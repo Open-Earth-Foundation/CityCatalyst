@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import NAMESPACE_URL, UUID, uuid5
 
+from app.config import Settings
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextFunder,
     ApplicationContextOpportunity,
@@ -24,7 +25,6 @@ from app.models.cnb.context_bundle import (
     SelectedSource,
     SourceDocumentText,
 )
-from app.models.cnb.golden_set import ReferenceChapter, ReferenceGap, TextUnit
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace import (
@@ -35,10 +35,10 @@ from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSn
 from app.services.cnb.application_context import included_sources_from_bundle
 from app.services.cnb.chapter_drafting import build_run_context
 from app.services.cnb.context_bundle import source_text_context
-from app.services.cnb.golden_set import LoadedFixture
 from app.services.cnb.source_analysis import render_source_text
 
-from app.config import Settings
+from benchmark.golden_set.core import LoadedFixture
+from benchmark.golden_set.models import ReferenceChapter, ReferenceGap, TextUnit
 
 _EPOCH = datetime(2026, 1, 1, tzinfo=UTC)
 

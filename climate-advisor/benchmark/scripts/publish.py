@@ -13,8 +13,9 @@ Outputs (no model calls, no network, no database):
   runs/<run-id>/viewer.js for each run.
 
 Usage (from climate-advisor/):
-- uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
-- open output/cnb_golden_set/index.html in a browser (no server needed)
+- uv run python -m benchmark.scripts.publish [--results-dir benchmark/results]
+- open output/cnb_golden_set/index.html (or benchmark/results/index.html) in a
+  browser (no server needed)
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from app.services.cnb.golden_set_viewer import DEFAULT_RESULTS_DIR, publish_viewer
+from benchmark.golden_set.viewer import DEFAULT_RESULTS_DIR, publish_viewer
 
 logger = logging.getLogger(__name__)
 

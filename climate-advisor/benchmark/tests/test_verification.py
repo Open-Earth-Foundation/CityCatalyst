@@ -6,11 +6,15 @@ from dataclasses import replace
 from unittest.mock import AsyncMock
 
 import pytest
+from app.config import get_settings
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationDecision,
     ChapterValidationFinding,
 )
-from app.models.cnb.golden_set import (
+from app.services.cnb.chapter_validation import select_chapter_validation_profile
+
+from benchmark.golden_set import verification as module
+from benchmark.golden_set.models import (
     DefectJudgment,
     FindingJudgment,
     GapAddition,
@@ -22,9 +26,7 @@ from app.models.cnb.golden_set import (
     TextReference,
     VerificationEvaluation,
 )
-from app.services.cnb import golden_set_verification as module
-from app.services.cnb.chapter_validation import select_chapter_validation_profile
-from app.services.cnb.golden_set_verification import (
+from benchmark.golden_set.verification import (
     finding_records,
     score_verification,
     seed_defects,
@@ -32,15 +34,12 @@ from app.services.cnb.golden_set_verification import (
     validation_requests,
     verification_judge_input,
 )
-from app.services.cnb.golden_set_workspace import (
+from benchmark.golden_set.workspace import (
     build_workspace,
     frozen_selected_source,
     reference_snapshots,
 )
-
-from app.config import get_settings
-
-from tests.cnb.golden_set_helpers import load_all
+from benchmark.tests.helpers import load_all
 
 QUESTION = "Confirm the contact person for the application."
 
@@ -292,7 +291,7 @@ async def test_evaluate_verification_saves_artifacts_and_isolates_judge_failure(
     verification_case, monkeypatch, tmp_path
 ):
     loaded, _, judgment, _ = verification_case
-    from app.services.cnb.golden_set_judge import GoldenJudgeError
+    from benchmark.golden_set.judge import GoldenJudgeError
 
     async def no_findings(settings, requests):
         return [

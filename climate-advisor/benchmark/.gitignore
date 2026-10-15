@@ -1,2 +1,2 @@
-# Original PDFs are copied here by the publisher; they already live in service/tests/fixtures/cnb_golden_set.
-pdf/
+# The publisher copies the original PDFs here; they already live in fixtures/.
+results/pdf/

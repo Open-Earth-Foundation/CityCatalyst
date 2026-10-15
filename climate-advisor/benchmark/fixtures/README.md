@@ -153,19 +153,19 @@ From `climate-advisor/`:
 
 ```bash
 # Deterministic tests: contracts, seeding, plumbing, prompt examples; no model calls.
-uv run --directory service pytest tests/cnb/test_golden_set*.py -q
+uv run pytest benchmark/tests -q
 
 # Every stage for every fixture, once; the label is shown in the viewer.
-uv run --directory service python -m scripts.evaluate_cnb_golden_set --label baseline
+uv run python -m benchmark.scripts.evaluate --label baseline
 
 # Selected stages or fixtures (repeat either flag).
-uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+uv run python -m benchmark.scripts.evaluate \
   --fixture krakow-flood-drainage-plan --stage chapter_writing
-uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+uv run python -m benchmark.scripts.evaluate \
   --fixture richfield-flood-risk --stage verification --stage editing
 
 # Rebuild the viewer from saved runs (no model calls).
-uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
+uv run python -m benchmark.scripts.publish
 ```
 
 `--fixtures-dir` overrides the fixture corpus and `--results-dir` the results
@@ -188,18 +188,19 @@ Prompt paths are configured under `prompts.cnb_golden_set_extraction_judge`,
 `prompts.cnb_golden_set_chapter_writing_judge`,
 `prompts.cnb_golden_set_verification_judge`, and
 `prompts.cnb_golden_set_editing_judge`, in
-[`prompts/cnb/golden_set/`](../../../../prompts/cnb/golden_set/). Reports record
+[`benchmark/prompts/`](../prompts/). Reports record
 SHA-256 hashes of the loaded prompts of the evaluated stages, the analysis
 contract version, and every producer and judge model.
 
 ## Results folder and viewer
 
 Every run is saved in one results folder, `climate-advisor/output/cnb_golden_set/`
-by default (gitignored):
+by default (gitignored); `--results-dir benchmark/results` saves a run with the
+committed ones:
 
 ```text
 output/cnb_golden_set/
-├── index.html, app.js      # the viewer, copied from service/scripts/cnb_golden_set_viewer/
+├── index.html, app.js      # the viewer, copied from benchmark/viewer/
 ├── pdf/<fixture>.pdf       # original PDFs, linked from the viewer
 └── runs/
     ├── index.js            # summary of every run, for the run picker and comparison

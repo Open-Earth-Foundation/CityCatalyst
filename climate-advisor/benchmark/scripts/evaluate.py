@@ -12,19 +12,20 @@ Four stages, each run once per fixture:
    reference draft; Python diffs chapters, the judge checks fidelity.
 
 Inputs:
-- --fixtures-dir: versioned fixtures (default service/tests/fixtures/cnb_golden_set).
+- --fixtures-dir: versioned fixtures (default benchmark/fixtures).
 - --fixture: fixture ID; repeat the flag to select multiple fixtures (default all).
 - --stage: extraction, chapter_writing, verification, editing, or all (default);
   repeat to select several. chapter_writing also runs extraction.
 - --results-dir: results folder shared by all runs (default
-  climate-advisor/output/cnb_golden_set). This run is saved in runs/<run-id>/.
+  climate-advisor/output/cnb_golden_set, git-ignored; benchmark/results holds the
+  committed runs). This run is saved in runs/<run-id>/.
 - --run-id: folder name for this run (default: UTC time, YYYYMMDD-HHMMSS, plus
   the label); letters, digits, '.', '_' and '-' only. An existing run is refused.
 - --label: optional short note shown in the viewer, for example "pr-3295".
 - --parallel: evaluate fixtures concurrently in one process (faster; default is
   one fixture at a time to keep provider load bounded).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
-  producer/judge models and prompts under prompts/cnb/golden_set/.
+  producer/judge models; the judge prompts are in benchmark/prompts/.
 
 Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - report.json and report.md with per-stage integrity failures, semantic findings,
@@ -35,13 +36,13 @@ Outputs (in <results-dir>/runs/<run-id>/; no database writes):
   verification/seeded_draft.json and findings.json, editing/cases.json, and
   <stage>/judgment.json for review.
 - viewer.js, and the refreshed viewer at <results-dir>/index.html (see
-  scripts/cnb_golden_set_viewer/publish.py). Open it to browse and compare runs.
+  benchmark/scripts/publish.py). Open it to browse and compare runs.
 - Exit 0 when all evaluated stages pass; 1 for quality/evaluation failures; 2
   when the run ID already exists (nothing is evaluated).
 
 Usage (from climate-advisor/):
-- uv run --directory service python -m scripts.evaluate_cnb_golden_set
-- uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+- uv run python -m benchmark.scripts.evaluate
+- uv run python -m benchmark.scripts.evaluate \
       --fixture krakow-flood-drainage-plan --stage chapter_writing --label krakow-drafting
 """
 
@@ -59,9 +60,37 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from app.config import Settings, get_settings
 from app.config.settings import ResearchModelConfig
 from app.models.cnb.context_bundle import SelectedSource
-from app.models.cnb.golden_set import (
+from app.services.cnb.application_context import template_chapter_requirements
+from app.services.cnb.chapter_drafting import ChapterDraftingError
+from app.services.cnb.source_analysis import (
+    SourceAnalysisError,
+    analyze_document,
+    chapter_evidence_fingerprint,
+    extract_chapter_evidence,
+    source_analysis_contract_version,
+)
+
+from benchmark.golden_set.chapters import (
+    chapter_writing_judge_input,
+    score_chapter_writing,
+    write_chapters,
+)
+from benchmark.golden_set.core import (
+    LoadedFixture,
+    extraction_judge_input,
+    fixture_problems,
+    load_golden_fixtures,
+    score_extraction,
+)
+from benchmark.golden_set.judge import (
+    GoldenJudgeError,
+    judge_output,
+    judge_prompt_versions,
+)
+from benchmark.golden_set.models import (
     STAGES,
     ChapterWritingEvaluation,
     FixtureReport,
@@ -71,42 +100,14 @@ from app.models.cnb.golden_set import (
     StageReport,
     StageUsage,
 )
-from app.services.cnb.chapter_drafting import ChapterDraftingError
-from app.services.cnb.golden_set import (
-    LoadedFixture,
-    extraction_judge_input,
-    fixture_problems,
-    load_golden_fixtures,
-    score_extraction,
-)
-from app.services.cnb.golden_set_chapters import (
-    chapter_writing_judge_input,
-    score_chapter_writing,
-    write_chapters,
-)
-from app.services.cnb.golden_set_judge import (
-    GoldenJudgeError,
-    judge_output,
-    judge_prompt_versions,
-)
-from app.services.cnb.golden_set_usage import UsageRecorder, measure, prompt_names
-from app.services.cnb.golden_set_viewer import publish_run
-from app.services.cnb.application_context import template_chapter_requirements
-from app.services.cnb.golden_set_workspace import fixture_template, golden_id
-from app.services.cnb.source_analysis import (
-    SourceAnalysisError,
-    analyze_document,
-    chapter_evidence_fingerprint,
-    extract_chapter_evidence,
-    source_analysis_contract_version,
-)
-
-from app.config import Settings, get_settings
+from benchmark.golden_set.usage import UsageRecorder, measure, prompt_names
+from benchmark.golden_set.viewer import publish_run
+from benchmark.golden_set.workspace import fixture_template, golden_id
 
 logger = logging.getLogger(__name__)
-SERVICE_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_FIXTURES_DIR = SERVICE_ROOT / "tests" / "fixtures" / "cnb_golden_set"
-DEFAULT_RESULTS_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
+BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_FIXTURES_DIR = BENCHMARK_ROOT / "fixtures"
+DEFAULT_RESULTS_DIR = BENCHMARK_ROOT.parent / "output" / "cnb_golden_set"
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 
 
@@ -163,11 +164,11 @@ def code_version() -> str | None:
     try:
         commit = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, check=True, cwd=SERVICE_ROOT,
+            capture_output=True, text=True, check=True, cwd=BENCHMARK_ROOT,
         ).stdout.strip()
         dirty = subprocess.run(
             ["git", "status", "--porcelain", "--untracked-files=no"],
-            capture_output=True, text=True, check=True, cwd=SERVICE_ROOT,
+            capture_output=True, text=True, check=True, cwd=BENCHMARK_ROOT,
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         return None
@@ -279,14 +280,14 @@ async def _evaluate_fixture(
                     else None,
                 )
     if "verification" in stages and fixture.verification:
-        from app.services.cnb.golden_set_verification import evaluate_verification
+        from benchmark.golden_set.verification import evaluate_verification
 
         with measure(usage("verification")):
             report.verification = await evaluate_verification(
                 loaded, settings, output_dir / "verification", judge=judge_output
             )
     if "editing" in stages and fixture.editing:
-        from app.services.cnb.golden_set_editing import evaluate_editing
+        from benchmark.golden_set.editing import evaluate_editing
 
         with measure(usage("editing")):
             report.editing = await evaluate_editing(

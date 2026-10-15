@@ -15,20 +15,15 @@ from unittest.mock import AsyncMock
 from uuid import NAMESPACE_URL, uuid5
 
 import pytest
-from app.models.cnb.golden_set import (
-    ClaimJudgment,
-    CoverageJudgment,
-    FixtureReport,
-    GoldenSetReport,
-    JudgeEvaluation,
-    StageReport,
-    TextReference,
-)
+from app.config import get_settings
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.context_bundle import ContextBundleService
-from app.services.cnb.golden_set import (
+from app.services.cnb.source_analysis import source_analysis_contract_version
+from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
+
+from benchmark.golden_set.core import (
     LoadedFixture,
     extraction_judge_input,
     fixture_problems,
@@ -37,20 +32,29 @@ from app.services.cnb.golden_set import (
     score_extraction,
     verify_excerpts,
 )
-from app.services.cnb.golden_set_judge import (
+from benchmark.golden_set.judge import (
     OUTPUT_TYPES,
     PROMPT_KEYS,
     GoldenJudgeError,
     judge_output,
     judge_prompt_versions,
 )
-from app.services.cnb.source_analysis import source_analysis_contract_version
-from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
-from service.scripts import evaluate_cnb_golden_set as evaluator
-
-from app.config import get_settings
-
-from tests.cnb.golden_set_helpers import HARBOR_POINT, load_all, reviewed_source, selected_source
+from benchmark.golden_set.models import (
+    ClaimJudgment,
+    CoverageJudgment,
+    FixtureReport,
+    GoldenSetReport,
+    JudgeEvaluation,
+    StageReport,
+    TextReference,
+)
+from benchmark.scripts import evaluate as evaluator
+from benchmark.tests.helpers import (
+    HARBOR_POINT,
+    load_all,
+    reviewed_source,
+    selected_source,
+)
 
 
 @pytest.fixture(scope="module")
@@ -313,9 +317,9 @@ async def test_extraction_feeds_chapter_writing_and_later_stages_use_reference(
     monkeypatch.setattr(evaluator, "_evaluate_extraction", extraction)
     monkeypatch.setattr(evaluator, "_evaluate_chapter_writing", writing)
     monkeypatch.setattr(
-        "app.services.cnb.golden_set_verification.evaluate_verification", verification
+        "benchmark.golden_set.verification.evaluate_verification", verification
     )
-    monkeypatch.setattr("app.services.cnb.golden_set_editing.evaluate_editing", editing)
+    monkeypatch.setattr("benchmark.golden_set.editing.evaluate_editing", editing)
     stages = evaluator.selected_stages(None)
     report = await evaluator._evaluate_fixture(loaded, get_settings(), stages, tmp_path)
     extraction.assert_awaited_once()
@@ -443,7 +447,7 @@ def test_prompt_fingerprints_cover_selected_stages():
 @pytest.mark.asyncio
 async def test_judge_client_closes_and_uses_configured_model(judged_case, monkeypatch):
     _, _, payload, judgment = judged_case
-    from app.services.cnb import golden_set_judge as module
+    from benchmark.golden_set import judge as module
 
     client = SimpleNamespace(close=AsyncMock())
     monkeypatch.setattr(
@@ -462,7 +466,7 @@ async def test_judge_client_closes_and_uses_configured_model(judged_case, monkey
 @pytest.mark.asyncio
 async def test_judge_provider_error_is_sanitized_and_client_closed(judged_case, monkeypatch):
     _, _, payload, _ = judged_case
-    from app.services.cnb import golden_set_judge as module
+    from benchmark.golden_set import judge as module
 
     client = SimpleNamespace(close=AsyncMock())
     monkeypatch.setattr(

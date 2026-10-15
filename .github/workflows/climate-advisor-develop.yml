@@ -125,6 +125,7 @@ jobs:
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
+          uv run pytest benchmark/tests -v --color=yes
 
       - name: Generate test coverage report
         working-directory: climate-advisor
@@ -154,7 +155,7 @@ jobs:
           fail-on-error: false
 
   # Live-model grounding evaluation; gates are documented in
-  # climate-advisor/service/tests/fixtures/cnb_golden_set/README.md.
+  # climate-advisor/benchmark/fixtures/README.md.
   cnbGoldenSet:
     name: CNB golden set (${{ matrix.fixture }})
     if: github.event_name != 'push'
@@ -200,7 +201,7 @@ jobs:
       - name: Evaluate extraction, chapter writing, verification and editing
         working-directory: climate-advisor
         run: |
-          uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+          uv run python -m benchmark.scripts.evaluate \
                  --fixture "${{ matrix.fixture }}" \
                  --run-id "ci-${{ matrix.fixture }}" \
                  --label "CI ${{ matrix.fixture }} ${{ github.sha }}"

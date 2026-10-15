@@ -22,7 +22,8 @@ from contextvars import ContextVar
 from typing import Any
 
 import httpx
-from app.models.cnb.golden_set import AgentUsage, StageUsage
+
+from benchmark.golden_set.models import AgentUsage, StageUsage
 
 logger = logging.getLogger(__name__)
 _STAGE: ContextVar[StageUsage | None] = ContextVar("golden_set_stage", default=None)

@@ -1,5 +1,5 @@
 /* CNB golden-set viewer. Reads runs/index.js and loads runs/<id>/viewer.js on demand
-   (both written by scripts/cnb_golden_set_viewer/publish.py). Works from disk. */
+   (both written by benchmark/scripts/publish.py). Works from disk. */
 (() => {
   "use strict";
   const INDEX = window.GOLDEN_INDEX || [];
@@ -1692,11 +1692,11 @@
   window.addEventListener("hashchange", render);
   if (!CURRENT) {
     app.innerHTML = `<h1>No runs yet</h1><p class="lede">Run the evaluator; each run is saved in <code>runs/</code> next to this page and appears here automatically.</p>
-      <pre class="card">cd climate-advisor\nuv run --directory service python -m scripts.evaluate_cnb_golden_set --label my-first-run</pre>`;
+      <pre class="card">cd climate-advisor\nuv run python -m benchmark.scripts.evaluate --label my-first-run</pre>`;
   } else {
     runPicker();
     loadRun(CURRENT)
       .then((payload) => { D = payload; render(); })
-      .catch(() => { app.innerHTML = `<h1>Run not found</h1><p class="lede">Could not load <code>runs/${esc(CURRENT)}/viewer.js</code>. Republish with <code>python -m scripts.cnb_golden_set_viewer.publish</code>.</p>`; });
+      .catch(() => { app.innerHTML = `<h1>Run not found</h1><p class="lede">Could not load <code>runs/${esc(CURRENT)}/viewer.js</code>. Republish with <code>uv run python -m benchmark.scripts.publish</code>.</p>`; });
   }
 })();

@@ -1,51 +1,71 @@
-# CNB golden-set benchmark results
+# CNB golden-set benchmark
 
-Saved runs of the Concept Note Builder golden-set benchmark and the static
-website for browsing them. The benchmark runs three fixture documents (Harbor
-Point, Kraków, Richfield) through four stages — extraction, chapter writing,
+Everything for the Concept Note Builder benchmark lives in this folder. The
+benchmark runs three fixture documents (Harbor Point, Kraków, Richfield) through
+the real production pipeline in four stages — extraction, chapter writing,
 verification, editing — and an LLM judge scores each stage against the golden
-expectations in `service/tests/fixtures/cnb_golden_set/`.
+expectations. Production code never imports anything from here, and the
+service's Docker image does not include it.
 
 ## What is here
 
-| Path | Contents |
+| Folder | Contents |
 | --- | --- |
-| `index.html`, `app.js` | The website (no build step, no server needed). |
-| `runs/index.js` | Summary of every saved run, for the run picker and run comparison. |
-| `runs/<run-id>/report.md` | Human-readable scores, failures, time and cost of one run. |
-| `runs/<run-id>/report.json` | The same report as data. |
-| `runs/<run-id>/outputs/` | What the pipeline produced per document and stage, and the judge's verdicts. |
-| `runs/<run-id>/viewer.js` | Snapshot the website loads for that run. |
+| `fixtures/` | The three documents with their golden expectations, drafting inputs, and reference drafts. [`fixtures/README.md`](fixtures/README.md) explains the format and gates. |
+| `prompts/` | The four judge prompts, one per stage, with their few-shot examples. |
+| `golden_set/` | The Python code that runs the stages and scores them (below). |
+| `scripts/` | `evaluate.py` runs the benchmark; `publish.py` rebuilds the website. |
+| `viewer/` | The website source: `index.html` and `app.js`. |
+| `tests/` | Offline tests for all of the above; no model calls. |
+| `results/` | Committed runs and the published website. |
 
-Saved run: `20261014-232449-five-fixes` (current implementation, commit
-`0026fa7b2`; producers `openai/gpt-5.6-terra`, judge and edit planner
-`openai/gpt-6-sol`). Its recorded cost ($7.03) misses about $0.78 of streamed
-edit-planner calls, which were recorded from later runs on.
+The code in `golden_set/`:
+
+| File | What it does |
+| --- | --- |
+| `models.py` | Data shapes: fixture files, judge inputs and verdicts, reports, usage. |
+| `core.py` | Loads and checks the fixtures; stage 1 (extraction) judge input and scoring; shared scoring helpers. |
+| `chapters.py` | Stage 2: runs the production drafter and support check per chapter, then scores. |
+| `verification.py` | Stage 3: plants defects in the reference draft, runs the production validator, then scores. |
+| `editing.py` | Stage 4: runs the production edit planner on each editing case, then scores. |
+| `workspace.py` | Builds the in-memory workspace the pipeline normally reads from the database. |
+| `judge.py` | Calls the judge model with a stage's judge prompt. |
+| `usage.py` | Records time, requests, tokens, and cost per stage and agent. |
+| `viewer.py` | Writes each run's website data and the run index. |
+
+The judge model (`models.cnb_golden_set_judge`) and the judge prompt paths are
+configured in `climate-advisor/llm_config.yaml`.
+
+Committed run: `results/runs/20261014-232449-five-fixes` (commit `0026fa7b2`;
+producers `openai/gpt-5.6-terra`, judge and edit planner `openai/gpt-6-sol`). Its
+recorded cost ($7.03) misses about $0.78 of streamed edit-planner calls, which
+later runs record.
 
 ## Open the website
 
-From `climate-advisor/`, open `benchmark/index.html` in a browser:
+From `climate-advisor/`, open `benchmark/results/index.html` in a browser
+(no server needed):
 
 ```bash
-start benchmark/index.html      # Windows
-open benchmark/index.html       # macOS
-xdg-open benchmark/index.html   # Linux
+start benchmark/results/index.html      # Windows
+open benchmark/results/index.html       # macOS
+xdg-open benchmark/results/index.html   # Linux
 ```
 
-Or serve it locally and open http://127.0.0.1:8765:
+Or serve it and open http://127.0.0.1:8765:
 
 ```bash
-python -m http.server 8765 --directory benchmark
+python -m http.server 8765 --directory benchmark/results
 ```
 
 The "Open original PDF" buttons need the PDFs copied next to the site once
-(they are kept out of git; the originals are in the fixtures folder):
+(they are kept out of git; the originals are in `fixtures/`):
 
 ```bash
-uv run --directory service python -m scripts.cnb_golden_set_viewer.publish --results-dir ../benchmark
+uv run python -m benchmark.scripts.publish --results-dir benchmark/results
 ```
 
-## What to look at
+Pages:
 
 - **Overview** — pass/fail per document and stage for the selected run.
 - **1 · Extraction … 4 · Editing** — every judge verdict with the quoted evidence.
@@ -56,17 +76,24 @@ uv run --directory service python -m scripts.cnb_golden_set_viewer.publish --res
   scores, time and cost, individual verdicts) and the history of all runs.
 - **Run** (top right) — switch the run every page shows.
 
-## Add a run
+## Run the benchmark
 
-A run calls the configured models (about 15 minutes and $8 for all three
-documents) and needs `OPENROUTER_API_KEY` in `climate-advisor/.env`:
+From `climate-advisor/`:
 
 ```bash
-uv run --directory service python -m scripts.evaluate_cnb_golden_set --parallel --results-dir ../benchmark --label my-change
+# Offline tests, no model calls.
+uv run pytest benchmark/tests -q
+
+# Full run: calls the configured models, about 15 minutes and $8.
+# Needs OPENROUTER_API_KEY in climate-advisor/.env.
+uv run python -m benchmark.scripts.evaluate --parallel --label my-change
+
+# Save the run with the committed ones instead of output/cnb_golden_set/.
+uv run python -m benchmark.scripts.evaluate --parallel --results-dir benchmark/results --label my-change
 ```
 
-The run is saved under `runs/<timestamp>-my-change/` and the website updates
-itself; commit the new run folder together with `runs/index.js`. Without
-`--results-dir` runs go to `output/cnb_golden_set/`, which git ignores. See the
-golden-set section of `climate-advisor/README.md` for running single fixtures or
-stages.
+Runs go to `climate-advisor/output/cnb_golden_set/` by default, which git
+ignores; open its `index.html` the same way. A run saved in `results/` updates
+the website there; commit the new `results/runs/<run-id>/` folder together with
+`results/runs/index.js`. `--fixture` and `--stage` select single documents or
+stages; see `uv run python -m benchmark.scripts.evaluate --help`.

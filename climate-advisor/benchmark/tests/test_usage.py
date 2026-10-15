@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 
 import httpx
-from app.models.cnb.golden_set import StageUsage
-from app.services.cnb.golden_set_usage import UsageRecorder, measure, prompt_names
-
 from app.config import get_settings
+
+from benchmark.golden_set.models import StageUsage
+from benchmark.golden_set.usage import UsageRecorder, measure, prompt_names
 
 DRAFTING = "You draft chapters."
 JUDGING = "You judge chapters."

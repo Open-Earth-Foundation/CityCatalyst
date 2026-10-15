@@ -18,17 +18,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from app.models.cnb.context_bundle import SelectedSource
-from app.models.cnb.golden_set import (
-    DraftingInput,
-    ExpectedFact,
-    GoldenFixture,
-    GoldenLocator,
-    JudgeEvaluation,
-    JudgeInput,
-    ReferenceDraft,
-    StageReport,
-    TextUnit,
-)
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
     SourceUnit,
@@ -42,6 +31,18 @@ from app.utils.cnb_information_markers import (
     information_needed_markers,
 )
 from app.utils.concept_note_context import readable_source_heading
+
+from benchmark.golden_set.models import (
+    DraftingInput,
+    ExpectedFact,
+    GoldenFixture,
+    GoldenLocator,
+    JudgeEvaluation,
+    JudgeInput,
+    ReferenceDraft,
+    StageReport,
+    TextUnit,
+)
 
 logger = logging.getLogger(__name__)
 GOLDEN_FIXTURE_FILE = "golden.json"

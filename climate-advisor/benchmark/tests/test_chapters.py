@@ -6,12 +6,23 @@ from dataclasses import replace
 from unittest.mock import AsyncMock
 
 import pytest
+from app.config import get_settings
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
     ConceptNoteGapSuggestion,
 )
-from app.models.cnb.golden_set import (
+
+from benchmark.golden_set import chapters as chapters_module
+from benchmark.golden_set.chapters import (
+    DraftedChapter,
+    chapter_writing_judge_input,
+    score_chapter_writing,
+    transfer_records,
+    validate_chapter_writing_judgment,
+    write_chapters,
+)
+from benchmark.golden_set.models import (
     ChapterJudgment,
     ChapterWritingEvaluation,
     ClaimJudgment,
@@ -22,20 +33,8 @@ from app.models.cnb.golden_set import (
     TextReference,
     TextUnit,
 )
-from app.services.cnb import golden_set_chapters as chapters_module
-from app.services.cnb.golden_set_chapters import (
-    DraftedChapter,
-    chapter_writing_judge_input,
-    score_chapter_writing,
-    transfer_records,
-    validate_chapter_writing_judgment,
-    write_chapters,
-)
-from app.services.cnb.golden_set_workspace import build_workspace, share_common_inputs
-
-from app.config import get_settings
-
-from tests.cnb.golden_set_helpers import load_all, reviewed_source
+from benchmark.golden_set.workspace import build_workspace, share_common_inputs
+from benchmark.tests.helpers import load_all, reviewed_source
 
 MARKER = "[Information needed: Confirm the application submittal date for the Richfield DNR application.]"
 QUESTION = "Confirm the application submittal date for the Richfield DNR application."

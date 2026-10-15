@@ -4,8 +4,8 @@ Every evaluation run lives in ``<results-dir>/runs/<run-id>/``. Publishing a
 run snapshots everything the viewer needs for it (fixtures, judge prompts,
 few-shot examples, outputs, judgments, and scored reports) into that run's
 ``viewer.js``, so a run stays readable after fixtures or prompts change. The
-results folder also gets the static viewer from ``service/scripts/
-cnb_golden_set_viewer/`` (``index.html``, ``app.js``), the fixtures' original
+results folder also gets the static viewer from ``benchmark/viewer/``
+(``index.html``, ``app.js``), the fixtures' original
 PDFs under ``pdf/``, and ``runs/index.js`` summarising every run for the run
 picker and run comparison. Nothing here calls a model or the network.
 """
@@ -20,17 +20,18 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from app.models.cnb.golden_set import STAGES
-from app.services.cnb.golden_set import load_golden_fixtures
-
 from app.config import get_settings
 
+from benchmark.golden_set.core import load_golden_fixtures
+from benchmark.golden_set.models import STAGES
+
 logger = logging.getLogger(__name__)
-SERVICE_ROOT = Path(__file__).resolve().parents[3]
-VIEWER_DIR = SERVICE_ROOT / "scripts" / "cnb_golden_set_viewer"
-FIXTURES_DIR = SERVICE_ROOT / "tests" / "fixtures" / "cnb_golden_set"
-PROMPTS_DIR = SERVICE_ROOT.parent / "prompts" / "cnb" / "golden_set"
-DEFAULT_RESULTS_DIR = SERVICE_ROOT.parent / "output" / "cnb_golden_set"
+BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
+VIEWER_DIR = BENCHMARK_ROOT / "viewer"
+FIXTURES_DIR = BENCHMARK_ROOT / "fixtures"
+PROMPTS_DIR = BENCHMARK_ROOT / "prompts"
+# Scratch runs (git-ignored); pass benchmark/results to save a run for committing.
+DEFAULT_RESULTS_DIR = BENCHMARK_ROOT.parent / "output" / "cnb_golden_set"
 # Raw artefacts each stage writes, keyed by the name the viewer uses.
 ARTEFACTS = {
     "extraction": {"judgment": "extraction/judgment.json"},

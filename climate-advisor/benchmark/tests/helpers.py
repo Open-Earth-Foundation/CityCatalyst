@@ -6,9 +6,10 @@ from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
 from app.models.cnb.context_bundle import SelectedSource
-from app.services.cnb.golden_set import LoadedFixture, load_golden_fixtures
 
-FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "cnb_golden_set"
+from benchmark.golden_set.core import LoadedFixture, load_golden_fixtures
+
+FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures"
 HARBOR_POINT = "harbor-point-heat-and-stormwater-resilience-plan"
 
 

@@ -15,9 +15,24 @@ from copy import deepcopy
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from app.config import Settings
 from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
 from app.models.cnb.context_bundle import SelectedSource
-from app.models.cnb.golden_set import (
+from app.services.cnb.chapter_drafting import (
+    _sanitize_generated_output,
+    build_chapter_input,
+    draft_chapter,
+)
+
+from benchmark.golden_set.core import (
+    LoadedFixture,
+    exactly_once,
+    marker_parity_problems,
+    score_facts_and_claims,
+    source_evidence,
+    validate_judgment,
+)
+from benchmark.golden_set.models import (
     ChapterRequirement,
     ChapterWritingEvaluation,
     ExpectedFact,
@@ -26,27 +41,12 @@ from app.models.cnb.golden_set import (
     StageReport,
     TextUnit,
 )
-from app.services.cnb.chapter_drafting import (
-    _sanitize_generated_output,
-    build_chapter_input,
-    draft_chapter,
-)
-from app.services.cnb.golden_set import (
-    LoadedFixture,
-    exactly_once,
-    marker_parity_problems,
-    score_facts_and_claims,
-    source_evidence,
-    validate_judgment,
-)
-from app.services.cnb.golden_set_workspace import (
+from benchmark.golden_set.workspace import (
     build_workspace,
     context_units,
     share_common_inputs,
     text_units,
 )
-
-from app.config import Settings
 
 logger = logging.getLogger(__name__)
 # Inputs a chapter sees that are not evidence: generated text and redraft state.

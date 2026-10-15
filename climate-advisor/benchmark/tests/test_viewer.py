@@ -7,8 +7,9 @@ import re
 from pathlib import Path
 
 import pytest
-from app.services.cnb import golden_set_viewer as publish
-from service.scripts import evaluate_cnb_golden_set as evaluator
+
+from benchmark.golden_set import viewer as publish
+from benchmark.scripts import evaluate as evaluator
 
 STAGE_OK = {
     "metrics": {"required_fact_coverage": 0.8, "required_facts_covered": 4},

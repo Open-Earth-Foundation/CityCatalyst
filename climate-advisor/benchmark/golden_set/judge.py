@@ -13,7 +13,11 @@ from collections.abc import Iterable
 from typing import Any
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
-from app.models.cnb.golden_set import (
+from app.config import Settings
+from app.services.openrouter_client import build_openrouter_client_options
+from openai import AsyncOpenAI
+
+from benchmark.golden_set.models import (
     ChapterWritingEvaluation,
     EditingEvaluation,
     EditingJudgeInput,
@@ -23,10 +27,6 @@ from app.models.cnb.golden_set import (
     VerificationEvaluation,
     VerificationJudgeInput,
 )
-from app.services.openrouter_client import build_openrouter_client_options
-from openai import AsyncOpenAI
-
-from app.config import Settings
 
 logger = logging.getLogger(__name__)
 PROMPT_KEYS = {

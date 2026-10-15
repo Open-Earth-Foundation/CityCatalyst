@@ -16,8 +16,21 @@ from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
+from app.config import Settings
 from app.models.cnb.concept_note_edits import EditProposalRequest, EditScope
-from app.models.cnb.golden_set import (
+from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.services.cnb.edit_planner import ConceptNoteEditPlanner
+from app.services.cnb.edit_validation import validate_edit_plan
+from app.utils.cnb_information_markers import removed_information_markers
+
+from benchmark.golden_set.core import (
+    LoadedFixture,
+    exactly_once,
+    source_evidence,
+)
+from benchmark.golden_set.judge import GoldenJudgeError
+from benchmark.golden_set.models import (
     EditCase,
     EditCaseInput,
     EditingEvaluation,
@@ -26,17 +39,7 @@ from app.models.cnb.golden_set import (
     StageReport,
     TextUnit,
 )
-from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
-from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
-from app.services.cnb.edit_planner import ConceptNoteEditPlanner
-from app.services.cnb.edit_validation import validate_edit_plan
-from app.services.cnb.golden_set import (
-    LoadedFixture,
-    exactly_once,
-    source_evidence,
-)
-from app.services.cnb.golden_set_judge import GoldenJudgeError
-from app.services.cnb.golden_set_workspace import (
+from benchmark.golden_set.workspace import (
     build_workspace,
     context_units,
     edit_run_context,
@@ -44,9 +47,6 @@ from app.services.cnb.golden_set_workspace import (
     golden_id,
     reference_snapshots,
 )
-from app.utils.cnb_information_markers import removed_information_markers
-
-from app.config import Settings
 
 logger = logging.getLogger(__name__)
 Judge = Callable[..., Awaitable[GoldenContract]]

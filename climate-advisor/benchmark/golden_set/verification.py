@@ -18,6 +18,7 @@ from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
+from app.config import Settings
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationChapter,
     ChapterValidationDecision,
@@ -25,7 +26,21 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationRequest,
     ChapterValidationTemplate,
 )
-from app.models.cnb.golden_set import (
+from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.services.cnb.chapter_validation import (
+    ChapterValidationError,
+    ConceptNoteChapterValidationService,
+    _deterministic_gap_findings,
+)
+
+from benchmark.golden_set.core import (
+    LoadedFixture,
+    exactly_once,
+    marker_parity_problems,
+    source_evidence,
+)
+from benchmark.golden_set.judge import GoldenJudgeError
+from benchmark.golden_set.models import (
     DefectInput,
     GoldenContract,
     ReferenceChapter,
@@ -35,20 +50,7 @@ from app.models.cnb.golden_set import (
     VerificationEvaluation,
     VerificationJudgeInput,
 )
-from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
-from app.services.cnb.chapter_validation import (
-    ChapterValidationError,
-    ConceptNoteChapterValidationService,
-    _deterministic_gap_findings,
-)
-from app.services.cnb.golden_set import (
-    LoadedFixture,
-    exactly_once,
-    marker_parity_problems,
-    source_evidence,
-)
-from app.services.cnb.golden_set_judge import GoldenJudgeError
-from app.services.cnb.golden_set_workspace import (
+from benchmark.golden_set.workspace import (
     GoldenWorkspace,
     build_workspace,
     context_units,
@@ -56,8 +58,6 @@ from app.services.cnb.golden_set_workspace import (
     golden_id,
     reference_snapshots,
 )
-
-from app.config import Settings
 
 logger = logging.getLogger(__name__)
 Judge = Callable[..., Awaitable[GoldenContract]]

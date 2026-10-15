@@ -1505,7 +1505,7 @@ uv run --directory service python -m scripts.run_ca_e2e
 
 ### CNB Golden Set
 
-Fixtures under `service/tests/fixtures/cnb_golden_set/` evaluate the Concept Note
+Fixtures under `benchmark/fixtures/` evaluate the Concept Note
 Builder pipeline stage by stage on three documents (two English, one Polish):
 
 1. **extraction**: production source analysis plus per-chapter quotations for
@@ -1529,12 +1529,12 @@ repeated verdict makes a stage an evaluation error. Generated source summaries a
 Production generation is unchanged.
 
 ```bash
-uv run --directory service pytest tests/cnb/test_golden_set*.py -q
-uv run --directory service python -m scripts.evaluate_cnb_golden_set --label baseline
-uv run --directory service python -m scripts.evaluate_cnb_golden_set \
+uv run pytest benchmark/tests -q
+uv run python -m benchmark.scripts.evaluate --label baseline
+uv run python -m benchmark.scripts.evaluate \
   --fixture krakow-flood-drainage-plan --stage verification --stage editing
 # Rebuild the viewer from saved runs (no model calls).
-uv run --directory service python -m scripts.cnb_golden_set_viewer.publish
+uv run python -m benchmark.scripts.publish
 ```
 
 Reports record per-stage wall time, requests, tokens, and the cost OpenRouter
@@ -1543,18 +1543,19 @@ Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
 the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
 browser). The viewer shows each run by stage and document, and **Compare runs**
 diffs any two runs: configuration, stage results, and changed verdicts.
-Reference runs are committed in [`benchmark/`](benchmark/benchmark.md) with the
-same viewer; pass `--results-dir ../benchmark` to save a run there.
+Everything for the benchmark (code, scripts, viewer, judge prompts, fixtures,
+tests, and committed runs) lives in [`benchmark/`](benchmark/benchmark.md); pass
+`--results-dir benchmark/results` to save a run with the committed ones.
 
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
-[`prompts/cnb/golden_set/`](prompts/cnb/golden_set/). Reports record the configured
+[`benchmark/prompts/`](benchmark/prompts/). Reports record the configured
 models and hashes of the loaded judge prompts. The CI evaluation runs one job per
 document on pull requests to `develop`; quality failures and unavailable/invalid
 evaluations both return a nonzero exit status. Mocked unit tests verify the
 evaluator plumbing and do not claim to validate the judge's semantic accuracy.
 
-See the [fixture README](service/tests/fixtures/cnb_golden_set/README.md) for
+See the [fixture README](benchmark/fixtures/README.md) for
 stage details, gates, reports, and how to add or review fixtures.
 
 ## Docker Deployment (Local Testing)

@@ -7,40 +7,39 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+from app.config import get_settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
     EditPlanOutput,
     PlannedTextChange,
 )
-from app.models.cnb.golden_set import (
-    ChangeJudgment,
-    EditCase,
-    EditCaseJudgment,
-    EditingEvaluation,
-    EditExpectation,
-    ExpectationJudgment,
-    PreservationJudgment,
-    TextReference,
-)
 from app.persistence.concept_notes.edits import EditOperationError
 from app.services.cnb.edit_planner import bind_semantic_review
-from app.services.cnb.golden_set_editing import (
+
+from benchmark.golden_set.editing import (
     case_checks,
     editing_judge_input,
     run_edit_case,
     score_editing,
     validate_editing_judgment,
 )
-from app.services.cnb.golden_set_workspace import (
+from benchmark.golden_set.models import (
+    ChangeJudgment,
+    EditCase,
+    EditCaseJudgment,
+    EditExpectation,
+    EditingEvaluation,
+    ExpectationJudgment,
+    PreservationJudgment,
+    TextReference,
+)
+from benchmark.golden_set.workspace import (
     build_workspace,
     edit_run_context,
     frozen_selected_source,
     reference_snapshots,
 )
-
-from app.config import get_settings
-
-from tests.cnb.golden_set_helpers import load_all
+from benchmark.tests.helpers import load_all
 
 
 @pytest.fixture(scope="module")
@@ -161,7 +160,7 @@ async def test_non_edit_outcomes_change_nothing(workspace_case, plan, error, out
 @pytest.mark.asyncio
 async def test_provider_failure_is_an_evaluation_error(workspace_case, monkeypatch, tmp_path):
     loaded, _, _, = workspace_case
-    from app.services.cnb import golden_set_editing as module
+    from benchmark.golden_set import editing as module
 
     monkeypatch.setattr(module, "run_edit_case", AsyncMock(side_effect=TimeoutError()))
     report = await module.evaluate_editing(loaded, get_settings(), tmp_path, judge=AsyncMock())

@@ -1434,9 +1434,15 @@
           return `<tr><td>${esc(shortFixture(fid))} · ${STAGES[s].n} ${esc(STAGES[s].label)} · <span class="muted">${esc(name)}</span></td>${cells.join("")}</tr>`;
         }))).join("")}</tbody></table></div>`;
 
+    const choose = (key, name, id) => `<label class="runpick">${name}<select data-compare="${key}" aria-label="${name}">
+        ${id ? "" : `<option value="" selected>Choose a run…</option>`}${INDEX.map((r) => `<option value="${esc(r.id)}"${r.id === id ? " selected" : ""}>${esc(runLabel(r))}</option>`).join("")}
+      </select></label>`;
+    const picker = INDEX.length < 2 ? "" : `<div class="comparepick">${choose("a", "Run A", aId)}
+      <a class="pill" href="#/compare/${enc(bId || "")}/${enc(aId || "")}" title="Swap run A and run B">⇄ Swap</a>
+      ${choose("b", "Run B", bId)}</div>`;
     if (!aId || !bId || aId === bId) {
-      return `<div class="eyebrow">Runs</div><h1>Compare runs</h1>
-        <p class="lede">${INDEX.length < 2 ? "Only one run is saved so far. Each new evaluator run is added here automatically." : "Pick run A and run B in the history below."}</p>${history}`;
+      return `<div class="eyebrow">Runs</div><h1>Compare runs</h1>${picker}
+        <p class="lede">${INDEX.length < 2 ? "Only one run is saved so far. Each new evaluator run is added here automatically." : "Pick two different runs above, or with A and B in the history below."}</p>${history}`;
     }
     let A, B;
     try {
@@ -1444,7 +1450,7 @@
     } catch (error) {
       return `<h1>Compare runs</h1><div class="callout err">Could not load run ${esc(error.message)}. Republish the results folder.</div>${history}`;
     }
-    return `<div class="eyebrow">Runs</div><h1>Compare runs</h1>
+    return `<div class="eyebrow">Runs</div><h1>Compare runs</h1>${picker}
       <div class="grid g2" style="margin-top:14px">${[["A", A], ["B", B]].map(([tag, run]) => `<div class="card"><div class="eyebrow">Run ${tag}</div>
         <h3 style="font-size:17px">${esc(run.run.label || run.run.id)}</h3>
         <div class="muted small mono">${esc(run.run.id)} · ${esc(run.run.code_version || "unknown commit")}</div>
@@ -1635,6 +1641,11 @@
   // ---------- interactions ----------
   document.addEventListener("change", (e) => {
     const t = e.target;
+    if (t.dataset.compare) {
+      const [a, b] = [...document.querySelectorAll("select[data-compare]")].map((s) => s.value);
+      location.hash = `#/compare/${enc(a)}/${enc(b)}`;
+      return;
+    }
     if (t.dataset.layer) {
       localStorage.setItem(`golden-layer-${t.dataset.layer}`, t.checked ? "on" : "off");
       document.querySelector(".facts-side")?.classList.toggle(`hide-${t.dataset.layer}`, !t.checked);

@@ -71,7 +71,13 @@ export default function ReviewConfirmStep({
           )}
           <Heading size="lg">{t("review-confirm-heading")}</Heading>
           <Text fontSize="body.lg" color="content.tertiary">
-            {t("review-confirm-description")}
+            <Trans
+              i18nKey="review-confirm-description"
+              t={t}
+              components={[
+                <Text as="span" fontWeight="bold" key="0" />,
+              ]}
+            />
           </Text>
         </Box>
         <Card.Root
@@ -152,14 +158,13 @@ export default function ReviewConfirmStep({
           {t("review-confirm-heading")}
         </Heading>
         <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
-          <Trans i18nKey="review-confirm-description" t={t}>
-            Please{" "}
-            <Text as="span" fontWeight="bold">
-              carefully review all fields
-            </Text>{" "}
-            and confirm the upload since you won&apos;t be able to modify it
-            later on.
-          </Trans>
+          <Trans
+            i18nKey="review-confirm-description"
+            t={t}
+            components={[
+              <Text as="span" fontWeight="bold" key="0" />,
+            ]}
+          />
         </Text>
       </Box>
       <ReportingLevelWarning

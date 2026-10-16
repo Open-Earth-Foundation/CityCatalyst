@@ -2,11 +2,20 @@
 import { useEffect } from "react";
 import { H } from "@highlight-run/next/client";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { isUnauthenticatedHighlightRoute } from "./route-gate";
 
-export default function HighlightIdentifier() {
+interface HighlightIdentifierProps {
+  enabled: boolean;
+}
+
+export default function HighlightIdentifier({ enabled }: HighlightIdentifierProps) {
   const { data } = useSession();
+  const pathname = usePathname();
+  const isActive = enabled && !isUnauthenticatedHighlightRoute(pathname);
+
   useEffect(() => {
-    if (data?.user) {
+    if (isActive && data?.user) {
       H.identify(data.user.email || "user", {
         id: data.user.id,
         name: data.user.name,
@@ -14,6 +23,6 @@ export default function HighlightIdentifier() {
         role: data.user.role,
       });
     }
-  }, [data]);
+  }, [isActive, data]);
   return null;
 }

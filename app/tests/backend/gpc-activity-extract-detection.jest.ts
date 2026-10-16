@@ -81,6 +81,11 @@ describe("GPC activity extract detection", () => {
     expect(columns.n2o).toBe(8);
     expect(columns.totalCO2e).toBe(9);
     expect(columns.year).toBe(10);
+    // Gas amount columns must not be treated as emission factors (CC-1113)
+    expect(columns.emissionFactorCO2).toBeUndefined();
+    expect(columns.emissionFactorCH4).toBeUndefined();
+    expect(columns.emissionFactorN2O).toBeUndefined();
+    expect(columns.emissionFactorTotalCO2e).toBeUndefined();
     expect(FileValidatorService.hasDistinctRequiredECRFColumns(columns)).toBe(
       true,
     );

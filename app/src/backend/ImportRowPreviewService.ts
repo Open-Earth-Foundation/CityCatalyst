@@ -60,10 +60,18 @@ export async function previewImportRows(
   }
 
   outcomes.sort((a, b) => a.rowNumber - b.rowNumber);
+
+  const skippedByIssue: ImportRowPreview["skippedByIssue"] = {};
+  for (const outcome of outcomes) {
+    if (outcome.status !== "skipped") continue;
+    skippedByIssue[outcome.issue] = (skippedByIssue[outcome.issue] ?? 0) + 1;
+  }
+
   return {
     totalRows: importResult.rows.length,
     importedRows: importedRows.length,
     skippedRows: importResult.rows.length - importedRows.length,
+    skippedByIssue,
     rows: outcomes,
   };
 }

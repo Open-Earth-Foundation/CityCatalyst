@@ -36,7 +36,7 @@ dependencies = [
     "langchain-text-splitters==1.1.2",
     "mako==1.4.2",
     "MarkupSafe==3.0.3",
-    "mcp==1.28.1",
+    "mcp==1.30.0",
     "mlflow>=3.2.0",
     "numpy==2.4.6",
     "openai==2.32.0",

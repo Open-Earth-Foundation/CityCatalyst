@@ -16,6 +16,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
 jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
+  STREAM_STALLED_CODE: "stream_stalled",
   useSSEStream: (options: SSEStreamOptions) => {
     streamOptions = options;
     return { startStream, stopStream };

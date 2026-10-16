@@ -129,7 +129,13 @@ def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
         async def stream_events(self):
             yield SimpleNamespace(type="agent_updated_stream_event")
 
-    def fake_run_streamed(agent: object, runner_input: object, run_config: object):
+    def fake_run_streamed(
+        agent: object,
+        runner_input: object,
+        run_config: object,
+        max_turns: object = None,
+        error_handlers: object = None,
+    ):
         recorded["runner_input"] = runner_input
         recorded["run_config"] = run_config
         return FakeStreamResult()

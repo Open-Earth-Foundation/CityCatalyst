@@ -868,7 +868,16 @@ class ContextBundleService:
                 selected_inventory=inventory,
                 token=token,
             )
-        except (CityCatalystClientError, ConceptNoteCityContextDataError):
+        except ConceptNoteCityContextDataError as exc:
+            # Contract messages are fixed strings, so the reason is safe to log.
+            logger.warning("GHGI context rejected for city %s: %s", city_id, exc)
+            return None, "unavailable", "GHGI context was unavailable."
+        except CityCatalystClientError as exc:
+            logger.warning(
+                "GHGI context request failed for city %s (status %s)",
+                city_id,
+                exc.status_code,
+            )
             return None, "unavailable", "GHGI context was unavailable."
         except Exception:
             logger.exception("Unexpected optional GHGI lookup failure")

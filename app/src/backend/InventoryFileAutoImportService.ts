@@ -332,7 +332,9 @@ export class InventoryFileAutoImportService {
     await syncGHGIImportedInventorySource(importedFile, contentDigest);
 
     // Replace and import share one transaction; the replaced data stays
-    // restorable from the inventory's version history.
+    // restorable from the inventory's version history. The old import file is
+    // marked superseded in the same transaction so it can't stay "completed"
+    // after the replace has already landed.
     const { summary, replacedData } = await db.sequelize!.transaction(
       async (transaction) => {
         const replacedData = replacing
@@ -343,12 +345,13 @@ export class InventoryFileAutoImportService {
             )
           : null;
         const didReplace = !!replacedData?.restoreVersionId;
+        // Version rows only when replacing (nothing to restore on a first import)
         const summary = await InventoryImportService.importECRFData(
           inventoryId,
           importResult,
           {
             defaultActivityDataSource: originalFileName,
-            authorId: input.userId,
+            authorId: didReplace ? input.userId : undefined,
             versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
             transaction,
           },
@@ -359,16 +362,20 @@ export class InventoryFileAutoImportService {
             "No rows could be imported, so the existing inventory data was kept",
           );
         }
+        // replacing already implies existingForInventory is set
+        if (replacing) {
+          await existingForInventory!.update(
+            {
+              importStatus: ImportStatusEnum.FAILED,
+              errorLog: "Superseded by a later bulk inventory import",
+              lastUpdated: new Date(),
+            },
+            { transaction },
+          );
+        }
         return { summary, replacedData };
       },
     );
-    if (existingForInventory && replacing) {
-      await existingForInventory.update({
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: "Superseded by a later bulk inventory import",
-        lastUpdated: new Date(),
-      });
-    }
 
     await importedFile.update({
       importStatus: ImportStatusEnum.COMPLETED,

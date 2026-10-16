@@ -249,6 +249,32 @@ describe("InventoryReplaceService", () => {
           },
         }),
       ).toBeGreaterThan(0);
+
+      // Snapshot and deletion share one restore point: deletions are written
+      // with created = snapshotTime + 1ms. Assert that against the DB so a
+      // Sequelize change that ignored the explicit created would fail here.
+      const snapshotVersions = await db.models.Version.findAll({
+        where: {
+          inventoryId: inventory.inventoryId,
+          label: IMPORT_REPLACE_BEFORE_LABEL,
+        },
+      });
+      const deletionVersions = await db.models.Version.findAll({
+        where: {
+          inventoryId: inventory.inventoryId,
+          label: IMPORT_REPLACE_LABEL,
+          isDeleted: true,
+        },
+      });
+      expect(snapshotVersions.length).toBeGreaterThan(0);
+      expect(deletionVersions.length).toBe(snapshotVersions.length);
+      const snapshotCreated = new Date(snapshotVersions[0].created!).getTime();
+      for (const version of snapshotVersions) {
+        expect(new Date(version.created!).getTime()).toBe(snapshotCreated);
+      }
+      for (const version of deletionVersions) {
+        expect(new Date(version.created!).getTime()).toBe(snapshotCreated + 1);
+      }
     });
 
     it("rejects restoring the version through another inventory", async () => {

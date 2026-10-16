@@ -252,12 +252,14 @@ async function runApproveImportInBackground(args: {
             )
           : null;
         const didReplace = !!replacedData?.restoreVersionId;
+        // Version rows only when replacing: a first import has nothing to
+        // restore to, so writing thousands of Version rows for it is wasted.
         const importSummary = await InventoryImportService.importECRFData(
           inventoryId,
           importResult,
           {
             defaultActivityDataSource,
-            authorId: userId,
+            authorId: didReplace ? userId : undefined,
             versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
             transaction,
           },

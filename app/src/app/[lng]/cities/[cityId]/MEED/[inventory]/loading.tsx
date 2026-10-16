@@ -5,7 +5,12 @@ import { MeedCardGridSkeleton } from "../components/MeedSkeletons";
 
 export default function Loading() {
   return (
-    <>
+    <Box
+      h="full"
+      bg="background.backgroundLight"
+      display="flex"
+      flexDirection="column"
+    >
       <ModuleHeroSkeleton compact />
       <Box
         display="flex"
@@ -24,6 +29,6 @@ export default function Loading() {
         </VStack>
         <MeedCardGridSkeleton items={5} />
       </Box>
-    </>
+    </Box>
   );
 }

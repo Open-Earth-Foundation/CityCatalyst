@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -814,6 +815,138 @@ describe("Import Routes API", () => {
       await importedFile.reload();
       const config = importedFile.mappingConfiguration;
       expect(config?.overrides).toBeTruthy();
+    });
+
+    describe("when the inventory already has data", () => {
+      let filledInventory: Inventory;
+
+      beforeEach(async () => {
+        filledInventory = await db.models.Inventory.create({
+          inventoryId: randomUUID(),
+          cityId: city.cityId,
+          inventoryName: testInventoryName,
+          year: 2021,
+          totalEmissions: 0,
+          inventoryType: InventoryTypeEnum.GPC_BASIC,
+          globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+        });
+        await db.models.InventoryValue.create({
+          id: randomUUID(),
+          inventoryId: filledInventory.inventoryId,
+          gpcReferenceNumber: "I.1.1",
+          sectorId: sector.sectorId,
+          subSectorId: subsector.subsectorId,
+          subCategoryId: subcategory.subcategoryId,
+          unavailableReason: "no-occurrance",
+          unavailableExplanation: "Does not occur",
+        });
+      });
+
+      afterEach(async () => {
+        await db.models.ImportedInventoryFile.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+          force: true,
+        });
+        await db.models.InventoryValue.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+        await db.models.Version.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+        await db.models.Inventory.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+      });
+
+      async function createFileWaitingForApproval() {
+        const fileContent = await createMockXLSXFile();
+        return db.models.ImportedInventoryFile.create({
+          id: randomUUID(),
+          userId: testUserID,
+          cityId: city.cityId,
+          inventoryId: filledInventory.inventoryId,
+          fileName: "test-file.xlsx",
+          fileType: "xlsx",
+          fileSize: fileContent.length,
+          originalFileName: "test-file.xlsx",
+          importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+          data: fileContent,
+          validationResults: { errors: [], warnings: [] },
+          mappingConfiguration: { rows: [] },
+        });
+      }
+
+      it("should return 409 inventory-has-data without replaceExisting", async () => {
+        const importedFile = await createFileWaitingForApproval();
+
+        const res = await approveImport(
+          mockRequest({ importedFileId: importedFile.id }),
+          {
+            params: Promise.resolve({
+              city: city.cityId,
+              inventory: filledInventory.inventoryId,
+            }),
+          },
+        );
+
+        await expectStatusCode(res, 409);
+        const json = await res.json();
+        expect(json.error.code).toBe("inventory-has-data");
+        expect(json.error.data).toEqual({ existingValueCount: 1 });
+
+        // nothing was started or removed
+        await importedFile.reload();
+        expect(importedFile.importStatus).toBe(
+          ImportStatusEnum.WAITING_FOR_APPROVAL,
+        );
+        expect(
+          await db.models.InventoryValue.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(1);
+      });
+
+      it("should keep the existing data when a confirmed replace imports no rows", async () => {
+        const importedFile = await createFileWaitingForApproval();
+
+        const res = await approveImport(
+          mockRequest({
+            importedFileId: importedFile.id,
+            replaceExisting: true,
+          }),
+          {
+            params: Promise.resolve({
+              city: city.cityId,
+              inventory: filledInventory.inventoryId,
+            }),
+          },
+        );
+
+        await expectStatusCode(res, 202);
+
+        // the file maps no rows, so the background import fails and rolls back the replace
+        for (let attempt = 0; attempt < 50; attempt++) {
+          await importedFile.reload();
+          if (
+            importedFile.importStatus === ImportStatusEnum.COMPLETED ||
+            importedFile.importStatus === ImportStatusEnum.FAILED
+          ) {
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        expect(importedFile.importStatus).toBe(ImportStatusEnum.FAILED);
+        expect(
+          await db.models.InventoryValue.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(1);
+        expect(
+          await db.models.Version.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(0);
+      });
     });
   });
 });

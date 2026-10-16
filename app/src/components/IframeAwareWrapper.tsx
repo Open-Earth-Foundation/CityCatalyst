@@ -1,28 +1,39 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
+import { isDashboardRoute } from "@/util/iframe-routes";
 
-const DASHBOARD_ROUTES = [
-  "/public/dashboard",
-  "/public/cities/[cityId]/dashboard",
-] as const;
+// Pulls in the full ChatBot UI and its dependencies — load it lazily so
+// routes that never show it (auth, public dashboards, etc.) don't pay for
+// that JS as part of the shared root layout bundle.
+const ChatPopover = dynamic(
+  () => import("@/components/ChatBot/chat-popover"),
+  { ssr: false },
+);
 
-interface IframeAwareWrapperProps {
-  children: React.ReactNode;
+// Routes where Clima (the chat launcher) is either not relevant (auth, public
+// iframe dashboards) or would compete with an embedded/primary chat workflow.
+function isChatExcludedRoute(pathname: string) {
+  return (
+    isDashboardRoute(pathname) ||
+    /^\/[^/]+\/auth(\/|$)/.test(pathname) ||
+    pathname.includes("/draft/stationary-energy") ||
+    /^\/[^/]+\/cities\/onboarding(\/|$)/.test(pathname) ||
+    /(^|\/)concept-notes(?:\/|$)/.test(pathname)
+  );
 }
 
-export default function IframeAwareWrapper({ children }: IframeAwareWrapperProps) {
+interface IframeAwareWrapperProps {
+  lng: string;
+}
+
+export default function IframeAwareWrapper({ lng }: IframeAwareWrapperProps) {
   const pathname = usePathname();
 
-  const isDashboardRoute = DASHBOARD_ROUTES.some(route => {
-    const routePattern = route.replace(/\[.*?\]/g, "[^/]+");
-    const regex = new RegExp(`^/[^/]+${routePattern}(/.*)?$`);
-    return regex.test(pathname);
-  });
-
-  if (isDashboardRoute) {
+  if (isChatExcludedRoute(pathname)) {
     return null;
   }
 
-  return <>{children}</>;
+  return <ChatPopover lng={lng} />;
 }

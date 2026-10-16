@@ -8,9 +8,8 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import IframeAwareWrapper from "@/components/IframeAwareWrapper";
-import { HighlightInit } from "@highlight-run/next/client";
+import HighlightInitGate from "@/components/HighlightIo/HighlightInitGate";
 import HighlightIdentifier from "@/components/HighlightIo/HighlightIdentifier";
 import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 export const metadata: Metadata = {
@@ -47,23 +46,10 @@ export default function RootLayout(props: {
 
   return (
     <>
-      <HighlightInit
-        projectId={isHighlightEnabled ? HIGHLIGHT_PROJECT_ID : ""}
+      <HighlightInitGate
+        enabled={isHighlightEnabled}
+        projectId={HIGHLIGHT_PROJECT_ID}
         serviceName={`CityCatalyst-${ENVIRONMENT}`}
-        tracingOrigins={isHighlightEnabled}
-        networkRecording={
-          isHighlightEnabled
-            ? {
-                enabled: true,
-                recordHeadersAndBody: true,
-                urlBlocklist: [],
-              }
-            : {
-                enabled: false,
-                recordHeadersAndBody: false,
-                urlBlocklist: [],
-              }
-        }
       />
 
       <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
@@ -75,12 +61,10 @@ export default function RootLayout(props: {
         <body>
           <Providers>
             <Toaster />
-            {isHighlightEnabled && <HighlightIdentifier />}
+            <HighlightIdentifier enabled={isHighlightEnabled} />
             <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-            <IframeAwareWrapper>
-              <CookieConsent lng={lng} />
-              <ChatPopover lng={lng} />
-            </IframeAwareWrapper>
+            <CookieConsent lng={lng} />
+            <IframeAwareWrapper lng={lng} />
           </Providers>
         </body>
       </html>

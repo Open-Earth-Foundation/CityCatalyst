@@ -1,0 +1,13 @@
+[Unit]
+Description=Recover an unhealthy CityCatalyst web container
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/citycatalyst-recovery/recover-web.py
+TimeoutStartSec=120
+StateDirectory=citycatalyst-recovery
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

@@ -1,0 +1,94 @@
+name: citycatalyst
+
+services:
+  db:
+    image: pgvector/pgvector:pg15
+    restart: unless-stopped
+    env_file: .env.db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/10-init.sh:ro
+    command: ["postgres", "-c", "shared_buffers=96MB", "-c", "max_connections=60"]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U climateadvisor -d climateadvisor"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ca:
+    image: ${CA_IMAGE}
+    restart: unless-stopped
+    env_file: .env.ca
+    command: >
+      sh -c "python -m alembic -c alembic.ini upgrade head &&
+             python -m alembic -c cnb-alembic.ini upgrade head &&
+             exec uvicorn app.main:app --host 0.0.0.0 --port 8080 --workers 1"
+    mem_limit: 900m
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: ${WEB_IMAGE}
+    # Reap terminated probes and forward signals directly to the web process.
+    init: true
+    command:
+      - node
+      - --report-on-signal
+      - --report-signal=SIGUSR2
+      - --report-exclude-env
+      - --report-exclude-network
+      - --report-directory=/diagnostics
+      - --report-filename=web-hang.json
+      - node_modules/next/dist/bin/next
+      - start
+    labels:
+      io.citycatalyst.auto-recover: "true"
+    volumes:
+      - ./diagnostics:/diagnostics
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    env_file: .env.web
+    ports:
+      - "20296:3000"
+      # Mikrus HTTPS proxy (happy-turkey7765.byst.re) targets 3010 over IPv6.
+      - "3010:3000"
+    mem_limit: 1400m
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:3000/api/v1/check/liveness/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Stand-in for the k8s CronJobs: drains PDF OCR and webhook queues.
+  cron:
+    image: curlimages/curl:8.11.1
+    restart: unless-stopped
+    env_file: .env.cron
+    mem_limit: 32m
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        i=0
+        while true; do
+          sleep 60
+          curl -s -o /dev/null -w "ocr %{http_code}\n" --max-time 300 -X POST -H "Authorization: Bearer $$CC_CRON_JOB_API_KEY" http://web:3000/api/v1/cron/process-pdf-ocr-jobs/ || true
+          i=$$((i+1))
+          if [ $$((i % 5)) -eq 0 ]; then
+            curl -s -o /dev/null -w "webhooks %{http_code}\n" --max-time 300 -X POST -H "Authorization: Bearer $$CC_CRON_JOB_API_KEY" http://web:3000/api/v1/cron/process-webhook-deliveries/ || true
+          fi
+        done
+    depends_on:
+      - web
+
+volumes:
+  db_data:

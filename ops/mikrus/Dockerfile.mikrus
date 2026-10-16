@@ -1,0 +1,13 @@
+# Runtime image assembled from a local production build: Mikrus is too small
+# to run next build. deploy.py packages tracked source plus .next (no env files).
+FROM node:22-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
+WORKDIR /tools
+RUN npm init -y >/dev/null && npm install --no-audit --no-fund sequelize-cli@6.6.5 tsx@4.21.0 && npm cache clean --force
+WORKDIR /app
+COPY . .
+ENV PATH="/tools/node_modules/.bin:${PATH}"
+EXPOSE 3000
+CMD ["npm", "run", "start"]

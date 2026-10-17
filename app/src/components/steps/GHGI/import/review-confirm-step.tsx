@@ -20,6 +20,7 @@ import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import ReportingLevelWarning from "./reporting-level-warning";
 import { activityDescriptionSample } from "@/util/activity-description-sample";
+import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -106,6 +107,10 @@ export default function ReviewConfirmStep({
   const importWarnings = (validationResults?.warnings ?? []).filter((warning) =>
     warning.startsWith("Row "),
   );
+
+  const extractionSummary = data?.mappingConfiguration?.extractionSummary;
+  const { reconciliation, reconciledPages, failedPages, droppedReasons } =
+    extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
@@ -225,6 +230,98 @@ export default function ReviewConfirmStep({
           </HStack>
         </HStack>
       </VStack>
+      {reconciliation?.mismatch && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
+        >
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Box>
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
+              {t("import-reconciliation-title")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary" mt={1}>
+              {t("import-reconciliation-detail", {
+                imported: Math.round(
+                  reconciliation.importedSum,
+                ).toLocaleString(),
+                reported: Math.round(
+                  reconciliation.reportedTotal,
+                ).toLocaleString(),
+                deviation: (reconciliation.deviation * 100).toFixed(1),
+              })}
+            </Text>
+          </Box>
+        </Box>
+      )}
+      {(droppedReasons.length > 0 ||
+        extractionSummary?.yearAssumed ||
+        reconciledPages.length > 0 ||
+        failedPages.length > 0) && (
+        <Box
+          bg="background.neutral"
+          border="1px solid"
+          borderColor="border.default"
+          borderRadius="md"
+          p={4}
+          mb={8}
+        >
+          {droppedReasons.length > 0 && (
+            <>
+              <Text fontWeight="semibold" fontSize="body.md">
+                {t("import-dropped-rows-title")}
+              </Text>
+              <VStack alignItems="flex-start" gap="4px" mt={2}>
+                {droppedReasons.map((reason) => (
+                  <Text
+                    key={reason}
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {t(`import-dropped-reason-${reason}`, {
+                      count: extractionSummary?.droppedRows?.[reason] ?? 0,
+                    })}
+                  </Text>
+                ))}
+              </VStack>
+            </>
+          )}
+          {reconciledPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-reconciled", {
+                pages: reconciledPages.join(", "),
+              })}
+            </Text>
+          )}
+          {failedPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-failed", { pages: failedPages.join(", ") })}
+            </Text>
+          )}
+          {extractionSummary?.yearAssumed && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-year-assumed")}
+            </Text>
+          )}
+        </Box>
+      )}
       {importWarnings.length > 0 && (
         <Box
           bg="sentiment.warningOverlay"

@@ -17,6 +17,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1016,6 +1017,8 @@ export interface ImportStatusResponse {
    */
   mappingConfiguration?: {
     extractionProgress?: { current: number; total?: number };
+    /** Totals and dropped-row counts from PDF extraction; drives the review warning. */
+    extractionSummary?: ExtractionSummary;
     [key: string]: unknown;
   } | null;
   rowCount: number;

@@ -796,5 +796,14 @@
   "context-change-ghgi-updated": "GHG inventory {{year}} updated with new data",
   "context-change-ghgi-removed": "GHG inventory {{year}} is no longer used",
   "context-change-hiap-added": "Climate action plan added",
-  "context-change-hiap-removed": "Climate action plan is no longer used"
+  "context-change-hiap-removed": "Climate action plan is no longer used",
+  "upload-climate-action-plan": "Upload plan",
+  "context-city-and-plan-sources": "City data and plan documents",
+  "plan-upload-limits": "PDF or Markdown · up to 20 MiB per file · {{max}} files per note, including other sources.",
+  "plan-upload-provenance": "Plan document uploaded to this note.",
+  "plan-upload-failed-help": "The plan could not be prepared for this note. Retry if available, or upload a corrected document.",
+  "plan-included-with-failures": "Included · some files failed",
+  "plan-upload-partial-help": "The ready plan documents are included in this run. Some other plan files failed; review them below and retry if available, or upload corrected documents.",
+  "plan-upload-processing-help": "The plan is included once document processing and run context preparation finish.",
+  "plan-upload-in-progress": "Wait for the current upload to finish."
 }

@@ -12,15 +12,14 @@ from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
-
 from app.db.cnb_reference import get_cnb_reference_session_factory
-from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.cnb.concept_note_runs import (
     ConceptNoteChatThreadListResponse,
     ConceptNoteChatThreadResponse,
     ConceptNoteRenameRequest,
     ConceptNoteRunResponse,
 )
+from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
@@ -118,9 +117,7 @@ class ConceptNoteLifecycleService:
             requested_user_id=requested_user_id,
             authorization=authorization,
         )
-        fingerprint = hashlib.sha256(
-            f"duplicate:{source.run_id}".encode()
-        ).hexdigest()
+        fingerprint = hashlib.sha256(f"duplicate:{source.run_id}".encode()).hexdigest()
 
         # Reuse the destination created by an identical browser retry.
         existing = await self.run_service.repository.get_by_idempotency_key(
@@ -209,7 +206,10 @@ class ConceptNoteLifecycleService:
             logger.exception("Concept Note workspace deletion failed")
             # Source delivery can still be active after OCR is ready. Preserve
             # this retryable conflict so the UI explains why deletion must wait.
-            if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 409:
+            if (
+                isinstance(exc, httpx.HTTPStatusError)
+                and exc.response.status_code == 409
+            ):
                 raise HTTPException(
                     status_code=409,
                     detail="Wait for source processing to finish before deleting this note",
@@ -403,9 +403,7 @@ class ConceptNoteLifecycleService:
             )
             .group_by(Message.thread_id)
         )
-        return {
-            thread_id: (int(count), last_at) for thread_id, count, last_at in rows
-        }
+        return {thread_id: (int(count), last_at) for thread_id, count, last_at in rows}
 
     async def _first_user_messages(self, thread_ids: list[UUID]) -> dict[UUID, str]:
         """Return a short preview of the first typed user message per thread."""
@@ -458,10 +456,12 @@ class ConceptNoteLifecycleService:
         uploads = list(
             (
                 await self.session.scalars(
-                    select(ConceptNoteUpload).where(
+                    select(ConceptNoteUpload)
+                    .where(
                         ConceptNoteUpload.run_id == source.run_id,
                         ConceptNoteUpload.ingest_status == "ready",
-                    ).order_by(ConceptNoteUpload.upload_id.asc())
+                    )
+                    .order_by(ConceptNoteUpload.upload_id.asc())
                 )
             ).all()
         )
@@ -520,6 +520,7 @@ class ConceptNoteLifecycleService:
                     uploaded_by_user_id=source.user_id,
                     filename=upload.filename,
                     source_label=upload.source_label,
+                    source_role=upload.source_role,
                     markdown_s3_key=upload.markdown_s3_key,
                     markdown_sha256=upload.markdown_sha256,
                     page_count=upload.page_count,
@@ -593,6 +594,13 @@ def _copy_context_summary(
         bundle.pop("build_id", None)
         bundle.pop("error_code", None)
         bundle["retryable"] = False
+        # Membership belongs to the copied uploads, not the source note.
+        included_upload_ids = []
+        for source_id in bundle.get("included_upload_ids", []):
+            upload_id = _as_uuid(source_id)
+            if upload_id in upload_map:
+                included_upload_ids.append(str(upload_map[upload_id]))
+        bundle["included_upload_ids"] = included_upload_ids
         fingerprint_rows = [
             {
                 "upload_id": str(upload_map[upload.upload_id]),

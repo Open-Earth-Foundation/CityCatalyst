@@ -98,7 +98,7 @@ def test_ca_migration_chain_has_one_head() -> None:
     config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_heads() == ["20261005_120000"]
+    assert scripts.get_heads() == ["20261008_120000"]
 
 
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
@@ -130,12 +130,12 @@ def test_ca_structured_upload_migration_keeps_explicit_constraint_name() -> None
         config="alembic.ini",
         database_env="CA_DATABASE_URL",
     )
-    assert (
-        "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
-    )
+    assert "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
     assert "annotation_mode IS NOT NULL" in sql
     assert "structured_size_bytes IS NOT NULL" in sql
-    assert "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
+    assert (
+        "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
+    )
     model_check = next(
         constraint
         for constraint in ConceptNoteUpload.__table__.constraints
@@ -525,9 +525,12 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
             )
         }
         with engine.connect() as connection:
-            assert connection.execute(
-                text("SELECT version_num FROM alembic_version")
-            ).scalar_one() == "20261005_120000"
+            assert (
+                connection.execute(
+                    text("SELECT version_num FROM alembic_version")
+                ).scalar_one()
+                == "20261008_120000"
+            )
 
         run_id = uuid4()
         upload_insert = text(
@@ -594,15 +597,15 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
                 "structured_size_bytes",
                 "structured_schema_version",
             ):
-                with pytest.raises(IntegrityError):
-                    with connection.begin_nested():
-                        connection.execute(
-                            upload_insert,
-                            {
-                                "upload_id": uuid4(),
-                                **{**complete_identity, null_field: None},
-                            },
-                        )
+                with pytest.raises(IntegrityError), connection.begin_nested():
+                    connection.execute(
+                        upload_insert,
+                        {
+                            "upload_id": uuid4(),
+                            **complete_identity,
+                            null_field: None,
+                        },
+                    )
 
         _run_alembic(
             config="alembic.ini",
@@ -860,3 +863,113 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         args=["downgrade", "base"],
     )
     engine.dispose()
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_upload_roles_upgrade_current_develop_and_preserve_existing_uploads() -> None:
+    """Add roles after the released merge head without losing existing sources."""
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    run_id, existing_id, plan_id = uuid4(), uuid4(), uuid4()
+    try:
+        # Seed an upload on the current develop schema, before roles exist.
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "20261005_120000"],
+        )
+        with engine.begin() as connection:
+            connection.execute(
+                text("""
+                INSERT INTO concept_note_runs
+                    (run_id, user_id, name, city_id, context_summary, permission_summary,
+                     idempotency_key, request_fingerprint)
+                VALUES (:run_id, 'owner', 'Plan migration', 'city', '{}'::jsonb,
+                        '{}'::jsonb, :key, :fingerprint)
+            """),
+                {"run_id": run_id, "key": uuid4(), "fingerprint": "a" * 64},
+            )
+            connection.execute(
+                text("""
+                INSERT INTO concept_note_uploads
+                    (upload_id, run_id, uploaded_by_user_id, filename)
+                VALUES (:upload_id, :run_id, 'owner', 'existing.pdf')
+            """),
+                {"upload_id": existing_id, "run_id": run_id},
+            )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+
+        # Existing sources default to references; only documented roles are valid.
+        with engine.begin() as connection:
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT source_role FROM concept_note_uploads WHERE upload_id = :id"
+                    ),
+                    {"id": existing_id},
+                ).scalar_one()
+                == "reference"
+            )
+            connection.execute(
+                text("""
+                INSERT INTO concept_note_uploads
+                    (upload_id, run_id, uploaded_by_user_id, filename, source_role)
+                VALUES (:upload_id, :run_id, 'owner', 'plan.pdf', 'climate_action_plan')
+            """),
+                {"upload_id": plan_id, "run_id": run_id},
+            )
+            with pytest.raises(IntegrityError), connection.begin_nested():
+                connection.execute(
+                    text(
+                        "UPDATE concept_note_uploads SET source_role = 'unknown' WHERE upload_id = :id"
+                    ),
+                    {"id": plan_id},
+                )
+            assert (
+                connection.execute(
+                    text("SELECT version_num FROM alembic_version")
+                ).scalar_one()
+                == "20261008_120000"
+            )
+
+        # Removing role metadata must retain both documents and the merged schema.
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "20261005_120000"],
+        )
+        assert "source_role" not in {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_uploads")
+        }
+        with engine.connect() as connection:
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM concept_note_uploads WHERE run_id = :id"
+                    ),
+                    {"id": run_id},
+                ).scalar_one()
+                == 2
+            )
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["upgrade", "head"],
+        )
+    finally:
+        _run_alembic(
+            config="alembic.ini",
+            database_env="CA_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        engine.dispose()

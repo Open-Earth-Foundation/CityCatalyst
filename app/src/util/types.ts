@@ -1136,6 +1136,7 @@ export interface ConceptNoteRun {
     status: ConceptNoteUploadStatus;
     filename: string;
     source_label?: string | null;
+    source_role?: ConceptNoteSourceRole;
     source_format: "pdf" | "markdown";
     page_count?: number | null;
     error_code?: string | null;
@@ -1389,6 +1390,7 @@ export interface StartConceptNoteRunRequest {
 
 export type ConceptNoteUploadStatus =
   "queued" | "processing" | "ready" | "failed";
+export type ConceptNoteSourceRole = "reference" | "climate_action_plan";
 
 export interface ConceptNoteUploadResponse {
   uploadId: string;
@@ -1401,6 +1403,7 @@ export interface ConceptNoteUploadResponse {
   retryKind?: string | null;
   filename?: string;
   sourceLabel?: string | null;
+  sourceRole?: ConceptNoteSourceRole;
   receivedAt?: string;
   completedAt?: string | null;
 }

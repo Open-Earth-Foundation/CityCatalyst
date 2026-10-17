@@ -7,6 +7,7 @@ import {
   Heading,
   HStack,
   Icon,
+  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -16,7 +17,6 @@ import { useRef } from "react";
 import { MdCheckCircle, MdRefresh, MdSave } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
-import ProgressLoader from "@/components/ProgressLoader";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type {
   ArtifactRow,
@@ -129,7 +129,14 @@ function overviewTitle(t: TFunction, stage: DraftStage): string {
 
 function RowMarker({ state }: { state: ArtifactRow["state"] }) {
   if (state === "active") {
-    return <ProgressLoader boxHeight="12px" boxWidth="12px" size="sm" />;
+    return (
+      <Spinner
+        display="block"
+        boxSize="12px"
+        flexShrink={0}
+        color="interactive.secondary"
+      />
+    );
   }
   const color =
     state === "done"

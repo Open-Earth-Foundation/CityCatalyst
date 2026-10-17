@@ -24,6 +24,7 @@ from app.persistence.concept_notes.gaps import (
     _gap_from_output,
     _has_blocking_gaps,
     _reconcile_evidence_gaps,
+    _restore_dropped_gaps,
 )
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
@@ -53,6 +54,7 @@ from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
 )
+from pydantic import ValidationError
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -386,11 +388,12 @@ class ConceptNoteWorkspaceRepository:
         """Persist a source-driven proposal while preserving confirmed content.
 
         ``answered_gap_ids`` are the gaps a successful new-source query answered;
-        only those may close.
+        only those may close. Unresolved gaps the redraft left out without such
+        an answer are put back at the end of the chapter and stay open.
 
         Raises:
-            WorkspaceConflictError: If markers and gaps disagree, or the redraft
-                dropped an unresolved gap the new source did not answer.
+            WorkspaceConflictError: If markers and gaps disagree, or a dropped
+                gap cannot be restored.
         """
         async with self._session_factory() as session, session.begin():
             chapter = await _require_chapter(session, chapter_id, lock=True)
@@ -403,12 +406,17 @@ class ConceptNoteWorkspaceRepository:
                 generated.body_markdown, generated.missing_information
             )
             existing = await _chapter_gaps(session, chapter_id)
-            if _dropped_unanswered_gaps(
+            # Only cited answers close gaps; keep the redraft and restore the rest.
+            dropped = _dropped_unanswered_gaps(
                 existing, generated.missing_information, answered_gap_ids
-            ):
-                raise WorkspaceConflictError(
-                    "Revalidation dropped gaps the new source did not answer"
-                )
+            )
+            if dropped:
+                try:
+                    generated = _restore_dropped_gaps(generated, dropped)
+                except ValidationError as exc:
+                    raise WorkspaceConflictError(
+                        "Revalidation dropped gaps that could not be restored"
+                    ) from exc
 
             # Reconcile evidence-filled and newly reopened gaps before status choice.
             gaps_changed = _reconcile_evidence_gaps(

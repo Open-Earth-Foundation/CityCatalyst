@@ -285,18 +285,31 @@ describe("Concept Note dashboard presentation helpers", () => {
     ).toBe(true);
   });
 
-  it("derives conservative run progress without inventing document work", () => {
-    expect(getRunProgressPercent("active", "assembling_context", {})).toBe(4);
+  it("derives run progress from the workflow step, then the sources", () => {
+    const ready = { context_bundle: { status: "ready" } };
     expect(
-      getRunProgressPercent("active", "assembling_context", {
-        context_bundle: { status: "building" },
-      }),
+      getRunProgressPercent("active", "assembling_context", {}, false),
+    ).toBe(4);
+    expect(
+      getRunProgressPercent(
+        "active",
+        "assembling_context",
+        { context_bundle: { status: "building" } },
+        false,
+      ),
     ).toBe(28);
+    expect(getRunProgressPercent("active", "interviewing", ready, false)).toBe(
+      30,
+    );
+    expect(getRunProgressPercent("active", "interviewing", ready, true)).toBe(
+      45,
+    );
     expect(
-      getRunProgressPercent("active", "interviewing", {
-        context_bundle: { status: "ready" },
-      }),
-    ).toBe(40);
-    expect(getRunProgressPercent("exported", "exported", {})).toBe(100);
+      getRunProgressPercent("active", "drafting_document", ready, true),
+    ).toBe(60);
+    expect(
+      getRunProgressPercent("active", "editing_document", ready, true),
+    ).toBe(80);
+    expect(getRunProgressPercent("exported", "exported", {}, true)).toBe(100);
   });
 });

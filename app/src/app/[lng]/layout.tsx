@@ -9,8 +9,7 @@ import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
 import IframeAwareWrapper from "@/components/IframeAwareWrapper";
-import HighlightInitGate from "@/components/HighlightIo/HighlightInitGate";
-import HighlightIdentifier from "@/components/HighlightIo/HighlightIdentifier";
+import HighlightWidgets from "@/components/HighlightIo/HighlightWidgets";
 import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 export const metadata: Metadata = {
   title: {
@@ -45,29 +44,25 @@ export default function RootLayout(props: {
   }
 
   return (
-    <>
-      <HighlightInitGate
-        enabled={isHighlightEnabled}
-        projectId={HIGHLIGHT_PROJECT_ID}
-        serviceName={`CityCatalyst-${ENVIRONMENT}`}
-      />
-
-      <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
-        <head>
-          <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
-          <link rel="icon" type="image/png" href="/assets/icon.png" />
-          <RuntimeEnvScript />
-        </head>
-        <body>
-          <Providers>
-            <Toaster />
-            <HighlightIdentifier enabled={isHighlightEnabled} />
-            <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-            <CookieConsent lng={lng} />
-            <IframeAwareWrapper lng={lng} />
-          </Providers>
-        </body>
-      </html>
-    </>
+    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+        <link rel="icon" type="image/png" href="/assets/icon.png" />
+        <RuntimeEnvScript />
+      </head>
+      <body>
+        <Providers>
+          <Toaster />
+          <HighlightWidgets
+            enabled={isHighlightEnabled}
+            projectId={HIGHLIGHT_PROJECT_ID}
+            serviceName={`CityCatalyst-${ENVIRONMENT}`}
+          />
+          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          <CookieConsent lng={lng} />
+          <IframeAwareWrapper lng={lng} />
+        </Providers>
+      </body>
+    </html>
   );
 }

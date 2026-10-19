@@ -1,6 +1,7 @@
 import "../globals.css";
 import type { Metadata } from "next";
 import { Providers } from "../providers";
+import { openSans, poppins } from "../fonts";
 import { dir } from "i18next";
 import { fallbackLng, languages } from "@/i18n/settings";
 import { NavigationBar } from "@/components/navigation-bar";
@@ -28,12 +29,17 @@ export default function RootLayout({
   const lng = languages.includes(firstSegment) ? firstSegment : fallbackLng;
 
   return (
-    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+    <html
+      lang={lng}
+      dir={dir(lng)}
+      suppressHydrationWarning
+      className={`${openSans.variable} ${poppins.variable}`}
+    >
       <head>
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
       </head>
-      <body>
+      <body className={openSans.className}>
         <Providers>
           <NavigationBar lng={lng} />
           <Toaster />

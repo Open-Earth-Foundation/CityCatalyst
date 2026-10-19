@@ -225,23 +225,25 @@ def _restore_dropped_gaps(
     whole redraft.
     """
     markers = "\n\n".join(f"[Information needed: {gap.question}]" for gap in dropped)
-    return ConceptNoteChapterDraftOutput.model_construct(
-        body_markdown=f"{generated.body_markdown.rstrip()}\n\n{markers}",
-        missing_information=[
-            *generated.missing_information,
-            *(
-                ConceptNoteDraftGapOutput.model_validate(
-                    {
-                        "field_key": gap.field_key,
-                        "question": gap.question,
-                        "why_asking": gap.why_asking,
-                        "severity": gap.severity,
-                        "suggestions": gap.suggestions or [],
-                    }
-                )
-                for gap in dropped
-            ),
-        ],
+    return ConceptNoteChapterDraftOutput.model_validate(
+        {
+            "body_markdown": f"{generated.body_markdown.rstrip()}\n\n{markers}",
+            "missing_information": [
+                *generated.missing_information,
+                *(
+                    ConceptNoteDraftGapOutput.model_validate(
+                        {
+                            "field_key": gap.field_key,
+                            "question": gap.question,
+                            "why_asking": gap.why_asking,
+                            "severity": gap.severity,
+                            "suggestions": gap.suggestions or [],
+                        }
+                    )
+                    for gap in dropped
+                ),
+            ],
+        }
     )
 
 

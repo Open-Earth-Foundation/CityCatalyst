@@ -486,6 +486,61 @@ async def test_source_revalidation_keeps_deferred_caveat_gaps(workspace) -> None
     assert chapter.gaps[0].resolution is None
 
 
+async def test_source_revalidation_rejects_a_restored_marker_it_cannot_match(
+    workspace,
+) -> None:
+    """A "]" in a dropped question truncates its marker, so the redraft is refused."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        assert gap is not None
+        gap.question = "Cost [approx] in EUR?"
+
+    with pytest.raises(WorkspaceConflictError, match="markers must match"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="## Implementation\n\nA partner will lead delivery."
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1
+
+
+async def test_source_revalidation_rejects_a_restore_over_the_gap_limit(
+    workspace,
+) -> None:
+    """Restoring a dropped gap must still respect the 30-gap output limit."""
+    questions = [f"Confirm figure {index}." for index in range(30)]
+    with pytest.raises(WorkspaceConflictError, match="could not be restored"):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=ConceptNoteChapterDraftOutput(
+                body_markdown="\n\n".join(
+                    f"[Information needed: {question}]" for question in questions
+                ),
+                missing_information=[
+                    ConceptNoteDraftGapOutput(
+                        field_key=f"figure_{index}",
+                        question=question,
+                        why_asking="The funder needs the figure.",
+                        severity="noncritical",
+                    )
+                    for index, question in enumerate(questions)
+                ],
+            ),
+            source_refs=["implementation-plan.pdf"],
+            answered_gap_ids=set(),
+        )
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 1
+
+
 async def test_source_revalidation_rejects_marker_gap_mismatch(workspace) -> None:
     """Every Information-needed marker must have a matching structured gap."""
     with pytest.raises(WorkspaceConflictError, match="markers must match"):

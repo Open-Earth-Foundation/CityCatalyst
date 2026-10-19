@@ -505,7 +505,7 @@
   "pref-sum-timeline_other": "{{count}} timelines",
   "config-none": "None set",
   "matrix-title": "Co-benefits and adverse effects of the top actions",
-  "matrix-description": "Each action is assessed on the methodology's eight co-benefit categories, from −2 (adverse) to +2 (strong benefit). The scores sit side by side and are never added up. A category already credited through a risk cell is marked as counted in Impact and not scored again. The co-benefits your city prioritises enter the Alignment score.",
+  "matrix-description": "Each action is assessed on the methodology's eight co-benefit categories, from −2 (adverse) to +2 (strong benefit). The scores sit side by side and are never added up. A category already credited through a hazard the action addresses is marked as counted in Impact and not scored again. The co-benefits your city prioritises enter the Alignment score.",
   "matrix-col-category": "Category",
   "matrix-in-impact": "Counted in Impact",
   "matrix-not-scored": "—",

@@ -525,6 +525,10 @@ describe("Context tab missing-state cards", () => {
       expect(
         (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
       ).toBe(true);
+      // An external picker request must not start a second, overlapping upload.
+      const picker = jest.spyOn(input, "click");
+      await renderTab({ onUploadFile, uploadPickerRequest: 1 });
+      expect(picker).not.toHaveBeenCalled();
       await act(async () => finishUpload());
       expect(uploadButton().disabled).toBe(false);
       expect(

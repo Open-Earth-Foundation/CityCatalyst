@@ -19,7 +19,7 @@ import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
-import { getClimateActionPlanState } from "./climate-action-plan-status";
+import { getRunClimateActionPlanState } from "./climate-action-plan-status";
 import {
   contextSourceStatusKey,
   contextSourceTone,
@@ -27,7 +27,6 @@ import {
 import { ContextStatusBadge } from "../ConceptNoteWorkspace/context-status-badge";
 import {
   getConceptNoteStatusPresentation,
-  getConceptNoteBundleProgress,
   shouldLoadConceptNoteReviewStatus,
 } from "./utils";
 
@@ -77,14 +76,7 @@ export function RunCard({
     skip: !loadReviewStatus,
   });
   const status = getConceptNoteStatusPresentation(run.status, draft);
-  const planState = getClimateActionPlanState(
-    (run.uploads ?? []).map((upload) => ({
-      uploadId: upload.upload_id,
-      sourceRole: upload.source_role,
-      status: upload.status,
-    })),
-    getConceptNoteBundleProgress(run.progress_summary),
-  );
+  const planState = getRunClimateActionPlanState(run);
 
   return (
     <motion.div

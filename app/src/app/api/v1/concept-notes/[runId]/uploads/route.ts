@@ -285,7 +285,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
       filename,
       source_label: sourceLabel,
       source_format: isPdf ? "pdf" : "markdown",
-      source_role: sourceRole,
+      // CA defaults to reference; omitting it keeps ordinary uploads working on a CA without roles.
+      ...(sourceRole === "climate_action_plan" && { source_role: sourceRole }),
     },
   });
   const createPayload = await readConceptNoteApiPayload(createResponse);

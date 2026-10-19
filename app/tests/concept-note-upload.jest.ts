@@ -405,6 +405,9 @@ describe("Concept Note source upload route", () => {
         }),
       }),
     );
+    expect(callConceptNoteApi.mock.calls[0][0].body).not.toHaveProperty(
+      "source_role",
+    );
     expect(putFile).toHaveBeenCalledWith(
       `pdf-ocr/sources/concept_note_upload/${payload.uploadId}/source.pdf`,
       expect.any(Buffer),

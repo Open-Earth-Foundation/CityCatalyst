@@ -57,7 +57,10 @@ import {
   inventorySourceAction,
   type ContextSourceState,
 } from "../ConceptNoteDashboard/context-source-status";
-import { CONCEPT_NOTE_MAX_UPLOADS } from "../ConceptNoteWiringHarness/utils";
+import {
+  CONCEPT_NOTE_MAX_UPLOADS,
+  CONCEPT_NOTE_SOURCE_MAX_BYTES,
+} from "../ConceptNoteWiringHarness/utils";
 import { getClimateActionPlanState } from "../ConceptNoteDashboard/climate-action-plan-status";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
 import { InventorySelectionDialog } from "./inventory-selection-dialog";
@@ -370,10 +373,13 @@ export function ContextTab({
   const uploadBusy = isUploading || uploadingRole !== null;
   const uploadLimitReasonId = useId();
   useEffect(() => {
-    if (uploadPickerRequest) {
+    // The buttons are disabled while busy; an external request must respect that too.
+    if (uploadPickerRequest && !uploadBusy) {
       fileSourceRoleRef.current = "reference";
       fileInputRef.current?.click();
     }
+    // Only a new request opens the picker, not uploadBusy settling.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadPickerRequest]);
   const [editingPopulation, setEditingPopulation] = useState(false);
   const [populationInput, setPopulationInput] = useState("");
@@ -513,22 +519,28 @@ export function ContextTab({
   } else if (planState === "included-with-failures") {
     planHelpKey = "plan-upload-partial-help";
   } else if (planState === "failed") {
-    planHelpKey = "plan-upload-failed-help";
+    planHelpKey = uploadLimitReached
+      ? "plan-upload-failed-limit-help"
+      : "plan-upload-failed-help";
   }
+  const planUploadLimits = t("plan-upload-limits", {
+    max: CONCEPT_NOTE_MAX_UPLOADS,
+    maxMb: CONCEPT_NOTE_SOURCE_MAX_BYTES / (1024 * 1024),
+  });
   const planDetails = uploadedPlanState
     ? [
         t("plan-upload-provenance"),
-        t(planHelpKey),
+        t(planHelpKey, { max: CONCEPT_NOTE_MAX_UPLOADS }),
         ...failedPlans
           .filter((upload) => upload.errorCode)
           .map((upload) => t("context-error-code", { code: upload.errorCode })),
-        t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+        planUploadLimits,
       ]
     : [
         t("hiap-why"),
         actionPlanState === "available" ? t("not-included-in-run") : "",
         runHelp(actionPlanState, actionPlanAvailable),
-        t("plan-upload-limits", { max: CONCEPT_NOTE_MAX_UPLOADS }),
+        planUploadLimits,
       ];
   let planValue = t("hiap-no-actions");
   if (planUploads.length > 0) {

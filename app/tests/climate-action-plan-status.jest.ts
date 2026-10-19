@@ -41,12 +41,21 @@ describe("Climate Action Plan document state", () => {
 
   it("reports inclusion only when the completed bundle holds the plan identity", () => {
     expect(
-      getClimateActionPlanState([plan], bundle("building", [plan.uploadId])),
+      getClimateActionPlanState([plan], bundle("building", ["other-pdf"])),
     ).toBe("processing");
     expect(
       getClimateActionPlanState([plan], bundle("ready", [plan.uploadId])),
     ).toBe("included");
   });
+
+  it.each(["building", "failed", "stale"])(
+    "keeps an included plan included while the bundle is %s for another source",
+    (status) => {
+      expect(
+        getClimateActionPlanState([plan], bundle(status, [plan.uploadId])),
+      ).toBe("included");
+    },
+  );
 
   it.each(["queued", "processing"] as const)(
     "reports %s uploads as processing",

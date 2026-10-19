@@ -36,7 +36,7 @@ import type { ConceptNoteRun } from "@/util/types";
 
 import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
-import { getClimateActionPlanState } from "./climate-action-plan-status";
+import { getRunClimateActionPlanState } from "./climate-action-plan-status";
 import {
   contextSourceHelpKey,
   contextSourceStatusKey,
@@ -96,15 +96,7 @@ export function ConceptNoteDashboard({
   const { data: cachedRunList } =
     api.endpoints.getConceptNoteRuns.useQueryState(cityId);
   const pollPlans = (cachedRunList?.runs ?? []).some(
-    (run) =>
-      getClimateActionPlanState(
-        (run.uploads ?? []).map((upload) => ({
-          uploadId: upload.upload_id,
-          sourceRole: upload.source_role,
-          status: upload.status,
-        })),
-        getConceptNoteBundleProgress(run.progress_summary),
-      ) === "processing",
+    (run) => getRunClimateActionPlanState(run) === "processing",
   );
   const {
     data: runList,

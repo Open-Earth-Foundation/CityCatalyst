@@ -348,14 +348,7 @@ export function useConceptNoteWorkspaceData({
     try {
       const formData = new FormData();
       formData.set("file", file);
-      formData.set(
-        "sourceLabel",
-        conceptNoteSourceLabel(
-          sourceRole === "climate_action_plan"
-            ? `${t("hiap-context")}: ${file.name}`
-            : file.name,
-        ),
-      );
+      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
       formData.set("sourceRole", sourceRole);
       const upload = await uploadSourceMutation({
         cityId,

@@ -331,11 +331,11 @@ export class InventoryFileAutoImportService {
 
     await syncGHGIImportedInventorySource(importedFile, contentDigest);
 
-    // Replace and import share one transaction; the replaced data stays
-    // restorable from the inventory's version history. The old import file is
-    // marked superseded in the same transaction so it can't stay "completed"
-    // after the replace has already landed.
-    const { summary, replacedData } = await db.sequelize!.transaction(
+    // Replace, import and both status updates share one transaction; the
+    // replaced data stays restorable from the inventory's version history.
+    // Neither the superseded old file nor this file's COMPLETED status can
+    // disagree with whether the data change committed.
+    const { summary } = await db.sequelize!.transaction(
       async (transaction) => {
         const replacedData = replacing
           ? await InventoryReplaceService.replaceInventoryValues(
@@ -373,20 +373,24 @@ export class InventoryFileAutoImportService {
             { transaction },
           );
         }
-        return { summary, replacedData };
+        await importedFile.update(
+          {
+            importStatus: ImportStatusEnum.COMPLETED,
+            processedRowCount: summary.importedRows,
+            completedAt: new Date(),
+            lastUpdated: new Date(),
+            validationResults: {
+              ...(importedFile.validationResults as object),
+              importSummary: { ...summary, replacedData },
+            },
+          },
+          { transaction },
+        );
+        return { summary };
       },
     );
 
-    await importedFile.update({
-      importStatus: ImportStatusEnum.COMPLETED,
-      processedRowCount: summary.importedRows,
-      completedAt: new Date(),
-      lastUpdated: new Date(),
-      validationResults: {
-        ...(importedFile.validationResults as object),
-        importSummary: { ...summary, replacedData },
-      },
-    });
+    // Best-effort: catalog sync logs and swallows its own errors.
     await syncGHGIInventory(importedFile);
 
     return {

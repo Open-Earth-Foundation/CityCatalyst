@@ -75,6 +75,7 @@ import {
   syncGHGIInventory,
 } from "@/backend/GHGINativeInputCatalogService";
 import { db } from "@/models";
+import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
@@ -194,6 +195,44 @@ async function persistMappingFeedback(args: {
   }
 }
 
+/**
+ * Persist mapping feedback for Path B (AI-shaped) files so future uploads with
+ * the same header structure get a warm-start prompt hint.
+ */
+async function persistPathBMappingFeedback(
+  cityId: string,
+  importedFile: ImportedInventoryFile,
+  extractedRows: ExtractedRow[] | null,
+): Promise<void> {
+  if (!extractedRows || extractedRows.length === 0) return;
+  const vr = (importedFile.validationResults as ImportValidationResults) ?? {};
+  const headerKey = vr.headerKey;
+  if (!headerKey) return;
+
+  const feedbackBuffer =
+    await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+  const rawHeaders: string[] = feedbackBuffer
+    ? await FileParserService.parseFile(feedbackBuffer, importedFile.fileType)
+        .then((p) => p.primarySheet?.headers ?? [])
+        .catch(() => [])
+    : [];
+
+  const columnMapping =
+    rawHeaders.length > 0 ? deriveColumnMapping(rawHeaders, extractedRows) : {};
+  const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
+    string,
+    unknown
+  >[];
+
+  await persistMappingFeedback({
+    cityId,
+    headerKey,
+    adapterType: vr.adapterType,
+    columnMapping,
+    exampleRows,
+  });
+}
+
 async function runApproveImportInBackground(args: {
   cityId: string;
   inventoryId: string;
@@ -240,9 +279,10 @@ async function runApproveImportInBackground(args: {
         ? "Imported from PDF"
         : "Imported from file");
 
-    // Replace and import share one transaction: if the import fails, the
-    // existing data is still there.
-    const { importSummary, replacedData } = await db.sequelize!.transaction(
+    // Replace, import and the COMPLETED status share one transaction: if the
+    // import fails the existing data is still there, and the status can't
+    // disagree with whether the data change committed.
+    const { importSummary } = await db.sequelize!.transaction(
       async (transaction) => {
         const replacedData = replaceExisting
           ? await InventoryReplaceService.replaceInventoryValues(
@@ -269,59 +309,34 @@ async function runApproveImportInBackground(args: {
             "No rows could be imported, so the existing inventory data was kept.",
           );
         }
-        return { importSummary, replacedData };
+        await importedFile.update(
+          {
+            importStatus: ImportStatusEnum.COMPLETED,
+            processedRowCount: importSummary.importedRows,
+            completedAt: new Date(),
+            lastUpdated: new Date(),
+            validationResults: {
+              ...((importedFile.validationResults as ImportValidationResults) ??
+                {}),
+              importSummary: { ...importSummary, replacedData },
+            },
+          },
+          { transaction },
+        );
+        return { importSummary };
       },
     );
 
-    await importedFile.update({
-      importStatus: ImportStatusEnum.COMPLETED,
-      processedRowCount: importSummary.importedRows,
-      completedAt: new Date(),
-      lastUpdated: new Date(),
-      validationResults: {
-        ...((importedFile.validationResults as ImportValidationResults) ?? {}),
-        importSummary: { ...importSummary, replacedData },
-      },
-    });
+    // Best-effort follow-ups: the import has committed, so a failure here must
+    // not reach the catch below and mark it FAILED.
     await syncGHGIInventory(importedFile);
-
-    // Persist mapping feedback for Path B (AI-shaped) files so future uploads
-    // with the same header structure get a warm-start prompt hint.
-    if (extractedRows && extractedRows.length > 0) {
-      const vr =
-        (importedFile.validationResults as ImportValidationResults) ?? {};
-      const headerKey = vr.headerKey;
-      if (headerKey) {
-        const feedbackBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(
-            importedFile,
-          );
-        const rawHeaders: string[] = feedbackBuffer
-          ? await FileParserService.parseFile(
-              feedbackBuffer,
-              importedFile.fileType,
-            )
-              .then((p) => p.primarySheet?.headers ?? [])
-              .catch(() => [])
-          : [];
-
-        const columnMapping =
-          rawHeaders.length > 0
-            ? deriveColumnMapping(rawHeaders, extractedRows)
-            : {};
-        const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
-          string,
-          unknown
-        >[];
-
-        await persistMappingFeedback({
-          cityId,
-          headerKey,
-          adapterType: vr.adapterType,
-          columnMapping,
-          exampleRows,
-        });
-      }
+    try {
+      await persistPathBMappingFeedback(cityId, importedFile, extractedRows);
+    } catch (err) {
+      logger.warn(
+        { err, importedFileId: importedFile.id },
+        "Failed to persist mapping feedback after import (non-fatal)",
+      );
     }
 
     logger.info(

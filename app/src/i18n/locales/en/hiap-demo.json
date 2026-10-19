@@ -705,6 +705,8 @@
   "next-why-short": "Why first",
   "risk-hover-note": "Hazard, exposure and vulnerability, 0–1, as published by AdaptaBrasil.",
   "next-context-link": "See the city context",
+  "context-map-aria": "Municipal boundary of {{city}}",
+  "context-map-missing": "No municipal boundary available for this city.",
   "adaptation": {
     "meed": {
       "overview-title": "Prioritize adaptation actions",

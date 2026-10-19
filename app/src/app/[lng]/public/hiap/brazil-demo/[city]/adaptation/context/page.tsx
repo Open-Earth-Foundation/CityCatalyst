@@ -14,6 +14,7 @@ import { cityFromSlug } from "../../../_lib/useTrack";
 import { useDemoT } from "../../../_lib/useDemoT";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { cityContextItems } from "../../../_components/next/CityContextDialog";
+import { CityOutline } from "../../../_components/next/CityOutline";
 
 /** BR-A10 — socioeconomic context: shown, explicitly not scored (methodology §5, decision #3). */
 export default function Page(props: {
@@ -37,21 +38,29 @@ export default function Page(props: {
     >
       <Card.Root borderColor="content.link">
         <Card.Body>
-          <HStack gap="s" alignItems="flex-start">
-            <Icon as={LuInfo} boxSize="18px" color="content.link" mt="2px" />
-            <VStack alignItems="flex-start" gap="xs">
-              <HStack gap="s" flexWrap="wrap">
-                <LabelLarge color="content.primary">
-                  {t("context-not-scored-title")}
-                </LabelLarge>
-                <MeedStatusTag tone="info">
-                  {t("stat-context-not-scored")}
-                </MeedStatusTag>
-              </HStack>
-              <BodyMedium color="content.secondary">
-                {t("context-not-scored-body")}
-              </BodyMedium>
-            </VStack>
+          <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+            <CityOutline
+              locode={city.locode}
+              label={t("context-map-aria", { city: city.name })}
+              emptyLabel={t("context-map-missing")}
+              size={120}
+            />
+            <HStack gap="s" alignItems="flex-start" flex="1" minW="240px">
+              <Icon as={LuInfo} boxSize="18px" color="content.link" mt="2px" />
+              <VStack alignItems="flex-start" gap="xs">
+                <HStack gap="s" flexWrap="wrap">
+                  <LabelLarge color="content.primary">
+                    {t("context-not-scored-title")}
+                  </LabelLarge>
+                  <MeedStatusTag tone="info">
+                    {t("stat-context-not-scored")}
+                  </MeedStatusTag>
+                </HStack>
+                <BodyMedium color="content.secondary">
+                  {t("context-not-scored-body")}
+                </BodyMedium>
+              </VStack>
+            </HStack>
           </HStack>
         </Card.Body>
       </Card.Root>

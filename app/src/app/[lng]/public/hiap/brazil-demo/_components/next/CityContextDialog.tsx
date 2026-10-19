@@ -17,6 +17,7 @@ import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInf
 import type { CityFixture } from "../../_lib/types";
 import { pushBucket, PUSH_LABEL } from "../../_lib/finance";
 import { pick } from "../../_lib/localized";
+import { CityOutline } from "./CityOutline";
 
 /** The city-context indicators as a list for a dialog or a page. */
 export function cityContextItems(city: CityFixture, lng: string) {
@@ -99,9 +100,17 @@ export function CityContextDialog({
         </DialogHeader>
         <DialogBody pb="xl">
           <VStack alignItems="stretch" gap="l">
-            <BodyMedium color="content.secondary">
-              {t("context-not-scored-body")}
-            </BodyMedium>
+            <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+              <CityOutline
+                locode={city.locode}
+                label={t("context-map-aria", { city: city.name })}
+                emptyLabel={t("context-map-missing")}
+                size={140}
+              />
+              <BodyMedium color="content.secondary" flex="1" minW="240px">
+                {t("context-not-scored-body")}
+              </BodyMedium>
+            </HStack>
             <SimpleGrid columns={{ base: 2, md: 4 }} gap="l">
               {items.map((it) => (
                 <VStack key={it.key} alignItems="flex-start" gap="xs">

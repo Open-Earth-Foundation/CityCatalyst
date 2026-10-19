@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { isDashboardRoute } from "@/util/iframe-routes";
+import { isDashboardRoute, isPreAuthRoute } from "@/util/iframe-routes";
 
 // Pulls in the full ChatBot UI and its dependencies — load it lazily so
 // routes that never show it (auth, public dashboards, etc.) don't pay for
@@ -12,12 +12,13 @@ const ChatPopover = dynamic(
   { ssr: false },
 );
 
-// Routes where Clima (the chat launcher) is either not relevant (auth, public
-// iframe dashboards) or would compete with an embedded/primary chat workflow.
+// Routes where Clima (the chat launcher) is either not relevant (pre-auth
+// flows, public iframe dashboards) or would compete with an embedded/primary
+// chat workflow.
 function isChatExcludedRoute(pathname: string) {
   return (
     isDashboardRoute(pathname) ||
-    /^\/[^/]+\/auth(\/|$)/.test(pathname) ||
+    isPreAuthRoute(pathname) ||
     pathname.includes("/draft/stationary-energy") ||
     /^\/[^/]+\/cities\/onboarding(\/|$)/.test(pathname) ||
     /(^|\/)concept-notes(?:\/|$)/.test(pathname)

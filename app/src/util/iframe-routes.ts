@@ -14,3 +14,14 @@ function matchesRoute(pathname: string, route: string) {
 export function isDashboardRoute(pathname: string) {
   return DASHBOARD_ROUTES.some((route) => matchesRoute(pathname, route));
 }
+
+// Routes a visitor can land on without an authenticated session — same
+// category as /auth/*, so widgets scoped to the logged-in app shouldn't
+// mount there either.
+export function isPreAuthRoute(pathname: string) {
+  return (
+    /^\/[^/]+\/auth(\/|$)/.test(pathname) ||
+    /^\/[^/]+\/(organization|user)\/invites(\/|$)/.test(pathname) ||
+    /^\/[^/]+\/authorize(\/|$)/.test(pathname)
+  );
+}

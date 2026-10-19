@@ -1,6 +1,16 @@
 "use client";
 import React from "react";
-import { Card, HStack, SimpleGrid, Table, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Collapsible,
+  HStack,
+  Icon,
+  SimpleGrid,
+  Table,
+  VStack,
+} from "@chakra-ui/react";
+import { LuChevronDown } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
@@ -230,134 +240,183 @@ export default function Page(props: {
         </Table.Root>
       </Card.Root>
 
-      {/* Pathways */}
-      <VStack alignItems="stretch" gap="m">
-        <TitleMedium color="content.primary">
-          {t("finance-pathways-title")}
-        </TitleMedium>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>
-                  {t("finance-col-pathway")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-access")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="140px">
-                  {t("finance-col-gate")}
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {PATHWAYS.map((p) => (
-                <Table.Row key={p.key}>
-                  <Table.Cell>
-                    <LabelMedium color="content.primary">
-                      {pick(p.label, lng)}
-                    </LabelMedium>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BodySmall color="content.secondary">
-                      {pick(p.access, lng)}
-                    </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {p.creditGated ? (
-                      <MeedStatusTag
-                        tone={
-                          credit === "available"
-                            ? "positive"
-                            : credit === "to_verify"
-                              ? "warning"
-                              : "neutral"
-                        }
-                      >
-                        {t("finance-gate-credit")}
-                      </MeedStatusTag>
-                    ) : (
-                      <MeedStatusTag tone="positive">
-                        {t("finance-gate-open")}
-                      </MeedStatusTag>
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
-      </VStack>
-
-      {/* Comparable projects */}
-      <VStack alignItems="stretch" gap="m">
-        <VStack alignItems="stretch" gap="xs">
-          <TitleMedium color="content.primary">
-            {t("finance-projects-title")}
-          </TitleMedium>
-          <BodyMedium color="content.secondary">
-            {t("finance-projects-description")}
-          </BodyMedium>
-        </VStack>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>
-                  {t("finance-col-project")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-channel")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader textAlign="end">
-                  {t("finance-col-amount")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-stage")}
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {ADAPTATION_ACTIONS.flatMap((a) =>
-                a.comparableProjects.map((p) => ({ a, p })),
-              ).map(({ a, p }, i) => (
-                <Table.Row key={i}>
-                  <Table.Cell>
-                    <LabelMedium color="content.primary">{p.name}</LabelMedium>
-                    <Caption color="content.tertiary">
-                      {p.city} · {pick(a.name, lng)}
-                    </Caption>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BodySmall color="content.secondary">
-                      {pick(p.channel, lng)}
-                    </BodySmall>
-                    <Caption color="content.tertiary">
-                      {pick(p.instrument, lng)}
-                    </Caption>
-                  </Table.Cell>
-                  <Table.Cell textAlign="end">
-                    <BodySmall
-                      color="content.primary"
-                      fontVariantNumeric="tabular-nums"
-                    >
-                      {formatBrl(p.amountBrl, lng)}
-                    </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <MeedStatusTag tone="neutral">
-                      {pick(p.stage, lng)}
-                    </MeedStatusTag>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
-        <BodySmall color="content.tertiary">
-          {t("finance-projects-note")}
-        </BodySmall>
-      </VStack>
+      <Collapsible.Root>
+        <Collapsible.Trigger asChild>
+          <Box
+            as="button"
+            w="full"
+            textAlign="start"
+            px="m"
+            py="s"
+            borderRadius="rounded"
+            _hover={{ bg: "background.neutral" }}
+          >
+            <HStack justifyContent="space-between" gap="s">
+              <TitleMedium color="content.primary">
+                {t("finance-pathways-title")}
+              </TitleMedium>
+              <Icon
+                as={LuChevronDown}
+                boxSize="16px"
+                color="content.tertiary"
+              />
+            </HStack>
+          </Box>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          <Box pt="m">
+            <VStack alignItems="stretch" gap="m">
+              <Card.Root overflow="hidden" borderColor="border.neutral">
+                <Table.Root size="md">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeader>
+                        {t("finance-col-pathway")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t("finance-col-access")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader w="140px">
+                        {t("finance-col-gate")}
+                      </Table.ColumnHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {PATHWAYS.map((p) => (
+                      <Table.Row key={p.key}>
+                        <Table.Cell>
+                          <LabelMedium color="content.primary">
+                            {pick(p.label, lng)}
+                          </LabelMedium>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <BodySmall color="content.secondary">
+                            {pick(p.access, lng)}
+                          </BodySmall>
+                        </Table.Cell>
+                        <Table.Cell>
+                          {p.creditGated ? (
+                            <MeedStatusTag
+                              tone={
+                                credit === "available"
+                                  ? "positive"
+                                  : credit === "to_verify"
+                                    ? "warning"
+                                    : "neutral"
+                              }
+                            >
+                              {t("finance-gate-credit")}
+                            </MeedStatusTag>
+                          ) : (
+                            <MeedStatusTag tone="positive">
+                              {t("finance-gate-open")}
+                            </MeedStatusTag>
+                          )}
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Card.Root>
+            </VStack>
+          </Box>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <Collapsible.Root>
+        <Collapsible.Trigger asChild>
+          <Box
+            as="button"
+            w="full"
+            textAlign="start"
+            px="m"
+            py="s"
+            borderRadius="rounded"
+            _hover={{ bg: "background.neutral" }}
+          >
+            <HStack justifyContent="space-between" gap="s">
+              <TitleMedium color="content.primary">
+                {t("finance-projects-title")}
+              </TitleMedium>
+              <Icon
+                as={LuChevronDown}
+                boxSize="16px"
+                color="content.tertiary"
+              />
+            </HStack>
+          </Box>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          <Box pt="m">
+            <VStack alignItems="stretch" gap="m">
+              <VStack alignItems="stretch" gap="xs">
+                <BodyMedium color="content.secondary">
+                  {t("finance-projects-description")}
+                </BodyMedium>
+              </VStack>
+              <Card.Root overflow="hidden" borderColor="border.neutral">
+                <Table.Root size="md">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeader>
+                        {t("finance-col-project")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t("finance-col-channel")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader textAlign="end">
+                        {t("finance-col-amount")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t("finance-col-stage")}
+                      </Table.ColumnHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {ADAPTATION_ACTIONS.flatMap((a) =>
+                      a.comparableProjects.map((p) => ({ a, p })),
+                    ).map(({ a, p }, i) => (
+                      <Table.Row key={i}>
+                        <Table.Cell>
+                          <LabelMedium color="content.primary">
+                            {p.name}
+                          </LabelMedium>
+                          <Caption color="content.tertiary">
+                            {p.city} · {pick(a.name, lng)}
+                          </Caption>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <BodySmall color="content.secondary">
+                            {pick(p.channel, lng)}
+                          </BodySmall>
+                          <Caption color="content.tertiary">
+                            {pick(p.instrument, lng)}
+                          </Caption>
+                        </Table.Cell>
+                        <Table.Cell textAlign="end">
+                          <BodySmall
+                            color="content.primary"
+                            fontVariantNumeric="tabular-nums"
+                          >
+                            {formatBrl(p.amountBrl, lng)}
+                          </BodySmall>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <MeedStatusTag tone="neutral">
+                            {pick(p.stage, lng)}
+                          </MeedStatusTag>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Card.Root>
+              <BodySmall color="content.tertiary">
+                {t("finance-projects-note")}
+              </BodySmall>
+            </VStack>
+          </Box>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </DemoShell>
   );
 }

@@ -36,6 +36,7 @@ import { TopRisks } from "./TopRisks";
 import { TopActions } from "./TopActions";
 import { RankedActionsTable } from "./RankedActionsTable";
 import { ActionDrawer } from "./ActionDrawer";
+import { CityContextDialog } from "./CityContextDialog";
 import { isCustomWeights } from "./WeightSliders";
 import {
   applyCityOrder,
@@ -115,6 +116,7 @@ export function AdaptationHomeNext({
   const isWide = useBreakpointValue({ base: false, "2xl": true }) ?? false;
 
   const [panelOpen, setPanelOpen] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
   const [filters, setFilters] = useState<RowFilters>(EMPTY_FILTERS);
   const [openId, setOpenId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -325,6 +327,7 @@ export function AdaptationHomeNext({
                   lng={lng}
                   t={t}
                   href={trackHref(lng, city.slug, track, "risk")}
+                  onContext={() => setContextOpen(true)}
                 />
               </Section>
               <Section
@@ -421,6 +424,14 @@ export function AdaptationHomeNext({
           </Portal>
         </Drawer.Root>
       )}
+
+      <CityContextDialog
+        city={city}
+        lng={lng}
+        open={contextOpen}
+        onOpenChange={setContextOpen}
+        t={t}
+      />
 
       {openAction && (
         <ActionDrawer

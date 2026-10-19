@@ -63,7 +63,7 @@ export function RiskCellTable({
             <Table.ColumnHeader w="36%">
               {t("risk-col-cell")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
               <HStack gap="xs" alignItems="center">
                 <span>{t("risk-col-hazard")}</span>
                 <MeedInfoTip
@@ -72,7 +72,7 @@ export function RiskCellTable({
                 />
               </HStack>
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
               <HStack gap="xs" alignItems="center">
                 <span>{t("risk-col-exposure")}</span>
                 <MeedInfoTip
@@ -81,7 +81,7 @@ export function RiskCellTable({
                 />
               </HStack>
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
               <HStack gap="xs" alignItems="center">
                 <span>{t("risk-col-vulnerability")}</span>
                 <MeedInfoTip
@@ -113,25 +113,40 @@ export function RiskCellTable({
                 bg={isHighlighted ? "background.neutral" : undefined}
               >
                 <Table.Cell>
-                  <HStack gap="s" alignItems="flex-start">
-                    <Box mt="2px">
-                      <SectorGlyph sector={cell.sector} size="16px" />
-                    </Box>
-                    <VStack alignItems="flex-start" gap="0" minW={0}>
-                      <LabelMedium color="content.primary">
-                        {pick(cell.label, lng)}
-                      </LabelMedium>
-                      <Caption color="content.tertiary">
-                        {pick(SECTOR_LABEL[cell.sector], lng)}
-                      </Caption>
-                    </VStack>
-                  </HStack>
+                  <MeedChartTip
+                    title={pick(cell.label, lng)}
+                    rows={
+                      reading && cell.hasComponents
+                        ? (
+                            ["hazard", "exposure", "vulnerability"] as const
+                          ).map((component) => ({
+                            label: t(`risk-col-${component}`),
+                            value: reading[component].toFixed(2),
+                          }))
+                        : [{ label: t("risk-no-components") }]
+                    }
+                    note={t("risk-hover-note")}
+                  >
+                    <HStack gap="s" alignItems="flex-start" tabIndex={0}>
+                      <Box mt="2px">
+                        <SectorGlyph sector={cell.sector} size="16px" />
+                      </Box>
+                      <VStack alignItems="flex-start" gap="0" minW={0}>
+                        <LabelMedium color="content.primary">
+                          {pick(cell.label, lng)}
+                        </LabelMedium>
+                        <Caption color="content.tertiary">
+                          {pick(SECTOR_LABEL[cell.sector], lng)}
+                        </Caption>
+                      </VStack>
+                    </HStack>
+                  </MeedChartTip>
                 </Table.Cell>
                 {(["hazard", "exposure", "vulnerability"] as const).map(
                   (component) => (
                     <Table.Cell
                       key={component}
-                      display={{ base: "none", md: "table-cell" }}
+                      display={{ base: "none", "2xl": "table-cell" }}
                     >
                       {reading && cell.hasComponents ? (
                         <BodySmall

@@ -703,6 +703,8 @@
   "next-filter-label": "Narrow by",
   "next-col-risk": "Risk reduced",
   "next-why-short": "Why first",
+  "risk-hover-note": "Hazard, exposure and vulnerability, 0–1, as published by AdaptaBrasil.",
+  "next-context-link": "See the city context",
   "adaptation": {
     "meed": {
       "overview-title": "Prioritize adaptation actions",

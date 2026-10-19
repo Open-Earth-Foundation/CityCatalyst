@@ -13,8 +13,7 @@ import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
 import { useDemoT } from "../../../_lib/useDemoT";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
-import { pushBucket, PUSH_LABEL } from "../../../_lib/finance";
-import { pick } from "../../../_lib/localized";
+import { cityContextItems } from "../../../_components/next/CityContextDialog";
 
 /** BR-A10 — socioeconomic context: shown, explicitly not scored (methodology §5, decision #3). */
 export default function Page(props: {
@@ -23,50 +22,7 @@ export default function Page(props: {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
-  const fmt = (v: number, opts?: Intl.NumberFormatOptions) =>
-    new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", opts).format(v);
-  const items = [
-    { key: "population", value: fmt(city.population), source: "IBGE 2022" },
-    {
-      key: "poverty",
-      value: `${fmt(city.context.povertyRate, { maximumFractionDigits: 1 })}%`,
-      source: "IBGE / CadÚnico",
-    },
-    {
-      key: "informal",
-      value: `${fmt(city.context.informalSettlementShare, { maximumFractionDigits: 1 })}%`,
-      source: "IBGE 2022",
-    },
-    {
-      key: "urban",
-      value: `${fmt(city.context.urbanShare, { maximumFractionDigits: 1 })}%`,
-      source: "IBGE 2022",
-    },
-    {
-      key: "gdp",
-      value: fmt(city.context.gdpPerCapitaBrl, {
-        style: "currency",
-        currency: "BRL",
-        maximumFractionDigits: 0,
-      }),
-      source: "IBGE 2021",
-    },
-    {
-      key: "hdi",
-      value: fmt(city.context.hdi, { maximumFractionDigits: 3 }),
-      source: "PNUD / Atlas Brasil",
-    },
-    {
-      key: "capag",
-      value: city.capag === "nd" ? "n.d." : city.capag,
-      source: "STN, Jun 2026",
-    },
-    {
-      key: "munic",
-      value: `${city.financePush} / 14 · ${pick(PUSH_LABEL[pushBucket(city.financePush)], lng)}`,
-      source: "IBGE MUNIC 2020–21",
-    },
-  ];
+  const items = cityContextItems(city, lng);
 
   return (
     <DemoShell

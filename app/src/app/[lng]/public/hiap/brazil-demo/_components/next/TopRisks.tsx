@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { Box, SimpleGrid, VStack } from "@chakra-ui/react";
+import { Box, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import type { CityFixture } from "../../_lib/types";
 import { RISK_CELLS, SECTOR_LABEL } from "../../_lib/riskCells";
@@ -21,11 +21,14 @@ export function TopRisks({
   lng,
   t,
   href,
+  onContext,
 }: {
   city: CityFixture;
   lng: string;
   t: TFunction;
   href: string;
+  /** Opens the city-context dialog. */
+  onContext?: () => void;
 }) {
   const top = RISK_CELLS.map((c) => ({ c, r: city.risk[c.key] }))
     .filter(
@@ -68,9 +71,12 @@ export function TopRisks({
         );
       })}
       <Box gridColumn="1 / -1">
-        <BodyMedium color="content.secondary" as="span">
+        <HStack gap="xl" flexWrap="wrap">
           <TextLink href={href}>{t("next-risks-link")}</TextLink>
-        </BodyMedium>
+          {onContext && (
+            <TextLink onClick={onContext}>{t("next-context-link")}</TextLink>
+          )}
+        </HStack>
       </Box>
     </SimpleGrid>
   );

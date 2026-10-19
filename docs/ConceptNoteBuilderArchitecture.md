@@ -1652,10 +1652,15 @@ How it works:
   contradicts is flagged with a marker rather than overwritten. Only gaps with a
   successful cited answer from the new source are resolved, as
   `evidence_update` by `system`; previously resolved gaps that the evidence
-  contradicts reopen, and deferred caveats are left untouched. A redraft that
-  drops an unanswered gap, or whose markers disagree with its gap list, is
-  rejected and logged, and the remaining chapters still update. A confirmed
+  contradicts reopen, and deferred caveats are left untouched. When a redraft
+  drops an unanswered gap, the redraft is kept and the gap's marker is added
+  back at the end of the chapter, so the gap stays open. A redraft whose
+  markers disagree with its gap list is rejected and logged, and the
+  remaining chapters still update. A confirmed
   revision is never replaced, so an affected Ready chapter returns to review.
+  A note with no drafted chapter has nothing to update and finishes without a
+  model call; drafting reads the new source when it starts. A note without a
+  template is redrafted from its chapters' own titles and descriptions.
 - The impact review is a durable job in `context_summary.source_revalidation`,
   queued atomically with the bundle commit. A worker leases it; failures stay
   pending and the context-bundle reconciler retries them up to three times,
@@ -1975,6 +1980,45 @@ CNB_TEST_URL=http://localhost:3000 CNB_AUTH_STATE=playwright/.auth/user.json npx
 The browser test exercises the real workspace with controlled API responses;
 the Python tests exercise catalogue joins, persistence, and invalidation in test
 databases. Neither test starts an LLM request.
+
+### Adding a funder that is not in the catalogue
+
+The funding dialog's rail footer, **Add a funder that isn't listed**, adds a
+funder, one programme and that programme's application template to the shared
+catalogue from values the user types. The result is an ordinary `funders` /
+`funding_opportunities` / `funder_templates` row set; those tables are
+unchanged. Selecting it afterwards uses the normal `PATCH /application-context`
+flow above.
+
+`POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one CNB
+transaction. Chapter references are slugged uniquely, and template
+`required_fields` is built from chapter `required_fields`, so every inventory
+field has an owning chapter as chapter validation requires. List fields
+(hazards, interventions, chapter required fields) are edited as comma-separated
+text. `funding_opportunities.source_run_id` is `cnb-manual:<run_id>`; the
+catalogue exposes this as `added_from`.
+
+Added funders are visible to every city, because `funders` has no owner column. The form explains this before submission.
+
+The form and Next.js route share `util/concept-note-funder.ts`, including field
+limits and award validation. Templates must match the workspace contract: 1-100
+chapters, single-line titles up to 255 characters and descriptions up to 4,000
+characters. Climate Advisor's `funder_creation` contracts validate chapter content
+against the same model used by structure edits before inserting catalogue rows.
+
+Creation keeps navigation and closing disabled through the catalogue refresh.
+Once the POST succeeds, the form closes and the new IDs remain selected even if
+refresh fails; retrying the catalogue load never repeats the successful creation.
+
+
+Award inputs accept a dot or comma as the decimal separator (up to two places)
+and spaces as thousands separators, for example `150 000,50`. Ambiguous comma
+or dot thousands grouping is rejected instead of silently changing the amount.
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_funder_creation.py
+```
 
 ### Context Bundle Build Responsibilities
 

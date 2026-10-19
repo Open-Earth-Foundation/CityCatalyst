@@ -138,7 +138,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   return (
     <>
       <Heading
-        fontFamily="Poppins"
+        fontFamily="heading"
         fontSize="display.sm"
         fontWeight={600}
         lineHeight="44px"

@@ -8,7 +8,7 @@ interface OverlineProps extends TextProps {
 
 export const Overline = ({ text, children, ...props }: OverlineProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="10px"
     lineHeight="16px"

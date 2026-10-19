@@ -416,6 +416,7 @@ export function ConceptNoteDashboard({
                   run.status,
                   run.workflow_step,
                   run.progress_summary,
+                  Boolean(run.funder_id),
                 );
 
                 return (

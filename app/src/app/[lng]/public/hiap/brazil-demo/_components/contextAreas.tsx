@@ -182,18 +182,8 @@ export function useContextAreas({
       status: "complete" as const,
       sub: text,
     });
-    const topCell = RISK_CELLS.map((c) => ({
-      c,
-      v: city.risk[c.key]?.index ?? -1,
-    })).sort((a, b) => b.v - a.v)[0];
     return {
-      risk: sub(
-        "risk",
-        t("area-risk-sub", {
-          cell: pick(topCell.c.label, lng),
-          value: topCell.v.toFixed(2),
-        }),
-      ),
+      risk: sub("risk", t("area-risk-sub")),
       emissions: sub(
         "emissions",
         tResults("context-summary-emissions-year", {

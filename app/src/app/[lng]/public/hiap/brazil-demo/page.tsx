@@ -87,6 +87,13 @@ const SCREENS: {
   { id: SCREEN_IDS.mitigation.home, key: "m-home", track: "mitigation" },
 ];
 
+/** Proposal screens built after the October review, beside the current ones. */
+const NEXT_SCREENS: { id: string; key: string; segment: string }[] = [
+  { id: SCREEN_IDS.next.home, key: "home", segment: "next" },
+  { id: SCREEN_IDS.next.drawer, key: "drawer", segment: "next" },
+  { id: SCREEN_IDS.next.legal, key: "legal", segment: "next/legal" },
+];
+
 /** BR-00 — the review guide. */
 export default function DemoGuidePage(props: {
   params: Promise<{ lng: string }>;
@@ -279,6 +286,68 @@ export default function DemoGuidePage(props: {
                           lng,
                           DEFAULT_CITY.slug,
                           s.track,
+                          s.segment,
+                        )}
+                      >
+                        {t("guide-open")}
+                      </NextLink>
+                    </Link>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </Card.Root>
+      </VStack>
+
+      <VStack alignItems="stretch" gap="m">
+        <VStack alignItems="stretch" gap="xs">
+          <HStack gap="s">
+            <TitleMedium color="content.primary">
+              {t("next-guide-title")}
+            </TitleMedium>
+            <MeedStatusTag tone="warning">
+              {t("next-proposal-tag")}
+            </MeedStatusTag>
+          </HStack>
+          <BodySmall color="content.secondary">
+            {t("next-guide-body")}
+          </BodySmall>
+        </VStack>
+        <Card.Root overflow="hidden" borderColor="border.neutral">
+          <Table.Root size="md">
+            <Table.Body>
+              {NEXT_SCREENS.map((s) => (
+                <Table.Row key={s.id}>
+                  <Table.Cell w="90px">
+                    <LabelMedium color="content.link" fontFamily="mono">
+                      {s.id}
+                    </LabelMedium>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <BodyMedium color="content.primary" fontWeight="semibold">
+                      {t(`next-screen-${s.key}`)}
+                    </BodyMedium>
+                  </Table.Cell>
+                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                    <BodySmall color="content.secondary">
+                      {t(`next-screen-${s.key}-look`)}
+                    </BodySmall>
+                  </Table.Cell>
+                  <Table.Cell w="120px">
+                    <Link
+                      asChild
+                      color="content.link"
+                      fontFamily="heading"
+                      fontSize="label.md"
+                      fontWeight="semibold"
+                      _focusVisible={FOCUS_RING}
+                    >
+                      <NextLink
+                        href={trackHref(
+                          lng,
+                          DEFAULT_CITY.slug,
+                          "adaptation",
                           s.segment,
                         )}
                       >

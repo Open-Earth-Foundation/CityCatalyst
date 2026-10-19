@@ -39,6 +39,7 @@ import { CO_BENEFIT_KEYS } from "../_lib/coBenefits";
 import { ADAPTATION_ACTIONS } from "../_lib/actions";
 import { pick } from "../_lib/localized";
 import { DemoShell } from "./DemoShell";
+import { SelectAllBar } from "./next/SelectAllBar";
 
 const TIMELINES: Timeline[] = ["<5 years", "5-10 years", ">10 years"];
 
@@ -196,7 +197,7 @@ export function TrackPreferences({
       track={track}
       segment="preferences"
       screenId={screenId}
-      title={tPrefs("title")}
+      title={t("preferences-title")}
       step="preferences"
       stepsDone={{
         preferences: Boolean(state.visited.preferences),
@@ -249,6 +250,15 @@ export function TrackPreferences({
             <BodyMedium color="content.secondary">
               {tPrefs("strategic-priorities-description")}
             </BodyMedium>
+            <SelectAllBar
+              total={CO_BENEFIT_KEYS.length}
+              selected={prefs.coBenefits.length}
+              onSelectAll={() =>
+                setPreferences({ coBenefits: [...CO_BENEFIT_KEYS] })
+              }
+              onClear={() => setPreferences({ coBenefits: [] })}
+              t={t}
+            />
             <SimpleGrid
               columns={{ base: 1, md: 2 }}
               gap="s"
@@ -334,6 +344,15 @@ export function TrackPreferences({
             <BodyMedium color="content.secondary">
               {tPrefs("priority-sectors-description")}
             </BodyMedium>
+            <SelectAllBar
+              total={sectorOptions.length}
+              selected={prefs.sectors.length}
+              onSelectAll={() =>
+                setPreferences({ sectors: sectorOptions.map((o) => o.value) })
+              }
+              onClear={() => setPreferences({ sectors: [] })}
+              t={t}
+            />
             <MeedChipGroup
               options={sectorOptions}
               selected={prefs.sectors}
@@ -357,6 +376,17 @@ export function TrackPreferences({
               <BodyMedium color="content.secondary">
                 {t("priority-risks-description")}
               </BodyMedium>
+              <SelectAllBar
+                total={riskOptions.length}
+                selected={prefs.priorityRisks.length}
+                onSelectAll={() =>
+                  setPreferences({
+                    priorityRisks: RISK_CELLS.map((c) => c.key),
+                  })
+                }
+                onClear={() => setPreferences({ priorityRisks: [] })}
+                t={t}
+              />
               <MeedChipGroup
                 options={riskOptions}
                 selected={prefs.priorityRisks}
@@ -378,6 +408,19 @@ export function TrackPreferences({
             <BodyMedium color="content.secondary">
               {t("exclusions-description")}
             </BodyMedium>
+            {track === "adaptation" && (
+              <SelectAllBar
+                total={excludable.length}
+                selected={prefs.excludedActionIds.length}
+                onSelectAll={() =>
+                  setPreferences({
+                    excludedActionIds: excludable.map((a) => a.id),
+                  })
+                }
+                onClear={() => setPreferences({ excludedActionIds: [] })}
+                t={t}
+              />
+            )}
             {track === "adaptation" ? (
               <SimpleGrid
                 columns={{ base: 1, md: 2 }}

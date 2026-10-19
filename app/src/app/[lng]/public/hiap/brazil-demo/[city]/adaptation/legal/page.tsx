@@ -102,6 +102,24 @@ export default function Page(props: {
               ]}
               ariaLabel={t("funnel-aria")}
             />
+            <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
+              <VStack alignItems="stretch" gap="xs">
+                <Overline color="content.tertiary">
+                  {t("legal-axis-authority")}
+                </Overline>
+                <BodyMedium color="content.secondary">
+                  {t("legal-axis-authority-body")}
+                </BodyMedium>
+              </VStack>
+              <VStack alignItems="stretch" gap="xs">
+                <Overline color="content.tertiary">
+                  {t("legal-axis-competence")}
+                </Overline>
+                <BodyMedium color="content.secondary">
+                  {t("legal-axis-competence-body")}
+                </BodyMedium>
+              </VStack>
+            </SimpleGrid>
             <HStack gap="s" flexWrap="wrap">
               {counts.map(({ g, n }) => (
                 <MeedStatusTag key={g} tone={GRADE_TONE[g]}>
@@ -162,24 +180,6 @@ export default function Page(props: {
                       </Caption>
                     </VStack>
                   </HStack>
-                  <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-                    <VStack alignItems="stretch" gap="xs">
-                      <Overline color="content.tertiary">
-                        {t("legal-axis-authority")}
-                      </Overline>
-                      <BodyMedium color="content.secondary">
-                        {t("legal-axis-authority-body")}
-                      </BodyMedium>
-                    </VStack>
-                    <VStack alignItems="stretch" gap="xs">
-                      <Overline color="content.tertiary">
-                        {t("legal-axis-competence")}
-                      </Overline>
-                      <BodyMedium color="content.secondary">
-                        {t("legal-axis-competence-body")}
-                      </BodyMedium>
-                    </VStack>
-                  </SimpleGrid>
                   <Table.Root size="md">
                     <Table.Header>
                       <Table.Row>

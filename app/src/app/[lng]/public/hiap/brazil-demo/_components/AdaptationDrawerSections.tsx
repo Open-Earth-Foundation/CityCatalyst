@@ -92,6 +92,52 @@ export function AdaptationDrawerSections({
 
   return (
     <>
+      {/* Related actions, both directions */}
+      {related.length > 0 && (
+        <DrawerSection
+          title={t("drawer-relationships-title")}
+          trailing={
+            <MeedInfoTip
+              content={t("drawer-relationships-note")}
+              ariaLabel={t("drawer-relationships-note")}
+            />
+          }
+        >
+          <VStack alignItems="stretch" gap="m">
+            {RELATED_ROLES.map((role) => {
+              const items = related.filter((r) => r.role === role);
+              if (items.length === 0) return null;
+              return (
+                <VStack key={role} alignItems="stretch" gap="s">
+                  <Overline color="content.tertiary">
+                    {t(`role-${role}`)}
+                  </Overline>
+                  <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
+                    {items.map(({ action: other, rationale }) => (
+                      <ActionMiniCard
+                        key={other.id}
+                        action={other}
+                        lng={lng}
+                        note={pick(rationale, lng)}
+                        tag={
+                          rankOf(other.id) ? null : (
+                            <MeedStatusTag tone="neutral">
+                              {t("drawer-not-ranked-tag")}
+                            </MeedStatusTag>
+                          )
+                        }
+                        onOpen={() => onOpenAction(other.id)}
+                        t={t}
+                      />
+                    ))}
+                  </SimpleGrid>
+                </VStack>
+              );
+            })}
+          </VStack>
+        </DrawerSection>
+      )}
+
       {/* Risk cells credited */}
       <DrawerSection title={t("drawer-risk-title")}>
         {action.uncoveredHazard ? (
@@ -255,100 +301,42 @@ export function AdaptationDrawerSections({
         )}
       </DrawerSection>
 
-      {/* Related actions, both directions */}
-      {related.length > 0 && (
-        <DrawerSection
-          title={t("drawer-relationships-title")}
-          trailing={
-            <MeedInfoTip
-              content={t("drawer-relationships-note")}
-              ariaLabel={t("drawer-relationships-note")}
-            />
-          }
-        >
-          <VStack alignItems="stretch" gap="m">
-            {RELATED_ROLES.map((role) => {
-              const items = related.filter((r) => r.role === role);
-              if (items.length === 0) return null;
-              return (
-                <VStack key={role} alignItems="stretch" gap="s">
-                  <Overline color="content.tertiary">
-                    {t(`role-${role}`)}
-                  </Overline>
-                  <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-                    {items.map(({ action: other, rationale }) => (
-                      <ActionMiniCard
-                        key={other.id}
-                        action={other}
-                        lng={lng}
-                        rank={rankOf(other.id)}
-                        note={pick(rationale, lng)}
-                        tag={
-                          rankOf(other.id) ? null : (
-                            <MeedStatusTag tone="neutral">
-                              {t("drawer-not-ranked-tag")}
-                            </MeedStatusTag>
-                          )
-                        }
-                        onOpen={() => onOpenAction(other.id)}
-                        t={t}
-                      />
-                    ))}
-                  </SimpleGrid>
-                </VStack>
-              );
-            })}
-          </VStack>
-        </DrawerSection>
-      )}
-
-      {/* Legal */}
-      <DrawerSection title={t("drawer-legal-title")}>
-        <HStack gap="s" flexWrap="wrap" alignItems="center">
-          <MeedStatusTag tone={GRADE_TONE[grade]}>
-            {pick(GRADE_LABEL[grade], lng)}
-          </MeedStatusTag>
-          <BodyMedium color="content.secondary">
-            {t("drawer-legal-line", {
-              score: action.legal.score.toFixed(1),
-              level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng),
-              norms: action.legal.norms.length,
-            })}
-          </BodyMedium>
-        </HStack>
-        <Link
-          asChild
-          color="content.link"
-          fontFamily="heading"
-          fontSize="label.md"
-          fontWeight="semibold"
-          alignSelf="flex-start"
-          _focusVisible={FOCUS_RING}
-        >
-          <NextLink href={legalHref}>{t("drawer-legal-link")}</NextLink>
-        </Link>
-      </DrawerSection>
-
-      {/* Funding */}
+      {/* Can the city deliver it? — legal capacity and funding gap together */}
       <DrawerSection
-        title={t("drawer-funding-title")}
+        title={t("drawer-delivery-title")}
         tag={
-          <MeedStatusTag
-            tone={
-              funding.gap === "self_deliverable" ||
-              funding.gap === "credit_available"
-                ? "positive"
-                : funding.gap === "needs_technical_assistance"
-                  ? "warning"
-                  : "info"
-            }
-          >
-            {pick(GAP_LABEL[funding.gap], lng)}
-          </MeedStatusTag>
+          <HStack gap="s" flexWrap="wrap">
+            <MeedStatusTag tone={GRADE_TONE[grade]}>
+              {pick(GRADE_LABEL[grade], lng)}
+            </MeedStatusTag>
+            <MeedStatusTag
+              tone={
+                funding.gap === "self_deliverable" ||
+                funding.gap === "credit_available"
+                  ? "positive"
+                  : funding.gap === "needs_technical_assistance"
+                    ? "warning"
+                    : "info"
+              }
+            >
+              {pick(GAP_LABEL[funding.gap], lng)}
+            </MeedStatusTag>
+          </HStack>
         }
       >
         <BodyMedium color="content.secondary">
-          {pick(GAP_MEANING[funding.gap], lng)}
+          {t("drawer-legal-line", {
+            score: action.legal.score.toFixed(1),
+            level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng),
+            norms: action.legal.norms.length,
+          })}
+        </BodyMedium>
+        <BodyMedium color="content.secondary">
+          {pick(GAP_MEANING[funding.gap], lng)}{" "}
+          {city.capag === "nd"
+            ? t("next-fact-capag-nd")
+            : t("next-fact-capag", { grade: city.capag })}
+          .
         </BodyMedium>
         {funding.ifCreditNotIndicated && (
           <BodySmall color="content.tertiary">
@@ -401,10 +389,22 @@ export function AdaptationDrawerSections({
             );
           })}
         </VStack>
-        <BodySmall color="content.tertiary">
-          {t("drawer-funding-cost", { cost: t(`cost-${action.costBand}`) })} ·{" "}
-          {t("drawer-funding-note")}
-        </BodySmall>
+        <HStack gap="m" flexWrap="wrap">
+          <BodySmall color="content.tertiary">
+            {t("drawer-funding-cost", { cost: t(`cost-${action.costBand}`) })} ·{" "}
+            {t("drawer-funding-note")}
+          </BodySmall>
+          <Link
+            asChild
+            color="content.link"
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+            _focusVisible={FOCUS_RING}
+          >
+            <NextLink href={legalHref}>{t("drawer-legal-link")}</NextLink>
+          </Link>
+        </HStack>
       </DrawerSection>
 
       {/* Co-benefits already inside the Impact score */}

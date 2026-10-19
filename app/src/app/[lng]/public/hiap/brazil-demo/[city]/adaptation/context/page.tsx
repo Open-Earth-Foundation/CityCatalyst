@@ -7,6 +7,7 @@ import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
@@ -108,9 +109,15 @@ export default function Page(props: {
             <Card.Root key={it.key} borderColor="border.overlay" h="full">
               <Card.Body p="m">
                 <VStack alignItems="flex-start" gap="s">
-                  <Overline color="content.tertiary">
-                    {t(`ctx-${it.key}`)}
-                  </Overline>
+                  <HStack gap="xs" alignItems="center">
+                    <Overline color="content.tertiary">
+                      {t(`ctx-${it.key}`)}
+                    </Overline>
+                    <MeedInfoTip
+                      content={t(`ctx-${it.key}-info`)}
+                      ariaLabel={t(`ctx-${it.key}-info`)}
+                    />
+                  </HStack>
                   <TitleMedium
                     color="content.primary"
                     fontVariantNumeric="tabular-nums"

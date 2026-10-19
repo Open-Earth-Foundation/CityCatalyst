@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Card, HStack, Icon, SimpleGrid, Tabs, VStack } from "@chakra-ui/react";
+import { Card, HStack, Icon, Tabs, VStack } from "@chakra-ui/react";
 import { LuExternalLink, LuInfo, LuMapPinOff } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
-import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { Link } from "@chakra-ui/react";
@@ -13,7 +11,6 @@ import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { DemoShell } from "../../../_components/DemoShell";
 import {
   RiskCellTable,
-  indexTone,
   type RiskScenario,
 } from "../../../_components/RiskCellGrid";
 import { cityFromSlug } from "../../../_lib/useTrack";
@@ -21,10 +18,11 @@ import { useDemoT } from "../../../_lib/useDemoT";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTABRASIL_URL } from "../../../_lib/links";
 import {
-  RISK_CELLS,
-  SECTOR_LABEL,
+  ADAPTA_SECTORS,
   UNCOVERED_HAZARD_LABEL,
 } from "../../../_lib/riskCells";
+import { useLabels } from "../../../_lib/useLabels";
+import { MeedChipGroup } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedChipGroup";
 import { pick } from "../../../_lib/localized";
 
 const SCENARIOS: RiskScenario[] = ["today", "2030", "2050"];
@@ -37,16 +35,8 @@ export default function Page(props: {
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
   const [scenario, setScenario] = useState<RiskScenario>("today");
-
-  const top = RISK_CELLS.map((c) => ({ c, r: city.risk[c.key] }))
-    .filter(
-      (
-        x,
-      ): x is { c: (typeof RISK_CELLS)[number]; r: NonNullable<typeof x.r> } =>
-        Boolean(x.r),
-    )
-    .sort((a, b) => b.r.index - a.r.index)
-    .slice(0, 4);
+  const [sectors, setSectors] = useState<string[]>([]);
+  const labels = useLabels(lng, "adaptation");
 
   return (
     <DemoShell
@@ -60,32 +50,6 @@ export default function Page(props: {
       backLabel={t("back-to-home")}
       openPoints={[t("open-risk-hazard")]}
     >
-      <SimpleGrid columns={{ base: 2, md: 4 }} gap="m">
-        {top.map(({ c, r }) => (
-          <Card.Root key={c.key} borderColor="border.overlay" h="full">
-            <Card.Body p="m">
-              <VStack alignItems="flex-start" gap="s">
-                <Overline color="content.tertiary">
-                  {pick(c.label, lng)}
-                </Overline>
-                <TitleMedium
-                  color="content.primary"
-                  fontVariantNumeric="tabular-nums"
-                >
-                  {r.index.toFixed(2)}
-                </TitleMedium>
-                <MeedStatusTag tone={indexTone(r.index)}>
-                  {t(`risk-level-${indexTone(r.index)}`)}
-                </MeedStatusTag>
-                <Caption color="content.tertiary">
-                  {pick(SECTOR_LABEL[c.sector], lng)}
-                </Caption>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-        ))}
-      </SimpleGrid>
-
       <VStack alignItems="stretch" gap="m">
         <HStack
           justifyContent="space-between"
@@ -136,7 +100,22 @@ export default function Page(props: {
             </BodySmall>
           </HStack>
         )}
-        <RiskCellTable city={city} lng={lng} t={t} scenario={scenario} />
+        <MeedChipGroup
+          options={ADAPTA_SECTORS.map((key) => ({
+            value: key,
+            label: labels.sector(key),
+          }))}
+          selected={sectors}
+          onChange={setSectors}
+          ariaLabel={t("next-legal-filter")}
+        />
+        <RiskCellTable
+          city={city}
+          lng={lng}
+          t={t}
+          scenario={scenario}
+          sectors={sectors}
+        />
         <BodySmall color="content.tertiary">{t("risk-hazard-note")}</BodySmall>
       </VStack>
 

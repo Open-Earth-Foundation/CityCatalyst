@@ -5,7 +5,8 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
 import {
   MeedStatusTag,
@@ -145,9 +146,9 @@ export default function Page(props: {
           flexWrap="wrap"
         >
           <VStack alignItems="flex-start" gap="xs">
-            <TitleMedium color="content.primary">
+            <TitleLarge color="content.primary">
               {t("finance-table-title")}
-            </TitleMedium>
+            </TitleLarge>
             <BodyMedium color="content.secondary">
               {t("finance-table-description")}
             </BodyMedium>
@@ -192,9 +193,15 @@ export default function Page(props: {
                 </Table.Cell>
                 <Table.Cell>
                   <VStack alignItems="flex-start" gap="xs">
-                    <MeedStatusTag tone={GAP_TONE[f.gap]}>
-                      {pick(GAP_LABEL[f.gap], lng)}
-                    </MeedStatusTag>
+                    <HStack gap="xs" alignItems="center">
+                      <MeedStatusTag tone={GAP_TONE[f.gap]}>
+                        {pick(GAP_LABEL[f.gap], lng)}
+                      </MeedStatusTag>
+                      <MeedInfoTip
+                        content={pick(GAP_MEANING[f.gap], lng)}
+                        ariaLabel={pick(GAP_MEANING[f.gap], lng)}
+                      />
+                    </HStack>
                     {f.ifCreditNotIndicated && (
                       <Caption color="content.tertiary">
                         {t("drawer-funding-verify", {
@@ -222,24 +229,6 @@ export default function Page(props: {
           </Table.Body>
         </Table.Root>
       </Card.Root>
-
-      {/* What the labels mean */}
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-        {(Object.keys(GAP_LABEL) as FundingGap[]).map((gap) => (
-          <Card.Root key={gap} borderColor="border.overlay">
-            <Card.Body>
-              <VStack alignItems="flex-start" gap="s">
-                <MeedStatusTag tone={GAP_TONE[gap]}>
-                  {pick(GAP_LABEL[gap], lng)}
-                </MeedStatusTag>
-                <BodyMedium color="content.secondary">
-                  {pick(GAP_MEANING[gap], lng)}
-                </BodyMedium>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-        ))}
-      </SimpleGrid>
 
       {/* Pathways */}
       <VStack alignItems="stretch" gap="m">

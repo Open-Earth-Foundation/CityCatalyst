@@ -2,7 +2,6 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { LuSparkles } from "react-icons/lu";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { formatEmissions } from "@/util/helpers";
@@ -102,13 +101,12 @@ export function TrackHome({
             bg="base.light"
             color="content.link"
             _hover={{ bg: "background.neutral" }}
-            leftIcon={<LuSparkles size={16} />}
             disabled={!isReady}
             onClick={() =>
               router.push(trackHref(lng, city.slug, track, "preferences"))
             }
           >
-            {hasRanking ? tMeed("ranking-rerun") : tMeed("get-recommendations")}
+            {hasRanking ? tMeed("ranking-rerun") : t("cta-set-preferences")}
           </MeedButton>
         }
       />

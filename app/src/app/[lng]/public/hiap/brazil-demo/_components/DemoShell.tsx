@@ -33,6 +33,8 @@ export interface DemoShellProps {
   /** Output areas show a way back instead of a footer. */
   backLabel?: string;
   headerFacts?: string;
+  /** Where "back" and the breadcrumb lead; defaults to the track home. */
+  homeHref?: string;
   /**
    * Decisions still open for this screen (already translated). They render
    * in the corner notice rather than in the layout, so the screen reads as
@@ -61,11 +63,12 @@ export function DemoShell({
   forward,
   backLabel,
   headerFacts,
+  homeHref,
   openPoints,
   children,
 }: DemoShellProps) {
   const { t } = useDemoT(lng);
-  const home = trackHref(lng, city.slug, track);
+  const home = homeHref ?? trackHref(lng, city.slug, track);
   return (
     <Box
       h="full"

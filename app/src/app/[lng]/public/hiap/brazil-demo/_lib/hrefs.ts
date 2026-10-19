@@ -32,6 +32,12 @@ export const SCREEN_IDS = {
     policy: "BR-A9",
     context: "BR-A10",
   },
+  /** Next-iteration proposal screens, built beside the current ones for review. */
+  next: {
+    home: "BR-N1",
+    drawer: "BR-N6",
+    legal: "BR-N7",
+  },
   mitigation: {
     home: "BR-M1",
     // BR-M2 (results) merged into BR-M1.

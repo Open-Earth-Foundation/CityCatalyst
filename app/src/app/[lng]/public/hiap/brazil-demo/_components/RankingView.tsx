@@ -1,13 +1,11 @@
 "use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { TitleLarge } from "@/components/package/Texts/Title";
-import { Box, Card, VStack } from "@chakra-ui/react";
+import { Box, Collapsible, HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuChevronDown } from "react-icons/lu";
+import { LabelLarge } from "@/components/package/Texts/Label";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { MeedFunnelStrip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedFunnelStrip";
-import { MeedScoreLegend } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreComposition";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { DetailPanel } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/DetailPanel";
 import { FullRanking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/FullRanking";
 import { ResultsHeader } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
@@ -18,7 +16,7 @@ import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { useLabels } from "../_lib/useLabels";
 import { trackHref } from "../_lib/hrefs";
-import { ACTION_BY_ID, ADAPTATION_ACTIONS } from "../_lib/actions";
+import { ACTION_BY_ID } from "../_lib/actions";
 import { SECTOR_HEX } from "../_lib/riskCells";
 import { MITIGATION_SHIFTS } from "../_lib/mitigation";
 import { buildDemoReport } from "../_lib/report";
@@ -26,15 +24,13 @@ import { pick } from "../_lib/localized";
 import { NotRankedLane } from "./NotRankedLane";
 import { AdaptationDrawerSections } from "./AdaptationDrawerSections";
 import { RankingSettings } from "./RankingSettings";
-import { CoBenefitMatrix } from "./CoBenefitMatrix";
 import { ShiftInterventionList } from "./ShiftInterventionList";
-import { useContextAreas } from "./contextAreas";
 
 /**
  * Everything a ranking produces, on one screen: the census, the configuration
- * it ran with, the funnel, the top picks with the report control beside
+ * it ran with, the top picks with the report control beside
  * their checkboxes, the full table (with the same control) and the chart,
- * the actions outside the ranking, and the context cards — plus the drawer.
+ * and, collapsed, the actions outside the ranking — plus the drawer.
  */
 export function RankingView({
   lng,
@@ -63,8 +59,6 @@ export function RankingView({
   }, []);
 
   const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);
-  const { areas, facts, backing, visualFor, indicatorFor, ctaFor, hrefFor } =
-    useContextAreas({ lng, data, tResults });
 
   const generateReport = useCallback(async () => {
     if (selectedIds.length === 0) return;
@@ -130,70 +124,6 @@ export function RankingView({
       />
     ) : undefined;
 
-  const funnel = useMemo(() => {
-    if (!adaptation) return null;
-    const bank = ADAPTATION_ACTIONS.length;
-    const covered =
-      bank -
-      adaptation.notRanked.filter((n) => n.reason === "outside_coverage")
-        .length;
-    const direct =
-      covered -
-      adaptation.notRanked.filter(
-        (n) => n.reason === "complementary" || n.reason === "no_impact_here",
-      ).length;
-    const legal =
-      direct -
-      adaptation.notRanked.filter((n) => n.reason === "legally_blocked").length;
-    const excluded = adaptation.notRanked.filter(
-      (n) => n.reason === "excluded_by_city",
-    ).length;
-    return [
-      {
-        label: t("funnel-bank"),
-        value: bank,
-        tone: "neutral" as const,
-        sublabel: t("funnel-bank-sub"),
-      },
-      {
-        label: t("funnel-covered"),
-        value: covered,
-        tone: "info" as const,
-        sublabel: t("funnel-covered-sub"),
-      },
-      {
-        label: t("funnel-direct"),
-        value: direct,
-        tone: "info" as const,
-        sublabel: t("funnel-direct-sub"),
-      },
-      {
-        label: t("funnel-legal"),
-        value: legal,
-        tone: "warning" as const,
-        sublabel: t("funnel-legal-sub"),
-      },
-      // The city's own exclusions only appear as a stage when there are any,
-      // so the last two numbers never differ without a stage explaining it.
-      ...(excluded > 0
-        ? [
-            {
-              label: t("funnel-excluded"),
-              value: legal - excluded,
-              tone: "caution" as const,
-              sublabel: t("funnel-excluded-sub"),
-            },
-          ]
-        : []),
-      {
-        label: t("funnel-ranked"),
-        value: adaptation.ranked.length,
-        tone: "positive" as const,
-        sublabel: t("funnel-ranked-sub"),
-      },
-    ];
-  }, [adaptation, t]);
-
   const reportProps = {
     onGenerate: generateReport,
     isGenerating,
@@ -225,23 +155,6 @@ export function RankingView({
           tResults={tResults}
         />
 
-        {funnel && (
-          <Card.Root borderColor="border.overlay">
-            <Card.Body p="l">
-              <VStack alignItems="stretch" gap="m">
-                <TitleLarge color="content.primary">
-                  {t("funnel-title")}
-                </TitleLarge>
-                <MeedFunnelStrip
-                  steps={funnel}
-                  size="lg"
-                  ariaLabel={t("funnel-aria")}
-                />
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-        )}
-
         <VStack alignItems="stretch" gap="l">
           <TopPicks
             actions={topPicks}
@@ -260,8 +173,6 @@ export function RankingView({
             }
             {...reportProps}
           />
-          <MeedScoreLegend weights={weights} t={tResults} />
-          <CoBenefitMatrix actions={topPicks} index={index} lng={lng} t={t} />
         </VStack>
 
         {track === "mitigation" && (
@@ -301,25 +212,44 @@ export function RankingView({
           )}
         </VStack>
 
-        {adaptation && (
-          <NotRankedLane
-            items={adaptation.notRanked}
-            lng={lng}
-            t={t}
-            onOpen={(a) => openById(a.id)}
-          />
+        {adaptation && adaptation.notRanked.length > 0 && (
+          <Collapsible.Root>
+            <Collapsible.Trigger asChild>
+              <Box
+                as="button"
+                w="full"
+                textAlign="start"
+                px="m"
+                py="s"
+                borderRadius="rounded"
+                _hover={{ bg: "background.neutral" }}
+              >
+                <HStack justifyContent="space-between" gap="s">
+                  <LabelLarge color="content.secondary">
+                    {t("not-ranked-footnote-title", {
+                      count: adaptation.notRanked.length,
+                    })}
+                  </LabelLarge>
+                  <Icon
+                    as={LuChevronDown}
+                    boxSize="16px"
+                    color="content.tertiary"
+                  />
+                </HStack>
+              </Box>
+            </Collapsible.Trigger>
+            <Collapsible.Content>
+              <Box pt="m">
+                <NotRankedLane
+                  items={adaptation.notRanked}
+                  lng={lng}
+                  t={t}
+                  onOpen={(a) => openById(a.id)}
+                />
+              </Box>
+            </Collapsible.Content>
+          </Collapsible.Root>
         )}
-
-        <ContextCardGrid
-          facts={facts}
-          backing={backing}
-          t={tResults}
-          hrefFor={hrefFor}
-          areas={areas}
-          visualFor={visualFor}
-          indicatorFor={indicatorFor}
-          ctaFor={ctaFor}
-        />
       </VStack>
 
       {open && (
@@ -330,8 +260,6 @@ export function RankingView({
           t={tResults}
           lng={lng}
           onClose={() => setOpen(null)}
-          rank={open.rank}
-          total={ranked.length}
           isSelected={selectedIds.includes(open.action_id)}
           onToggleSelect={toggleSelect}
           size="lg"

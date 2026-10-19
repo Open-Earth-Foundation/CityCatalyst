@@ -876,6 +876,17 @@ identity changes return `409`, and unavailable storage returns
 presigned URL. See the authoritative handoff contract in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#pdf-conversion-and-native-markdown-handoff).
 
+Upload registration accepts `source_role: "reference" | "climate_action_plan"`
+(default `reference`). The role is immutable and survives CC OCR delivery,
+retry and reload. Apply CA migration `20261008_120000` before deploying this
+contract (after the `20261005_120000` merge revision). Existing uploads default
+to `reference`; note duplication preserves roles and remaps bundle membership.
+The role does not change document processing: plan PDFs follow the
+same CC OCR and source-analysis pipeline as initial note PDFs. Run list/detail
+responses expose upload roles, and completed bundle progress publishes exact
+`included_upload_ids` for consistent plan readiness in both views. HIAP loading
+and refresh behavior are unchanged.
+
 CC uses the intentionally separate service-to-service route
 `GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
 `X-CC-Service-Key` to recover the run and user scope for an opaque upload ID.
@@ -952,8 +963,10 @@ Operationally:
   unaffected prose are kept; a contradicted existing fact is flagged with a new
   marker instead of being overwritten. Each redraft appends a revision, resolves
   only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
-  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
-  unanswered gap or mismatches its markers is rejected and logged. The last
+  caveats, and reopens resolved gaps it contradicts. A gap the redraft drops
+  without an answer is added back as a marker at the end of the chapter and
+  stays open; a redraft that mismatches its markers is rejected and logged.
+  The last
   confirmed revision is preserved, so an affected Ready chapter returns to
   review. The drafter also receives the chapter's `resolved_information` and
   `existing_open_gaps` so earlier answers stay applied and gap keys stay

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from app.models.cnb.concept_note_application_context import (
@@ -12,6 +12,16 @@ from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
 )
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+# ``funding_opportunities.source_run_id`` prefixes for programmes users added.
+MANUAL_SOURCE_PREFIX = "cnb-manual:"
+
+
+class FundingAddedFrom(BaseModel):
+    """How a user-added programme reached the catalogue."""
+
+    kind: Literal["manual"]
 
 
 class FundingCatalogueOpportunity(ApplicationContextOpportunity):
@@ -31,6 +41,7 @@ class FundingCatalogueOpportunity(ApplicationContextOpportunity):
     hazards: list[str] = Field(default_factory=list)
     interventions: list[str] = Field(default_factory=list)
     known_gaps: list[str] = Field(default_factory=list)
+    added_from: FundingAddedFrom | None = None
     template: ApplicationContextTemplate | None = None
 
 

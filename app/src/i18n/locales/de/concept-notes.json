@@ -799,5 +799,15 @@
   "chat-stream-stalled": "Clima hat aufgehört zu reagieren. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   "chat-overview-error": "Clima konnte die Entwurfszusammenfassung nicht veröffentlichen.",
   "chat-retry": "Wiederholen",
-  "drafting-card-summary-failed": "Die Zusammenfassung konnte nicht veröffentlicht werden. Versuchen Sie es erneut aus dem Chat."
+  "drafting-card-summary-failed": "Die Zusammenfassung konnte nicht veröffentlicht werden. Versuchen Sie es erneut aus dem Chat.",
+  "upload-climate-action-plan": "Plan hochladen",
+  "context-city-and-plan-sources": "Stadt Daten und Plan Dokumente",
+  "plan-upload-limits": "PDF oder Markdown · bis zu {{maxMb}} MiB pro Datei · {{max}} Dateien pro Notiz, einschließlich anderer Quellen.",
+  "plan-upload-provenance": "Plan-Dokument zu dieser Notiz hochgeladen.",
+  "plan-upload-failed-help": "Der Plan konnte für diese Notiz nicht vorbereitet werden. Versuchen Sie es erneut, falls verfügable, oder laden Sie ein korrigiertes Dokument hoch.",
+  "plan-upload-failed-limit-help": "Der Plan konnte nicht für diese Notiz vorbereitet werden. Versuchen Sie es erneut, wenn verfügbar. Die Notiz hat bereits {{max}} Dateien, daher kann kein korrigiertes Dokument hinzugefügt werden.",
+  "plan-included-with-failures": "Inklusive · einige Dateien fehlgeschlagen",
+  "plan-upload-partial-help": "Die fertigen Plandokumente sind in diesem Durchlauf enthalten. Einige andere Plan-Dateien sind fehlgeschlagen; überprüfen Sie diese unten und versuchen Sie es erneut, wenn verfügbar, oder laden Sie korrigierte Dokumente hoch.",
+  "plan-upload-processing-help": "Der Plan wird eingefügt, sobald die Dokumentenverarbeitung und die Vorbereitung des Ausführungskontexts abgeschlossen sind.",
+  "plan-upload-in-progress": "Warten Sie darauf, dass der aktuelle Upload abgeschlossen ist."
 }

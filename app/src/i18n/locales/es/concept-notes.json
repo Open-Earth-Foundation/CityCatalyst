@@ -799,5 +799,15 @@
   "chat-stream-stalled": "Clima dejó de responder. Verifica tu conexión, luego intenta de nuevo.",
   "chat-overview-error": "Clima no pudo publicar el resumen del borrador.",
   "chat-retry": "Reintentar",
-  "drafting-card-summary-failed": "No se pudo publicar el resumen. Intenta de nuevo desde el chat."
+  "drafting-card-summary-failed": "No se pudo publicar el resumen. Intenta de nuevo desde el chat.",
+  "upload-climate-action-plan": "Subir plan",
+  "context-city-and-plan-sources": "Datos de la ciudad y documentos del plan",
+  "plan-upload-limits": "PDF o Markdown · hasta {{maxMb}} MiB por archivo · {{max}} archivos por nota, incluyendo otras fuentes.",
+  "plan-upload-provenance": "Documento del plan subido a esta nota.",
+  "plan-upload-failed-help": "No se pudo preparar el plan para esta nota. Reintente si está disponible, o cargue un documento corregido.",
+  "plan-upload-failed-limit-help": "No se pudo preparar el plan para esta nota. Inténtelo de nuevo si está disponible. La nota ya tiene {{max}} archivos, por lo que no se puede agregar un documento corregido.",
+  "plan-included-with-failures": "Incluido · algunos archivos fallaron",
+  "plan-upload-partial-help": "Los documentos del plan listos están incluidos en esta ejecución. Algunos otros archivos del plan fallaron; revíselos a continuación y vuelva a intentarlo si está disponible, o cargue documentos corregidos.",
+  "plan-upload-processing-help": "El plan se incluye una vez que finalizan el procesamiento del documento y la preparación del contexto de ejecución.",
+  "plan-upload-in-progress": "Espera a que termine la carga actual."
 }

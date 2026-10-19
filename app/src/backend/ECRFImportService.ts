@@ -1,15 +1,17 @@
 import { db } from "@/models";
 import { Op } from "sequelize";
 import {
-  resolveGpcRefNo,
+  resolveGpcRefFromLabels,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
 import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
+import type { ImportRowIssue } from "@/util/types";
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -38,6 +40,12 @@ export interface ECRFRowData {
   emissionFactorTotalCO2e?: number;
   year?: number;
   rowIndex: number;
+  /** 1-based row number in the uploaded file, when known. */
+  sourceRowNumber?: number;
+  /** Sector / subsector text for rows whose GPC reference could not be resolved. */
+  sourceLabel?: string;
+  /** Why the row is rejected; set together with `errors`. */
+  issue?: ImportRowIssue;
   errors?: string[];
   warnings?: string[];
 }
@@ -48,8 +56,25 @@ export interface ECRFImportResult {
   warnings: string[];
   rowCount: number;
   validRowCount: number;
+  /**
+   * Rows kept in the parse but dropped at import: no signed CO2, CH4, N2O,
+   * or total CO2e, and no notation key. Zero counts as empty.
+   */
+  rowsSkippedEmptyEmissions: number;
   /** First non-null year from file when a year column is mapped (inventory year). */
   inferredYearFromFile?: number;
+}
+
+/** Same rule InventoryImportService uses when it skips a row at commit. */
+export function countRowsSkippedEmptyEmissions(rows: ECRFRowData[]): number {
+  return rows.filter(
+    (row) =>
+      !hasSignedNumericValue(row.co2) &&
+      !hasSignedNumericValue(row.ch4) &&
+      !hasSignedNumericValue(row.n2o) &&
+      !hasSignedNumericValue(row.totalCO2e) &&
+      !row.notationKey,
+  ).length;
 }
 
 /**
@@ -78,6 +103,7 @@ export default class ECRFImportService {
         warnings: [],
         rowCount: 0,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
 
@@ -86,6 +112,10 @@ export default class ECRFImportService {
     const hasGpcRefNoColumn = detectedColumns.gpcRefNo !== undefined;
     const hasSectorColumn = detectedColumns.sector !== undefined;
     const hasSubsectorColumn = detectedColumns.subsector !== undefined;
+    const scopeHeader =
+      detectedColumns.scope !== undefined
+        ? headers[detectedColumns.scope]
+        : this.findHeader(headers, ["scope"]);
 
     if (!hasGpcRefNoColumn && (!hasSectorColumn || !hasSubsectorColumn)) {
       errors.push(
@@ -97,12 +127,14 @@ export default class ECRFImportService {
         warnings,
         rowCount: sheet.rows.length,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
 
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
+      const sourceRowNumber = sheet.rowNumbers?.[i];
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
 
@@ -112,86 +144,67 @@ export default class ECRFImportService {
       if (gpcRefNo === "") gpcRefNo = undefined;
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
-        let rawSector = hasSectorColumn
+        const rawSector = hasSectorColumn
           ? row[headers[detectedColumns.sector!]]?.toString().trim()
           : "";
-        let rawSubsector = hasSubsectorColumn
+        const rawSubsector = hasSubsectorColumn
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
-        // Preserve the left parts of " > " splits for fallback resolution
-        // e.g. "On-road > Other/uncategorized" → right = "Other/uncategorized", leftFallback = "On-road"
-        let sectorLeftFallback: string | undefined;
-        let subsectorLeftFallback: string | undefined;
-        if (rawSector && rawSector.includes(" > ")) {
-          const [left, right] = rawSector
-            .split(" > ")
-            .map((s: string) => s.trim());
-          if (left && right) {
-            sectorLeftFallback = left;
-            rawSector = left;
-            if (!rawSubsector) rawSubsector = right;
-          }
-        }
-        if (rawSubsector && rawSubsector.includes(" > ")) {
-          const [left, right] = rawSubsector
-            .split(" > ")
-            .map((s: string) => s.trim());
-          if (left && right) {
-            subsectorLeftFallback = left;
-            if (!rawSector) rawSector = left;
-            rawSubsector = right;
-          }
-        }
-        if (rawSector && rawSubsector) {
-          const activityHeader = this.findHeader(headers, [
-            "activity type",
-            "activity_type",
-            "fuel type",
-            "fuel_type",
-          ]);
-          const activityType = activityHeader
-            ? row[activityHeader]?.toString().trim()
-            : undefined;
-          let resolved = resolveGpcRefNo(rawSector, rawSubsector, activityType);
-          // Fallback: if the right side of " > " didn't resolve, try the left side
-          // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
-          if (!resolved && subsectorLeftFallback) {
-            resolved = resolveGpcRefNo(
-              rawSector,
-              subsectorLeftFallback,
-              activityType,
-            );
-          }
-          if (!resolved && sectorLeftFallback) {
-            resolved = resolveGpcRefNo(
-              sectorLeftFallback,
-              rawSubsector,
-              activityType,
-            );
-          }
-          if (resolved) {
-            gpcRefNo = resolved;
-          } else {
-            rowErrors.push(
-              `Could not resolve GPC ref from sector "${rawSector}" and subsector "${rawSubsector}"`,
-            );
-            rows.push({
-              gpcRefNo: "",
-              sectorId: "",
-              subsectorId: "",
-              subcategoryId: null,
-              scopeId: "",
-              rowIndex: i,
-              errors: rowErrors,
-              warnings: rowWarnings,
-            });
-            continue;
-          }
+        const activityHeader = this.findHeader(headers, [
+          "fuel type or activity",
+          "activity type",
+          "activity_type",
+          "fuel type",
+          "fuel_type",
+        ]);
+        const activityType = activityHeader
+          ? row[activityHeader]?.toString().trim()
+          : undefined;
+        const scopeLabel = scopeHeader
+          ? row[scopeHeader]?.toString().trim()
+          : undefined;
+        const resolved = resolveGpcRefFromLabels({
+          sector: rawSector,
+          subsector: rawSubsector,
+          fuelTypeOrActivity: activityType,
+          scopeLabel,
+        });
+        if (resolved) {
+          gpcRefNo = resolved;
+        } else if (rawSector || rawSubsector) {
+          rowErrors.push(
+            `Could not resolve GPC ref from sector "${rawSector}" and subsector "${rawSubsector}"`,
+          );
+          rows.push({
+            gpcRefNo: "",
+            sectorId: "",
+            subsectorId: "",
+            subcategoryId: null,
+            scopeId: "",
+            rowIndex: i,
+            sourceRowNumber,
+            sourceLabel: `${rawSector} / ${rawSubsector}`,
+            issue: "gpc-reference-unresolved",
+            errors: rowErrors,
+            warnings: rowWarnings,
+          });
+          continue;
         }
       }
 
       if (!gpcRefNo) {
-        rowWarnings.push("No GPC reference number found");
+        // Keep the row (as rejected) so the mapping step can show why it is skipped.
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          issue: "missing-gpc-reference",
+          errors: ["No GPC reference number found"],
+        });
         continue;
       }
 
@@ -208,6 +221,8 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceRowNumber,
+          issue: "gpc-reference-unknown",
           errors: rowErrors,
           warnings: rowWarnings,
         });
@@ -351,6 +366,8 @@ export default class ECRFImportService {
 
       const methodologyHeader = this.findHeader(headers, [
         "activity data - description and methodology",
+        "activity data - description",
+        "activity data description",
         "methodology",
         "input methodology",
         "input_methodology",
@@ -527,6 +544,7 @@ export default class ECRFImportService {
         emissionFactorN2O,
         emissionFactorTotalCO2e,
         rowIndex: i,
+        sourceRowNumber,
         errors: rowErrors.length > 0 ? rowErrors : undefined,
         warnings: rowWarnings.length > 0 ? rowWarnings : undefined,
       });
@@ -537,7 +555,9 @@ export default class ECRFImportService {
       errors.push("No valid rows found in file");
     }
 
-    const inferredYearFromFile = rows.find((r) => r.year != null)?.year;
+    const inferredYearFromFile =
+      rows.find((r) => r.year != null)?.year ??
+      inferInventoryYearFromSheets(parsedData.sheets);
 
     return {
       rows,
@@ -545,6 +565,7 @@ export default class ECRFImportService {
       warnings,
       rowCount: rows.length,
       validRowCount: validRows.length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile,
     };
   }
@@ -670,19 +691,15 @@ export default class ECRFImportService {
       );
       const activityHint =
         row.activityType?.trim() || row.category?.trim() || undefined;
-      let gpcRefNo =
+      const gpcRefNo =
         row.gpcRefNo?.trim() ||
-        resolveGpcRefNo(sector, subsector, activityHint) ||
+        resolveGpcRefFromLabels({
+          sector: row.sector,
+          subsector: row.subsector,
+          fuelTypeOrActivity: activityHint,
+          scopeLabel: row.scope,
+        }) ||
         null;
-      if (!gpcRefNo) {
-        const rawSub = row.subsector?.trim() ?? "";
-        if (rawSub.includes(" > ")) {
-          const leftPart = rawSub.split(" > ")[0].trim();
-          if (leftPart && leftPart !== subsector) {
-            gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
-          }
-        }
-      }
 
       if (!gpcRefNo) {
         errors.push(
@@ -695,6 +712,9 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceLabel:
+            [sector, subsector].filter(Boolean).join(" / ") || undefined,
+          issue: "gpc-reference-unresolved",
           errors: [
             `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
           ],
@@ -714,6 +734,7 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          issue: "gpc-reference-unknown",
           errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
         });
         continue;
@@ -750,10 +771,20 @@ export default class ECRFImportService {
             ? row.activityAmount
             : undefined,
         activityUnit: row.activityUnit?.trim() || undefined,
+        // Fuel/activity wins over category. Category used to be the sub-sector name.
         activityType:
-          row.category?.trim() || row.activityType?.trim() || undefined,
+          row.activityType?.trim() || row.category?.trim() || undefined,
         activityDataSource: row.activityDataSource?.trim() || undefined,
         activityDataQuality: row.activityDataQuality?.trim() || undefined,
+        notationKey: row.notationKey?.trim() || undefined,
+        emissionFactorUnit: row.emissionFactorUnit?.trim() || undefined,
+        emissionFactorSource: row.emissionFactorSource?.trim() || undefined,
+        emissionFactorDescription:
+          row.emissionFactorDescription?.trim() || undefined,
+        emissionFactorCO2: num(row.emissionFactorCO2),
+        emissionFactorCH4: num(row.emissionFactorCH4),
+        emissionFactorN2O: num(row.emissionFactorN2O),
+        emissionFactorTotalCO2e: num(row.emissionFactorTotalCO2e),
       });
     }
 
@@ -763,6 +794,7 @@ export default class ECRFImportService {
       warnings,
       rowCount: extractedRows.length,
       validRowCount: rows.filter((r) => !r.errors?.length).length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile: inferredYear,
     };
   }

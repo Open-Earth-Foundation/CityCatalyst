@@ -7,6 +7,12 @@ import {
   inventoryCapabilityOutputSchema,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
+  HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY,
+  HIAP_MEED_RANKING_CONTEXT_CAPABILITY,
+  hiapMeedContextInputSchema,
+  hiapMeedContextOutputSchema,
+} from "@/backend/agentic/hiap-meed/registry";
+import {
   HIAP_INVENTORY_CONTEXT_CAPABILITY,
   hiapInventoryContextInputSchema,
   hiapInventoryContextOutputSchema,
@@ -19,6 +25,8 @@ export const NATIVE_INPUT_CAPABILITY_IDS = [
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
   INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
   HIAP_INVENTORY_CONTEXT_CAPABILITY,
+  HIAP_MEED_RANKING_CONTEXT_CAPABILITY,
+  HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY,
 ] as const;
 
 export type NativeInputCapabilityId =
@@ -31,7 +39,7 @@ export type NativeInputCapabilityKey = {
 };
 
 export type NativeInputCapabilityDefinition = {
-  module: "ghgi" | "hiap";
+  module: "ghgi" | "hiap" | "hiap_meed";
   operationType: "query";
   requiredResourceScope: readonly ("user" | "city" | "inventory")[];
   capabilityIds: readonly NativeInputCapabilityId[];
@@ -101,6 +109,26 @@ const HIAP_INVENTORY_DEFINITION: NativeInputCapabilityDefinition = {
   },
 };
 
+const HIAP_MEED_RANKING_DEFINITION: NativeInputCapabilityDefinition = {
+  module: "hiap_meed",
+  operationType: "query",
+  requiredResourceScope: ["user", "city", "inventory"],
+  capabilityIds: [HIAP_MEED_RANKING_CONTEXT_CAPABILITY],
+  transport: {
+    type: "internal_ca_route",
+    route: NATIVE_INPUT_CAPABILITY_READ_ROUTE,
+  },
+  schemas: {
+    input: hiapMeedContextInputSchema,
+    output: hiapMeedContextOutputSchema,
+  },
+};
+
+const HIAP_MEED_OUTPUT_PLAN_DEFINITION: NativeInputCapabilityDefinition = {
+  ...HIAP_MEED_RANKING_DEFINITION,
+  capabilityIds: [HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY],
+};
+
 const nativeInputCapabilityRegistry: Record<
   string,
   NativeInputCapabilityDefinition
@@ -110,6 +138,9 @@ const nativeInputCapabilityRegistry: Record<
   "hiap|hiap_selection|hiap_ranked_selection": HIAP_INVENTORY_DEFINITION,
   "hiap|hiap_selection|hiap_unranked_selection": HIAP_INVENTORY_DEFINITION,
   "hiap|hiap_action_plan|action_plan": HIAP_INVENTORY_DEFINITION,
+  "hiap_meed|hiap_meed_ranking|hiap_meed_ranking": HIAP_MEED_RANKING_DEFINITION,
+  "hiap_meed|hiap_meed_output_plan|hiap_meed_output_plan":
+    HIAP_MEED_OUTPUT_PLAN_DEFINITION,
 };
 
 function capabilityKey(key: NativeInputCapabilityKey): string {

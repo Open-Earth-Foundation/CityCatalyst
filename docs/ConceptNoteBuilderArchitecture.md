@@ -58,8 +58,23 @@ building, and a small icon opens that inventory in GHGI. GHGI links open in a
 new tab. Inventory context refreshes automatically (see below), so the inventory
 card has no manual refresh control. The population card retains its explicit
 refresh when the stored population is missing or differs from CityCatalyst. The Climate
-Action Plan card has no module link because not every project enables HIAP. A
-missing application template opens funding selection. The climate risk
+Action Plan card offers a run-scoped PDF/Markdown upload independently of HIAP
+module access. Uploads use the same CC storage, OCR and Markdown handoff as the
+new-note dialog, with an immutable `source_role: "climate_action_plan"`. Other
+uploads default to `reference`. The plan card shows processing/failure/retry and
+persisted filenames; it reports **Included in run** only when the completed
+bundle's `included_upload_ids` contains those plan uploads. Each note's list
+card uses the same resolver and persisted upload metadata. The dashboard refreshes
+on entry and polls while plan processing is unfinished; bundle completion also
+invalidates the city list. If ready plans are included but other plan files failed,
+both views show **Included · some files failed**, retaining failed-file details and
+retry controls where supported. Duplicating a note preserves source roles and
+remaps included upload IDs to the copy. The city tile still
+reports city-level HIAP availability; HIAP loading and freshness are unchanged.
+Both entrypoints share PDF/Markdown validation, the 20 MiB limit and the 10-file
+per-note cap. The plan and ordinary source actions share a role-aware file picker
+and upload handler; both wait for the current file's validation and upload to finish.
+A missing application template opens funding selection. The climate risk
 assessment card and tile are hidden until CCRA data feeds concept notes.
 
 In scope:
@@ -1100,9 +1115,13 @@ their source records:
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-dedicated chat thread. It deliberately has no database foreign key so legacy
-thread bindings remain compatible. Rename updates the owned thread title and
-delete removes the dedicated thread. CityCatalyst validates thread ownership
+run's active chat thread. It deliberately has no database foreign key so legacy
+thread bindings remain compatible. The reverse link is enforced: every chat
+opened for a run carries `threads.concept_note_run_id` (cascading on run
+deletion), which is what the chat list, chat switching, and cleanup rely on. A
+run keeps every chat it has opened; only one is active at a time and message
+turns are validated against it. Rename updates the active thread title and
+delete removes every attached thread. CityCatalyst validates thread ownership
 before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique
@@ -1633,10 +1652,15 @@ How it works:
   contradicts is flagged with a marker rather than overwritten. Only gaps with a
   successful cited answer from the new source are resolved, as
   `evidence_update` by `system`; previously resolved gaps that the evidence
-  contradicts reopen, and deferred caveats are left untouched. A redraft that
-  drops an unanswered gap, or whose markers disagree with its gap list, is
-  rejected and logged, and the remaining chapters still update. A confirmed
+  contradicts reopen, and deferred caveats are left untouched. When a redraft
+  drops an unanswered gap, the redraft is kept and the gap's marker is added
+  back at the end of the chapter, so the gap stays open. A redraft whose
+  markers disagree with its gap list is rejected and logged, and the
+  remaining chapters still update. A confirmed
   revision is never replaced, so an affected Ready chapter returns to review.
+  A note with no drafted chapter has nothing to update and finishes without a
+  model call; drafting reads the new source when it starts. A note without a
+  template is redrafted from its chapters' own titles and descriptions.
 - The impact review is a durable job in `context_summary.source_revalidation`,
   queued atomically with the bundle commit. A worker leases it; failures stay
   pending and the context-bundle reconciler retries them up to three times,
@@ -2068,9 +2092,12 @@ Rules:
   and numeric `error_details` alongside `error_code`. The workspace derives
   chat and draft notices from one shared upload/context status, including
   pending uploads that have not yet reached the bundle. Pending uploads, a failed
-  current upload, and bundle preparation/failure block chat. Older failed uploads
-  are superseded by a newer successful upload and excluded from readiness counts.
-  Ready document context unlocks chat automatically, including after reload.
+  current upload, and bundle preparation/failure block chat submission. With an
+  active thread, the composer remains editable while submission is blocked.
+  Send and Enter wait for readiness; the draft is preserved and never auto-sent.
+  Older failed uploads are superseded by a newer successful upload and excluded
+  from readiness counts. Ready document context unlocks submission automatically,
+  including after reload.
 - `POST /v1/messages` checks the request/thread's owned CNB run before saving a
   user turn or starting SSE. Its persisted bundle must be ready and contain the
   current ready uploads with matching IDs/digests, with no pending uploads or

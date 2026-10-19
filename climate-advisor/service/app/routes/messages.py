@@ -13,6 +13,7 @@ from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.models.requests import MessageCreateRequest
 from app.services.cnb.chat_readiness import require_chat_context_ready
+from app.services.cnb.chat_retry import is_retry_turn
 from app.services.cnb.draft_overview import (
     DRAFT_OVERVIEW_REQUEST,
     claim_draft_overview,
@@ -64,7 +65,8 @@ async def post_message(
     - Thread resolution/creation for the canonical subject
     - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
     - Hidden drafting-overview claim (after auth, once per drafting build)
-    - User message persistence
+    - User message persistence (a `concept_note_turn: retry` turn skips it when
+      the thread's latest message is already this question)
     - AI response streaming via SSE
 
     Args:
@@ -177,11 +179,20 @@ async def post_message(
                             authenticated_payload.options
                         ):
                             message_service = MessageService(db_session)
-                            await message_service.create_user_message(
+                            # A retry after a failed reply repeats a question
+                            # that was saved before streaming began.
+                            already_saved = is_retry_turn(
+                                authenticated_payload.options
+                            ) and await message_service.latest_message_is_user_text(
                                 thread_id=resolved_thread_id,
-                                user_id=identity.user_id,
                                 text=authenticated_payload.content,
                             )
+                            if not already_saved:
+                                await message_service.create_user_message(
+                                    thread_id=resolved_thread_id,
+                                    user_id=identity.user_id,
+                                    text=authenticated_payload.content,
+                                )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
 

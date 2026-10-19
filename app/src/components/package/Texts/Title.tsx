@@ -4,7 +4,7 @@ import { Heading, HeadingProps } from "@chakra-ui/react";
 
 export const TitleLarge = ({ children, color = "content.secondary", ...props }: HeadingProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="title.lg"
     lineHeight="28px"
@@ -18,7 +18,7 @@ export const TitleLarge = ({ children, color = "content.secondary", ...props }: 
 
 export const TitleMedium = ({ children, color = "content.secondary", ...props }: HeadingProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="title.md"
     lineHeight="24px"
@@ -32,7 +32,7 @@ export const TitleMedium = ({ children, color = "content.secondary", ...props }:
 
 export const TitleSmall = ({ children, color = "content.secondary", ...props }: HeadingProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="title.sm"
     lineHeight="20px"

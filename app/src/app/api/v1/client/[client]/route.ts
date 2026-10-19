@@ -5,6 +5,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientI18N } from "@/models/OAuthClientI18N";
 import { Client } from "@/util/types";
+import UserService from "@/backend/UserService";
 
 /**
  * @swagger
@@ -137,12 +138,9 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
 
-  if (!session) {
-    throw new createHttpError.Unauthorized("Must be logged in!");
-  }
+  UserService.ensureIsAdmin(session);
 
   const { client: clientId } = params;
-
   const client = await OAuthClient.findByPk(clientId);
 
   if (!client) {

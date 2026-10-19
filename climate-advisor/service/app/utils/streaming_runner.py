@@ -19,6 +19,7 @@ from agents.retry import ModelRetrySettings, RetryPolicyContext
 
 from app.config import get_settings
 from app.models.requests import MessageCreateRequest
+from app.utils.max_turns_handler import build_max_turns_handler
 from app.utils.streaming_events import process_chunk
 from app.utils.streaming_prompt import (
     clear_agent_instructions,
@@ -66,6 +67,8 @@ async def stream_agent_events(
         result = Runner.run_streamed(
             agent,
             runner_input,
+            max_turns=get_settings().llm.chat.max_agent_turns,
+            error_handlers={"max_turns": build_max_turns_handler(handler)},
             run_config=build_stream_run_config(handler, payload),
         )
     except Exception as runner_exc:

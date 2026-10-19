@@ -1652,10 +1652,15 @@ How it works:
   contradicts is flagged with a marker rather than overwritten. Only gaps with a
   successful cited answer from the new source are resolved, as
   `evidence_update` by `system`; previously resolved gaps that the evidence
-  contradicts reopen, and deferred caveats are left untouched. A redraft that
-  drops an unanswered gap, or whose markers disagree with its gap list, is
-  rejected and logged, and the remaining chapters still update. A confirmed
+  contradicts reopen, and deferred caveats are left untouched. When a redraft
+  drops an unanswered gap, the redraft is kept and the gap's marker is added
+  back at the end of the chapter, so the gap stays open. A redraft whose
+  markers disagree with its gap list is rejected and logged, and the
+  remaining chapters still update. A confirmed
   revision is never replaced, so an affected Ready chapter returns to review.
+  A note with no drafted chapter has nothing to update and finishes without a
+  model call; drafting reads the new source when it starts. A note without a
+  template is redrafted from its chapters' own titles and descriptions.
 - The impact review is a durable job in `context_summary.source_revalidation`,
   queued atomically with the bundle commit. A worker leases it; failures stay
   pending and the context-bundle reconciler retries them up to three times,

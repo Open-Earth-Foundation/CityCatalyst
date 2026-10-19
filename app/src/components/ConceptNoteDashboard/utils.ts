@@ -381,19 +381,30 @@ export function getConceptNoteDraftProgress(
   };
 }
 
+/**
+ * Progress of a note on the dashboard, from its workflow step, then its sources.
+ * A failed run keeps the progress it reached; its status badge shows the failure.
+ */
 export function getRunProgressPercent(
   status: string,
   workflowStep: string,
   summary: Record<string, unknown>,
+  fundingSelected: boolean,
 ): number {
   const normalizedStatus = status.trim().toLowerCase();
   if (["completed", "exported", "succeeded"].includes(normalizedStatus)) {
     return 100;
   }
+  if (workflowStep === "editing_document") {
+    return 80;
+  }
+  if (workflowStep === "drafting_document") {
+    return 60;
+  }
 
   const bundle = getConceptNoteBundleProgress(summary);
   if (workflowStep === "interviewing" || bundle.status === "ready") {
-    return 40;
+    return fundingSelected ? 45 : 30;
   }
   if (bundle.status === "building") {
     return 28;

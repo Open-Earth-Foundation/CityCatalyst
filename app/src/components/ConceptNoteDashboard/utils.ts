@@ -374,7 +374,10 @@ export function getConceptNoteDraftProgress(
   };
 }
 
-/** Progress of a note on the dashboard, from its workflow step, then its sources. */
+/**
+ * Progress of a note on the dashboard, from its workflow step, then its sources.
+ * A failed run keeps the progress it reached; its status badge shows the failure.
+ */
 export function getRunProgressPercent(
   status: string,
   workflowStep: string,

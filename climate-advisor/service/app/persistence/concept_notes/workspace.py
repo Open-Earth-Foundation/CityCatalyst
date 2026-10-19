@@ -413,6 +413,10 @@ class ConceptNoteWorkspaceRepository:
             if dropped:
                 try:
                     generated = _restore_dropped_gaps(generated, dropped)
+                    # A question containing "]" yields a marker that no longer matches.
+                    _require_marker_parity(
+                        generated.body_markdown, generated.missing_information
+                    )
                 except ValidationError as exc:
                     raise WorkspaceConflictError(
                         "Revalidation dropped gaps that could not be restored"

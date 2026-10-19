@@ -831,7 +831,10 @@ const JNDrawer = ({
               >
                 <ProjectFilterSection
                   t={t}
-                  projectsData={projectsData}
+                  projectsData={projectsData.filter(
+                    (project) =>
+                      project.organizationId === resolvedOrganizationId,
+                  )}
                   lng={lng}
                   currentCityId={currentCityId}
                   organizationId={resolvedOrganizationId}

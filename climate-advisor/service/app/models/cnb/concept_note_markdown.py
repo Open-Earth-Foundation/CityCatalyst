@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ConceptNoteSourceFormat = Literal["pdf", "markdown"]
+ConceptNoteSourceRole = Literal["reference", "climate_action_plan"]
 STRUCTURED_DOCUMENT_SCHEMA_VERSION = "citycatalyst.structured-document.1"
 
 # Every upload stays attached to its run (there is no per-file delete), so failed
@@ -35,6 +36,7 @@ class ConceptNoteUploadCreateRequest(BaseModel):
     filename: str = Field(min_length=1, max_length=255)
     source_label: str | None = Field(default=None, max_length=255)
     source_format: ConceptNoteSourceFormat = "pdf"
+    source_role: ConceptNoteSourceRole = "reference"
 
     @model_validator(mode="after")
     def validate_source_format(self) -> ConceptNoteUploadCreateRequest:
@@ -112,6 +114,7 @@ class ConceptNoteUploadStatusResponse(ConceptNoteMarkdownResponse):
     filename: str
     source_label: str | None = None
     source_format: ConceptNoteSourceFormat
+    source_role: ConceptNoteSourceRole = "reference"
     page_count: int | None = None
     error_code: str | None = None
     received_at: datetime

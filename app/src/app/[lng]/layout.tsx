@@ -1,6 +1,7 @@
 import "../globals.css";
 import type { Metadata } from "next";
 import { Providers } from "../providers";
+import { openSans, poppins } from "../fonts";
 import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
 import { RuntimeEnvScript, env } from "@/lib/runtime-env";
@@ -44,13 +45,18 @@ export default function RootLayout(props: {
   }
 
   return (
-    <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
+    <html
+      lang={lng}
+      dir={dir(lng)}
+      suppressHydrationWarning
+      className={`${openSans.variable} ${poppins.variable}`}
+    >
       <head>
         <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
         <link rel="icon" type="image/png" href="/assets/icon.png" />
         <RuntimeEnvScript />
       </head>
-      <body>
+      <body className={openSans.className}>
         <Providers>
           <Toaster />
           <HighlightWidgets

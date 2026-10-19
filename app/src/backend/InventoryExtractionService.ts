@@ -110,6 +110,15 @@ export type ExtractedRow = {
   activityDataSource?: string | null;
   /** Data quality when present (e.g. high, medium, low). */
   activityDataQuality?: string | null;
+  /** Notation key when the row has no measured emissions (NE, NO, IE, NA). */
+  notationKey?: string | null;
+  emissionFactorUnit?: string | null;
+  emissionFactorSource?: string | null;
+  emissionFactorDescription?: string | null;
+  emissionFactorCO2?: number | null;
+  emissionFactorCH4?: number | null;
+  emissionFactorN2O?: number | null;
+  emissionFactorTotalCO2e?: number | null;
 };
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
@@ -783,7 +792,12 @@ function fillMissingGpcRefNo(rows: ExtractedRow[]): ExtractedRow[] {
     const category = row.category?.trim();
     const resolved =
       sector || subsector
-        ? resolveGpcRefNo(sector, subsector, category ?? undefined)
+        ? resolveGpcRefNo(
+            sector,
+            subsector,
+            category ?? undefined,
+            row.scope ?? undefined,
+          )
         : null;
 
     if (resolved) {

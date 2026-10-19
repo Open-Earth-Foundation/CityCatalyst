@@ -19,6 +19,12 @@ import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads
 import type { ConceptNoteRun } from "@/util/types";
 
 import { StatusBadge } from "./status-badge";
+import { getRunClimateActionPlanState } from "./climate-action-plan-status";
+import {
+  contextSourceStatusKey,
+  contextSourceTone,
+} from "./context-source-status";
+import { ContextStatusBadge } from "../ConceptNoteWorkspace/context-status-badge";
 import {
   getConceptNoteStatusPresentation,
   shouldLoadConceptNoteReviewStatus,
@@ -70,6 +76,7 @@ export function RunCard({
     skip: !loadReviewStatus,
   });
   const status = getConceptNoteStatusPresentation(run.status, draft);
+  const planState = getRunClimateActionPlanState(run);
 
   return (
     <motion.div
@@ -190,6 +197,17 @@ export function RunCard({
           </Text>
         )}
 
+        {planState && (
+          <HStack gap={2} flexWrap="wrap">
+            <Text fontSize="label.sm" color="content.tertiary">
+              {t("hiap-context")}
+            </Text>
+            <ContextStatusBadge
+              label={t(contextSourceStatusKey(planState))}
+              tone={contextSourceTone(planState)}
+            />
+          </HStack>
+        )}
         <HStack mt="auto" gap={2} flexWrap="wrap">
           {incomplete ? (
             <Button size="sm" onClick={onRetryUpload}>

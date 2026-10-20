@@ -5,6 +5,7 @@ import {
   afterEach,
   beforeAll,
   beforeEach,
+  describe,
   expect,
   it,
   jest,
@@ -18,6 +19,7 @@ import type {
   ConceptNoteFunder,
   ConceptNoteFundingOpportunity,
 } from "@/util/types";
+import type { FunderImportFlow } from "@/components/ConceptNoteWorkspace/use-funder-import";
 
 const opportunity: ConceptNoteFundingOpportunity = {
   id: "programme-internal-id",
@@ -144,27 +146,79 @@ const applicationContext: ConceptNoteApplicationContext = {
   },
 };
 
-async function renderDialog() {
+async function renderDialog(
+  context = applicationContext,
+  templateImport?: FunderImportFlow,
+) {
   await act(async () => {
     root.render(
       <ChakraProvider value={defaultSystem}>
         <FundingSelectionDialog
-          applicationContext={applicationContext}
+          applicationContext={context}
           hasDraft={false}
           busy={false}
           lng="en"
           runId="run"
           onClose={onClose}
+          templateImport={templateImport}
         />
       </ChakraProvider>,
     );
   });
 }
 
+it("uses template reading copy in the rail and panel", async () => {
+  const flow: FunderImportFlow = {
+    kind: "template",
+    phase: "reading",
+    funderImport: null,
+    filename: "form.pdf",
+    error: null,
+    busy: false,
+    uploadFile: async () => {},
+    retry: async () => {},
+    discard: async () => {},
+    chooseAnotherFile: () => {},
+  };
+  await renderDialog(applicationContext, flow);
+  await click("Use your own template");
+  const panel = document.querySelector('[data-testid="own-template-panel"]')!;
+  expect(panel.textContent).toContain("Reading template chapters");
+  expect(document.body.textContent).not.toContain("Reading funder details");
+});
+
+it("allows explicitly discarding a ready template from its panel", async () => {
+  const discard = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+  const flow: FunderImportFlow = {
+    kind: "template",
+    phase: "ready",
+    funderImport: null,
+    filename: "form.pdf",
+    error: null,
+    busy: false,
+    uploadFile: async () => {},
+    retry: async () => {},
+    discard,
+    chooseAnotherFile: () => {},
+  };
+  await renderDialog(applicationContext, flow);
+  await click("Use your own template");
+  const panel = document.querySelector('[data-testid="own-template-panel"]')!;
+  const discardButton = [...panel.querySelectorAll("button")].find((item) =>
+    item.textContent?.includes(translations["funder-discard"]),
+  )!;
+  await act(async () => discardButton.click());
+  expect(discard).toHaveBeenCalledTimes(1);
+});
+
 const button = (label: string) =>
   [...document.querySelectorAll("button")].find((item) =>
     item.textContent?.includes(label),
   )!;
+
+async function click(label: string) {
+  await act(async () => button(label).click());
+}
 
 async function type(label: string, value: string) {
   const labelNode = [...document.querySelectorAll("label")].find((item) =>
@@ -256,13 +310,6 @@ it.each([
   async (detail, key) => {
     rejection = { status: 409, data: { detail } };
     await renderDialog();
-    async function click(label: string) {
-      const button = [...document.querySelectorAll("button")].find((item) =>
-        item.textContent?.includes(label),
-      );
-      expect(button).toBeDefined();
-      await act(async () => button!.click());
-    }
     await click("New funder");
     await click(translations["funding-save"]);
     expect(save).toHaveBeenCalledTimes(1);
@@ -273,9 +320,85 @@ it.each([
   },
 );
 
+describe("own template", () => {
+  const ownTemplate = {
+    id: "own-template-id",
+    name: "City concept note",
+    output_format: "DOCX",
+    chapter_schema: [
+      { chapter_ref: "summary", title: "Summary", required: true },
+    ],
+    required_fields: [],
+  };
+  beforeEach(() => {
+    save.mockImplementation(() => ({ unwrap: async () => ({}) }));
+  });
+
+  it("uses a template defined by hand without a funder", async () => {
+    await renderDialog();
+    await click(translations["template-own-entry"]);
+    await type(translations["funder-field-template-name"], "City concept note");
+    await type("Chapter", "Summary");
+    await click(translations["template-use-submit"]);
+
+    // The chosen template is previewed and becomes the pending selection.
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-by-hand"]);
+    await click(translations["funding-save-and-draft"]);
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: null,
+        selected_funding_opportunity_id: null,
+        custom_template: {
+          template: expect.objectContaining({
+            template_name: "City concept note",
+            chapter_schema: [
+              expect.objectContaining({ chapter_ref: "", title: "Summary" }),
+            ],
+          }),
+          import_id: null,
+        },
+        expected_custom_template_id: null,
+      }),
+    });
+  });
+
+  it("shows a saved own template and replaces it with a funder", async () => {
+    await renderDialog({
+      ...applicationContext,
+      template: ownTemplate,
+      template_source: { kind: "document", filename: "form.pdf" },
+    });
+    expect(
+      document.querySelector('[data-testid="own-template-details"]')
+        ?.textContent,
+    ).toContain(translations["template-from-file"]);
+    // Nothing changed yet, so there is nothing to save.
+    const saveButton = () =>
+      document.querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-funding-save"]',
+      )!;
+    expect(saveButton().disabled).toBe(true);
+
+    await click("New funder");
+    await act(async () => saveButton().click());
+    expect(save).toHaveBeenCalledWith({
+      runId: "run",
+      selection: expect.objectContaining({
+        funder_id: "new-funder",
+        custom_template: null,
+        expected_custom_template_id: "own-template-id",
+      }),
+    });
+  });
+});
+
 async function openFilledForm() {
   await renderDialog();
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   for (const [label, value] of [
     [translations["funder-field-name"], "Delayed funder"],
     [translations["funder-field-programme-name"], "Programme"],
@@ -301,53 +424,45 @@ function addCatalogueRow() {
 }
 
 it("blocks cancel, closing and selection changes while creation is pending", async () => {
-  let resolveCreate!: (value: unknown) => void;
-  const pending = new Promise((resolve) => {
-    resolveCreate = resolve;
-  });
-  createFunder.mockImplementation(() => ({ unwrap: () => pending }));
+  const pending = Promise.withResolvers<ReturnType<typeof addCatalogueRow>>();
+  createFunder.mockImplementation(() => ({ unwrap: () => pending.promise }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(button(translations["funder-add-submit"]).disabled).toBe(true);
-  expect(button(translations.cancel).disabled).toBe(true);
+  expect(button(translations["funder-back"]).disabled).toBe(true);
   expect(button("New funder").disabled).toBe(true);
   expect(
     document.querySelector<HTMLButtonElement>('button[aria-label="Close"]')
       ?.disabled,
   ).toBe(true);
   await act(async () => {
-    button(translations.cancel).click();
+    button(translations["funder-back"]).click();
     button("New funder").click();
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
   });
   expect(onClose).not.toHaveBeenCalled();
-  await act(async () => resolveCreate(addCatalogueRow()));
+  await act(async () => pending.resolve(addCatalogueRow()));
   expect(
     document.querySelector('nav button[aria-pressed="true"]')?.textContent,
   ).toContain("Delayed funder");
 });
 
 it("keeps controls busy through refresh and sends one create request", async () => {
-  let resolveRefresh!: (value: unknown) => void;
-  refetch.mockReturnValue({
-    unwrap: () =>
-      new Promise((resolve) => {
-        resolveRefresh = resolve;
-      }),
-  });
+  const pending = Promise.withResolvers<void>();
+  refetch.mockReturnValue({ unwrap: () => pending.promise });
   createFunder.mockImplementation(() => ({
     unwrap: async () => addCatalogueRow(),
   }));
   const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await click(translations["funder-add-submit"]);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(button(translations["funder-add-entry"]).disabled).toBe(true);
   expect(button(translations.cancel).disabled).toBe(true);
-  await act(async () => button(translations["funder-add-entry"]).click());
+  await click(translations["funder-add-entry"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
-  await act(async () => resolveRefresh(undefined));
+  await act(async () => pending.resolve());
   expect(button(translations["funder-add-entry"]).disabled).toBe(false);
 });
 
@@ -364,8 +479,8 @@ it("retries a failed catalogue refresh without repeating a successful create", a
       funding_opportunity_id: "delayed-programme",
     }),
   }));
-  const button = await openFilledForm();
-  await act(async () => button(translations["funder-add-submit"]).click());
+  await openFilledForm();
+  await click(translations["funder-add-submit"]);
   expect(createFunder).toHaveBeenCalledTimes(1);
   expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
   expect(document.body.textContent).toContain(
@@ -377,7 +492,7 @@ it("retries a failed catalogue refresh without repeating a successful create", a
     addCatalogueRow();
     return { unwrap: async () => undefined };
   });
-  await act(async () => button(translations["try-again"]).click());
+  await click(translations["try-again"]);
   expect(document.body.textContent).not.toContain(
     translations["funder-added-refresh-error"],
   );

@@ -262,10 +262,9 @@ export function useConceptNoteWorkspaceData({
             : "population-unavailable",
       );
   const files = cityFiles ?? [];
+  // A programme's template or the note's own template; a funder is optional.
   const canStartDrafting = Boolean(
-    applicationContext?.funder &&
-    applicationContext.opportunity &&
-    applicationContext.template?.chapter_schema.length,
+    applicationContext?.template?.chapter_schema.length,
   );
   const hasApplicationTemplate = Boolean(applicationContext?.template);
   const hasDraftChapters = Boolean(draft?.chapters.length);

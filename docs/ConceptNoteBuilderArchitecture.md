@@ -1945,6 +1945,9 @@ and replaces the bundle's funding context. City and uploaded-source context rema
 available. The corresponding CityCatalyst proxy routes and RTK cache invalidation
 refresh the selection, draft review state, and pending proposals.
 
+A note's own template is the alternative to a funder; see
+[using a note's own template](#using-a-notes-own-template).
+
 Funding changes are rejected during active context assembly, drafting, or edit
 planning. For an existing draft, the user must acknowledge another review: chapter
 text and revision history are retained, confirmations and prior validation results
@@ -1985,20 +1988,67 @@ databases. Neither test starts an LLM request.
 
 The funding dialog's rail footer, **Add a funder that isn't listed**, adds a
 funder, one programme and that programme's application template to the shared
-catalogue from values the user types. The result is an ordinary `funders` /
-`funding_opportunities` / `funder_templates` row set; those tables are
-unchanged. Selecting it afterwards uses the normal `PATCH /application-context`
-flow above.
+catalogue, either from an uploaded funder document or typed by hand. The result
+is an ordinary `funders` / `funding_opportunities` / `funder_templates` row set;
+those tables are unchanged. Selecting it afterwards uses the normal
+`PATCH /application-context` flow above.
 
-`POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one CNB
-transaction. Chapter references are slugged uniquely, and template
-`required_fields` is built from chapter `required_fields`, so every inventory
-field has an owning chapter as chapter validation requires. List fields
-(hazards, interventions, chapter required fields) are edited as comma-separated
-text. `funding_opportunities.source_run_id` is `cnb-manual:<run_id>`; the
-catalogue exposes this as `added_from`.
+Document path:
 
-Added funders are visible to every city, because `funders` has no owner column. The form explains this before submission.
+1. The file goes through the normal run upload (`POST /concept-notes/{run_id}/uploads`,
+   OCR to Markdown, retry). It is labelled with its file name and, like any
+   ready upload, also becomes a note source.
+2. The browser calls `POST /v1/concept-notes/{run_id}/funder-imports {upload_id}`
+   right after the upload is accepted. It records a `processing` import under
+   the run context bundle's `funder_import` key. The background job polls the
+   upload until it is `ready` (up to 10 minutes; a failed conversion ends the
+   import with `upload_failed`), so `GET .../current` reports
+   `stage: converting` and then `stage: reading`. It then reads the verified
+   Markdown in one model call
+   (`cnb_funder_extractor`, prompt `prompts/cnb/funder_document_extraction.md`,
+   limit `prompt_budget.cnb_funder_import.max_document_tokens`). Code keeps only
+   evidence quotes found verbatim (whitespace-insensitive) in the document,
+   records their PDF page, slugs chapter references uniquely and lists empty
+   catalogue columns in `missing`. Zero award amounts count as present and retain
+   their evidence; quotes using duplicate model chapter references are discarded
+   because their chapter cannot be identified reliably.
+   `GET .../funder-imports/current` returns the
+   import; bodyless `DELETE .../current?importId=<uuid>` discards the observed
+   import through CityCatalyst. The proxy forwards the ID to Climate Advisor as
+   `?import_id=<uuid>`, also without a body. Both endpoints require a valid UUID;
+   a stale ID cannot remove a replacement import. Starting again on the same upload
+   replaces a failed import under a new id, which is how the browser retries.
+   During conversion and extraction, the job refreshes `updated_at` every
+   30 seconds. Two minutes without a heartbeat makes the import read as `failed`
+   (`extraction_interrupted`), exposing the existing Retry control. Expired or
+   replaced jobs cannot renew their lease or publish a late result.
+3. `POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one
+   CNB transaction and clears the import. Template `required_fields` is built
+   from chapter `required_fields`, so every inventory field has an owning
+   chapter as chapter validation requires.
+
+Backend responsibilities are split across `services/cnb/funder_creation.py`
+(import lifecycle and saves), `funder_document.py` (extraction and verified
+quotes), and `funder_fields.py` (normalization and provenance field values).
+
+The browser fills the review form from the draft and shows how many catalogue
+columns the document did not state. Profile facts and known gaps are not edited
+in the form; they are submitted as extracted. List fields (hazards,
+interventions, chapter required fields) are edited as comma-separated text.
+
+Provenance uses existing tables. The upload becomes one `source_documents` row
+(`source_type = cnb_upload`, Markdown SHA-256). Each document-backed field that
+still has a value gets a `funding_evidence` row on the new opportunity with
+`claim` = field path (for example `opportunity.min_award`), the verbatim quote and
+`source_map = {entity, field, origin: extracted | edited, page, original_value?}`.
+The server compares submitted values with the stored draft, so an edited value
+keeps its original document quote. Values typed by hand have no evidence row.
+`funding_opportunities.source_run_id` is `cnb-upload:<upload_id>` (with the
+filename as `source_record_ref`, so one upload cannot be added twice) or
+`cnb-manual:<run_id>`; the catalogue exposes this as `added_from`.
+
+Added funders are visible to every city, because `funders` has no owner column.
+The form explains this before submission.
 
 The form and Next.js route share `util/concept-note-funder.ts`, including field
 limits and award validation. Templates must match the workspace contract: 1-100
@@ -2010,6 +2060,27 @@ Creation keeps navigation and closing disabled through the catalogue refresh.
 Once the POST succeeds, the form closes and the new IDs remain selected even if
 refresh fails; retrying the catalogue load never repeats the successful creation.
 
+Because the import starts before conversion finishes, the server import is the
+only state to recover: reopening the dialog or reloading the note shows it.
+Discarding or choosing another file invalidates outstanding upload/start
+callbacks in the browser. If a discarded start already reached the server, the
+client removes only that response's import ID. Retrying an `upload_failed`
+import retries the conversion first, then starts a new import on the same upload.
+
+Import starts lock the run before checking for an existing processing import, so
+concurrent requests schedule only one job. DELETE requires `{ importId }` at the
+CityCatalyst boundary (`{ import_id }` upstream); cleanup after catalogue creation
+uses the same ID-conditional removal to preserve any newer import. Duplicating a
+note copies its uploaded sources but omits the original run's pending import.
+Award provenance compares numeric values independent of decimal scale, so an
+unchanged `150000.0` extracted amount submitted as `150000` remains `extracted`.
+
+Errors return `detail = {code, message}` (for example `upload_not_found`,
+`funder_import_running`, `funder_import_changed`, `funder_already_added`).
+Failed imports carry `error_code` (`upload_failed`, `upload_not_ready`,
+`document_too_long`, `source_fetch_failed`, `extraction_failed`,
+`extraction_interrupted` or a source-verification code). Award amounts are JSON
+numbers in drafts and create requests.
 
 Award inputs accept a dot or comma as the decimal separator (up to two places)
 and spaces as thousands separators, for example `150 000,50`. Ambiguous comma
@@ -2017,7 +2088,62 @@ or dot thousands grouping is rejected instead of silently changing the amount.
 
 ```bash
 # From climate-advisor/service
-python -m pytest tests/cnb/test_funder_creation.py
+python -m pytest tests/cnb/test_funder_creation.py tests/cnb/test_funder_import.py
+```
+
+### Using a note's own template
+
+A note does not need a funder. The funding dialog's rail footer, **Use your own
+template**, gives the note an application template that the user defines by hand
+or uploads (an application form or concept note template). The template applies
+only to that note and is not added to the shared catalogue. It replaces the
+funder selection: a note uses either one catalogue programme's template or its
+own template.
+
+Storage and selection:
+
+- `concept_note_runs.custom_template` (CA migration `20261007_120000`) stores a
+  normalized snapshot `{id, template_name, output_format, chapter_schema,
+  required_fields, added_from: {kind: manual | document, filename}}`. Chapter
+  refs are slugged uniquely and `required_fields` is built from chapter fields,
+  as for catalogue templates.
+- It is saved through the same `PATCH /application-context` as a funder:
+  `custom_template: {template, import_id}` with `funder_id` and
+  `selected_funding_opportunity_id` null. `expected_custom_template_id` joins
+  the expected funder and programme in the stale-selection check. Each save
+  stores a new template id; choosing a funder or clearing the selection removes
+  the own template. Draft acknowledgement, chapter compatibility
+  (`funding_template_incompatible`), review invalidation and locking are the
+  rules above, applied to the own template's chapters.
+- `GET /application-context` returns it as `template` with
+  `template_source = added_from`; `funder` and `opportunity` stay null. Drafting,
+  validation and the template fingerprint read it there, so they need no other
+  change. The bundle's `funder_context` carries the template with a null funder.
+- Duplicating a note copies its own template.
+
+Document path: the same upload and import as adding a funder, started with
+`POST /funder-imports {upload_id, kind: "template"}`. The run still has one
+import at a time; each dialog flow shows only an import of its own `kind`, and
+stored imports without a kind are funder imports. The background job reads the
+document with prompt `prompts/cnb/template_document_extraction.md` (same
+`cnb_funder_extractor` model and token limit) into a draft that fills only
+`template`, reporting only template columns in `missing`. The user reviews the
+chapters, confirms the template in the dialog and saves the selection, which
+stores the template and clears the import. A funder import cannot be used as an
+own template, and a template import cannot be added as a funder
+(`funder_import_changed`).
+
+A ready draft must be reviewed or explicitly discarded before another import
+can start, including when switching between funder and template flows. The UI
+checks before uploading; the backend enforces the same rule with
+`funder_import_pending` to protect against stale clients. Both import panels
+offer Discard for ready drafts. Template reads display “Reading template chapters”.
+The CityCatalyst funder proxy preserves error status and public `detail.code` /
+`detail.message` fields, excluding internal service URLs and error extensions.
+
+```bash
+# From climate-advisor/service
+python -m pytest tests/cnb/test_own_template.py
 ```
 
 ### Context Bundle Build Responsibilities

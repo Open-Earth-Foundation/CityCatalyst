@@ -104,8 +104,10 @@ export default class FileParserService {
     if (value instanceof Date) return value.toISOString();
     if (typeof value === "object") {
       const o = value as Record<string, unknown>;
-      if (typeof o.error === "string" && o.error) return `#${o.error.toUpperCase()}!`;
-      if (typeof o.result !== "undefined") return this.normalizeCellValue(o.result) ?? null;
+      if (typeof o.error === "string" && o.error)
+        return `#${o.error.toUpperCase()}!`;
+      if (typeof o.result !== "undefined")
+        return this.normalizeCellValue(o.result) ?? null;
       if (typeof o.richText === "string") return o.richText;
       if (Array.isArray(o.richText)) {
         const text = (o.richText as { text?: string }[])
@@ -234,13 +236,31 @@ export default class FileParserService {
       }
     }
 
-    // Third pass: Fallback to reverse contains (term contains header)
+    // Third pass: reverse contains (term contains header). Require a
+    // substantial header so short gas names like "co2" do not match
+    // "emission factor - co2" / "ef co2" and steal EF column bindings.
     for (let i = 0; i < normalizedHeaders.length; i++) {
       const header = normalizedHeaders[i];
+      if (header.length < 4) {
+        continue;
+      }
       for (const term of sortedTerms) {
-        if (term.includes(header)) {
-          return i;
+        if (!term.includes(header)) {
+          continue;
         }
+        // Emission-factor terms must only reverse-match EF-looking headers
+        if (
+          (term.includes("emission factor") ||
+            term.startsWith("ef ") ||
+            term.startsWith("ef_")) &&
+          !header.includes("emission factor") &&
+          !header.startsWith("ef ") &&
+          !header.startsWith("ef_") &&
+          !/^ef[\s_-]/.test(header)
+        ) {
+          continue;
+        }
+        return i;
       }
     }
 

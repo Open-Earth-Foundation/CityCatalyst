@@ -159,6 +159,12 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                 ConceptNoteContextBundle(
                     run_id=source_run_id,
                     context_bundle={
+                        "funder_import": {
+                            "import_id": str(uuid4()),
+                            "upload_id": str(source_upload_id),
+                            "status": "processing",
+                            "filename": "plan.pdf",
+                        },
                         "selected_sources": [
                             {
                                 "upload_id": str(source_upload_id),
@@ -171,7 +177,7 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
                                 "topics": ["heat"],
                                 "key_excerpts": [],
                             }
-                        ]
+                        ],
                     },
                 ),
                 ConceptNoteUpload(
@@ -249,10 +255,15 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
         assert destination.context_summary["context_bundle"]["included_upload_ids"] == [
             str(destination_upload.upload_id)
         ]
-        copied_bundle = await session.get(ConceptNoteContextBundle, destination.run_id)
-        assert copied_bundle.context_bundle["selected_sources"][0]["upload_id"] == str(
-            destination_upload.upload_id
+        destination_bundle = await session.get(
+            ConceptNoteContextBundle, destination.run_id
         )
+        assert "funder_import" not in destination_bundle.context_bundle
+        assert destination_bundle.context_bundle["selected_sources"][0][
+            "upload_id"
+        ] == str(destination_upload.upload_id)
+        source_bundle = await session.get(ConceptNoteContextBundle, source_run_id)
+        assert source_bundle.context_bundle["funder_import"]["status"] == "processing"
 
         async with workspace_sessions() as workspace_session:
             copied_chapter = await workspace_session.scalar(

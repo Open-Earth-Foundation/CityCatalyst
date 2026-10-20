@@ -112,6 +112,16 @@ export default function ImportRowIssues({
           <Text fontSize="body.sm" color="content.secondary" mt={1}>
             {data.skippedRows > 0 &&
               t("import-rows-skipped", { count: data.skippedRows })}{" "}
+            {data.skippedByIssue?.["unknown-notation-key"]
+              ? t("import-rows-skipped-unknown-notation", {
+                  count: data.skippedByIssue["unknown-notation-key"],
+                }) + " "
+              : null}
+            {data.skippedByIssue?.["no-value-or-notation-key"]
+              ? t("import-rows-skipped-empty", {
+                  count: data.skippedByIssue["no-value-or-notation-key"],
+                }) + " "
+              : null}
             {notCounted.length > 0 &&
               t("import-rows-not-counted", { count: notCounted.length })}
           </Text>

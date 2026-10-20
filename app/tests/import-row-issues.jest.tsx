@@ -92,6 +92,11 @@ it("shows each rejected row with its source, status and reason", () => {
     totalRows: 5,
     importedRows: 2,
     skippedRows: 3,
+    skippedByIssue: {
+      "missing-gpc-reference": 1,
+      "gpc-reference-unresolved": 1,
+      "unknown-notation-key": 1,
+    },
     rows: [
       outcome(3, {
         gpcRefNo: "I.1.3",
@@ -121,6 +126,7 @@ it("shows each rejected row with its source, status and reason", () => {
   const text = container.textContent ?? "";
   expect(text).toContain('import-rows-summary:{"imported":2,"total":5}');
   expect(text).toContain('import-rows-skipped:{"count":3}');
+  expect(text).toContain('import-rows-skipped-unknown-notation:{"count":1}');
   expect(text).toContain('import-rows-not-counted:{"count":1}');
 
   const rows = [...container.querySelectorAll("tbody tr")].map((tr) =>
@@ -159,6 +165,7 @@ it("collapses long lists until the user asks for all rows", () => {
     totalRows: 12,
     importedRows: 0,
     skippedRows: 12,
+    skippedByIssue: { "missing-gpc-reference": 12 },
     rows: Array.from({ length: 12 }, (_, index) => outcome(index + 2, {})),
   };
   render();
@@ -172,7 +179,13 @@ it("collapses long lists until the user asks for all rows", () => {
 });
 
 it("confirms when every row will be imported", () => {
-  preview = { totalRows: 3, importedRows: 3, skippedRows: 0, rows: [] };
+  preview = {
+    totalRows: 3,
+    importedRows: 3,
+    skippedRows: 0,
+    skippedByIssue: {},
+    rows: [],
+  };
   render();
 
   expect(container.textContent).toContain('import-rows-all-ok:{"count":3}');

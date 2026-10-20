@@ -320,11 +320,17 @@ class ConceptNoteChapterDraftService:
         """Redraft only chapters a reviewer ties to the new sources, with evidence.
 
         Returns False when the pass failed and should be retried; rejected
-        chapter redrafts are logged and count as handled.
+        chapter redrafts are logged and count as handled. A note without a
+        template is redrafted from its persisted chapters.
         """
         try:
-            # Snapshot the rebuilt bundle and the persisted chapters.
             run = await self._load_owned_run(run_id, user_id)
+            chapters = await self._workspace.list_chapters(run_id=run_id)
+            # Drafting reads every source when it starts, so undrafted notes are done.
+            if all(chapter.revision_number is None for chapter in chapters):
+                return True
+
+            # Snapshot the rebuilt bundle; the template only adds chapter guidance.
             run_context, included_sources = await self._load_run_context(
                 run_id,
                 user_id,
@@ -333,9 +339,10 @@ class ConceptNoteChapterDraftService:
                 run,
                 included_sources=included_sources,
             )
-            _, templates = _require_template(application_context)
-            template_by_ref = {item.chapter_ref: item for item in templates}
-            chapters = await self._workspace.list_chapters(run_id=run_id)
+            template_by_ref = {
+                item.chapter_ref: item
+                for item in _optional_template_chapters(application_context)
+            }
 
             # A review-only call picks the chapters the new sources affect.
             reviewer = self._source_impact_reviewer or ConceptNoteSourceImpactReviewer(
@@ -842,6 +849,16 @@ def _require_template(
     if not chapters:
         raise ChapterDraftingTemplateError("The selected template has no chapters")
     return template, chapters
+
+
+def _optional_template_chapters(
+    application_context: ConceptNoteApplicationContextResponse,
+) -> list[WorkspaceTemplateChapter]:
+    """Return the selected template's chapters, or none without a usable template."""
+    try:
+        return _require_template(application_context)[1]
+    except ChapterDraftingTemplateError:
+        return []
 
 
 def _build_chapter_input(

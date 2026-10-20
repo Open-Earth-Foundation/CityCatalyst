@@ -1,5 +1,6 @@
 import type Decimal from "decimal.js";
 import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -18,6 +19,7 @@ import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import type { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1219,7 +1221,22 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "manual";
+}
+
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {

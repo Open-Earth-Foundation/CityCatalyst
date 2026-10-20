@@ -37,6 +37,7 @@ import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
+import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -63,6 +64,9 @@ interface ConceptNoteChatPanelProps {
   contextBuildId?: string | null;
   contextChanges?: ConceptNoteContextChange[];
   composerRequest: { content: string; id: string } | null;
+  gapAnswer: GapAnswerRequest | null;
+  onCloseGap: () => void;
+  onAddGapSource: () => void;
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
@@ -223,6 +227,9 @@ export function ConceptNoteChatPanel({
   contextBuildId = null,
   contextChanges = [],
   composerRequest,
+  gapAnswer,
+  onCloseGap,
+  onAddGapSource,
   draftOverviewPending,
   lng,
   onOpenContext,
@@ -303,6 +310,7 @@ export function ConceptNoteChatPanel({
 
   useEffect(() => {
     if (
+      gapAnswer ||
       !threadId ||
       historyLoading ||
       messages.length === 0 ||
@@ -324,7 +332,7 @@ export function ConceptNoteChatPanel({
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [historyLoading, messages, reasoning, threadId]);
+  }, [gapAnswer, historyLoading, messages, reasoning, threadId]);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -360,7 +368,29 @@ export function ConceptNoteChatPanel({
     }
     setInput("");
     followLatestRef.current = true;
-    await sendChatMessage(content);
+    if (gapAnswer) {
+      await answerGap(content);
+    } else {
+      await sendChatMessage(content);
+    }
+  }
+
+  async function answerGap(answer: string): Promise<void> {
+    if (!gapAnswer || chatDisabled) return;
+    const content = t("gap-answer-request", {
+      chapter: gapAnswer.chapterTitle,
+      question: gapAnswer.row.question,
+      answer,
+      interpolation: { escapeValue: false },
+    });
+    const scope: EditScope = {
+      kind: "auto",
+      focused_chapter_id: gapAnswer.chapterId,
+    };
+    onCloseGap();
+    onOpenDraft?.();
+    followLatestRef.current = true;
+    await sendChatMessage(content, scope);
   }
 
   return (
@@ -442,6 +472,7 @@ export function ConceptNoteChatPanel({
       <VStack
         ref={chatScrollRef}
         onScroll={(event) => {
+          if (gapAnswer) return;
           const scroll = event.currentTarget;
           followLatestRef.current =
             scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 48;
@@ -455,144 +486,163 @@ export function ConceptNoteChatPanel({
         bg="base.light"
         p={4}
       >
-        <OlderChatNotice
-          controller={chatThreads}
-          disabled={threadSwitchDisabled}
-          lng={lng}
-        />
-        <ContextStatusNotice
-          key={contextState}
-          busy={contextBlocked && contextState !== "failed"}
-          autoDismissAfterMs={
-            hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
-          }
-          onOpenContext={onOpenContext}
-          status={contextStatus}
-        />
-        {!contextBlocked && (
-          <ContextChangesNotice
-            buildId={contextBuildId}
-            changes={contextChanges}
-            lng={lng}
-            onOpenContext={onOpenContext}
+        {gapAnswer ? (
+          <GapAnswerForm
+            key={`${runId}:${lng}:${gapAnswer.chapterId}:${gapAnswer.row.id}:${gapAnswer.row.question}:${gapAnswer.row.gap?.version}`}
             runId={runId}
+            request={gapAnswer}
+            lng={lng}
+            disabled={chatDisabled}
+            onAnswer={(answer) => void answerGap(answer)}
+            onClose={onCloseGap}
+            onAddSource={onAddGapSource}
           />
-        )}
-
-        {welcomeStage &&
-          threadId &&
-          !historyLoading &&
-          messages.length === 0 &&
-          draft?.status !== "running" && (
-            <ChatWelcome
+        ) : (
+          <>
+            <OlderChatNotice
+              controller={chatThreads}
+              disabled={threadSwitchDisabled}
               lng={lng}
-              stage={welcomeStage}
-              onOpenDraft={onOpenDraft}
-              onOpenFundingSetup={onOpenFundingSetup}
             />
-          )}
+            <ContextStatusNotice
+              key={contextState}
+              busy={contextBlocked && contextState !== "failed"}
+              autoDismissAfterMs={
+                hasUploadedEvidence
+                  ? CONTEXT_READY_NOTICE_DURATION_MS
+                  : undefined
+              }
+              onOpenContext={onOpenContext}
+              status={contextStatus}
+            />
+            {!contextBlocked && (
+              <ContextChangesNotice
+                buildId={contextBuildId}
+                changes={contextChanges}
+                lng={lng}
+                onOpenContext={onOpenContext}
+                runId={runId}
+              />
+            )}
 
-        {messages.map((message) => (
-          <Fragment key={message.id}>
-            {message.role === "assistant" &&
-              message.id === messages.at(-1)?.id && (
-                <ChatProgress
+            {welcomeStage &&
+              threadId &&
+              !historyLoading &&
+              messages.length === 0 &&
+              draft?.status !== "running" && (
+                <ChatWelcome
                   lng={lng}
-                  reasoning={reasoning}
-                  progress={progress}
-                  isGenerating={isGenerating}
+                  stage={welcomeStage}
+                  onOpenDraft={onOpenDraft}
+                  onOpenFundingSetup={onOpenFundingSetup}
                 />
               )}
-            {(message.text || message.role === "user") && (
-              <Box
-                alignSelf={message.role === "user" ? "end" : "start"}
-                maxW="92%"
-                border="1px solid"
-                borderColor="border.neutral"
-                borderRadius="rounded"
-                bg={
-                  message.role === "user" ? "background.neutral" : "base.light"
-                }
-                px={3}
-                py={2.5}
-              >
-                {message.role === "assistant" && message.text ? (
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={assistantMarkdownComponents}
-                  >
-                    {message.text}
-                  </ReactMarkdown>
-                ) : message.role === "user" ? (
-                  <Text
-                    fontSize="body.sm"
-                    lineHeight="22px"
-                    color="content.primary"
-                    whiteSpace="pre-wrap"
-                  >
-                    {message.text}
-                  </Text>
-                ) : null}
-              </Box>
-            )}
-          </Fragment>
-        ))}
 
-        {draft && (
-          <DraftingProgressCard
-            draft={draft}
-            lng={lng}
-            startedAt={draftStartedAt}
-            completedAt={draftCompletedAt}
-            summaryFailed={overviewFailed && !isGenerating}
-          />
-        )}
+            {messages.map((message) => (
+              <Fragment key={message.id}>
+                {message.role === "assistant" &&
+                  message.id === messages.at(-1)?.id && (
+                    <ChatProgress
+                      lng={lng}
+                      reasoning={reasoning}
+                      progress={progress}
+                      isGenerating={isGenerating}
+                    />
+                  )}
+                {(message.text || message.role === "user") && (
+                  <Box
+                    alignSelf={message.role === "user" ? "end" : "start"}
+                    maxW="92%"
+                    border="1px solid"
+                    borderColor="border.neutral"
+                    borderRadius="rounded"
+                    bg={
+                      message.role === "user"
+                        ? "background.neutral"
+                        : "base.light"
+                    }
+                    px={3}
+                    py={2.5}
+                  >
+                    {message.role === "assistant" && message.text ? (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={assistantMarkdownComponents}
+                      >
+                        {message.text}
+                      </ReactMarkdown>
+                    ) : message.role === "user" ? (
+                      <Text
+                        fontSize="body.sm"
+                        lineHeight="22px"
+                        color="content.primary"
+                        whiteSpace="pre-wrap"
+                      >
+                        {message.text}
+                      </Text>
+                    ) : null}
+                  </Box>
+                )}
+              </Fragment>
+            ))}
 
-        {edits.error && (
-          <Text role="alert" fontSize="label.sm" color="content.primary">
-            {t(
-              edits.error === "stale_base"
-                ? "edit-stale-hint"
-                : "edit-request-error",
+            {draft && (
+              <DraftingProgressCard
+                draft={draft}
+                lng={lng}
+                startedAt={draftStartedAt}
+                completedAt={draftCompletedAt}
+                summaryFailed={overviewFailed && !isGenerating}
+              />
             )}
-          </Text>
-        )}
-        {edits.error && (
-          <Button
-            size="xs"
-            minH="36px"
-            variant="outline"
-            data-testid="concept-note-edit-refresh"
-            onClick={() => void edits.refresh()}
-          >
-            {t("edit-refresh")}
-          </Button>
-        )}
-        {chatError && (
-          <HStack
-            role="alert"
-            align="start"
-            gap={2}
-            color="sentiment.negativeDefault"
-            data-testid="concept-note-chat-error"
-          >
-            <Icon as={LuCircleAlert} mt={0.5} />
-            <Text fontSize="label.sm" flex={1}>
-              {chatError}
-            </Text>
-            {canRetry && (
+
+            {edits.error && (
+              <Text role="alert" fontSize="label.sm" color="content.primary">
+                {t(
+                  edits.error === "stale_base"
+                    ? "edit-stale-hint"
+                    : "edit-request-error",
+                )}
+              </Text>
+            )}
+            {edits.error && (
               <Button
                 size="xs"
+                minH="36px"
                 variant="outline"
-                flexShrink={0}
-                data-testid="concept-note-chat-retry"
-                onClick={() => void retry()}
+                data-testid="concept-note-edit-refresh"
+                onClick={() => void edits.refresh()}
               >
-                <Icon as={LuRotateCw} boxSize={3.5} />
-                {t("chat-retry")}
+                {t("edit-refresh")}
               </Button>
             )}
-          </HStack>
+            {chatError && (
+              <HStack
+                role="alert"
+                align="start"
+                gap={2}
+                color="sentiment.negativeDefault"
+                data-testid="concept-note-chat-error"
+              >
+                <Icon as={LuCircleAlert} mt={0.5} />
+                <Text fontSize="label.sm" flex={1}>
+                  {chatError}
+                </Text>
+                {canRetry && (
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    flexShrink={0}
+                    data-testid="concept-note-chat-retry"
+                    onClick={() => void retry()}
+                  >
+                    <Icon as={LuRotateCw} boxSize={3.5} />
+                    {t("chat-retry")}
+                  </Button>
+                )}
+              </HStack>
+            )}
+          </>
         )}
       </VStack>
 
@@ -605,7 +655,7 @@ export function ConceptNoteChatPanel({
         onSubmit={submitMessage}
       >
         <Box mb={!chatDisabled && threadId ? 3 : 0}>
-          {!chatDisabled && threadId && (
+          {!gapAnswer && !chatDisabled && threadId && (
             <ChatSuggestions
               runId={runId}
               threadId={threadId}
@@ -634,7 +684,13 @@ export function ConceptNoteChatPanel({
               contextBlocked ? "concept-note-chat-blocked" : undefined
             }
             placeholder={
-              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+              threadId
+                ? t(
+                    gapAnswer
+                      ? "gap-chat-placeholder"
+                      : "chat-input-placeholder",
+                  )
+                : t("chat-unavailable")
             }
             bg="base.light"
             borderColor="border.neutral"

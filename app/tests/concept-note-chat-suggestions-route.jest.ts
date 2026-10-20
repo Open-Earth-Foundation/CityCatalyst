@@ -34,12 +34,15 @@ jest.unstable_mockModule("@/util/api", () => ({
 }));
 
 let postSuggestions: typeof import("@/app/api/v1/concept-notes/[runId]/chat/suggestions/route").POST;
+let postGapQuestion: typeof import("@/app/api/v1/concept-notes/[runId]/gap-question/route").POST;
 const originalFetch = globalThis.fetch;
 const originalCaBaseUrl = process.env.CA_BASE_URL;
 
 beforeAll(async () => {
   ({ POST: postSuggestions } =
     await import("@/app/api/v1/concept-notes/[runId]/chat/suggestions/route"));
+  ({ POST: postGapQuestion } =
+    await import("@/app/api/v1/concept-notes/[runId]/gap-question/route"));
 });
 
 beforeEach(() => {
@@ -60,45 +63,83 @@ afterEach(() => {
   else process.env.CA_BASE_URL = originalCaBaseUrl;
 });
 
-it("aborts an in-flight Climate Advisor request when the browser request is cancelled", async () => {
-  let reportUpstreamStart!: (signal: AbortSignal | undefined) => void;
-  const upstreamStarted = new Promise<AbortSignal | undefined>((resolve) => {
-    reportUpstreamStart = resolve;
-  });
-  let upstreamCancelled = false;
-  globalThis.fetch = jest.fn<typeof fetch>((_url, init) => {
-    const signal = init?.signal ?? undefined;
-    reportUpstreamStart(signal);
-    return new Promise<Response>((_resolve, reject) => {
-      signal?.addEventListener(
-        "abort",
-        () => {
-          upstreamCancelled = true;
-          reject(new DOMException("aborted", "AbortError"));
-        },
-        { once: true },
-      );
+it.each(["chat", "gap"])(
+  "aborts an in-flight %s suggestion when the browser request is cancelled",
+  async (kind) => {
+    let reportUpstreamStart!: (signal: AbortSignal | undefined) => void;
+    const upstreamStarted = new Promise<AbortSignal | undefined>((resolve) => {
+      reportUpstreamStart = resolve;
     });
-  });
+    let upstreamCancelled = false;
+    globalThis.fetch = jest.fn<typeof fetch>((_url, init) => {
+      const signal = init?.signal ?? undefined;
+      reportUpstreamStart(signal);
+      return new Promise<Response>((_resolve, reject) => {
+        signal?.addEventListener(
+          "abort",
+          () => {
+            upstreamCancelled = true;
+            reject(new DOMException("aborted", "AbortError"));
+          },
+          { once: true },
+        );
+      });
+    });
 
-  const controller = new AbortController();
-  const request = new Request(
-    "http://localhost/api/v1/concept-notes/chat/suggestions",
-    {
+    const controller = new AbortController();
+    const request = new Request(
+      "http://localhost/api/v1/concept-notes/chat/suggestions",
+      {
+        method: "POST",
+        body: JSON.stringify(
+          kind === "chat"
+            ? { language: "en", tab: "draft" }
+            : {
+                language: "en",
+                chapter_id: cityId,
+                gap_id: null,
+                question: "Instrument?",
+              },
+        ),
+        signal: controller.signal,
+      },
+    );
+    const response = (kind === "chat" ? postSuggestions : postGapQuestion)(
+      request,
+      {
+        session: { user: { id: ownerId } },
+        params: { runId },
+      },
+    );
+
+    const upstreamSignal = await upstreamStarted;
+    expect(upstreamSignal).toBe(request.signal);
+    controller.abort();
+    expect(upstreamSignal?.aborted).toBe(true);
+    await expect(response).rejects.toMatchObject({ statusCode: 502 });
+    expect(upstreamCancelled).toBe(true);
+  },
+);
+
+it("requires authentication and validates gap identifiers before calling upstream", async () => {
+  const request = () =>
+    new Request("http://localhost/gap-question", {
       method: "POST",
-      body: JSON.stringify({ language: "en", tab: "draft" }),
-      signal: controller.signal,
-    },
-  );
-  const response = postSuggestions(request, {
-    session: { user: { id: ownerId } },
-    params: { runId },
-  });
-
-  const upstreamSignal = await upstreamStarted;
-  expect(upstreamSignal).toBe(request.signal);
-  controller.abort();
-  expect(upstreamSignal?.aborted).toBe(true);
-  await expect(response).rejects.toMatchObject({ statusCode: 502 });
-  expect(upstreamCancelled).toBe(true);
+      body: JSON.stringify({
+        chapter_id: "invalid",
+        gap_id: null,
+        question: "Instrument?",
+      }),
+    });
+  await expect(
+    postGapQuestion(request(), { session: null, params: { runId } }),
+  ).rejects.toMatchObject({ statusCode: 401 });
+  await expect(
+    postGapQuestion(request(), {
+      session: { user: { id: ownerId } },
+      params: { runId },
+    }),
+  ).rejects.toThrow();
+  expect(loadRunCity).not.toHaveBeenCalled();
+  expect(issueClimateAdvisorUserToken).not.toHaveBeenCalled();
 });

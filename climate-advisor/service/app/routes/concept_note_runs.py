@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Awaitable
 from contextlib import suppress
-from typing import Annotated
+from typing import Annotated, TypeVar
 from uuid import UUID
 
 from app.config.settings import get_settings
@@ -32,6 +33,7 @@ from app.models.cnb.funding_catalogue import (
     FundingCatalogueResponse,
     FundingSelectionRequest,
 )
+from app.models.cnb.gap_question import GapQuestionOutput, GapQuestionRequest
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
@@ -45,6 +47,7 @@ from app.services.cnb.chapter_drafting import (
 from app.services.cnb.chat_suggestions import (
     build_suggestion_context,
     generate_chat_suggestions,
+    generate_suggestion,
 )
 from app.services.cnb.context_bundle import (
     ContextBundleService,
@@ -82,6 +85,80 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+GenerationResult = TypeVar("GenerationResult")
+
+
+async def _until_disconnect(
+    request: Request, result: Awaitable[GenerationResult]
+) -> GenerationResult:
+    """Cancel read-only generation when the browser abandons its request."""
+    generation = asyncio.ensure_future(result)
+
+    async def cancel_on_disconnect() -> None:
+        """Observe disconnects without consuming the request body."""
+        while not generation.done():
+            if await request.is_disconnected():
+                generation.cancel()
+                return
+            await asyncio.sleep(0.1)
+
+    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
+    try:
+        return await generation
+    finally:
+        disconnect_watcher.cancel()
+        with suppress(asyncio.CancelledError):
+            await disconnect_watcher
+
+
+@router.post("/concept-notes/{run_id}/gap-question", response_model=GapQuestionOutput)
+async def propose_gap_question(
+    run_id: UUID,
+    payload: GapQuestionRequest,
+    request: Request,
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> GapQuestionOutput:
+    """Read an authorized gap and suggest answer categories without writing state."""
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    if draft_service is None:
+        raise HTTPException(status_code=503, detail="Draft service unavailable")
+    draft = await draft_service.load_state(run)
+    chapter = next(
+        (item for item in draft.chapters if item.chapter_id == payload.chapter_id), None
+    )
+    if chapter is None:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+    gap = next((item for item in chapter.gaps if item.gap_id == payload.gap_id), None)
+    if payload.gap_id and (gap is None or gap.state not in {"open", "processing"}):
+        raise HTTPException(status_code=409, detail="Gap is no longer open")
+    # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
+    if not payload.gap_id and payload.question not in (chapter.body_markdown or ""):
+        raise HTTPException(status_code=404, detail="Gap question not found")
+    output = await _until_disconnect(
+        request,
+        generate_suggestion(
+            get_settings(),
+            {
+                "language": payload.language,
+                "chapter_title": chapter.title,
+                "chapter_excerpt": (chapter.body_markdown or "")[:12000],
+                "question": gap.question if gap else payload.question,
+                "why_asking": gap.why_asking if gap else "",
+            },
+            "cnb_gap_question",
+            GapQuestionOutput,
+        ),
+    )
+    if output is None:
+        raise HTTPException(status_code=503, detail="Gap question unavailable")
+    return output
 
 
 @router.post(
@@ -116,22 +193,9 @@ async def propose_chat_questions(
     context = build_suggestion_context(
         payload, run, draft, bundle.context_bundle if bundle else {}, messages
     )
-    generation = asyncio.create_task(generate_chat_suggestions(get_settings(), context))
-
-    async def cancel_on_disconnect() -> None:
-        while not generation.done():
-            if await request.is_disconnected():
-                generation.cancel()
-                return
-            await asyncio.sleep(0.1)
-
-    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
-    try:
-        return await generation
-    finally:
-        disconnect_watcher.cancel()
-        with suppress(asyncio.CancelledError):
-            await disconnect_watcher
+    return await _until_disconnect(
+        request, generate_chat_suggestions(get_settings(), context)
+    )
 
 
 @router.get(

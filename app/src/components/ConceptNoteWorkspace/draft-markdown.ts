@@ -204,6 +204,40 @@ export function remarkMissingInformation() {
   };
 }
 
+/** Keep standalone gap controls beside the preceding passage, in the preview only. */
+export function remarkGapPassages() {
+  return (tree: MarkerMarkdownNode) => {
+    const visit = (node: MarkerMarkdownNode) => {
+      if (!node.children) return;
+      for (let index = node.children.length - 1; index >= 0; index--) {
+        const child = node.children[index];
+        const previous = node.children[index - 1];
+        const onlyMarkers =
+          child.type === "paragraph" &&
+          child.children?.some(
+            (part) => part.url === MISSING_INFORMATION_LINK,
+          ) &&
+          child.children.every(
+            (part) =>
+              part.url === MISSING_INFORMATION_LINK ||
+              (part.type === "text" && !part.value?.trim()),
+          );
+        if (onlyMarkers && previous?.type === "paragraph") {
+          if (
+            previous.children!.some(
+              (part) => part.url === MISSING_INFORMATION_LINK,
+            )
+          )
+            previous.children!.push(...child.children!);
+          else previous.children!.unshift(...child.children!);
+          node.children.splice(index, 1);
+        } else visit(child);
+      }
+    };
+    visit(tree);
+  };
+}
+
 export function stripMissingInformationMarkers(markdown: string): string {
   return markdown
     .replace(

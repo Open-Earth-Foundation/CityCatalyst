@@ -38,13 +38,16 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
+  missingInformationRanges,
+  remarkGapPassages,
   remarkMissingInformation,
-  splitStandaloneMarkers,
 } from "./draft-markdown";
 import { markerLabel } from "./missing-information";
 import {
   ChapterGapsPanel,
+  ChapterGapMarker,
   chapterGapRows,
+  gapRowForMessage,
   type ChapterGapRow,
 } from "./chapter-gaps-panel";
 import {
@@ -432,6 +435,12 @@ export function DraftDocumentPanel({
           >
             {chapters.map((chapter) => {
               const isSelected = focus.selectedChapterId === chapter.chapter_id;
+              const gapCount = chapterGapRows(
+                chapter,
+                missingInformationRanges(chapter.body_markdown ?? "").map(
+                  (marker) => marker.message,
+                ),
+              ).length;
               return (
                 <Button
                   key={chapter.chapter_id}
@@ -472,6 +481,7 @@ export function DraftDocumentPanel({
                     bg={chapterTone(getChapterDisplayStatus(chapter))}
                   />
                   <Text
+                    flex={1}
                     minW={0}
                     overflow="hidden"
                     fontSize="11px"
@@ -484,6 +494,18 @@ export function DraftDocumentPanel({
                   >
                     {chapter.position + 1} {chapter.title}
                   </Text>
+                  {gapCount > 0 && (
+                    <Text
+                      as="span"
+                      flexShrink={0}
+                      fontSize="10px"
+                      color="content.tertiary"
+                      aria-label={t("chapter-open-gaps", { count: gapCount })}
+                      data-testid="concept-note-section-gap-count"
+                    >
+                      {gapCount}
+                    </Text>
+                  )}
                   {reviewChanges.some(
                     (change) => change.chapter_id === chapter.chapter_id,
                   ) && (
@@ -582,13 +604,6 @@ export function DraftDocumentPanel({
                                     : "chapter-status-draft",
                         )}
                       </Text>
-                      {chapter.open_gap_count > 0 && (
-                        <Text fontSize="10px" color="sentiment.warningDefault">
-                          {t("chapter-open-gaps", {
-                            count: chapter.open_gap_count,
-                          })}
-                        </Text>
-                      )}
                       {chapter.caveat_count > 0 && (
                         <Text fontSize="10px" color="content.tertiary">
                           {t("chapter-caveats", {
@@ -598,6 +613,17 @@ export function DraftDocumentPanel({
                       )}
                     </HStack>
                   </Box>
+                  <ChapterGapsPanel
+                    chapter={chapter}
+                    lng={lng}
+                    rows={chapterGapRows(
+                      chapter,
+                      missingInformationRanges(chapter.body_markdown ?? "").map(
+                        (marker) => marker.message,
+                      ),
+                    )}
+                    onAnswerGap={onAnswerGap}
+                  />
                   {chapter.status === "draft" &&
                     chapter.open_gap_count === 0 && (
                       <Button
@@ -696,12 +722,14 @@ export function DraftDocumentPanel({
                         </Box>
                       );
                     }
-                    // Standalone markers move out of the prose into one
-                    // gap block per chapter; inline ones stay as chips.
-                    const preview = splitStandaloneMarkers(
-                      chapterPreviewMarkdown(
-                        chapter.body_markdown!,
-                        chapter.title,
+                    const markdown = chapterPreviewMarkdown(
+                      chapter.body_markdown!,
+                      chapter.title,
+                    );
+                    const rows = chapterGapRows(
+                      chapter,
+                      missingInformationRanges(markdown).map(
+                        (marker) => marker.message,
                       ),
                     );
                     return (
@@ -710,18 +738,61 @@ export function DraftDocumentPanel({
                         data-current-chapter-id={chapter.chapter_id}
                         data-current-revision={chapter.revision_number}
                       >
-                        <ReactMarkdown
-                          components={markdownComponents}
-                          remarkPlugins={[remarkGfm, remarkMissingInformation]}
+                        <Box
+                          pr={{ base: 0, md: "44px" }}
+                          css={{
+                            "& p": { display: "flow-root" },
+                            "& p:has([data-testid='concept-note-gap-marker'][data-state='open'])":
+                              {
+                                borderInlineStart: "2px solid",
+                                borderColor: "sentiment.warningDefault",
+                                paddingInlineStart: 3,
+                                marginInlineStart: -3,
+                              },
+                            "& p:has([data-testid='concept-note-gap-marker'][data-severity='noncritical'][data-state='open'])":
+                              {
+                                borderColor: "gray.medium",
+                              },
+                          }}
                         >
-                          {preview.markdown}
-                        </ReactMarkdown>
-                        <ChapterGapsPanel
-                          chapter={chapter}
-                          lng={lng}
-                          rows={chapterGapRows(chapter, preview.messages)}
-                          onAnswerGap={onAnswerGap}
-                        />
+                          <ReactMarkdown
+                            components={{
+                              ...markdownComponents,
+                              a: ({ href, title, children }) => {
+                                const message =
+                                  href === MISSING_INFORMATION_LINK
+                                    ? decodeMissingInformationMessage(title)
+                                    : null;
+                                if (!message)
+                                  return (
+                                    <markdownComponents.a
+                                      href={href}
+                                      title={title}
+                                    >
+                                      {children}
+                                    </markdownComponents.a>
+                                  );
+                                const row = gapRowForMessage(rows, message);
+                                return row ? (
+                                  <ChapterGapMarker
+                                    chapter={chapter}
+                                    lng={lng}
+                                    row={row}
+                                    number={rows.indexOf(row) + 1}
+                                    onAnswerGap={onAnswerGap}
+                                  />
+                                ) : null;
+                              },
+                            }}
+                            remarkPlugins={[
+                              remarkGfm,
+                              remarkMissingInformation,
+                              remarkGapPassages,
+                            ]}
+                          >
+                            {markdown}
+                          </ReactMarkdown>
+                        </Box>
                       </Box>
                     );
                   })()

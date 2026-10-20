@@ -122,9 +122,7 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
       ?.textContent,
   ).toContain("Check the total budget");
   expect(
-    container.querySelector(
-      '[aria-label="Information needed: Confirm funding"]',
-    ),
+    container.querySelector('[data-testid="concept-note-gap-marker"]'),
   ).not.toBeNull();
   await render({
     reviewChanges: [change],

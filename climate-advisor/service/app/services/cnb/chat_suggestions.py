@@ -1,11 +1,11 @@
-"""Generate two optional next questions without changing the run or chat."""
+"""Generate optional chat and gap guidance without changing the run or chat."""
 
 from __future__ import annotations
 
 import asyncio
 import json
 import logging
-from typing import Any
+from typing import Any, TypeVar
 
 import tiktoken
 from app.config.settings import Settings
@@ -19,8 +19,10 @@ from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.message import Message, MessageRole
 from app.services.openrouter_client import build_openrouter_client_options
 from openai import AsyncOpenAI, OpenAIError
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
+SuggestionOutput = TypeVar("SuggestionOutput", bound=BaseModel)
 
 
 def build_suggestion_context(
@@ -76,9 +78,22 @@ async def generate_chat_suggestions(
     settings: Settings, payload: dict[str, Any]
 ) -> ChatSuggestionsResponse:
     """Make one bounded OpenRouter call; failures request a localized UI fallback."""
+    output = await generate_suggestion(
+        settings, payload, "cnb_chat_suggestions", ChatSuggestionsOutput
+    )
+    return ChatSuggestionsResponse(suggestions=output.suggestions if output else [])
+
+
+async def generate_suggestion(
+    settings: Settings,
+    payload: dict[str, Any],
+    prompt_name: str,
+    output_type: type[SuggestionOutput],
+) -> SuggestionOutput | None:
+    """Generate validated, read-only guidance; provider failures return no result."""
     model = settings.llm.models.cnb_chat_suggestions
     if model is None:
-        return ChatSuggestionsResponse()
+        return None
 
     # Suggestions are optional and must never block normal chat on provider errors.
     try:
@@ -94,9 +109,7 @@ async def generate_chat_suggestions(
                 messages=[
                     {
                         "role": "system",
-                        "content": settings.llm.prompts.get_prompt(
-                            "cnb_chat_suggestions"
-                        ),
+                        "content": settings.llm.prompts.get_prompt(prompt_name),
                     },
                     {
                         "role": "user",
@@ -107,11 +120,10 @@ async def generate_chat_suggestions(
                 extra_body={"reasoning": {"effort": model.reasoning_effort}},
                 max_completion_tokens=4096,
             )
-        output = ChatSuggestionsOutput.model_validate_json(
+        return output_type.model_validate_json(
             response.choices[0].message.content or ""
         )
-        return ChatSuggestionsResponse(suggestions=output.suggestions)
     except (OpenAIError, ValueError, TimeoutError, OSError, IndexError) as exc:
         # Exception text can contain provider request bodies; log only its type.
         logger.warning("CNB suggestions unavailable (%s)", type(exc).__name__)
-        return ChatSuggestionsResponse()
+        return None

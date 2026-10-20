@@ -18,7 +18,7 @@ from app.services.cnb.funder_creation import create_funder
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from pydantic import ValidationError
 from sqlalchemy import select
-from tests.test_concept_note_lifecycle import _workspace_repository
+from tests.test_concept_note_lifecycle import _ca_session, _workspace_repository
 
 
 def _request(**overrides) -> FunderCreateRequest:
@@ -52,7 +52,7 @@ def _request(**overrides) -> FunderCreateRequest:
 
 
 async def test_create_by_hand_adds_ordinary_catalogue_rows_without_evidence():
-    async with _workspace_repository() as (_, factory):
+    async with _workspace_repository() as (_, factory), _ca_session() as session:
         request = _request()
         request.template.chapter_schema.append(
             TemplateChapterFields(
@@ -62,7 +62,7 @@ async def test_create_by_hand_adds_ordinary_catalogue_rows_without_evidence():
             )
         )
         run = SimpleNamespace(run_id=uuid4())
-        created = await create_funder(run, request, reference_factory=factory)
+        created = await create_funder(session, run, request, reference_factory=factory)
 
         catalogue = await load_funding_catalogue(factory)
         funder = next(f for f in catalogue.funders if f.id == created.funder_id)
@@ -125,7 +125,10 @@ async def test_created_template_round_trips_through_structure_with_unicode_and_d
     from app.persistence.concept_notes.structure import structure_snapshot
     from app.persistence.concept_notes.workspace import normalize_template_chapters
 
-    async with _workspace_repository() as (workspace, factory):
+    async with (
+        _workspace_repository() as (workspace, factory),
+        _ca_session() as session,
+    ):
         chapters = [
             TemplateChapterFields(title=title, description="x" * 4000)
             for title in ("Łódź", "Łódź", "Łódź-2", "!!!")
@@ -134,7 +137,7 @@ async def test_created_template_round_trips_through_structure_with_unicode_and_d
             template=TemplateFields(template_name="Form", chapter_schema=chapters)
         )
         run = SimpleNamespace(run_id=uuid4())
-        created = await create_funder(run, payload, reference_factory=factory)
+        created = await create_funder(session, run, payload, reference_factory=factory)
         catalogue = await load_funding_catalogue(factory)
         template = (
             next(f for f in catalogue.funders if f.id == created.funder_id)

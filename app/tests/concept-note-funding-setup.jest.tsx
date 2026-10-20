@@ -85,9 +85,7 @@ jest.unstable_mockModule(
         applicationContextLoading: false,
         hasApplicationTemplate: Boolean(applicationContext?.template),
         canStartDrafting: Boolean(
-          applicationContext?.funder &&
-          applicationContext.opportunity &&
-          applicationContext.template?.chapter_schema.length,
+          applicationContext?.template?.chapter_schema.length,
         ),
         isDraftRunning: workspaceState.draftStatus === "running",
         draft: workspaceState.draftStatus
@@ -128,6 +126,12 @@ jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-edits",
   () => ({
     useConceptNoteEdits: () => ({ proposals: [] }),
+  }),
+);
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-funder-import",
+  () => ({
+    useFunderImport: () => ({ phase: "idle", filename: null }),
   }),
 );
 jest.unstable_mockModule(

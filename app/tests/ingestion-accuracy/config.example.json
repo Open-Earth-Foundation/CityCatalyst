@@ -1,0 +1,21 @@
+{
+  "runs": 3,
+  "files": [
+    {
+      "id": "city-report-pdf",
+      "kind": "pdf",
+      "path": "/absolute/path/to/city-inventory-report.pdf",
+      "targetYear": 2021,
+      "reference": {
+        "total": 1000000,
+        "scopes": { "1": 600000, "2": 300000, "3": 100000 }
+      }
+    },
+    {
+      "id": "city-export-csv",
+      "kind": "csv",
+      "path": "/absolute/path/to/inventory.csv",
+      "targetYear": 2021
+    }
+  ]
+}

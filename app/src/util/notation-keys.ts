@@ -46,6 +46,19 @@ const LEGACY_REASON_TO_CANONICAL: Record<string, NotationKeyCanonical> = {
   "reason-IE": "included-elsewhere",
 };
 
+/**
+ * Human-readable labels as they appear in activity extracts (activity_name).
+ * Includes the common source typo "Not Occuring".
+ */
+const LABEL_TO_CANONICAL: Record<string, NotationKeyCanonical> = {
+  "not occurring": "no-occurrance",
+  "not occuring": "no-occurrance",
+  "not estimated": "not-estimated",
+  "included elsewhere": "included-elsewhere",
+  confidential: "confidential-information",
+  "confidential information": "confidential-information",
+};
+
 /** Normalize any known spelling to the canonical kebab DB/API form. */
 export function toCanonical(
   input?: string | null,
@@ -70,6 +83,11 @@ export function toCanonical(
   );
   if (reasonMatch) {
     return reasonMatch[1];
+  }
+
+  // Activity-column labels ("Not Occurring", "Not Occuring", …)
+  if (lower in LABEL_TO_CANONICAL) {
+    return LABEL_TO_CANONICAL[lower];
   }
 
   return null;

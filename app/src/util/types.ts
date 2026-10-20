@@ -985,6 +985,8 @@ export interface ImportRowPreview {
   totalRows: number;
   importedRows: number;
   skippedRows: number;
+  /** Counts of skipped rows by reason, for the review summary line. */
+  skippedByIssue: Partial<Record<ImportRowIssue, number>>;
   /** Only rows that are skipped or will not count toward completion. */
   rows: ImportRowOutcome[];
 }

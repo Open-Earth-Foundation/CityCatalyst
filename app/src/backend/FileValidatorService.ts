@@ -741,6 +741,26 @@ export default class FileValidatorService {
       }
     }
 
+    // Drop EF bindings that landed on gas / total columns (legacy reverse-match)
+    const gasIndexes = new Set(
+      [mapping.co2, mapping.ch4, mapping.n2o, mapping.totalCO2e].filter(
+        (index): index is number => index !== undefined,
+      ),
+    );
+    for (const efKey of [
+      "emissionFactorCO2",
+      "emissionFactorCH4",
+      "emissionFactorN2O",
+      "emissionFactorTotalCO2e",
+    ] as const) {
+      if (mapping[efKey] !== undefined && gasIndexes.has(mapping[efKey])) {
+        console.log(
+          `[FileValidator] Clearing "${efKey}" — it matched gas column index ${mapping[efKey]}`,
+        );
+        delete mapping[efKey];
+      }
+    }
+
     return mapping;
   }
 }

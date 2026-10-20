@@ -1,4 +1,4 @@
-"""Contracts for a focused, read-only gap-filling question."""
+"""Contracts for a focused, read-only set of gap-filling questions."""
 
 from typing import Annotated
 from uuid import UUID
@@ -17,13 +17,12 @@ class GapQuestionRequest(BaseModel):
     language: str = Field(default="en", pattern=r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
 
 
-class GapQuestionOutput(BaseModel):
-    """Possible categories are choices, never claims of source-backed facts."""
+class GapSubQuestion(BaseModel):
+    """One part of the gap; categories are choices, never source-backed facts."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     question: str = Field(min_length=1, max_length=160)
-    why_asking: str = Field(min_length=1, max_length=240)
     options: list[
         Annotated[
             str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)
@@ -39,3 +38,12 @@ class GapQuestionOutput(BaseModel):
         ):
             raise ValueError("Use no options or two to five distinct options")
         return value
+
+
+class GapQuestionOutput(BaseModel):
+    """Every still-missing part of one gap, so complete answers can close it."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    why_asking: str = Field(min_length=1, max_length=240)
+    questions: list[GapSubQuestion] = Field(min_length=1, max_length=4)

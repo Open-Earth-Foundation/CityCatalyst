@@ -9,6 +9,7 @@ from typing import Annotated, TypeVar
 from uuid import UUID
 
 from app.config.settings import get_settings
+from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session
 from app.models.cnb.chat_suggestions import (
     ChatSuggestionsRequest,
@@ -35,6 +36,7 @@ from app.models.cnb.funding_catalogue import (
 )
 from app.models.cnb.gap_question import GapQuestionOutput, GapQuestionRequest
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
+from app.persistence.concept_notes.edits import applied_gap_answers
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -123,7 +125,7 @@ async def propose_gap_question(
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
 ) -> GapQuestionOutput:
-    """Read an authorized gap and suggest answer categories without writing state."""
+    """Read an authorized gap and suggest questions for its still-missing parts."""
     run = await ConceptNoteRunService(session).get_authorized_run(
         run_id=run_id, requested_user_id=user_id, authorization=authorization
     )
@@ -141,6 +143,11 @@ async def propose_gap_question(
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
     if not payload.gap_id and payload.question not in (chapter.body_markdown or ""):
         raise HTTPException(status_code=404, detail="Gap question not found")
+    question = gap.question if gap else payload.question
+    async with get_cnb_reference_session_factory()() as cnb_session:
+        previous_answers = await applied_gap_answers(
+            cnb_session, run_id=run_id, question=question
+        )
     output = await _until_disconnect(
         request,
         generate_suggestion(
@@ -149,8 +156,9 @@ async def propose_gap_question(
                 "language": payload.language,
                 "chapter_title": chapter.title,
                 "chapter_excerpt": (chapter.body_markdown or "")[:12000],
-                "question": gap.question if gap else payload.question,
+                "question": question,
                 "why_asking": gap.why_asking if gap else "",
+                "previous_answers": [answer[:2000] for answer in previous_answers],
             },
             "cnb_gap_question",
             GapQuestionOutput,

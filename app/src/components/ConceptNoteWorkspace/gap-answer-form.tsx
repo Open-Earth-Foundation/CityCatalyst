@@ -30,15 +30,15 @@ interface GapAnswerFormProps {
   request: GapAnswerRequest;
   lng: string;
   disabled: boolean;
-  onAnswer: (answer: string) => void;
+  /** complete is true when every question has a substantive answer. */
+  onAnswer: (answer: string, complete: boolean) => void;
   onClose: () => void;
   onAddSource: () => void;
 }
 
-const questionSchema = z
+const subQuestionSchema = z
   .object({
     question: z.string().trim().min(1).max(160),
-    why_asking: z.string().trim().min(1).max(240),
     options: z
       .array(z.string().trim().min(1).max(80))
       .max(5)
@@ -51,7 +51,14 @@ const questionSchema = z
   })
   .strict();
 
-/** Ask a focused question; choices are user answers, not inferred project facts. */
+const questionSchema = z
+  .object({
+    why_asking: z.string().trim().min(1).max(240),
+    questions: z.array(subQuestionSchema).min(1).max(4),
+  })
+  .strict();
+
+/** Ask about each missing part; choices are user answers, not inferred project facts. */
 export function GapAnswerForm({
   runId,
   request,
@@ -67,19 +74,25 @@ export function GapAnswerForm({
   > | null>(null);
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
-  const [choice, setChoice] = useState<string | null>(null);
-  const [customAnswer, setCustomAnswer] = useState("");
+  const [choices, setChoices] = useState<Record<number, string>>({});
+  const [customAnswers, setCustomAnswers] = useState<Record<number, string>>(
+    {},
+  );
   const [details, setDetails] = useState("");
   const headingRef = useRef<HTMLParagraphElement>(null);
-  const prompt = question?.question ?? request.row.question;
   const whyAsking = question?.why_asking ?? request.row.whyAsking;
-  const options = question?.options ?? [];
-  const answer =
-    choice === "custom"
-      ? customAnswer.trim()
-      : choice === "unknown"
-        ? t("gap-not-decided")
-        : options.find((_, index) => choice === String(index));
+  // Without generated questions, the original gap is one free-text question.
+  const questions = question?.questions ?? [
+    { question: request.row.question, options: [] },
+  ];
+  const answers = questions.map(({ options }, index) => {
+    const choice = choices[index];
+    if (choice === "custom") return customAnswers[index]?.trim() || undefined;
+    if (choice === "unknown") return undefined;
+    return options.find((_, option) => choice === String(option));
+  });
+  const complete = answers.every(Boolean);
+  const answered = answers.some(Boolean);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -103,11 +116,17 @@ export function GapAnswerForm({
         const result = questionSchema.parse(await response.json());
         if (controller.signal.aborted) return;
         setQuestion(result);
-        setChoice(result.options.length ? null : "custom");
+        setChoices(
+          Object.fromEntries(
+            result.questions.flatMap(({ options }, index) =>
+              options.length ? [] : [[index, "custom"]],
+            ),
+          ),
+        );
       } catch {
         if (controller.signal.aborted) return;
         setQuestion(null);
-        setChoice("custom");
+        setChoices({ 0: "custom" });
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -135,9 +154,18 @@ export function GapAnswerForm({
       data-testid="concept-note-gap-answer-form"
       onSubmit={(event) => {
         event.preventDefault();
-        if (disabled || loading || !answer) return;
+        if (disabled || loading || !answered) return;
         onAnswer(
-          [`${prompt}\n${answer}`, details.trim()].filter(Boolean).join("\n\n"),
+          [
+            ...questions.map(
+              ({ question: text }, index) =>
+                `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
+            ),
+            details.trim(),
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
+          complete,
         );
       }}
     >
@@ -167,9 +195,8 @@ export function GapAnswerForm({
             fontWeight="semibold"
             color="content.primary"
             data-testid="concept-note-gap-question"
-            aria-live="polite"
           >
-            {loading ? t("gap-loading-question") : prompt}
+            {request.row.question}
           </Text>
           {!loading && whyAsking && (
             <Text mt={2} fontSize="body.sm" color="content.secondary">
@@ -198,38 +225,60 @@ export function GapAnswerForm({
             </Button>
           </Box>
         )}
-        {!loading && (
-          <RadioGroup
-            value={choice}
-            onValueChange={({ value }) => setChoice(value)}
-            aria-label={prompt}
-          >
-            <VStack align="stretch" gap={2}>
-              {options.map((option, index) => (
-                <Radio key={index} value={String(index)} alignItems="start">
-                  <Text fontSize="body.sm">{option}</Text>
-                </Radio>
-              ))}
-              <Radio value="custom">
-                {t(options.length ? "gap-other" : "gap-your-answer")}
-              </Radio>
-              <Radio value="unknown">{t("gap-not-decided")}</Radio>
+        {!loading &&
+          questions.map(({ question: text, options }, index) => (
+            <VStack
+              key={`${index}-${text}`}
+              align="stretch"
+              gap={2}
+              data-testid="concept-note-gap-subquestion"
+            >
+              <Text fontSize="body.md" fontWeight="semibold">
+                {questions.length > 1 ? `${index + 1}. ${text}` : text}
+              </Text>
+              <RadioGroup
+                value={choices[index] ?? null}
+                onValueChange={({ value }) =>
+                  value &&
+                  setChoices((current) => ({ ...current, [index]: value }))
+                }
+                aria-label={text}
+              >
+                <VStack align="stretch" gap={2}>
+                  {options.map((option, optionIndex) => (
+                    <Radio
+                      key={optionIndex}
+                      value={String(optionIndex)}
+                      alignItems="start"
+                    >
+                      <Text fontSize="body.sm">{option}</Text>
+                    </Radio>
+                  ))}
+                  <Radio value="custom">
+                    {t(options.length ? "gap-other" : "gap-your-answer")}
+                  </Radio>
+                  <Radio value="unknown">{t("gap-not-decided")}</Radio>
+                </VStack>
+              </RadioGroup>
+              {choices[index] === "custom" && (
+                <Textarea
+                  value={customAnswers[index] ?? ""}
+                  onChange={(event) =>
+                    setCustomAnswers((current) => ({
+                      ...current,
+                      [index]: event.target.value,
+                    }))
+                  }
+                  aria-label={text}
+                  placeholder={t("gap-answer-placeholder")}
+                  data-testid="concept-note-gap-custom-answer"
+                  maxLength={2000}
+                  rows={2}
+                  fontSize="body.sm"
+                />
+              )}
             </VStack>
-          </RadioGroup>
-        )}
-        {!loading && choice === "custom" && (
-          <Field label={t("gap-your-answer")} required>
-            <Textarea
-              value={customAnswer}
-              onChange={(event) => setCustomAnswer(event.target.value)}
-              placeholder={t("gap-answer-placeholder")}
-              data-testid="concept-note-gap-custom-answer"
-              maxLength={2000}
-              rows={3}
-              fontSize="body.sm"
-            />
-          </Field>
-        )}
+          ))}
         {!loading && (
           <Field label={t("gap-additional-details")}>
             <Textarea
@@ -255,13 +304,13 @@ export function GapAnswerForm({
         <Button
           type="submit"
           bg="content.link"
-          disabled={disabled || loading || !answer}
+          disabled={disabled || loading || !answered}
           data-testid="concept-note-gap-preview"
         >
           {t("gap-preview-change")}
         </Button>
         <Text fontSize="label.sm" color="content.tertiary" textAlign="center">
-          {t("gap-acceptance-hint")}
+          {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
         </Text>
       </VStack>
     </chakra.form>

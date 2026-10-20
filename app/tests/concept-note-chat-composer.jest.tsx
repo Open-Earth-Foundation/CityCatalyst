@@ -26,7 +26,9 @@ const closeGap = jest.fn();
 let isGenerating = false;
 const promptI18n = createInstance();
 const t = (key: string, values?: Record<string, unknown>) =>
-  key === "gap-answer-request" ? promptI18n.t(key, values) : key;
+  key === "gap-answer-request" || key === "gap-answer-complete-request"
+    ? promptI18n.t(key, values)
+    : key;
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
@@ -318,33 +320,70 @@ beforeEach(() => {
   fetchQuestion.mockResolvedValue({
     ok: true,
     json: async () => ({
-      question: "Which financing instrument?",
       why_asking: "Choose the support needed.",
-      options: ["Loan", "Grant", "Guarantee"],
+      questions: [
+        {
+          question: "Which financing instrument?",
+          options: ["Loan", "Grant", "Guarantee"],
+        },
+        { question: "What amount?", options: [] },
+      ],
     }),
   } as Response);
 });
 
+const subQuestion = (index: number) =>
+  container.querySelectorAll<HTMLElement>(
+    '[data-testid="concept-note-gap-subquestion"]',
+  )[index];
+
+async function writeAnswer(index: number, value: string) {
+  const answer = subQuestion(index).querySelector<HTMLTextAreaElement>(
+    '[data-testid="concept-note-gap-custom-answer"]',
+  )!;
+  const setValue = Object.getOwnPropertyDescriptor(
+    HTMLTextAreaElement.prototype,
+    "value",
+  )!.set!;
+  await act(async () => {
+    setValue.call(answer, value);
+    answer.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+
+const previewButton = () =>
+  container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-gap-preview"]',
+  )!;
+
 it("shows generated multiple-choice answers without claiming they are sourced facts", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(container.textContent).toContain("Which financing instrument?");
+  expect(subQuestion(0).textContent).toContain(
+    "1. Which financing instrument?",
+  );
+  expect(subQuestion(1).textContent).toContain("2. What amount?");
   expect(container.textContent).toContain("Guarantee");
   expect(container.textContent).toContain("gap-other");
   expect(container.textContent).toContain("gap-not-decided");
   expect(sendMessage).not.toHaveBeenCalled();
-  const preview = container.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-gap-preview"]',
-  )!;
+  const preview = previewButton();
   expect(preview.disabled).toBe(true);
   await act(async () =>
-    container
+    subQuestion(0)
       .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
       .click(),
   );
   expect(preview.disabled).toBe(false);
+  expect(container.textContent).toContain("gap-acceptance-hint");
   await act(async () => preview.click());
   const [content, scope] = sendMessage.mock.calls[0];
-  expect(content).toContain("My answer:\nWhich financing instrument?\nLoan");
+  // A partial answer keeps the gap's marker, so the gap stays open.
+  expect(content).toContain(
+    "My answer:\n1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-decided",
+  );
+  expect(content).toContain(
+    "Keep any information I have not supplied marked as missing",
+  );
   expect(content).toContain('"Financing plan"');
   expect(content).toContain(gapAnswer.row.question);
   expect(content).not.toContain("investment-plan");
@@ -354,6 +393,27 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
     focused_chapter_id: "financing-chapter",
   });
   expect(closeGap).toHaveBeenCalledTimes(1);
+});
+
+it("asks Clima to replace the gap marker once every question is answered", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  await writeAnswer(0, "Blended loan and grant");
+  await writeAnswer(1, "EUR 2 million");
+  expect(container.textContent).toContain("gap-complete-hint");
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain(
+    "My answers:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
+  );
+  expect(content).toContain(
+    "[Information needed: What is the requested instrument?]",
+  );
+  expect(content).not.toContain("marked as missing");
 });
 
 it("leaves skipped gaps untouched and accepts a custom answer without claiming a suggestion's source", async () => {
@@ -377,9 +437,8 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   fetchQuestion.mockResolvedValue({
     ok: true,
     json: async () => ({
-      question: "What amount?",
       why_asking: "Provide the exact amount.",
-      options: [],
+      questions: [{ question: "What amount?", options: [] }],
     }),
   } as Response);
   await renderPanel(contextStatus, "thread", {
@@ -407,26 +466,23 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   });
   await act(async () => answer.form!.requestSubmit());
   expect(sendMessage.mock.calls[0][0]).toContain(
-    "My answer:\nWhat amount?\nLoan",
+    "My answers:\n1. What amount?\nLoan",
   );
 });
 
 it("keeps an undecided answer explicit instead of selecting an invented fact", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
   await act(async () =>
-    container
+    subQuestion(0)
       .querySelector<HTMLInputElement>('input[value="unknown"]')!
       .click(),
   );
-  await act(async () =>
-    container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-gap-preview"]',
-      )!
-      .click(),
-  );
+  // Not decided yet alone is not an answer, so there is nothing to preview.
+  expect(previewButton().disabled).toBe(true);
+  await writeAnswer(1, "EUR 2 million");
+  await act(async () => previewButton().click());
   expect(sendMessage.mock.calls[0][0]).toContain(
-    "Which financing instrument?\ngap-not-decided",
+    "1. Which financing instrument?\ngap-not-decided",
   );
   expect(sendMessage.mock.calls[0][0]).toContain(
     "Keep any information I have not supplied marked as missing",
@@ -464,9 +520,10 @@ it("cancels stale generation when another gap is opened", async () => {
     resolveOld({
       ok: true,
       json: async () => ({
-        question: "Stale question?",
         why_asking: "Old",
-        options: ["Old", "Outdated"],
+        questions: [
+          { question: "Stale question?", options: ["Old", "Outdated"] },
+        ],
       }),
     } as Response),
   );

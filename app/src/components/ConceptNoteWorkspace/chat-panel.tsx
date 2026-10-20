@@ -375,14 +375,18 @@ export function ConceptNoteChatPanel({
     }
   }
 
-  async function answerGap(answer: string): Promise<void> {
+  async function answerGap(answer: string, complete = false): Promise<void> {
     if (!gapAnswer || chatDisabled) return;
-    const content = t("gap-answer-request", {
-      chapter: gapAnswer.chapterTitle,
-      question: gapAnswer.row.question,
-      answer,
-      interpolation: { escapeValue: false },
-    });
+    // Only a complete answer may replace the marker; that is what closes the gap.
+    const content = t(
+      complete ? "gap-answer-complete-request" : "gap-answer-request",
+      {
+        chapter: gapAnswer.chapterTitle,
+        question: gapAnswer.row.question,
+        answer,
+        interpolation: { escapeValue: false },
+      },
+    );
     const scope: EditScope = {
       kind: "auto",
       focused_chapter_id: gapAnswer.chapterId,
@@ -493,7 +497,7 @@ export function ConceptNoteChatPanel({
             request={gapAnswer}
             lng={lng}
             disabled={chatDisabled}
-            onAnswer={(answer) => void answerGap(answer)}
+            onAnswer={(answer, complete) => void answerGap(answer, complete)}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
           />

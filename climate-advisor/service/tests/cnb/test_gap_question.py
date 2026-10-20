@@ -5,7 +5,11 @@ from uuid import uuid4
 
 import pytest
 from app.config.settings import Settings, _load_llm_config
-from app.models.cnb.gap_question import GapQuestionOutput, GapQuestionRequest
+from app.models.cnb.gap_question import (
+    GapQuestionOutput,
+    GapQuestionRequest,
+    GapSubQuestion,
+)
 from app.routes.concept_note_runs import propose_gap_question
 from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
@@ -17,8 +21,15 @@ from pydantic import ValidationError
 )
 def test_rejects_single_or_invalid_choices(options):
     with pytest.raises(ValidationError):
+        GapSubQuestion(question="Instrument?", options=options)
+
+
+@pytest.mark.parametrize("count", [0, 5])
+def test_requires_one_to_four_questions(count):
+    with pytest.raises(ValidationError):
         GapQuestionOutput(
-            question="Instrument?", why_asking="Support needed", options=options
+            why_asking="Support needed",
+            questions=[{"question": f"Part {i}?", "options": []} for i in range(count)],
         )
 
 
@@ -26,9 +37,11 @@ def test_rejects_single_or_invalid_choices(options):
 async def test_generates_validated_question_with_dedicated_prompt(monkeypatch, options):
     settings = Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
     output = {
-        "question": "Instrument?",
         "why_asking": "Support needed",
-        "options": options,
+        "questions": [
+            {"question": "Instrument?", "options": options},
+            {"question": "Amount?", "options": []},
+        ],
     }
     client = AsyncMock()
     client.__aenter__.return_value = client
@@ -43,7 +56,7 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch, o
     )
     assert result.model_dump() == output
     messages = client.chat.completions.create.call_args.kwargs["messages"]
-    assert "ONE short, focused question" in messages[0]["content"]
+    assert "one short question" in messages[0]["content"]
     assert json.loads(messages[1]["content"]) == {"question": "Original gap"}
 
 
@@ -74,16 +87,24 @@ def gap_route(monkeypatch):
     )
     generate = AsyncMock(
         return_value=GapQuestionOutput(
-            question="Instrument?",
             why_asking="Support needed",
-            options=["Loan", "Grant"],
+            questions=[{"question": "Instrument?", "options": ["Loan", "Grant"]}],
         )
     )
     monkeypatch.setattr("app.routes.concept_note_runs.generate_suggestion", generate)
+    previous = AsyncMock(return_value=["Earlier answer " * 300])
+    monkeypatch.setattr("app.routes.concept_note_runs.applied_gap_answers", previous)
+    cnb_session = AsyncMock()
+    cnb_session.__aenter__.return_value = cnb_session
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
+        Mock(return_value=Mock(return_value=cnb_session)),
+    )
     return SimpleNamespace(
         authorize=authorize,
         chapter=chapter,
         generate=generate,
+        previous=previous,
         args={
             "run_id": run.run_id,
             "payload": GapQuestionRequest(
@@ -128,10 +149,13 @@ async def test_rejects_foreign_or_stale_gap(gap_route, change, status):
 
 async def test_uses_server_question_and_bounded_chapter_without_writing(gap_route):
     result = await propose_gap_question(**gap_route.args)
-    assert result.options == ["Loan", "Grant"]
+    assert result.questions[0].options == ["Loan", "Grant"]
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
     assert len(context["chapter_excerpt"]) == 12000
+    # Earlier accepted answers steer the model away from re-asking them.
+    assert gap_route.previous.call_args.kwargs["question"] == "Original question"
+    assert [len(answer) for answer in context["previous_answers"]] == [2000]
     gap_route.args["session"].commit.assert_not_called()
 
 

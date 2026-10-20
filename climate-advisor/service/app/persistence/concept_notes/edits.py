@@ -757,3 +757,29 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "updated_at": row.updated_at,
         }
     )
+
+
+async def applied_gap_answers(
+    session: AsyncSession, *, run_id: UUID, question: str, limit: int = 3
+) -> list[str]:
+    """Return recent accepted gap-answer requests that quote this gap's question."""
+    # shortcut: matches the quoted question text, not a gap ID; store gap_id on
+    # proposals if answers ever need exact attribution.
+    return list(
+        (
+            await session.scalars(
+                select(ConceptNoteEditProposal.instruction)
+                .where(
+                    ConceptNoteEditProposal.run_id == run_id,
+                    ConceptNoteEditProposal.status.in_(
+                        ["applied", "partially_applied"]
+                    ),
+                    ConceptNoteEditProposal.instruction.contains(
+                        question, autoescape=True
+                    ),
+                )
+                .order_by(ConceptNoteEditProposal.created_at.desc())
+                .limit(limit)
+            )
+        ).all()
+    )

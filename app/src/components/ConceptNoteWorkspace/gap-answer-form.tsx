@@ -320,9 +320,13 @@ export function GapAnswerForm({
                     </Radio>
                   ))}
                   <Radio value="custom">
-                    {t(options.length ? "gap-other" : "gap-your-answer")}
+                    <Text fontSize="body.sm">
+                      {t(options.length ? "gap-other" : "gap-your-answer")}
+                    </Text>
                   </Radio>
-                  <Radio value="unknown">{t("gap-not-decided")}</Radio>
+                  <Radio value="unknown">
+                    <Text fontSize="body.sm">{t("gap-not-decided")}</Text>
+                  </Radio>
                 </VStack>
               </RadioGroup>
               {choices[index] === "custom" && (

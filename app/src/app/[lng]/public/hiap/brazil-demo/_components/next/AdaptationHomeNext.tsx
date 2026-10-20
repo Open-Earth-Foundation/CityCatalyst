@@ -25,6 +25,7 @@ import { SCREEN_IDS, trackHref } from "../../_lib/hrefs";
 import { RISK_CELLS } from "../../_lib/riskCells";
 import { ACTION_BY_ID } from "../../_lib/actions";
 import { buildDemoReport } from "../../_lib/report";
+import { downloadCsv } from "../../_lib/csv";
 import type { NotRankedAction } from "../../_lib/ranking";
 import { pick } from "../../_lib/localized";
 import { DemoHero } from "../DemoHero";
@@ -42,25 +43,12 @@ import {
   applyCityOrder,
   buildRows,
   EMPTY_FILTERS,
+  filtersFromSearch,
+  filtersToSearch,
   matchesFilters,
   type RankedRow,
   type RowFilters,
 } from "./rows";
-
-function downloadCsv(filename: string, headers: string[], rows: string[][]) {
-  const escape = (v: string) =>
-    /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-  const text = [headers, ...rows]
-    .map((r) => r.map(escape).join(","))
-    .join("\n");
-  const blob = new Blob([`﻿${text}`], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 /** A section of the home: title, one line, content. The same frame four times. */
 function Section({
@@ -117,7 +105,22 @@ export function AdaptationHomeNext({
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
-  const [filters, setFilters] = useState<RowFilters>(EMPTY_FILTERS);
+  // Filters live in the URL so a filtered view can be shared. The list only
+  // renders after hydration (isReady), so reading window here is safe.
+  const [filters, setFiltersState] = useState<RowFilters>(() =>
+    typeof window === "undefined"
+      ? EMPTY_FILTERS
+      : filtersFromSearch(window.location.search),
+  );
+  const setFilters = useCallback((next: RowFilters) => {
+    setFiltersState(next);
+    const qs = filtersToSearch(next);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${qs ? `?${qs}` : ""}`,
+    );
+  }, []);
   const [openId, setOpenId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -349,8 +352,7 @@ export function AdaptationHomeNext({
                 body={t("next-section-list-body")}
               >
                 <RankedActionsTable
-                  rows={visibleRows}
-                  totalRanked={rows.length}
+                  rows={rows}
                   cityOrder={cityOrder}
                   notRanked={footnote}
                   filters={filters}

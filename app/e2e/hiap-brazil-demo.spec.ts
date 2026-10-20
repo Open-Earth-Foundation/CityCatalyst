@@ -130,7 +130,7 @@ test.describe("BR-N1 proposal home", () => {
       .click();
     await page.keyboard.press("Escape");
 
-    await expect(page.getByText(/of 10 match the filters/)).toBeVisible();
+    await expect(page.getByText(/^Showing \d of 10/)).toBeVisible();
     const filtered = await rowNames(page);
     expect(filtered.length).toBeGreaterThan(0);
     expect(filtered.length).toBeLessThan(10);
@@ -139,6 +139,88 @@ test.describe("BR-N1 proposal home", () => {
 
     await page.getByRole("button", { name: "Clear filters" }).click();
     await expect.poll(() => rowNames(page)).toEqual(before);
+  });
+
+  test("facets show live counts, disable dead ends, and live in the URL", async ({
+    page,
+  }) => {
+    await openHome(page);
+
+    // Pick "Low cost": the list shrinks to exactly the count the option showed.
+    await page.getByRole("button", { name: /^Cost/ }).click();
+    const low = page.getByRole("menuitemcheckbox", { name: /^Low cost/ });
+    const lowCount = Number((await low.innerText()).match(/(\d+)\s*$/)![1]);
+    expect(lowCount).toBeGreaterThan(0);
+    await low.click();
+    await page.keyboard.press("Escape");
+    await expect.poll(async () => (await rowNames(page)).length).toBe(lowCount);
+    await expect(page).toHaveURL(/[?&]cost=low/);
+    await expect(
+      page.getByRole("button", { name: /Remove filter Cost: Low cost/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(`Showing ${lowCount} of 10`, { exact: false }),
+    ).toBeVisible();
+
+    // With low cost on, sectors that would leave nothing are disabled.
+    await page.getByRole("button", { name: /^Sector/ }).click();
+    expect(
+      await page.getByRole("menuitemcheckbox", { disabled: true }).count(),
+    ).toBeGreaterThan(0);
+    await page.keyboard.press("Escape");
+
+    // The view survives a reload, because it lives in the URL.
+    await page.reload();
+    await expect(page.getByText("All actions, in order")).toBeVisible();
+    await dismissOverlays(page);
+    await expect.poll(async () => (await rowNames(page)).length).toBe(lowCount);
+
+    // Removing the chip restores the full list and cleans the URL.
+    await page
+      .getByRole("button", { name: /Remove filter Cost: Low cost/ })
+      .click();
+    await expect.poll(async () => (await rowNames(page)).length).toBe(10);
+    await expect(page).not.toHaveURL(/cost=/);
+  });
+
+  test("a shared link opens the same filtered view", async ({ page }) => {
+    await page.goto(`${home()}?level=high`);
+    await expect(page.getByText("All actions, in order")).toBeVisible({
+      timeout: 90_000,
+    });
+    await dismissOverlays(page);
+    await expect(
+      page.getByRole("button", { name: /Remove filter Risk level: High/ }),
+    ).toBeVisible();
+    const names = await rowNames(page);
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.length).toBeLessThan(10);
+    const risk = page.getByRole("table").locator("tbody tr td:nth-child(3)");
+    for (const text of await risk.allInnerTexts()) expect(text).toMatch(/High/);
+  });
+
+  test("sorting by risk level puts high-risk actions first", async ({
+    page,
+  }) => {
+    await openHome(page);
+    await page.getByRole("button", { name: /^Sort by/ }).click();
+    await page
+      .getByRole("menuitemradio", { name: /Risk level, highest first/ })
+      .click();
+    const first = page.getByRole("table").locator("tbody tr").first();
+    await expect(first.locator("td").nth(2)).toContainText("High");
+  });
+
+  test("every assessment column explains itself", async ({ page }) => {
+    await openHome(page);
+    for (const tip of [
+      "Indicative investment band: low, medium or high.",
+      "How strongly federal adaptation policy backs the action.",
+    ]) {
+      expect(
+        await page.getByRole("button", { name: tip }).count(),
+      ).toBeGreaterThan(0);
+    }
   });
 
   test("the city reworks the order and it persists", async ({ page }) => {
@@ -217,6 +299,9 @@ test.describe("BR-N1 proposal home", () => {
     await expect(drawer.getByText(/% weight/).first()).toBeHidden();
     await drawer.getByRole("button", { name: "Show the calculation" }).click();
     await expect(drawer.getByText(/% weight/).first()).toBeVisible();
+    await expect(
+      drawer.getByRole("link", { name: "Methodology and data sources" }),
+    ).toBeVisible();
 
     for (const link of [
       "Legal detail",
@@ -309,6 +394,17 @@ test.describe("BR-N1 proposal home", () => {
       );
       expect(overflow).toBeLessThanOrEqual(1);
 
+      // The cookie banner is reachable with a real click (the notice sits under it).
+      await page.goto(home());
+      await expect(page.getByText("All actions, in order")).toBeVisible();
+      const decline = page.getByRole("button", {
+        name: "Decline",
+        exact: true,
+      });
+      if (await decline.isVisible().catch(() => false)) {
+        await decline.click({ timeout: 5_000 });
+      }
+
       // Preferences open as a drawer.
       await page
         .getByRole("button", { name: /adjust preferences/i })
@@ -378,6 +474,58 @@ test.describe("Quick fixes on the current screens", () => {
     expect(
       (await page.locator("body").innerText()).toLowerCase(),
     ).not.toContain("risk cell");
+  });
+
+  test("BR-A1 shows one table, without the duplicate chart", async ({
+    page,
+  }) => {
+    await page.goto(`${DEMO}/sobral/adaptation/preflight/`);
+    await expect(
+      page.getByRole("button", { name: /generate recommendations/i }),
+    ).toBeVisible({ timeout: 90_000 });
+    await dismissOverlays(page);
+    await page
+      .getByRole("button", { name: /generate recommendations/i })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Ranked actions" }),
+    ).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByText("Ranking at a glance")).toHaveCount(0);
+  });
+
+  test("BR-A2 exports the risk profile, honouring the sector filter", async ({
+    page,
+  }) => {
+    await page.goto(`${DEMO}/sobral/adaptation/risk/`);
+    await expect(
+      page.getByRole("heading", { name: "Twelve hazards" }),
+    ).toBeVisible({
+      timeout: 90_000,
+    });
+    await dismissOverlays(page);
+    const lines = async () => {
+      const dl = page.waitForEvent("download");
+      await page.getByRole("button", { name: /export csv/i }).click();
+      const file = await dl;
+      return (await (await file.createReadStream()).toArray())
+        .join("")
+        .trim()
+        .split("\n").length;
+    };
+    expect(await lines()).toBe(13);
+    await page.getByText("Health", { exact: true }).first().click();
+    expect(await lines()).toBe(5);
+  });
+
+  test("BR-A8 shows the funding-gap split as one bar", async ({ page }) => {
+    await page.goto(`${DEMO}/sobral/adaptation/finance/`);
+    await expect(page.getByText("Funding gap per action")).toBeVisible({
+      timeout: 90_000,
+    });
+    await expect(page.getByText(/Self-funded or credit/).first()).toBeVisible();
+    await expect(page.getByText(/What the labels mean/)).toHaveCount(0);
   });
 
   test("BR-A3 has select all and clear on every list", async ({ page }) => {

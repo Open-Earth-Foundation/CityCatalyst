@@ -18,13 +18,14 @@ import { Overline } from "@/components/package/Texts/Overline";
 import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
+import { MeedShareBar } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedShareBar";
 import {
   MeedStatusTag,
   type MeedTone,
 } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
-import { useDemoT } from "../../../_lib/useDemoT";
+import { useDemoT, useTrackT } from "../../../_lib/useDemoT";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTATION_ACTIONS } from "../../../_lib/actions";
 import {
@@ -65,6 +66,7 @@ export default function Page(props: {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
+  const tResults = useTrackT(lng, "adaptation", "meed-results");
   const credit = creditScreen(city.capag);
   const bucket = pushBucket(city.financePush);
   const rows = ADAPTATION_ACTIONS.filter((a) => a.kind === "direct").map(
@@ -167,6 +169,40 @@ export default function Page(props: {
             {t("finance-tier-pending")}
           </MeedStatusTag>
         </HStack>
+        <Box px="l" py="m" borderBottomWidth="1px" borderColor="border.overlay">
+          <MeedShareBar
+            segments={[
+              {
+                label: t("next-funding-bin-self"),
+                value: rows.filter(
+                  ({ f }) =>
+                    f.gap === "self_deliverable" ||
+                    f.gap === "credit_available",
+                ).length,
+                color: "interactive.tertiary",
+              },
+              {
+                label: t("next-funding-bin-support"),
+                value: rows.filter(
+                  ({ f }) =>
+                    f.gap === "needs_cofinance" ||
+                    f.gap === "needs_technical_assistance",
+                ).length,
+                color: "sentiment.warningDefault",
+              },
+              {
+                label: t("next-funding-bin-both"),
+                value: rows.filter(
+                  ({ f }) => f.gap === "needs_cofinance_and_ta",
+                ).length,
+                color: "sentiment.negativeDefault",
+              },
+            ]}
+            ariaLabel={t("finance-table-title")}
+            tipTitle={t("finance-table-title")}
+            t={tResults}
+          />
+        </Box>
         <Table.Root size="md">
           <Table.Header>
             <Table.Row>

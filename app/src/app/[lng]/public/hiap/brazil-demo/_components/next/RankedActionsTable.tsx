@@ -24,9 +24,7 @@ import {
 import type { TFunction } from "i18next";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
-import { Overline } from "@/components/package/Texts/Overline";
 import {
-  MenuCheckboxItem,
   MenuContent,
   MenuItem,
   MenuRadioItem,
@@ -36,19 +34,16 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
-import { GenerateReportControl } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import type { NotRankedAction } from "../../_lib/ranking";
 import type { useLabels } from "../../_lib/useLabels";
 import { pick } from "../../_lib/localized";
-import {
-  ADAPTA_SECTORS,
-  RISK_CELLS,
-  SECTOR_LABEL,
-  UNCOVERED_HAZARD_LABEL,
-} from "../../_lib/riskCells";
-import { CO_BENEFIT_KEYS } from "../../_lib/coBenefits";
+import { SECTOR_LABEL, UNCOVERED_HAZARD_LABEL } from "../../_lib/riskCells";
+import { relatedActions } from "../../_lib/relationships";
+import { FilterBar } from "./FilterBar";
+import { ReportControl } from "./ReportControl";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
 import { TextLink } from "./TextLink";
@@ -56,78 +51,15 @@ import {
   applyCityOrder,
   COST_TONE,
   GAP_TONE,
-  hasActiveFilters,
+  matchesFilters,
   movedCount,
   POLICY_TONE,
   SORT_KEYS,
   sortRows,
-  EMPTY_FILTERS,
   type RankedRow,
   type RowFilters,
   type SortKey,
 } from "./rows";
-
-/** One dropdown of checkboxes: the filter control of the list. */
-function FilterMenu({
-  label,
-  options,
-  selected,
-  onChange,
-}: {
-  label: string;
-  options: { value: string; label: string }[];
-  selected: string[];
-  onChange: (next: string[]) => void;
-}) {
-  return (
-    <MenuRoot closeOnSelect={false} positioning={{ placement: "bottom-start" }}>
-      <MenuTrigger asChild>
-        <chakra.button
-          type="button"
-          display="inline-flex"
-          alignItems="center"
-          gap="xs"
-          px="m"
-          py="s"
-          borderRadius="pill"
-          borderWidth="1px"
-          borderColor={selected.length ? "content.link" : "border.neutral"}
-          bg={selected.length ? "background.neutral" : "base.light"}
-          color={selected.length ? "content.link" : "content.secondary"}
-          fontFamily="heading"
-          fontSize="label.md"
-          fontWeight="medium"
-          _hover={{ borderColor: "content.link" }}
-          _focusVisible={FOCUS_RING}
-        >
-          <span>
-            {label}
-            {selected.length ? ` · ${selected.length}` : ""}
-          </span>
-          <Icon as={LuChevronDown} boxSize="14px" />
-        </chakra.button>
-      </MenuTrigger>
-      <MenuContent maxH="320px" overflowY="auto">
-        {options.map((o) => (
-          <MenuCheckboxItem
-            key={o.value}
-            value={o.value}
-            checked={selected.includes(o.value)}
-            onCheckedChange={(checked) =>
-              onChange(
-                checked
-                  ? [...selected, o.value]
-                  : selected.filter((v) => v !== o.value),
-              )
-            }
-          >
-            {o.label}
-          </MenuCheckboxItem>
-        ))}
-      </MenuContent>
-    </MenuRoot>
-  );
-}
 
 function RowMenu({
   row,
@@ -194,7 +126,6 @@ function RowMenu({
  */
 export function RankedActionsTable({
   rows,
-  totalRanked,
   cityOrder,
   notRanked,
   filters,
@@ -219,7 +150,6 @@ export function RankedActionsTable({
 }: {
   /** All ranked rows, in suggested order; the list filters and orders them. */
   rows: RankedRow[];
-  totalRanked: number;
   cityOrder?: string[];
   notRanked?: NotRankedAction[];
   filters: RowFilters;
@@ -256,29 +186,43 @@ export function RankedActionsTable({
   const isNarrow =
     (useBreakpointValue({ base: true, lg: false }) ?? false) || forceList;
 
+  const visible = useMemo(
+    () => rows.filter((r) => matchesFilters(r, filters)),
+    [rows, filters],
+  );
   const ordered = useMemo(
-    () => (hasOwnOrder ? applyCityOrder(rows, order) : sortRows(rows, sort)),
-    [rows, order, hasOwnOrder, sort],
+    () =>
+      hasOwnOrder ? applyCityOrder(visible, order) : sortRows(visible, sort),
+    [visible, order, hasOwnOrder, sort],
   );
   const moved = useMemo(
     () => (hasOwnOrder ? movedCount(rows, applyCityOrder(rows, order)) : 0),
     [rows, order, hasOwnOrder],
   );
-  const filtered = hasActiveFilters(filters);
   const menuProps = { t, onOpen, onMove, onPin, onExclude };
-
-  const sectorOptions = ADAPTA_SECTORS.map((k) => ({
-    value: k,
-    label: labels.sector(k),
-  }));
-  const hazardOptions = RISK_CELLS.map((c) => ({
-    value: c.key,
-    label: pick(c.label, lng),
-  }));
-  const coBenefitOptions = CO_BENEFIT_KEYS.map((k) => ({
-    value: k,
-    label: labels.coBenefit(k),
-  }));
+  const summary = t("next-summary", {
+    shown: visible.length,
+    total: rows.length,
+    high: visible.filter((r) => r.riskTone === "negative").length,
+    low: visible.filter((r) => r.cost === "low").length,
+    self: visible.filter(
+      (r) =>
+        r.funding === "self_deliverable" || r.funding === "credit_available",
+    ).length,
+  });
+  const dependsOn = (row: RankedRow) =>
+    relatedActions(row.action)
+      .filter((r) => r.role === "requires")
+      .map((r) => pick(r.action.name, lng));
+  const header = (key: string) => (
+    <HStack gap="xs" alignItems="center">
+      <span>{t(`next-col-${key}`)}</span>
+      <MeedInfoTip
+        content={t(`next-info-${key}`)}
+        ariaLabel={t(`next-info-${key}`)}
+      />
+    </HStack>
+  );
 
   const levels = (row: RankedRow) => (
     <>
@@ -299,59 +243,52 @@ export function RankedActionsTable({
         boxShadow="1dp"
         overflow="hidden"
       >
-        {/* Controls: narrow, sort, export, report */}
+        {/* Controls: filters; then what is shown, sort, export, report */}
         <VStack
           alignItems="stretch"
-          gap="m"
+          gap="l"
           px="xl"
           py="l"
           borderBottomWidth="1px"
           borderColor="border.overlay"
         >
+          <FilterBar
+            rows={rows}
+            filters={filters}
+            onChange={onFiltersChange}
+            lng={lng}
+            t={t}
+            labels={labels}
+          />
           <HStack
-            gap="m"
             justifyContent="space-between"
-            alignItems="center"
+            alignItems="flex-start"
+            gap="m"
             flexWrap="wrap"
+            pt="l"
+            borderTopWidth="1px"
+            borderColor="border.overlay"
           >
-            <HStack gap="s" alignItems="center" flexWrap="wrap">
-              <Overline color="content.tertiary">
-                {t("next-filter-label")}
-              </Overline>
-              <FilterMenu
-                label={t("next-filter-sectors")}
-                options={sectorOptions}
-                selected={filters.sectors}
-                onChange={(next) =>
-                  onFiltersChange({ ...filters, sectors: next })
-                }
-              />
-              <FilterMenu
-                label={t("next-filter-hazards")}
-                options={hazardOptions}
-                selected={filters.hazards}
-                onChange={(next) =>
-                  onFiltersChange({ ...filters, hazards: next })
-                }
-              />
-              <FilterMenu
-                label={t("next-filter-cobenefits")}
-                options={coBenefitOptions}
-                selected={filters.coBenefits}
-                onChange={(next) =>
-                  onFiltersChange({ ...filters, coBenefits: next })
-                }
-              />
-              {filtered && (
-                <TextLink
-                  arrow={false}
-                  muted
-                  onClick={() => onFiltersChange(EMPTY_FILTERS)}
-                >
-                  {t("next-filters-clear")}
-                </TextLink>
-              )}
-            </HStack>
+            <VStack alignItems="flex-start" gap="xs" flex="1" minW="260px">
+              <BodySmall color="content.primary" fontWeight="semibold">
+                {summary}
+              </BodySmall>
+              <BodySmall color="content.secondary">
+                {hasOwnOrder
+                  ? t("next-order-note", { count: moved })
+                  : t("next-order-hint")}
+              </BodySmall>
+              <HStack gap="l" pt="xs">
+                {hasOwnOrder && (
+                  <TextLink arrow={false} onClick={onResetOrder}>
+                    {t("next-order-reset")}
+                  </TextLink>
+                )}
+                {onAdjust && (
+                  <TextLink onClick={onAdjust}>{t("next-customize")}</TextLink>
+                )}
+              </HStack>
+            </VStack>
             <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
               {!hasOwnOrder && (
                 <MenuRoot
@@ -397,36 +334,13 @@ export function RankedActionsTable({
               >
                 {t("next-export-csv")}
               </MeedButton>
-              <GenerateReportControl
+              <ReportControl
                 selectedCount={selectedIds.length}
                 isGenerating={report.isGenerating}
-                progress={report.progress}
                 onGenerate={report.onGenerate}
                 t={tResults}
                 hintId="next-report-hint"
               />
-            </HStack>
-          </HStack>
-          <HStack justifyContent="space-between" gap="m" flexWrap="wrap">
-            <BodySmall color="content.secondary">
-              {hasOwnOrder
-                ? t("next-order-note", { count: moved })
-                : filtered
-                  ? t("next-table-filtered", {
-                      shown: rows.length,
-                      total: totalRanked,
-                    })
-                  : t("next-order-hint")}
-            </BodySmall>
-            <HStack gap="l">
-              {hasOwnOrder && (
-                <TextLink arrow={false} onClick={onResetOrder}>
-                  {t("next-order-reset")}
-                </TextLink>
-              )}
-              {onAdjust && (
-                <TextLink onClick={onAdjust}>{t("next-customize")}</TextLink>
-              )}
             </HStack>
           </HStack>
         </VStack>
@@ -472,6 +386,13 @@ export function RankedActionsTable({
                             level: t(`risk-level-${row.riskTone}`),
                           })}
                         </Level>
+                        {dependsOn(row).length > 0 && (
+                          <BodySmall color="content.secondary">
+                            {t("next-depends-on", {
+                              names: dependsOn(row).join(", "),
+                            })}
+                          </BodySmall>
+                        )}
                       </VStack>
                     </HStack>
                     <RowMenu row={row} name={name} {...menuProps} />
@@ -497,22 +418,22 @@ export function RankedActionsTable({
                 </Table.ColumnHeader>
                 <Table.ColumnHeader>{t("next-col-action")}</Table.ColumnHeader>
                 <Table.ColumnHeader w="190px">
-                  {t("next-col-risk")}
+                  {header("risk")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader w="130px">
-                  {t("next-col-cost")}
+                  {header("cost")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader w="190px">
-                  {t("next-col-legal")}
+                  {header("legal")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader w="190px">
-                  {t("next-col-funding")}
+                  {header("funding")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader
                   w="150px"
                   display={{ base: "none", "2xl": "table-cell" }}
                 >
-                  {t("next-col-policy")}
+                  {header("policy")}
                 </Table.ColumnHeader>
                 <Table.ColumnHeader w="96px" pr="xl" />
               </Table.Row>
@@ -539,6 +460,13 @@ export function RankedActionsTable({
                         <SectorLabel sector={row.action.sector} size="14px">
                           {row.sectorLabel}
                         </SectorLabel>
+                        {dependsOn(row).length > 0 && (
+                          <BodySmall color="content.secondary">
+                            {t("next-depends-on", {
+                              names: dependsOn(row).join(", "),
+                            })}
+                          </BodySmall>
+                        )}
                       </VStack>
                     </Table.Cell>
                     <Table.Cell py="l">

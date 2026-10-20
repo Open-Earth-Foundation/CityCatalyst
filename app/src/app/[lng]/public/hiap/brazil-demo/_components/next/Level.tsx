@@ -4,6 +4,7 @@ import { Box, HStack } from "@chakra-ui/react";
 import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 
 const DOT: Record<MeedTone, string> = {
   positive: "interactive.tertiary",
@@ -24,11 +25,14 @@ export function Level({
   tone,
   children,
   label,
+  info,
 }: {
   tone: MeedTone;
   children: React.ReactNode;
   /** Optional eyebrow above the level, for card and drawer facts. */
   label?: string;
+  /** What the dimension means, shown as an "i" tip beside the label. */
+  info?: string;
 }) {
   const row = (
     <HStack gap="s" alignItems="center">
@@ -41,9 +45,10 @@ export function Level({
   if (!label) return row;
   return (
     <Box>
-      <Overline color="content.tertiary" mb="xs">
-        {label}
-      </Overline>
+      <HStack gap="xs" alignItems="center" mb="xs">
+        <Overline color="content.tertiary">{label}</Overline>
+        {info && <MeedInfoTip content={info} ariaLabel={info} />}
+      </HStack>
       {row}
     </Box>
   );

@@ -17,6 +17,7 @@ export function TextLink({
   arrow = true,
   disabled = false,
   muted = false,
+  external = false,
 }: {
   children: React.ReactNode;
   href?: string;
@@ -25,6 +26,8 @@ export function TextLink({
   disabled?: boolean;
   /** Secondary colour for less important actions (Clear, Reset). */
   muted?: boolean;
+  /** Opens in a new tab (documents outside the app). */
+  external?: boolean;
 }) {
   const color = disabled
     ? "content.tertiary"
@@ -47,7 +50,12 @@ export function TextLink({
         fontWeight="semibold"
         _focusVisible={FOCUS_RING}
       >
-        <NextLink href={href}>{body}</NextLink>
+        <NextLink
+          href={href}
+          {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+        >
+          {body}
+        </NextLink>
       </Link>
     );
   }

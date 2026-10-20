@@ -8,6 +8,7 @@ import { BodySmall } from "@/components/package/Texts/Body";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { DetailPanel } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/DetailPanel";
 import { FullRanking } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/FullRanking";
+import { RankingTable } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/RankingTable";
 import { ResultsHeader } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ResultsHeader";
 import { TopPicks } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/TopPicks";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
@@ -17,7 +18,6 @@ import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { useLabels } from "../_lib/useLabels";
 import { trackHref } from "../_lib/hrefs";
 import { ACTION_BY_ID } from "../_lib/actions";
-import { SECTOR_HEX } from "../_lib/riskCells";
 import { MITIGATION_SHIFTS } from "../_lib/mitigation";
 import { buildDemoReport } from "../_lib/report";
 import { pick } from "../_lib/localized";
@@ -25,6 +25,7 @@ import { NotRankedLane } from "./NotRankedLane";
 import { AdaptationDrawerSections } from "./AdaptationDrawerSections";
 import { RankingSettings } from "./RankingSettings";
 import { ShiftInterventionList } from "./ShiftInterventionList";
+import { ReportControl } from "./next/ReportControl";
 
 /**
  * Everything a ranking produces, on one screen: the census, the configuration
@@ -137,6 +138,17 @@ export function RankingView({
           rankedCount={ranked.length}
           excludedCount={adaptation ? adaptation.notRanked.length : null}
           t={tResults}
+          trailing={
+            track === "adaptation" ? (
+              <ReportControl
+                selectedCount={selectedIds.length}
+                isGenerating={isGenerating}
+                onGenerate={generateReport}
+                t={tResults}
+                hintId="a1-report-hint"
+              />
+            ) : undefined
+          }
         />
 
         <RankingSettings
@@ -171,7 +183,7 @@ export function RankingView({
                 block: "start",
               })
             }
-            {...reportProps}
+            {...(track === "adaptation" ? {} : reportProps)}
           />
         </VStack>
 
@@ -188,23 +200,33 @@ export function RankingView({
         )}
 
         <VStack alignItems="stretch" gap="s">
-          <FullRanking
-            ref={rankingRef}
-            actions={ranked}
-            index={index}
-            weights={weights}
-            t={tResults}
-            onSelect={setOpen}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
-            colorOf={
-              track === "adaptation"
-                ? (tag) =>
-                    tag ? SECTOR_HEX[tag as keyof typeof SECTOR_HEX] : undefined
-                : undefined
-            }
-            {...reportProps}
-          />
+          {track === "adaptation" ? (
+            // One table only: the review found the glance chart repeated it
+            // on a different colour scale.
+            <Box ref={rankingRef} scrollMarginTop="l">
+              <RankingTable
+                actions={ranked}
+                index={index}
+                weights={weights}
+                t={tResults}
+                onSelect={setOpen}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+              />
+            </Box>
+          ) : (
+            <FullRanking
+              ref={rankingRef}
+              actions={ranked}
+              index={index}
+              weights={weights}
+              t={tResults}
+              onSelect={setOpen}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              {...reportProps}
+            />
+          )}
           {track === "adaptation" && (
             <BodySmall color="content.tertiary">
               {t("glance-normalised-note")}

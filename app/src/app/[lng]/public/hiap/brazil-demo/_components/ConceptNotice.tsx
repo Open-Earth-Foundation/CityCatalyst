@@ -66,7 +66,7 @@ export function ConceptNotice({
       position="fixed"
       left={{ base: "16px", md: "24px" }}
       bottom={{ base: "16px", md: "24px" }}
-      zIndex={1200}
+      zIndex={900}
       maxW={{ base: "calc(100vw - 32px)", md: "400px" }}
       css={{ "@media print": { display: "none" } }}
     >

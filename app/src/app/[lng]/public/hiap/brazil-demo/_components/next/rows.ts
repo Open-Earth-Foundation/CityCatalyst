@@ -101,6 +101,10 @@ export interface RankedRow {
   hazardLabel: string;
   /** The city's risk level for that hazard: red high, amber medium, green low. */
   riskTone: MeedTone;
+  /** The city's AdaptaBrasil index for that hazard, 0–1; sorts "by risk". */
+  riskIndex: number;
+  /** How many co-benefits the action delivers; sorts "by co-benefits". */
+  benefitCount: number;
   sectorLabel: string;
   cost: CostBand;
   legal: LegalGrade;
@@ -136,6 +140,10 @@ export function buildRows(data: TrackData, lng: string): RankedRow[] {
         hazard,
         hazardLabel: hazard ? pick(RISK_CELL_BY_KEY[hazard].label, lng) : "—",
         riskTone: hazard ? indexTone(city.risk[hazard]?.index ?? 0) : "neutral",
+        riskIndex: hazard ? (city.risk[hazard]?.index ?? 0) : 0,
+        benefitCount: Object.values(action.coBenefits).filter(
+          (v) => (v ?? 0) > 0,
+        ).length,
         sectorLabel: pick(SECTOR_LABEL[action.sector], lng),
         cost: action.costBand,
         legal,
@@ -151,51 +159,160 @@ export function buildRows(data: TrackData, lng: string): RankedRow[] {
   });
 }
 
-export interface RowFilters {
-  sectors: string[];
-  hazards: string[];
-  coBenefits: string[];
-  timelines: string[];
-}
+/** The eight facets of the list, in the two groups the filter bar shows. */
+export type FacetKey =
+  | "sector"
+  | "hazard"
+  | "level"
+  | "benefit"
+  | "cost"
+  | "legal"
+  | "funding"
+  | "timeline";
+
+/** What the action addresses. */
+export const FACETS_ADDRESSES: FacetKey[] = [
+  "sector",
+  "hazard",
+  "level",
+  "benefit",
+];
+/** What it takes to deliver it. */
+export const FACETS_TAKES: FacetKey[] = [
+  "cost",
+  "legal",
+  "funding",
+  "timeline",
+];
+export const FACET_KEYS: FacetKey[] = [...FACETS_ADDRESSES, ...FACETS_TAKES];
+
+export type RowFilters = Record<FacetKey, string[]>;
 
 export const EMPTY_FILTERS: RowFilters = {
-  sectors: [],
-  hazards: [],
-  coBenefits: [],
-  timelines: [],
+  sector: [],
+  hazard: [],
+  level: [],
+  benefit: [],
+  cost: [],
+  legal: [],
+  funding: [],
+  timeline: [],
 };
 
-export const hasActiveFilters = (f: RowFilters) =>
-  f.sectors.length +
-    f.hazards.length +
-    f.coBenefits.length +
-    f.timelines.length >
-  0;
+/** Risk level of the hazard an action reduces, as a filter value. */
+const LEVEL_OF_TONE: Partial<Record<MeedTone, string>> = {
+  negative: "high",
+  warning: "medium",
+  positive: "low",
+};
+export const LEVEL_TONE: Record<string, MeedTone> = {
+  high: "negative",
+  medium: "warning",
+  low: "positive",
+};
+/** Legal grades in three bins, the same green / amber / red as the levels. */
+const LEGAL_BIN: Partial<Record<MeedTone, string>> = {
+  positive: "feasible",
+  warning: "adjustments",
+  negative: "heavy",
+};
+/** Funding gaps in three bins, the same split as their colours. */
+const FUNDING_BIN: Record<FundingGap, string> = {
+  self_deliverable: "self",
+  credit_available: "self",
+  needs_technical_assistance: "support",
+  needs_cofinance: "support",
+  needs_cofinance_and_ta: "both",
+};
 
-/** Filters narrow the list; they never touch a score. */
-export function matchesFilters(row: RankedRow, f: RowFilters): boolean {
-  if (f.sectors.length && !f.sectors.includes(row.action.sector)) return false;
-  if (f.timelines.length && !f.timelines.includes(row.timeline)) return false;
-  if (f.hazards.length) {
-    const credited = row.action.links
-      .filter((l) => l.directness === "direct")
-      .map((l) => l.cell as string);
-    if (!credited.some((c) => f.hazards.includes(c))) return false;
+/** Every value a row holds for a facet; an action can address several hazards. */
+export function facetValues(row: RankedRow, key: FacetKey): string[] {
+  switch (key) {
+    case "sector":
+      return [row.action.sector];
+    case "hazard":
+      return row.action.links
+        .filter((l) => l.directness === "direct")
+        .map((l) => l.cell as string);
+    case "level":
+      return [LEVEL_OF_TONE[row.riskTone] ?? "low"];
+    case "benefit":
+      return (Object.keys(row.action.coBenefits) as CoBenefitKey[]).filter(
+        (k) => (row.action.coBenefits[k] ?? 0) > 0,
+      );
+    case "cost":
+      return [row.cost];
+    case "legal":
+      return [LEGAL_BIN[row.legalTone] ?? "heavy"];
+    case "funding":
+      return [FUNDING_BIN[row.funding]];
+    case "timeline":
+      return [row.timeline];
   }
-  if (f.coBenefits.length) {
-    const delivers = f.coBenefits.some(
-      (k) => (row.action.coBenefits[k as CoBenefitKey] ?? 0) > 0,
-    );
-    if (!delivers) return false;
+}
+
+export const hasActiveFilters = (f: RowFilters) =>
+  FACET_KEYS.some((k) => f[k].length > 0);
+
+/**
+ * Filters narrow the list; they never touch a score. Within a facet any
+ * selected value matches; across facets all must. `skip` leaves one facet
+ * out, for the option counts.
+ */
+export function matchesFilters(
+  row: RankedRow,
+  f: RowFilters,
+  skip?: FacetKey,
+): boolean {
+  return FACET_KEYS.every((k) => {
+    if (k === skip || f[k].length === 0) return true;
+    return facetValues(row, k).some((v) => f[k].includes(v));
+  });
+}
+
+/** Booking-style count: how many rows an option would leave, given the other facets. */
+export function facetCount(
+  rows: RankedRow[],
+  f: RowFilters,
+  key: FacetKey,
+  value: string,
+): number {
+  return rows.filter(
+    (r) => matchesFilters(r, f, key) && facetValues(r, key).includes(value),
+  ).length;
+}
+
+/** Filters live in the URL, so a filtered view can be shared. */
+export function filtersFromSearch(search: string): RowFilters {
+  const params = new URLSearchParams(search);
+  const out: RowFilters = { ...EMPTY_FILTERS };
+  for (const k of FACET_KEYS) {
+    const raw = params.get(k);
+    out[k] = raw ? raw.split(",").filter(Boolean) : [];
   }
-  return true;
+  return out;
+}
+
+export function filtersToSearch(f: RowFilters): string {
+  const params = new URLSearchParams();
+  for (const k of FACET_KEYS) if (f[k].length) params.set(k, f[k].join(","));
+  return params.toString();
 }
 
 export type SortKey =
-  "priority" | "cost" | "legal" | "funding" | "policy" | "timeline";
+  | "priority"
+  | "risk"
+  | "benefit"
+  | "cost"
+  | "legal"
+  | "funding"
+  | "policy"
+  | "timeline";
 
 export const SORT_KEYS: SortKey[] = [
   "priority",
+  "risk",
+  "benefit",
   "cost",
   "legal",
   "funding",
@@ -207,6 +324,10 @@ export const SORT_KEYS: SortKey[] = [
 export function sortRows(rows: RankedRow[], key: SortKey): RankedRow[] {
   const by = (r: RankedRow): number => {
     switch (key) {
+      case "risk":
+        return -r.riskIndex;
+      case "benefit":
+        return -r.benefitCount;
       case "cost":
         return COST_ORDER[r.cost];
       case "legal":

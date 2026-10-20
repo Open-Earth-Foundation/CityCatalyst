@@ -51,6 +51,7 @@ export function TopActions({
             boxShadow="1dp"
             borderWidth="1px"
             borderColor={isSelected ? "content.link" : "transparent"}
+            containerType="inline-size"
           >
             <Box
               display="flex"
@@ -85,27 +86,44 @@ export function TopActions({
               </BodySmall>
             </VStack>
             <Box flex="1" />
+            {/* Two columns only when the card itself has room, so the
+                labels never wrap when the preferences panel narrows it. */}
             <SimpleGrid
-              columns={{ base: 1, xl: 2 }}
+              columns={1}
+              css={{
+                "@container (min-width: 300px)": {
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                },
+              }}
               gap="m"
               pt="l"
               borderTopWidth="1px"
               borderColor="border.overlay"
             >
-              <Level label={t("next-fact-cost")} tone={COST_TONE[row.cost]}>
+              <Level
+                label={t("next-fact-cost")}
+                info={t("next-info-cost")}
+                tone={COST_TONE[row.cost]}
+              >
                 {t(`next-cost-${row.cost}`)}
               </Level>
-              <Level label={t("next-fact-legal")} tone={row.legalTone}>
+              <Level
+                label={t("next-fact-legal")}
+                info={t("next-info-legal")}
+                tone={row.legalTone}
+              >
                 {row.legalLabel}
               </Level>
               <Level
                 label={t("next-fact-funding")}
+                info={t("next-info-funding")}
                 tone={GAP_TONE[row.funding]}
               >
                 {row.fundingLabel}
               </Level>
               <Level
                 label={t("next-fact-policy")}
+                info={t("next-info-policy")}
                 tone={POLICY_TONE[row.policy]}
               >
                 {t(`next-policy-${row.policy}`)}

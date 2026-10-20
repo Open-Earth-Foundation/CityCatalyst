@@ -34,6 +34,7 @@ import {
   UNCOVERED_HAZARD_LABEL,
 } from "../../_lib/riskCells";
 import { trackHref } from "../../_lib/hrefs";
+import { METHODOLOGY_DOC_URL } from "../../_lib/links";
 import { pick } from "../../_lib/localized";
 import { indexTone } from "../RiskCellGrid";
 import { Level } from "./Level";
@@ -206,6 +207,7 @@ export function ActionDrawer({
                     <VStack alignItems="flex-start" gap="xs">
                       <Level
                         label={t("next-fact-cost")}
+                        info={t("next-info-cost")}
                         tone={COST_TONE[action.costBand]}
                       >
                         {t(`next-cost-${action.costBand}`)}
@@ -217,6 +219,7 @@ export function ActionDrawer({
                     <VStack alignItems="flex-start" gap="xs">
                       <Level
                         label={t("next-fact-legal")}
+                        info={t("next-info-legal")}
                         tone={legalTone(grade)}
                       >
                         {pick(GRADE_LABEL[grade], lng)}
@@ -234,6 +237,7 @@ export function ActionDrawer({
                     <VStack alignItems="flex-start" gap="xs">
                       <Level
                         label={t("next-fact-funding")}
+                        info={t("next-info-funding")}
                         tone={GAP_TONE[funding.gap]}
                       >
                         {pick(GAP_LABEL[funding.gap], lng)}
@@ -249,6 +253,7 @@ export function ActionDrawer({
                     <VStack alignItems="flex-start" gap="xs">
                       <Level
                         label={t("next-fact-policy")}
+                        info={t("next-info-policy")}
                         tone={POLICY_TONE[policy]}
                       >
                         {t(`next-policy-${policy}`)}
@@ -259,34 +264,6 @@ export function ActionDrawer({
                     </VStack>
                   </SimpleGrid>
                 </VStack>
-
-                <Section title={t("next-drawer-cobenefits")}>
-                  {cells.length === 0 ? (
-                    <BodyMedium color="content.secondary">
-                      {t("next-drawer-no-cobenefits")}
-                    </BodyMedium>
-                  ) : (
-                    <SimpleGrid columns={{ base: 1, sm: 2 }} gap="m">
-                      {cells.map((c) =>
-                        c.kind === "in_impact" ? (
-                          <Level key={c.key} tone="neutral">
-                            {labels.coBenefit(c.key)} · {t("matrix-in-impact")}
-                          </Level>
-                        ) : (
-                          <Level
-                            key={c.key}
-                            tone={c.value < 0 ? "negative" : "positive"}
-                          >
-                            {labels.coBenefit(c.key)} ·{" "}
-                            {t(
-                              `matrix-scale-${c.value < 0 ? "adverse" : c.value > 1 ? "strong" : "benefit"}`,
-                            )}
-                          </Level>
-                        ),
-                      )}
-                    </SimpleGrid>
-                  )}
-                </Section>
 
                 {related.length > 0 && (
                   <Section title={t("next-drawer-plan-with")}>
@@ -324,6 +301,42 @@ export function ActionDrawer({
                                     {t("next-drawer-not-scored")}
                                   </BodySmall>
                                 )}
+
+                                <Section title={t("next-drawer-cobenefits")}>
+                                  {cells.length === 0 ? (
+                                    <BodyMedium color="content.secondary">
+                                      {t("next-drawer-no-cobenefits")}
+                                    </BodyMedium>
+                                  ) : (
+                                    <SimpleGrid
+                                      columns={{ base: 1, sm: 2 }}
+                                      gap="m"
+                                    >
+                                      {cells.map((c) =>
+                                        c.kind === "in_impact" ? (
+                                          <Level key={c.key} tone="neutral">
+                                            {labels.coBenefit(c.key)} ·{" "}
+                                            {t("matrix-in-impact")}
+                                          </Level>
+                                        ) : (
+                                          <Level
+                                            key={c.key}
+                                            tone={
+                                              c.value < 0
+                                                ? "negative"
+                                                : "positive"
+                                            }
+                                          >
+                                            {labels.coBenefit(c.key)} ·{" "}
+                                            {t(
+                                              `matrix-scale-${c.value < 0 ? "adverse" : c.value > 1 ? "strong" : "benefit"}`,
+                                            )}
+                                          </Level>
+                                        ),
+                                      )}
+                                    </SimpleGrid>
+                                  )}
+                                </Section>
                               </VStack>
                               <Box flexShrink={0}>
                                 <TextLink
@@ -416,6 +429,9 @@ export function ActionDrawer({
                                 id: action.id,
                               })}
                             </BodySmall>
+                            <TextLink href={METHODOLOGY_DOC_URL} external>
+                              {t("next-methodology-link")}
+                            </TextLink>
                           </VStack>
                         </VStack>
                       </Collapsible.Content>

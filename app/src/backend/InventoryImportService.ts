@@ -1,7 +1,9 @@
 import { db } from "@/models";
 import { type ECRFImportResult, type ECRFRowData } from "./ECRFImportService";
+import VersionHistoryService from "./VersionHistoryService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
+import type { Transaction } from "sequelize";
 import { decimalToBigInt } from "@/util/big_int";
 import { logger } from "@/services/logger";
 import {
@@ -61,7 +63,15 @@ export function importRowSkipReason(
 export type ImportECRFDataOptions = {
   /** When set (e.g. file name), used as activity data source when row does not provide one. */
   defaultActivityDataSource?: string;
+  /** When set, every written value is recorded in version history under this user, so the import can be undone. */
+  authorId?: string;
+  /** Label for those versions, e.g. IMPORT_REPLACE_LABEL when the import replaces existing data. */
+  versionLabel?: string;
+  /** Outer transaction (e.g. shared with a replace); otherwise the import runs in its own. */
+  transaction?: Transaction;
 };
+
+type RowOutcome = "imported" | "skipped";
 
 /**
  * Reverse map (value -> key) from manage-subsectors en locale.
@@ -308,19 +318,68 @@ export default class InventoryImportService {
     importResult: ECRFImportResult,
     options?: ImportECRFDataOptions,
   ): Promise<ImportSummary> {
+    if (options?.transaction) {
+      return InventoryImportService.importRows(
+        inventoryId,
+        importResult,
+        options,
+        options.transaction,
+      );
+    }
+    return db.sequelize!.transaction((transaction) =>
+      InventoryImportService.importRows(
+        inventoryId,
+        importResult,
+        options,
+        transaction,
+      ),
+    );
+  }
+
+  private static async importRows(
+    inventoryId: string,
+    importResult: ECRFImportResult,
+    options: ImportECRFDataOptions | undefined,
+    transaction: Transaction,
+  ): Promise<ImportSummary> {
     const errors: string[] = [];
     const warnings: string[] = [];
     let importedRows = 0;
     let skippedRows = 0;
 
+    const recordVersion = async (
+      table: string,
+      entry: { id: string; toJSON(): object },
+      rowTransaction: Transaction,
+      isDeleted: boolean = false,
+    ) => {
+      if (!options?.authorId) return;
+      await VersionHistoryService.createVersion(
+        inventoryId,
+        table,
+        entry.id,
+        options.authorId,
+        entry.toJSON(),
+        isDeleted,
+        rowTransaction,
+        "ghgi",
+        { label: options.versionLabel },
+      );
+    };
+
     // Set inventory year from file when missing (year column mapped as "Year")
-    const inventory = await db.models.Inventory.findByPk(inventoryId);
+    const inventory = await db.models.Inventory.findByPk(inventoryId, {
+      transaction,
+    });
     if (
       inventory &&
       inventory.year == null &&
       importResult.inferredYearFromFile != null
     ) {
-      await inventory.update({ year: importResult.inferredYearFromFile });
+      await inventory.update(
+        { year: importResult.inferredYearFromFile },
+        { transaction },
+      );
       logger.info(
         {
           inventoryId,
@@ -356,461 +415,523 @@ export default class InventoryImportService {
 
     // Process each valid row
     for (const row of validRows) {
+      const rowWarnings: string[] = [];
       try {
-        // Check if inventory value already exists for this GPC reference
-        const existingValue = await db.models.InventoryValue.findOne({
-          where: {
-            inventoryId,
-            gpcReferenceNumber: row.gpcRefNo,
-          },
-        });
-
-        // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
-        // Otherwise: store only totalCO2e (no per-gas storage).
-        const co2Val = parseNumericCell(row.co2);
-        const ch4Val = parseNumericCell(row.ch4);
-        const n2oVal = parseNumericCell(row.n2o);
-        const hasAnyGas =
-          hasSignedNumericValue(co2Val) ||
-          hasSignedNumericValue(ch4Val) ||
-          hasSignedNumericValue(n2oVal);
-
-        const totalCO2e = resolveImportedTotalCO2e(row);
-        if (hasAnyGas) {
-          console.log(
-            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
-          );
-        } else {
-          console.log(
-            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
-          );
-        }
-
-        // Priority: Emission values take precedence over notation keys
-        // Only use notation keys if there are NO emission values
-        // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
-        if (hasSignedNumericValue(totalCO2e)) {
-          console.log(
-            `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
-          );
-          // Handle rows with emission values (ignore notation keys if emissions exist)
-          // Convert metric tonnes to the unit used in database (kilograms)
-          // eCRF files use metric tonnes, database stores as bigint (kilograms)
-          // 1 metric tonne = 1000 kilograms
-          const co2eqKilograms = new Decimal(totalCO2e).mul(1000);
-          const co2eqBigInt = decimalToBigInt(co2eqKilograms);
-
-          // Map methodology from eCRF to schema methodology ID
-          const mappedMethodology = mapMethodologyToSchema(
-            row.methodology,
-            row.gpcRefNo,
-          );
-
-          // Get hierarchy entry for field mapping
-          const hierarchyEntry = MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
-
-          // Default to Direct Measure when methodology is missing or not mapped
-          const resolvedMethodology =
-            mappedMethodology ||
-            (row.methodology?.toLowerCase().includes("direct") &&
-            row.methodology?.toLowerCase().includes("measure")
-              ? hierarchyEntry?.directMeasure?.id
-              : hierarchyEntry?.directMeasure?.id) ||
-            row.methodology ||
-            hierarchyEntry?.directMeasure?.id;
-
-          // Normalize: when the resolved methodology is a directMeasure variant,
-          // store "direct-measure" so the frontend lookup (which normalizes IDs
-          // containing "direct-measure" to just "direct-measure") can find the match.
-          const finalMethodology = resolvedMethodology?.includes(
-            "direct-measure",
-          )
-            ? "direct-measure"
-            : resolvedMethodology;
-
-          let inventoryValue;
-          if (existingValue) {
-            // Accumulate co2eq when multiple rows share the same GPC reference
-            const accumulatedCo2eq =
-              existingValue.co2eq != null
-                ? BigInt(existingValue.co2eq) + co2eqBigInt
-                : co2eqBigInt;
-            // Update existing value with emissions. null clears a notation key
-            // that an earlier row stored for this same GPC reference.
-            inventoryValue = await existingValue.update({
-              co2eq: accumulatedCo2eq,
-              co2eqYears: 100, // Default value
-              unavailableReason: null,
-              unavailableExplanation: null,
-              inputMethodology:
-                finalMethodology || existingValue.inputMethodology,
-              sectorId: row.sectorId,
-              subSectorId: row.subsectorId,
-              subCategoryId: row.subcategoryId ?? undefined,
-              lastUpdated: new Date(),
+        // Savepoint per row: a failed row is rolled back and skipped without
+        // aborting the transaction the rest of the import runs in.
+        const outcome = await db.sequelize!.transaction(
+          { transaction },
+          async (rowTransaction): Promise<RowOutcome> => {
+            // Check if inventory value already exists for this GPC reference
+            const existingValue = await db.models.InventoryValue.findOne({
+              where: {
+                inventoryId,
+                gpcReferenceNumber: row.gpcRefNo,
+              },
+              transaction: rowTransaction,
             });
-            importedRows++;
-          } else {
-            // Create new inventory value with emissions
-            inventoryValue = await db.models.InventoryValue.create({
-              id: randomUUID(),
-              inventoryId,
-              gpcReferenceNumber: row.gpcRefNo,
-              sectorId: row.sectorId,
-              subSectorId: row.subsectorId,
-              subCategoryId: row.subcategoryId ?? undefined,
-              co2eq: co2eqBigInt,
-              co2eqYears: 100, // Default value
-              inputMethodology: finalMethodology,
-              lastUpdated: new Date(),
-            });
-            importedRows++;
-          }
 
-          // Sync per-gas storage: store CO2, CH4, N2O as GasValues when present; otherwise clear any existing.
-          const existingGasValues = await db.models.GasValue.findAll({
-            where: { inventoryValueId: inventoryValue.id },
-          });
-          for (const gv of existingGasValues) {
-            await gv.destroy();
-          }
-          if (
-            hasAnyGas &&
-            (typeof co2Val === "number" ||
-              typeof ch4Val === "number" ||
-              typeof n2oVal === "number")
-          ) {
-            const toKg = (t: number) =>
-              decimalToBigInt(new Decimal(t).mul(1000));
-            const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
-            if (typeof co2Val === "number" && !isNaN(co2Val)) {
-              gases.push({ gas: "CO2", val: co2Val });
-            }
-            if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
-              gases.push({ gas: "CH4", val: ch4Val });
-            }
-            if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
-              gases.push({ gas: "N2O", val: n2oVal });
-            }
-            for (const { gas, val } of gases) {
-              await db.models.GasValue.create({
-                id: randomUUID(),
-                inventoryValueId: inventoryValue.id,
-                gas,
-                gasAmount: toKg(val),
-              });
-            }
-          }
+            // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
+            // Otherwise: store only totalCO2e (no per-gas storage).
+            const co2Val = parseNumericCell(row.co2);
+            const ch4Val = parseNumericCell(row.ch4);
+            const n2oVal = parseNumericCell(row.n2o);
+            const hasAnyGas =
+              hasSignedNumericValue(co2Val) ||
+              hasSignedNumericValue(ch4Val) ||
+              hasSignedNumericValue(n2oVal);
 
-          // Create ActivityValue if activity data or metadata is present, or when default data source from file is provided
-          if (
-            row.activityAmount != null ||
-            row.activityType ||
-            row.activityUnit ||
-            row.activityDataSource ||
-            row.activityDataQuality ||
-            options?.defaultActivityDataSource
-          ) {
-            try {
-              // Get schema for this GPC reference to map fields correctly
-              const hierarchyEntryForActivity =
-                MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
-
-              // Get the methodology to determine field mappings
-              const methodology = mappedMethodology
-                ? hierarchyEntryForActivity?.methodologies?.find(
-                    (m) => m.id === mappedMethodology,
-                  )
-                : hierarchyEntryForActivity?.directMeasure;
-
-              // Get the activity from the methodology
-              // For Methodology, check activities array; for DirectMeasure, use activityUnitsField
-              let activityTitle: string;
-              let activityId: string | undefined;
-
-              if (
-                methodology &&
-                "activities" in methodology &&
-                methodology.activities?.[0]
-              ) {
-                const activity = methodology.activities[0];
-                activityTitle = activity["activity-title"] || "activity-value";
-                activityId = activity.id;
-              } else if (methodology?.activityUnitsField) {
-                activityTitle = `activity-${methodology.activityUnitsField}`;
-                activityId = undefined;
-              } else {
-                activityTitle = "activity-value";
-                activityId = undefined;
-              }
-
-              // Get group-by field and its default value (exclusive option) if available
-              let groupByField: string | undefined;
-              let groupByDefaultValue: string | undefined;
-
-              if (
-                methodology &&
-                "activities" in methodology &&
-                methodology.activities?.[0]
-              ) {
-                // Methodology with activities array: read from activities[0]
-                const activity = methodology.activities[0];
-                groupByField = activity["group-by"];
-
-                // Find the exclusive option for the group-by field
-                if (groupByField && activity["extra-fields"]) {
-                  const groupByFieldDef = activity["extra-fields"].find(
-                    (f) => f.id === groupByField && f.exclusive,
-                  );
-                  if (groupByFieldDef?.exclusive) {
-                    groupByDefaultValue = groupByFieldDef.exclusive;
-                  }
-                }
-              } else if (methodology && "group-by" in methodology) {
-                // DirectMeasure: group-by and extra-fields are at the top level
-                groupByField = methodology["group-by"];
-
-                if (groupByField && methodology["extra-fields"]) {
-                  const groupByFieldDef = methodology["extra-fields"].find(
-                    (f) => f.id === groupByField && f.exclusive,
-                  );
-                  if (groupByFieldDef?.exclusive) {
-                    groupByDefaultValue = groupByFieldDef.exclusive;
-                  }
-                }
-              }
-
-              // Build activityData JSONB object using schema mapping
-              const activityData: Record<string, string | number | string[]> =
-                {};
-
-              // Map activity amount using activityTitle from schema
-              if (row.activityAmount !== undefined) {
-                activityData[activityTitle] = row.activityAmount.toString();
-              }
-
-              if (row.activityUnit) {
-                // Map unit to translation key (e.g., "Kilograms (kg)" -> "units-kilograms")
-                const mappedUnit = mapUnitToTranslationKey(row.activityUnit);
-                const unitFieldName = `${activityTitle}-unit`;
-                activityData[unitFieldName] = mappedUnit;
-              }
-
-              // Map activity type using activityTypeField from schema
-              if (row.activityType && methodology?.activityTypeField) {
-                // Map activity type to schema key (e.g., "Firewood" -> "fuel-type-firewood")
-                const mappedActivityType = mapActivityTypeToSchemaKey(
-                  row.activityType,
-                  methodology,
-                  row.gpcRefNo,
-                );
-                activityData[methodology.activityTypeField] =
-                  mappedActivityType;
-              } else if (row.activityType) {
-                // Fallback if no schema mapping - still try to map it
-                const mappedActivityType = mapActivityTypeToSchemaKey(
-                  row.activityType,
-                  methodology,
-                  row.gpcRefNo,
-                );
-                activityData["activity-type"] = mappedActivityType;
-              }
-
-              // Store data source in activityData (frontend reads from here); default from file when provided
-              const dataSource =
-                row.activityDataSource?.trim() ||
-                options?.defaultActivityDataSource?.trim();
-              if (dataSource) {
-                let sourceFieldName = "data-source";
-                if (
-                  methodology &&
-                  "extra-fields" in methodology &&
-                  methodology["extra-fields"]
-                ) {
-                  const methodSourceField = methodology["extra-fields"].find(
-                    (f) => f.id.includes("-source") && f.type === "text",
-                  );
-                  if (methodSourceField) {
-                    sourceFieldName = methodSourceField.id;
-                  }
-                }
-                activityData[sourceFieldName] = dataSource;
-              }
-
-              // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
-              if (typeof co2Val === "number" && !isNaN(co2Val)) {
-                activityData.co2_amount = co2Val;
-                activityData.co2_unit = "units-tonnes";
-              }
-              if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
-                activityData.ch4_amount = ch4Val;
-                activityData.ch4_unit = "units-tonnes";
-              }
-              if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
-                activityData.n2o_amount = n2oVal;
-                activityData.n2o_unit = "units-tonnes";
-              }
-
+            const totalCO2e = resolveImportedTotalCO2e(row);
+            if (hasAnyGas) {
               console.log(
-                `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+                `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
+              );
+            } else {
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
+              );
+            }
+
+            // Priority: Emission values take precedence over notation keys
+            // Only use notation keys if there are NO emission values
+            // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
+            if (hasSignedNumericValue(totalCO2e)) {
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
+              );
+              // Handle rows with emission values (ignore notation keys if emissions exist)
+              // Convert metric tonnes to the unit used in database (kilograms)
+              // eCRF files use metric tonnes, database stores as bigint (kilograms)
+              // 1 metric tonne = 1000 kilograms
+              const co2eqKilograms = new Decimal(totalCO2e).mul(1000);
+              const co2eqBigInt = decimalToBigInt(co2eqKilograms);
+
+              // Map methodology from eCRF to schema methodology ID
+              const mappedMethodology = mapMethodologyToSchema(
+                row.methodology,
+                row.gpcRefNo,
               );
 
-              // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
-              if (groupByField) {
-                if (groupByDefaultValue) {
-                  activityData[groupByField] = groupByDefaultValue;
-                } else {
-                  const activityLabel =
-                    row.activityType?.trim() || "Uncategorized";
-                  activityData[groupByField] = activityLabel;
+              // Get hierarchy entry for field mapping
+              const hierarchyEntry = MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
+
+              // Default to Direct Measure when methodology is missing or not mapped
+              const resolvedMethodology =
+                mappedMethodology ||
+                (row.methodology?.toLowerCase().includes("direct") &&
+                row.methodology?.toLowerCase().includes("measure")
+                  ? hierarchyEntry?.directMeasure?.id
+                  : hierarchyEntry?.directMeasure?.id) ||
+                row.methodology ||
+                hierarchyEntry?.directMeasure?.id;
+
+              // Normalize: when the resolved methodology is a directMeasure variant,
+              // store "direct-measure" so the frontend lookup (which normalizes IDs
+              // containing "direct-measure" to just "direct-measure") can find the match.
+              const finalMethodology = resolvedMethodology?.includes(
+                "direct-measure",
+              )
+                ? "direct-measure"
+                : resolvedMethodology;
+
+              let inventoryValue;
+              if (existingValue) {
+                // Accumulate co2eq when multiple rows share the same GPC reference
+                const accumulatedCo2eq =
+                  existingValue.co2eq != null
+                    ? BigInt(existingValue.co2eq) + co2eqBigInt
+                    : co2eqBigInt;
+                // Update existing value with emissions. null clears a notation key
+                // that an earlier row stored for this same GPC reference.
+                inventoryValue = await existingValue.update(
+                  {
+                    co2eq: accumulatedCo2eq,
+                    co2eqYears: 100, // Default value
+                    unavailableReason: null,
+                    unavailableExplanation: null,
+                    inputMethodology:
+                      finalMethodology || existingValue.inputMethodology,
+                    sectorId: row.sectorId,
+                    subSectorId: row.subsectorId,
+                    subCategoryId: row.subcategoryId ?? undefined,
+                    lastUpdated: new Date(),
+                  },
+                  { transaction: rowTransaction },
+                );
+              } else {
+                // Create new inventory value with emissions
+                inventoryValue = await db.models.InventoryValue.create(
+                  {
+                    id: randomUUID(),
+                    inventoryId,
+                    gpcReferenceNumber: row.gpcRefNo,
+                    sectorId: row.sectorId,
+                    subSectorId: row.subsectorId,
+                    subCategoryId: row.subcategoryId ?? undefined,
+                    co2eq: co2eqBigInt,
+                    co2eqYears: 100, // Default value
+                    inputMethodology: finalMethodology,
+                    lastUpdated: new Date(),
+                  },
+                  { transaction: rowTransaction },
+                );
+              }
+              await recordVersion(
+                "InventoryValue",
+                inventoryValue,
+                rowTransaction,
+              );
+
+              // Sync per-gas storage: store CO2, CH4, N2O as GasValues when present; otherwise clear any existing.
+              const existingGasValues = await db.models.GasValue.findAll({
+                where: { inventoryValueId: inventoryValue.id },
+                transaction: rowTransaction,
+              });
+              for (const gv of existingGasValues) {
+                await gv.destroy({ transaction: rowTransaction });
+                await recordVersion("GasValue", gv, rowTransaction, true);
+              }
+              if (
+                hasAnyGas &&
+                (typeof co2Val === "number" ||
+                  typeof ch4Val === "number" ||
+                  typeof n2oVal === "number")
+              ) {
+                const toKg = (t: number) =>
+                  decimalToBigInt(new Decimal(t).mul(1000));
+                const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
+                if (typeof co2Val === "number" && !isNaN(co2Val)) {
+                  gases.push({ gas: "CO2", val: co2Val });
+                }
+                if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+                  gases.push({ gas: "CH4", val: ch4Val });
+                }
+                if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+                  gases.push({ gas: "N2O", val: n2oVal });
+                }
+                for (const { gas, val } of gases) {
+                  const gasValue = await db.models.GasValue.create(
+                    {
+                      id: randomUUID(),
+                      inventoryValueId: inventoryValue.id,
+                      gas,
+                      gasAmount: toKg(val),
+                    },
+                    { transaction: rowTransaction },
+                  );
+                  await recordVersion("GasValue", gasValue, rowTransaction);
                 }
               }
 
-              // Build metadata JSONB object
-              const metadata: Record<string, string | number | string[]> = {};
+              // Create ActivityValue if activity data or metadata is present, or when default data source from file is provided
+              if (
+                row.activityAmount != null ||
+                row.activityType ||
+                row.activityUnit ||
+                row.activityDataSource ||
+                row.activityDataQuality ||
+                options?.defaultActivityDataSource
+              ) {
+                try {
+                  // Get schema for this GPC reference to map fields correctly
+                  const hierarchyEntryForActivity =
+                    MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
 
-              // Set activityId from schema
-              if (activityId) {
-                metadata.activityId = activityId;
+                  // Get the methodology to determine field mappings
+                  const methodology = mappedMethodology
+                    ? hierarchyEntryForActivity?.methodologies?.find(
+                        (m) => m.id === mappedMethodology,
+                      )
+                    : hierarchyEntryForActivity?.directMeasure;
+
+                  // Get the activity from the methodology
+                  // For Methodology, check activities array; for DirectMeasure, use activityUnitsField
+                  let activityTitle: string;
+                  let activityId: string | undefined;
+
+                  if (
+                    methodology &&
+                    "activities" in methodology &&
+                    methodology.activities?.[0]
+                  ) {
+                    const activity = methodology.activities[0];
+                    activityTitle =
+                      activity["activity-title"] || "activity-value";
+                    activityId = activity.id;
+                  } else if (methodology?.activityUnitsField) {
+                    activityTitle = `activity-${methodology.activityUnitsField}`;
+                    activityId = undefined;
+                  } else {
+                    activityTitle = "activity-value";
+                    activityId = undefined;
+                  }
+
+                  // Get group-by field and its default value (exclusive option) if available
+                  let groupByField: string | undefined;
+                  let groupByDefaultValue: string | undefined;
+
+                  if (
+                    methodology &&
+                    "activities" in methodology &&
+                    methodology.activities?.[0]
+                  ) {
+                    // Methodology with activities array: read from activities[0]
+                    const activity = methodology.activities[0];
+                    groupByField = activity["group-by"];
+
+                    // Find the exclusive option for the group-by field
+                    if (groupByField && activity["extra-fields"]) {
+                      const groupByFieldDef = activity["extra-fields"].find(
+                        (f) => f.id === groupByField && f.exclusive,
+                      );
+                      if (groupByFieldDef?.exclusive) {
+                        groupByDefaultValue = groupByFieldDef.exclusive;
+                      }
+                    }
+                  } else if (methodology && "group-by" in methodology) {
+                    // DirectMeasure: group-by and extra-fields are at the top level
+                    groupByField = methodology["group-by"];
+
+                    if (groupByField && methodology["extra-fields"]) {
+                      const groupByFieldDef = methodology["extra-fields"].find(
+                        (f) => f.id === groupByField && f.exclusive,
+                      );
+                      if (groupByFieldDef?.exclusive) {
+                        groupByDefaultValue = groupByFieldDef.exclusive;
+                      }
+                    }
+                  }
+
+                  // Build activityData JSONB object using schema mapping
+                  const activityData: Record<
+                    string,
+                    string | number | string[]
+                  > = {};
+
+                  // Map activity amount using activityTitle from schema
+                  if (row.activityAmount !== undefined) {
+                    activityData[activityTitle] = row.activityAmount.toString();
+                  }
+
+                  if (row.activityUnit) {
+                    // Map unit to translation key (e.g., "Kilograms (kg)" -> "units-kilograms")
+                    const mappedUnit = mapUnitToTranslationKey(
+                      row.activityUnit,
+                    );
+                    const unitFieldName = `${activityTitle}-unit`;
+                    activityData[unitFieldName] = mappedUnit;
+                  }
+
+                  // Map activity type using activityTypeField from schema
+                  if (row.activityType && methodology?.activityTypeField) {
+                    // Map activity type to schema key (e.g., "Firewood" -> "fuel-type-firewood")
+                    const mappedActivityType = mapActivityTypeToSchemaKey(
+                      row.activityType,
+                      methodology,
+                      row.gpcRefNo,
+                    );
+                    activityData[methodology.activityTypeField] =
+                      mappedActivityType;
+                  } else if (row.activityType) {
+                    // Fallback if no schema mapping - still try to map it
+                    const mappedActivityType = mapActivityTypeToSchemaKey(
+                      row.activityType,
+                      methodology,
+                      row.gpcRefNo,
+                    );
+                    activityData["activity-type"] = mappedActivityType;
+                  }
+
+                  // Store data source in activityData (frontend reads from here); default from file when provided
+                  const dataSource =
+                    row.activityDataSource?.trim() ||
+                    options?.defaultActivityDataSource?.trim();
+                  if (dataSource) {
+                    let sourceFieldName = "data-source";
+                    if (
+                      methodology &&
+                      "extra-fields" in methodology &&
+                      methodology["extra-fields"]
+                    ) {
+                      const methodSourceField = methodology[
+                        "extra-fields"
+                      ].find(
+                        (f) => f.id.includes("-source") && f.type === "text",
+                      );
+                      if (methodSourceField) {
+                        sourceFieldName = methodSourceField.id;
+                      }
+                    }
+                    activityData[sourceFieldName] = dataSource;
+                  }
+
+                  // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
+                  if (typeof co2Val === "number" && !isNaN(co2Val)) {
+                    activityData.co2_amount = co2Val;
+                    activityData.co2_unit = "units-tonnes";
+                  }
+                  if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+                    activityData.ch4_amount = ch4Val;
+                    activityData.ch4_unit = "units-tonnes";
+                  }
+                  if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+                    activityData.n2o_amount = n2oVal;
+                    activityData.n2o_unit = "units-tonnes";
+                  }
+
+                  console.log(
+                    `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+                  );
+
+                  // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
+                  if (groupByField) {
+                    if (groupByDefaultValue) {
+                      activityData[groupByField] = groupByDefaultValue;
+                    } else {
+                      const activityLabel =
+                        row.activityType?.trim() || "Uncategorized";
+                      activityData[groupByField] = activityLabel;
+                    }
+                  }
+
+                  // Build metadata JSONB object
+                  const metadata: Record<string, string | number | string[]> =
+                    {};
+
+                  // Set activityId from schema
+                  if (activityId) {
+                    metadata.activityId = activityId;
+                  }
+
+                  // Set activity title for metadata (used for display) - MUST match the key used in activityData
+                  metadata.activityTitle = activityTitle;
+
+                  // Store data source in metadata as sourceExplanation (for export/other purposes)
+                  if (dataSource) {
+                    metadata.sourceExplanation = dataSource;
+                  }
+
+                  // Default data quality to low when not provided
+                  metadata.dataQuality =
+                    row.activityDataQuality?.trim() || "low";
+
+                  if (row.emissionFactorSource) {
+                    metadata.emissionFactorName = row.emissionFactorSource;
+                  }
+
+                  if (row.emissionFactorDescription) {
+                    metadata.emissionFactorTypeReference =
+                      row.emissionFactorDescription;
+                  }
+
+                  if (row.emissionFactorUnit) {
+                    metadata.emissionFactorUnit = row.emissionFactorUnit;
+                  }
+
+                  if (row.emissionFactorCO2 != null) {
+                    metadata.emissionFactorCO2 = row.emissionFactorCO2;
+                  }
+                  if (row.emissionFactorCH4 != null) {
+                    metadata.emissionFactorCH4 = row.emissionFactorCH4;
+                  }
+                  if (row.emissionFactorN2O != null) {
+                    metadata.emissionFactorN2O = row.emissionFactorN2O;
+                  }
+                  if (row.emissionFactorTotalCO2e != null) {
+                    metadata.emissionFactorTotalCO2e =
+                      row.emissionFactorTotalCO2e;
+                  }
+
+                  // emissionFactorType is a UUID field that we don't have in eCRF files
+                  // Setting as empty string as per the example structure
+                  metadata.emissionFactorType = "";
+
+                  // Convert activity CO2e to kilograms (if available)
+                  // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
+                  const activityCO2eq = hasSignedNumericValue(totalCO2e)
+                    ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
+                    : undefined;
+
+                  // Own savepoint: a failed activity only drops the activity, not the row's emissions
+                  await db.sequelize!.transaction(
+                    { transaction: rowTransaction },
+                    async (activityTransaction) => {
+                      const activityValue =
+                        await db.models.ActivityValue.create(
+                          {
+                            id: randomUUID(),
+                            inventoryValueId: inventoryValue.id,
+                            co2eq: activityCO2eq,
+                            co2eqYears: 100,
+                            activityData:
+                              Object.keys(activityData).length > 0
+                                ? activityData
+                                : undefined,
+                            metadata:
+                              Object.keys(metadata).length > 0
+                                ? metadata
+                                : undefined,
+                            lastUpdated: new Date(),
+                          },
+                          { transaction: activityTransaction },
+                        );
+                      await recordVersion(
+                        "ActivityValue",
+                        activityValue,
+                        activityTransaction,
+                      );
+                    },
+                  );
+                } catch (activityError) {
+                  rowWarnings.push(
+                    `Row ${row.rowIndex + 1}: Failed to create activity value: ${activityError instanceof Error ? activityError.message : "Unknown error"}`,
+                  );
+                  logger.error(
+                    {
+                      err: activityError,
+                      rowIndex: row.rowIndex,
+                      gpcRefNo: row.gpcRefNo,
+                    },
+                    "Failed to create activity value",
+                  );
+                }
               }
-
-              // Set activity title for metadata (used for display) - MUST match the key used in activityData
-              metadata.activityTitle = activityTitle;
-
-              // Store data source in metadata as sourceExplanation (for export/other purposes)
-              if (dataSource) {
-                metadata.sourceExplanation = dataSource;
-              }
-
-              // Default data quality to low when not provided
-              metadata.dataQuality = row.activityDataQuality?.trim() || "low";
-
-              if (row.emissionFactorSource) {
-                metadata.emissionFactorName = row.emissionFactorSource;
-              }
-
-              if (row.emissionFactorDescription) {
-                metadata.emissionFactorTypeReference =
-                  row.emissionFactorDescription;
-              }
-
-              if (row.emissionFactorUnit) {
-                metadata.emissionFactorUnit = row.emissionFactorUnit;
-              }
-
-              if (row.emissionFactorCO2 != null) {
-                metadata.emissionFactorCO2 = row.emissionFactorCO2;
-              }
-              if (row.emissionFactorCH4 != null) {
-                metadata.emissionFactorCH4 = row.emissionFactorCH4;
-              }
-              if (row.emissionFactorN2O != null) {
-                metadata.emissionFactorN2O = row.emissionFactorN2O;
-              }
-              if (row.emissionFactorTotalCO2e != null) {
-                metadata.emissionFactorTotalCO2e = row.emissionFactorTotalCO2e;
-              }
-
-              // emissionFactorType is a UUID field that we don't have in eCRF files
-              // Setting as empty string as per the example structure
-              metadata.emissionFactorType = "";
-
-              // Convert activity CO2e to kilograms (if available)
-              // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
-              const activityCO2eq = hasSignedNumericValue(totalCO2e)
-                ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
-                : undefined;
-
-              await db.models.ActivityValue.create({
-                id: randomUUID(),
-                inventoryValueId: inventoryValue.id,
-                co2eq: activityCO2eq,
-                co2eqYears: 100,
-                activityData:
-                  Object.keys(activityData).length > 0
-                    ? activityData
-                    : undefined,
-                metadata:
-                  Object.keys(metadata).length > 0 ? metadata : undefined,
-                lastUpdated: new Date(),
-              });
-            } catch (activityError) {
-              warnings.push(
-                `Row ${row.rowIndex + 1}: Failed to create activity value: ${activityError instanceof Error ? activityError.message : "Unknown error"}`,
+            } else if (row.notationKey) {
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}"`,
               );
-              logger.error(
-                {
-                  err: activityError,
-                  rowIndex: row.rowIndex,
-                  gpcRefNo: row.gpcRefNo,
-                },
-                "Failed to create activity value",
+              // Accept short, kebab, or legacy reason-* spellings → canonical kebab
+              const unavailableReason = toCanonical(row.notationKey);
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey}" -> "${unavailableReason}"`,
               );
+
+              if (!unavailableReason) {
+                rowWarnings.push(
+                  `Row ${row.rowIndex + 1}: Unknown notation key "${row.notationKey}", skipping`,
+                );
+                return "skipped";
+              }
+
+              // A later NE/NO/IE row must not hide activity data already stored for this ref.
+              if (existingValue?.co2eq != null) {
+                rowWarnings.push(
+                  `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
+                );
+                return "skipped";
+              }
+
+              // Create or update inventory value with notation key
+              // Note: eCRF files don't typically include explanation, so we use a default
+              const unavailableExplanation = `Imported from eCRF file with notation key: ${row.notationKey}`;
+
+              const notationValue = existingValue
+                ? await existingValue.update(
+                    {
+                      unavailableReason,
+                      unavailableExplanation,
+                      sectorId: row.sectorId,
+                      subSectorId: row.subsectorId,
+                      subCategoryId: row.subcategoryId ?? undefined,
+                      lastUpdated: new Date(),
+                    },
+                    { transaction: rowTransaction },
+                  )
+                : // Create new inventory value with notation key
+                  await db.models.InventoryValue.create(
+                    {
+                      id: randomUUID(),
+                      inventoryId,
+                      gpcReferenceNumber: row.gpcRefNo,
+                      sectorId: row.sectorId,
+                      subSectorId: row.subsectorId,
+                      subCategoryId: row.subcategoryId ?? undefined,
+                      unavailableReason,
+                      unavailableExplanation,
+                      lastUpdated: new Date(),
+                    },
+                    { transaction: rowTransaction },
+                  );
+              await recordVersion(
+                "InventoryValue",
+                notationValue,
+                rowTransaction,
+              );
+            } else {
+              // Skip rows with no emission values and no notation key
+              rowWarnings.push(
+                `Row ${row.rowIndex + 1}: Skipped - no emission values or notation key`,
+              );
+              return "skipped";
             }
-          }
-        } else if (row.notationKey) {
-          console.log(
-            `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}"`,
-          );
-          // Accept short, kebab, or legacy reason-* spellings → canonical kebab
-          const unavailableReason = toCanonical(row.notationKey);
-          console.log(
-            `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey}" -> "${unavailableReason}"`,
-          );
-
-          if (!unavailableReason) {
-            warnings.push(
-              `Row ${row.rowIndex + 1}: Unknown notation key "${row.notationKey}", skipping`,
-            );
-            skippedRows++;
-            continue;
-          }
-
-          // A later NE/NO/IE row must not hide activity data already stored for this ref.
-          if (existingValue?.co2eq != null) {
-            skippedRows++;
-            warnings.push(
-              `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
-            );
-            continue;
-          }
-
-          // Create or update inventory value with notation key
-          // Note: eCRF files don't typically include explanation, so we use a default
-          const unavailableExplanation = `Imported from eCRF file with notation key: ${row.notationKey}`;
-
-          if (existingValue) {
-            await existingValue.update({
-              unavailableReason,
-              unavailableExplanation,
-              sectorId: row.sectorId,
-              subSectorId: row.subsectorId,
-              subCategoryId: row.subcategoryId ?? undefined,
-              lastUpdated: new Date(),
-            });
-            importedRows++;
-          } else {
-            // Create new inventory value with notation key
-            await db.models.InventoryValue.create({
-              id: randomUUID(),
-              inventoryId,
-              gpcReferenceNumber: row.gpcRefNo,
-              sectorId: row.sectorId,
-              subSectorId: row.subsectorId,
-              subCategoryId: row.subcategoryId ?? undefined,
-              unavailableReason,
-              unavailableExplanation,
-              lastUpdated: new Date(),
-            });
-            importedRows++;
-          }
+            return "imported";
+          },
+        );
+        warnings.push(...rowWarnings);
+        if (outcome === "imported") {
+          importedRows++;
         } else {
-          // Skip rows with no emission values and no notation key
           skippedRows++;
-          warnings.push(
-            `Row ${row.rowIndex + 1}: Skipped - no emission values or notation key`,
-          );
-          continue;
         }
       } catch (error) {
         errors.push(

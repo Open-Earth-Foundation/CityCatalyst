@@ -134,7 +134,11 @@ export function FunderProfile({
             color="content.tertiary"
             data-testid="concept-note-funder-added-from"
           >
-            {t("funding-added-by-hand")}
+            {addedFrom.kind === "manual"
+              ? t("funding-added-by-hand")
+              : addedFrom.filename
+                ? t("funding-added-from-file", { filename: addedFrom.filename })
+                : t("funding-added-from-document")}
           </Text>
         )}
       </Box>
@@ -319,7 +323,8 @@ export function ApplicationTemplatePreview({
             {template.chapter_schema.map((chapter, index) => (
               <Flex
                 as="li"
-                key={chapter.chapter_ref ?? index}
+                // Chapters not saved yet have no ref.
+                key={chapter.chapter_ref || index}
                 gap={3}
                 py={3}
                 borderTop="1px solid"

@@ -16,6 +16,38 @@ const funderAward = z
   )
   .nullable();
 
+export const conceptNoteTemplateFields = z
+  .object({
+    template_name: name("funder-error-template-name"),
+    output_format: funderText(64),
+    chapter_schema: z
+      .array(
+        z
+          .object({
+            // Empty for new chapters; the server derives one from the title.
+            chapter_ref: z.string().max(255),
+            title: name("funder-error-chapter-title").regex(
+              /^[^\r\n]*$/,
+              "funder-error-chapter-title-line",
+            ),
+            description: funderText(4000),
+            required: z.boolean(),
+            required_fields: z.array(z.string()),
+          })
+          .strict(),
+      )
+      .min(1, "funder-error-chapters")
+      .max(100, "funder-error-chapter-limit"),
+  })
+  .strict();
+
+export const conceptNoteCustomTemplateRequest = z
+  .object({
+    template: conceptNoteTemplateFields,
+    import_id: z.string().uuid().nullable(),
+  })
+  .strict();
+
 /** Reviewed funder, programme and template to add to the CNB catalogue. */
 export const conceptNoteFunderCreateRequest = z
   .object({
@@ -59,29 +91,7 @@ export const conceptNoteFunderCreateRequest = z
           value.min_award <= value.max_award,
         { message: "funder-error-award-range", path: ["max_award"] },
       ),
-    template: z
-      .object({
-        template_name: name("funder-error-template-name"),
-        output_format: funderText(64),
-        chapter_schema: z
-          .array(
-            z
-              .object({
-                // Empty for new chapters; the server derives one from the title.
-                chapter_ref: z.string().max(255),
-                title: name("funder-error-chapter-title").regex(
-                  /^[^\r\n]*$/,
-                  "funder-error-chapter-title-line",
-                ),
-                description: funderText(4000),
-                required: z.boolean(),
-                required_fields: z.array(z.string()),
-              })
-              .strict(),
-          )
-          .min(1, "funder-error-chapters")
-          .max(100, "funder-error-chapter-limit"),
-      })
-      .strict(),
+    template: conceptNoteTemplateFields,
+    import_id: z.string().uuid().nullable(),
   })
   .strict();

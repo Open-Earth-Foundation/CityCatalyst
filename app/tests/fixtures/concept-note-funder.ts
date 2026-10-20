@@ -17,4 +17,4 @@ export function typedFunderForm(): FunderForm {
   return form;
 }
 
-export const funderRequest = formToCreateRequest(typedFunderForm());
+export const funderRequest = formToCreateRequest(typedFunderForm(), null);

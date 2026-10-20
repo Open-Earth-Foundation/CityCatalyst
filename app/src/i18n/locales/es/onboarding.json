@@ -356,5 +356,9 @@
   "import-row-issue-unknown-notation-key": "Clave de notación desconocida \"{{notationKey}}\". Use NO, NE, IE o C.",
   "import-row-issue-no-value-or-notation-key": "La fila no tiene valor de emisiones ni clave de notación.",
   "import-row-issue-invalid-row": "La fila no pudo ser leída.",
-  "import-row-issue-outside-inventory-type": "Solo una parte de GPC BASIC+. Se importa, pero no cuenta para la finalización de GPC BASIC."
+  "import-row-issue-outside-inventory-type": "Solo una parte de GPC BASIC+. Se importa, pero no cuenta para la finalización de GPC BASIC.",
+  "import-rows-skipped-unknown-notation_one": "{{count}} fila de notación clave desconocida.",
+  "import-rows-skipped-unknown-notation_other": "{{count}} filas de clave de notación desconocida.",
+  "import-rows-skipped-empty_one": "{{count}} fila vacía.",
+  "import-rows-skipped-empty_other": "{{count}} filas vacías."
 }

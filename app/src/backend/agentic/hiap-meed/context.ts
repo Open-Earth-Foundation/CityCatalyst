@@ -5,6 +5,9 @@ import { LANGUAGES } from "@/util/types";
 
 const MAX_REMOVED_ACTIONS = 25;
 const MAX_OUTPUT_PLAN_BYTES = 40 * 1024;
+/** Ranked page and removed list stay together under the 64 KB tool result bound. */
+const MAX_RANKED_PAGE_BYTES = 40 * 1024;
+const MAX_REMOVED_BYTES = 12 * 1024;
 
 type MeedRankingPage = { limit?: number; offset?: number };
 type MeedOutputPlanOptions = { chapters?: readonly string[] };
@@ -56,11 +59,25 @@ function localizeChapter(chapter: unknown, language: string): unknown {
   );
 }
 
+/** Drop trailing items until the JSON fits; always keeps the first item. */
+function fitToBytes<T>(items: T[], maxBytes: number): T[] {
+  let fitted = items;
+  while (
+    fitted.length > 1 &&
+    Buffer.byteLength(JSON.stringify(fitted), "utf8") > maxBytes
+  ) {
+    fitted = fitted.slice(0, -1);
+  }
+  return fitted;
+}
+
 /**
  * Compact persisted HIAP-MEED ranking, one page of ranked actions in rank
  * order plus the actions MEED removed. Read-only; never starts a ranking run.
  * `counts.total` is the full ranked list; `truncated` tells whether more pages
- * follow (read again with `offset` = `counts.offset` + `counts.returned`).
+ * follow (read again with `offset` = `counts.offset` + `counts.returned`). A
+ * page that would exceed the size bound is cut, so `counts.returned` can be
+ * below the requested `limit`.
  */
 export async function buildMeedRankingContext(
   rankingId: string,
@@ -79,9 +96,27 @@ export async function buildMeedRankingContext(
   });
 
   const offset = page.offset ?? 0;
-  const pageRows = rankedRows.slice(
-    offset,
-    offset + (page.limit ?? MEED_DEFAULT_PAGE_SIZE),
+  const rankedActions = fitToBytes(
+    rankedRows
+      .slice(offset, offset + (page.limit ?? MEED_DEFAULT_PAGE_SIZE))
+      .map((row) => ({
+        rank: row.rank ?? null,
+        action_id: row.actionId ?? null,
+        final_score: row.finalScore ?? null,
+        impact_score: row.impactScore ?? null,
+        alignment_score: row.alignmentScore ?? null,
+        feasibility_score: row.feasibilityScore ?? null,
+        explanation: localizedExplanation(row.explanations, language),
+      })),
+    MAX_RANKED_PAGE_BYTES,
+  );
+  const removedActions = fitToBytes(
+    removedRows.slice(0, MAX_REMOVED_ACTIONS).map((row) => ({
+      action_id: row.actionId ?? null,
+      action_name: row.actionName ?? null,
+      removal_reason: row.removalReason ?? null,
+    })),
+    MAX_REMOVED_BYTES,
   );
 
   return {
@@ -91,24 +126,12 @@ export async function buildMeedRankingContext(
       ranked: rankedRows.length,
       total: rankedRows.length,
       removed: removedRows.length,
-      returned: pageRows.length,
+      returned: rankedActions.length,
       offset,
     },
-    truncated: offset + pageRows.length < rankedRows.length,
-    ranked_actions: pageRows.map((row) => ({
-      rank: row.rank ?? null,
-      action_id: row.actionId ?? null,
-      final_score: row.finalScore ?? null,
-      impact_score: row.impactScore ?? null,
-      alignment_score: row.alignmentScore ?? null,
-      feasibility_score: row.feasibilityScore ?? null,
-      explanation: localizedExplanation(row.explanations, language),
-    })),
-    removed_actions: removedRows.slice(0, MAX_REMOVED_ACTIONS).map((row) => ({
-      action_id: row.actionId ?? null,
-      action_name: row.actionName ?? null,
-      removal_reason: row.removalReason ?? null,
-    })),
+    truncated: offset + rankedActions.length < rankedRows.length,
+    ranked_actions: rankedActions,
+    removed_actions: removedActions,
   };
 }
 

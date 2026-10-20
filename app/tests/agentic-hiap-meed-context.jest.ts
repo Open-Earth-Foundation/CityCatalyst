@@ -334,4 +334,49 @@ describe("HIAP-MEED native input capabilities", () => {
       chapters: [{ key: "legal_mandate_delivery", markdown: "short legal" }],
     });
   });
+
+  it("trims a ranked page that would exceed the tool size bound", async () => {
+    findRanking.mockResolvedValue({
+      id: "r1",
+      status: "completed",
+      created: new Date("2026-10-01T00:00:00Z"),
+    });
+    // 50 rows with a long explanation in three languages: about 150 KB untrimmed.
+    const long = "x".repeat(1000);
+    findRanked.mockResolvedValue(
+      Array.from({ length: 50 }, (_, index) => ({
+        rank: index + 1,
+        actionId: `t${index + 1}`,
+        explanations: { en: long, pt: long, es: long },
+      })),
+    );
+    findRemoved.mockResolvedValue(
+      Array.from({ length: 25 }, (_, index) => ({
+        actionId: `r${index}`,
+        actionName: "Removed",
+        removalReason: "y".repeat(2000),
+      })),
+    );
+
+    const page = await buildMeedRankingContext("r1", "en", { limit: 50 });
+    const bytes = Buffer.byteLength(JSON.stringify(page), "utf8");
+
+    expect(bytes).toBeLessThan(64 * 1024);
+    const returned = (page!.ranked_actions as unknown[]).length;
+    expect(returned).toBeGreaterThan(0);
+    expect(returned).toBeLessThan(50);
+    expect(page).toMatchObject({
+      truncated: true,
+      counts: { total: 50, offset: 0, returned },
+    });
+
+    // The next page starts exactly where the trimmed one ended.
+    const next = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: returned,
+    });
+    expect((next!.ranked_actions as { rank: number }[])[0].rank).toBe(
+      returned + 1,
+    );
+  });
 });

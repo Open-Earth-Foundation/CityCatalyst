@@ -1508,6 +1508,11 @@ city can answer "no ranking found".
 real local Core as a seeded user. It spends OpenRouter credit, so it is skipped
 unless `RUN_REAL_LLM=1`. From the repository root:
 
+The seed also holds the CC-1060 fixtures: city A8 (a 30-action HIAP ranking with
+five selections, two implementation plans and a different 2022 ranking) and
+city A9 (a 60-action HIAP-MEED ranking with output plans). Scenarios `P1`-`P16`
+cover them for HIAP and HIAP-MEED.
+
 1. `docker run --name cc1021-core-db -e POSTGRES_USER=citycatalyst -e POSTGRES_PASSWORD=development -e POSTGRES_DB=citycatalyst -p 5432:5432 -d postgres postgres -N 1000`
    (or `app/scripts/start-db.sh`), `docker compose up -d postgres` in
    `climate-advisor/`, then `npm run db:migrate` in `app/` and
@@ -1556,9 +1561,30 @@ mid-turn renewal uses only that turn's server-owned canonical subject, never a
 stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
-`capabilityId`, and optional `language`; `language` is accepted only for the
-bounded HIAP capabilities (`hiap.inventory.context`,
-`hiap_meed.ranking.context`; the HIAP-MEED output plan is returned as stored, without language). Climate Advisor
+`capabilityId`, optional `language` and `inventoryId`, and a finite set of
+capability-specific view arguments. Each capability accepts only its own
+arguments; anything else is rejected before Core is called:
+
+| Capability | Optional arguments |
+| --- | --- |
+| `hiap.inventory.context` (ranking and selections) | `language`, `scope` (`selected` or `ranked`), `type` (`mitigation` or `adaptation`), `limit` (1-50), `offset` |
+| `hiap.action_plan.context` (one HIAP implementation plan) | none (the plan has its own language) |
+| `hiap_meed.ranking.context` (mitigation only) | `language`, `limit` (1-50), `offset` |
+| `hiap_meed.output_plan.context` | `language`, `chapters` (keys such as `legal_mandate_delivery`, `financing_precedents_pathway`, `city_fit`) |
+
+Without `scope` the HIAP read keeps its original view (the city selection when
+one exists, else the ranking). `scope: selected` returns every selected action
+(there is no selection limit) and never falls back to the ranking;
+`scope: ranked` lists the ranking in rank order with each action flagged
+`selected`. Long lists are paged: results carry `counts.total`, `counts.offset`,
+`counts.returned` and `truncated`, and the prompt tells the model to read again
+with `offset` = `counts.offset` + `counts.returned` until `truncated` is false.
+Discovery also passes a safe `displayName` (the action name of a HIAP plan, a
+short label for a HIAP-MEED plan) so plans can be told apart. HIAP-MEED has no
+adaptation ranking and no selections, and its legal, finance and city-fit
+context exists only inside a generated output plan; the prompt states these gaps
+and the pillar glossary (Impact, Alignment, Feasibility and their default
+weights, from `hiap-meed/docs/pipeline-description.md`). Climate Advisor
 does not accept an
 arbitrary input object, storage path, credential, signed URL, or raw source
 pointer. CNB producer registration and a bounded CNB capability remain outside

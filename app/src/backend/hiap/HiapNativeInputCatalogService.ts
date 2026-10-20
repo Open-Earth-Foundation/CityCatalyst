@@ -433,6 +433,8 @@ export async function buildHIAPActionPlanInput(
       actionPlanId: plan.id,
       actionId: plan.actionId,
       language: plan.language,
+      // Discovery shows this so the model can tell plans apart by action name.
+      display_name: plan.actionName,
     },
   };
 

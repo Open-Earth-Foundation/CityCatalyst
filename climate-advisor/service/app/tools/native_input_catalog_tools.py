@@ -41,7 +41,9 @@ _DISCOVER_DESCRIPTION = (
     "inventory_list_accessible; never show it to the user). "
     "Call this first when the user asks about their ranked, prioritized, or "
     "selected climate actions (HIAP ranking, action plan), or about stored "
-    "inventory context. Each entry lists its catalogId and capabilityIds. An empty "
+    "inventory context. Each entry lists its catalogId and capabilityIds, and a "
+    "displayName when one is stored (implementation plans carry the action name). "
+    "An empty "
     "result means nothing is stored, which is not an access error. If the result "
     "is an error with error_code temporarily_unavailable, the lookup failed: do not "
     "say that no ranking exists."
@@ -51,13 +53,31 @@ _READ_DESCRIPTION = (
     "and one of its capabilityIds. Supported capabilityIds: "
     "hiap.inventory.context (ranked climate actions and HIAP action plan), "
     "hiap_meed.ranking.context (HIAP-MEED ranked and removed actions), "
-    "hiap_meed.output_plan.context (HIAP-MEED output plan for one action, returned "
-    "as stored; no language). Only the first two accept language. Also "
+    "hiap.action_plan.context (HIAP implementation plan for one action), "
+    "hiap_meed.output_plan.context (HIAP-MEED output plan for one action; "
+    "accepts chapters to read only some chapters). hiap.inventory.context accepts "
+    "scope (selected or ranked), type, limit and offset; hiap_meed.ranking.context "
+    "accepts limit and offset. Page through a long list by repeating the read with "
+    "offset until truncated is false. language is accepted by every capability "
+    "except hiap.action_plan.context. Also "
     "ghgi.inventory.status_overview and "
     "ghgi.inventory.emissions_context. "
     "By default the city and inventory come from the chat scope; pass inventoryId "
     "only to read another accessible inventory chosen with inventory_list_accessible."
 )
+
+_MEED_CHAPTER_KEYS = (
+    "snapshot",
+    "the_action",
+    "action_impact",
+    "city_fit",
+    "policy_backing",
+    "legal_mandate_delivery",
+    "financing_precedents_pathway",
+    "sources_assumptions",
+)
+_MAX_LIMIT = 50
+_MAX_OFFSET = 1000
 
 _FORBIDDEN_RESULT_KEYS = {
     "access_key_id",
@@ -102,11 +122,11 @@ def _inventory_input(
     return payload
 
 
-def _hiap_input(
+def _language_input(
     context: ActiveRequestContext,
     arguments: Dict[str, Any],
 ) -> Optional[Dict[str, Any]]:
-    """Build bounded HIAP input from captured scope and optional language."""
+    """Build bounded input from captured scope and optional language."""
     payload = _inventory_input(context, arguments)
     if payload is None:
         return None
@@ -117,19 +137,96 @@ def _hiap_input(
     return payload
 
 
+def _page_input(arguments: Dict[str, Any], payload: Dict[str, Any]) -> bool:
+    """Copy validated paging arguments into payload; False when one is invalid."""
+    for name, minimum, maximum in (
+        ("limit", 1, _MAX_LIMIT),
+        ("offset", 0, _MAX_OFFSET),
+    ):
+        if name not in arguments:
+            continue
+        value = arguments[name]
+        if isinstance(value, bool) or not isinstance(value, int):
+            return False
+        if not minimum <= value <= maximum:
+            return False
+        payload[name] = value
+    return True
+
+
+def _hiap_input(
+    context: ActiveRequestContext,
+    arguments: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Build bounded HIAP ranking input: language, view, action type and page."""
+    payload = _language_input(context, arguments)
+    if payload is None or not _page_input(arguments, payload):
+        return None
+    for name, allowed in (
+        ("scope", ("selected", "ranked")),
+        ("type", ("mitigation", "adaptation")),
+    ):
+        if name in arguments:
+            if arguments[name] not in allowed:
+                return None
+            payload[name] = arguments[name]
+    return payload
+
+
+def _meed_ranking_input(
+    context: ActiveRequestContext,
+    arguments: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Build bounded HIAP-MEED ranking input: language and page."""
+    payload = _language_input(context, arguments)
+    if payload is None or not _page_input(arguments, payload):
+        return None
+    return payload
+
+
+def _meed_output_plan_input(
+    context: ActiveRequestContext,
+    arguments: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Build bounded HIAP-MEED output plan input: language and chapter keys."""
+    payload = _language_input(context, arguments)
+    if payload is None:
+        return None
+    if "chapters" in arguments:
+        chapters = arguments["chapters"]
+        if (
+            not isinstance(chapters, list)
+            or len(chapters) > len(_MEED_CHAPTER_KEYS)
+            or any(chapter not in _MEED_CHAPTER_KEYS for chapter in chapters)
+        ):
+            return None
+        payload["chapters"] = list(dict.fromkeys(chapters))
+    return payload
+
+
 _CAPABILITY_DEFINITIONS: dict[str, InputBuilder] = {
     "ghgi.inventory.status_overview": _inventory_input,
     "ghgi.inventory.emissions_context": _inventory_input,
     "hiap.inventory.context": _hiap_input,
-    "hiap_meed.ranking.context": _hiap_input,
-    "hiap_meed.output_plan.context": _hiap_input,
+    "hiap.action_plan.context": _inventory_input,
+    "hiap_meed.ranking.context": _meed_ranking_input,
+    "hiap_meed.output_plan.context": _meed_output_plan_input,
 }
 _LANGUAGE_CAPABILITIES = frozenset(
     {
         "hiap.inventory.context",
         "hiap_meed.ranking.context",
+        "hiap_meed.output_plan.context",
     }
 )
+# Optional read arguments each capability accepts beyond catalog, capability,
+# language and inventory. Anything else is rejected before Core is called.
+_CAPABILITY_ARGUMENTS: dict[str, frozenset[str]] = {
+    "hiap.inventory.context": frozenset({"scope", "type", "limit", "offset"}),
+    "hiap_meed.ranking.context": frozenset({"limit", "offset"}),
+    "hiap_meed.output_plan.context": frozenset({"chapters"}),
+}
+_EXTRA_ARGUMENTS = frozenset({"scope", "type", "limit", "offset", "chapters"})
 
 _INVENTORY_ID_SCHEMA = {"type": "string", "format": "uuid"}
 
@@ -149,6 +246,15 @@ _READ_SCHEMA = {
         "capabilityId": {"type": "string", "minLength": 1},
         "language": {"type": "string", "maxLength": 16},
         "inventoryId": _INVENTORY_ID_SCHEMA,
+        "scope": {"type": "string", "enum": ["selected", "ranked"]},
+        "type": {"type": "string", "enum": ["mitigation", "adaptation"]},
+        "limit": {"type": "integer", "minimum": 1, "maximum": _MAX_LIMIT},
+        "offset": {"type": "integer", "minimum": 0, "maximum": _MAX_OFFSET},
+        "chapters": {
+            "type": "array",
+            "items": {"type": "string", "enum": list(_MEED_CHAPTER_KEYS)},
+            "maxItems": len(_MEED_CHAPTER_KEYS),
+        },
     },
     "required": ["catalogId", "capabilityId"],
     "additionalProperties": False,
@@ -234,8 +340,16 @@ def build_native_input_catalog_tools(
         catalog_id = arguments["catalogId"]
         capability_id = arguments["capabilityId"]
         definition = _CAPABILITY_DEFINITIONS.get(capability_id)
-        if definition is None or (
-            "language" in arguments and capability_id not in _LANGUAGE_CAPABILITIES
+        if (
+            definition is None
+            or (
+                "language" in arguments
+                and capability_id not in _LANGUAGE_CAPABILITIES
+            )
+            or (
+                (_EXTRA_ARGUMENTS & set(arguments))
+                - _CAPABILITY_ARGUMENTS.get(capability_id, frozenset())
+            )
         ):
             return _error_payload(
                 _READ_TOOL_NAME,
@@ -359,15 +473,17 @@ def _discovery_success_payload(discovery: NativeInputDiscovery) -> str:
         ]
         if not capability_ids:
             continue
-        entries.append(
-            {
-                "catalogId": entry["catalog_id"],
-                "kind": entry["kind"],
-                "owningModule": entry["owning_module"],
-                "sourceType": entry["source_type"],
-                "capabilityIds": capability_ids,
-            }
-        )
+        projected = {
+            "catalogId": entry["catalog_id"],
+            "kind": entry["kind"],
+            "owningModule": entry["owning_module"],
+            "sourceType": entry["source_type"],
+            "capabilityIds": capability_ids,
+        }
+        display_name = entry.get("display_name")
+        if isinstance(display_name, str) and display_name:
+            projected["displayName"] = display_name
+        entries.append(projected)
     data: Dict[str, Any] = {"entries": entries}
     if discovery.continuation_cursor:
         data["continuationCursor"] = discovery.continuation_cursor

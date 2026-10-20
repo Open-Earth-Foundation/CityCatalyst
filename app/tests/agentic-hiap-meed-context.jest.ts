@@ -220,4 +220,118 @@ describe("HIAP-MEED native input capabilities", () => {
 
     await expect(buildMeedOutputPlanContext("p1")).resolves.toBeNull();
   });
+
+  it("pages the ranked list and reports the total", async () => {
+    findRanking.mockResolvedValue({
+      id: "r1",
+      status: "completed",
+      created: new Date("2026-10-01T00:00:00Z"),
+    });
+    findRanked.mockResolvedValue(
+      Array.from({ length: 60 }, (_, index) => ({
+        rank: index + 1,
+        actionId: `t${index + 1}`,
+        explanations: { en: `E${index + 1}` },
+      })),
+    );
+    findRemoved.mockResolvedValue([]);
+
+    const first = await buildMeedRankingContext("r1", "en");
+    const second = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: 25,
+    });
+    const last = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: 50,
+    });
+
+    expect(first).toMatchObject({
+      truncated: true,
+      counts: { ranked: 60, total: 60, returned: 25, offset: 0 },
+    });
+    expect(second).toMatchObject({
+      truncated: false,
+      counts: { total: 60, returned: 35, offset: 25 },
+    });
+    expect((second!.ranked_actions as { rank: number }[])[0].rank).toBe(26);
+    expect(last).toMatchObject({
+      truncated: false,
+      counts: { returned: 10, offset: 50 },
+    });
+  });
+
+  it("selects chapters by key, localizes them and lists every key", async () => {
+    const chapters = [
+      {
+        key: "legal_mandate_delivery",
+        title: { en: "Legal", pt: "Legal PT" },
+        markdown: { en: "legal en", pt: "legal pt" },
+      },
+      {
+        key: "financing_precedents_pathway",
+        title: { en: "Finance" },
+        markdown: { en: "finance en" },
+      },
+      { key: "city_fit", title: { en: "Fit" }, markdown: { en: "fit en" } },
+    ];
+    findReport.mockResolvedValue({
+      actionId: "t1",
+      languages: ["en", "pt"],
+      chapters,
+    });
+
+    const result = await buildMeedOutputPlanContext("p1", "pt", {
+      chapters: [
+        "legal_mandate_delivery",
+        "financing_precedents_pathway",
+        "snapshot",
+      ],
+    });
+
+    expect(result).toMatchObject({
+      truncated: false,
+      chapter_keys: [
+        "legal_mandate_delivery",
+        "financing_precedents_pathway",
+        "city_fit",
+      ],
+      missing_chapters: ["snapshot"],
+      chapters: [
+        {
+          key: "legal_mandate_delivery",
+          title: "Legal PT",
+          markdown: "legal pt",
+        },
+        { key: "financing_precedents_pathway", markdown: "finance en" },
+      ],
+    });
+  });
+
+  it("returns a too-large plan as keys, and a small selection of it in full", async () => {
+    const chapters = [
+      { key: "city_fit", markdown: { en: "x".repeat(50 * 1024) } },
+      { key: "legal_mandate_delivery", markdown: { en: "short legal" } },
+    ];
+    findReport.mockResolvedValue({
+      actionId: "t1",
+      languages: ["en"],
+      chapters,
+    });
+
+    const whole = await buildMeedOutputPlanContext("p1", "en");
+    const legal = await buildMeedOutputPlanContext("p1", "en", {
+      chapters: ["legal_mandate_delivery"],
+    });
+
+    expect(whole).toMatchObject({
+      truncated: true,
+      chapters: null,
+      chapter_keys: ["city_fit", "legal_mandate_delivery"],
+    });
+    expect(legal).toMatchObject({
+      truncated: false,
+      chapters: [{ key: "legal_mandate_delivery", markdown: "short legal" }],
+    });
+  });
 });

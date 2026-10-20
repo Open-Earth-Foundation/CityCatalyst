@@ -298,6 +298,186 @@ def h3(fix: Fixture, run: Run) -> tuple[bool, str]:
     )
 
 
+def read_inputs(run: Run, capability: Optional[str] = None) -> list[dict]:
+    """Return the validated inputs of catalog reads, optionally for one capability."""
+    return [
+        call.payload.get("input") or {}
+        for call in reads(run)
+        if capability is None or call.capability == capability
+    ]
+
+
+def coded(name: str) -> str:
+    """Return the marker of a seeded action name ("A8 measure code R02 for City" -> "A8 measure code R02")."""
+    return name.split(" for ")[0]
+
+
+def says_unavailable(text: str) -> bool:
+    """Return True when the answer says the data does not exist or is not available."""
+    normalized = text.replace("’", "'")
+    return bool(
+        re.search(
+            r"no (implementation )?plan|not (yet )?(been )?(generated|available|stored|included|supported)|"
+            r"isn't|is not|does not|doesn't|don't have|do not have|not have|no (legal|information|data|selection|adaptation)|"
+            r"not (been )?(documented|supported|contain)|missing|"
+            r"only (covers|ranks|includes|has|mitigation)|unavailable|cannot|can't|couldn't|could not",
+            normalized,
+            re.IGNORECASE,
+        )
+    )
+
+
+def cc1060_names(fix: Fixture, key: str) -> list[str]:
+    """Return the seeded en action names, in rank order, of A8 (HIAP) or A9 (MEED)."""
+    return fix.data["cc1060"][key]
+
+
+def s_hiap_selected(fix: Fixture, run: Run) -> tuple[bool, str]:
+    selected = fix.data["cc1060"]["a8Selected"]
+    missing = [rank for rank, item in selected.items() if not answer_has(run.text, [coded(item["en"])])]
+    return ok(
+        (fix.inventory("A8", 2023).lower() in inventories(reads(run)), "A8 2023 not read"),
+        (not missing, f"selected actions missing from answer: ranks {missing}"),
+    )
+
+
+def s_hiap_top5(fix: Fixture, run: Run) -> tuple[bool, str]:
+    names = cc1060_names(fix, "a8Names")
+    missing = [rank + 1 for rank in range(5) if not answer_has(run.text, [coded(names[rank])])]
+    return ok(
+        (bool(reads(run)), "no catalog read"),
+        (not missing, f"top 5 ranks missing from answer (selected and unselected): {missing}"),
+    )
+
+
+def s_hiap_all(fix: Fixture, run: Run) -> tuple[bool, str]:
+    names = cc1060_names(fix, "a8Names")
+    wanted = [1, 2, 10, 25, 26, 30]
+    missing = [rank for rank in wanted if not answer_has(run.text, [coded(names[rank - 1])])]
+    # One page of up to 50 holds all 30 actions, so paging is covered by P9.
+    return ok(
+        (bool(read_inputs(run, "hiap.inventory.context")), "ranking not read"),
+        (not missing, f"ranks missing from the full list: {missing}"),
+    )
+
+
+def s_hiap_plan_list(fix: Fixture, run: Run) -> tuple[bool, str]:
+    plans = fix.data["cc1060"]["a8Plans"]
+    missing = [plan["actionName"] for plan in plans if not answer_has(run.text, [coded(plan["actionName"])])]
+    return ok(
+        (not missing, f"plans missing from answer: {missing}"),
+        (not UUID_PATTERN.search(run.text), "a UUID appears in the answer"),
+    )
+
+
+def s_hiap_plan_detail(fix: Fixture, run: Run) -> tuple[bool, str]:
+    first, second = fix.data["cc1060"]["a8Plans"]
+    return ok(
+        (bool(read_inputs(run, "hiap.action_plan.context")), "action plan capability not read"),
+        (answer_has(run.text, ["turbine supplier contract"]), "milestone of the asked plan missing"),
+        ("4.2" in run.text, "cost of the asked plan missing"),
+        ("1.7" not in run.text, "cost of the other plan leaked into the answer"),
+    )
+
+
+def s_hiap_ambiguous(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        (not reads(run), "read happened before asking which year"),
+        ("2022" in run.text and "2023" in run.text, "years not offered"),
+        (asks_user(run.text), "no question asked"),
+    )
+
+
+def s_hiap_compare(fix: Fixture, run: Run) -> tuple[bool, str]:
+    wanted = {fix.inventory("A8", 2022).lower(), fix.inventory("A8", 2023).lower()}
+    return ok(
+        (set(inventories(reads(run))) == wanted, f"read inventories {[fix.abbreviate(i) for i in inventories(reads(run))]}"),
+        (has(run.text, fix, "A8"), "2023 rank-1 value missing"),
+        (has(run.text, fix, "A8-2022"), "2022 rank-1 value missing"),
+    )
+
+
+def s_meed_top5(fix: Fixture, run: Run) -> tuple[bool, str]:
+    # HIAP-MEED rows carry no action name, so the prompt has the model show a
+    # list position instead of a name: the answer must list positions 1 to 5.
+    positions = listed_positions(run.text)
+    return ok(
+        (has(run.text, fix, "A9"), "rank-1 value missing"),
+        ({1, 2, 3, 4, 5} <= positions, f"list positions found: {sorted(positions)[:8]}"),
+        (6 not in positions, "more than the top 5 listed"),
+    )
+
+
+def listed_positions(text: str) -> set[int]:
+    """Return the numbers of the numbered list items in an answer ("12. ..." or "12) ...")."""
+    return {int(number) for number in re.findall(r"^\s*(\d{1,3})[.)]", text, re.MULTILINE)}
+
+
+def s_meed_all(fix: Fixture, run: Run) -> tuple[bool, str]:
+    positions = listed_positions(run.text)
+    missing = [rank for rank in (2, 25, 26, 50, 51, 60) if rank not in positions]
+    offsets = [item.get("offset", 0) for item in read_inputs(run, "hiap_meed.ranking.context")]
+    return ok(
+        (any(offset > 0 for offset in offsets), f"no later page was read, offsets {offsets}"),
+        (not missing, f"list positions missing from the full list: {missing}"),
+    )
+
+
+def s_meed_no_selection(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        (says_unavailable(run.text), "answer does not say MEED has no selections"),
+        ("mitigation" in run.text.lower() or "select" in run.text.lower(), "answer ignores the question"),
+    )
+
+
+def s_meed_no_adaptation(fix: Fixture, run: Run) -> tuple[bool, str]:
+    text = run.text.lower()
+    return ok(
+        ("mitigation" in text, "answer does not say MEED ranks mitigation only"),
+        (says_unavailable(run.text), "answer does not say there is no adaptation ranking"),
+    )
+
+
+def s_meed_legal_finance(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        (bool(read_inputs(run, "hiap_meed.output_plan.context")), "output plan not read"),
+        (answer_has(run.text, ["decree 4412"]), "legal chapter content missing"),
+        (answer_has(run.text, ["40 percent"]) or "40%" in run.text, "finance chapter content missing"),
+        (not UUID_PATTERN.search(run.text), "a UUID appears in the answer"),
+    )
+
+
+def s_meed_no_legal(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        (not answer_has(run.text, ["decree 4412"]), "legal text of the other action was attributed to this one"),
+        (says_unavailable(run.text), "answer does not say the legal information is not available"),
+    )
+
+
+def s_meed_pillars(fix: Fixture, run: Run) -> tuple[bool, str]:
+    text = run.text.lower()
+    return ok(
+        (all(word in text for word in ("impact", "alignment", "feasibility")), "a pillar is not explained"),
+        (any(word in text for word in ("policy", "priorit", "strategic")), "alignment meaning missing"),
+        (any(word in text for word in ("legal", "financ")), "feasibility meaning missing"),
+    )
+
+
+def s_meed_plan_list(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        (bool(discovers(run)), "no discovery"),
+        (not NO_RANKING.search(run.text), "answer says nothing was found"),
+        ("zz-a9" not in run.text.lower() and not UUID_PATTERN.search(run.text), "an internal code appears in the answer"),
+    )
+
+
+def s_meed_no_export(fix: Fixture, run: Run) -> tuple[bool, str]:
+    return ok(
+        ("http" not in run.text.lower(), "answer links a file"),
+        (says_unavailable(run.text), "answer does not decline the export"),
+    )
+
+
 def build_scenarios(fix: Fixture) -> list[Scenario]:
     """Return all scenarios with prompts filled from the fixture names."""
     n = fix.name
@@ -324,4 +504,21 @@ def build_scenarios(fix: Fixture) -> list[Scenario]:
         Scenario("H1", [f"I'd like to know the highest-priority climate measure in {n('A1')} 2022 and in {n('A0')}."], h1, repeat=True),
         Scenario("H2", [f"Quais são as principais ações climáticas priorizadas de {n('A1')} 2022 e de {n('A2')} 2023?"], h2),
         Scenario("H3", [f"Show ranked actions for {n('A4')}, {n('A1')} 2022 and {n('A0')}."], h3),
+        # CC-1060: HIAP (A8) and HIAP-MEED (A9) capabilities, one scenario per ticket prompt.
+        Scenario("P1", [f"Which climate actions have I selected for {n('A8')} 2023?"], s_hiap_selected),
+        Scenario("P2", [f"Show the top 5 ranked climate actions for {n('A8')} 2023."], s_hiap_top5),
+        Scenario("P3", [f"List all the ranked climate actions for {n('A8')} 2023."], s_hiap_all),
+        Scenario("P4", [f"Which implementation plans exist for {n('A8')} 2023?"], s_hiap_plan_list),
+        Scenario("P5", [f"What are the costs and milestones of the wind farm repowering plan for {n('A8')} 2023?"], s_hiap_plan_detail),
+        Scenario("P6", [f"Show my ranked climate actions for {n('A8')}."], s_hiap_ambiguous),
+        Scenario("P7", [f"Compare my 2022 and 2023 ranked climate actions for {n('A8')}."], s_hiap_compare),
+        Scenario("P8", [f"Show the top 5 ranked climate actions for {n('A9')} 2023."], s_meed_top5),
+        Scenario("P9", [f"List all the ranked climate actions for {n('A9')} 2023."], s_meed_all),
+        Scenario("P10", [f"Which climate actions have I selected for {n('A9')} 2023?"], s_meed_no_selection),
+        Scenario("P11", [f"Does {n('A9')} 2023 have ranked adaptation actions?"], s_meed_no_adaptation),
+        Scenario("P12", [f"What are the legal basis and the financing options for the top ranked action of {n('A9')} 2023?"], s_meed_legal_finance),
+        Scenario("P13", [f"What is the legal feasibility of the second ranked action of {n('A9')} 2023?"], s_meed_no_legal),
+        Scenario("P14", [f"What do impact, alignment and feasibility mean in the ranking of {n('A9')} 2023?"], s_meed_pillars),
+        Scenario("P15", [f"Which implementation plans exist for {n('A9')} 2023?"], s_meed_plan_list),
+        Scenario("P16", [f"Export the ranked actions of {n('A9')} 2023 to a spreadsheet file I can download."], s_meed_no_export),
     ]

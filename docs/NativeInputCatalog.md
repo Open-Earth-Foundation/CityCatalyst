@@ -127,3 +127,19 @@ The first CC-736 slice registers the completed MEED ranking artifact produced by
 The catalog stores the parent pointer, digests, action count, language/top-N metadata, and resolved inventory/city/project/organization scope. The requesting user remains audit metadata on `MeedRanking`; it is not part of the catalog scope or ranking identity. It does not copy ranked actions, removed actions, explanations, evidence, or legal payloads. Incomplete, failed, empty, or request-local results are not registered. Inventory and city deletion withdraw active MEED ranking entries while retaining catalog audit rows. The operational `npm run hiap-catalog-backfill` runner scans completed rankings in bounded, resumable pages and retries failed catalog writes using the shared `HiapCatalogBackfillCheckpoint` state.
 
 Report/output-plan artifacts and caller-provided city data, context, preferences, and exclusions remain out of scope until each has a durable, reusable CityCatalyst source record.
+
+## Climate Advisor read capabilities (CC-1060)
+
+Selected-read capabilities are bounded and read-only. Each capability has its own input schema in the module `registry.ts` and accepts only the optional view arguments below; Core still authorizes the catalog row first (CC-1060 PR 1 changes no authorization).
+
+| Capability | Catalog rows | Optional input |
+|---|---|---|
+| `hiap.inventory.context` | `hiap_ranking`, `hiap_selection` | `language`, `scope` (`selected`, `ranked`), `type` (`mitigation`, `adaptation`), `limit` (1-50), `offset` |
+| `hiap.action_plan.context` | `hiap_action_plan` | none; returns the plan summary (`timeline`, `costBudget`, `milestones`, `institutions`, `merIndicators`, ...) and lists sections left out for size in `omitted_sections` |
+| `hiap_meed.ranking.context` | `hiap_meed_ranking` | `language`, `limit` (1-50, default 25), `offset` |
+| `hiap_meed.output_plan.context` | `hiap_meed_output_plan` | `language`, `chapters` (stored chapter keys, for example `legal_mandate_delivery`, `financing_precedents_pathway`, `city_fit`) |
+
+- Without `scope`, `hiap.inventory.context` returns the city selection when one exists, else the ranked fallback (the pre-CC-1060 output). `selected` returns every selected action (no selection limit) and does not fall back; `ranked` returns the ranking in rank order, flagging selected actions, 25 per page by default.
+- Paged results carry `counts.total`, `counts.offset`, `counts.returned` and `truncated`; the caller reads the next page with `offset` = `counts.offset` + `counts.returned`. A page is also cut when it would exceed the tool size bound.
+- A plan row's `labels.display_name` is a safe, content-free name shown by discovery: the action name for a HIAP plan and `HIAP-MEED output plan (<languages>)` for a HIAP-MEED plan (MEED stores no action name and its action code must not reach the user, so the plan read, which returns `action_id`, identifies the action). Registration adds a missing name to an existing row, so re-running the existing `npm run hiap-catalog-backfill` (a deployment step that needs David's go-ahead per environment) fills the names of rows registered before CC-1060.
+- HIAP-MEED stores legal, finance and city-fit context only inside its output-plan chapters. HIAP stores none of it.

@@ -1,10 +1,13 @@
 import { db } from "@/models";
 import { hasChapters } from "@/backend/meed/meedOutputPlan";
+import { MEED_DEFAULT_PAGE_SIZE } from "@/backend/agentic/hiap-meed/registry";
 import { LANGUAGES } from "@/util/types";
 
-const MAX_RANKED_ACTIONS = 25;
 const MAX_REMOVED_ACTIONS = 25;
 const MAX_OUTPUT_PLAN_BYTES = 40 * 1024;
+
+type MeedRankingPage = { limit?: number; offset?: number };
+type MeedOutputPlanOptions = { chapters?: readonly string[] };
 
 function localizedExplanation(
   explanations: Record<string, string> | undefined,
@@ -20,12 +23,49 @@ function localizedExplanation(
 }
 
 /**
- * Compact persisted HIAP-MEED ranking: top ranked actions in rank order plus
- * the actions MEED removed. Read-only; never starts a ranking run.
+ * Pick one language from a stored i18n value (`{ en: ..., pt: ... }`). Any
+ * other value is returned as stored.
+ */
+function pickLanguage(value: unknown, language: string): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+  const byLanguage = value as Record<string, unknown>;
+  return (
+    byLanguage[language] ??
+    byLanguage[LANGUAGES.en] ??
+    Object.values(byLanguage)[0] ??
+    null
+  );
+}
+
+function chapterKey(chapter: unknown, fallback: string): string {
+  const key = (chapter as { key?: unknown } | null)?.key;
+  return typeof key === "string" ? key : fallback;
+}
+
+function localizeChapter(chapter: unknown, language: string): unknown {
+  if (!chapter || typeof chapter !== "object" || Array.isArray(chapter)) {
+    return chapter;
+  }
+  return Object.fromEntries(
+    Object.entries(chapter as Record<string, unknown>).map(([name, value]) => [
+      name,
+      name === "key" ? value : pickLanguage(value, language),
+    ]),
+  );
+}
+
+/**
+ * Compact persisted HIAP-MEED ranking, one page of ranked actions in rank
+ * order plus the actions MEED removed. Read-only; never starts a ranking run.
+ * `counts.total` is the full ranked list; `truncated` tells whether more pages
+ * follow (read again with `offset` = `counts.offset` + `counts.returned`).
  */
 export async function buildMeedRankingContext(
   rankingId: string,
   language: string,
+  page: MeedRankingPage = {},
 ): Promise<Record<string, unknown> | null> {
   const ranking = await db.models.MeedRanking.findByPk(rankingId);
   if (!ranking || ranking.status !== "completed") return null;
@@ -38,15 +78,24 @@ export async function buildMeedRankingContext(
     where: { rankingId },
   });
 
+  const offset = page.offset ?? 0;
+  const pageRows = rankedRows.slice(
+    offset,
+    offset + (page.limit ?? MEED_DEFAULT_PAGE_SIZE),
+  );
+
   return {
     status: "available",
     updated_at: ranking.created?.toISOString() ?? null,
     counts: {
       ranked: rankedRows.length,
+      total: rankedRows.length,
       removed: removedRows.length,
-      returned: Math.min(rankedRows.length, MAX_RANKED_ACTIONS),
+      returned: pageRows.length,
+      offset,
     },
-    ranked_actions: rankedRows.slice(0, MAX_RANKED_ACTIONS).map((row) => ({
+    truncated: offset + pageRows.length < rankedRows.length,
+    ranked_actions: pageRows.map((row) => ({
       rank: row.rank ?? null,
       action_id: row.actionId ?? null,
       final_score: row.finalScore ?? null,
@@ -64,18 +113,34 @@ export async function buildMeedRankingContext(
 }
 
 /**
- * Persisted HIAP-MEED output plan for one action. Large plans return only
- * their chapter keys so the response stays inside the tool size bound.
+ * Persisted HIAP-MEED output plan for one action, in one language. `chapters`
+ * selects chapters by key (for example `legal_mandate_delivery`,
+ * `financing_precedents_pathway`, `city_fit`); `chapter_keys` always lists the
+ * keys the plan holds. A plan over the size bound returns only its keys.
  */
 export async function buildMeedOutputPlanContext(
   reportId: string,
+  language: string = LANGUAGES.en,
+  options: MeedOutputPlanOptions = {},
 ): Promise<Record<string, unknown> | null> {
   const report = await db.models.MeedActionReport.findByPk(reportId);
   if (!report || !hasChapters(report.chapters)) return null;
 
-  const chapters = report.chapters as Record<string, unknown>;
+  const stored = report.chapters as unknown;
+  const entries: [string, unknown][] = Array.isArray(stored)
+    ? stored.map((chapter, index) => [
+        chapterKey(chapter, String(index)),
+        chapter,
+      ])
+    : Object.entries(stored as Record<string, unknown>);
+  const chapterKeys = entries.map(([key]) => key);
+  const requested = options.chapters?.length ? new Set(options.chapters) : null;
+  const selected = entries.filter(([key]) => !requested || requested.has(key));
+  const localized = selected.map(
+    ([key, chapter]) => [key, localizeChapter(chapter, language)] as const,
+  );
   const fits =
-    Buffer.byteLength(JSON.stringify(chapters), "utf8") <=
+    Buffer.byteLength(JSON.stringify(localized), "utf8") <=
     MAX_OUTPUT_PLAN_BYTES;
 
   return {
@@ -84,7 +149,15 @@ export async function buildMeedOutputPlanContext(
     languages: report.languages ?? [],
     updated_at: report.created?.toISOString() ?? null,
     truncated: !fits,
-    chapters: fits ? chapters : null,
-    chapter_keys: fits ? undefined : Object.keys(chapters),
+    chapter_keys: chapterKeys,
+    missing_chapters: requested
+      ? [...requested].filter((key) => !chapterKeys.includes(key))
+      : [],
+    // Array plans stay arrays so each chapter keeps its `key`.
+    chapters: fits
+      ? Array.isArray(stored)
+        ? localized.map(([, chapter]) => chapter)
+        : Object.fromEntries(localized)
+      : null,
   };
 }

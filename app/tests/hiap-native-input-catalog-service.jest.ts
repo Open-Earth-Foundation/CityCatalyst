@@ -426,7 +426,10 @@ describe("HiapNativeInputCatalogService", () => {
         sourceType: "action_plan",
         sourceId: expect.stringMatching(/^plan-1:/),
         contentDigest: expect.any(String),
-        labels: expect.objectContaining({ actionPlanId: "plan-1" }),
+        labels: expect.objectContaining({
+          actionPlanId: "plan-1",
+          display_name: "Action",
+        }),
       }),
     );
     expect(registerNativeInput.mock.calls[0][0]).not.toHaveProperty(

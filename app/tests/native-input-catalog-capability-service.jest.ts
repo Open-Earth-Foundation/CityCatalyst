@@ -297,9 +297,8 @@ describe("NativeInputCatalog capability service", () => {
     });
   });
 
-  it("keeps rows without a scope field visible to an authorized caller", async () => {
-    // No scope fields on the row, so no permission check runs.
-    const inventoryOwned = {
+  it("never exposes a row without any scope field", async () => {
+    const unscoped = {
       ...authorizedEntry,
       userId: null,
       inventoryId: null,
@@ -310,9 +309,9 @@ describe("NativeInputCatalog capability service", () => {
       authorizeCatalogScope(
         session,
         { userId: session.user.id },
-        inventoryOwned as never,
+        unscoped as never,
       ),
-    ).resolves.toBe(true);
+    ).resolves.toBe(false);
   });
 
   it("does not filter candidates by the creator userId", () => {

@@ -428,6 +428,69 @@ describe("NativeInputCatalog access at city and project (CC-1060 PR 2)", () => {
     });
   });
 
+  describe("rows without a city or inventory fail closed", () => {
+    const everyone = () =>
+      [
+        ["organization admin", ids.orgAdmin],
+        ["project admin", ids.projectAdminP1],
+        ["collaborator", ids.collaboratorA],
+        ["outsider", ids.outsider],
+      ] as const;
+
+    it("denies a userId-only row and a row with no scope field", async () => {
+      await createRow("user-only", "hiap ranking", {
+        inventoryId: null,
+        cityId: null,
+        projectId: null,
+        organizationId: null,
+        userId: ids.collaboratorA,
+      });
+      await createRow("no-scope", "meed ranking", {
+        inventoryId: null,
+        cityId: null,
+        projectId: null,
+        organizationId: null,
+      });
+      for (const key of ["user-only", "no-scope"]) {
+        for (const [who, userId] of everyone()) {
+          for (const request of [{}, { cityId: p1.cityId }]) {
+            expect([
+              key,
+              who,
+              request,
+              await canRead(userId, key, request),
+            ]).toEqual([key, who, request, false]);
+          }
+        }
+      }
+    });
+
+    it("keeps project-only and organization-only rows as before", async () => {
+      await createRow("project-only", "hiap plan", {
+        inventoryId: null,
+        cityId: null,
+        projectId: p1.projectId,
+        organizationId: null,
+      });
+      await createRow("org-only", "hiap plan", {
+        inventoryId: null,
+        cityId: null,
+        projectId: null,
+        organizationId: p1.organizationId,
+      });
+      // project-only: organization admin and project admin of P1 pass
+      expect(await canRead(ids.orgAdmin, "project-only")).toBe(true);
+      expect(await canRead(ids.projectAdminP1, "project-only")).toBe(true);
+      expect(await canRead(ids.collaboratorA, "project-only")).toBe(false);
+      expect(await canRead(ids.outsider, "project-only")).toBe(false);
+      // organization-only: organization admin only
+      expect(await canRead(ids.orgAdmin, "org-only")).toBe(true);
+      expect(await canRead(ids.projectAdminP1, "org-only")).toBe(false);
+      expect(await canRead(ids.collaboratorA, "org-only")).toBe(false);
+      expect(await canRead(ids.outsider, "org-only")).toBe(false);
+    });
+  });
+
   describe("discovery and reads through the service", () => {
     const discoveredIds = async (
       userId: string,

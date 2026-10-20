@@ -354,13 +354,16 @@ async function resolveRowCityProject(
 
 /**
  * Rows without a city or inventory (project- or organization-level) keep the
- * per-dimension checks; no catalog source registers such rows today.
+ * per-dimension checks. Fail closed: a row that names neither a project nor an
+ * organization (for example a userId-only row) has nothing to authorize
+ * against and is never readable.
  */
 async function authorizeCoarseScope(
   session: AppSession,
   request: NativeInputDiscoveryRequest,
   entry: CatalogEntry,
 ): Promise<boolean> {
+  if (!entry.projectId && !entry.organizationId) return false;
   for (const field of AUTHORIZED_SCOPE_FIELDS) {
     const entryValue = entry[field];
     const requestValue = request[field];

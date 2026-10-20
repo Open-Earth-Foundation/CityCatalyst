@@ -444,6 +444,8 @@ export function RankedActionsTable({
               return (
                 <VStack
                   key={row.action.id}
+                  data-testid="ranked-action"
+                  data-action-name={name}
                   alignItems="stretch"
                   gap="m"
                   px="xl"
@@ -519,7 +521,11 @@ export function RankedActionsTable({
               {ordered.map((row) => {
                 const name = pick(row.action.name, lng);
                 return (
-                  <Table.Row key={row.action.id}>
+                  <Table.Row
+                    key={row.action.id}
+                    data-testid="ranked-action"
+                    data-action-name={name}
+                  >
                     <Table.Cell py="l" pl="xl">
                       <SelectActionCheckbox
                         checked={selectedIds.includes(row.action.id)}

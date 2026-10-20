@@ -68,6 +68,12 @@ describe("importRowSkipReason", () => {
   it("imports rows with a known notation key", () => {
     expect(importRowSkipReason(row(0, { notationKey: "IE" }))).toBeNull();
     expect(importRowSkipReason(row(0, { notationKey: "no" }))).toBeNull();
+    expect(
+      importRowSkipReason(row(0, { notationKey: "Not Occuring" })),
+    ).toBeNull();
+    expect(
+      importRowSkipReason(row(0, { notationKey: "Not Estimated" })),
+    ).toBeNull();
   });
 
   it("skips rows with an unknown notation key or no data at all", () => {
@@ -118,6 +124,14 @@ describe("previewImportRows", () => {
       totalRows: 8,
       importedRows: 2,
       skippedRows: 6,
+      skippedByIssue: {
+        "missing-gpc-reference": 1,
+        "gpc-reference-unresolved": 1,
+        "gpc-reference-unknown": 1,
+        "unknown-notation-key": 1,
+        "no-value-or-notation-key": 1,
+        "invalid-row": 1,
+      },
     });
     expect(
       preview.rows.map(({ rowNumber, gpcRefNo, status, issue }) => [
@@ -167,6 +181,102 @@ describe("previewImportRows", () => {
 });
 
 describe("ECRFImportService.processECRFFile", () => {
+  it("reads activity_name as fuel and ignores gas columns as emission factors", async () => {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector-I",
+      subsectorId: "subsector-I.1",
+      subcategoryId: "subcategory-I.1.1",
+      scopeId: "scope-1",
+    } as Awaited<ReturnType<typeof ECRFImportService.lookupGPCReference>>);
+
+    const headers = [
+      "gpc_ref_no",
+      "sector",
+      "subsector",
+      "activity_name",
+      "activity_amount",
+      "scope",
+      "co2",
+      "ch4",
+      "n2o",
+      "total_co2e",
+      "year",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "Sheet1",
+          headers,
+          rows: [
+            {
+              gpc_ref_no: "I.1.1",
+              sector: "Stationary Energy",
+              subsector: "Residential",
+              activity_name: "Gas natural",
+              activity_amount: 10,
+              scope: "1",
+              co2: 6139026,
+              ch4: 1,
+              n2o: 2,
+              total_co2e: 100,
+              year: 2020,
+            },
+            {
+              gpc_ref_no: "I.1.2",
+              sector: "Stationary Energy",
+              subsector: "Residential",
+              activity_name: "Not Occuring",
+              activity_amount: null,
+              scope: "1",
+              co2: null,
+              ch4: null,
+              n2o: null,
+              total_co2e: null,
+              year: 2020,
+            },
+          ],
+          rowCount: 3,
+          columnCount: headers.length,
+        },
+      },
+      {
+        gpcRefNo: 0,
+        sector: 1,
+        subsector: 2,
+        activityType: 3,
+        activityAmount: 4,
+        scope: 5,
+        co2: 6,
+        ch4: 7,
+        n2o: 8,
+        totalCO2e: 9,
+        year: 10,
+        // Simulate the pre-fix bad binding so the importer still rejects it
+        emissionFactorCO2: 6,
+        emissionFactorCH4: 7,
+        emissionFactorN2O: 8,
+        emissionFactorTotalCO2e: 6,
+      },
+    );
+
+    expect(result.rows[0]).toMatchObject({
+      activityType: "Gas natural",
+      co2: 6139026,
+      emissionFactorCO2: undefined,
+      emissionFactorCH4: undefined,
+      emissionFactorN2O: undefined,
+      emissionFactorTotalCO2e: undefined,
+      notationKey: undefined,
+    });
+    expect(result.rows[1]).toMatchObject({
+      activityType: undefined,
+      notationKey: "Not Occuring",
+    });
+    expect(importRowSkipReason(result.rows[1])).toBeNull();
+  });
+
   it("keeps rows without a GPC reference as rejected rows with their file row number", async () => {
     jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
       sectorId: "sector-I",

@@ -665,6 +665,7 @@ Current CA model defaults:
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
 - New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Uploaded funder and standalone-template extraction: `openai/gpt-6.1-sol`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
 with medium reasoning. CNB chat and source workers use OpenRouter's Responses API
@@ -810,7 +811,25 @@ language, or client-side fallback behavior. The boundary is:
   CNB Alembic chain, never the CA chain. The reviewed-reference importer,
   similar-project reader, runtime funding-reference validation, and the workspace's
   searchable funder/programme/template catalogue also use it. Funding selection
-  does not run research or call an LLM. See the
+  does not run research or call an LLM. Adding a funder from an uploaded
+  document calls `cnb_funder_extractor` once and writes catalogue rows only after
+  the user reviews them. `services/cnb/funder_creation.py` owns import lifecycle
+  and catalogue saves; `funder_document.py` handles extraction and verified quotes;
+  `funder_fields.py` normalizes fields and indexes their provenance values.
+  Concurrent import starts are serialized; ready drafts must be reviewed or
+  explicitly discarded before another import starts. Discard requires the
+  observed import ID as the `import_id` query parameter (CityCatalyst's public
+  endpoint uses `importId`), without a DELETE body, so it cannot remove a newer
+  import. A worker refreshes its
+  lease every 30 seconds; after two minutes without a heartbeat, the import is
+  reported as interrupted and can be retried. Expired workers cannot publish
+  late results. Duplicated
+  notes keep the source files but omit pending funder imports; see
+  [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue).
+  A note can instead use its own template (`concept_note_runs.custom_template`),
+  typed by hand or read from an upload with the same extractor and
+  `prompts/cnb/template_document_extraction.md`; see
+  [own templates](../docs/ConceptNoteBuilderArchitecture.md#using-a-notes-own-template). See the
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
   for compatible-template checks, draft review invalidation, serialized edit
   registration/application, and focused tests
@@ -875,6 +894,17 @@ identity changes return `409`, and unavailable storage returns
 `503 cnb_storage_unavailable`. CA owns no OCR queue, bucket credential, or
 presigned URL. See the authoritative handoff contract in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#pdf-conversion-and-native-markdown-handoff).
+
+Upload registration accepts `source_role: "reference" | "climate_action_plan"`
+(default `reference`). The role is immutable and survives CC OCR delivery,
+retry and reload. Apply CA migration `20261008_120000` before deploying this
+contract (after the `20261005_120000` merge revision). Existing uploads default
+to `reference`; note duplication preserves roles and remaps bundle membership.
+The role does not change document processing: plan PDFs follow the
+same CC OCR and source-analysis pipeline as initial note PDFs. Run list/detail
+responses expose upload roles, and completed bundle progress publishes exact
+`included_upload_ids` for consistent plan readiness in both views. HIAP loading
+and refresh behavior are unchanged.
 
 CC uses the intentionally separate service-to-service route
 `GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
@@ -952,8 +982,10 @@ Operationally:
   unaffected prose are kept; a contradicted existing fact is flagged with a new
   marker instead of being overwritten. Each redraft appends a revision, resolves
   only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
-  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
-  unanswered gap or mismatches its markers is rejected and logged. The last
+  caveats, and reopens resolved gaps it contradicts. A gap the redraft drops
+  without an answer is added back as a marker at the end of the chapter and
+  stays open; a redraft that mismatches its markers is rejected and logged.
+  The last
   confirmed revision is preserved, so an affected Ready chapter returns to
   review. The drafter also receives the chapter's `resolved_information` and
   `existing_open_gaps` so earlier answers stay applied and gap keys stay
@@ -1087,6 +1119,9 @@ PostgreSQL regression coverage runs with `CNB_TEST_DATABASE_URL` configured:
 
 Merge revision `20261005_120000` joins chat ownership (`20260925_130000`)
 and structured uploads (`20261001_120000`) without changing either migration.
+Merge revision `20261011_120000` joins that history with the custom application
+template revision (`20261007_120000`), preserving both branches' schema and data
+operations and keeping a single deployable head.
 Run `uv run --directory service alembic upgrade head` from `climate-advisor/`
 to apply both branches, including when either parent is already installed.
 

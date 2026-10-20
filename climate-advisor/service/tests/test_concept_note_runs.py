@@ -493,6 +493,7 @@ async def test_get_run_returns_owned_upload_metadata() -> None:
         uploaded_by_user_id=payload.user_id,
         filename="Richfield_FloodRiskPrioritization.pdf",
         source_label="Richfield Flood Risk Prioritization",
+        source_role="reference",
         ingest_status="ready",
         page_count=55,
         received_at=datetime.now(timezone.utc),
@@ -568,7 +569,9 @@ async def test_list_runs_revalidates_city_access_before_querying() -> None:
     repository.list_for_user_city.assert_not_awaited()
 
 
-async def test_list_runs_maps_city_authorization_outage_to_service_unavailable() -> None:
+async def test_list_runs_maps_city_authorization_outage_to_service_unavailable() -> (
+    None
+):
     """Keep authorization integration failures distinct from access denial."""
     service, repository, cc_client, _ = _run_service()
     cc_client.get_city.side_effect = CityCatalystClientError(
@@ -612,9 +615,11 @@ async def test_list_runs_returns_stable_progress_and_resume_fields() -> None:
     assert listed.runs[0].thread_id == detailed.thread_id
     assert listed.runs[0].status == detailed.status == "paused"
     assert listed.runs[0].workflow_step == detailed.workflow_step == "interviewing"
-    assert listed.runs[0].progress_summary == detailed.progress_summary == {
-        "ready_sources": 3
-    }
+    assert (
+        listed.runs[0].progress_summary
+        == detailed.progress_summary
+        == {"ready_sources": 3}
+    )
 
 
 async def test_list_runs_returns_empty_envelope() -> None:
@@ -669,6 +674,7 @@ async def test_repository_filters_and_orders_city_runs_deterministically() -> No
     try:
         async with engine.begin() as connection:
             await connection.run_sync(ConceptNoteRun.__table__.create)
+            await connection.run_sync(ConceptNoteUpload.__table__.create)
 
         owner_payload = _start_request(city_id=city_id)
         other_user_payload = _start_request(user_id="other-user", city_id=city_id)

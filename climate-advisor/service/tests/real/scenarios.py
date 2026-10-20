@@ -312,19 +312,34 @@ def coded(name: str) -> str:
     return name.split(" for ")[0]
 
 
-def says_unavailable(text: str) -> bool:
-    """Return True when the answer says the data does not exist or is not available."""
-    normalized = text.replace("’", "'")
-    return bool(
-        re.search(
-            r"no (implementation )?plan|not (yet )?(been )?(generated|available|stored|included|supported)|"
-            r"isn't|is not|does not|doesn't|don't have|do not have|not have|no (legal|information|data|selection|adaptation)|"
-            r"not (been )?(documented|supported|contain)|missing|"
-            r"only (covers|ranks|includes|has|mitigation)|unavailable|cannot|can't|couldn't|could not",
-            normalized,
-            re.IGNORECASE,
-        )
-    )
+def claims(pattern: str, text: str) -> bool:
+    """Return True when one sentence of the answer makes the specific claim the pattern describes."""
+    return bool(re.search(pattern, text.replace("’", "'"), re.IGNORECASE))
+
+
+# Each pattern is one specific claim, not a generic negation.
+NO_SELECTION_CONCEPT = (
+    r"(no|not|n't|cannot|can't|without)[^.\n]{0,60}(select|choos|pick)"
+)
+MITIGATION_ONLY = (
+    r"(only|just)[^.\n]{0,40}mitigation|mitigation[^.\n]{0,25}(only|alone)|no adaptation|"
+    r"adaptation[^.\n]{0,50}(not|no)\b|not[^.\n]{0,30}adaptation"
+)
+LEGAL_NOT_IN_PLAN = (
+    r"(legal|mandate)[^.\n]{0,80}(missing|not (been )?(documented|included|available|generated|stored|contain)|no\b)|"
+    r"(no|not|missing)[^.\n]{0,40}legal"
+)
+CANNOT_EXPORT = (
+    r"(cannot|can't|can not|unable|not able|won't|do not|don't|no)[^.\n]{0,60}(export|download|file|spreadsheet)|"
+    r"(export|download)[^.\n]{0,40}(not|unavailable|isn't)"
+)
+TWO_PLANS = r"\b(2|two)\b[^.\n]{0,40}plans?|plans?[^.\n]{0,60}\b(2|two)\b|first[^.\n]{0,80}second"
+RAW_MEED_CODE = re.compile(r"zz-a9-", re.IGNORECASE)
+
+
+def has_programme(text: str, fix: Fixture, key: str) -> bool:
+    """Return True when the answer shows the rank-1 name (not the raw action code)."""
+    return answer_has(text, fix.markers(key)[1:])
 
 
 def cc1060_names(fix: Fixture, key: str) -> list[str]:
@@ -402,15 +417,19 @@ def s_meed_top5(fix: Fixture, run: Run) -> tuple[bool, str]:
     # list position instead of a name: the answer must list positions 1 to 5.
     positions = listed_positions(run.text)
     return ok(
-        (has(run.text, fix, "A9"), "rank-1 value missing"),
+        (has_programme(run.text, fix, "A9"), "rank-1 name missing"),
         ({1, 2, 3, 4, 5} <= positions, f"list positions found: {sorted(positions)[:8]}"),
         (6 not in positions, "more than the top 5 listed"),
+        (not RAW_MEED_CODE.search(run.text), "a raw action code appears in the answer"),
     )
 
 
 def listed_positions(text: str) -> set[int]:
-    """Return the numbers of the numbered list items in an answer ("12. ..." or "12) ...")."""
-    return {int(number) for number in re.findall(r"^\s*(\d{1,3})[.)]", text, re.MULTILINE)}
+    """Return the positions listed in an answer: "12. ...", "12) ..." or a table row "| 12 | ...")."""
+    return {
+        int(number)
+        for number in re.findall(r"^\s*(?:\|\s*)?(\d{1,3})\s*(?:[.)]|\|)", text, re.MULTILINE)
+    }
 
 
 def s_meed_all(fix: Fixture, run: Run) -> tuple[bool, str]:
@@ -420,21 +439,21 @@ def s_meed_all(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
         (any(offset > 0 for offset in offsets), f"no later page was read, offsets {offsets}"),
         (not missing, f"list positions missing from the full list: {missing}"),
+        (not RAW_MEED_CODE.search(run.text), "a raw action code appears in the answer"),
     )
 
 
 def s_meed_no_selection(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
-        (says_unavailable(run.text), "answer does not say MEED has no selections"),
-        ("mitigation" in run.text.lower() or "select" in run.text.lower(), "answer ignores the question"),
+        (claims(NO_SELECTION_CONCEPT, run.text), "answer does not say MEED has no selection of actions"),
+        (not has_programme(run.text, fix, "A9") or "select" in run.text.lower(), "answer lists ranked actions as if they were selected"),
     )
 
 
 def s_meed_no_adaptation(fix: Fixture, run: Run) -> tuple[bool, str]:
-    text = run.text.lower()
     return ok(
-        ("mitigation" in text, "answer does not say MEED ranks mitigation only"),
-        (says_unavailable(run.text), "answer does not say there is no adaptation ranking"),
+        (claims(MITIGATION_ONLY, run.text), "answer does not say MEED ranks mitigation only / has no adaptation ranking"),
+        ("mitigation" in run.text.lower(), "answer does not mention mitigation"),
     )
 
 
@@ -450,7 +469,8 @@ def s_meed_legal_finance(fix: Fixture, run: Run) -> tuple[bool, str]:
 def s_meed_no_legal(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
         (not answer_has(run.text, ["decree 4412"]), "legal text of the other action was attributed to this one"),
-        (says_unavailable(run.text), "answer does not say the legal information is not available"),
+        (bool(read_inputs(run, "hiap_meed.output_plan.context")), "output plan not read"),
+        (claims(LEGAL_NOT_IN_PLAN, run.text), "answer does not say the legal information is missing from this action's plan"),
     )
 
 
@@ -467,14 +487,15 @@ def s_meed_plan_list(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
         (bool(discovers(run)), "no discovery"),
         (not NO_RANKING.search(run.text), "answer says nothing was found"),
-        ("zz-a9" not in run.text.lower() and not UUID_PATTERN.search(run.text), "an internal code appears in the answer"),
+        (claims(TWO_PLANS, run.text), "answer does not say the two seeded plans exist"),
+        (not RAW_MEED_CODE.search(run.text) and not UUID_PATTERN.search(run.text), "an internal code appears in the answer"),
     )
 
 
 def s_meed_no_export(fix: Fixture, run: Run) -> tuple[bool, str]:
     return ok(
         ("http" not in run.text.lower(), "answer links a file"),
-        (says_unavailable(run.text), "answer does not decline the export"),
+        (claims(CANNOT_EXPORT, run.text), "answer does not decline the export"),
     )
 
 

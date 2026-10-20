@@ -227,6 +227,26 @@ def test_tool_descriptions_route_ranked_action_questions_to_hiap_capability() ->
     assert "hiap_meed.output_plan.context" in read_description
     assert "hiap.action_plan.context" in read_description
     assert "offset" in read_description
+    assert (
+        "language is accepted only by hiap.inventory.context, "
+        "hiap_meed.ranking.context and hiap_meed.output_plan.context"
+    ) in read_description
+
+
+def test_description_language_claim_matches_the_capabilities_that_accept_it() -> None:
+    """The description names exactly the capabilities in _LANGUAGE_CAPABILITIES."""
+    from app.tools import native_input_catalog_tools as module
+
+    tools, _, _ = _build(_StubClient())
+    description = getattr(_tool(tools, "native_input_read"), "description")
+
+    assert module._LANGUAGE_CAPABILITIES == {
+        "hiap.inventory.context",
+        "hiap_meed.ranking.context",
+        "hiap_meed.output_plan.context",
+    }
+    for capability in module._LANGUAGE_CAPABILITIES:
+        assert capability in description.split("language is accepted only by")[1].split("Also")[0]
 
 
 @pytest.mark.asyncio

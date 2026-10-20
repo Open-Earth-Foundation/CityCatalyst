@@ -23,11 +23,14 @@ from tests.real.harness import (
     CostGuard,
     Run,
     append_record,
+    flush_traces,
     issue_token,
     load_fixture,
+    pop_trace_ids,
     run_summary,
     run_with_retry,
     runs_per_scenario,
+    set_trace_scenario,
 )
 from tests.real.scenarios import build_scenarios, discovers, has
 
@@ -69,8 +72,10 @@ def guard() -> CostGuard:
 
 def _record(scenario_id: str, run_number: int, fixture, run: Run, passed: bool, note: str, *, known: bool = False) -> None:
     """Persist one sanitized run record."""
+    flush_traces()
     append_record(
         {
+            "trace_ids": pop_trace_ids(),
             "round": os.getenv("REAL_LLM_ROUND", ""),
             "scenario": scenario_id,
             "run": run_number,
@@ -97,6 +102,7 @@ async def test_scenario(scenario_id: str, guard: CostGuard, monkeypatch: pytest.
     runs = runs_per_scenario() if scenario.repeat else 1
     for run_number in range(1, runs + 1):
         guard.check()
+        set_trace_scenario(scenario_id, run_number)
         run, retries = await run_with_retry(fixture, scenario.prompts, guard)
         passed, note = scenario.check(fixture, run)
         if retries:

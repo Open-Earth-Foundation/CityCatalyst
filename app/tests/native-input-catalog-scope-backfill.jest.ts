@@ -19,7 +19,7 @@ import {
   type TestData,
 } from "./helpers/testDataCreationHelper";
 
-// CC-1060 PR 2 backfill: clear the creator userId of HIAP and HIAP-MEED rows,
+// CC-1060 PR 2 backfill: fill a missing projectId and write nothing else (userId is preserved),
 // fill the missing projectId. Runs against the local test database only.
 
 describe("native input catalog scope backfill", () => {
@@ -128,41 +128,43 @@ describe("native input catalog scope backfill", () => {
       batchSize: 50,
       dryRun: true,
     });
-    expect(result.userIdCleared).toBeGreaterThanOrEqual(3);
     expect(result.projectFilled).toBeGreaterThanOrEqual(4);
     expect(await Promise.all(Object.keys(keys).map(load))).toEqual(before);
   });
 
-  it("clears the creator of HIAP and MEED rows and fills the project", async () => {
+  it("fills only the missing projectId and preserves userId", async () => {
+    const before = Object.fromEntries(
+      await Promise.all(
+        Object.keys(keys).map(async (key) => [key, await load(key)] as const),
+      ),
+    );
     await runCatalogScopeBackfill({ batchSize: 50, dryRun: false });
 
-    const scope = {
-      projectId: tenant.projectId,
-      organizationId: tenant.organizationId,
-    };
-    expect(await load("hiap-legacy")).toMatchObject({
-      userId: null,
-      cityId: tenant.cityId,
-      ...scope,
-    });
-    expect(await load("hiap-inventory-only")).toMatchObject({
-      userId: null,
-      cityId: tenant.cityId,
-      inventoryId,
-      ...scope,
-    });
-    expect(await load("meed-legacy")).toMatchObject({ userId: null, ...scope });
-    // other modules keep the uploader as provenance; the access check ignores it
+    for (const key of ["hiap-legacy", "hiap-inventory-only", "meed-legacy"]) {
+      const row = await load(key);
+      expect(row.projectId).toBe(tenant.projectId);
+      expect(row.userId).toBe(creatorId);
+      // nothing but projectId (and the update timestamps) changed
+      const strip = (value: object) => {
+        const {
+          projectId: _projectId,
+          lastUpdated: _lastUpdated,
+          last_updated: _last_updated,
+          ...rest
+        } = value as Record<string, unknown>;
+        return rest;
+      };
+      expect(strip(row)).toEqual(strip(before[key]));
+    }
+    // other modules: same rule
     expect(await load("ghgi-upload")).toMatchObject({
       userId: creatorId,
-      ...scope,
+      projectId: tenant.projectId,
     });
-    expect(await load("clean")).toMatchObject({ userId: null, ...scope });
+    // already complete rows are untouched
+    expect(await load("clean")).toEqual(before["clean"]);
     // no city to derive a project from: left alone, never guessed
-    expect(await load("unresolved")).toMatchObject({
-      projectId: null,
-      cityId: null,
-    });
+    expect(await load("unresolved")).toEqual(before["unresolved"]);
   });
 
   it("is idempotent", async () => {

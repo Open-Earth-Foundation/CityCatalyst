@@ -1,6 +1,6 @@
 /**
- * CC-1060 PR 2: clear the creator userId of HIAP and HIAP-MEED catalog rows and
- * fill missing projectId/organizationId from the row's city. Idempotent.
+ * CC-1060 PR 2: fill a missing projectId on catalog rows from the row's city.
+ * Writes nothing else (userId is preserved). Idempotent.
  *
  * Run from `app/` with `npm run native-input-catalog-scope-backfill`.
  * Environment: `CATALOG_SCOPE_BACKFILL_DRY_RUN` (default true: set to `false`

@@ -168,4 +168,11 @@ GHGI import rows keep the uploader as `userId` for provenance. The access check 
 
 ### Backfill (idempotent, not run anywhere yet)
 
-`npm run native-input-catalog-scope-backfill` (`scripts/native-input-catalog-scope-backfill.ts`, `NativeInputCatalogScopeBackfill.ts`) clears the creator `userId` of `hiap` and `hiap_meed` rows and fills a missing `projectId` and `organizationId` (and `cityId` for inventory-only rows) from the city. Rows without a resolvable city are left alone. `CATALOG_SCOPE_BACKFILL_DRY_RUN` defaults to true; set it to `false` to write. It needs no migration and a second run changes nothing. Run it per environment only with David's go-ahead. Without it, old rows still work: the access check ignores `userId` and resolves the project from the city.
+`npm run native-input-catalog-scope-backfill` (`scripts/native-input-catalog-scope-backfill.ts`, `NativeInputCatalogScopeBackfill.ts`) fills a missing `projectId` on catalog rows from the row's city (or its inventory's city). It writes nothing else: `userId`, `cityId` and `organizationId` stay as they are. Rows without a resolvable city are left alone. `CATALOG_SCOPE_BACKFILL_DRY_RUN` defaults to true; set it to `false` to write. It needs no migration and a second run changes nothing. Run it per environment only with David's go-ahead. Without it, old rows still work: the access check derives the project from the city.
+
+The stored `userId` is not authoritative and is ignored by authorization. Re-registering a source (`registerNativeInput`) returns the existing row and does not touch `userId`; reconciliation compares only the scope fields the new input carries, and new HIAP inputs carry no `userId`, so it neither clears nor rejects an old one. New versions are created without it. Old rows therefore keep a stale creator `userId` until they are superseded; this is harmless.
+
+### Accepted decisions (David, PR 3321 review)
+
+- GHGI import rows stay readable by colleagues with access to the same city and project.
+- Inventory-only rows (no city) no longer use the public-inventory path, for all modules.

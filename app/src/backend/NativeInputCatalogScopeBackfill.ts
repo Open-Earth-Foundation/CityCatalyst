@@ -4,12 +4,11 @@ import { db } from "@/models";
 
 /**
  * CC-1060 PR 2: catalog rows are authorized at city and project, never by the
- * creator. This pass clears the creator `userId` of HIAP and HIAP-MEED rows
- * and fills a missing `projectId` and `organizationId` from the row's city
- * (or its inventory's city). It is idempotent: a second run changes nothing.
- * Other owning modules keep `userId` as provenance; the access check ignores it.
+ * creator. This pass only fills a missing `projectId` from the row's city (or
+ * its inventory's city). It writes nothing else: `userId`, `cityId` and
+ * `organizationId` are left as they are (authorization ignores `userId`).
+ * It is idempotent: a second run changes nothing.
  */
-export const CREATOR_SCOPED_MODULES = ["hiap", "hiap_meed"] as const;
 
 export type CatalogScopeBackfillCursor = { created: string; id: string };
 
@@ -21,7 +20,6 @@ export type CatalogScopeBackfillOptions = {
 
 export type CatalogScopeBackfillPage = {
   scanned: number;
-  userIdCleared: number;
   projectFilled: number;
   unresolved: number;
   nextCursor: CatalogScopeBackfillCursor | null;
@@ -48,11 +46,7 @@ function cursorWhere(cursor?: CatalogScopeBackfillCursor) {
 async function resolveCityProject(row: {
   cityId?: string | null;
   inventoryId?: string | null;
-}): Promise<{
-  cityId: string;
-  projectId: string;
-  organizationId: string | null;
-} | null> {
+}): Promise<{ projectId: string } | null> {
   let cityId = row.cityId ?? null;
   if (!cityId && row.inventoryId) {
     const inventory = await db.models.Inventory.findByPk(row.inventoryId, {
@@ -63,20 +57,9 @@ async function resolveCityProject(row: {
   if (!cityId) return null;
   const city = await db.models.City.findByPk(cityId, {
     attributes: ["cityId", "projectId"],
-    include: [
-      {
-        model: db.models.Project,
-        as: "project",
-        attributes: ["projectId", "organizationId"],
-      },
-    ],
   });
   if (!city?.projectId) return null;
-  return {
-    cityId,
-    projectId: city.projectId,
-    organizationId: city.project?.organizationId ?? null,
-  };
+  return { projectId: city.projectId };
 }
 
 export async function backfillCatalogScopePage(
@@ -86,18 +69,7 @@ export async function backfillCatalogScopePage(
 
   const rows = await db.models.NativeInputCatalog.findAll({
     where: {
-      [Op.and]: [
-        {
-          [Op.or]: [
-            {
-              owningModule: { [Op.in]: [...CREATOR_SCOPED_MODULES] },
-              userId: { [Op.ne]: null },
-            },
-            { projectId: null },
-          ],
-        },
-        cursorWhere(options.cursor),
-      ],
+      [Op.and]: [{ projectId: null }, cursorWhere(options.cursor)],
     },
     order: [
       ["created", "ASC"],
@@ -110,7 +82,6 @@ export async function backfillCatalogScopePage(
 
   const result: CatalogScopeBackfillPage = {
     scanned: page.length,
-    userIdCleared: 0,
     projectFilled: 0,
     unresolved: 0,
     nextCursor: null,
@@ -118,30 +89,13 @@ export async function backfillCatalogScopePage(
   };
 
   for (const row of page) {
-    const changes: Record<string, string | null> = {};
-    if (
-      row.userId &&
-      (CREATOR_SCOPED_MODULES as readonly string[]).includes(row.owningModule)
-    ) {
-      changes.userId = null;
-      result.userIdCleared += 1;
+    const resolved = await resolveCityProject(row);
+    if (!resolved) {
+      result.unresolved += 1;
+      continue;
     }
-    if (!row.projectId) {
-      const resolved = await resolveCityProject(row);
-      if (resolved) {
-        changes.projectId = resolved.projectId;
-        if (!row.cityId) changes.cityId = resolved.cityId;
-        if (!row.organizationId && resolved.organizationId) {
-          changes.organizationId = resolved.organizationId;
-        }
-        result.projectFilled += 1;
-      } else {
-        result.unresolved += 1;
-      }
-    }
-    if (Object.keys(changes).length > 0 && !options.dryRun) {
-      await row.update(changes);
-    }
+    result.projectFilled += 1;
+    if (!options.dryRun) await row.update({ projectId: resolved.projectId });
   }
 
   const last = page[page.length - 1];
@@ -171,7 +125,6 @@ export async function runCatalogScopeBackfill(config: {
 > {
   const totals = {
     scanned: 0,
-    userIdCleared: 0,
     projectFilled: 0,
     unresolved: 0,
     pages: 0,
@@ -186,7 +139,6 @@ export async function runCatalogScopeBackfill(config: {
     });
     totals.pages += 1;
     totals.scanned += page.scanned;
-    totals.userIdCleared += page.userIdCleared;
     totals.projectFilled += page.projectFilled;
     totals.unresolved += page.unresolved;
     if (!page.hasMore || !page.nextCursor) break;

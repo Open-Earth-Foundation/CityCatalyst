@@ -88,10 +88,55 @@ const SCREENS: {
 ];
 
 /** Proposal screens built after the October review, beside the current ones. */
-const NEXT_SCREENS: { id: string; key: string; segment: string }[] = [
-  { id: SCREEN_IDS.next.home, key: "home", segment: "next" },
-  { id: SCREEN_IDS.next.drawer, key: "drawer", segment: "next" },
-  { id: SCREEN_IDS.next.legal, key: "legal", segment: "next/legal" },
+const NEXT_SCREENS: {
+  id: string;
+  key: string;
+  segment: string;
+  /** The current screens this one replaces. */
+  replaces: string;
+}[] = [
+  {
+    id: SCREEN_IDS.next.home,
+    key: "home",
+    segment: "next",
+    replaces: "BR-A1, A3, A4, A4b",
+  },
+  {
+    id: SCREEN_IDS.next.risk,
+    key: "risk",
+    segment: "next/risk",
+    replaces: "BR-A2",
+  },
+  {
+    id: SCREEN_IDS.next.drawer,
+    key: "drawer",
+    segment: "next",
+    replaces: "BR-A6",
+  },
+  {
+    id: SCREEN_IDS.next.legal,
+    key: "legal",
+    segment: "next/legal",
+    replaces: "BR-A7",
+  },
+  {
+    id: SCREEN_IDS.next.finance,
+    key: "finance",
+    segment: "next/finance",
+    replaces: "BR-A8",
+  },
+  {
+    id: SCREEN_IDS.next.policy,
+    key: "policy",
+    segment: "next/policy",
+    replaces: "BR-A9",
+  },
+  {
+    id: SCREEN_IDS.next.context,
+    key: "context",
+    segment: "next/context",
+    replaces: "BR-A10",
+  },
 ];
 
 /** BR-00 — the review guide. */
@@ -332,6 +377,9 @@ export default function DemoGuidePage(props: {
                   <Table.Cell display={{ base: "none", md: "table-cell" }}>
                     <BodySmall color="content.secondary">
                       {t(`next-screen-${s.key}-look`)}
+                    </BodySmall>
+                    <BodySmall color="content.tertiary">
+                      {t("next-screen-replaces", { ids: s.replaces })}
                     </BodySmall>
                   </Table.Cell>
                   <Table.Cell w="120px">

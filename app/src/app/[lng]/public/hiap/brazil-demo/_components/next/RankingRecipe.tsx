@@ -54,10 +54,10 @@ export function RankingRecipe({
         }
         values={{ city: city.name }}
         components={{
-          risk: <A href={href("risk")} />,
+          risk: <A href={href("next/risk")} />,
           legal: <A href={href("next/legal")} />,
-          finance: <A href={href("finance")} />,
-          policy: <A href={href("policy")} />,
+          finance: <A href={href("next/finance")} />,
+          policy: <A href={href("next/policy")} />,
         }}
       />
     </BodyMedium>

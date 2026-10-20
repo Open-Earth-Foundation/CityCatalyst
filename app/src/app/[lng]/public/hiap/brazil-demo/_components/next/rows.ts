@@ -4,8 +4,8 @@
  * render from the fixtures and the city's current inputs, so the three views
  * can never disagree about a band.
  *
- * Colour rule for the proposal screens: blue means priority (see
- * `PriorityTag`); green / amber / red mean favourable / moderate /
+ * Colour rule for the proposal screens: no colour for priority (the order
+ * is the ranking); green / amber / red mean favourable / moderate /
  * unfavourable on every assessment, and nothing else.
  */
 import type { MeedRankedActionResult } from "@/util/types/meed";

@@ -329,7 +329,7 @@ export function AdaptationHomeNext({
                   city={city}
                   lng={lng}
                   t={t}
-                  href={trackHref(lng, city.slug, track, "risk")}
+                  href={trackHref(lng, city.slug, track, "next/risk")}
                   onContext={() => setContextOpen(true)}
                 />
               </Section>
@@ -457,6 +457,7 @@ export function AdaptationHomeNext({
         lng={lng}
         points={[
           t("next-notice-proposal"),
+          t("next-notice-order"),
           t("next-notice-enabling"),
           t("next-notice-weights"),
         ]}

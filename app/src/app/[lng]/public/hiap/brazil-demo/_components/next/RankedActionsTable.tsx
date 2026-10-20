@@ -2,7 +2,6 @@
 import React, { useMemo, useState } from "react";
 import {
   Box,
-  chakra,
   Collapsible,
   HStack,
   Icon,
@@ -16,7 +15,6 @@ import {
   LuArrowUp,
   LuChevronDown,
   LuChevronUp,
-  LuDownload,
   LuEllipsisVertical,
   LuPin,
   LuSquareArrowOutUpRight,
@@ -27,13 +25,10 @@ import { LabelLarge } from "@/components/package/Texts/Label";
 import {
   MenuContent,
   MenuItem,
-  MenuRadioItem,
-  MenuRadioItemGroup,
   MenuRoot,
   MenuSeparator,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
@@ -47,6 +42,7 @@ import { ReportControl } from "./ReportControl";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
 import { TextLink } from "./TextLink";
+import { ChoiceMenu, ExportCsvButton } from "./ListControls";
 import {
   applyCityOrder,
   COST_TONE,
@@ -291,49 +287,17 @@ export function RankedActionsTable({
             </VStack>
             <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
               {!hasOwnOrder && (
-                <MenuRoot
-                  positioning={{ placement: "bottom-end" }}
-                  onSelect={(d) => setSort(d.value as SortKey)}
-                >
-                  <MenuTrigger asChild>
-                    <chakra.button
-                      type="button"
-                      display="inline-flex"
-                      alignItems="center"
-                      gap="xs"
-                      color="content.link"
-                      fontFamily="heading"
-                      fontSize="label.md"
-                      fontWeight="semibold"
-                      _focusVisible={FOCUS_RING}
-                    >
-                      <span>
-                        {t("next-sort-label")}: {t(`next-sort-${sort}`)}
-                      </span>
-                      <Icon as={LuChevronDown} boxSize="14px" />
-                    </chakra.button>
-                  </MenuTrigger>
-                  <MenuContent>
-                    <MenuRadioItemGroup value={sort}>
-                      {SORT_KEYS.map((k) => (
-                        <MenuRadioItem key={k} value={k}>
-                          {t(`next-sort-${k}`)}
-                        </MenuRadioItem>
-                      ))}
-                    </MenuRadioItemGroup>
-                  </MenuContent>
-                </MenuRoot>
+                <ChoiceMenu
+                  label={t("next-sort-label")}
+                  value={sort}
+                  options={SORT_KEYS.map((k) => ({
+                    value: k,
+                    label: t(`next-sort-${k}`),
+                  }))}
+                  onChange={setSort}
+                />
               )}
-              <MeedButton
-                variant="outlined"
-                minW="auto"
-                px="m"
-                leftIcon={<Icon as={LuDownload} boxSize="16px" />}
-                onClick={onExportCsv}
-                _focusVisible={FOCUS_RING}
-              >
-                {t("next-export-csv")}
-              </MeedButton>
+              <ExportCsvButton onClick={onExportCsv} t={t} />
               <ReportControl
                 selectedCount={selectedIds.length}
                 isGenerating={report.isGenerating}

@@ -1,17 +1,14 @@
 "use client";
 import React from "react";
-import { Box, chakra, HStack, Icon, Menu, VStack } from "@chakra-ui/react";
-import { LuCheck, LuChevronDown, LuX } from "react-icons/lu";
+import { Box, HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import { MenuContent, MenuRoot, MenuTrigger } from "@/components/ui/menu";
-import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import type { useLabels } from "../../_lib/useLabels";
 import { ADAPTA_SECTORS, RISK_CELLS } from "../../_lib/riskCells";
 import { CO_BENEFIT_KEYS } from "../../_lib/coBenefits";
 import { pick } from "../../_lib/localized";
 import { TextLink } from "./TextLink";
+import { FacetMenu, FilterChip } from "./ListControls";
 import {
   EMPTY_FILTERS,
   FACET_KEYS,
@@ -26,97 +23,6 @@ import {
 interface Option {
   value: string;
   label: string;
-}
-
-/** One facet: a dropdown of checkboxes, each with the count it would leave. */
-function FacetMenu({
-  label,
-  options,
-  counts,
-  selected,
-  onChange,
-}: {
-  label: string;
-  options: Option[];
-  counts: number[];
-  selected: string[];
-  onChange: (next: string[]) => void;
-}) {
-  const active = selected.length > 0;
-  return (
-    <MenuRoot closeOnSelect={false} positioning={{ placement: "bottom-start" }}>
-      <MenuTrigger asChild>
-        <chakra.button
-          type="button"
-          display="inline-flex"
-          alignItems="center"
-          gap="xs"
-          px="m"
-          py="s"
-          borderRadius="pill"
-          borderWidth="1px"
-          borderColor={active ? "content.link" : "border.neutral"}
-          bg={active ? "background.neutral" : "base.light"}
-          color={active ? "content.link" : "content.secondary"}
-          fontFamily="heading"
-          fontSize="label.md"
-          fontWeight="medium"
-          _hover={{ borderColor: "content.link" }}
-          _focusVisible={FOCUS_RING}
-        >
-          <span>
-            {label}
-            {active ? ` · ${selected.length}` : ""}
-          </span>
-          <Icon as={LuChevronDown} boxSize="14px" />
-        </chakra.button>
-      </MenuTrigger>
-      <MenuContent maxH="360px" overflowY="auto" minW="240px">
-        {options.map((o, i) => {
-          const checked = selected.includes(o.value);
-          return (
-            <Menu.CheckboxItem
-              key={o.value}
-              value={o.value}
-              checked={checked}
-              disabled={counts[i] === 0 && !checked}
-              onCheckedChange={(on) =>
-                onChange(
-                  on
-                    ? [...selected, o.value]
-                    : selected.filter((v) => v !== o.value),
-                )
-              }
-            >
-              <HStack justifyContent="space-between" w="full" gap="l">
-                <HStack gap="s">
-                  <Box
-                    aria-hidden
-                    display="inline-flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    boxSize="16px"
-                    flexShrink={0}
-                    borderRadius="2px"
-                    borderWidth="1px"
-                    borderColor={checked ? "content.link" : "border.neutral"}
-                    bg={checked ? "content.link" : "transparent"}
-                    color="base.light"
-                  >
-                    {checked && <Icon as={LuCheck} boxSize="12px" />}
-                  </Box>
-                  <span>{o.label}</span>
-                </HStack>
-                <BodySmall as="span" color="content.tertiary">
-                  {counts[i]}
-                </BodySmall>
-              </HStack>
-            </Menu.CheckboxItem>
-          );
-        })}
-      </MenuContent>
-    </MenuRoot>
-  );
 }
 
 /**
@@ -250,35 +156,20 @@ export function FilterBar({
       {active.length > 0 && (
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           {active.map((a) => (
-            <chakra.button
+            <FilterChip
               key={`${a.key}-${a.value}`}
-              type="button"
-              display="inline-flex"
-              alignItems="center"
-              gap="xs"
-              px="m"
-              py="xs"
-              borderRadius="pill"
-              bg="background.neutral"
-              color="content.primary"
-              fontFamily="heading"
-              fontSize="label.md"
-              aria-label={t("next-filter-remove", {
+              label={chipLabel(a.key, a.value, a.label)}
+              ariaLabel={t("next-filter-remove", {
                 facet: facets[a.key].title,
                 value: a.label,
               })}
-              onClick={() =>
+              onRemove={() =>
                 onChange({
                   ...filters,
                   [a.key]: filters[a.key].filter((v) => v !== a.value),
                 })
               }
-              _hover={{ bg: "border.overlay" }}
-              _focusVisible={FOCUS_RING}
-            >
-              <span>{chipLabel(a.key, a.value, a.label)}</span>
-              <Icon as={LuX} boxSize="14px" />
-            </chakra.button>
+            />
           ))}
           <TextLink arrow={false} muted onClick={() => onChange(EMPTY_FILTERS)}>
             {t("next-filters-clear")}

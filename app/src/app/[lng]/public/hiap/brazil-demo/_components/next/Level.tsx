@@ -35,7 +35,7 @@ export function Level({
   info?: string;
 }) {
   const row = (
-    <HStack gap="s" alignItems="center">
+    <HStack gap="s" alignItems="center" data-testid="level">
       <Box boxSize="8px" borderRadius="full" bg={DOT[tone]} flexShrink={0} />
       <BodySmall color="content.primary" fontWeight="semibold">
         {children}

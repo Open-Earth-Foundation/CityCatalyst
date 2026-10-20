@@ -35,8 +35,12 @@ export const SCREEN_IDS = {
   /** Next-iteration proposal screens, built beside the current ones for review. */
   next: {
     home: "BR-N1",
+    risk: "BR-N2",
     drawer: "BR-N6",
     legal: "BR-N7",
+    finance: "BR-N8",
+    policy: "BR-N9",
+    context: "BR-N10",
   },
   mitigation: {
     home: "BR-M1",

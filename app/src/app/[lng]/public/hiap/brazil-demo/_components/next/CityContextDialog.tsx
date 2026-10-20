@@ -68,6 +68,58 @@ export function cityContextItems(city: CityFixture, lng: string) {
 }
 
 /**
+ * The context itself: boundary outline, the not-scored note, eight
+ * indicators with their sources. Shared by the dialog on the home and the
+ * full page (BR-N10).
+ */
+export function CityContextBody({
+  city,
+  lng,
+  t,
+  outlineSize = 140,
+}: {
+  city: CityFixture;
+  lng: string;
+  t: TFunction;
+  outlineSize?: number;
+}) {
+  const items = cityContextItems(city, lng);
+  return (
+    <VStack alignItems="stretch" gap="l">
+      <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
+        <CityOutline
+          locode={city.locode}
+          label={t("context-map-aria", { city: city.name })}
+          emptyLabel={t("context-map-missing")}
+          size={outlineSize}
+        />
+        <BodyMedium color="content.secondary" flex="1" minW="240px">
+          {t("context-not-scored-body")}
+        </BodyMedium>
+      </HStack>
+      <SimpleGrid columns={{ base: 2, md: 4 }} gap="l">
+        {items.map((it) => (
+          <VStack key={it.key} alignItems="flex-start" gap="xs">
+            <HStack gap="xs" alignItems="center">
+              <Overline color="content.tertiary">{t(`ctx-${it.key}`)}</Overline>
+              <MeedInfoTip
+                content={t(`ctx-${it.key}-info`)}
+                ariaLabel={t(`ctx-${it.key}-info`)}
+              />
+            </HStack>
+            <LabelLarge color="content.primary">{it.value}</LabelLarge>
+            <BodySmall color="content.tertiary">{it.source}</BodySmall>
+          </VStack>
+        ))}
+      </SimpleGrid>
+      <BodySmall color="content.secondary">
+        {t("context-vulnerability-note")}
+      </BodySmall>
+    </VStack>
+  );
+}
+
+/**
  * City context on demand (review feedback: "a box that opens once you ask
  * for city context"). Shown, never scored; the page BR-A10 stays for links.
  */
@@ -84,7 +136,6 @@ export function CityContextDialog({
   onOpenChange: (open: boolean) => void;
   t: TFunction;
 }) {
-  const items = cityContextItems(city, lng);
   return (
     <DialogRoot
       open={open}
@@ -99,39 +150,7 @@ export function CityContextDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogBody pb="xl">
-          <VStack alignItems="stretch" gap="l">
-            <HStack gap="xl" alignItems="flex-start" flexWrap="wrap">
-              <CityOutline
-                locode={city.locode}
-                label={t("context-map-aria", { city: city.name })}
-                emptyLabel={t("context-map-missing")}
-                size={140}
-              />
-              <BodyMedium color="content.secondary" flex="1" minW="240px">
-                {t("context-not-scored-body")}
-              </BodyMedium>
-            </HStack>
-            <SimpleGrid columns={{ base: 2, md: 4 }} gap="l">
-              {items.map((it) => (
-                <VStack key={it.key} alignItems="flex-start" gap="xs">
-                  <HStack gap="xs" alignItems="center">
-                    <Overline color="content.tertiary">
-                      {t(`ctx-${it.key}`)}
-                    </Overline>
-                    <MeedInfoTip
-                      content={t(`ctx-${it.key}-info`)}
-                      ariaLabel={t(`ctx-${it.key}-info`)}
-                    />
-                  </HStack>
-                  <LabelLarge color="content.primary">{it.value}</LabelLarge>
-                  <BodySmall color="content.tertiary">{it.source}</BodySmall>
-                </VStack>
-              ))}
-            </SimpleGrid>
-            <BodySmall color="content.secondary">
-              {t("context-vulnerability-note")}
-            </BodySmall>
-          </VStack>
+          <CityContextBody city={city} lng={lng} t={t} />
         </DialogBody>
         <DialogCloseTrigger aria-label={t("next-dialog-close")} />
       </DialogContent>

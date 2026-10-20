@@ -444,10 +444,10 @@ export function ActionDrawer({
                     <TextLink href={`${href("next/legal")}#${action.id}`}>
                       {t("next-further-legal")}
                     </TextLink>
-                    <TextLink href={href("finance")}>
+                    <TextLink href={`${href("next/finance")}#${action.id}`}>
                       {t("next-further-finance")}
                     </TextLink>
-                    <TextLink href={href("policy")}>
+                    <TextLink href={`${href("next/policy")}#${action.id}`}>
                       {t("next-further-policy")}
                     </TextLink>
                   </HStack>

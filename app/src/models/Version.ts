@@ -13,6 +13,7 @@ export interface VersionAttributes {
   moduleName?: string;
   data?: Record<string, unknown>;
   isDeleted?: boolean;
+  label?: string | null; // set by bulk operations, e.g. replacing the inventory from a file
   created?: Date;
   lastUpdated?: Date;
 }
@@ -28,6 +29,7 @@ export type VersionOptionalAttributes =
   | "moduleName"
   | "data"
   | "isDeleted"
+  | "label"
   | "created"
   | "lastUpdated";
 export type VersionCreationAttributes = Optional<
@@ -48,6 +50,7 @@ export class Version
   declare moduleName?: string;
   declare data?: Record<string, unknown>;
   declare isDeleted?: boolean;
+  declare label?: string | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -65,7 +68,7 @@ export class Version
   declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
-  // Version hasOne Version via previousVersionId
+  // Version belongsTo Version via previousVersionId
   declare previousVersion: Version;
   declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;
   declare setPreviousVersion: Sequelize.BelongsToSetAssociationMixin<
@@ -132,6 +135,10 @@ export class Version
           type: DataTypes.BOOLEAN,
           allowNull: false,
           field: "is_deleted",
+        },
+        label: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
       },
       {

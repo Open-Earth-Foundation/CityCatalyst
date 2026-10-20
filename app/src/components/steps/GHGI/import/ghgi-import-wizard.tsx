@@ -20,6 +20,7 @@ import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mappi
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
+import ReplaceInventoryConfirmModal from "@/components/Modals/replace-inventory-confirm-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { getApiErrorMessage } from "@/util/helpers";
@@ -40,6 +41,9 @@ function resolveErrorMessage(
   return errorLog;
 }
 
+/** Error code from the approve route when the inventory has data and the user has not confirmed replacing it. */
+const INVENTORY_HAS_DATA_CODE = "inventory-has-data";
+
 function ImportButton({
   cityId,
   inventoryId,
@@ -48,6 +52,8 @@ function ImportButton({
   onImport,
   onImportProgressChange,
   disabled,
+  inventoryHasData,
+  inventoryYear,
   t,
 }: {
   cityId: string;
@@ -57,12 +63,16 @@ function ImportButton({
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
   disabled?: boolean;
+  /** The import replaces existing data, so the user confirms first. */
+  inventoryHasData: boolean;
+  inventoryYear: number | null;
   t: TFunction;
 }) {
   const dispatch = useAppDispatch();
   const [approveImport, { isLoading: isImporting }] =
     api.useApproveImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
 
   /** Invalidate inventory-related caches so the GHGI page shows fresh totalEmissions. */
   const invalidateInventoryCache = () => {
@@ -73,6 +83,7 @@ function ImportButton({
         "InventoryValue",
         "ReportResults",
         "YearlyReportResults",
+        "VersionHistory",
       ]),
     );
   };
@@ -128,7 +139,7 @@ function ImportButton({
     intervalMs: 3000,
   });
 
-  const handleImport = async () => {
+  const handleImport = async (replaceExisting: boolean) => {
     if (!importedFileId || disabled) return;
     stopImportPolling();
     // Swap ReviewConfirmStep for the importing panel before approve polling
@@ -147,6 +158,7 @@ function ImportButton({
         mappingOverrides: Object.keys(overridesToSend).length
           ? overridesToSend
           : undefined,
+        replaceExisting,
       }).unwrap();
 
       if ("accepted" in result && result.accepted) {
@@ -178,6 +190,13 @@ function ImportButton({
       onImportProgressChange(false);
     } catch (error: unknown) {
       onImportProgressChange(false);
+      // Data was added since the page loaded: ask before replacing it
+      const errorCode = (error as { data?: { error?: { code?: string } } })
+        ?.data?.error?.code;
+      if (errorCode === INVENTORY_HAS_DATA_CODE) {
+        setShowReplaceConfirm(true);
+        return;
+      }
       makeErrorToast(
         "Import failed",
         getApiErrorMessage(error, "Failed to import data"),
@@ -186,21 +205,35 @@ function ImportButton({
   };
 
   return (
-    <Button
-      w="auto"
-      gap="8px"
-      py="16px"
-      px="24px"
-      onClick={handleImport}
-      h="64px"
-      loading={isImporting || isImportPolling}
-      disabled={disabled || isImporting || isImportPolling}
-    >
-      <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-        {t("import-inventory")}
-      </Text>
-      <MdArrowForward height="24px" width="24px" />
-    </Button>
+    <>
+      <Button
+        w="auto"
+        gap="8px"
+        py="16px"
+        px="24px"
+        onClick={() =>
+          inventoryHasData ? setShowReplaceConfirm(true) : handleImport(false)
+        }
+        h="64px"
+        loading={isImporting || isImportPolling}
+        disabled={disabled || isImporting || isImportPolling}
+      >
+        <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+          {t("import-inventory")}
+        </Text>
+        <MdArrowForward height="24px" width="24px" />
+      </Button>
+      <ReplaceInventoryConfirmModal
+        isOpen={showReplaceConfirm}
+        year={inventoryYear}
+        onConfirm={() => {
+          setShowReplaceConfirm(false);
+          handleImport(true);
+        }}
+        onCancel={() => setShowReplaceConfirm(false)}
+        t={t}
+      />
+    </>
   );
 }
 
@@ -906,10 +939,10 @@ export default function GhgiImportWizard({
                             color="orange.800"
                             fontSize="sm"
                           >
-                            {t("inventory-already-has-data-title")}
+                            {t("inventory-has-data-replace-title")}
                           </Text>
                           <Text color="orange.700" fontSize="sm" mt={1}>
-                            {t("inventory-already-has-data-description", {
+                            {t("inventory-has-data-replace-description", {
                               year: inventoryYear,
                             })}
                           </Text>
@@ -920,9 +953,7 @@ export default function GhgiImportWizard({
                       t={t}
                       cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={
-                        inventoryHasData ? () => {} : handleFileUpload
-                      }
+                      onFileUpload={handleFileUpload}
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
@@ -1147,7 +1178,6 @@ export default function GhgiImportWizard({
                   h="64px"
                   disabled={
                     fileYearMismatch ||
-                    inventoryHasData ||
                     !uploadedFile ||
                     !importedFileId ||
                     (pdfPendingExtraction &&
@@ -1235,6 +1265,8 @@ export default function GhgiImportWizard({
                     mappingOverrides={mappingOverrides}
                     onImportProgressChange={setIsImportInProgress}
                     disabled={fileYearMismatch}
+                    inventoryHasData={inventoryHasData}
+                    inventoryYear={inventoryYear}
                     onImport={() => {
                       onComplete(inventoryId);
                     }}

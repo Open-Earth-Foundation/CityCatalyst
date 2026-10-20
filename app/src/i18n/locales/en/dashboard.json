@@ -329,6 +329,8 @@
   "inventory-versions-value-general-change-entry": "{{name}} changed GPC ref no {{refNo}} (total) from {{totalA}} to {{totalB}}",
   "inventory-versions-action-change": "{{name}} changed action {{actionName}} to rank {{rank}} and {{selectionStatus}}",
   "inventory-versions-action-deleted": "{{name}} deleted action {{actionName}}",
+  "inventory-versions-label-import-replace-before": "Inventory data before it was replaced by a file import. Restore this version to undo the replace.",
+  "inventory-versions-label-import-replace": "Inventory data replaced by a file import",
   "selected": "selected",
   "unselected": "unselected",
   "name": "Name",

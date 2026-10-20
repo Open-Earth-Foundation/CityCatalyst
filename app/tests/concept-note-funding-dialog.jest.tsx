@@ -14,6 +14,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import translations from "@/i18n/locales/en/concept-notes.json";
 import type {
+  ConceptNoteApplicationContext,
   ConceptNoteFunder,
   ConceptNoteFundingOpportunity,
 } from "@/util/types";
@@ -44,6 +45,7 @@ const opportunity: ConceptNoteFundingOpportunity = {
   },
 };
 let funders: ConceptNoteFunder[];
+let catalogueFailed = false;
 
 let rejection: unknown;
 const save = jest.fn(() => ({
@@ -52,6 +54,8 @@ const save = jest.fn(() => ({
   },
 }));
 const onClose = jest.fn();
+const createFunder = jest.fn();
+const refetch = jest.fn<() => { unwrap: () => Promise<unknown> }>();
 jest.unstable_mockModule("@/services/api", () => ({
   api: {
     useGetConceptNoteFundingCatalogueQuery: () => ({
@@ -59,10 +63,15 @@ jest.unstable_mockModule("@/services/api", () => ({
         funders,
       },
       isLoading: false,
-      isError: false,
+      isError: catalogueFailed,
+      refetch,
     }),
     useUpdateConceptNoteFundingSelectionMutation: () => [
       save,
+      { isLoading: false },
+    ],
+    useCreateConceptNoteFunderMutation: () => [
+      createFunder,
       { isLoading: false },
     ],
   },
@@ -101,6 +110,7 @@ afterAll(() => {
   globalThis.structuredClone = originalStructuredClone;
 });
 beforeEach(() => {
+  catalogueFailed = false;
   funders = [
     {
       id: "new-funder",
@@ -116,7 +126,59 @@ beforeEach(() => {
   document.body.append(container);
   root = createRoot(container);
   jest.clearAllMocks();
+  refetch.mockReturnValue({ unwrap: async () => undefined });
 });
+
+const applicationContext: ConceptNoteApplicationContext = {
+  run_id: "run",
+  city_id: "city",
+  funder: null,
+  opportunity: null,
+  template: null,
+  included_sources: {
+    city: true,
+    project: false,
+    ghgi: false,
+    ccra: false,
+    hiap: false,
+  },
+};
+
+async function renderDialog() {
+  await act(async () => {
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <FundingSelectionDialog
+          applicationContext={applicationContext}
+          hasDraft={false}
+          busy={false}
+          lng="en"
+          runId="run"
+          onClose={onClose}
+        />
+      </ChakraProvider>,
+    );
+  });
+}
+
+const button = (label: string) =>
+  [...document.querySelectorAll("button")].find((item) =>
+    item.textContent?.includes(label),
+  )!;
+
+async function type(label: string, value: string) {
+  const labelNode = [...document.querySelectorAll("label")].find((item) =>
+    item.textContent?.startsWith(label),
+  )!;
+  const input = document.getElementById(labelNode.htmlFor)!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )!.set!.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
 
 it.each([
   ["NEW funder", true],
@@ -133,33 +195,7 @@ it.each([
 ] as const)(
   "searches visible funding fields for %s",
   async (query, matches) => {
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={defaultSystem}>
-          <FundingSelectionDialog
-            applicationContext={{
-              run_id: "run",
-              city_id: "city",
-              funder: null,
-              opportunity: null,
-              template: null,
-              included_sources: {
-                city: true,
-                project: false,
-                ghgi: false,
-                ccra: false,
-                hiap: false,
-              },
-            }}
-            hasDraft={false}
-            busy={false}
-            lng="en"
-            runId="run"
-            onClose={onClose}
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderDialog();
     const input = document.querySelector<HTMLInputElement>("#funding-search")!;
     await act(async () => {
       Object.getOwnPropertyDescriptor(
@@ -219,33 +255,7 @@ it.each([
   "keeps the dialog open with the appropriate funding conflict message",
   async (detail, key) => {
     rejection = { status: 409, data: { detail } };
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={defaultSystem}>
-          <FundingSelectionDialog
-            applicationContext={{
-              run_id: "run",
-              city_id: "city",
-              funder: null,
-              opportunity: null,
-              template: null,
-              included_sources: {
-                city: true,
-                project: false,
-                ghgi: false,
-                ccra: false,
-                hiap: false,
-              },
-            }}
-            hasDraft={false}
-            busy={false}
-            lng="en"
-            runId="run"
-            onClose={onClose}
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderDialog();
     async function click(label: string) {
       const button = [...document.querySelectorAll("button")].find((item) =>
         item.textContent?.includes(label),
@@ -262,3 +272,118 @@ it.each([
     expect(onClose).not.toHaveBeenCalled();
   },
 );
+
+async function openFilledForm() {
+  await renderDialog();
+  await act(async () => button(translations["funder-add-entry"]).click());
+  for (const [label, value] of [
+    [translations["funder-field-name"], "Delayed funder"],
+    [translations["funder-field-programme-name"], "Programme"],
+    [translations["funder-field-template-name"], "Template"],
+    ["Chapter", "Summary"],
+  ]) {
+    await type(label, value);
+  }
+  return button;
+}
+
+function addCatalogueRow() {
+  funders = [
+    ...funders.filter((f) => f.id !== "delayed"),
+    {
+      ...funders[0]!,
+      id: "delayed",
+      name: "Delayed funder",
+      opportunities: [{ ...opportunity, id: "delayed-programme" }],
+    },
+  ];
+  return { funder_id: "delayed", funding_opportunity_id: "delayed-programme" };
+}
+
+it("blocks cancel, closing and selection changes while creation is pending", async () => {
+  let resolveCreate!: (value: unknown) => void;
+  const pending = new Promise((resolve) => {
+    resolveCreate = resolve;
+  });
+  createFunder.mockImplementation(() => ({ unwrap: () => pending }));
+  const button = await openFilledForm();
+  await act(async () => button(translations["funder-add-submit"]).click());
+  expect(button(translations["funder-add-submit"]).disabled).toBe(true);
+  expect(button(translations.cancel).disabled).toBe(true);
+  expect(button("New funder").disabled).toBe(true);
+  expect(
+    document.querySelector<HTMLButtonElement>('button[aria-label="Close"]')
+      ?.disabled,
+  ).toBe(true);
+  await act(async () => {
+    button(translations.cancel).click();
+    button("New funder").click();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+  });
+  expect(onClose).not.toHaveBeenCalled();
+  await act(async () => resolveCreate(addCatalogueRow()));
+  expect(
+    document.querySelector('nav button[aria-pressed="true"]')?.textContent,
+  ).toContain("Delayed funder");
+});
+
+it("keeps controls busy through refresh and sends one create request", async () => {
+  let resolveRefresh!: (value: unknown) => void;
+  refetch.mockReturnValue({
+    unwrap: () =>
+      new Promise((resolve) => {
+        resolveRefresh = resolve;
+      }),
+  });
+  createFunder.mockImplementation(() => ({
+    unwrap: async () => addCatalogueRow(),
+  }));
+  const button = await openFilledForm();
+  await act(async () => button(translations["funder-add-submit"]).click());
+  expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
+  expect(button(translations["funder-add-entry"]).disabled).toBe(true);
+  expect(button(translations.cancel).disabled).toBe(true);
+  await act(async () => button(translations["funder-add-entry"]).click());
+  expect(createFunder).toHaveBeenCalledTimes(1);
+  await act(async () => resolveRefresh(undefined));
+  expect(button(translations["funder-add-entry"]).disabled).toBe(false);
+});
+
+it("retries a failed catalogue refresh without repeating a successful create", async () => {
+  refetch.mockReturnValueOnce({
+    unwrap: async () => {
+      catalogueFailed = true;
+      throw { status: 503 };
+    },
+  });
+  createFunder.mockImplementation(() => ({
+    unwrap: async () => ({
+      funder_id: "delayed",
+      funding_opportunity_id: "delayed-programme",
+    }),
+  }));
+  const button = await openFilledForm();
+  await act(async () => button(translations["funder-add-submit"]).click());
+  expect(createFunder).toHaveBeenCalledTimes(1);
+  expect(document.querySelector('[data-testid="add-funder-form"]')).toBeNull();
+  expect(document.body.textContent).toContain(
+    translations["funder-added-refresh-error"],
+  );
+
+  refetch.mockImplementationOnce(() => {
+    catalogueFailed = false;
+    addCatalogueRow();
+    return { unwrap: async () => undefined };
+  });
+  await act(async () => button(translations["try-again"]).click());
+  expect(document.body.textContent).not.toContain(
+    translations["funder-added-refresh-error"],
+  );
+  expect(
+    document.querySelector('nav button[aria-pressed="true"]')?.textContent,
+  ).toContain("Delayed funder");
+  expect(refetch).toHaveBeenCalledTimes(2);
+  expect(createFunder).toHaveBeenCalledTimes(1);
+});

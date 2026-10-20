@@ -15,6 +15,7 @@ from app.utils.chat_workflow_context import (
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class ConceptNoteRunRepository:
@@ -135,6 +136,13 @@ class ConceptNoteRunRepository:
         """Load a user's runs for one city in deterministic activity order."""
         query = (
             select(ConceptNoteRun)
+            .options(
+                selectinload(
+                    ConceptNoteRun.uploads.and_(
+                        ConceptNoteUpload.uploaded_by_user_id == user_id
+                    )
+                )
+            )
             .where(
                 ConceptNoteRun.user_id == user_id,
                 ConceptNoteRun.city_id == city_id,

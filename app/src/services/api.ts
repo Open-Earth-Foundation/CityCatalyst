@@ -67,6 +67,8 @@ import {
   CityDashboardResponse,
   ConceptNoteApplicationContext,
   ConceptNoteFunder,
+  ConceptNoteFunderCreateRequest,
+  ConceptNoteFunderCreateResponse,
   ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
@@ -2594,8 +2596,12 @@ export const api = createApi({
           url: "concept-notes/",
           params: { city_id: cityId },
         }),
-        providesTags: (_result, _error, cityId) => [
+        providesTags: (result, _error, cityId) => [
           { type: "ConceptNoteRuns", id: cityId },
+          ...(result?.runs ?? []).map((run) => ({
+            type: "ConceptNoteRuns" as const,
+            id: run.run_id,
+          })),
         ],
       }),
       getConceptNoteRun: builder.query<
@@ -2641,6 +2647,17 @@ export const api = createApi({
           { type: "ConceptNoteDraft", id: runId },
           { type: "ConceptNoteEdits", id: runId },
         ],
+      }),
+      createConceptNoteFunder: builder.mutation<
+        ConceptNoteFunderCreateResponse,
+        { runId: string; funder: ConceptNoteFunderCreateRequest }
+      >({
+        query: ({ runId, funder }) => ({
+          url: `concept-notes/${runId}/funders/`,
+          method: "POST",
+          body: funder,
+        }),
+        invalidatesTags: ["ConceptNoteFundingCatalogue"],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
@@ -3111,5 +3128,6 @@ export const {
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
   useRetryConceptNoteContextBundleMutation,
+  useCreateConceptNoteFunderMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

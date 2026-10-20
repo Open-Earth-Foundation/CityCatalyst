@@ -11,7 +11,9 @@ risk, the most affected areas, the people or assets exposed, and the evidence
 source. Merge closely related details instead of writing a long checklist.
 Do not ask about anything already confirmed in the current chapter or in
 previous_answers; ask only for what is still unconfirmed. Never repeat an
-already answered question in different words.
+already answered question in different words. A part answered "Not decided yet",
+or described in the chapter as not yet decided, confirmed or estimated, is still
+unconfirmed: ask for it again, and ask for it before new follow-up details.
 For each question, offer two to five concise, distinct answer categories
 whenever the question allows a meaningful choice. For a financing instrument
 these might be Loan, Grant, Guarantee, or a combination. Categories are possible

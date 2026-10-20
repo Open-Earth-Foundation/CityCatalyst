@@ -456,7 +456,13 @@ jobs:
         if: steps.run_migrations.outputs.status == 'success'
         run: |
           kubectl create -f k8s/cc-seed.yml -n default
+          # Batch every cc-web change below into a single rollout; resume even if a later command fails
+          kubectl rollout pause deployment/cc-web-deploy -n default
+          trap 'kubectl rollout resume deployment/cc-web-deploy -n default 2>/dev/null || true' EXIT
           kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set image deployment/cc-web-deploy \
+            cc-web=ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }} \
+            -n default
           kubectl apply -f k8s/cc-web-pdb.yml -n default || echo "PDB apply skipped (requires policy API permissions)"
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
@@ -517,8 +523,15 @@ jobs:
           kubectl apply -f k8s/cc-process-bulk-inventory-import.yml -n default
           kubectl set env cronjob/citycatalyst-process-bulk-inventory-import \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
-          kubectl rollout restart deployment cc-web-deploy -n default
-          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+          kubectl rollout resume deployment/cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=600s
+
+      - name: Rollout diagnostics
+        if: failure()
+        run: |
+          kubectl get rs,pods -l app=cc-web -n default -o wide || true
+          kubectl describe pods -l app=cc-web -n default | tail -150 || true
+          kubectl get events -n default --sort-by=.lastTimestamp | tail -60 || true
 
   ccCaPostDeploySmoke:
     name: CA/CC post-deploy smoke

@@ -13,10 +13,8 @@ import {
 import { useTranslation } from "@/i18n/client";
 
 import { ContextStatusBadge } from "./context-status-badge";
-import {
-  FUNDER_IMPORT_PHASE_LABEL,
-  type FunderImportFlow,
-} from "./use-funder-import";
+import { funderApiErrorKey } from "./funder-form";
+import { importPhaseLabel, type FunderImportFlow } from "./use-funder-import";
 
 /** Badge once a file has been chosen; every other phase is still processing. */
 const PHASE_BADGE = {
@@ -67,6 +65,7 @@ export function AddFunderPanel({
   const { t } = useTranslation(lng, "concept-notes");
   // Remount the dropzone after each pick so a rejected file can be replaced.
   const [pickerKey, setPickerKey] = useState(0);
+  const [discardError, setDiscardError] = useState<string | null>(null);
   const { phase } = flow;
   const copy = PANEL_COPY[flow.kind];
   const badge =
@@ -75,6 +74,7 @@ export function AddFunderPanel({
       : PROCESSING_BADGE;
   const working =
     phase === "uploading" || phase === "converting" || phase === "reading";
+  const error = flow.error ?? discardError;
 
   function onFileChange(details: FileUploadFileChangeDetails): void {
     setPickerKey((key) => key + 1);
@@ -142,7 +142,7 @@ export function AddFunderPanel({
               {flow.filename}
             </Text>
             <Text fontSize="label.sm" color="content.tertiary" role="status">
-              {t(FUNDER_IMPORT_PHASE_LABEL[phase])}
+              {t(importPhaseLabel(flow.kind, phase))}
             </Text>
           </Box>
           <ContextStatusBadge label={t(badge.label)} tone={badge.tone} />
@@ -166,7 +166,7 @@ export function AddFunderPanel({
         </Text>
       )}
 
-      {flow.error && (
+      {error && (
         <Flex
           role="alert"
           align="start"
@@ -179,12 +179,27 @@ export function AddFunderPanel({
         >
           <Icon as={LuCircleAlert} mt={0.5} color="sentiment.negativeDefault" />
           <Text fontSize="body.sm" color="content.secondary">
-            {t(flow.error)}
+            {t(error)}
           </Text>
         </Flex>
       )}
 
       <Flex gap={2} flexWrap="wrap" justify="end">
+        {phase === "ready" && (
+          <Button
+            size="sm"
+            variant="outline"
+            loading={flow.busy}
+            onClick={() => {
+              setDiscardError(null);
+              void flow.discard().catch((cause: unknown) => {
+                setDiscardError(funderApiErrorKey(cause));
+              });
+            }}
+          >
+            {t("funder-discard")}
+          </Button>
+        )}
         {phase === "failed" && (
           <Button size="sm" variant="outline" onClick={flow.chooseAnotherFile}>
             {t("funder-upload-different-file")}

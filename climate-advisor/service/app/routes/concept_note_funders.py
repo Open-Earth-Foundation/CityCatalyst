@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from uuid import UUID
+
 from app.db.session import get_session
 from app.models.cnb.funder_creation import (
     FunderCreateRequest,
     FunderCreateResponse,
-    FunderImportDiscardRequest,
     FunderImportResponse,
     FunderImportStartRequest,
 )
@@ -18,7 +19,7 @@ from app.services.cnb.funder_creation import (
     start_funder_import,
 )
 from app.utils.citycatalyst_auth import extract_bearer_token
-from fastapi import APIRouter, Depends, Header, Response, status
+from fastapi import APIRouter, Depends, Header, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -62,12 +63,12 @@ async def start_concept_note_funder_import(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def discard_concept_note_funder_import(
-    payload: FunderImportDiscardRequest,
     run: AuthorizedRun,
+    import_id: UUID = Query(..., description="Observed import ID; preserves replacements"),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
-    """Discard the pending import without adding anything to the catalogue."""
-    await discard_funder_import(session, run, import_id=payload.import_id)
+    """Discard the observed import using a query parameter and no request body."""
+    await discard_funder_import(session, run, import_id=import_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

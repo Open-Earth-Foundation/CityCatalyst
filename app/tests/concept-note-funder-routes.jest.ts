@@ -94,9 +94,8 @@ describe("Funder API boundary", () => {
 
     callApi.mockResolvedValue(new Response(null, { status: 204 }));
     const discarded = await discardImport(
-      new Request("http://localhost", {
+      new Request(`http://localhost?importId=${uploadId}`, {
         method: "DELETE",
-        body: JSON.stringify({ importId: uploadId }),
       }),
       context,
     );
@@ -104,7 +103,8 @@ describe("Funder API boundary", () => {
     expect(callApi).toHaveBeenLastCalledWith(
       expect.objectContaining({
         method: "DELETE",
-        body: { import_id: uploadId },
+        body: undefined,
+        searchParams: { import_id: uploadId, user_id: "owner" },
       }),
     );
 
@@ -133,11 +133,79 @@ describe("Funder API boundary", () => {
     );
   });
 
+  it.each([404, 409, 500])(
+    "strips internal problem metadata while preserving public errors at %s",
+    async (status) => {
+      const detail = {
+        code: "funder_import_pending",
+        message: "Review the draft",
+      };
+      callApi.mockResolvedValue(
+        Response.json(
+          {
+            detail: { ...detail, error: "internal secret" },
+            instance: "http://internal-ca/funder-imports?user_id=private",
+            title: "internal secret",
+          },
+          { status },
+        ),
+      );
+      const response = await startImport(post({ uploadId }), context);
+      expect(response.status).toBe(status);
+      expect(await response.json()).toEqual({ detail });
+    },
+  );
+
   it.each([
-    ["a discard without an import id", () => discardImport(post({}), context)],
+    { message: "internal secret" },
+    { code: { nested: "internal secret" } },
+    "internal secret",
+  ])("drops errors outside the public contract: %j", async (detail) => {
+    callApi.mockResolvedValue(Response.json({ detail }, { status: 500 }));
+    const response = await getImport(new Request("http://localhost"), context);
+    expect(await response.json()).toEqual({ detail: "" });
+  });
+
+  it("does not serialize an object-valued error message", async () => {
+    callApi.mockResolvedValue(
+      Response.json(
+        {
+          detail: {
+            code: "funder_import_changed",
+            message: { error: "internal secret" },
+          },
+        },
+        { status: 409 },
+      ),
+    );
+    const response = await getImport(new Request("http://localhost"), context);
+    expect(await response.json()).toEqual({
+      detail: { code: "funder_import_changed" },
+    });
+  });
+
+  it.each([
+    [
+      "a discard without an import id",
+      () =>
+        discardImport(
+          new Request("http://localhost", { method: "DELETE" }),
+          context,
+        ),
+    ],
     [
       "an invalid discard import id",
-      () => discardImport(post({ importId: "invalid" }), context),
+      () =>
+        discardImport(
+          new Request("http://localhost?importId=invalid", {
+            method: "DELETE",
+          }),
+          context,
+        ),
+    ],
+    [
+      "a discard with the import id only in the obsolete body",
+      () => discardImport(post({ importId: uploadId }), context),
     ],
     [
       "an invalid upload id",

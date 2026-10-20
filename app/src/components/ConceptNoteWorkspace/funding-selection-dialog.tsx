@@ -60,6 +60,7 @@ import {
 } from "./own-template-flow";
 import {
   FUNDER_IMPORT_PHASE_LABEL,
+  importPhaseLabel,
   type FunderImportFlow,
 } from "./use-funder-import";
 
@@ -581,7 +582,7 @@ export function FundingSelectionDialog({
                         truncate
                       >
                         {templateImport && templateImport.phase !== "idle"
-                          ? t(FUNDER_IMPORT_PHASE_LABEL[templateImport.phase])
+                          ? t(importPhaseLabel("template", templateImport.phase))
                           : (ownTemplate?.preview.name ??
                             t("template-own-entry-help"))}
                       </Text>

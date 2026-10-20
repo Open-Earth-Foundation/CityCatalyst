@@ -50,6 +50,16 @@ export const FUNDER_IMPORT_PHASE_LABEL: Record<FunderImportPhase, string> = {
   failed: "funder-import-failed",
 };
 
+/** Use template-specific reading copy in both the panel and the rail. */
+export function importPhaseLabel(
+  kind: ImportKind,
+  phase: FunderImportPhase,
+): string {
+  return kind === "template" && phase === "reading"
+    ? "template-import-reading"
+    : FUNDER_IMPORT_PHASE_LABEL[phase];
+}
+
 export interface FunderImportFlow {
   kind: ImportKind;
   phase: FunderImportPhase;
@@ -145,6 +155,10 @@ export function useFunderImport({
   }
 
   async function uploadFile(file: File): Promise<void> {
+    if (serverImport?.status === "ready") {
+      setLocal((state) => ({ ...state, error: "funder-error-draft-pending" }));
+      return;
+    }
     const generation = ++generationRef.current;
     const validationError = await validateConceptNoteSourceFile(file);
     if (generation !== generationRef.current) return;

@@ -246,3 +246,38 @@ it("reads a template upload and ignores an import of the other kind", async () =
   expect(flow.kind).toBe("template");
   expect(flow.phase).toBe("converting");
 });
+
+it.each(["funder", "template"] as const)(
+  "preserves a ready draft before uploading into the %s flow",
+  async (kind) => {
+    serverImport = { ...currentImport, status: "ready" };
+    await render("run", kind);
+    await upload("replacement.pdf");
+    expect(uploadSource).not.toHaveBeenCalled();
+    expect(startImport).not.toHaveBeenCalled();
+    expect(flow.error).toBe("funder-error-draft-pending");
+    expect(serverImport.import_id).toBe("import-1");
+  },
+);
+
+it("uploads a replacement after explicitly discarding a ready draft", async () => {
+  serverImport = { ...currentImport, status: "ready" };
+  await render();
+  await act(async () => flow.discard());
+  await render();
+  await upload("replacement.pdf");
+  expect(discardImport).toHaveBeenCalledWith({
+    runId: "run",
+    importId: "import-1",
+  });
+  expect(startImport).toHaveBeenCalledTimes(1);
+});
+
+it("shows the pending-draft conflict if another client created a draft during upload", async () => {
+  start.mockRejectedValueOnce({
+    data: { detail: { code: "funder_import_pending" } },
+  });
+  await upload();
+  expect(flow.error).toBe("funder-error-draft-pending");
+  expect(discardImport).not.toHaveBeenCalled();
+});

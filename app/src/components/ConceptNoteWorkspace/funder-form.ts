@@ -325,6 +325,7 @@ const IMPORT_ERROR_KEYS = new Map([
 
 const API_ERROR_KEYS = new Map([
   ["funder_import_running", "funder-error-import-running"],
+  ["funder_import_pending", "funder-error-draft-pending"],
   ["funder_import_changed", "funder-error-import-changed"],
   ["funder_already_added", "funder-error-already-added"],
 ]);

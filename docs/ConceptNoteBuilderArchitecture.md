@@ -2009,11 +2009,19 @@ Document path:
    limit `prompt_budget.cnb_funder_import.max_document_tokens`). Code keeps only
    evidence quotes found verbatim (whitespace-insensitive) in the document,
    records their PDF page, slugs chapter references uniquely and lists empty
-   catalogue columns in `missing`. `GET .../funder-imports/current` returns the
-   import; `DELETE .../current` discards it. Starting again on the same upload
+   catalogue columns in `missing`. Zero award amounts count as present and retain
+   their evidence; quotes using duplicate model chapter references are discarded
+   because their chapter cannot be identified reliably.
+   `GET .../funder-imports/current` returns the
+   import; bodyless `DELETE .../current?importId=<uuid>` discards the observed
+   import through CityCatalyst. The proxy forwards the ID to Climate Advisor as
+   `?import_id=<uuid>`, also without a body. Both endpoints require a valid UUID;
+   a stale ID cannot remove a replacement import. Starting again on the same upload
    replaces a failed import under a new id, which is how the browser retries.
-   A job lost to a restart reads as `failed` (`extraction_interrupted`) after
-   25 minutes (the conversion wait plus 15 minutes).
+   During conversion and extraction, the job refreshes `updated_at` every
+   30 seconds. Two minutes without a heartbeat makes the import read as `failed`
+   (`extraction_interrupted`), exposing the existing Retry control. Expired or
+   replaced jobs cannot renew their lease or publish a late result.
 3. `POST /v1/concept-notes/{run_id}/funders` writes the reviewed values in one
    CNB transaction and clears the import. Template `required_fields` is built
    from chapter `required_fields`, so every inventory field has an owning
@@ -2124,6 +2132,14 @@ chapters, confirms the template in the dialog and saves the selection, which
 stores the template and clears the import. A funder import cannot be used as an
 own template, and a template import cannot be added as a funder
 (`funder_import_changed`).
+
+A ready draft must be reviewed or explicitly discarded before another import
+can start, including when switching between funder and template flows. The UI
+checks before uploading; the backend enforces the same rule with
+`funder_import_pending` to protect against stale clients. Both import panels
+offer Discard for ready drafts. Template reads display “Reading template chapters”.
+The CityCatalyst funder proxy preserves error status and public `detail.code` /
+`detail.message` fields, excluding internal service URLs and error extensions.
 
 ```bash
 # From climate-advisor/service

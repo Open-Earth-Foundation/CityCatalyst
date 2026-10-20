@@ -26,20 +26,17 @@
  *         name: runId
  *         required: true
  *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: importId
+ *         required: true
+ *         description: The observed import ID; a newer replacement is preserved.
+ *         schema: { type: string, format: uuid }
  *     responses:
  *       204: { description: Import discarded }
+ *       400: { description: Missing or invalid import ID }
  *       401: { description: Authentication required }
  *       403: { description: City or run access denied }
  *       404: { description: Concept note run not found }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [importId]
- *             properties:
- *               importId: { type: string, format: uuid }
  */
 import { z } from "zod";
 
@@ -60,11 +57,11 @@ export const DELETE = apiHandler(async (req, { session, params }) => {
   const { runId } = paramsSchema.parse(params);
   const { importId } = z
     .object({ importId: z.string().uuid() })
-    .parse(await req.json());
+    .parse({ importId: new URL(req.url).searchParams.get("importId") });
   return proxyConceptNoteRunRequest(req, session, {
     runId,
     path: `/v1/concept-notes/${runId}/funder-imports/current`,
     method: "DELETE",
-    body: { import_id: importId },
+    searchParams: { import_id: importId },
   });
 });

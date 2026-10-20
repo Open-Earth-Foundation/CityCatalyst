@@ -157,9 +157,13 @@ def get_app() -> FastAPI:
     ) -> JSONResponse:
         """Return HTTP errors as problem details, keeping structured codes."""
         # Structured details ({"code", "message"}) stay machine-readable for callers.
-        if isinstance(exc.detail, dict):
-            title = str(exc.detail.get("message", "HTTP Error"))
-            detail: str | dict[str, Any] = exc.detail
+        if isinstance(exc.detail, dict) and isinstance(exc.detail.get("code"), str):
+            # Only scalar public fields may cross the API boundary.
+            detail: str | dict[str, Any] = {"code": exc.detail["code"]}
+            message = exc.detail.get("message")
+            if isinstance(message, str):
+                detail["message"] = message
+            title = message if isinstance(message, str) and message else "HTTP Error"
         elif isinstance(exc.detail, str):
             title = detail = exc.detail
         else:

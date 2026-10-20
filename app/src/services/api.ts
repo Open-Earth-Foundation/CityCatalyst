@@ -2672,7 +2672,7 @@ export const api = createApi({
         query: ({ runId, importId }) => ({
           url: `concept-notes/${runId}/funder-imports/current/`,
           method: "DELETE",
-          body: { importId },
+          params: { importId },
         }),
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteFunderImport", id: runId },

@@ -38,6 +38,7 @@ from app.services.cnb.funder_fields import (
     award_amount,
     cleaned_fields,
     field_values,
+    has_value,
     normalize_chapters,
     optional_text,
     profile_facts,
@@ -185,7 +186,7 @@ def _with_evidence(
     filled = {
         path
         for path, value in values.items()
-        if value and path != "template.chapter_schema"
+        if has_value(value) and path != "template.chapter_schema"
     }
     unit_texts = [(squash_text(unit.text), unit) for unit in units]
     evidence: list[FieldEvidence] = []
@@ -203,7 +204,7 @@ def _with_evidence(
         per_field[path] += 1
 
     draft.evidence = evidence
-    draft.missing = [path for path in reported_paths if not values.get(path)]
+    draft.missing = [path for path in reported_paths if not has_value(values.get(path))]
     return draft
 
 
@@ -220,8 +221,12 @@ def _extracted_chapters(
             for chapter in kept
         ]
     )
+    # Repeated model refs cannot identify which chapter a quote supports.
+    counts = Counter(chapter.chapter_ref for chapter in kept)
     return normalized, {
-        original.chapter_ref: stored.chapter_ref
+        original.chapter_ref: (
+            stored.chapter_ref if counts[original.chapter_ref] == 1 else ""
+        )
         for original, stored in zip(kept, normalized, strict=True)
     }
 

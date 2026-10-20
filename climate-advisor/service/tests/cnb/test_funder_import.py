@@ -1,5 +1,6 @@
 """Adding funders to the CNB catalogue from a document upload or by hand."""
 
+import asyncio
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
@@ -43,6 +44,7 @@ from app.services.cnb.funding_catalogue import load_funding_catalogue
 from app.services.cnb.source_analysis import SourceBlock, SourcePage
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from tests.cnb.test_funder_creation import _request as _manual_request
@@ -257,6 +259,34 @@ def test_build_draft_drops_inconsistent_award_range_and_flags_it():
     )
 
 
+def test_zero_award_is_present_and_retains_saved_evidence():
+    extraction = _extraction(opportunity={"min_award": 0})
+    quote = "There is no minimum award."
+    extraction.evidence[1].quote = quote
+    draft = build_draft(extraction, [*PAGES, SourcePage(number=3, text=quote)])
+    assert draft.opportunity.min_award == Decimal("0")
+    assert "opportunity.min_award" not in draft.missing
+    rows = service.evidence_rows(
+        draft, _request(draft), opportunity_id=uuid4(), source_document_id=uuid4()
+    )
+    award = next(row for row in rows if row.claim == "opportunity.min_award")
+    assert award.quote_or_summary == quote
+    assert award.source_map["origin"] == "extracted"
+
+
+def test_duplicate_chapter_refs_do_not_assign_quotes_to_another_chapter():
+    extraction = _extraction()
+    for chapter in extraction.template.chapters:
+        chapter.chapter_ref = "section"
+    extraction.evidence[-1].field = "template.chapter_schema.section"
+    draft = build_draft(extraction, PAGES)
+    assert len(draft.template.chapter_schema) == 2
+    assert not any(
+        item.field.startswith("template.chapter_schema.") for item in draft.evidence
+    )
+    assert any(item.field == "funder.name" for item in draft.evidence)
+
+
 def test_build_draft_reports_markdown_quotes_without_page():
     blocks = [SourceBlock(anchor="doc/block-1", text="Green Cities Foundation\n")]
     draft = build_draft(_extraction(template={"chapters": []}), blocks)
@@ -431,7 +461,7 @@ async def test_start_accepts_a_converting_upload_and_allows_one_running_import()
 async def test_abandoned_import_is_reported_failed_and_restarted_on_its_upload():
     async with _ca_session() as session:
         run, upload = await _run_with_upload(session)
-        stale = datetime.now(UTC) - timedelta(hours=1)
+        stale = datetime.now(UTC) - timedelta(minutes=2, seconds=1)
         await _store_import(
             session,
             run,
@@ -450,6 +480,99 @@ async def test_abandoned_import_is_reported_failed_and_restarted_on_its_upload()
         assert retried.status == "processing"
         assert retried.import_id != current.import_id
         schedule.assert_called_once()
+
+
+@pytest.mark.parametrize("kind", ["funder", "template"])
+async def test_ready_draft_is_preserved_until_explicitly_discarded(kind):
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session)
+        current = _ready_import(upload)
+        await _store_import(session, run, current)
+        with patch.object(service, "schedule_funder_import") as schedule:
+            with pytest.raises(HTTPException) as error:
+                await start_funder_import(
+                    session, run, upload_id=upload.upload_id, token="t", kind=kind
+                )
+            assert error.value.detail["code"] == "funder_import_pending"
+            assert await load_funder_import(session, run) == current
+            schedule.assert_not_called()
+            await service.discard_funder_import(
+                session, run, import_id=current.import_id
+            )
+            replacement = await start_funder_import(
+                session, run, upload_id=upload.upload_id, token="t", kind=kind
+            )
+            assert replacement.kind == kind
+            assert replacement.import_id != current.import_id
+
+
+async def test_heartbeat_keeps_a_long_running_import_alive(monkeypatch):
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session)
+        current = _ready_import(upload, status="processing").model_copy(
+            update={
+                "created_at": datetime.now(UTC) - timedelta(hours=1),
+                "updated_at": datetime.now(UTC) - timedelta(seconds=60),
+            }
+        )
+        await _store_import(session, run, current)
+        factory = async_sessionmaker(session.bind, expire_on_commit=False)
+        monkeypatch.setattr(service, "IMPORT_HEARTBEAT_SECONDS", 0.01)
+        refreshed = asyncio.Event()
+        refresh = service._refresh_import_heartbeat
+
+        async def observe_refresh(
+            factory: async_sessionmaker[AsyncSession], run_id: UUID, import_id: UUID
+        ) -> bool:
+            result = await refresh(factory, run_id, import_id)
+            refreshed.set()
+            return result
+
+        async def read(*args, **kwargs) -> FunderImportDraft:
+            await asyncio.wait_for(refreshed.wait(), timeout=2)
+            async with factory() as other:
+                observed = await load_funder_import(other, run)
+                assert observed.status == "processing"
+                assert observed.updated_at > current.updated_at
+            return _draft()
+
+        with patch.object(
+            service, "_refresh_import_heartbeat", side_effect=observe_refresh
+        ):
+            result = await _run_job(session, run, upload, read)
+        assert result.status == "ready"
+        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+        assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
+
+
+@pytest.mark.parametrize("state", ["expired", "replaced", "discarded", "ready"])
+async def test_old_worker_cannot_renew_or_publish_over_inactive_import(state):
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session)
+        original = _ready_import(upload, status="processing")
+        current = original
+        if state == "expired":
+            current = original.model_copy(
+                update={"updated_at": datetime.now(UTC) - timedelta(minutes=3)}
+            )
+        elif state == "replaced":
+            current = original.model_copy(update={"import_id": uuid4()})
+        elif state == "ready":
+            current = original.model_copy(update={"status": "ready", "draft": _draft()})
+        await _store_import(session, run, current)
+        if state == "discarded":
+            await service.discard_funder_import(
+                session, run, import_id=original.import_id
+            )
+        before = await load_funder_import(session, run)
+        factory = async_sessionmaker(session.bind, expire_on_commit=False)
+        assert not await service._refresh_import_heartbeat(
+            factory, run.run_id, original.import_id
+        )
+        await service._finish_import(
+            factory, run.run_id, original.import_id, error_code=None, draft=_draft()
+        )
+        assert await load_funder_import(session, run) == before
 
 
 async def _run_job(
@@ -534,7 +657,10 @@ async def test_background_job_waits_for_the_upload_to_convert(
                 converted.ingest_status = converted_status
                 await other.commit()
 
-        with patch.object(service.asyncio, "sleep", side_effect=convert) as sleep:
+        with (
+            patch.object(service.asyncio, "sleep", side_effect=convert) as sleep,
+            patch.object(service, "_heartbeat_import", new_callable=AsyncMock),
+        ):
             result = await _run_job(
                 session,
                 run,
@@ -547,6 +673,76 @@ async def test_background_job_waits_for_the_upload_to_convert(
 
 
 # --- HTTP ---------------------------------------------------------------------------
+
+
+async def test_bodyless_discard_uses_query_id_and_preserves_a_replacement():
+    async with _ca_session() as session:
+        run, upload = await _run_with_upload(session)
+        current = _ready_import(upload)
+        await _store_import(session, run, current)
+        app = get_app()
+        app.dependency_overrides[get_session] = lambda: session
+        app.dependency_overrides[authorized_run] = lambda: run
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            path = f"/v1/concept-notes/{run.run_id}/funder-imports/current"
+            stale = await client.delete(path, params={"import_id": str(uuid4())})
+            assert stale.status_code == 204
+            assert stale.content == b""
+            assert (await load_funder_import(session, run)).import_id == current.import_id
+            discarded = await client.delete(
+                path, params={"import_id": str(current.import_id)}
+            )
+            assert discarded.status_code == 204
+            assert discarded.content == b""
+            assert await load_funder_import(session, run) is None
+
+
+@pytest.mark.parametrize("params", [{}, {"import_id": "invalid"}])
+def test_discard_rejects_missing_or_invalid_query_id(params):
+    app = get_app()
+    run = SimpleNamespace(run_id=uuid4())
+    app.dependency_overrides[get_session] = lambda: None
+    app.dependency_overrides[authorized_run] = lambda: run
+    with (
+        patch("app.routes.concept_note_funders.discard_funder_import", AsyncMock()) as discard,
+        TestClient(app) as client,
+    ):
+        response = client.delete(
+            f"/v1/concept-notes/{run.run_id}/funder-imports/current", params=params
+        )
+    assert response.status_code == 422
+    discard.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "detail, expected",
+    [
+        ({"message": "Safe message", "error": "internal secret"}, ""),
+        (
+            {"code": "public_code", "message": "Safe message", "error": "internal secret"},
+            {"code": "public_code", "message": "Safe message"},
+        ),
+        (
+            {"code": "public_code", "message": {"error": "internal secret"}},
+            {"code": "public_code"},
+        ),
+        ({"code": {"error": "internal secret"}, "message": "Safe message"}, ""),
+    ],
+)
+def test_problem_details_do_not_expose_non_contract_fields(detail, expected):
+    app = get_app()
+
+    @app.get("/test-error-contract")
+    async def fail():
+        raise HTTPException(500, detail=detail)
+
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.get("/test-error-contract")
+    assert response.status_code == 500
+    assert response.json()["detail"] == expected
+    assert "internal secret" not in response.text
 
 
 def test_structured_errors_keep_their_code_in_problem_responses():

@@ -816,8 +816,14 @@ language, or client-side fallback behavior. The boundary is:
   the user reviews them. `services/cnb/funder_creation.py` owns import lifecycle
   and catalogue saves; `funder_document.py` handles extraction and verified quotes;
   `funder_fields.py` normalizes fields and indexes their provenance values.
-  Concurrent import starts are serialized, and discard
-  requires the observed import ID so it cannot remove a newer import. Duplicated
+  Concurrent import starts are serialized; ready drafts must be reviewed or
+  explicitly discarded before another import starts. Discard requires the
+  observed import ID as the `import_id` query parameter (CityCatalyst's public
+  endpoint uses `importId`), without a DELETE body, so it cannot remove a newer
+  import. A worker refreshes its
+  lease every 30 seconds; after two minutes without a heartbeat, the import is
+  reported as interrupted and can be retried. Expired workers cannot publish
+  late results. Duplicated
   notes keep the source files but omit pending funder imports; see
   [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue).
   A note can instead use its own template (`concept_note_runs.custom_template`),

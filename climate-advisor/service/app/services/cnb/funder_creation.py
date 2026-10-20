@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
+from contextlib import suppress
 from contextvars import Context
 from copy import deepcopy
 from datetime import UTC, datetime, timedelta
@@ -58,6 +59,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.cnb.funder_document import FunderImportError, extract_funder_draft
 from app.services.cnb.funder_fields import (
     field_values,
+    has_value,
     json_value,
     normalize_chapters,
     template_required_fields,
@@ -69,8 +71,9 @@ IMPORT_BUNDLE_KEY = "funder_import"
 # The import waits for the upload to finish converting before reading it.
 UPLOAD_POLL_SECONDS = 2.0
 UPLOAD_WAIT = timedelta(minutes=10)
-# A process restart loses the in-memory job; after this long it becomes retryable.
-STALE_IMPORT_AFTER = UPLOAD_WAIT + timedelta(minutes=15)
+# A lost worker becomes retryable without expiring a healthy, slow extraction.
+IMPORT_HEARTBEAT_SECONDS = 30.0
+STALE_IMPORT_AFTER = timedelta(minutes=2)
 _BACKGROUND_IMPORTS: set[asyncio.Task[None]] = set()
 
 ExtractDraft = Callable[..., Awaitable[FunderImportDraft]]
@@ -127,8 +130,13 @@ async def start_funder_import(
     current = await load_funder_import(session, run)
     if current is not None and current.status == "processing":
         raise api_error("funder_import_running", "A document is already being read.")
+    if current is not None and current.status == "ready":
+        raise api_error(
+            "funder_import_pending",
+            "Review or discard the ready document draft before reading another file.",
+        )
 
-    # Replace any previous draft or failure; a new id makes late results no-ops.
+    # Replace a failure; a new id makes late results no-ops.
     now = datetime.now(UTC)
     funder_import = FunderImport(
         import_id=uuid4(),
@@ -178,6 +186,8 @@ def schedule_funder_import(*, run_id: UUID, import_id: UUID, token: str) -> None
     def release(completed: asyncio.Task[None]) -> None:
         """Drop the finished task and log a crash the job did not handle."""
         _BACKGROUND_IMPORTS.discard(completed)
+        if completed.cancelled():
+            return
         try:
             completed.result()
         except Exception:
@@ -200,6 +210,7 @@ async def run_funder_import(
     cc_client: CityCatalystClient | None = None
     draft: FunderImportDraft | None = None
     error_code: str | None = None
+    heartbeat = asyncio.create_task(_heartbeat_import(factory, run_id, import_id))
     try:
         # Step 1: wait until the upload on the still-current import is converted.
         converted = await _converted_upload(factory, run_id, import_id)
@@ -234,11 +245,49 @@ async def run_funder_import(
         logger.exception("Unexpected funder extraction failure run_id=%s", run_id)
         error_code = "extraction_failed"
     finally:
+        heartbeat.cancel()
+        with suppress(asyncio.CancelledError):
+            await heartbeat
         if cc_client is not None:
             await cc_client.close()
 
     # Step 3: publish the outcome only if the user has not replaced the import.
     await _finish_import(factory, run_id, import_id, error_code=error_code, draft=draft)
+
+
+async def _heartbeat_import(
+    factory: async_sessionmaker[AsyncSession], run_id: UUID, import_id: UUID
+) -> None:
+    """Renew the current job's lease during conversion and extraction."""
+    try:
+        while True:
+            await asyncio.sleep(IMPORT_HEARTBEAT_SECONDS)
+            if not await _refresh_import_heartbeat(factory, run_id, import_id):
+                return
+    except Exception:
+        # A worker that cannot renew its lease must not revive an expired import.
+        logger.exception(
+            "CNB import heartbeat failed run_id=%s import_id=%s", run_id, import_id
+        )
+
+
+async def _refresh_import_heartbeat(
+    factory: async_sessionmaker[AsyncSession], run_id: UUID, import_id: UUID
+) -> bool:
+    """Renew an unexpired processing import under the shared bundle lock."""
+    async with factory() as session, session.begin():
+        bundle = await _locked_bundle(session, run_id)
+        current = _import_from_bundle(bundle)
+        now = datetime.now(UTC)
+        if (
+            current is None
+            or current.import_id != import_id
+            or current.status != "processing"
+            or now - current.updated_at > STALE_IMPORT_AFTER
+        ):
+            return False
+        _set_import(bundle, current.model_copy(update={"updated_at": now}))
+        return True
 
 
 async def _converted_upload(
@@ -275,8 +324,15 @@ async def _finish_import(
     async with factory() as session, session.begin():
         bundle = await _locked_bundle(session, run_id)
         current = _import_from_bundle(bundle)
-        if current is None or current.import_id != import_id:
-            logger.info("Ignored superseded CNB funder import import_id=%s", import_id)
+        if (
+            current is None
+            or current.import_id != import_id
+            or current.status != "processing"
+            or datetime.now(UTC) - current.updated_at > STALE_IMPORT_AFTER
+        ):
+            logger.info(
+                "Ignored expired or superseded CNB funder import import_id=%s", import_id
+            )
             return
         finished = current.model_copy(
             update={
@@ -505,7 +561,7 @@ def evidence_rows(
     rows: list[CnbFundingEvidence] = []
     for item in draft.evidence:
         saved = saved_values.get(item.field)
-        if not saved:
+        if not has_value(saved):
             continue
         original = original_values.get(item.field)
         # Decimal equality ignores scale lost in the browser's numeric payload.

@@ -19,6 +19,7 @@ import type {
   ConceptNoteFunder,
   ConceptNoteFundingOpportunity,
 } from "@/util/types";
+import type { FunderImportFlow } from "@/components/ConceptNoteWorkspace/use-funder-import";
 
 const opportunity: ConceptNoteFundingOpportunity = {
   id: "programme-internal-id",
@@ -145,7 +146,10 @@ const applicationContext: ConceptNoteApplicationContext = {
   },
 };
 
-async function renderDialog(context = applicationContext) {
+async function renderDialog(
+  context = applicationContext,
+  templateImport?: FunderImportFlow,
+) {
   await act(async () => {
     root.render(
       <ChakraProvider value={defaultSystem}>
@@ -156,11 +160,56 @@ async function renderDialog(context = applicationContext) {
           lng="en"
           runId="run"
           onClose={onClose}
+          templateImport={templateImport}
         />
       </ChakraProvider>,
     );
   });
 }
+
+it("uses template reading copy in the rail and panel", async () => {
+  const flow: FunderImportFlow = {
+    kind: "template",
+    phase: "reading",
+    funderImport: null,
+    filename: "form.pdf",
+    error: null,
+    busy: false,
+    uploadFile: async () => {},
+    retry: async () => {},
+    discard: async () => {},
+    chooseAnotherFile: () => {},
+  };
+  await renderDialog(applicationContext, flow);
+  await click("Use your own template");
+  const panel = document.querySelector('[data-testid="own-template-panel"]')!;
+  expect(panel.textContent).toContain("Reading template chapters");
+  expect(document.body.textContent).not.toContain("Reading funder details");
+});
+
+it("allows explicitly discarding a ready template from its panel", async () => {
+  const discard = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+  const flow: FunderImportFlow = {
+    kind: "template",
+    phase: "ready",
+    funderImport: null,
+    filename: "form.pdf",
+    error: null,
+    busy: false,
+    uploadFile: async () => {},
+    retry: async () => {},
+    discard,
+    chooseAnotherFile: () => {},
+  };
+  await renderDialog(applicationContext, flow);
+  await click("Use your own template");
+  const panel = document.querySelector('[data-testid="own-template-panel"]')!;
+  const discardButton = [...panel.querySelectorAll("button")].find((item) =>
+    item.textContent?.includes(translations["funder-discard"]),
+  )!;
+  await act(async () => discardButton.click());
+  expect(discard).toHaveBeenCalledTimes(1);
+});
 
 const button = (label: string) =>
   [...document.querySelectorAll("button")].find((item) =>

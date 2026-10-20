@@ -106,6 +106,11 @@ def json_value(value: Any) -> Any:
     return value
 
 
+def has_value(value: Any) -> bool:
+    """Distinguish absent fields from valid zero amounts."""
+    return value not in (None, "", [], {})
+
+
 def optional_text(value: str | None) -> str | None:
     """Strip text and treat blanks as missing."""
     return (value or "").strip() or None

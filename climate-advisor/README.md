@@ -1498,9 +1498,13 @@ return `success: false` with `error_code: temporarily_unavailable`, and the
 prompts tell the model to ask the user to try again. Authorization and
 not-found answers still look like an empty catalog.
 
-Known limitation: a legacy HIAP ranking created by a colleague is hidden by Core
-(the catalog row carries the creator's `userId`; see CC-768), so an accessible
-city can answer "no ranking found".
+Access (CC-1060 PR 2): Core authorizes catalog rows at city and project, not by
+creator. Organization admins, project admins of the row's project and
+collaborators of its city read every ranking, selection and plan of that city
+and project, for every year, including ones a colleague created. Users outside
+the city and project still get "no ranking found", the same answer as for a
+missing row. HIAP-MEED data is never readable through public inventories and
+Clima never exports or offers it for download. See `docs/NativeInputCatalog.md`.
 
 #### Real-LLM multi-city tests (local, opt-in)
 

@@ -249,6 +249,36 @@ def test_description_language_claim_matches_the_capabilities_that_accept_it() ->
         assert capability in description.split("language is accepted only by")[1].split("Also")[0]
 
 
+def test_meed_data_has_only_read_capabilities_and_no_export_or_download() -> None:
+    """CC-1060 PR 2: HIAP-MEED data is interpreted in chat, never exported."""
+    import re
+
+    from app.tools import native_input_catalog_tools as module
+
+    meed = {c for c in module._CAPABILITY_DEFINITIONS if c.startswith("hiap_meed.")}
+    assert meed == {"hiap_meed.ranking.context", "hiap_meed.output_plan.context"}
+    forbidden = re.compile(r"export|download|file|csv|xlsx|pdf|docx", re.IGNORECASE)
+    assert not [c for c in module._CAPABILITY_DEFINITIONS if forbidden.search(c)]
+
+    tools, _, _ = _build(_StubClient())
+    assert set(tools) == {"native_input_discover", "native_input_read"}
+    assert not [name for name in tools if forbidden.search(name)]
+
+
+@pytest.mark.asyncio
+async def test_read_tool_refuses_an_invented_meed_export_capability() -> None:
+    """An export capability is rejected before Core is ever called."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.ranking.export"},
+    )
+    assert result["success"] is False
+    assert client.requests == []
+
+
 @pytest.mark.asyncio
 async def test_discovery_is_fresh_filters_unsupported_capabilities_and_exposes_safe_camelcase() -> None:
     """Each discover call returns only current, locally supported safe entries."""

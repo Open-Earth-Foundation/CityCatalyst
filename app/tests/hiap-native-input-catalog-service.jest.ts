@@ -148,7 +148,6 @@ describe("HiapNativeInputCatalogService", () => {
     ]);
     const scope = await resolveHIAPCatalogScope({
       inventoryId: "inventory-1",
-      userId: "user-1",
     });
 
     await expect(buildHIAPRankingInput(ranking)).resolves.toEqual(
@@ -187,6 +186,63 @@ describe("HiapNativeInputCatalogService", () => {
         sourceId: "ranking-1:action-1",
       }),
     );
+  });
+
+  it("scopes new rows to city and project and never writes the creator userId", async () => {
+    rankedModel.findAll.mockResolvedValue([
+      {
+        actionId: "action-1",
+        rank: 1,
+        lang: "en",
+        type: "mitigation",
+        isSelected: true,
+      },
+    ]);
+    unrankedModel.findAll.mockResolvedValue([]);
+    rankingModel.findOne = jest.fn().mockResolvedValue(ranking as never);
+
+    const rankingInput = await buildHIAPRankingInput(ranking);
+    const planInput = await buildHIAPActionPlanInput({
+      id: "plan-1",
+      actionId: "action-1",
+      highImpactActionRankedId: "ranked-1",
+      inventoryId: "inventory-1",
+      createdBy: "user-1",
+    } as never);
+    const scope = await resolveHIAPCatalogScope({
+      inventoryId: "inventory-1",
+    });
+
+    for (const input of [rankingInput, planInput]) {
+      expect(input.userId ?? null).toBeNull();
+      expect(input).toEqual(
+        expect.objectContaining({
+          inventoryId: "inventory-1",
+          cityId: "city-1",
+          projectId: "project-1",
+          organizationId: "organization-1",
+        }),
+      );
+    }
+    expect(scope).toEqual({
+      inventoryId: "inventory-1",
+      cityId: "city-1",
+      projectId: "project-1",
+      organizationId: "organization-1",
+    });
+
+    await registerHIAPSelections({
+      inventoryId: "inventory-1",
+      actionType: "mitigation" as never,
+    });
+    const selectionInputs = registerNativeInput.mock.calls.map(
+      (call) => call[0] as { userId?: string | null; projectId?: string },
+    );
+    expect(selectionInputs.length).toBeGreaterThan(0);
+    for (const input of selectionInputs) {
+      expect(input.userId ?? null).toBeNull();
+      expect(input.projectId).toBe("project-1");
+    }
   });
 
   it("processes rankings in a bounded keyset-paginated page", async () => {
@@ -377,7 +433,6 @@ describe("HiapNativeInputCatalogService", () => {
     await registerHIAPSelections({
       inventoryId: "inventory-1",
       actionType: "mitigation" as never,
-      authorId: "user-1",
     });
 
     expect(registerNativeInput).toHaveBeenCalledTimes(2);

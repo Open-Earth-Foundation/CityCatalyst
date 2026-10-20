@@ -223,7 +223,6 @@ describe("NativeInputCatalog capability service", () => {
 
   describe("candidate scope filter", () => {
     const fields = [
-      "userId",
       "organizationId",
       "projectId",
       "cityId",
@@ -292,17 +291,14 @@ describe("NativeInputCatalog capability service", () => {
       expect(page.continuationCursor).toBeUndefined();
       expect(find).toHaveBeenCalledWith(
         expect.objectContaining({
-          scope: {
-            userId: session.user.id,
-            inventoryId: authorizedEntry.inventoryId,
-          },
+          scope: { inventoryId: authorizedEntry.inventoryId },
         }),
       );
     });
   });
 
-  it("keeps inventory-owned rows without a userId visible to an authorized caller", async () => {
-    // No scope fields on the row, so only the owner check is exercised.
+  it("keeps rows without a scope field visible to an authorized caller", async () => {
+    // No scope fields on the row, so no permission check runs.
     const inventoryOwned = {
       ...authorizedEntry,
       userId: null,
@@ -319,19 +315,18 @@ describe("NativeInputCatalog capability service", () => {
     ).resolves.toBe(true);
   });
 
-  it("still hides rows owned by a different user", async () => {
-    const foreign = {
-      ...authorizedEntry,
-      userId: "99999999-9999-4999-8999-999999999999",
-    };
-
-    await expect(
-      authorizeCatalogScope(
-        session,
-        { userId: session.user.id, inventoryId: authorizedEntry.inventoryId },
-        foreign as never,
-      ),
-    ).resolves.toBe(false);
+  it("does not filter candidates by the creator userId", () => {
+    expect(
+      buildCandidateScopeConditions({
+        userId: session.user.id,
+      } as never),
+    ).toEqual([]);
+    expect(
+      requestMatchesEntry({ userId: session.user.id }, {
+        ...authorizedEntry,
+        userId: "99999999-9999-4999-8999-999999999999",
+      } as never),
+    ).toBe(true);
   });
 
   it("keeps caller-supplied city and inventory input instead of overwriting it", async () => {

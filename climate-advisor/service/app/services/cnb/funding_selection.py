@@ -1,4 +1,8 @@
-"""Persist reviewed funding choices and invalidate the previous review context."""
+"""Persist reviewed funding choices and invalidate the previous review context.
+
+A choice is a catalogue funder (optionally one programme and its template) or
+the note's own template, which replaces the funder.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +24,12 @@ from app.models.db.cnb_workspace import (
 )
 from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.persistence.concept_notes.workspace import normalize_template_chapters
-from app.services.cnb.application_context import ConceptNoteApplicationContextService
+from app.services.cnb.application_context import (
+    ConceptNoteApplicationContextService,
+    custom_template,
+    custom_template_response,
+)
+from app.services.cnb.funder_creation import build_custom_template, clear_import
 from app.services.cnb.funding_catalogue import load_funding_catalogue
 from fastapi import HTTPException
 from sqlalchemy import delete, select
@@ -48,11 +57,22 @@ async def save_funding_selection(
 
     # Re-read under a lock so a second tab cannot overwrite a newer choice.
     await session.refresh(run, with_for_update=True)
-    current = (run.funder_id, run.selected_funding_opportunity_id)
+    current_custom = custom_template(run)
+    current = (
+        run.funder_id,
+        run.selected_funding_opportunity_id,
+        current_custom.id if current_custom else None,
+    )
     requested = (payload.funder_id, payload.selected_funding_opportunity_id)
-    if current == requested:
+    # Saving an own template always stores a new version.
+    if payload.custom_template is None and current == (*requested, None):
         return await context_service.load_for_run(run)
-    if current != (payload.expected_funder_id, payload.expected_funding_opportunity_id):
+    expected = (
+        payload.expected_funder_id,
+        payload.expected_funding_opportunity_id,
+        payload.expected_custom_template_id,
+    )
+    if current != expected:
         raise HTTPException(
             status_code=409, detail="Funding selection changed. Reload and try again."
         )
@@ -91,6 +111,18 @@ async def save_funding_selection(
             status_code=422,
             detail="The selected programme does not belong to this funder.",
         )
+    own_template = (
+        await build_custom_template(session, run, payload.custom_template)
+        if payload.custom_template is not None
+        else None
+    )
+    next_template = (
+        custom_template_response(own_template)
+        if own_template is not None
+        else opportunity.template
+        if opportunity
+        else None
+    )
 
     # Keep draft revisions, but revoke approvals and proposals for the old setup.
     async with factory() as reference, reference.begin():
@@ -181,10 +213,10 @@ async def save_funding_selection(
         # A populated workspace cannot migrate unrelated sections without a
         # separate user decision about where each existing revision belongs.
         template_by_ref = None
-        if chapters and opportunity and opportunity.template:
+        if chapters and next_template:
             try:
                 template_chapters = normalize_template_chapters(
-                    opportunity.template.chapter_schema
+                    next_template.chapter_schema
                 )
             except ValueError:
                 template_chapters = []
@@ -232,6 +264,9 @@ async def save_funding_selection(
 
     # Publish current funding context for Clima and subsequent chapter generation.
     run.funder_id, run.selected_funding_opportunity_id = requested
+    run.custom_template = (
+        own_template.model_dump(mode="json") if own_template is not None else None
+    )
     run.updated_at = datetime.now(UTC)
     # Lock the bundle so a finishing document build cannot overwrite this write.
     bundle = await session.get(
@@ -244,21 +279,29 @@ async def save_funding_selection(
         bundle = ConceptNoteContextBundle(run_id=run.run_id, context_bundle={})
         session.add(bundle)
     bundle_payload = deepcopy(bundle.context_bundle or {})
-    bundle_payload["funder_context"] = (
-        {
+    if funder:
+        funder_context = {
             "funder": funder.model_dump(mode="json", exclude={"opportunities"}),
             "opportunity": opportunity.model_dump(mode="json", exclude={"template"})
             if opportunity
             else None,
-            "template": opportunity.template.model_dump(mode="json")
-            if opportunity and opportunity.template
-            else None,
+            "template": next_template.model_dump(mode="json") if next_template else None,
         }
-        if funder
-        else None
-    )
+    elif next_template:
+        # An own template gives drafting its chapters without a funder.
+        funder_context = {
+            "funder": None,
+            "opportunity": None,
+            "template": next_template.model_dump(mode="json"),
+        }
+    else:
+        funder_context = None
+    bundle_payload["funder_context"] = funder_context
     bundle_payload["similar_projects"] = []
     bundle.context_bundle = bundle_payload
+    # The reviewed template import is now on the run, so clear it.
+    if payload.custom_template is not None and payload.custom_template.import_id:
+        clear_import(bundle, payload.custom_template.import_id)
     response = await context_service.load_for_run(run)
     await session.commit()
     logger.info("Updated funding selection for CNB run %s", run.run_id)

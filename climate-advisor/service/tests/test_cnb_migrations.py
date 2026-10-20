@@ -98,7 +98,7 @@ def test_ca_migration_chain_has_one_head() -> None:
     config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_heads() == ["20261008_120000"]
+    assert scripts.get_heads() == ["20261011_120000"]
 
 
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
@@ -470,7 +470,14 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
     reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
 )
 @pytest.mark.parametrize(
-    "parent", ["20260925_120000", "20260925_130000", "20261001_120000"]
+    "parent",
+    [
+        "20260925_120000",
+        "20260925_130000",
+        "20261001_120000",
+        "20261005_120000",
+        "20261007_120000",
+    ],
 )
 def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
     parent: str,
@@ -500,7 +507,7 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
             column["name"]
             for column in inspect(engine).get_columns("concept_note_uploads")
         }
-        if parent == "20261001_120000":
+        if parent in {"20261001_120000", "20261005_120000", "20261007_120000"}:
             assert expected_columns <= parent_columns
         else:
             assert not expected_columns & parent_columns
@@ -518,6 +525,10 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
         assert "concept_note_run_id" in {
             column["name"] for column in inspect(engine).get_columns("threads")
         }
+        assert "custom_template" in {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_runs")
+        }
         assert "ck_concept_note_uploads_structured_identity" in {
             constraint["name"]
             for constraint in inspect(engine).get_check_constraints(
@@ -525,12 +536,9 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
             )
         }
         with engine.connect() as connection:
-            assert (
-                connection.execute(
-                    text("SELECT version_num FROM alembic_version")
-                ).scalar_one()
-                == "20261008_120000"
-            )
+            assert connection.execute(
+                text("SELECT version_num FROM alembic_version")
+            ).scalar_one() == "20261011_120000"
 
         run_id = uuid4()
         upload_insert = text(
@@ -903,7 +911,7 @@ def test_upload_roles_upgrade_current_develop_and_preserve_existing_uploads() ->
         _run_alembic(
             config="alembic.ini",
             database_env="CA_DATABASE_URL",
-            args=["upgrade", "head"],
+            args=["upgrade", "20261008_120000"],
         )
 
         # Existing sources default to references; only documented roles are valid.

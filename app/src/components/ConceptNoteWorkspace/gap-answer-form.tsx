@@ -79,6 +79,7 @@ export function GapAnswerForm({
     {},
   );
   const [details, setDetails] = useState("");
+  const [showRequest, setShowRequest] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
   const whyAsking = question?.why_asking ?? request.row.whyAsking;
   // Without generated questions, the original gap is one free-text question.
@@ -181,28 +182,69 @@ export function GapAnswerForm({
           {t("gap-back-to-chat")}
         </Button>
         <Box>
-          <Text fontSize="label.sm" color="content.tertiary" mb={2}>
+          <Text fontSize="label.sm" color="content.tertiary" mb={1}>
             {t("gap-question-context", {
               chapter: request.chapterTitle,
               interpolation: { escapeValue: false },
             })}
           </Text>
-          <Text
-            ref={headingRef}
-            tabIndex={-1}
-            fontFamily="heading"
-            fontSize="body.lg"
-            fontWeight="semibold"
-            color="content.primary"
-            data-testid="concept-note-gap-question"
-          >
-            {request.row.question}
-          </Text>
-          {!loading && whyAsking && (
-            <Text mt={2} fontSize="body.sm" color="content.secondary">
-              {whyAsking}
+          <HStack justify="space-between" align="baseline" gap={2}>
+            <Text
+              ref={headingRef}
+              tabIndex={-1}
+              fontFamily="heading"
+              fontSize="body.lg"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {loading
+                ? t("gap-loading-question")
+                : t("gap-questions-heading", { count: questions.length })}
             </Text>
-          )}
+            {!loading && questions.length > 1 && (
+              <Text fontSize="label.sm" color="content.tertiary" flexShrink={0}>
+                {t("gap-questions-progress", {
+                  answered: answers.filter(Boolean).length,
+                  total: questions.length,
+                })}
+              </Text>
+            )}
+          </HStack>
+          {/* The original gap request is long; keep it as collapsible context. */}
+          <Box
+            mt={3}
+            px={3}
+            py={2}
+            bg="sentiment.warningOverlay"
+            borderLeft="3px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+          >
+            <Text
+              fontSize="body.sm"
+              color="content.secondary"
+              lineClamp={showRequest ? undefined : 2}
+              data-testid="concept-note-gap-question"
+            >
+              {request.row.question}
+            </Text>
+            {showRequest && whyAsking && (
+              <Text mt={2} fontSize="label.sm" color="content.tertiary">
+                {whyAsking}
+              </Text>
+            )}
+            <chakra.button
+              type="button"
+              mt={1}
+              fontSize="label.sm"
+              fontWeight="semibold"
+              color="content.link"
+              aria-expanded={showRequest}
+              onClick={() => setShowRequest((value) => !value)}
+            >
+              {t(showRequest ? "gap-show-less" : "gap-show-more")}
+            </chakra.button>
+          </Box>
         </Box>
         {loading && (
           <Text role="status" fontSize="body.sm">
@@ -231,11 +273,34 @@ export function GapAnswerForm({
               key={`${index}-${text}`}
               align="stretch"
               gap={2}
+              p={3}
+              border="1px solid"
+              borderColor={answers[index] ? "content.link" : "border.neutral"}
+              borderRadius="rounded"
+              bg="base.light"
               data-testid="concept-note-gap-subquestion"
             >
-              <Text fontSize="body.md" fontWeight="semibold">
-                {questions.length > 1 ? `${index + 1}. ${text}` : text}
-              </Text>
+              <HStack align="start" gap={2}>
+                {questions.length > 1 && (
+                  <Box
+                    flexShrink={0}
+                    boxSize="20px"
+                    mt="1px"
+                    borderRadius="full"
+                    bg={answers[index] ? "content.link" : "background.neutral"}
+                    color={answers[index] ? "base.light" : "content.secondary"}
+                    fontSize="11px"
+                    fontWeight="semibold"
+                    lineHeight="20px"
+                    textAlign="center"
+                  >
+                    {index + 1}
+                  </Box>
+                )}
+                <Text fontSize="body.sm" fontWeight="semibold">
+                  {text}
+                </Text>
+              </HStack>
               <RadioGroup
                 value={choices[index] ?? null}
                 onValueChange={({ value }) =>

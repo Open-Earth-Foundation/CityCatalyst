@@ -358,10 +358,14 @@ const previewButton = () =>
 
 it("shows generated multiple-choice answers without claiming they are sourced facts", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(subQuestion(0).textContent).toContain(
-    "1. Which financing instrument?",
-  );
-  expect(subQuestion(1).textContent).toContain("2. What amount?");
+  expect(subQuestion(0).textContent).toContain("1Which financing instrument?");
+  expect(subQuestion(1).textContent).toContain("2What amount?");
+  // The long gap request is collapsible context, not the heading.
+  expect(container.textContent).toContain("gap-questions-heading");
+  expect(
+    container.querySelector('[data-testid="concept-note-gap-question"]')
+      ?.textContent,
+  ).toBe(gapAnswer.row.question);
   expect(container.textContent).toContain("Guarantee");
   expect(container.textContent).toContain("gap-other");
   expect(container.textContent).toContain("gap-not-decided");

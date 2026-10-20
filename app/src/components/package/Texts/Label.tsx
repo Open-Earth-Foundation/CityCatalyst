@@ -8,7 +8,7 @@ interface LabelProps extends TextProps {
 
 export const LabelLarge = ({ text, children, color = "content.secondary", ...props }: LabelProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={500}
     fontSize="label.lg"
     lineHeight="20px"
@@ -23,7 +23,7 @@ export const LabelLarge = ({ text, children, color = "content.secondary", ...pro
 
 export const LabelMedium = ({ text, children, color = "content.secondary", ...props }: LabelProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={500}
     fontSize="label.md"
     lineHeight="16px"
@@ -38,7 +38,7 @@ export const LabelMedium = ({ text, children, color = "content.secondary", ...pr
 
 export const LabelSmall = ({ text, children, color = "content.secondary", ...props }: LabelProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={500}
     fontSize="label.sm"
     lineHeight="16px"

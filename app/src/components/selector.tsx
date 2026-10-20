@@ -18,7 +18,7 @@ export function Selector<T extends string>({
     <NativeSelectRoot
       width="162px"
       style={{
-        fontFamily: "Poppins",
+        fontFamily: "var(--font-poppins)",
         fontSize: "button.md",
         fontWeight: 600,
         lineHeight: "16px",

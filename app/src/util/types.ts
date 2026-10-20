@@ -1,5 +1,6 @@
 import type Decimal from "decimal.js";
 import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -17,6 +18,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { conceptNoteFunderCreateRequest } from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -1138,6 +1140,7 @@ export interface ConceptNoteRun {
     status: ConceptNoteUploadStatus;
     filename: string;
     source_label?: string | null;
+    source_role?: ConceptNoteSourceRole;
     source_format: "pdf" | "markdown";
     page_count?: number | null;
     error_code?: string | null;
@@ -1217,7 +1220,22 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "manual";
+}
+
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {
@@ -1391,6 +1409,7 @@ export interface StartConceptNoteRunRequest {
 
 export type ConceptNoteUploadStatus =
   "queued" | "processing" | "ready" | "failed";
+export type ConceptNoteSourceRole = "reference" | "climate_action_plan";
 
 export interface ConceptNoteUploadResponse {
   uploadId: string;
@@ -1403,6 +1422,7 @@ export interface ConceptNoteUploadResponse {
   retryKind?: string | null;
   filename?: string;
   sourceLabel?: string | null;
+  sourceRole?: ConceptNoteSourceRole;
   receivedAt?: string;
   completedAt?: string | null;
 }

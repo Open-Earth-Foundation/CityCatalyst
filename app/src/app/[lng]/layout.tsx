@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
-import IframeAwareWrapper from "@/components/IframeAwareWrapper";
+import ChatWrapper from "@/components/ChatWrapper";
 import HighlightWidgets from "@/components/HighlightIo/HighlightWidgets";
 import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default function RootLayout(props: {
           />
           <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
           <CookieConsent lng={lng} />
-          <IframeAwareWrapper lng={lng} />
+          <ChatWrapper lng={lng} />
         </Providers>
       </body>
     </html>

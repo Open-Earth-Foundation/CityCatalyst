@@ -25,11 +25,11 @@ function isChatExcludedRoute(pathname: string) {
   );
 }
 
-interface IframeAwareWrapperProps {
+interface ChatWrapperProps {
   lng: string;
 }
 
-export default function IframeAwareWrapper({ lng }: IframeAwareWrapperProps) {
+export default function ChatWrapper({ lng }: ChatWrapperProps) {
   const pathname = usePathname();
 
   if (isChatExcludedRoute(pathname)) {

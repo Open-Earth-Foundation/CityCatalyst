@@ -2350,14 +2350,23 @@ export const api = createApi({
           inventoryId: string;
           importedFileId: string;
           mappingOverrides?: Record<string, unknown>;
+          /** Confirmed by the user: the file replaces the inventory's existing data. */
+          replaceExisting?: boolean;
         }
       >({
-        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+        query: ({
+          cityId,
+          inventoryId,
+          importedFileId,
+          mappingOverrides,
+          replaceExisting,
+        }) => ({
           url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
           method: "POST",
           body: {
             importedFileId,
             mappingOverrides,
+            replaceExisting,
           },
         }),
         transformResponse: (response: {

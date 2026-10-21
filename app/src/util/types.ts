@@ -469,6 +469,8 @@ export interface ActivityDataByScope {
   percentage: number | null;
   datasource_id: string;
   datasource_name: string;
+  /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
+  datasource_source_type: string | null;
   activities?: ActivityValue[];
 }
 

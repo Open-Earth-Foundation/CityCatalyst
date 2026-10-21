@@ -282,9 +282,9 @@ jobs:
       - name: Rollout diagnostics
         if: failure()
         run: |
+          # No `describe pods`, logs or `-o yaml`: they print env values set via `kubectl set env` (secrets) in plain text
           kubectl get rs,pods -l app=cc-web -n default -o wide || true
-          kubectl describe pods -l app=cc-web -n default | tail -150 || true
-          kubectl get events -n default --sort-by=.lastTimestamp | tail -60 || true
+          kubectl get events -n default --sort-by=.lastTimestamp | grep 'cc-web-deploy' | tail -60 || true
 
       - name: Notify Slack - Deployment Success
         if: steps.deploy.outputs.status == 'success'

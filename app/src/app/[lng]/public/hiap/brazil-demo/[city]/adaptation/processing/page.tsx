@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { previousHref } from "../../../_lib/hrefs";
+import { trackHref } from "../../../_lib/hrefs";
 
 /**
- * The adaptation wizard step "processing" belongs to the previous version (the
- * ranking now opens at once, with preferences in a side panel). Old links
- * land on the archived step.
+ * The adaptation wizard step "processing" is gone: the ranking opens at once.
+ * Old links land on the home (the ranking is already there); the previous step stays under
+ * /adaptation/previous/.
  */
 export default async function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city } = await props.params;
-  redirect(previousHref(lng, city, "processing"));
+  redirect(`${trackHref(lng, city, "adaptation")}/`);
 }

@@ -32,6 +32,7 @@ import {
 } from "../../../_components/next/ExpandableRow";
 import {
   FacetFilters,
+  useLocationHash,
   useUrlSelection,
 } from "../../../_components/next/ListControls";
 import { matchesFacets, type Facet } from "../../../_components/next/facets";
@@ -56,7 +57,10 @@ export default function Page(props: {
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
   const labels = useLabels(lng, "adaptation");
-  const [open, setOpen] = useState<string | null>(null);
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
   const [calcOpen, setCalcOpen] = useState<string | null>(null);
   const [selected, setSelected] = useUrlSelection(["sector", "policy", "plan"]);
 
@@ -97,8 +101,9 @@ export default function Page(props: {
     chip: (o) => o.label,
   });
   const visible = all.filter((a) => matchesFacets(a, facets, selected));
+  // Counted on what is shown, so the line follows the filters.
   const docs = new Set(
-    all.flatMap((a) => a.policy.evidence.map((e) => e.document)),
+    visible.flatMap((a) => a.policy.evidence.map((e) => e.document)),
   );
 
   return (

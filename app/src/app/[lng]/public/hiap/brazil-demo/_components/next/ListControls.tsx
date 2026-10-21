@@ -19,7 +19,6 @@ import {
   facetOptionCount,
   selectionFromSearch,
   selectionIsEmpty,
-  selectionToSearch,
   type Facet,
   type FacetSelection,
 } from "./facets";
@@ -333,6 +332,49 @@ function subscribe(listener: () => void) {
 }
 const searchSnapshot = () => window.location.search;
 const serverSnapshot = () => "";
+const hashSnapshot = () => window.location.hash.slice(1);
+
+/**
+ * Updates some query parameters in place (null removes one), keeping the
+ * others and the hash, and tells every URL-backed hook.
+ */
+export function writeSearchParams(update: Record<string, string | null>) {
+  const params = new URLSearchParams(window.location.search);
+  for (const [k, v] of Object.entries(update)) {
+    if (v === null || v === "") params.delete(k);
+    else params.set(k, v);
+  }
+  const qs = params.toString();
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`,
+  );
+  listeners.forEach((l) => l());
+}
+
+/** One query parameter, null on the server and when absent. */
+export function useSearchParam(key: string): string | null {
+  const search = useSyncExternalStore(
+    subscribe,
+    searchSnapshot,
+    serverSnapshot,
+  );
+  return useMemo(() => new URLSearchParams(search).get(key), [search, key]);
+}
+
+function subscribeHash(listener: () => void) {
+  window.addEventListener("hashchange", listener);
+  return () => window.removeEventListener("hashchange", listener);
+}
+
+/**
+ * The URL's hash without "#": a deep link to a row (`legal/#c40_0048`), so
+ * the page can open the row it points at. Empty on the server.
+ */
+export function useLocationHash(): string {
+  return useSyncExternalStore(subscribeHash, hashSnapshot, serverSnapshot);
+}
 
 /** A facet selection kept in the URL, so a filtered view can be shared. */
 export function useUrlSelection(
@@ -348,14 +390,16 @@ export function useUrlSelection(
     () => selectionFromSearch(search, keyList.split(",")),
     [search, keyList],
   );
-  const setSelection = useCallback((next: FacetSelection) => {
-    const qs = selectionToSearch(next);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`,
-    );
-    listeners.forEach((l) => l());
-  }, []);
+  const setSelection = useCallback(
+    (next: FacetSelection) =>
+      writeSearchParams(
+        Object.fromEntries(
+          keyList
+            .split(",")
+            .map((k) => [k, next[k]?.length ? next[k].join(",") : null]),
+        ),
+      ),
+    [keyList],
+  );
   return [selection, setSelection];
 }

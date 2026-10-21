@@ -34,7 +34,10 @@ import {
   ChoiceMenu,
   ExportCsvButton,
   FacetFilters,
+  useLocationHash,
+  useSearchParam,
   useUrlSelection,
+  writeSearchParams,
 } from "../../../_components/next/ListControls";
 import { matchesFacets, type Facet } from "../../../_components/next/facets";
 
@@ -75,13 +78,27 @@ export default function Page(props: {
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
   const labels = useLabels(lng, "adaptation");
-  const [scenario, setScenario] = useState<Scenario>("today");
+  // Scenario lives in the URL, like the filters.
+  const urlScenario = useSearchParam("scenario");
+  const [scenarioState, setScenarioState] = useState<Scenario | null>(null);
+  const scenario: Scenario =
+    scenarioState ??
+    (SCENARIOS.includes(urlScenario as Scenario)
+      ? (urlScenario as Scenario)
+      : "today");
+  const setScenario = (s: Scenario) => {
+    setScenarioState(s);
+    writeSearchParams({ scenario: s === "today" ? null : s });
+  };
   const fmt2 = (n: number) =>
     new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(n);
-  const [open, setOpen] = useState<string | null>(null);
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
   const [selected, setSelected] = useUrlSelection(["sector", "level"]);
 
   const rows: HazardRow[] = useMemo(
@@ -128,7 +145,7 @@ export default function Page(props: {
       [
         t("risk-col-cell"),
         t("next-col-sector"),
-        t("risk-col-hazard"),
+        t("next-csv-hazard-component"),
         t("risk-col-exposure"),
         t("risk-col-vulnerability"),
         t(`risk-col-index-${scenario}`),
@@ -171,7 +188,7 @@ export default function Page(props: {
         >
           <VStack alignItems="flex-start" gap="xs">
             <TitleLarge color="content.primary">
-              {t("risk-table-title")}
+              {t("next-risk-heading")}
             </TitleLarge>
             <BodySmall color="content.secondary">
               {t("next-risk-rows", { count: visible.length })}
@@ -262,17 +279,15 @@ export default function Page(props: {
                               ariaLabel={t(`risk-tip-${c}`)}
                             />
                             <Level tone={v === 0 ? "neutral" : ct}>
-                              {t("next-component-value", {
-                                level: t(`risk-level-${ct}`),
-                                value: fmt2(v),
-                              })}
+                              {/* Levels only: the index is the one number kept. */}
+                              {t(`next-component-level-${ct}`)}
                             </Level>
                           </HStack>
                         );
                       })
                     ) : (
                       <BodySmall color="content.secondary">
-                        {t("risk-no-components")}
+                        {t("next-risk-no-components")}
                       </BodySmall>
                     )}
                   </VStack>

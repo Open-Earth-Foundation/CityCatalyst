@@ -30,6 +30,7 @@ import { pick } from "../../_lib/localized";
 import { DemoHero } from "../DemoHero";
 import { TrackTabs } from "../TrackTabs";
 import { ConceptNotice } from "../ConceptNotice";
+import { useSearchParam, writeSearchParams } from "./ListControls";
 import { RankingControls } from "./RankingControls";
 import { RankingRecipe } from "./RankingRecipe";
 import { TopRisks } from "./TopRisks";
@@ -42,6 +43,7 @@ import {
   applyCityOrder,
   buildRows,
   EMPTY_FILTERS,
+  FACET_KEYS,
   filtersFromSearch,
   filtersToSearch,
   matchesFilters,
@@ -101,7 +103,16 @@ export function AdaptationHomeNext({
   const labels = useLabels(lng, track);
   const isNarrow = useBreakpointValue({ base: true, lg: false }) ?? false;
 
-  const [panelOpen, setPanelOpen] = useState(false);
+  // Panel and drawer can be opened from the URL (?panel=open, ?action=<id>
+  // or ?action=top), so old wizard links and the review guide land on them.
+  const urlPanel = useSearchParam("panel");
+  const urlAction = useSearchParam("action");
+  const [panelState, setPanelState] = useState<boolean | null>(null);
+  const panelOpen = panelState ?? urlPanel === "open";
+  const setPanelOpen = useCallback((open: boolean) => {
+    setPanelState(open);
+    writeSearchParams({ panel: open ? "open" : null });
+  }, []);
   const [contextOpen, setContextOpen] = useState(false);
   // Filters live in the URL so a filtered view can be shared. The list only
   // renders after hydration (isReady), so reading window here is safe.
@@ -112,18 +123,29 @@ export function AdaptationHomeNext({
   );
   const setFilters = useCallback((next: RowFilters) => {
     setFiltersState(next);
-    const qs = filtersToSearch(next);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}${qs ? `?${qs}` : ""}`,
+    // Only the facet keys change; sort, panel and action stay in the URL.
+    const qs = new URLSearchParams(filtersToSearch(next));
+    writeSearchParams(
+      Object.fromEntries(FACET_KEYS.map((k) => [k, qs.get(k)])),
     );
   }, []);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openState, setOpenState] = useState<string | null | undefined>(
+    undefined,
+  );
+  const setOpenId = useCallback((id: string | null) => {
+    setOpenState(id);
+    writeSearchParams({ action: id });
+  }, []);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const rows = useMemo(() => buildRows(data, lng), [data, lng]);
+  const openId =
+    openState !== undefined
+      ? openState
+      : urlAction === "top"
+        ? (applyCityOrder(rows, state.cityOrder ?? [])[0]?.action.id ?? null)
+        : urlAction;
   const rowById = useMemo(
     () => new Map(rows.map((r) => [r.action.id, r])),
     [rows],
@@ -191,7 +213,13 @@ export function AdaptationHomeNext({
     if (selectedIds.length === 0) return;
     setIsGenerating(true);
     try {
-      const documents = buildDemoReport(selectedIds, data, lng, t);
+      const documents = buildDemoReport(
+        selectedIds,
+        data,
+        lng,
+        t,
+        labels.timeline,
+      );
       const pdf = await buildReportPdf(documents, {
         title: tResults("report-title"),
         cityName: `${city.name}, ${city.state}`,
@@ -202,11 +230,11 @@ export function AdaptationHomeNext({
         pageLabel: tResults("report-footer-page"),
         ofLabel: tResults("report-footer-of"),
       });
-      pdf.save(`hiap-brazil-demo-${city.slug}-${track}-next.pdf`);
+      pdf.save(`hiap-brazil-demo-${city.slug}-${track}.pdf`);
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedIds, data, lng, t, tResults, city, track]);
+  }, [selectedIds, data, lng, t, tResults, city, track, labels]);
 
   const exportCsv = () =>
     downloadCsv(
@@ -269,16 +297,22 @@ export function AdaptationHomeNext({
           <MeedButton
             minW="auto"
             px="l"
-            bg="base.light"
-            color="content.link"
-            _hover={{ bg: "background.neutral" }}
+            // Open: an outlined button on the blue band, so it never reads
+            // as disabled; closed: the solid white primary.
+            bg={panelOpen ? "transparent" : "base.light"}
+            color={panelOpen ? "base.light" : "content.link"}
+            borderWidth="1px"
+            borderColor="base.light"
+            _hover={{
+              bg: panelOpen ? "whiteAlpha.200" : "background.neutral",
+            }}
             leftIcon={
               <Icon
                 as={panelOpen ? LuChevronLeft : LuSlidersHorizontal}
                 boxSize="16px"
               />
             }
-            onClick={() => setPanelOpen((v) => !v)}
+            onClick={() => setPanelOpen(!panelOpen)}
             _focusVisible={FOCUS_RING}
           >
             {panelOpen ? t("next-customize-close") : t("next-customize")}
@@ -293,7 +327,8 @@ export function AdaptationHomeNext({
         pb="xxl-6"
         px="l"
         w="full"
-        maxW={panelOpen ? "1440px" : "1200px"}
+        // Same column as the hero, tabs and sub-pages; wider with the panel.
+        maxW={panelOpen ? "1440px" : "1090px"}
       >
         {!isReady ? null : (
           <Grid
@@ -308,7 +343,8 @@ export function AdaptationHomeNext({
               <Box
                 position="sticky"
                 top="l"
-                maxH="calc(100vh - 32px)"
+                // Leaves room above the corner notice at the bottom.
+                maxH="calc(100vh - 120px)"
                 overflowY="auto"
                 bg="base.light"
                 borderRadius="rounded"
@@ -412,6 +448,7 @@ export function AdaptationHomeNext({
                     <Drawer.CloseTrigger asChild>
                       <CloseButton
                         size="sm"
+                        color="content.secondary"
                         aria-label={t("next-drawer-close")}
                       />
                     </Drawer.CloseTrigger>

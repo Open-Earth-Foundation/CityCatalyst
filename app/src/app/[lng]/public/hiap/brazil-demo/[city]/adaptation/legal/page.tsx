@@ -40,6 +40,7 @@ import {
 } from "../../../_components/next/ExpandableRow";
 import {
   FacetFilters,
+  useLocationHash,
   useUrlSelection,
 } from "../../../_components/next/ListControls";
 import { matchesFacets, type Facet } from "../../../_components/next/facets";
@@ -73,7 +74,10 @@ export default function Page(props: {
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
   const labels = useLabels(lng, "adaptation");
-  const [open, setOpen] = useState<string | null>(null);
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
   const [selected, setSelected] = useUrlSelection(["sector", "legal", "cost"]);
 
   const all = [...ADAPTATION_ACTIONS].sort(
@@ -126,7 +130,7 @@ export default function Page(props: {
       segment="legal"
       screenId={SCREEN_IDS.next.legal}
       title={t("legal-title")}
-      description={t("legal-intro")}
+      description={t("next-legal-intro")}
       backLabel={t("back-to-home")}
       openPoints={[t("next-notice-proposal"), t("next-notice-legal")]}
     >
@@ -143,7 +147,7 @@ export default function Page(props: {
                   {t("legal-axis-authority")}
                 </Overline>
                 <BodyMedium color="content.secondary">
-                  {t("legal-axis-authority-body")}
+                  {t("next-legal-axis-authority-body")}
                 </BodyMedium>
               </VStack>
               <VStack alignItems="stretch" gap="xs">
@@ -151,7 +155,7 @@ export default function Page(props: {
                   {t("legal-axis-competence")}
                 </Overline>
                 <BodyMedium color="content.secondary">
-                  {t("legal-axis-competence-body")}
+                  {t("next-legal-axis-competence-body")}
                 </BodyMedium>
               </VStack>
             </SimpleGrid>
@@ -179,6 +183,9 @@ export default function Page(props: {
             </TitleLarge>
             <BodySmall color="content.secondary">
               {t("next-legal-rows", { count: actions.length })}
+            </BodySmall>
+            <BodySmall color="content.tertiary">
+              {t("next-bank-scope")}
             </BodySmall>
           </VStack>
         </HStack>

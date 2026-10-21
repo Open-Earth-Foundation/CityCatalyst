@@ -131,14 +131,16 @@ export function DemoShell({
         />
       )}
 
+      {/* Props in the order the server serialises them, so the class
+          hashes match on hydration (the client kept JSX order). */}
       <Box
-        display="flex"
         mx="auto"
-        pt="xxl"
-        pb="xxl-6"
-        px="l"
         w="full"
         maxW="1090px"
+        px="l"
+        pt="xxl"
+        pb="xxl-6"
+        display="flex"
         flexDirection="column"
         gap="xl"
       >
@@ -161,7 +163,9 @@ export function DemoShell({
           </Link>
         )}
         <VStack alignItems="stretch" gap="m">
-          <HeadlineSmall color="content.primary">{title}</HeadlineSmall>
+          <HeadlineSmall as="h1" color="content.primary">
+            {title}
+          </HeadlineSmall>
           {description && (
             <BodyLarge color="content.secondary">{description}</BodyLarge>
           )}

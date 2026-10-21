@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import {
   Box,
+  chakra,
   Collapsible,
   Drawer,
   HStack,
@@ -17,6 +18,7 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
+import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { MeedScoreComposition } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreComposition";
 import type { AdaptationAction } from "../../_lib/types";
 import type { NotRankedReason } from "../../_lib/ranking";
@@ -187,19 +189,25 @@ export function ActionDrawer({
                 </BodySmall>
               )}
               <HStack gap="l" flexWrap="wrap">
-                <Level tone={riskTone}>
-                  {t("next-addresses", { hazard: hazardLabel })}
-                  {hazardKey
-                    ? ` · ${t(`next-addresses-level-${riskTone}`)}`
-                    : ""}
-                </Level>
+                {hazardKey || action.uncoveredHazard ? (
+                  <Level tone={riskTone}>
+                    {t("next-addresses", { hazard: hazardLabel })}
+                    {hazardKey
+                      ? ` · ${t(`next-addresses-level-${riskTone}`)}`
+                      : ""}
+                  </Level>
+                ) : (
+                  // An enabling action reduces no hazard itself.
+                  <Level tone="neutral">{t("next-enabling-line")}</Level>
+                )}
                 <BodySmall color="content.secondary">
                   {labels.timeline(action.timeline)}
                 </BodySmall>
               </HStack>
             </Drawer.Header>
 
-            <Drawer.Body px="xl" py="0">
+            {/* Keyed by action: opening a related action starts at the top. */}
+            <Drawer.Body key={action.id} px="xl" py="0">
               <VStack alignItems="stretch" gap="xl" pb="xl">
                 <VStack alignItems="stretch" gap="m" pt="xl">
                   <Overline color="content.tertiary">
@@ -424,8 +432,12 @@ export function ActionDrawer({
                               <BodySmall key={i} color="content.secondary">
                                 {pick(RISK_CELL_BY_KEY[link.cell].label, lng)} ·{" "}
                                 {t(`component-${link.component}`)} ·{" "}
-                                {t(`effectiveness-${link.effectiveness}`)} ·{" "}
-                                {t(`confidence-${link.confidence}`)} ·{" "}
+                                {t("next-calc-effectiveness", {
+                                  level: t(
+                                    `effectiveness-${link.effectiveness}`,
+                                  ),
+                                })}{" "}
+                                · {t(`confidence-${link.confidence}`)} ·{" "}
                                 {t("drawer-component-score", {
                                   score: componentScore(link, action).toFixed(
                                     2,
@@ -507,9 +519,17 @@ export function ActionDrawer({
                     onToggle={() => onToggleSelect(action.id)}
                     ariaLabel={tResults("select-action", { name })}
                   />
-                  <BodyMedium color="content.primary">
-                    {tResults("detail-include-in-report")}
-                  </BodyMedium>
+                  {/* The words toggle too, not only the box. */}
+                  <chakra.button
+                    type="button"
+                    onClick={() => onToggleSelect(action.id)}
+                    textAlign="start"
+                    _focusVisible={FOCUS_RING}
+                  >
+                    <BodyMedium color="content.primary">
+                      {tResults("detail-include-in-report")}
+                    </BodyMedium>
+                  </chakra.button>
                 </HStack>
               </Drawer.Footer>
             )}

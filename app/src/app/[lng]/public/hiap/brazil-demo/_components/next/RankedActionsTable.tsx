@@ -42,7 +42,12 @@ import { ReportControl } from "./ReportControl";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
 import { TextLink } from "./TextLink";
-import { ChoiceMenu, ExportCsvButton } from "./ListControls";
+import {
+  ChoiceMenu,
+  ExportCsvButton,
+  useSearchParam,
+  writeSearchParams,
+} from "./ListControls";
 import {
   applyCityOrder,
   COST_TONE,
@@ -65,9 +70,14 @@ function RowMenu({
   onMove,
   onPin,
   onExclude,
+  isFirst,
+  isLast,
 }: {
   row: RankedRow;
   name: string;
+  /** Position in the city's order, to disable moves that go nowhere. */
+  isFirst: boolean;
+  isLast: boolean;
   t: TFunction;
   onOpen: (row: RankedRow) => void;
   onMove: (id: string, delta: -1 | 1) => void;
@@ -91,13 +101,25 @@ function RowMenu({
           {t("next-view-details")}
         </MenuItem>
         <MenuSeparator />
-        <MenuItem value="up" onClick={() => onMove(row.action.id, -1)}>
+        <MenuItem
+          value="up"
+          disabled={isFirst}
+          onClick={() => onMove(row.action.id, -1)}
+        >
           <Icon as={LuArrowUp} /> {t("next-move-up")}
         </MenuItem>
-        <MenuItem value="down" onClick={() => onMove(row.action.id, 1)}>
+        <MenuItem
+          value="down"
+          disabled={isLast}
+          onClick={() => onMove(row.action.id, 1)}
+        >
           <Icon as={LuArrowDown} /> {t("next-move-down")}
         </MenuItem>
-        <MenuItem value="pin" onClick={() => onPin(row.action.id)}>
+        <MenuItem
+          value="pin"
+          disabled={isFirst}
+          onClick={() => onPin(row.action.id)}
+        >
           <Icon as={LuPin} /> {t("next-pin-top")}
         </MenuItem>
         <MenuSeparator />
@@ -174,7 +196,18 @@ export function RankedActionsTable({
   const order = useMemo(() => cityOrder ?? [], [cityOrder]);
   const unscored = notRanked ?? [];
   const hasOwnOrder = order.length > 0;
-  const [sort, setSort] = useState<SortKey>("priority");
+  // Sort lives in the URL, like the filters, so it survives a reload.
+  const urlSort = useSearchParam("sort");
+  const [sortState, setSortState] = useState<SortKey | null>(null);
+  const sort: SortKey =
+    sortState ??
+    (SORT_KEYS.includes(urlSort as SortKey)
+      ? (urlSort as SortKey)
+      : "priority");
+  const setSort = (k: SortKey) => {
+    setSortState(k);
+    writeSearchParams({ sort: k === "priority" ? null : k });
+  };
   const [footnoteOpen, setFootnoteOpen] = useState(false);
 
   const visible = useMemo(
@@ -191,6 +224,14 @@ export function RankedActionsTable({
     [rows, order, hasOwnOrder],
   );
   const menuProps = { t, onOpen, onMove, onPin, onExclude };
+  // Moves act on the city's whole order, not on the filtered view.
+  const fullOrder = useMemo(
+    () =>
+      (hasOwnOrder ? applyCityOrder(rows, order) : rows).map(
+        (r) => r.action.id,
+      ),
+    [rows, order, hasOwnOrder],
+  );
   const summary = t("next-summary", {
     shown: visible.length,
     total: rows.length,
@@ -253,7 +294,13 @@ export function RankedActionsTable({
                 )}
               </HStack>
             </VStack>
-            <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
+            <HStack
+              gap="m"
+              alignItems={{ base: "flex-start", md: "flex-start" }}
+              flexWrap="wrap"
+              w={{ base: "full", md: "auto" }}
+              justifyContent={{ base: "flex-start", md: "flex-end" }}
+            >
               {!hasOwnOrder && (
                 <ChoiceMenu
                   label={t("next-sort-label")}
@@ -285,13 +332,15 @@ export function RankedActionsTable({
           </BodyMedium>
         </Box>
       ) : (
-        <VStack alignItems="stretch" gap="m">
-          {/* What each level means, once, aligned with the cards' facts. */}
+        <VStack alignItems="stretch" gap="m" containerType="inline-size">
+          {/* What each level means, once, aligned with the cards' facts:
+              only when the list is wide enough for five columns. */}
           <SimpleGrid
-            display={{ base: "none", lg: "grid" }}
+            display="none"
             columns={5}
             gap="l"
             px="xl"
+            css={{ "@container (min-width: 1000px)": { display: "grid" } }}
           >
             {["risk", "cost", "legal", "funding", "policy"].map((key) => (
               <HStack key={key} gap="xs" alignItems="center">
@@ -351,7 +400,11 @@ export function RankedActionsTable({
                         _hover={{ "& > *": { color: "content.link" } }}
                         _focusVisible={FOCUS_RING}
                       >
-                        <TitleMedium color="content.primary">
+                        <TitleMedium
+                          as="span"
+                          display="block"
+                          color="content.primary"
+                        >
                           {name}
                         </TitleMedium>
                       </chakra.button>
@@ -368,11 +421,29 @@ export function RankedActionsTable({
                         {t("next-view-details")}
                       </TextLink>
                     </Box>
-                    <RowMenu row={row} name={name} {...menuProps} />
+                    <RowMenu
+                      row={row}
+                      name={name}
+                      isFirst={fullOrder[0] === row.action.id}
+                      isLast={fullOrder[fullOrder.length - 1] === row.action.id}
+                      {...menuProps}
+                    />
                   </HStack>
                 </HStack>
                 <SimpleGrid
-                  columns={{ base: 2, md: 3, lg: 5 }}
+                  columns={2}
+                  // Columns follow the list's width, not the window's, so
+                  // the side panel never squeezes five columns.
+                  css={{
+                    "@container (min-width: 640px)": {
+                      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                    },
+                    "@container (min-width: 1000px)": {
+                      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+                    },
+                  }}
+                  // Values line up even when a label wraps to two lines.
+                  alignItems="end"
                   gap="l"
                   mt="l"
                   pt="l"

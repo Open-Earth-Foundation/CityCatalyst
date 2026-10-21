@@ -113,7 +113,7 @@ export function WeightSliders({
             muted
             onClick={() => onChange({ ...DEFAULT_WEIGHTS })}
           >
-            {tPre("reset-to-defaults")}
+            {t("next-weights-reset")}
           </TextLink>
         )}
       </HStack>

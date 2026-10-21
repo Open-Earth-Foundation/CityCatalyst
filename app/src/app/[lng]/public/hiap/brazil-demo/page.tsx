@@ -22,7 +22,6 @@ import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { CITIES, DEFAULT_CITY } from "./_lib/cities";
 import { previousHref, SCREEN_IDS, trackHref } from "./_lib/hrefs";
@@ -110,7 +109,8 @@ const NEXT_SCREENS: {
   {
     id: SCREEN_IDS.next.drawer,
     key: "drawer",
-    segment: undefined,
+    // Opens the home with the first action's drawer already open.
+    segment: "?action=top",
     replaces: "BR-A6",
   },
   {
@@ -181,6 +181,13 @@ function GuideTable({
                 <BodyMedium color="content.primary" fontWeight="semibold">
                   {r.title}
                 </BodyMedium>
+                {/* On phones the "What to look at" column folds in here. */}
+                <Box display={{ base: "block", md: "none" }} pt="xs">
+                  <BodySmall color="content.secondary">{r.look}</BodySmall>
+                  {r.note && (
+                    <BodySmall color="content.tertiary">{r.note}</BodySmall>
+                  )}
+                </Box>
               </Table.Cell>
               <Table.Cell display={{ base: "none", md: "table-cell" }}>
                 <BodySmall color="content.secondary">{r.look}</BodySmall>
@@ -221,7 +228,9 @@ export default function DemoGuidePage(props: {
       title: t(`next-screen-${s.key}`),
       look: t(`next-screen-${s.key}-look`),
       note: t("next-screen-replaces", { ids: s.replaces }),
-      href: trackHref(lng, city, "adaptation", s.segment),
+      href: s.segment?.startsWith("?")
+        ? `${trackHref(lng, city, "adaptation")}/${s.segment}`
+        : trackHref(lng, city, "adaptation", s.segment),
     })),
     ...SCREENS.filter((s) => s.track === "mitigation").map((s) => ({
       id: s.id,
@@ -342,11 +351,6 @@ export default function DemoGuidePage(props: {
                     <BodySmall color="content.tertiary">
                       {city.state} · {t(`guide-city-${city.slug}`)}
                     </BodySmall>
-                    {city.coastal && (
-                      <MeedStatusTag tone="warning">
-                        {t("guide-coastal")}
-                      </MeedStatusTag>
-                    )}
                   </VStack>
                 </Card.Body>
               </NextLink>

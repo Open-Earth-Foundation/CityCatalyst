@@ -26,7 +26,11 @@ export function ReportControl({
   hintId: string;
 }) {
   return (
-    <VStack alignItems="flex-end" gap="xs" flexShrink={0}>
+    <VStack
+      alignItems={{ base: "flex-start", md: "flex-end" }}
+      gap="xs"
+      flexShrink={0}
+    >
       <MeedButton
         variant="filled"
         minW="auto"
@@ -43,7 +47,11 @@ export function ReportControl({
             ? t("generate-report-count", { count: selectedCount })
             : t("generate-report")}
       </MeedButton>
-      <BodySmall id={hintId} color="content.tertiary" textAlign="end">
+      <BodySmall
+        id={hintId}
+        color="content.tertiary"
+        textAlign={{ base: "start", md: "end" }}
+      >
         {selectedCount === 0
           ? t("generate-report-hint")
           : t("generate-report-duration", { count: selectedCount })}

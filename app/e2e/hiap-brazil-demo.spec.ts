@@ -114,7 +114,7 @@ test.describe("BR-N1 proposal home", () => {
       })
       .toBe(true);
 
-    await page.getByRole("button", { name: /reset to defaults/i }).click();
+    await page.getByRole("button", { name: /reset all preferences/i }).click();
     await expect.poll(() => rowNames(page)).toEqual(before);
   });
 
@@ -261,10 +261,12 @@ test.describe("BR-N1 proposal home", () => {
     await page
       .getByRole("button", { name: `More options for ${target}` })
       .click();
-    await page.getByRole("menuitem", { name: /exclude from ranking/i }).click();
+    await page
+      .getByRole("menuitem", { name: /leave out of the ranking/i })
+      .click();
 
     await expect.poll(async () => (await rowNames(page)).length).toBe(9);
-    const footnote = page.getByText(/actions not scored for this city/);
+    const footnote = page.getByText(/actions outside the ranking/);
     await expect(footnote).toHaveText(/^3 actions/);
     await footnote.click();
     await page.getByRole("button", { name: "Include again" }).click();
@@ -368,7 +370,7 @@ test.describe("BR-N1 proposal home", () => {
 
     // São Luís: the sea-level-rise action is outside AdaptaBrasil's coverage.
     await openHome(page, "sao-luis");
-    await page.getByText(/actions? not scored for this city/).click();
+    await page.getByText(/actions? outside the ranking/).click();
     await expect(
       page.getByText("Strengthen coastal protection against sea-level rise"),
     ).toBeVisible();
@@ -452,7 +454,7 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
   test("BR-N2 lists hazards highest first, filters, expands and exports", async ({
     page,
   }) => {
-    await openSub(page, "risk", "Twelve hazards");
+    await openSub(page, "risk", "Hazards");
     await expect(rows(page)).toHaveCount(12);
     const index = await page
       .getByText(/^Index \d\.\d\d$/)
@@ -516,11 +518,11 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
       page.getByText("Non-reimbursable funds from the federal budget (OGU)."),
     ).toBeVisible();
     await expect(
-      page.getByText(/Self-funded or credit · \d+ actions?/),
+      page.getByText(/Self-deliverable or credit · \d+ actions?/),
     ).toBeVisible();
     await expect(page.getByText(/^T[1-4]$/)).toHaveCount(0);
     const all = await rows(page).count();
-    await pickFacet(page, /^Funding/, /^Self-funded or credit/);
+    await pickFacet(page, /^Funding/, /^Self-deliverable or credit/);
     const self = await rows(page).count();
     expect(self).toBeGreaterThan(0);
     expect(self).toBeLessThan(all);
@@ -557,7 +559,7 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
 
   test("every proposal screen uses levels, never pills", async ({ page }) => {
     for (const [segment, heading] of [
-      ["risk", "Twelve hazards"],
+      ["risk", "Hazards"],
       ["legal", "Actions and the norms behind them"],
       ["finance", "Funding gap per action"],
       ["policy", "Policy support per action"],
@@ -596,7 +598,7 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
     test(`sub-pages fit at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       for (const [segment, heading] of [
-        ["risk", "Twelve hazards"],
+        ["risk", "Hazards"],
         ["finance", "Funding gap per action"],
         ["policy", "Policy support per action"],
         ["context", "City context"],
@@ -690,7 +692,9 @@ test.describe("Previous version, kept for comparison", () => {
     await expect(page.getByText("Funding gap per action")).toBeVisible({
       timeout: 90_000,
     });
-    await expect(page.getByText(/Self-funded or credit/).first()).toBeVisible();
+    await expect(
+      page.getByText(/Self-deliverable or credit/).first(),
+    ).toBeVisible();
     await expect(page.getByText(/What the labels mean/)).toHaveCount(0);
   });
 
@@ -713,11 +717,18 @@ test.describe("Routes, action cards, Plano Clima and Portuguese", () => {
     await expect(
       page.getByRole("button", { name: /set your preferences/i }),
     ).toBeVisible({ timeout: 90_000 });
-    // The corner notice says what this section is, before it is dismissed.
+    // The corner notice starts as a pill; opened, it says what this section is.
+    await dismissOverlays(page);
+    // The dev-only Next.js badge sits over the pill, so dispatch the click.
+    await page
+      .getByRole("button", { name: /open decision/ })
+      .dispatchEvent("click");
     await expect(
       page.getByText(/Previous version, kept for comparison/),
     ).toBeVisible();
-    await dismissOverlays(page);
+    await page
+      .getByRole("button", { name: "Dismiss", exact: true })
+      .dispatchEvent("click");
     await page.getByRole("button", { name: /set your preferences/i }).click();
     await expect(page).toHaveURL(/\/adaptation\/previous\/preferences\/?$/);
     const forward = page.locator('a[href*="/adaptation/previous/preflight"]');
@@ -728,7 +739,8 @@ test.describe("Routes, action cards, Plano Clima and Portuguese", () => {
     await page.goto(`${DEMO}/sobral/adaptation/next/risk/`);
     await expect(page).toHaveURL(/\/adaptation\/risk\/?$/, { timeout: 90_000 });
     await page.goto(`${DEMO}/sobral/adaptation/preferences/`);
-    await expect(page).toHaveURL(/\/adaptation\/previous\/preferences\/?$/);
+    // Old wizard links open the home with the preferences panel.
+    await expect(page).toHaveURL(/\/adaptation\/\?panel=open$/);
   });
 
   test("the review guide leads to the new screens and lists the previous ones", async ({
@@ -830,5 +842,69 @@ test.describe("Routes, action cards, Plano Clima and Portuguese", () => {
     await expect(page.getByText(/Índice \d,\d\d/).first()).toBeVisible({
       timeout: 90_000,
     });
+  });
+});
+
+test.describe("Fixes from the UI review", () => {
+  test("sorting by funding gap puts self-deliverable actions first", async ({
+    page,
+  }) => {
+    await openHome(page);
+    await page.getByRole("button", { name: /^Sort by/ }).click();
+    await page.getByRole("menuitemradio", { name: /Funding gap/ }).click();
+    await expect(page.getByTestId("ranked-action").first()).toContainText(
+      "Self-deliverable",
+    );
+    await expect(page).toHaveURL(/sort=funding/);
+    // The choice survives a reload, because it lives in the URL.
+    await page.reload();
+    await expect(page.getByText("All actions, in order")).toBeVisible({
+      timeout: 90_000,
+    });
+    await expect(
+      page.getByRole("button", { name: /^Sort by: Funding gap/ }),
+    ).toBeVisible();
+  });
+
+  test("a deep link opens its row on legal and policy", async ({ page }) => {
+    await openSub(page, "legal", "Actions and the norms behind them");
+    const id = await rows(page)
+      .first()
+      .locator("button")
+      .first()
+      .getAttribute("id");
+    for (const [segment, heading, marker] of [
+      ["legal", "Actions and the norms behind them", "Norm"],
+      ["policy", "Policy support per action", "Show the calculation"],
+    ]) {
+      await page.goto(`${sub(segment)}#${id}`);
+      await expect(page.getByRole("heading", { name: heading })).toBeVisible({
+        timeout: 90_000,
+      });
+      // Collapsed rows keep their content in the DOM: look at visible text.
+      await expect(
+        page.getByText(marker).filter({ visible: true }).first(),
+      ).toBeVisible();
+    }
+  });
+
+  test("?action=top opens the first action's drawer", async ({ page }) => {
+    await page.goto(`${home()}?action=top`);
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 90_000 });
+    await expect(
+      page.getByRole("dialog").getByText("At a glance"),
+    ).toBeVisible();
+  });
+
+  test("an unknown city is a 404, not Sobral", async ({ page }) => {
+    const res = await page.goto(`${DEMO}/recife/adaptation/`);
+    expect(res?.status()).toBe(404);
+  });
+
+  test("the home has a city switcher", async ({ page }) => {
+    await openHome(page);
+    await expect(
+      page.getByRole("button", { name: "Switch city" }),
+    ).toBeVisible();
   });
 });

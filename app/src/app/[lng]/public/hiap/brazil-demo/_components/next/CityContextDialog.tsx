@@ -61,7 +61,8 @@ export function cityContextItems(city: CityFixture, lng: string) {
     },
     {
       key: "munic",
-      value: `${city.financePush} / 14 · ${pick(PUSH_LABEL[pushBucket(city.financePush)], lng)}`,
+      // Non-breaking space: "Established (7–9)" never splits at the bracket.
+      value: `${city.financePush} / 14 · ${pick(PUSH_LABEL[pushBucket(city.financePush)], lng).replace(" (", "\u00a0(")}`,
       source: "IBGE MUNIC 2020–21",
     },
   ];
@@ -97,7 +98,7 @@ export function CityContextBody({
           {t("context-not-scored-body")}
         </BodyMedium>
       </HStack>
-      <SimpleGrid columns={{ base: 2, md: 4 }} gap="l">
+      <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap="l">
         {items.map((it) => (
           <VStack key={it.key} alignItems="flex-start" gap="xs">
             <HStack gap="xs" alignItems="center">

@@ -21,7 +21,9 @@ const EVENT = "hiap-br-demo:notice-changed";
 
 function readCollapsed(): boolean {
   try {
-    return window.sessionStorage.getItem(KEY) === "1";
+    // Collapsed to its pill unless the reader opened it this session, so it
+    // never sits over checkboxes or buttons on arrival.
+    return window.sessionStorage.getItem(KEY) !== "0";
   } catch {
     return false;
   }
@@ -50,7 +52,8 @@ function writeCollapsed(value: boolean) {
  * or the working group still has to settle. Keeping them out of the screen
  * itself lets the layout read the way the product would, while every screen
  * still tells the reviewer that it is a concept and what may move it.
- * Dismissing collapses it to a pill for the rest of the session.
+ * It starts as a pill; opening it keeps it open for the session, and
+ * dismissing collapses it again.
  */
 export function ConceptNotice({
   lng,

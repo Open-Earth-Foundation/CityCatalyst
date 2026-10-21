@@ -268,24 +268,29 @@ function narrativeParts(
       : lng === "pt"
         ? "exposição"
         : "exposure";
-  const idx = (
+  const n2 = (v: number) =>
+    new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(v);
+  const idx = n2(
     top.adjustedVulnerability >= top.adjustedExposure
       ? reading.vulnerability
-      : reading.exposure
-  ).toFixed(2);
+      : reading.exposure,
+  );
   const lead =
     lng === "pt"
-      ? `Em ${city.name}, esta ação é creditada na célula de risco “${cellName}” (${sector}) pelo componente de ${driver}, onde o índice municipal do AdaptaBrasil é ${idx}.`
-      : `In ${city.name}, this action is credited in the “${cellName}” risk cell (${sector}) on the ${driver} component, where the city's AdaptaBrasil index is ${idx}.`;
+      ? `Em ${city.name}, esta ação é creditada na ameaça “${cellName}” (${sector}) pelo componente de ${driver}, onde o índice municipal do AdaptaBrasil é ${idx}.`
+      : `In ${city.name}, this action is credited on the “${cellName}” hazard (${sector}) through its ${driver} component, where the city's AdaptaBrasil index is ${idx}.`;
   const rest =
     lng === "pt"
-      ? ` O impacto normalizado no município é ${scored.impact.toFixed(2)}; a viabilidade (${scored.feasibility.toFixed(2)}) e o alinhamento (${scored.alignment.toFixed(2)}) completam a pontuação final de ${scored.final.toFixed(2)}, posição ${scored.rank}.`
-      : ` Its normalised Impact in the municipality is ${scored.impact.toFixed(2)}; Feasibility (${scored.feasibility.toFixed(2)}) and Alignment (${scored.alignment.toFixed(2)}) complete a final score of ${scored.final.toFixed(2)}, rank ${scored.rank}.`;
+      ? ` O impacto normalizado no município é ${n2(scored.impact)}; a viabilidade (${n2(scored.feasibility)}) e o alinhamento (${n2(scored.alignment)}) completam a pontuação final de ${n2(scored.final)}, posição ${scored.rank}.`
+      : ` Its normalised Impact in the municipality is ${n2(scored.impact)}; Feasibility (${n2(scored.feasibility)}) and Alignment (${n2(scored.alignment)}) complete a final score of ${n2(scored.final)}, rank ${scored.rank}.`;
   const hazardNote =
     reading.hazard === 0
       ? lng === "pt"
-        ? " A ameaça climática é nula nesta célula; o resultado é exibido apenas para contexto."
-        : " The climate hazard is absent in this cell; the result is shown for context only."
+        ? " O fator climático está ausente para esta ameaça; o resultado é exibido apenas para contexto."
+        : " The climate driver is absent for this hazard; the result is shown for context only."
       : "";
   return { lead, rest, hazardNote };
 }
@@ -341,12 +346,12 @@ export function explainRankingShort(
       : "exposure";
   const lead =
     lng === "pt"
-      ? `Em ${city.name}, esta ação conta contra o perigo “${hazard}” (${sector}) porque reduz ${component}, que o AdaptaBrasil classifica como ${level} no município.`
-      : `In ${city.name}, this action counts against the “${hazard}” hazard (${sector}) because it reduces ${component}, which AdaptaBrasil rates ${level} for the city.`;
+      ? `Em ${city.name}, esta ação atua sobre a ameaça “${hazard}” (${sector}) porque reduz ${component}, que o AdaptaBrasil classifica como ${level} no município.`
+      : `In ${city.name}, this action works on the “${hazard}” hazard (${sector}) because it reduces ${component}, which AdaptaBrasil rates ${level} for the city.`;
   const hazardNote =
     reading.hazard === 0
       ? lng === "pt"
-        ? " A ameaça climática é nula neste perigo; o resultado é exibido apenas para contexto."
+        ? " O fator climático está ausente para esta ameaça; o resultado é exibido apenas para contexto."
         : " The climate hazard itself is absent here; the result is shown for context only."
       : "";
   return lead + hazardNote;

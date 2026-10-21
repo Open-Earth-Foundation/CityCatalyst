@@ -333,7 +333,8 @@ export function sortRows(rows: RankedRow[], key: SortKey): RankedRow[] {
       case "legal":
         return -r.action.legal.score;
       case "funding":
-        return r.fundingTier.localeCompare("T0");
+        // T1 (self-deliverable) first … T4 last; localeCompare only gave ±1.
+        return Number(r.fundingTier.slice(1));
       case "policy":
         return POLICY_ORDER[r.policy];
       case "timeline":

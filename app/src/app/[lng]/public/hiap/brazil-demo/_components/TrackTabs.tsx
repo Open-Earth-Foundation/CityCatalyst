@@ -2,7 +2,6 @@
 import { Box, HStack, Icon, Tabs } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { useTrackHref } from "../_lib/useTrackHref";
 import type { DemoTrack } from "../_lib/types";
 import { useDemoT } from "../_lib/useDemoT";
@@ -67,9 +66,16 @@ export function TrackTabs({
                 <HStack gap="s">
                   <span>{t(`tab-${value}`)}</span>
                   {value === "mitigation" && (
-                    <MeedStatusTag tone="warning">
+                    // Plain text, not a pill: pills are for filter chips.
+                    <Box
+                      as="span"
+                      fontFamily="body"
+                      fontSize="body.sm"
+                      fontWeight="normal"
+                      color="content.tertiary"
+                    >
                       {t("mitigation-provisional-tag")}
-                    </MeedStatusTag>
+                    </Box>
                   )}
                 </HStack>
               </Tabs.Trigger>

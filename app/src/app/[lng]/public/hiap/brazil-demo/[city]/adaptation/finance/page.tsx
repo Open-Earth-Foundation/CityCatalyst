@@ -22,7 +22,6 @@ import {
   PATHWAY_BY_KEY,
   PATHWAYS,
   pushBucket,
-  PUSH_LABEL,
   type CreditScreen,
   type FundingGap,
   type FundingResult,
@@ -44,6 +43,7 @@ import {
 import {
   ExportCsvButton,
   FacetFilters,
+  useLocationHash,
   useUrlSelection,
 } from "../../../_components/next/ListControls";
 import { matchesFacets, type Facet } from "../../../_components/next/facets";
@@ -83,7 +83,10 @@ export default function Page(props: {
   const { t } = useDemoT(lng);
   const tResults = useTrackT(lng, "adaptation", "meed-results");
   const labels = useLabels(lng, "adaptation");
-  const [open, setOpen] = useState<string | null>(null);
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
   const [selected, setSelected] = useUrlSelection([
     "sector",
     "funding",
@@ -198,7 +201,11 @@ export default function Page(props: {
                 </Level>
               </HStack>
               <BodySmall color="content.tertiary">
-                {t("next-capag-source")}
+                {t(
+                  city.capag === "nd"
+                    ? "next-capag-source-nd"
+                    : "next-capag-source",
+                )}
               </BodySmall>
               <BodyMedium color="content.secondary">
                 {t("next-capag-what")}
@@ -234,7 +241,7 @@ export default function Page(props: {
                 label={t("next-finance-push-label")}
                 info={t("finance-push-note")}
               >
-                {pick(PUSH_LABEL[pushBucket(city.financePush)], lng)}
+                {t(`next-push-${pushBucket(city.financePush)}`)}
               </Level>
               <BodySmall color="content.tertiary">
                 {t("next-finance-push-source")}
@@ -307,6 +314,9 @@ export default function Page(props: {
             </TitleLarge>
             <BodySmall color="content.secondary">
               {t("next-finance-rows", { count: visible.length })}
+            </BodySmall>
+            <BodySmall color="content.tertiary">
+              {t("next-finance-scope")}
             </BodySmall>
           </VStack>
           <ExportCsvButton onClick={exportCsv} t={t} />

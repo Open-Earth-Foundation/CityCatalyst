@@ -1050,5 +1050,21 @@
   "record-type-context": "contexto",
   "record-type-enabling_condition": "condição habilitadora",
   "record-type-objective": "objetivo",
-  "record-type-target": "meta"
+  "record-type-target": "meta",
+  "next-capag-eyebrow": "Capacidade de pagamento (CAPAG)",
+  "next-capag-grade": "CAPAG {{grade}}",
+  "next-capag-grade-nd": "CAPAG não declarada",
+  "next-capag-source": "Classificação do Tesouro Nacional (STN), junho de 2026",
+  "next-capag-what": "A CAPAG é a classificação do Tesouro Nacional, de A a D, da capacidade de pagamento de um município, com base em seu endividamento, poupança corrente e liquidez.",
+  "next-capag-why": "Ela define o acesso ao crédito. O crédito nacional e o internacional dependem fortemente dela, e uma classificação melhor dá acesso a financiamento mais barato e juros menores. O crédito é o caminho mais sustentável para financiar grandes obras de infraestrutura verde; subvenções, transferências e recursos para desastres seguem disponíveis qualquer que seja a nota.",
+  "next-capag-nd": "{{city}} não declarou classificação CAPAG, por isso as vias de crédito aparecem como não confirmadas até que o faça.",
+  "next-capag-link-capag": "O que é a CAPAG e como é calculada",
+  "next-capag-link-pef": "Plano de Promoção do Equilíbrio Fiscal (PEF)",
+  "next-options-title": "Opções de financiamento para {{city}}",
+  "next-options-intro": "As vias que um município pode usar, em geral. Não são excludentes: a maioria dos projetos combina várias. Cada ação abaixo indica as vias que se aplicam a ela.",
+  "next-pathway-note-federal_transfer": "Recursos não reembolsáveis do Orçamento Geral da União (OGU).",
+  "next-pathway-note-credit": "Depende da classificação CAPAG.",
+  "next-finance-options-link": "Ver todas as opções de financiamento",
+  "next-notice-finance-level": "A lacuna de financiamento é lida por ação, como define a metodologia (§5.2.6). A revisão financeira pergunta se ela deveria ser lida por projeto (decisão C7).",
+  "next-notice-finance-categories": "Agrupar as vias em cinco categorias (recursos próprios, transferências, subvenções, crédito nacional, crédito externo) está em aberto, assim como onde ficam os recursos para desastres (decisão C6)."
 }

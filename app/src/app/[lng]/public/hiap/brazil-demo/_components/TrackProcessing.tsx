@@ -70,7 +70,7 @@ export function TrackProcessing({
       900,
     );
     return () => window.clearTimeout(timer);
-  }, [done, markGenerated, router, lng, city.slug, track]);
+  }, [done, markGenerated, router, lng, city.slug, track, trackHrefIn]);
 
   return (
     <Box

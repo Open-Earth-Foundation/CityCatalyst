@@ -498,11 +498,23 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
     ).toBeVisible();
   });
 
-  test("BR-N8 finance shows flags as levels, one bar and pathways per action", async ({
+  test("BR-N8 finance leads with CAPAG, then options, then each action", async ({
     page,
   }) => {
     await openSub(page, "finance", "Funding gap per action");
-    await expect(page.getByText("Credit access")).toBeVisible();
+    // CAPAG first, explained, with the Treasury's pages.
+    await expect(page.getByText("CAPAG C", { exact: true })).toBeVisible();
+    await expect(page.getByText(/decides access to credit/)).toBeVisible();
+    await expect(
+      page.locator('a[href*="tesourotransparente.gov.br"]'),
+    ).toHaveCount(2);
+    // The routes in general, not tied to an action.
+    await expect(
+      page.getByTestId("financing-options").getByRole("heading"),
+    ).toHaveCount(6);
+    await expect(
+      page.getByText("Non-reimbursable funds from the federal budget (OGU)."),
+    ).toBeVisible();
     await expect(
       page.getByText(/Self-funded or credit · \d+ actions?/),
     ).toBeVisible();
@@ -516,6 +528,9 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
     await rows(page).first().getByRole("button").first().click();
     await expect(
       page.getByText("Pathways to investigate").first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "See all financing options" }).first(),
     ).toBeVisible();
   });
 
@@ -726,9 +741,9 @@ test.describe("Routes, action cards, Plano Clima and Portuguese", () => {
     const hrefs = await page
       .locator('a[href*="/adaptation"]')
       .evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
-    expect(
-      hrefs.some((h) => /\/adaptation\/previous\/risk\/?$/.test(h)),
-    ).toBe(true);
+    expect(hrefs.some((h) => /\/adaptation\/previous\/risk\/?$/.test(h))).toBe(
+      true,
+    );
     expect(hrefs.some((h) => /\/sobral\/adaptation\/risk\/?$/.test(h))).toBe(
       true,
     );

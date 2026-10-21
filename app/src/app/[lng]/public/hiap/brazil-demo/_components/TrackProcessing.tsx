@@ -11,7 +11,8 @@ import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedS
 import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
-import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
+import { SCREEN_IDS } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ScreenTag } from "./ScreenTag";
 
 const STAGES = ["validation", "impact", "alignment", "feasibility"] as const;
@@ -33,6 +34,7 @@ export function TrackProcessing({
   citySlug: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const { city, markGenerated } = useTrack(lng, citySlug, track);
   const { t } = useDemoT(lng);
   const tProc = useTrackT(lng, track, "meed-processing");
@@ -64,7 +66,7 @@ export function TrackProcessing({
     if (!done) return;
     markGenerated();
     const timer = window.setTimeout(
-      () => router.replace(trackHref(lng, city.slug, track)),
+      () => router.replace(trackHrefIn(lng, city.slug, track)),
       900,
     );
     return () => window.clearTimeout(timer);
@@ -191,7 +193,7 @@ export function TrackProcessing({
                   minW="auto"
                   px="m"
                   onClick={() =>
-                    router.push(trackHref(lng, city.slug, track, "preflight"))
+                    router.push(trackHrefIn(lng, city.slug, track, "preflight"))
                   }
                 >
                   {tProc("cancel")}

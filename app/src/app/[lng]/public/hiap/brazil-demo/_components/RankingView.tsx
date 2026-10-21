@@ -16,7 +16,7 @@ import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { useLabels } from "../_lib/useLabels";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ACTION_BY_ID } from "../_lib/actions";
 import { MITIGATION_SHIFTS } from "../_lib/mitigation";
 import { buildDemoReport } from "../_lib/report";
@@ -42,6 +42,7 @@ export function RankingView({
   citySlug: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const data = useTrack(lng, citySlug, track);
   const { city, ranked, index, weights, adaptation, state } = data;
   const { t } = useDemoT(lng);
@@ -154,7 +155,7 @@ export function RankingView({
         <RankingSettings
           preferences={state.preferences}
           track={track}
-          editHref={trackHref(lng, city.slug, track, "preferences")}
+          editHref={trackHrefIn(lng, city.slug, track, "preferences")}
           labelFor={{
             sector: labels.sector,
             coBenefit: labels.coBenefit,

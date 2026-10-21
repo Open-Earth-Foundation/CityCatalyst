@@ -2,8 +2,8 @@
 import React from "react";
 import { Box, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
 import { pick } from "../../_lib/localized";
@@ -63,7 +63,9 @@ export function TopActions({
                 <SectorLabel sector={row.action.sector}>
                   {row.sectorLabel}
                 </SectorLabel>
-                <LabelLarge color="content.primary">{name}</LabelLarge>
+                <TitleMedium as="h3" color="content.primary">
+                  {name}
+                </TitleMedium>
               </VStack>
               <SelectActionCheckbox
                 checked={isSelected}
@@ -77,9 +79,7 @@ export function TopActions({
               </Overline>
               <Level tone={row.riskTone}>
                 {t("next-addresses", { hazard: row.hazardLabel })} ·{" "}
-                {t("next-addresses-level", {
-                  level: t(`risk-level-${row.riskTone}`),
-                })}
+                {t(`next-addresses-level-${row.riskTone}`)}
               </Level>
               <BodySmall color="content.secondary" lineClamp={2}>
                 {pick(row.action.description, lng)}

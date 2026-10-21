@@ -2,12 +2,12 @@
 import React, { useMemo, useState } from "react";
 import {
   Box,
+  chakra,
   Collapsible,
   HStack,
   Icon,
   IconButton,
-  Table,
-  useBreakpointValue,
+  SimpleGrid,
   VStack,
 } from "@chakra-ui/react";
 import {
@@ -17,11 +17,11 @@ import {
   LuChevronUp,
   LuEllipsisVertical,
   LuPin,
-  LuSquareArrowOutUpRight,
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import {
   MenuContent,
   MenuItem,
@@ -141,7 +141,6 @@ export function RankedActionsTable({
   onResetOrder,
   onExportCsv,
   report,
-  forceList = false,
   onAdjust,
 }: {
   /** All ranked rows, in suggested order; the list filters and orders them. */
@@ -169,8 +168,6 @@ export function RankedActionsTable({
     isGenerating: boolean;
     progress: string | null;
   };
-  /** Render the stacked list even on desktop, when the table has no room (side panel open). */
-  forceList?: boolean;
   /** Opens the preferences panel from the list itself. */
   onAdjust?: () => void;
 }) {
@@ -179,8 +176,6 @@ export function RankedActionsTable({
   const hasOwnOrder = order.length > 0;
   const [sort, setSort] = useState<SortKey>("priority");
   const [footnoteOpen, setFootnoteOpen] = useState(false);
-  const isNarrow =
-    (useBreakpointValue({ base: true, lg: false }) ?? false) || forceList;
 
   const visible = useMemo(
     () => rows.filter((r) => matchesFilters(r, filters)),
@@ -210,26 +205,6 @@ export function RankedActionsTable({
     relatedActions(row.action)
       .filter((r) => r.role === "requires")
       .map((r) => pick(r.action.name, lng));
-  const header = (key: string) => (
-    <HStack gap="xs" alignItems="center">
-      <span>{t(`next-col-${key}`)}</span>
-      <MeedInfoTip
-        content={t(`next-info-${key}`)}
-        ariaLabel={t(`next-info-${key}`)}
-      />
-    </HStack>
-  );
-
-  const levels = (row: RankedRow) => (
-    <>
-      <Level tone={COST_TONE[row.cost]}>{t(`next-cost-${row.cost}`)}</Level>
-      <Level tone={row.legalTone}>{row.legalLabel}</Level>
-      <Level tone={GAP_TONE[row.funding]}>{row.fundingLabel}</Level>
-      <Level tone={POLICY_TONE[row.policy]}>
-        {t(`next-policy-${row.policy}`)}
-      </Level>
-    </>
-  );
 
   return (
     <VStack alignItems="stretch" gap="m">
@@ -240,14 +215,7 @@ export function RankedActionsTable({
         overflow="hidden"
       >
         {/* Controls: filters; then what is shown, sort, export, report */}
-        <VStack
-          alignItems="stretch"
-          gap="l"
-          px="xl"
-          py="l"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
-        >
+        <VStack alignItems="stretch" gap="l" px="xl" py="l">
           <FilterBar
             rows={rows}
             filters={filters}
@@ -308,188 +276,141 @@ export function RankedActionsTable({
             </HStack>
           </HStack>
         </VStack>
+      </Box>
 
-        {ordered.length === 0 ? (
-          <Box px="xl" py="xl">
-            <BodyMedium color="content.secondary">
-              {t("next-empty-filtered")}
-            </BodyMedium>
-          </Box>
-        ) : isNarrow ? (
-          <VStack alignItems="stretch" gap="0">
-            {ordered.map((row) => {
-              const name = pick(row.action.name, lng);
-              return (
-                <VStack
-                  key={row.action.id}
-                  data-testid="ranked-action"
-                  data-action-name={name}
-                  alignItems="stretch"
+      {ordered.length === 0 ? (
+        <Box px="xl" py="xl" bg="base.light" borderRadius="rounded">
+          <BodyMedium color="content.secondary">
+            {t("next-empty-filtered")}
+          </BodyMedium>
+        </Box>
+      ) : (
+        <VStack alignItems="stretch" gap="m">
+          {/* What each level means, once, aligned with the cards' facts. */}
+          <SimpleGrid
+            display={{ base: "none", lg: "grid" }}
+            columns={5}
+            gap="l"
+            px="xl"
+          >
+            {["risk", "cost", "legal", "funding", "policy"].map((key) => (
+              <HStack key={key} gap="xs" alignItems="center">
+                <Overline color="content.tertiary">
+                  {t(`next-col-${key}`)}
+                </Overline>
+                <MeedInfoTip
+                  content={t(`next-info-${key}`)}
+                  ariaLabel={t(`next-info-${key}`)}
+                />
+              </HStack>
+            ))}
+          </SimpleGrid>
+          {ordered.map((row) => {
+            const name = pick(row.action.name, lng);
+            const selected = selectedIds.includes(row.action.id);
+            const deps = dependsOn(row);
+            return (
+              <Box
+                key={row.action.id}
+                data-testid="ranked-action"
+                data-action-name={name}
+                bg="base.light"
+                borderWidth="1px"
+                borderColor={selected ? "content.link" : "border.neutral"}
+                borderRadius="rounded"
+                boxShadow="1dp"
+                px="xl"
+                py="l"
+                transition="box-shadow 0.15s, border-color 0.15s"
+                _hover={{ boxShadow: "2dp" }}
+              >
+                <HStack
+                  justifyContent="space-between"
+                  alignItems="flex-start"
                   gap="m"
-                  px="xl"
-                  py="l"
-                  borderBottomWidth="1px"
-                  borderColor="border.overlay"
                 >
-                  <HStack
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                    gap="m"
-                  >
-                    <HStack gap="m" alignItems="flex-start" minW={0}>
+                  <HStack gap="m" alignItems="flex-start" minW={0} flex="1">
+                    <Box pt="xs">
                       <SelectActionCheckbox
-                        checked={selectedIds.includes(row.action.id)}
+                        checked={selected}
                         onToggle={() => onToggleSelect(row.action.id)}
                         ariaLabel={tResults("select-action", { name })}
                       />
-                      <VStack alignItems="flex-start" gap="xs" minW={0}>
-                        <LabelLarge color="content.primary">{name}</LabelLarge>
-                        <Level tone={row.riskTone}>
-                          {t("next-addresses", { hazard: row.hazardLabel })} ·{" "}
-                          {t("next-addresses-level", {
-                            level: t(`risk-level-${row.riskTone}`),
-                          })}
-                        </Level>
-                        {dependsOn(row).length > 0 && (
-                          <BodySmall color="content.secondary">
-                            {t("next-depends-on", {
-                              names: dependsOn(row).join(", "),
-                            })}
-                          </BodySmall>
-                        )}
-                      </VStack>
-                    </HStack>
+                    </Box>
+                    <VStack alignItems="flex-start" gap="xs" minW={0}>
+                      <SectorLabel sector={row.action.sector}>
+                        {row.sectorLabel}
+                      </SectorLabel>
+                      <chakra.button
+                        type="button"
+                        textAlign="start"
+                        onClick={() => onOpen(row)}
+                        aria-label={tResults("select-action-details", {
+                          name,
+                        })}
+                        _hover={{ "& > *": { color: "content.link" } }}
+                        _focusVisible={FOCUS_RING}
+                      >
+                        <TitleMedium color="content.primary">
+                          {name}
+                        </TitleMedium>
+                      </chakra.button>
+                      {deps.length > 0 && (
+                        <BodySmall color="content.secondary">
+                          {t("next-depends-on", { names: deps.join(", ") })}
+                        </BodySmall>
+                      )}
+                    </VStack>
+                  </HStack>
+                  <HStack gap="s" flexShrink={0}>
+                    <Box display={{ base: "none", md: "block" }}>
+                      <TextLink onClick={() => onOpen(row)}>
+                        {t("next-view-details")}
+                      </TextLink>
+                    </Box>
                     <RowMenu row={row} name={name} {...menuProps} />
                   </HStack>
-                  <HStack gap="l" flexWrap="wrap">
-                    {levels(row)}
-                  </HStack>
-                  <Box alignSelf="flex-start">
-                    <TextLink onClick={() => onOpen(row)}>
-                      {t("next-view-details")}
-                    </TextLink>
-                  </Box>
-                </VStack>
-              );
-            })}
-          </VStack>
-        ) : (
-          <Table.Root size="lg">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader w="48px" pl="xl">
-                  {tResults("column-select")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>{t("next-col-action")}</Table.ColumnHeader>
-                <Table.ColumnHeader w="190px">
-                  {header("risk")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="130px">
-                  {header("cost")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="190px">
-                  {header("legal")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="190px">
-                  {header("funding")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader
-                  w="150px"
-                  display={{ base: "none", "2xl": "table-cell" }}
+                </HStack>
+                <SimpleGrid
+                  columns={{ base: 2, md: 3, lg: 5 }}
+                  gap="l"
+                  mt="l"
+                  pt="l"
+                  borderTopWidth="1px"
+                  borderColor="border.overlay"
                 >
-                  {header("policy")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="96px" pr="xl" />
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {ordered.map((row) => {
-                const name = pick(row.action.name, lng);
-                return (
-                  <Table.Row
-                    key={row.action.id}
-                    data-testid="ranked-action"
-                    data-action-name={name}
+                  <Box data-testid="action-risk">
+                    <Level tone={row.riskTone} label={t("next-col-risk")}>
+                      {t("next-risk-fact", {
+                        hazard: row.hazardLabel,
+                        level: t(`risk-level-${row.riskTone}`),
+                      })}
+                    </Level>
+                  </Box>
+                  <Level tone={COST_TONE[row.cost]} label={t("next-col-cost")}>
+                    {t(`next-cost-${row.cost}`)}
+                  </Level>
+                  <Level tone={row.legalTone} label={t("next-col-legal")}>
+                    {row.legalLabel}
+                  </Level>
+                  <Level
+                    tone={GAP_TONE[row.funding]}
+                    label={t("next-col-funding")}
                   >
-                    <Table.Cell py="l" pl="xl">
-                      <SelectActionCheckbox
-                        checked={selectedIds.includes(row.action.id)}
-                        onToggle={() => onToggleSelect(row.action.id)}
-                        ariaLabel={tResults("select-action", { name })}
-                      />
-                    </Table.Cell>
-                    <Table.Cell py="l">
-                      <VStack alignItems="flex-start" gap="xs">
-                        <LabelLarge color="content.primary">{name}</LabelLarge>
-                        <SectorLabel sector={row.action.sector} size="14px">
-                          {row.sectorLabel}
-                        </SectorLabel>
-                        {dependsOn(row).length > 0 && (
-                          <BodySmall color="content.secondary">
-                            {t("next-depends-on", {
-                              names: dependsOn(row).join(", "),
-                            })}
-                          </BodySmall>
-                        )}
-                      </VStack>
-                    </Table.Cell>
-                    <Table.Cell py="l">
-                      <Level tone={row.riskTone}>
-                        {row.hazardLabel} · {t(`risk-level-${row.riskTone}`)}
-                      </Level>
-                    </Table.Cell>
-                    <Table.Cell py="l">
-                      <Level tone={COST_TONE[row.cost]}>
-                        {t(`next-cost-${row.cost}`)}
-                      </Level>
-                    </Table.Cell>
-                    <Table.Cell py="l">
-                      <Level tone={row.legalTone}>{row.legalLabel}</Level>
-                    </Table.Cell>
-                    <Table.Cell py="l">
-                      <Level tone={GAP_TONE[row.funding]}>
-                        {row.fundingLabel}
-                      </Level>
-                    </Table.Cell>
-                    <Table.Cell
-                      py="l"
-                      display={{ base: "none", "2xl": "table-cell" }}
-                    >
-                      <Level tone={POLICY_TONE[row.policy]}>
-                        {t(`next-policy-${row.policy}`)}
-                      </Level>
-                    </Table.Cell>
-                    <Table.Cell
-                      py="l"
-                      pr="xl"
-                      textAlign="end"
-                      whiteSpace="nowrap"
-                    >
-                      <HStack gap="xs" justifyContent="flex-end">
-                        <IconButton
-                          aria-label={tResults("select-action-details", {
-                            name,
-                          })}
-                          size="xs"
-                          variant="ghost"
-                          onClick={() => onOpen(row)}
-                          _focusVisible={FOCUS_RING}
-                        >
-                          <Icon
-                            as={LuSquareArrowOutUpRight}
-                            color="content.link"
-                          />
-                        </IconButton>
-                        <RowMenu row={row} name={name} {...menuProps} />
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })}
-            </Table.Body>
-          </Table.Root>
-        )}
-      </Box>
+                    {row.fundingLabel}
+                  </Level>
+                  <Level
+                    tone={POLICY_TONE[row.policy]}
+                    label={t("next-col-policy")}
+                  >
+                    {t(`next-policy-${row.policy}`)}
+                  </Level>
+                </SimpleGrid>
+              </Box>
+            );
+          })}
+        </VStack>
+      )}
 
       {unscored.length > 0 && (
         <Collapsible.Root
@@ -508,9 +429,9 @@ export function RankedActionsTable({
               _focusVisible={FOCUS_RING}
             >
               <HStack justifyContent="space-between" gap="s">
-                <LabelLarge color="content.secondary">
+                <TitleMedium as="span" color="content.secondary">
                   {t("next-footnote-title", { count: unscored.length })}
-                </LabelLarge>
+                </TitleMedium>
                 <Icon
                   as={footnoteOpen ? LuChevronUp : LuChevronDown}
                   boxSize="16px"
@@ -550,9 +471,9 @@ export function RankedActionsTable({
                     flex="1"
                     minW="240px"
                   >
-                    <LabelLarge color="content.primary">
+                    <TitleMedium as="h3" color="content.primary">
                       {pick(action.name, lng)}
-                    </LabelLarge>
+                    </TitleMedium>
                     <BodySmall color="content.secondary">
                       {pick(SECTOR_LABEL[action.sector], lng)} ·{" "}
                       {action.uncoveredHazard

@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { LuChevronDown, LuChevronUp, LuRotateCcw } from "react-icons/lu";
 import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { MeedChipGroup } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedChipGroup";
@@ -53,7 +53,9 @@ function Group({
         >
           <HStack justifyContent="space-between" gap="s">
             <HStack gap="s" flexWrap="wrap">
-              <LabelLarge color="content.primary">{title}</LabelLarge>
+              <TitleMedium as="span" color="content.primary">
+                {title}
+              </TitleMedium>
               {badge}
             </HStack>
             <Icon
@@ -127,9 +129,9 @@ export function RankingControls({
   return (
     <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="xs">
-        <LabelLarge color="content.primary">
+        <TitleMedium as="span" color="content.primary">
           {t("next-controls-title")}
-        </LabelLarge>
+        </TitleMedium>
         <BodySmall color="content.tertiary">
           {t("next-controls-intro")}
         </BodySmall>

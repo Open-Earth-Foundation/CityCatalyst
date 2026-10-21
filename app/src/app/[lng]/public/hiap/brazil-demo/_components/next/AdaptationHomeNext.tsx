@@ -13,8 +13,7 @@ import {
 import { LuChevronLeft, LuSlidersHorizontal } from "react-icons/lu";
 import { CloseButton } from "@/components/ui/close-button";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
-import { TitleLarge } from "@/components/package/Texts/Title";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
@@ -101,7 +100,6 @@ export function AdaptationHomeNext({
   const tPre = useTrackT(lng, track, "meed-preflight");
   const labels = useLabels(lng, track);
   const isNarrow = useBreakpointValue({ base: true, lg: false }) ?? false;
-  const isWide = useBreakpointValue({ base: false, "2xl": true }) ?? false;
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
@@ -329,7 +327,7 @@ export function AdaptationHomeNext({
                   city={city}
                   lng={lng}
                   t={t}
-                  href={trackHref(lng, city.slug, track, "next/risk")}
+                  href={trackHref(lng, city.slug, track, "risk")}
                   onContext={() => setContextOpen(true)}
                 />
               </Section>
@@ -376,7 +374,6 @@ export function AdaptationHomeNext({
                     isGenerating,
                     progress: null,
                   }}
-                  forceList={panelOpen && !isWide}
                   onAdjust={() => setPanelOpen(true)}
                 />
               </Section>
@@ -409,9 +406,9 @@ export function AdaptationHomeNext({
                   borderColor="border.overlay"
                 >
                   <HStack justifyContent="space-between">
-                    <LabelLarge color="content.primary">
+                    <TitleMedium as="span" color="content.primary">
                       {t("next-customize")}
-                    </LabelLarge>
+                    </TitleMedium>
                     <Drawer.CloseTrigger asChild>
                       <CloseButton
                         size="sm"

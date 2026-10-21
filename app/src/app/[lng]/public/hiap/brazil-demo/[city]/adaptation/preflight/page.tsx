@@ -1,10 +1,14 @@
-"use client";
-import React from "react";
-import { TrackPreflight } from "../../../_components/TrackPreflight";
+import { redirect } from "next/navigation";
+import { previousHref } from "../../../_lib/hrefs";
 
-export default function Page(props: {
+/**
+ * The adaptation wizard step "preflight" belongs to the previous version (the
+ * ranking now opens at once, with preferences in a side panel). Old links
+ * land on the archived step.
+ */
+export default async function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
-  const { lng, city } = React.use(props.params);
-  return <TrackPreflight lng={lng} citySlug={city} track="adaptation" />;
+  const { lng, city } = await props.params;
+  redirect(previousHref(lng, city, "preflight"));
 }

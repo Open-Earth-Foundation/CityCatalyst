@@ -15,6 +15,7 @@ import {
   FACETS_ADDRESSES,
   FACETS_TAKES,
   facetCount,
+  LEVEL_TONE,
   type FacetKey,
   type RankedRow,
   type RowFilters,
@@ -114,7 +115,7 @@ export function FilterBar({
   // A chip names its dimension once: "High risk", "Low cost", a sector or
   // hazard by its own name, the rest as "Legal capacity: Feasible".
   const chipLabel = (key: FacetKey, value: string, label: string) => {
-    if (key === "level") return t("next-risk-level", { level: label });
+    if (key === "level") return t(`next-risk-level-${LEVEL_TONE[value]}`);
     if (
       key === "cost" ||
       key === "sector" ||

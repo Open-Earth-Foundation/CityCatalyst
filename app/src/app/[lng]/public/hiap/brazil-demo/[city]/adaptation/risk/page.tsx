@@ -1,27 +1,18 @@
 "use client";
-import React, { useState } from "react";
-import { Card, HStack, Icon, Tabs, VStack } from "@chakra-ui/react";
-import {
-  LuDownload,
-  LuExternalLink,
-  LuInfo,
-  LuMapPinOff,
-} from "react-icons/lu";
+import React, { useMemo, useState } from "react";
+import { Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { Link } from "@chakra-ui/react";
-import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { DemoShell } from "../../../_components/DemoShell";
-import {
-  RiskCellTable,
-  type RiskScenario,
-} from "../../../_components/RiskCellGrid";
+import { indexTone } from "../../../_components/RiskCellGrid";
 import { cityFromSlug } from "../../../_lib/useTrack";
 import { useDemoT } from "../../../_lib/useDemoT";
+import { useLabels } from "../../../_lib/useLabels";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTABRASIL_URL } from "../../../_lib/links";
+import { ADAPTATION_ACTIONS } from "../../../_lib/actions";
 import {
   ADAPTA_SECTORS,
   RISK_CELLS,
@@ -29,29 +20,109 @@ import {
   UNCOVERED_HAZARD_LABEL,
 } from "../../../_lib/riskCells";
 import { downloadCsv } from "../../../_lib/csv";
-import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
-import { useLabels } from "../../../_lib/useLabels";
-import { MeedChipGroup } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedChipGroup";
 import { pick } from "../../../_lib/localized";
+import type { RiskCell, RiskReading } from "../../../_lib/types";
+import { Level } from "../../../_components/next/Level";
+import { LEVEL_TONE } from "../../../_components/next/rows";
+import { SectorGlyph } from "../../../_components/next/SectorIcon";
+import { TextLink } from "../../../_components/next/TextLink";
+import {
+  ExpandableRow,
+  RowList,
+} from "../../../_components/next/ExpandableRow";
+import {
+  ChoiceMenu,
+  ExportCsvButton,
+  FacetFilters,
+  useUrlSelection,
+} from "../../../_components/next/ListControls";
+import { matchesFacets, type Facet } from "../../../_components/next/facets";
 
-const SCENARIOS: RiskScenario[] = ["today", "2030", "2050"];
+type Scenario = "today" | "2030" | "2050";
+const SCENARIOS: Scenario[] = ["today", "2030", "2050"];
+const COMPONENTS = ["hazard", "exposure", "vulnerability"] as const;
+const LEVEL_OF_TONE: Record<string, string> = {
+  negative: "high",
+  warning: "medium",
+  positive: "low",
+};
 
-/** BR-A2 — the city's AdaptaBrasil risk profile. */
+interface HazardRow {
+  cell: RiskCell;
+  reading: RiskReading | null;
+  index: number | null;
+}
+
+const indexFor = (r: RiskReading | null, s: Scenario) =>
+  !r
+    ? null
+    : s === "today"
+      ? r.index
+      : s === "2030"
+        ? r.index2030
+        : r.index2050;
+
+/**
+ * BR-N2 — proposal: the city's AdaptaBrasil risk profile as one list,
+ * highest risk first. Each hazard reads as a level in words with the index
+ * beside it (the one number the proposal keeps, decision D7); opening a row
+ * shows what drives the risk and which actions reduce it.
+ */
 export default function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
-  const [scenario, setScenario] = useState<RiskScenario>("today");
-  const [sectors, setSectors] = useState<string[]>([]);
   const labels = useLabels(lng, "adaptation");
+  const [scenario, setScenario] = useState<Scenario>("today");
+  const fmt2 = (n: number) =>
+    new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
+  const [open, setOpen] = useState<string | null>(null);
+  const [selected, setSelected] = useUrlSelection(["sector", "level"]);
+
+  const rows: HazardRow[] = useMemo(
+    () =>
+      RISK_CELLS.map((cell) => {
+        const reading = city.risk[cell.key] ?? null;
+        return { cell, reading, index: indexFor(reading, scenario) };
+      }).sort((a, b) => (b.index ?? -1) - (a.index ?? -1)),
+    [city, scenario],
+  );
+
+  const facets: Facet<HazardRow>[] = [
+    {
+      key: "sector",
+      title: t("next-filter-sectors"),
+      options: ADAPTA_SECTORS.map((k) => ({
+        value: k,
+        label: labels.sector(k),
+      })),
+      values: (r) => [r.cell.sector],
+      chip: (o) => o.label,
+    },
+    {
+      key: "level",
+      title: t("next-filter-level"),
+      options: ["high", "medium", "low"].map((v) => ({
+        value: v,
+        label: t(
+          `risk-level-${v === "high" ? "negative" : v === "medium" ? "warning" : "positive"}`,
+        ),
+      })),
+      values: (r) =>
+        r.index === null ? [] : [LEVEL_OF_TONE[indexTone(r.index)]],
+      chip: (o) => t(`next-risk-level-${LEVEL_TONE[o.value]}`),
+    },
+  ];
+  const visible = rows.filter((r) => matchesFacets(r, facets, selected));
+
   const exportCsv = () => {
-    const cells = sectors.length
-      ? RISK_CELLS.filter((c) => sectors.includes(c.sector))
-      : RISK_CELLS;
-    const value = (n: number | undefined) =>
-      n === undefined ? "" : n.toFixed(2);
+    const value = (n: number | undefined | null) =>
+      n === undefined || n === null ? "" : n.toFixed(2);
     downloadCsv(
       `hiap-brazil-demo-${city.slug}-risk-${scenario}.csv`,
       [
@@ -62,26 +133,22 @@ export default function Page(props: {
         t("risk-col-vulnerability"),
         t(`risk-col-index-${scenario}`),
       ],
-      cells.map((c) => {
-        const r = city.risk[c.key];
-        const index = !r
-          ? undefined
-          : scenario === "today"
-            ? r.index
-            : scenario === "2030"
-              ? r.index2030
-              : r.index2050;
-        return [
-          pick(c.label, lng),
-          pick(SECTOR_LABEL[c.sector], lng),
-          r && c.hasComponents ? value(r.hazard) : "",
-          r && c.hasComponents ? value(r.exposure) : "",
-          r && c.hasComponents ? value(r.vulnerability) : "",
-          value(index),
-        ];
-      }),
+      visible.map(({ cell, reading, index }) => [
+        pick(cell.label, lng),
+        pick(SECTOR_LABEL[cell.sector], lng),
+        reading && cell.hasComponents ? value(reading.hazard) : "",
+        reading && cell.hasComponents ? value(reading.exposure) : "",
+        reading && cell.hasComponents ? value(reading.vulnerability) : "",
+        value(index),
+      ]),
     );
   };
+
+  const uncovered = (
+    Object.keys(
+      UNCOVERED_HAZARD_LABEL,
+    ) as (keyof typeof UNCOVERED_HAZARD_LABEL)[]
+  ).map((h) => pick(UNCOVERED_HAZARD_LABEL[h], lng));
 
   return (
     <DemoShell
@@ -89,11 +156,11 @@ export default function Page(props: {
       city={city}
       track="adaptation"
       segment="risk"
-      screenId={SCREEN_IDS.adaptation.risk}
+      screenId={SCREEN_IDS.next.risk}
       title={t("risk-title")}
-      description={t("risk-intro")}
+      description={t("next-risk-intro", { city: city.name })}
       backLabel={t("back-to-home")}
-      openPoints={[t("open-risk-hazard")]}
+      openPoints={[t("next-notice-proposal"), t("next-notice-risk")]}
     >
       <VStack alignItems="stretch" gap="m">
         <HStack
@@ -102,135 +169,163 @@ export default function Page(props: {
           gap="m"
           flexWrap="wrap"
         >
-          <VStack alignItems="stretch" gap="xs">
-            <TitleMedium color="content.primary">
+          <VStack alignItems="flex-start" gap="xs">
+            <TitleLarge color="content.primary">
               {t("risk-table-title")}
-            </TitleMedium>
-            <BodyMedium color="content.secondary">
-              {t("risk-table-description")}
-            </BodyMedium>
+            </TitleLarge>
+            <BodySmall color="content.secondary">
+              {t("next-risk-rows", { count: visible.length })}
+            </BodySmall>
           </VStack>
-          <HStack gap="m" alignItems="center" flexWrap="wrap">
-            <Tabs.Root
-              variant="enclosed"
-              size="sm"
+          <HStack gap="l" alignItems="center" flexWrap="wrap">
+            <ChoiceMenu
+              label={t("next-scenario-label")}
               value={scenario}
-              onValueChange={(d) => setScenario(d.value as RiskScenario)}
-            >
-              <Tabs.List>
-                {SCENARIOS.map((s) => (
-                  <Tabs.Trigger key={s} value={s} _focusVisible={FOCUS_RING}>
-                    {t(`risk-scenario-${s}`)}
-                  </Tabs.Trigger>
-                ))}
-              </Tabs.List>
-            </Tabs.Root>
-            <MeedButton
-              variant="outlined"
-              minW="auto"
-              px="m"
-              leftIcon={<Icon as={LuDownload} boxSize="16px" />}
-              onClick={exportCsv}
-              _focusVisible={FOCUS_RING}
-            >
-              {t("next-export-csv")}
-            </MeedButton>
+              options={SCENARIOS.map((s) => ({
+                value: s,
+                label: t(`risk-scenario-${s}`),
+              }))}
+              onChange={setScenario}
+            />
+            <ExportCsvButton onClick={exportCsv} t={t} />
           </HStack>
         </HStack>
-        {scenario !== "today" && (
-          <HStack
-            gap="s"
-            px="m"
-            py="s"
-            borderRadius="rounded"
-            bg="sentiment.warningOverlay"
-            alignItems="flex-start"
-          >
-            <Icon
-              as={LuInfo}
-              boxSize="16px"
-              color="sentiment.warningDefault"
-              mt="2px"
-            />
-            <BodySmall color="content.secondary">
-              {t("risk-scenario-note")}
-            </BodySmall>
-          </HStack>
-        )}
-        <MeedChipGroup
-          options={ADAPTA_SECTORS.map((key) => ({
-            value: key,
-            label: labels.sector(key),
-          }))}
-          selected={sectors}
-          onChange={setSectors}
-          ariaLabel={t("next-legal-filter")}
-        />
-        <RiskCellTable
-          city={city}
-          lng={lng}
+
+        <FacetFilters
+          items={rows}
+          facets={facets}
+          selected={selected}
+          onChange={setSelected}
           t={t}
-          scenario={scenario}
-          sectors={sectors}
         />
-        <BodySmall color="content.tertiary">{t("risk-hazard-note")}</BodySmall>
+
+        {scenario !== "today" && (
+          <BodySmall color="content.secondary">
+            {t("risk-scenario-note")}
+          </BodySmall>
+        )}
+
+        <RowList>
+          {visible.map(({ cell, reading, index }) => {
+            const tone = index === null ? "neutral" : indexTone(index);
+            const reducedBy = ADAPTATION_ACTIONS.filter((a) =>
+              a.links.some(
+                (l) => l.cell === cell.key && l.directness === "direct",
+              ),
+            );
+            return (
+              <ExpandableRow
+                key={cell.key}
+                id={cell.key}
+                open={open === cell.key}
+                onOpenChange={(o) => setOpen(o ? cell.key : null)}
+                title={
+                  <HStack as="span" gap="s">
+                    <SectorGlyph sector={cell.sector} size="16px" />
+                    <span>{pick(cell.label, lng)}</span>
+                  </HStack>
+                }
+                meta={`${pick(SECTOR_LABEL[cell.sector], lng)} · ${pick(cell.hazardLabel, lng)}`}
+                aside={
+                  index === null ? (
+                    <Level tone="neutral">{t("risk-no-data")}</Level>
+                  ) : (
+                    <>
+                      <Level tone={tone}>{t(`next-risk-level-${tone}`)}</Level>
+                      <BodySmall
+                        color="content.tertiary"
+                        fontVariantNumeric="tabular-nums"
+                        minW="72px"
+                      >
+                        {t("next-risk-index", { value: fmt2(index) })}
+                      </BodySmall>
+                    </>
+                  )
+                }
+              >
+                <SimpleGrid columns={{ base: 1, md: 2 }} gap="xl">
+                  <VStack alignItems="stretch" gap="s">
+                    <Overline color="content.tertiary">
+                      {t("next-risk-drivers")}
+                    </Overline>
+                    {reading && cell.hasComponents ? (
+                      COMPONENTS.map((c) => {
+                        const v = reading[c];
+                        const ct = indexTone(v);
+                        return (
+                          <HStack key={c} gap="xs" alignItems="center">
+                            <BodySmall color="content.secondary" minW="96px">
+                              {t(`risk-col-${c}`)}
+                            </BodySmall>
+                            <MeedInfoTip
+                              content={t(`risk-tip-${c}`)}
+                              ariaLabel={t(`risk-tip-${c}`)}
+                            />
+                            <Level tone={v === 0 ? "neutral" : ct}>
+                              {t("next-component-value", {
+                                level: t(`risk-level-${ct}`),
+                                value: fmt2(v),
+                              })}
+                            </Level>
+                          </HStack>
+                        );
+                      })
+                    ) : (
+                      <BodySmall color="content.secondary">
+                        {t("risk-no-components")}
+                      </BodySmall>
+                    )}
+                  </VStack>
+                  <VStack alignItems="stretch" gap="s">
+                    <Overline color="content.tertiary">
+                      {t("next-risk-reduced-by")}
+                    </Overline>
+                    {reducedBy.length === 0 ? (
+                      <BodySmall color="content.secondary">
+                        {t("next-risk-reduced-none")}
+                      </BodySmall>
+                    ) : (
+                      reducedBy.map((a) => (
+                        <BodyMedium key={a.id} color="content.primary">
+                          {pick(a.name, lng)}
+                        </BodyMedium>
+                      ))
+                    )}
+                  </VStack>
+                </SimpleGrid>
+              </ExpandableRow>
+            );
+          })}
+        </RowList>
+        <BodySmall color="content.tertiary">
+          {t("next-risk-index-note")}
+        </BodySmall>
       </VStack>
 
-      <Card.Root borderColor="sentiment.warningDefault">
-        <Card.Body>
+      <Card.Root borderColor="border.overlay">
+        <Card.Body p="l">
           <VStack alignItems="stretch" gap="s">
-            <HStack gap="s" alignItems="center">
-              <Icon
-                as={LuMapPinOff}
-                boxSize="18px"
-                color="sentiment.warningDefault"
-              />
-              <LabelLarge color="content.primary">
-                {t("risk-not-covered-title")}
-              </LabelLarge>
-            </HStack>
+            <TitleMedium as="h3" color="content.primary">
+              {t("risk-not-covered-title")}
+            </TitleMedium>
             <BodyMedium color="content.secondary">
-              {t("risk-not-covered-body")}
+              {t("next-risk-not-covered-body")}
             </BodyMedium>
-            <HStack gap="xs" flexWrap="wrap">
-              {(
-                Object.keys(
-                  UNCOVERED_HAZARD_LABEL,
-                ) as (keyof typeof UNCOVERED_HAZARD_LABEL)[]
-              ).map((h) => (
-                <MeedStatusTag key={h} tone="warning">
-                  {pick(UNCOVERED_HAZARD_LABEL[h], lng)}
-                </MeedStatusTag>
-              ))}
-              <MeedStatusTag tone="neutral">
-                {t("risk-not-covered-infra")}
-              </MeedStatusTag>
-            </HStack>
+            <BodySmall color="content.secondary">
+              {[...uncovered, t("risk-not-covered-infra")].join(" · ")}
+            </BodySmall>
             {city.coastal && (
-              <BodySmall color="sentiment.warningDefault">
-                {t("risk-coastal-note", { city: city.name })}
+              <BodySmall color="content.secondary">
+                {t("next-risk-coastal-note", { city: city.name })}
               </BodySmall>
             )}
           </VStack>
         </Card.Body>
       </Card.Root>
 
-      <Link
-        href={ADAPTABRASIL_URL}
-        target="_blank"
-        rel="noreferrer"
-        color="content.link"
-        fontFamily="heading"
-        fontSize="label.md"
-        fontWeight="semibold"
-        alignSelf="flex-start"
-        _focusVisible={FOCUS_RING}
-      >
-        <HStack gap="xs">
-          <span>{t("risk-source-link")}</span>
-          <Icon as={LuExternalLink} boxSize="14px" />
-        </HStack>
-      </Link>
+      <TextLink href={ADAPTABRASIL_URL} external>
+        {t("risk-source-link")}
+      </TextLink>
     </DemoShell>
   );
 }

@@ -3,7 +3,7 @@ import { Box, HStack, Icon, Tabs } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import type { DemoTrack } from "../_lib/types";
 import { useDemoT } from "../_lib/useDemoT";
 
@@ -23,6 +23,7 @@ export function TrackTabs({
   city: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const { t } = useDemoT(lng);
   const router = useRouter();
   return (
@@ -38,7 +39,7 @@ export function TrackTabs({
           value={track}
           onValueChange={(details) => {
             const next = details.value as DemoTrack;
-            if (next !== track) router.push(trackHref(lng, city, next));
+            if (next !== track) router.push(trackHrefIn(lng, city, next));
           }}
         >
           <Tabs.List>

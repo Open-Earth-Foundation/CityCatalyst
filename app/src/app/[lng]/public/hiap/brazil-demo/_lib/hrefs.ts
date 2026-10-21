@@ -2,6 +2,27 @@ import type { DemoTrack } from "./types";
 
 export const DEMO_ROOT = "public/hiap/brazil-demo";
 
+/**
+ * Where the previous adaptation screens (BR-A1…A10) are kept for comparison
+ * now that the proposal is the adaptation track: `/adaptation/previous/…`.
+ */
+export const PREVIOUS_SEGMENT = "previous";
+
+/** Whether a pathname is inside the archived adaptation screens. */
+export function isPreviousPath(pathname: string): boolean {
+  return pathname.includes(`/adaptation/${PREVIOUS_SEGMENT}`);
+}
+
+/** A link into the archived adaptation screens. */
+export function previousHref(lng: string, city: string, segment?: string) {
+  return trackHref(
+    lng,
+    city,
+    "adaptation",
+    segment ? `${PREVIOUS_SEGMENT}/${segment}` : PREVIOUS_SEGMENT,
+  );
+}
+
 export function demoHome(lng: string): string {
   return `/${lng}/${DEMO_ROOT}`;
 }
@@ -32,7 +53,11 @@ export const SCREEN_IDS = {
     policy: "BR-A9",
     context: "BR-A10",
   },
-  /** Next-iteration proposal screens, built beside the current ones for review. */
+  /**
+   * The adaptation screens since the October review (the proposal, now the
+   * adaptation track). The BR-A IDs above are the previous version, kept
+   * under `/adaptation/previous/`.
+   */
   next: {
     home: "BR-N1",
     risk: "BR-N2",

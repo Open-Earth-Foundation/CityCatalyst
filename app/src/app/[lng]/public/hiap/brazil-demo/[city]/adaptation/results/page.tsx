@@ -1,10 +1,14 @@
 import { redirect } from "next/navigation";
-import { trackHref } from "../../../_lib/hrefs";
+import { previousHref } from "../../../_lib/hrefs";
 
-/** The ranking lives on the module home now; old links still land there. */
+/**
+ * The adaptation wizard step "results" belongs to the previous version (the
+ * ranking now opens at once, with preferences in a side panel). Old links
+ * land on the archived step.
+ */
 export default async function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city } = await props.params;
-  redirect(trackHref(lng, city, "adaptation"));
+  redirect(previousHref(lng, city, "results"));
 }

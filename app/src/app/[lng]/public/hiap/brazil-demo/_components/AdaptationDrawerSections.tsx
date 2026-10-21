@@ -47,7 +47,7 @@ import {
 } from "../_lib/finance";
 import { suppressionSources, CO_BENEFIT_LABEL } from "../_lib/coBenefits";
 import { RELATED_ROLES, relatedActions } from "../_lib/relationships";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ActionMiniCard } from "./ActionMiniCard";
 
 const LEVEL_TONE: Record<string, MeedTone> = {
@@ -81,6 +81,7 @@ export function AdaptationDrawerSections({
   rankOf: (id: string) => number | null;
   onOpenAction: (id: string) => void;
 }) {
+  const trackHrefIn = useTrackHref();
   const track: DemoTrack = "adaptation";
   const grade = legalGrade(action.legal.score);
   const funding = fundingResult(action, city);
@@ -88,7 +89,7 @@ export function AdaptationDrawerSections({
   const directLinks = action.links.filter((l) => l.directness === "direct");
   const otherLinks = action.links.filter((l) => l.directness !== "direct");
   const related = relatedActions(action);
-  const legalHref = `${trackHref(lng, city.slug, track, "legal")}#${action.id}`;
+  const legalHref = `${trackHrefIn(lng, city.slug, track, "legal")}#${action.id}`;
 
   return (
     <>

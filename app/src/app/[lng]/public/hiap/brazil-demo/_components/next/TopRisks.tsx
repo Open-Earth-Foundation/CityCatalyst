@@ -2,8 +2,8 @@
 import React from "react";
 import { Box, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import type { CityFixture } from "../../_lib/types";
 import { RISK_CELLS, SECTOR_LABEL } from "../../_lib/riskCells";
 import { pick } from "../../_lib/localized";
@@ -58,12 +58,10 @@ export function TopRisks({
             <SectorLabel sector={c.sector}>
               {pick(SECTOR_LABEL[c.sector], lng)}
             </SectorLabel>
-            <LabelLarge color="content.primary">
+            <TitleMedium as="h3" color="content.primary">
               {pick(c.label, lng)}
-            </LabelLarge>
-            <Level tone={tone}>
-              {t("next-risk-level", { level: t(`risk-level-${tone}`) })}
-            </Level>
+            </TitleMedium>
+            <Level tone={tone}>{t(`next-risk-level-${tone}`)}</Level>
             <BodySmall color="content.secondary">
               {pick(c.hazardLabel, lng)}
             </BodySmall>

@@ -1,8 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Brazil Phase 3 demo — the proposal flow (BR-N1, N2, N6–N10) end to end,
- * plus the quick fixes on the current screens. Fixture data only; every test
+ * Brazil Phase 3 demo — the adaptation flow (BR-N1, N2, N6–N10) end to end,
+ * the previous version kept under /adaptation/previous/, and Portuguese. Fixture data only; every test
  * starts from a fresh browser context, so localStorage (the city's settings
  * and its own order) is empty.
  *
@@ -11,7 +11,7 @@ import { expect, test, type Page } from "@playwright/test";
  */
 
 const DEMO = "/en/public/hiap/brazil-demo";
-const home = (city = "sobral") => `${DEMO}/${city}/adaptation/next/`;
+const home = (city = "sobral") => `${DEMO}/${city}/adaptation/`;
 
 async function dismissOverlays(page: Page) {
   // On narrow screens the demo's "open decisions" pill overlaps the cookie
@@ -195,8 +195,8 @@ test.describe("BR-N1 proposal home", () => {
     const names = await rowNames(page);
     expect(names.length).toBeGreaterThan(0);
     expect(names.length).toBeLessThan(10);
-    const risk = page.getByRole("table").locator("tbody tr td:nth-child(3)");
-    for (const text of await risk.allInnerTexts()) expect(text).toMatch(/High/);
+    for (const text of await page.getByTestId("action-risk").allInnerTexts())
+      expect(text).toMatch(/High/);
   });
 
   test("sorting by risk level puts high-risk actions first", async ({
@@ -207,8 +207,9 @@ test.describe("BR-N1 proposal home", () => {
     await page
       .getByRole("menuitemradio", { name: /Risk level, highest first/ })
       .click();
-    const first = page.getByRole("table").locator("tbody tr").first();
-    await expect(first.locator("td").nth(2)).toContainText("High");
+    await expect(
+      page.getByTestId("ranked-action").first().getByTestId("action-risk"),
+    ).toContainText("High");
   });
 
   test("every assessment column explains itself", async ({ page }) => {
@@ -385,7 +386,7 @@ test.describe("BR-N1 proposal home", () => {
       await page.setViewportSize({ width, height: 1000 });
       await openHome(page);
 
-      // The list becomes stacked rows; no table to scroll sideways.
+      // Every action is a card; there is no table to scroll sideways.
       await expect(page.getByRole("table")).toHaveCount(0);
       const overflow = await page.evaluate(
         () =>
@@ -418,7 +419,7 @@ test.describe("BR-N1 proposal home", () => {
 });
 
 const sub = (segment: string, city = "sobral") =>
-  `${DEMO}/${city}/adaptation/next/${segment}/`;
+  `${DEMO}/${city}/adaptation/${segment}/`;
 
 async function openSub(page: Page, segment: string, heading: string) {
   await page.goto(sub(segment));
@@ -553,7 +554,9 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
     }
   });
 
-  test("links from the proposal stay inside the proposal", async ({ page }) => {
+  test("links from the new screens never lead to the previous version", async ({
+    page,
+  }) => {
     await openHome(page);
     await page
       .getByRole("button", { name: /^View details for/ })
@@ -563,18 +566,15 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
     const hrefs = await page
       .locator('a[href*="/adaptation/"]')
       .evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
-    const original = hrefs.filter((h) =>
-      /\/adaptation\/(risk|legal|finance|policy|context)\//.test(h),
-    );
-    expect(original).toEqual([]);
-    expect(hrefs.some((h) => h.includes("/next/finance/"))).toBe(true);
-    expect(hrefs.some((h) => h.includes("/next/policy/"))).toBe(true);
+    expect(hrefs.filter((h) => h.includes("/previous"))).toEqual([]);
+    expect(hrefs.some((h) => h.includes("/adaptation/finance"))).toBe(true);
+    expect(hrefs.some((h) => h.includes("/adaptation/policy"))).toBe(true);
     await page.keyboard.press("Escape");
 
     await page.getByRole("link", { name: "See the full risk profile" }).click();
-    await expect(page).toHaveURL(/\/next\/risk\//);
+    await expect(page).toHaveURL(/\/adaptation\/risk\/?$/);
     await page.getByRole("link", { name: "Back to module home" }).click();
-    await expect(page).toHaveURL(/\/adaptation\/next\/$/);
+    await expect(page).toHaveURL(/\/adaptation\/?$/);
   });
 
   for (const width of [640, 900]) {
@@ -596,9 +596,9 @@ test.describe("Proposal sub-pages (BR-N2, N7–N10)", () => {
   }
 });
 
-test.describe("Quick fixes on the current screens", () => {
+test.describe("Previous version, kept for comparison", () => {
   test("BR-A1 uses plain wording and no AI styling", async ({ page }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/`);
     await expect(
       page.getByText("12 climate hazards assessed by AdaptaBrasil"),
     ).toBeVisible({ timeout: 90_000 });
@@ -611,7 +611,7 @@ test.describe("Quick fixes on the current screens", () => {
   test("BR-A2 says hazard, filters by sector and explains H/E/V", async ({
     page,
   }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/risk/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/risk/`);
     await expect(
       page.getByRole("heading", { name: "Twelve hazards" }),
     ).toBeVisible({
@@ -630,7 +630,7 @@ test.describe("Quick fixes on the current screens", () => {
   test("BR-A1 shows one table, without the duplicate chart", async ({
     page,
   }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/preflight/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/preflight/`);
     await expect(
       page.getByRole("button", { name: /generate recommendations/i }),
     ).toBeVisible({ timeout: 90_000 });
@@ -649,7 +649,7 @@ test.describe("Quick fixes on the current screens", () => {
   test("BR-A2 exports the risk profile, honouring the sector filter", async ({
     page,
   }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/risk/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/risk/`);
     await expect(
       page.getByRole("heading", { name: "Twelve hazards" }),
     ).toBeVisible({
@@ -671,7 +671,7 @@ test.describe("Quick fixes on the current screens", () => {
   });
 
   test("BR-A8 shows the funding-gap split as one bar", async ({ page }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/finance/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/finance/`);
     await expect(page.getByText("Funding gap per action")).toBeVisible({
       timeout: 90_000,
     });
@@ -680,7 +680,7 @@ test.describe("Quick fixes on the current screens", () => {
   });
 
   test("BR-A3 has select all and clear on every list", async ({ page }) => {
-    await page.goto(`${DEMO}/sobral/adaptation/preferences/`);
+    await page.goto(`${DEMO}/sobral/adaptation/previous/preferences/`);
     await expect(
       page.getByText("Preferences", { exact: true }).first(),
     ).toBeVisible({
@@ -689,5 +689,131 @@ test.describe("Quick fixes on the current screens", () => {
     await expect(page.getByRole("button", { name: "Select all" })).toHaveCount(
       4,
     );
+  });
+});
+
+test.describe("Routes, action cards, Plano Clima and Portuguese", () => {
+  test("the previous version keeps its own flow", async ({ page }) => {
+    await page.goto(`${DEMO}/sobral/adaptation/previous/`);
+    await expect(
+      page.getByRole("button", { name: /set your preferences/i }),
+    ).toBeVisible({ timeout: 90_000 });
+    // The corner notice says what this section is, before it is dismissed.
+    await expect(
+      page.getByText(/Previous version, kept for comparison/),
+    ).toBeVisible();
+    await dismissOverlays(page);
+    await page.getByRole("button", { name: /set your preferences/i }).click();
+    await expect(page).toHaveURL(/\/adaptation\/previous\/preferences\/?$/);
+    const forward = page.locator('a[href*="/adaptation/previous/preflight"]');
+    expect(await forward.count()).toBeGreaterThan(0);
+  });
+
+  test("old proposal and wizard links redirect", async ({ page }) => {
+    await page.goto(`${DEMO}/sobral/adaptation/next/risk/`);
+    await expect(page).toHaveURL(/\/adaptation\/risk\/?$/, { timeout: 90_000 });
+    await page.goto(`${DEMO}/sobral/adaptation/preferences/`);
+    await expect(page).toHaveURL(/\/adaptation\/previous\/preferences\/?$/);
+  });
+
+  test("the review guide leads to the new screens and lists the previous ones", async ({
+    page,
+  }) => {
+    await page.goto(`${DEMO}/`);
+    await expect(
+      page.getByText("Previous version, for comparison"),
+    ).toBeVisible({ timeout: 90_000 });
+    const hrefs = await page
+      .locator('a[href*="/adaptation"]')
+      .evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    expect(
+      hrefs.some((h) => /\/adaptation\/previous\/risk\/?$/.test(h)),
+    ).toBe(true);
+    expect(hrefs.some((h) => /\/sobral\/adaptation\/risk\/?$/.test(h))).toBe(
+      true,
+    );
+  });
+
+  test("every action is its own card, named in the title style", async ({
+    page,
+  }) => {
+    await openHome(page);
+    const cards = page.getByTestId("ranked-action");
+    const [a, b] = [
+      await cards.nth(0).boundingBox(),
+      await cards.nth(1).boundingBox(),
+    ];
+    expect(b!.y - (a!.y + a!.height)).toBeGreaterThanOrEqual(8);
+    const sizes = await cards.nth(0).evaluate((card) => {
+      const name = card.querySelector(
+        'button[aria-label^="View details for"] > *',
+      );
+      const body = card.querySelector(
+        '[data-testid="level"] p, [data-testid="level"] span',
+      );
+      return [
+        parseFloat(getComputedStyle(name!).fontSize),
+        parseFloat(getComputedStyle(body!).fontSize),
+      ];
+    });
+    expect(sizes[0]).toBeGreaterThanOrEqual(16);
+    expect(sizes[0]).toBeGreaterThan(sizes[1]);
+  });
+
+  test("the drawer separates related actions and shows co-benefits once", async ({
+    page,
+  }) => {
+    await openHome(page);
+    await page
+      .getByRole("button", {
+        name: /View details for Protect and enhance water sources/,
+      })
+      .first()
+      .click();
+    const drawer = page.getByRole("dialog");
+    await expect(
+      drawer.getByText("Co-benefits and adverse effects"),
+    ).toHaveCount(1);
+    expect(await drawer.getByTestId("related-action").count()).toBeGreaterThan(
+      0,
+    );
+    await expect(
+      drawer.getByText("Plano Clima", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      drawer
+        .getByTestId("plano-clima-plan")
+        .filter({ hasText: "Recursos Hídricos" }),
+    ).toHaveCount(1);
+  });
+
+  test("policy filters by the Plano Clima plan that cites the action", async ({
+    page,
+  }) => {
+    await openSub(page, "policy", "Policy support per action");
+    await pickFacet(page, /^Plano Clima plan/, /^Recursos Hídricos/);
+    await expect(page).toHaveURL(/plan=/);
+    const n = await rows(page).count();
+    expect(n).toBeGreaterThan(0);
+    expect(n).toBeLessThan(14);
+  });
+
+  test("Portuguese shows no English on the new screens", async ({ page }) => {
+    await page.goto(`/pt/public/hiap/brazil-demo/sobral/adaptation/`);
+    await expect(page.getByText("Todas as ações, em ordem")).toBeVisible({
+      timeout: 90_000,
+    });
+    const home = await page.locator("body").innerText();
+    for (const english of [
+      "All actions, in order",
+      "View details",
+      "Risk reduced",
+      "High risk",
+    ])
+      expect(home).not.toContain(english);
+    await page.goto(`/pt/public/hiap/brazil-demo/sobral/adaptation/risk/`);
+    await expect(page.getByText(/Índice \d,\d\d/).first()).toBeVisible({
+      timeout: 90_000,
+    });
   });
 });

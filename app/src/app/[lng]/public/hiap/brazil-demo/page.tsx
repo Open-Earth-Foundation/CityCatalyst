@@ -25,7 +25,7 @@ import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButt
 import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { CITIES, DEFAULT_CITY } from "./_lib/cities";
-import { SCREEN_IDS, trackHref } from "./_lib/hrefs";
+import { previousHref, SCREEN_IDS, trackHref } from "./_lib/hrefs";
 import { FEEDBACK_SHEET_URL, METHODOLOGY_DOC_URL } from "./_lib/links";
 import { useDemoT } from "./_lib/useDemoT";
 import { ScreenTag } from "./_components/ScreenTag";
@@ -87,57 +87,126 @@ const SCREENS: {
   { id: SCREEN_IDS.mitigation.home, key: "m-home", track: "mitigation" },
 ];
 
-/** Proposal screens built after the October review, beside the current ones. */
+/** The adaptation screens since the October review, then mitigation. */
 const NEXT_SCREENS: {
   id: string;
   key: string;
-  segment: string;
+  segment: string | undefined;
   /** The current screens this one replaces. */
   replaces: string;
 }[] = [
   {
     id: SCREEN_IDS.next.home,
     key: "home",
-    segment: "next",
+    segment: undefined,
     replaces: "BR-A1, A3, A4, A4b",
   },
   {
     id: SCREEN_IDS.next.risk,
     key: "risk",
-    segment: "next/risk",
+    segment: "risk",
     replaces: "BR-A2",
   },
   {
     id: SCREEN_IDS.next.drawer,
     key: "drawer",
-    segment: "next",
+    segment: undefined,
     replaces: "BR-A6",
   },
   {
     id: SCREEN_IDS.next.legal,
     key: "legal",
-    segment: "next/legal",
+    segment: "legal",
     replaces: "BR-A7",
   },
   {
     id: SCREEN_IDS.next.finance,
     key: "finance",
-    segment: "next/finance",
+    segment: "finance",
     replaces: "BR-A8",
   },
   {
     id: SCREEN_IDS.next.policy,
     key: "policy",
-    segment: "next/policy",
+    segment: "policy",
     replaces: "BR-A9",
   },
   {
     id: SCREEN_IDS.next.context,
     key: "context",
-    segment: "next/context",
+    segment: "context",
     replaces: "BR-A10",
   },
 ];
+
+interface GuideRow {
+  id: string;
+  title: string;
+  look: string;
+  note?: string;
+  href: string;
+}
+
+function GuideTable({
+  rows,
+  t,
+}: {
+  rows: GuideRow[];
+  t: (k: string) => string;
+}) {
+  return (
+    <Card.Root overflow="hidden" borderColor="border.neutral">
+      <Table.Root size="md">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader w="90px">
+              {t("guide-col-id")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>{t("guide-col-screen")}</Table.ColumnHeader>
+            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+              {t("guide-col-look")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader w="120px" />
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {rows.map((r) => (
+            <Table.Row key={r.id}>
+              <Table.Cell>
+                <LabelMedium color="content.link" fontFamily="mono">
+                  {r.id}
+                </LabelMedium>
+              </Table.Cell>
+              <Table.Cell>
+                <BodyMedium color="content.primary" fontWeight="semibold">
+                  {r.title}
+                </BodyMedium>
+              </Table.Cell>
+              <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                <BodySmall color="content.secondary">{r.look}</BodySmall>
+                {r.note && (
+                  <BodySmall color="content.tertiary">{r.note}</BodySmall>
+                )}
+              </Table.Cell>
+              <Table.Cell>
+                <Link
+                  asChild
+                  color="content.link"
+                  fontFamily="heading"
+                  fontSize="label.md"
+                  fontWeight="semibold"
+                  _focusVisible={FOCUS_RING}
+                >
+                  <NextLink href={r.href}>{t("guide-open")}</NextLink>
+                </Link>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Card.Root>
+  );
+}
 
 /** BR-00 — the review guide. */
 export default function DemoGuidePage(props: {
@@ -145,6 +214,30 @@ export default function DemoGuidePage(props: {
 }) {
   const { lng } = React.use(props.params);
   const { t } = useDemoT(lng);
+  const city = DEFAULT_CITY.slug;
+  const mainRows: GuideRow[] = [
+    ...NEXT_SCREENS.map((s) => ({
+      id: s.id,
+      title: t(`next-screen-${s.key}`),
+      look: t(`next-screen-${s.key}-look`),
+      note: t("next-screen-replaces", { ids: s.replaces }),
+      href: trackHref(lng, city, "adaptation", s.segment),
+    })),
+    ...SCREENS.filter((s) => s.track === "mitigation").map((s) => ({
+      id: s.id,
+      title: t(`screen-${s.key}`),
+      look: t(`screen-${s.key}-look`),
+      href: trackHref(lng, city, s.track, s.segment),
+    })),
+  ];
+  const previousRows: GuideRow[] = SCREENS.filter(
+    (s) => s.track === "adaptation",
+  ).map((s) => ({
+    id: s.id,
+    title: t(`screen-${s.key}`),
+    look: t(`screen-${s.key}-look`),
+    href: previousHref(lng, city, s.segment),
+  }));
   return (
     <Box
       mx="auto"
@@ -283,131 +376,19 @@ export default function DemoGuidePage(props: {
             {t("guide-screens-body")}
           </BodySmall>
         </VStack>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader w="90px">
-                  {t("guide-col-id")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>{t("guide-col-screen")}</Table.ColumnHeader>
-                <Table.ColumnHeader
-                  display={{ base: "none", md: "table-cell" }}
-                >
-                  {t("guide-col-look")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="120px" />
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {SCREENS.map((s) => (
-                <Table.Row key={s.id}>
-                  <Table.Cell>
-                    <LabelMedium color="content.link" fontFamily="mono">
-                      {s.id}
-                    </LabelMedium>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BodyMedium color="content.primary" fontWeight="semibold">
-                      {t(`screen-${s.key}`)}
-                    </BodyMedium>
-                  </Table.Cell>
-                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                    <BodySmall color="content.secondary">
-                      {t(`screen-${s.key}-look`)}
-                    </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      asChild
-                      color="content.link"
-                      fontFamily="heading"
-                      fontSize="label.md"
-                      fontWeight="semibold"
-                      _focusVisible={FOCUS_RING}
-                    >
-                      <NextLink
-                        href={trackHref(
-                          lng,
-                          DEFAULT_CITY.slug,
-                          s.track,
-                          s.segment,
-                        )}
-                      >
-                        {t("guide-open")}
-                      </NextLink>
-                    </Link>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
+        <GuideTable rows={mainRows} t={t} />
       </VStack>
 
       <VStack alignItems="stretch" gap="m">
         <VStack alignItems="stretch" gap="xs">
-          <HStack gap="s">
-            <TitleMedium color="content.primary">
-              {t("next-guide-title")}
-            </TitleMedium>
-            <MeedStatusTag tone="warning">
-              {t("next-proposal-tag")}
-            </MeedStatusTag>
-          </HStack>
+          <TitleMedium color="content.primary">
+            {t("previous-guide-title")}
+          </TitleMedium>
           <BodySmall color="content.secondary">
-            {t("next-guide-body")}
+            {t("previous-guide-body")}
           </BodySmall>
         </VStack>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Body>
-              {NEXT_SCREENS.map((s) => (
-                <Table.Row key={s.id}>
-                  <Table.Cell w="90px">
-                    <LabelMedium color="content.link" fontFamily="mono">
-                      {s.id}
-                    </LabelMedium>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BodyMedium color="content.primary" fontWeight="semibold">
-                      {t(`next-screen-${s.key}`)}
-                    </BodyMedium>
-                  </Table.Cell>
-                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                    <BodySmall color="content.secondary">
-                      {t(`next-screen-${s.key}-look`)}
-                    </BodySmall>
-                    <BodySmall color="content.tertiary">
-                      {t("next-screen-replaces", { ids: s.replaces })}
-                    </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell w="120px">
-                    <Link
-                      asChild
-                      color="content.link"
-                      fontFamily="heading"
-                      fontSize="label.md"
-                      fontWeight="semibold"
-                      _focusVisible={FOCUS_RING}
-                    >
-                      <NextLink
-                        href={trackHref(
-                          lng,
-                          DEFAULT_CITY.slug,
-                          "adaptation",
-                          s.segment,
-                        )}
-                      >
-                        {t("guide-open")}
-                      </NextLink>
-                    </Link>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
+        <GuideTable rows={previousRows} t={t} />
       </VStack>
     </Box>
   );

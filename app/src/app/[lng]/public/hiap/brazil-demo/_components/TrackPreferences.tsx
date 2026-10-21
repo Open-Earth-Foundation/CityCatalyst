@@ -33,7 +33,8 @@ import type {
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { useLabels } from "../_lib/useLabels";
-import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
+import { SCREEN_IDS } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ADAPTA_SECTORS, RISK_CELLS } from "../_lib/riskCells";
 import { CO_BENEFIT_KEYS } from "../_lib/coBenefits";
 import { ADAPTATION_ACTIONS } from "../_lib/actions";
@@ -159,6 +160,7 @@ export function TrackPreferences({
   citySlug: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const { city, state, setPreferences, isReady } = useTrack(
     lng,
     citySlug,
@@ -204,7 +206,7 @@ export function TrackPreferences({
         preflight: Boolean(state.visited.preflight),
       }}
       forward={{
-        href: trackHref(lng, city.slug, track, "preflight"),
+        href: trackHrefIn(lng, city.slug, track, "preflight"),
         label: t("step-preflight"),
       }}
       openPoints={

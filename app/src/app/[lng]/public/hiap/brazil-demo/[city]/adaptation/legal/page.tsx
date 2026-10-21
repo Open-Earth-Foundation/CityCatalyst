@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   HStack,
@@ -11,29 +11,46 @@ import {
 } from "@chakra-ui/react";
 import { LuExternalLink } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { MeedFunnelStrip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedFunnelStrip";
-import { MeedStatusTag } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
 import { useDemoT } from "../../../_lib/useDemoT";
+import { useLabels } from "../../../_lib/useLabels";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTATION_ACTIONS } from "../../../_lib/actions";
 import {
   AUTHORITY_LABEL,
   COMPETENCE_LABEL,
   GRADE_LABEL,
-  GRADE_TONE,
   LEVEL_LABEL,
   legalGrade,
   type LegalGrade,
 } from "../../../_lib/legal";
 import { pick } from "../../../_lib/localized";
-import { SECTOR_LABEL } from "../../../_lib/riskCells";
+import { ADAPTA_SECTORS, SECTOR_LABEL } from "../../../_lib/riskCells";
+import { Level } from "../../../_components/next/Level";
+import { SectorGlyph } from "../../../_components/next/SectorIcon";
+import { legalTone } from "../../../_components/next/rows";
+import {
+  ExpandableRow,
+  RowList,
+} from "../../../_components/next/ExpandableRow";
+import {
+  FacetFilters,
+  useUrlSelection,
+} from "../../../_components/next/ListControls";
+import { matchesFacets, type Facet } from "../../../_components/next/facets";
+import type { AdaptationAction } from "../../../_lib/types";
+
+/** Legal grades in three bins, the same green / amber / red as the levels. */
+const LEGAL_BIN: Partial<Record<MeedTone, string>> = {
+  positive: "feasible",
+  warning: "adjustments",
+  negative: "heavy",
+};
 
 const GRADES: LegalGrade[] = [
   "highly_feasible",
@@ -44,21 +61,62 @@ const GRADES: LegalGrade[] = [
   "not_feasible",
 ];
 
-/** BR-A7 — legal feasibility (I Care's Sep 2026 method: authority × competence per norm). */
+/**
+ * BR-N7 — proposal: legal feasibility as one expandable list, on the pattern
+ * of the policy-alignment page. The authority × competence explanation
+ * appears once; each row shows the grade, and opens on the norms behind it.
+ */
 export default function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
-  const actions = [...ADAPTATION_ACTIONS].sort(
+  const labels = useLabels(lng, "adaptation");
+  const [open, setOpen] = useState<string | null>(null);
+  const [selected, setSelected] = useUrlSelection(["sector", "legal", "cost"]);
+
+  const all = [...ADAPTATION_ACTIONS].sort(
     (a, b) => b.legal.score - a.legal.score,
   );
+  const facets: Facet<AdaptationAction>[] = [
+    {
+      key: "sector",
+      title: t("next-filter-sectors"),
+      options: ADAPTA_SECTORS.map((k) => ({
+        value: k,
+        label: labels.sector(k),
+      })),
+      values: (a) => [a.sector],
+      chip: (o) => o.label,
+    },
+    {
+      key: "legal",
+      title: t("next-filter-legal"),
+      options: ["feasible", "adjustments", "heavy"].map((k) => ({
+        value: k,
+        label: t(`next-legal-bin-${k}`),
+      })),
+      values: (a) => [
+        LEGAL_BIN[legalTone(legalGrade(a.legal.score))] ?? "heavy",
+      ],
+    },
+    {
+      key: "cost",
+      title: t("next-filter-cost"),
+      options: ["low", "medium", "high"].map((k) => ({
+        value: k,
+        label: t(`next-cost-${k}`),
+      })),
+      values: (a) => [a.costBand],
+      chip: (o) => o.label,
+    },
+  ];
+  const actions = all.filter((a) => matchesFacets(a, facets, selected));
   const counts = GRADES.map((g) => ({
     g,
-    n: actions.filter((a) => legalGrade(a.legal.score) === g).length,
-  }));
-  const blocked = counts.find((c) => c.g === "not_feasible")?.n ?? 0;
+    n: all.filter((a) => legalGrade(a.legal.score) === g).length,
+  })).filter((c) => c.n > 0);
 
   return (
     <DemoShell
@@ -66,42 +124,19 @@ export default function Page(props: {
       city={city}
       track="adaptation"
       segment="legal"
-      screenId={SCREEN_IDS.adaptation.legal}
+      screenId={SCREEN_IDS.next.legal}
       title={t("legal-title")}
       description={t("legal-intro")}
       backLabel={t("back-to-home")}
-      openPoints={[
-        t("open-legal-classification"),
-        t("open-legal-method"),
-        t("open-legal-filter"),
-      ]}
+      openPoints={[t("next-notice-proposal"), t("next-notice-legal")]}
     >
+      {/* How to read the grade — once, not on every card. */}
       <Card.Root borderColor="border.overlay">
-        <Card.Body>
+        <Card.Body p="l">
           <VStack alignItems="stretch" gap="m">
-            <MeedFunnelStrip
-              steps={[
-                {
-                  label: t("funnel-bank"),
-                  value: actions.length,
-                  tone: "neutral",
-                  sublabel: t("funnel-bank-sub"),
-                },
-                {
-                  label: t("funnel-legal"),
-                  value: actions.length - blocked,
-                  tone: "info",
-                  sublabel: t("legal-funnel-passed-sub"),
-                },
-                {
-                  label: t("legal-funnel-strong"),
-                  value: actions.filter((a) => a.legal.score >= 4).length,
-                  tone: "positive",
-                  sublabel: t("legal-funnel-strong-sub"),
-                },
-              ]}
-              ariaLabel={t("funnel-aria")}
-            />
+            <TitleLarge color="content.primary">
+              {t("next-legal-explainer-title")}
+            </TitleLarge>
             <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
               <VStack alignItems="stretch" gap="xs">
                 <Overline color="content.tertiary">
@@ -120,11 +155,11 @@ export default function Page(props: {
                 </BodyMedium>
               </VStack>
             </SimpleGrid>
-            <HStack gap="s" flexWrap="wrap">
+            <HStack gap="l" flexWrap="wrap">
               {counts.map(({ g, n }) => (
-                <MeedStatusTag key={g} tone={GRADE_TONE[g]}>
+                <Level key={g} tone={legalTone(g)}>
                   {pick(GRADE_LABEL[g], lng)} · {n}
-                </MeedStatusTag>
+                </Level>
               ))}
             </HStack>
           </VStack>
@@ -132,128 +167,131 @@ export default function Page(props: {
       </Card.Root>
 
       <VStack alignItems="stretch" gap="m">
-        <TitleMedium color="content.primary">
-          {t("legal-actions-title")}
-        </TitleMedium>
-        {actions.map((a) => {
-          const grade = legalGrade(a.legal.score);
-          return (
-            <Card.Root
-              key={a.id}
-              id={a.id}
-              borderColor="border.overlay"
-              scrollMarginTop="96px"
-            >
-              <Card.Body>
-                <VStack alignItems="stretch" gap="m">
-                  <HStack
-                    justifyContent="space-between"
-                    gap="m"
-                    alignItems="flex-start"
-                    flexWrap="wrap"
-                  >
-                    <VStack
-                      alignItems="flex-start"
-                      gap="xs"
-                      flex="1"
-                      minW="260px"
-                    >
-                      <LabelLarge color="content.primary">
-                        {pick(a.name, lng)}
-                      </LabelLarge>
-                      <Caption color="content.tertiary">
-                        {pick(SECTOR_LABEL[a.sector], lng)} · {a.id}
-                      </Caption>
-                    </VStack>
-                    <VStack alignItems="flex-end" gap="xs">
-                      <MeedStatusTag tone={GRADE_TONE[grade]}>
-                        {pick(GRADE_LABEL[grade], lng)}
-                      </MeedStatusTag>
-                      <Caption color="content.tertiary">
-                        {t("legal-score-line", {
-                          score: a.legal.score.toFixed(1),
-                          level: pick(
-                            LEVEL_LABEL[a.legal.responsibleLevel],
-                            lng,
-                          ),
-                        })}
-                      </Caption>
-                    </VStack>
-                  </HStack>
-                  <Table.Root size="md">
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.ColumnHeader>
-                          {t("legal-col-norm")}
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader>
-                          {t("legal-col-authority")}
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader>
-                          {t("legal-col-competence")}
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader
+        <HStack
+          justifyContent="space-between"
+          alignItems="flex-end"
+          gap="m"
+          flexWrap="wrap"
+        >
+          <VStack alignItems="flex-start" gap="xs">
+            <TitleLarge color="content.primary">
+              {t("legal-actions-title")}
+            </TitleLarge>
+            <BodySmall color="content.secondary">
+              {t("next-legal-rows", { count: actions.length })}
+            </BodySmall>
+          </VStack>
+        </HStack>
+
+        <FacetFilters
+          items={all}
+          facets={facets}
+          selected={selected}
+          onChange={setSelected}
+          t={t}
+        />
+
+        <RowList>
+          {actions.map((a) => {
+            const grade = legalGrade(a.legal.score);
+            const isOpen = open === a.id;
+            return (
+              <ExpandableRow
+                key={a.id}
+                id={a.id}
+                open={isOpen}
+                onOpenChange={(o) => setOpen(o ? a.id : null)}
+                title={pick(a.name, lng)}
+                meta={
+                  <>
+                    <SectorGlyph sector={a.sector} size="12px" />{" "}
+                    {pick(SECTOR_LABEL[a.sector], lng)} ·{" "}
+                    {pick(LEVEL_LABEL[a.legal.responsibleLevel], lng)} ·{" "}
+                    {t("next-legal-norms", { count: a.legal.norms.length })}
+                  </>
+                }
+                aside={
+                  <Level tone={legalTone(grade)}>
+                    {pick(GRADE_LABEL[grade], lng)}
+                  </Level>
+                }
+              >
+                <Table.Root size="md">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeader>
+                        {t("legal-col-norm")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t("legal-col-authority")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t("legal-col-competence")}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader
+                        display={{ base: "none", md: "table-cell" }}
+                      >
+                        {t("legal-col-validation")}
+                      </Table.ColumnHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {a.legal.norms.map((n) => (
+                      <Table.Row key={`${a.id}-${n.code}`}>
+                        <Table.Cell>
+                          <VStack alignItems="flex-start" gap="xs">
+                            <BodyMedium
+                              color="content.primary"
+                              fontWeight="semibold"
+                            >
+                              {n.name}
+                            </BodyMedium>
+                            {n.url ? (
+                              <Link
+                                href={n.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                color="content.link"
+                                fontSize="caption"
+                                _focusVisible={FOCUS_RING}
+                              >
+                                <HStack gap="xs">
+                                  <span>{n.code}</span>
+                                  <Icon as={LuExternalLink} boxSize="12px" />
+                                </HStack>
+                              </Link>
+                            ) : (
+                              <BodySmall color="content.tertiary">
+                                {n.code}
+                              </BodySmall>
+                            )}
+                          </VStack>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <BodySmall color="content.secondary">
+                            {pick(AUTHORITY_LABEL[n.authority], lng)}
+                          </BodySmall>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <BodySmall color="content.secondary">
+                            {pick(COMPETENCE_LABEL[n.competence], lng)}
+                          </BodySmall>
+                        </Table.Cell>
+                        <Table.Cell
                           display={{ base: "none", md: "table-cell" }}
                         >
-                          {t("legal-col-validation")}
-                        </Table.ColumnHeader>
+                          <BodySmall color="content.tertiary">
+                            {pick(n.validation, lng)}
+                          </BodySmall>
+                        </Table.Cell>
                       </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {a.legal.norms.map((n) => (
-                        <Table.Row key={`${a.id}-${n.code}`}>
-                          <Table.Cell>
-                            <VStack alignItems="flex-start" gap="xs">
-                              <LabelMedium color="content.primary">
-                                {n.name}
-                              </LabelMedium>
-                              {n.url ? (
-                                <Link
-                                  href={n.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  color="content.link"
-                                  fontSize="caption"
-                                  _focusVisible={FOCUS_RING}
-                                >
-                                  <HStack gap="xs">
-                                    <span>{n.code}</span>
-                                    <Icon as={LuExternalLink} boxSize="12px" />
-                                  </HStack>
-                                </Link>
-                              ) : (
-                                <Caption color="content.tertiary">
-                                  {n.code}
-                                </Caption>
-                              )}
-                            </VStack>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <BodySmall color="content.secondary">
-                              {pick(AUTHORITY_LABEL[n.authority], lng)}
-                            </BodySmall>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <BodySmall color="content.secondary">
-                              {pick(COMPETENCE_LABEL[n.competence], lng)}
-                            </BodySmall>
-                          </Table.Cell>
-                          <Table.Cell
-                            display={{ base: "none", md: "table-cell" }}
-                          >
-                            <BodySmall color="content.tertiary">
-                              {pick(n.validation, lng)}
-                            </BodySmall>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table.Root>
-                </VStack>
-              </Card.Body>
-            </Card.Root>
-          );
-        })}
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </ExpandableRow>
+            );
+          })}
+        </RowList>
       </VStack>
     </DemoShell>
   );

@@ -23,7 +23,7 @@ import { sectorShares } from "@/app/[lng]/cities/[cityId]/MEED/components/sector
 import { SECTORS } from "@/util/constants";
 import type { SectorEmission } from "@/util/types";
 import type { TrackData } from "../_lib/useTrack";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ADAPTATION_ACTIONS } from "../_lib/actions";
 import { creditScreen, CREDIT_LABEL, fundingResult } from "../_lib/finance";
 import { legalGrade } from "../_lib/legal";
@@ -47,6 +47,7 @@ export function useContextAreas({
   data: TrackData;
   tResults: TFunction;
 }) {
+  const trackHrefIn = useTrackHref();
   const { city, track, ranked, adaptation, state } = data;
   const { t } = useDemoT(lng);
 
@@ -408,7 +409,7 @@ export function useContextAreas({
   };
 
   const hrefFor = (segment: string) =>
-    trackHref(lng, city.slug, track, segment);
+    trackHrefIn(lng, city.slug, track, segment);
 
   // City context is inside the AdaptaBrasil Impact index already, so the
   // card's action says so instead of inviting the reader to "view details".

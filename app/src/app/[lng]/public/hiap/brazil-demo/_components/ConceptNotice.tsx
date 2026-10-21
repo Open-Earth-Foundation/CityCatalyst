@@ -12,7 +12,9 @@ import { LuChevronUp, LuLightbulb, LuX } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
+import { usePathname } from "next/navigation";
 import { useDemoT } from "../_lib/useDemoT";
+import { isPreviousPath } from "../_lib/hrefs";
 
 const KEY = "hiap-br-demo:notice-collapsed";
 const EVENT = "hiap-br-demo:notice-changed";
@@ -52,12 +54,17 @@ function writeCollapsed(value: boolean) {
  */
 export function ConceptNotice({
   lng,
-  points,
+  points: screenPoints,
 }: {
   lng: string;
   points: string[];
 }) {
   const { t } = useDemoT(lng);
+  // The archived adaptation screens say what they are, first.
+  const pathname = usePathname() ?? "";
+  const points = isPreviousPath(pathname)
+    ? [t("previous-notice"), ...screenPoints]
+    : screenPoints;
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => true);
   if (points.length === 0) return null;
 

@@ -14,9 +14,8 @@ import { LuInfo } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { CloseButton } from "@/components/ui/close-button";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleLarge } from "@/components/package/Texts/Title";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
 import { MeedScoreComposition } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreComposition";
 import type { AdaptationAction } from "../../_lib/types";
@@ -36,6 +35,7 @@ import {
 import { trackHref } from "../../_lib/hrefs";
 import { METHODOLOGY_DOC_URL } from "../../_lib/links";
 import { pick } from "../../_lib/localized";
+import { planoClimaPlans, MATCH_TONE } from "./planoClima";
 import { indexTone } from "../RiskCellGrid";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
@@ -77,8 +77,9 @@ function Section({
 
 /**
  * BR-N6 — the action drawer in reading order: what it is and why it ranks
- * here; the four delivery facts; co-benefits; the actions to plan it with;
- * and, collapsed, the calculation. Levels are dots and words, as everywhere
+ * here; the four delivery facts; the actions to plan it with, each a card;
+ * co-benefits; the Plano Clima plans that cite it; and, collapsed, the
+ * calculation. Levels are dots and words, as everywhere
  * else on the proposal screens.
  */
 export function ActionDrawer({
@@ -118,6 +119,7 @@ export function ActionDrawer({
   const policy = policyGrade(action.policy.score);
   const cells = coBenefitCells(action);
   const related = relatedActions(action);
+  const plans = planoClimaPlans(action);
   const directLinks = action.links.filter((l) => l.directness === "direct");
   const hazardKey = row?.hazard ?? directLinks[0]?.cell ?? null;
   const hazardLabel = action.uncoveredHazard
@@ -188,7 +190,7 @@ export function ActionDrawer({
                 <Level tone={riskTone}>
                   {t("next-addresses", { hazard: hazardLabel })}
                   {hazardKey
-                    ? ` · ${t("next-addresses-level", { level: t(`risk-level-${riskTone}`) })}`
+                    ? ` · ${t(`next-addresses-level-${riskTone}`)}`
                     : ""}
                 </Level>
                 <BodySmall color="content.secondary">
@@ -267,19 +269,22 @@ export function ActionDrawer({
 
                 {related.length > 0 && (
                   <Section title={t("next-drawer-plan-with")}>
-                    <VStack alignItems="stretch" gap="0">
+                    <VStack alignItems="stretch" gap="s">
                       {RELATED_ROLES.flatMap((role) =>
                         related
                           .filter((r) => r.role === role)
                           .map(({ action: other, rationale }) => (
                             <HStack
                               key={`${role}-${other.id}`}
+                              data-testid="related-action"
                               justifyContent="space-between"
                               alignItems="flex-start"
                               gap="m"
-                              py="m"
-                              borderBottomWidth="1px"
-                              borderColor="border.overlay"
+                              p="l"
+                              bg="base.light"
+                              borderWidth="1px"
+                              borderColor="border.neutral"
+                              borderRadius="rounded"
                             >
                               <VStack
                                 alignItems="flex-start"
@@ -290,9 +295,9 @@ export function ActionDrawer({
                                 <Overline color="content.tertiary">
                                   {t(`next-role-${role}`)}
                                 </Overline>
-                                <LabelLarge color="content.primary">
+                                <TitleMedium as="h3" color="content.primary">
                                   {pick(other.name, lng)}
-                                </LabelLarge>
+                                </TitleMedium>
                                 <BodySmall color="content.secondary">
                                   {pick(rationale, lng)}
                                 </BodySmall>
@@ -301,42 +306,6 @@ export function ActionDrawer({
                                     {t("next-drawer-not-scored")}
                                   </BodySmall>
                                 )}
-
-                                <Section title={t("next-drawer-cobenefits")}>
-                                  {cells.length === 0 ? (
-                                    <BodyMedium color="content.secondary">
-                                      {t("next-drawer-no-cobenefits")}
-                                    </BodyMedium>
-                                  ) : (
-                                    <SimpleGrid
-                                      columns={{ base: 1, sm: 2 }}
-                                      gap="m"
-                                    >
-                                      {cells.map((c) =>
-                                        c.kind === "in_impact" ? (
-                                          <Level key={c.key} tone="neutral">
-                                            {labels.coBenefit(c.key)} ·{" "}
-                                            {t("matrix-in-impact")}
-                                          </Level>
-                                        ) : (
-                                          <Level
-                                            key={c.key}
-                                            tone={
-                                              c.value < 0
-                                                ? "negative"
-                                                : "positive"
-                                            }
-                                          >
-                                            {labels.coBenefit(c.key)} ·{" "}
-                                            {t(
-                                              `matrix-scale-${c.value < 0 ? "adverse" : c.value > 1 ? "strong" : "benefit"}`,
-                                            )}
-                                          </Level>
-                                        ),
-                                      )}
-                                    </SimpleGrid>
-                                  )}
-                                </Section>
                               </VStack>
                               <Box flexShrink={0}>
                                 <TextLink
@@ -351,6 +320,75 @@ export function ActionDrawer({
                     </VStack>
                   </Section>
                 )}
+
+                <Section title={t("next-drawer-cobenefits")}>
+                  {cells.length === 0 ? (
+                    <BodyMedium color="content.secondary">
+                      {t("next-drawer-no-cobenefits")}
+                    </BodyMedium>
+                  ) : (
+                    <SimpleGrid columns={{ base: 1, sm: 2 }} gap="m">
+                      {cells.map((c) =>
+                        c.kind === "in_impact" ? (
+                          <Level key={c.key} tone="neutral">
+                            {labels.coBenefit(c.key)} · {t("matrix-in-impact")}
+                          </Level>
+                        ) : (
+                          <Level
+                            key={c.key}
+                            tone={c.value < 0 ? "negative" : "positive"}
+                          >
+                            {labels.coBenefit(c.key)} ·{" "}
+                            {t(
+                              `matrix-scale-${c.value < 0 ? "adverse" : c.value > 1 ? "strong" : "benefit"}`,
+                            )}
+                          </Level>
+                        ),
+                      )}
+                    </SimpleGrid>
+                  )}
+                </Section>
+
+                <Section title={t("next-drawer-plans")}>
+                  {plans.length === 0 ? (
+                    <BodyMedium color="content.secondary">
+                      {t("next-drawer-no-plans")}
+                    </BodyMedium>
+                  ) : (
+                    <VStack alignItems="stretch" gap="m">
+                      <BodySmall color="content.secondary">
+                        {t("next-drawer-plans-note")}
+                      </BodySmall>
+                      {plans.map((plan) => (
+                        <HStack
+                          key={plan.document}
+                          data-testid="plano-clima-plan"
+                          justifyContent="space-between"
+                          alignItems="flex-start"
+                          gap="m"
+                          flexWrap="wrap"
+                        >
+                          <VStack alignItems="flex-start" gap="xs" minW={0}>
+                            <BodyMedium
+                              color="content.primary"
+                              fontWeight="semibold"
+                            >
+                              {plan.document}
+                            </BodyMedium>
+                            <BodySmall color="content.tertiary">
+                              {plan.pages
+                                .map((page) => t("policy-page-short", { page }))
+                                .join(", ")}
+                            </BodySmall>
+                          </VStack>
+                          <Level tone={MATCH_TONE[plan.match]}>
+                            {t(`next-match-${plan.match}`)}
+                          </Level>
+                        </HStack>
+                      ))}
+                    </VStack>
+                  )}
+                </Section>
 
                 {row && (
                   <Collapsible.Root
@@ -441,13 +479,13 @@ export function ActionDrawer({
 
                 <Section title={t("next-drawer-further")}>
                   <HStack gap="xl" flexWrap="wrap">
-                    <TextLink href={`${href("next/legal")}#${action.id}`}>
+                    <TextLink href={`${href("legal")}#${action.id}`}>
                       {t("next-further-legal")}
                     </TextLink>
-                    <TextLink href={`${href("next/finance")}#${action.id}`}>
+                    <TextLink href={`${href("finance")}#${action.id}`}>
                       {t("next-further-finance")}
                     </TextLink>
-                    <TextLink href={`${href("next/policy")}#${action.id}`}>
+                    <TextLink href={`${href("policy")}#${action.id}`}>
                       {t("next-further-policy")}
                     </TextLink>
                   </HStack>

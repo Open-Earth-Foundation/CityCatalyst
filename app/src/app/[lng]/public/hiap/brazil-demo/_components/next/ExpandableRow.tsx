@@ -1,16 +1,16 @@
 "use client";
 import React from "react";
-import { Box, Card, Collapsible, HStack, Icon, VStack } from "@chakra-ui/react";
+import { Box, Collapsible, HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 
 /**
  * One row of a proposal list that opens on its detail: the pattern the
  * reviewers liked on policy alignment, used for risk, legal, finance and
- * policy alike. Title and one meta line on the left, the row's level on the
- * right, the detail on a tinted panel below.
+ * policy alike. Each row is its own card: the name as a title, one meta line,
+ * the row's level on the right, and the detail below a divider when open.
  */
 export function ExpandableRow({
   id,
@@ -36,6 +36,14 @@ export function ExpandableRow({
       open={open}
       onOpenChange={(d) => onOpenChange(d.open)}
       data-testid="expandable-row"
+      bg="base.light"
+      borderWidth="1px"
+      borderColor={open ? "content.link" : "border.neutral"}
+      borderRadius="rounded"
+      boxShadow="1dp"
+      overflow="hidden"
+      transition="box-shadow 0.15s, border-color 0.15s"
+      _hover={{ boxShadow: "2dp" }}
     >
       <Collapsible.Trigger asChild>
         <Box
@@ -43,12 +51,9 @@ export function ExpandableRow({
           id={id}
           w="full"
           textAlign="start"
-          px="l"
-          py="m"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
+          px="xl"
+          py="l"
           scrollMarginTop="96px"
-          _hover={{ bg: "background.neutral" }}
           _focusVisible={FOCUS_RING}
         >
           <HStack justifyContent="space-between" gap="m" alignItems="center">
@@ -63,7 +68,9 @@ export function ExpandableRow({
               gap={{ base: "s", lg: "l" }}
             >
               <VStack alignItems="flex-start" gap="xs" minW={0} flex="1">
-                <LabelLarge color="content.primary">{title}</LabelLarge>
+                <TitleMedium as="span" color="content.primary">
+                  {title}
+                </TitleMedium>
                 {meta && (
                   <BodySmall as="div" color="content.tertiary">
                     {meta}
@@ -86,13 +93,7 @@ export function ExpandableRow({
         </Box>
       </Collapsible.Trigger>
       <Collapsible.Content>
-        <Box
-          px="l"
-          py="l"
-          bg="background.neutral"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
-        >
+        <Box px="xl" py="l" borderTopWidth="1px" borderColor="border.overlay">
           {children}
         </Box>
       </Collapsible.Content>
@@ -100,13 +101,11 @@ export function ExpandableRow({
   );
 }
 
-/** The card the rows sit in. */
+/** The rows, each its own card, with room between them. */
 export function RowList({ children }: { children: React.ReactNode }) {
   return (
-    <Card.Root overflow="hidden" borderColor="border.neutral">
-      <VStack alignItems="stretch" gap="0">
-        {children}
-      </VStack>
-    </Card.Root>
+    <VStack alignItems="stretch" gap="m">
+      {children}
+    </VStack>
   );
 }

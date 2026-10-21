@@ -10,7 +10,8 @@ import { MeedBreadcrumb } from "@/app/[lng]/cities/[cityId]/MEED/components/Meed
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import type { CityFixture, DemoTrack } from "../_lib/types";
-import { demoHome, trackHref } from "../_lib/hrefs";
+import { demoHome } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { useDemoT } from "../_lib/useDemoT";
 import { CitySwitcher } from "./CitySwitcher";
 import { ConceptNotice } from "./ConceptNotice";
@@ -67,8 +68,9 @@ export function DemoShell({
   openPoints,
   children,
 }: DemoShellProps) {
+  const trackHrefIn = useTrackHref();
   const { t } = useDemoT(lng);
-  const home = homeHref ?? trackHref(lng, city.slug, track);
+  const home = homeHref ?? trackHrefIn(lng, city.slug, track);
   return (
     <Box
       h="full"
@@ -188,7 +190,7 @@ export function DemoShell({
                 href={
                   step === "preferences"
                     ? home
-                    : trackHref(lng, city.slug, track, "preferences")
+                    : trackHrefIn(lng, city.slug, track, "preferences")
                 }
               >
                 {step === "preferences"

@@ -2,8 +2,8 @@
 import React from "react";
 import { HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { Slider } from "@/components/ui/slider";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import type { DemoWeights } from "../../_lib/types";
@@ -64,20 +64,21 @@ export function WeightSliders({
           <VStack key={k} alignItems="stretch" gap="s">
             <HStack justifyContent="space-between" alignItems="center" gap="s">
               <VStack alignItems="flex-start" gap="0" minW="0" flex="1">
-                <LabelLarge color="content.primary">
+                <TitleMedium as="span" color="content.primary">
                   {tPre(`weight-${k}`)}
-                </LabelLarge>
+                </TitleMedium>
                 <BodySmall color="content.tertiary">
                   {t(`weight-${k}-description-adaptation`)}
                 </BodySmall>
               </VStack>
-              <LabelLarge
+              <TitleMedium
+                as="span"
                 color={isDefault ? "content.secondary" : "content.link"}
                 flexShrink={0}
                 fontVariantNumeric="tabular-nums"
               >
                 {value}%
-              </LabelLarge>
+              </TitleMedium>
             </HStack>
             <Slider
               value={[value]}

@@ -2,8 +2,8 @@
 import React from "react";
 import { HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
 import {
   DialogBody,
@@ -107,7 +107,9 @@ export function CityContextBody({
                 ariaLabel={t(`ctx-${it.key}-info`)}
               />
             </HStack>
-            <LabelLarge color="content.primary">{it.value}</LabelLarge>
+            <TitleMedium as="span" color="content.primary">
+              {it.value}
+            </TitleMedium>
             <BodySmall color="content.tertiary">{it.source}</BodySmall>
           </VStack>
         ))}

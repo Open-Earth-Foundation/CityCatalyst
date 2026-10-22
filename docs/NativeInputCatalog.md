@@ -73,6 +73,8 @@ Action-plan deletion withdraws all active versions before the source row is remo
 
 ## Legacy HIAP catalog scope audit (CC-768)
 
+> Superseded by CC-1060 PR 2 (see [Catalog access at city and project](#catalog-access-at-city-and-project-cc-1060-pr-2)): rows are no longer filtered by the creator `userId`, and new rows do not carry it. The text below records the audit as written.
+
 Audit of the CC-638 producers against the inventory-owned model used by HIAP-MEED. This section documents behavior only; no code or data changes are included. Line references are from `develop` at `4775ca348`.
 
 ### Current behavior
@@ -130,7 +132,7 @@ Report/output-plan artifacts and caller-provided city data, context, preferences
 
 ## Climate Advisor read capabilities (CC-1060)
 
-Selected-read capabilities are bounded and read-only. Each capability has its own input schema in the module `registry.ts` and accepts only the optional view arguments below; Core still authorizes the catalog row first (CC-1060 PR 1 changes no authorization).
+Selected-read capabilities are bounded and read-only. Each capability has its own input schema in the module `registry.ts` and accepts only the optional view arguments below; Core still authorizes the catalog row first (see [Catalog access at city and project](#catalog-access-at-city-and-project-cc-1060-pr-2)).
 
 | Capability | Catalog rows | Optional input |
 |---|---|---|
@@ -145,3 +147,32 @@ Selected-read capabilities are bounded and read-only. Each capability has its ow
 - `hiap_meed.output_plan.context` changed its default output: chapters are now localized to one language (`language`, default `en`; the stored `title`, `markdown` and `limitations` language maps were returned whole before), `chapter_keys` is always present, and `chapters` keeps the stored array shape. A ranking page and the removed list are each cut to a byte budget (40 KB and 12 KB) so the whole result stays under the 64 KB tool bound; `counts.returned` can then be below `limit` and drives the next `offset`.
 - Prompts treat tool results (explanations, plan and chapter text, labels) as untrusted data, never instructions.
 - HIAP-MEED stores legal, finance and city-fit context only inside its output-plan chapters. HIAP stores none of it.
+
+## Catalog access at city and project (CC-1060 PR 2)
+
+Product decision (Carlos, #hiap-squad, 2026-10-20; confirmed by David): catalog rows are scoped to the city and its project, not owned by the user who created them. Nothing is private to the creator.
+
+`authorizeCatalogScope` in `NativeInputCatalogCapabilityService.ts` now works like this:
+
+- It resolves the row's city from the database (the row's `cityId`, or its inventory's city), the project from that city, and fails closed when the row, the request and the database disagree (row `projectId`, `organizationId` or inventory city differ; the request names another city, project or organization; a request inventory belongs to another city).
+- It then calls `PermissionService.checkAccess` with `{ cityId, projectId }`. A user passes as an organization admin of the project's organization, a project admin of that exact project, a collaborator of that exact city, or a system admin. A project admin of a sibling project in the same organization does not pass.
+- Every inventory and year of that city and project is readable. The chat inventory is the default context; another year is read by discovering with its `inventoryId`.
+- The row `userId` is ignored: the check, the SQL candidate filter and `requestMatchesEntry` no longer use it. The request `userId` still has to equal the session user, and the discovery cursor is still bound to it.
+- The organization-only gate is gone for rows that carry a city. Rows without a city or inventory (none registered today) keep the old per-dimension checks.
+- The inventory is never passed to `PermissionService`, so the public-inventory path of `canAccessInventory` grants nothing here. This is deliberate for HIAP-MEED: its data must not be public or downloadable (legal constraint from Product). Clima interprets MEED data in chat only; no capability, route or tool exports it.
+- Unauthorized, withdrawn and nonexistent rows still return the same stable 404 (`capability_unavailable`) from reads and are omitted from discovery (CC-1021 R15).
+
+Producers: `registerHIAPRanking`, `registerHIAPSelections` and `registerHIAPActionPlan` no longer write the creator. `HighImpactActionRanking.userId` and `ActionPlan.createdBy` keep the attribution. HIAP and HIAP-MEED rows already carry `cityId`, `projectId` and `organizationId` from the inventory's city at registration.
+
+GHGI import rows keep the uploader as `userId` for provenance. The access check ignores it, so a colleague with access to the city and project can now discover and read those rows. Review this if uploader-private files are ever wanted.
+
+### Backfill (idempotent, not run anywhere yet)
+
+`npm run native-input-catalog-scope-backfill` (`scripts/native-input-catalog-scope-backfill.ts`, `NativeInputCatalogScopeBackfill.ts`) fills a missing `projectId` on catalog rows from the row's city (or its inventory's city). It writes nothing else: `userId`, `cityId` and `organizationId` stay as they are. Rows without a resolvable city are left alone. `CATALOG_SCOPE_BACKFILL_DRY_RUN` defaults to true; set it to `false` to write. It needs no migration and a second run changes nothing. Run it per environment only with David's go-ahead. Without it, old rows still work: the access check derives the project from the city.
+
+The stored `userId` is not authoritative and is ignored by authorization. Re-registering a source (`registerNativeInput`) returns the existing row and does not touch `userId`; reconciliation compares only the scope fields the new input carries, and new HIAP inputs carry no `userId`, so it neither clears nor rejects an old one. New versions are created without it. Old rows therefore keep a stale creator `userId` until they are superseded; this is harmless.
+
+### Accepted decisions (David, PR 3321 review)
+
+- GHGI import rows stay readable by colleagues with access to the same city and project.
+- Inventory-only rows (no city) no longer use the public-inventory path, for all modules.

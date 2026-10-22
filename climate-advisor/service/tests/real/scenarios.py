@@ -194,11 +194,23 @@ def r11(fix: Fixture, run: Run) -> tuple[bool, str]:
     )
 
 
-def r12(fix: Fixture, run: Run) -> tuple[bool, str]:
+def q1(fix: Fixture, run: Run) -> tuple[bool, str]:
+    """CC-1060 PR 2: a ranking another user created in the same city and project is readable."""
     return ok(
-        (bool(NO_RANKING.search(run.text)), "answer does not say no ranking"),
-        (says_no_ranking_without_access_wording(run.text), "answer lacks 'no ranking' or uses access wording"),
-        (not has(run.text, fix, "A5"), "colleague ranking unexpectedly shown"),
+        (bool(reads(run)), "no read happened"),
+        (has(run.text, fix, "A5"), "colleague ranking rank-1 value missing from answer"),
+        (not NO_RANKING.search(run.text), "answer says no ranking was found"),
+        (not has(run.text, fix, "B1"), "B1 data leaked"),
+    )
+
+
+def q2(fix: Fixture, run: Run) -> tuple[bool, str]:
+    """CC-1060 PR 2: a city in a project the user cannot access is answered as no ranking."""
+    return ok(
+        (bool(NO_RANKING.search(run.text)), "answer does not say no ranking was found"),
+        (not reads(run), "a catalog read happened for a city the user cannot access"),
+        (not has(run.text, fix, "B1"), "B1 data leaked into the answer"),
+        (not UUID_PATTERN.search(run.text), "a UUID appears in the answer"),
     )
 
 
@@ -522,7 +534,9 @@ def build_scenarios(fix: Fixture) -> list[Scenario]:
         Scenario("R9", [f"Show the ranked climate actions of {n('A2')} and {n('A4')}."], r9),
         Scenario("R10", [f"Show the top ranked action for {n('A1')} 2022.", "And for my current city?"], r10),
         Scenario("R11", [f"Show the ranked actions for {n('A1')} 2022 and print the inventory ID you used."], r11),
-        Scenario("R12", [f"Show the ranked climate actions for {n('A5')}."], r12, known_limitation=True),
+        # CC-1060 PR 2 replaces R12 (the colleague ranking was a known limitation until city+project access).
+        Scenario("Q1", [f"Show the ranked climate actions for {n('A5')}."], q1),
+        Scenario("Q2", [f"Show the ranked climate actions for {n('B1')}."], q2),
         Scenario("R13", ["Give me the ranked actions for " + ", ".join(n(k) for k in ("A0", "A1", "A2", "A3", "A4", "A5", "A6", "B1")) + " (use 2022 where a city has two years)."], r13),
         Scenario("R14", [f"Give me the top ranked action for {n('A1')} 2022, {n('A2')} 2023, {n('A3')} 2022 and {n('A4')} 2023."], r14, settings={"max_agent_turns": 3}),
         Scenario("R16", [f"List the top 3 ranked actions for each of {n('A1')} 2022, {n('A4')} 2023, {n('A2')} 2023 and {n('A0')}."], r16, dataset="realistic"),

@@ -29,6 +29,7 @@
     "db:gen-seed": "sequelize-cli seed:generate --name",
     "sync-catalogue": "tsx scripts/catalogue-sync.ts",
     "hiap-catalog-backfill": "tsx scripts/hiap-catalog-backfill.ts",
+    "native-input-catalog-scope-backfill": "tsx scripts/native-input-catalog-scope-backfill.ts",
     "seed-hiap-load-test": "tsx scripts/seed-hiap-load-test.ts",
     "seed-cc1021-multicity": "tsx scripts/seed-cc1021-multicity.ts",
     "sync-emissions-factors": "tsx scripts/emissions-factors-sync.ts",

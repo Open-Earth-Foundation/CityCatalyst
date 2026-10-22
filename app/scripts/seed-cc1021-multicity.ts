@@ -10,7 +10,8 @@
  * inventory so that discovery needs more than one page. One A4 ranking contains an injected
  * instruction used by scenario R19.
  *
- * Inputs (env): CC1021_ACCESS=org|project (default org; see the comment in seedStructure), CC1021_DATASET=small|realistic (default small; realistic uses
+ * Inputs (env): CC1021_ACCESS=org|project|collaborator (default org; CC-1060 PR 2 reads
+ * all three: organization admin, project admin, city collaborator), CC1021_DATASET=small|realistic (default small; realistic uses
  * 40 actions per ranking with long en/pt explanations), CC1021_FIXTURE_PATH
  * (default climate-advisor/service/tests/real/out/seed-fixture.json), plus the
  * normal app database variables. DATABASE_HOST must be local.
@@ -305,19 +306,22 @@ async function seedStructure(): Promise<void> {
       description: "CC-1021 multi-city real-test fixture",
     });
   }
-  // The user administers organization A only; organization B (city B1) stays
-  // inaccessible. The catalog checks organization scope with canAccessOrganization,
-  // which only passes for organization admins, so a ProjectAdmin-only user would
-  // never see any catalog entry (CC-1021 finding). CC1021_ACCESS=project reproduces it.
+  // The user belongs to organization A only; organization B (city B1) stays
+  // inaccessible. CC-1060 PR 2 authorizes catalog rows at city and project, so
+  // all three roles read every project A city:
+  // CC1021_ACCESS=org (organization admin, default), project (project admin of
+  // A) or collaborator (collaborator of each project A city, no admin role).
   await db.models.OrganizationAdmin.destroy({ where: { userId: IDS.user } });
   await db.models.ProjectAdmin.destroy({ where: { userId: IDS.user } });
-  if ((process.env.CC1021_ACCESS ?? "org") === "project") {
+  await db.models.CityUser.destroy({ where: { userId: IDS.user } });
+  const access = process.env.CC1021_ACCESS ?? "org";
+  if (access === "project") {
     await db.models.ProjectAdmin.create({
       projectAdminId: fixedId(7),
       projectId: IDS.projectA,
       userId: IDS.user,
     });
-  } else {
+  } else if (access === "org") {
     await db.models.OrganizationAdmin.create({
       organizationAdminId: fixedId(8),
       organizationId: IDS.orgA,
@@ -342,6 +346,15 @@ async function seedStructure(): Promise<void> {
         inventoryName: `${PREFIX} ${city.key} ${year}`,
         year,
         isPublic: false,
+      });
+    }
+  }
+  if ((process.env.CC1021_ACCESS ?? "org") === "collaborator") {
+    for (const city of CITIES.filter((spec) => spec.project === "A")) {
+      await db.models.CityUser.create({
+        cityUserId: fixedId(9, cityIndex(city.key)),
+        cityId: cityId(city.key),
+        userId: IDS.user,
       });
     }
   }

@@ -21,7 +21,6 @@ const UNRANKED_SELECTION_SOURCE_TYPE = "hiap_unranked_selection" as const;
 const ACTION_PLAN_SOURCE_TYPE = "action_plan" as const;
 
 type HiapCatalogScope = {
-  userId: string | null;
   inventoryId: string | null;
   cityId: string | null;
   projectId: string | null;
@@ -76,11 +75,9 @@ function canonicalize(value: unknown): unknown {
 async function resolveScope({
   inventoryId,
   cityId,
-  userId,
 }: {
   inventoryId?: string | null;
   cityId?: string | null;
-  userId?: string | null;
 }): Promise<HiapCatalogScope> {
   let inventory = inventoryId
     ? await db.models.Inventory.findByPk(inventoryId, {
@@ -129,7 +126,6 @@ async function resolveScope({
   const organization = project?.organization;
 
   return {
-    userId: userId ?? null,
     inventoryId: inventory?.inventoryId ?? inventoryId ?? null,
     cityId: inventory?.cityId ?? city?.cityId ?? cityId ?? null,
     projectId: city?.projectId ?? project?.projectId ?? null,
@@ -140,7 +136,6 @@ async function resolveScope({
 
 function ensureScope(scope: HiapCatalogScope): void {
   if (
-    !scope.userId &&
     !scope.inventoryId &&
     !scope.cityId &&
     !scope.projectId &&
@@ -153,7 +148,6 @@ function ensureScope(scope: HiapCatalogScope): void {
 export async function resolveHIAPCatalogScope(input: {
   inventoryId?: string | null;
   cityId?: string | null;
-  userId?: string | null;
 }): Promise<HiapCatalogScope> {
   const scope = await resolveScope(input);
   ensureScope(scope);
@@ -202,7 +196,6 @@ export async function buildHIAPRankingInput(
 
   const scope = await resolveScope({
     inventoryId: ranking.inventoryId,
-    userId: ranking.userId,
   });
   ensureScope(scope);
 
@@ -346,7 +339,6 @@ export async function backfillMissingHIAPRankingsPage(
     attributes: [
       "id",
       "inventoryId",
-      "userId",
       "locode",
       "type",
       "langs",
@@ -417,7 +409,6 @@ export async function buildHIAPActionPlanInput(
   const scope = await resolveScope({
     inventoryId: plan.inventoryId,
     cityId: plan.cityId,
-    userId: plan.createdBy,
   });
   ensureScope(scope);
 
@@ -487,7 +478,6 @@ export async function backfillMissingHIAPActionPlansPage(
       "mitigations",
       "adaptations",
       "sdgs",
-      "createdBy",
       "created",
     ],
     order: [
@@ -629,11 +619,9 @@ async function withdrawOrSupersedeStaleSelections(
 export async function registerHIAPSelections({
   inventoryId,
   actionType,
-  authorId,
 }: {
   inventoryId: string;
   actionType: ACTION_TYPES;
-  authorId: string;
 }) {
   const ranking = await db.models.HighImpactActionRanking.findOne({
     where: {
@@ -643,7 +631,7 @@ export async function registerHIAPSelections({
     },
     order: [["created", "DESC"]],
   });
-  const scope = await resolveScope({ inventoryId, userId: authorId });
+  const scope = await resolveScope({ inventoryId });
   ensureScope(scope);
   const registrations: SelectionRegistration[] = [];
 
@@ -783,7 +771,6 @@ export function syncHIAPRanking(ranking: HighImpactActionRanking) {
 export function syncHIAPSelections(input: {
   inventoryId: string;
   actionType: ACTION_TYPES;
-  authorId: string;
 }) {
   return tryCatalogSync(() => registerHIAPSelections(input), {
     inventoryId: input.inventoryId,

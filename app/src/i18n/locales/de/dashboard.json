@@ -352,5 +352,6 @@
   "invite-email-failed-toast-description-many": "Wir konnten die Einladung an {{count}} Einladungsempfänger nicht senden. Teilen Sie die Einladungslinks direkt mit ihnen.",
   "invite-link-in-clipboard": "Der Link befindet sich in Ihrer Zwischenablage.",
   "inventory-versions-label-import-replace-before": "Inventardaten, bevor sie durch einen Dateiimport ersetzt wurden. Stellen Sie diese Version wieder her, um die Ersetzung rückgängig zu machen.",
-  "inventory-versions-label-import-replace": "Inventardaten durch eine Dateiimportierung ersetzt"
+  "inventory-versions-label-import-replace": "Inventardaten durch eine Dateiimportierung ersetzt",
+  "less-than-one-percent": "<1"
 }

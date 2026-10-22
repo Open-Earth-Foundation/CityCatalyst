@@ -25,11 +25,21 @@ export const SectorHeader = ({
     <HStack alignItems={"start"}>
       <Icon as={icon} height="24px" w="24px" color="interactive.secondary" />
       <VStack alignItems={"start"} gap={0}>
-        <Text fontSize="14px" fontWeight="500" fontStyle="normal">
+        <Text
+          fontFamily="heading"
+          fontSize="14px"
+          fontWeight="500"
+          fontStyle="normal"
+        >
           {capitalizeFirstLetter(t("sector"))} -{" "}
           {capitalizeFirstLetter(t(sectorName))}
         </Text>
-        <Text fontWeight={"600"} fontSize={"28px"} color={"content.secondary"}>
+        <Text
+          fontFamily="heading"
+          fontWeight={"600"}
+          fontSize={"28px"}
+          color={"content.secondary"}
+        >
           {dataForSector?.co2eq
             ? formatEmissionsOrRemoval(
                 dataForSector.co2eq,
@@ -39,6 +49,7 @@ export const SectorHeader = ({
             : t("N/A")}
         </Text>
         <Text
+          fontFamily="heading"
           fontWeight={"400"}
           fontSize={"16px"}
           color={"content.secondary"}

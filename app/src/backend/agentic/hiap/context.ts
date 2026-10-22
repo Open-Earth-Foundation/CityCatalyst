@@ -57,10 +57,11 @@ type HiapCategoryContext = {
     ranked: number;
     selected: number;
     returned: number;
-    total: number;
-    offset: number;
+    // Only present when the call asked for a scope, limit or offset.
+    total?: number;
+    offset?: number;
   };
-  truncated: boolean;
+  truncated?: boolean;
   actions: HiapActionContext[];
 };
 
@@ -351,6 +352,33 @@ function buildCategoryContext(
         (right.rank ?? Number.MAX_SAFE_INTEGER) ||
       left.action_id.localeCompare(right.action_id),
   );
+
+  // The default projection is consumed by the Concept Note Builder, whose
+  // models forbid extra fields and check `counts.returned == len(actions)`.
+  // Keep it exactly as it was: no paging fields and no byte trim.
+  const paged =
+    options.scope !== undefined ||
+    options.limit !== undefined ||
+    options.offset !== undefined;
+  if (!paged) {
+    return {
+      status: state.status,
+      ranking_id: state.ranking?.id ?? null,
+      updated_at: state.ranking?.lastUpdated?.toISOString() ?? null,
+      language: state.effectiveLanguage ?? state.requestedLanguage,
+      selection_mode: hasCitySelection
+        ? "city_selected"
+        : allActions.length > 0
+          ? "ranked_fallback"
+          : "none",
+      counts: {
+        ranked: rowsByActionId.size,
+        selected: selectedIds.size,
+        returned: allActions.length,
+      },
+      actions: allActions,
+    };
+  }
 
   // A ranked listing is paged; other views keep returning the whole list.
   const offset = options.offset ?? 0;

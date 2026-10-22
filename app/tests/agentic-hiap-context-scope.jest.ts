@@ -119,14 +119,16 @@ describe("HIAP inventory context scope and paging", () => {
     const data = await buildHiapInventoryContext(inventoryId, LANGUAGES.en);
 
     expect(ids(data.mitigation!)).toEqual(["m-2", "m-5"]);
+    // The default view has no paging fields (the CNB models forbid them).
     expect(data.mitigation).toMatchObject({
       selection_mode: "city_selected",
-      truncated: false,
-      counts: { ranked: 30, selected: 2, returned: 2, total: 2, offset: 0 },
+      counts: { ranked: 30, selected: 2, returned: 2 },
     });
+    expect(data.mitigation!.counts).not.toHaveProperty("total");
+    expect(data.mitigation).not.toHaveProperty("truncated");
     expect(data.adaptation).toMatchObject({
       selection_mode: "ranked_fallback",
-      counts: { returned: 3, total: 3 },
+      counts: { returned: 3 },
     });
   });
 

@@ -1,0 +1,78 @@
+---
+description: Conventions for LangGraph-based Python services (climate-advisor, hiap, hiap-meed).
+globs: climate-advisor/**/*.py,hiap/**/*.py,hiap-meed/**/*.py
+alwaysApply: false
+---
+
+# LangGraph / RAG Service Conventions
+
+These rules apply to all three LLM-backed Python services. They complement `python-fastapi.mdc`.
+
+## Project layout
+
+```
+<service>/
+├── app/                   # FastAPI app (entry point: app/main.py)
+│   ├── api/v1/            # routers
+│   ├── agents/            # LangGraph graph definitions
+│   ├── tools/             # tools the agent can call
+│   ├── prompts/           # system prompt templates (markdown)
+│   ├── models.py          # Pydantic models for in/out
+│   └── settings.py        # pydantic-settings (env)
+├── tests/
+└── pyproject.toml + uv.lock
+```
+
+## Prompts
+
+Prompt files live in `<service>/app/prompts/*.md`. Use the **`prompt-schema-authoring`** skill to author / change them.
+
+Required structure:
+
+```md
+<role>...</role>
+<task>...</task>
+<input>JSON object with: - field (type): purpose</input>
+<tools>...</tools>            <!-- only if tools exist -->
+<output>...</output>
+<example_output>...</example_output>
+```
+
+Keep prompts under 300 lines. If longer, split by responsibility (planner / synthesiser / etc.) and compose.
+
+## Tool definitions
+
+- Each tool = one Python function with a Pydantic input model + clear docstring.
+- The docstring is what the LLM sees: write it as instructions to the model, not to humans.
+- Side effects must be reversible or idempotent.
+
+## Streaming responses
+
+Use **SSE** (Server-Sent Events) for streaming. The `text/event-stream` content type is set by FastAPI's `EventSourceResponse` (sse-starlette). Do not invent a custom protocol.
+
+## Cost / observability
+
+- LangSmith is optional but **on** in prod for `climate-advisor`. Tag runs with the user/session ID, never PII.
+- Log a token count + cost estimate per request at INFO level.
+- Failures from the LLM provider must surface as `502 Bad Gateway` (upstream), not `500`.
+
+## Auth
+
+- JWT validation against the same shared secret as the Next.js app (`NEXTAUTH_SECRET`).
+- Service-to-service calls (e.g. CityCatalyst → Climate Advisor) use `X-Service-Name` + `X-Service-Key` (see `auth-permissions.mdc`).
+
+## Tests
+
+- Mock the LLM (do not call the real API in unit tests).
+- Use `pytest-asyncio` for async tests.
+- Smoke tests can hit a small local model (`ollama`) when available — but they're optional, not in CI.
+
+## Vector store (climate-advisor only)
+
+- Embeddings via OpenAI `text-embedding-3-small` unless overridden in `llm_config.yaml`.
+- Storage: `pgvector` extension on the same Postgres DB.
+- Re-ingestion is a separate CLI in `vector_db/` — never re-ingest from a request handler.
+
+## Adding a new agent / tool / prompt
+
+Use the `add-langgraph-tool` skill (CityCatalyst) — it walks through registering the tool, updating the graph, adding a Pydantic model, and writing the smoke test.

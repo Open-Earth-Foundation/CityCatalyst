@@ -639,7 +639,7 @@ function decisionReviewContextForProposal(
     proposal_id: proposal.proposal_id,
     proposal,
     label:
-      proposalLabel(proposal) ||
+      proposalLabel(proposal, t) ||
       translateReviewText(t, "review-fallback-row-label"),
     status: proposal.status,
     recommendedOption,

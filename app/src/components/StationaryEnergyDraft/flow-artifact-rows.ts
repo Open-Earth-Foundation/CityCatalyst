@@ -10,6 +10,7 @@ import {
   compareProposalsByGpcReference,
   currentValueLabel,
   findRecommendedSource,
+  proposalScopeLabel,
   proposalSubcategoryLabel,
   proposalSubsectorLabel,
   proposalSubsectorRef,
@@ -109,11 +110,11 @@ export function buildArtifactRows(
       return {
         id: proposal.proposal_id,
         subsectorRef: proposalSubsectorRef(proposal),
-        subsectorLabel: proposalSubsectorLabel(proposal),
+        subsectorLabel: proposalSubsectorLabel(proposal, t),
         subcategoryLabel:
-          proposalSubcategoryLabel(proposal) ||
+          proposalSubcategoryLabel(proposal, t) ||
           translateArtifactText(t, "artifact-row-fallback"),
-        scope: rowScopeLabel(proposal),
+        scope: rowScopeLabel(proposal, t),
         state: artifactStateForProposal(proposal),
         value: proposal.proposed_value ? proposedValueLabel(proposal, t) : null,
         sourceName: shortSourceName(recommendedSource),
@@ -188,9 +189,9 @@ function artifactStatusLabel(proposal: DraftProposal, t?: TFunction): string {
   return currentValueLabel(proposal, t);
 }
 
-function rowScopeLabel(proposal: DraftProposal): string {
+function rowScopeLabel(proposal: DraftProposal, t?: TFunction): string {
   return [
-    proposal.target_ref.scope_name ?? proposal.target_ref.scope_id,
+    proposalScopeLabel(proposal, t),
     proposal.target_ref.subcategory_reference_number,
   ]
     .filter(Boolean)

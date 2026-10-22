@@ -1,5 +1,7 @@
 """Unit tests for conversation history manager and pruning behavior."""
 
+import json
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from typing import List
@@ -221,6 +223,41 @@ class TestHistoryManagerBuildContext:
             assert pruned_count == 2
             for msg in context:
                 assert set(msg.keys()) == {"role", "content"}
+
+
+def test_tool_context_replaces_visual_html_with_placeholder():
+    html = "<html>" + "x" * 1000 + "</html>"
+    result = {
+        "action": "concept_note.visual.render",
+        "success": True,
+        "data": {"title": "Chart", "html": html},
+        "error_code": None,
+    }
+    invocation = {
+        "id": "call-1",
+        "name": "concept_note_render_visual",
+        "status": "success",
+        "arguments": {"title": "Chart", "html": html},
+        "result": json.dumps(result),
+        "result_json": result,
+    }
+    manager = HistoryManager("thread123", "user456", None)
+
+    [message] = manager._tool_context_to_messages([invocation])
+
+    assert html not in message["content"]
+    [item] = json.loads(message["content"].split("\n", 1)[1])["tools_used"]
+    assert item["arguments"] == {
+        "title": "Chart",
+        "html": f"[{len(html)} chars omitted]",
+    }
+    assert item["result"]["data"] == {
+        "title": "Chart",
+        "html": f"[visual 'Chart' rendered, {len(html)} chars omitted]",
+    }
+    # The stored invocation keeps the full HTML for reload and the done event.
+    assert invocation["result_json"]["data"]["html"] == html
+    assert invocation["arguments"]["html"] == html
 
 
 class TestLoadConversationHistory:

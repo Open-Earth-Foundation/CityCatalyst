@@ -54,6 +54,37 @@ paths:
           $ref: '#/components/responses/WriteAuthUnavailable'
         '422':
           description: Validation error
+  /v1/threads/{thread_id}/messages:
+    get:
+      summary: List thread messages (oldest first)
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Thread messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadMessagesResponse'
+        '422':
+          description: Validation error
   /v1/messages:
     post:
       summary: Send a message (streams SSE)
@@ -150,6 +181,46 @@ components:
           nullable: true
         context:
           nullable: true
+    ThreadMessagesResponse:
+      type: object
+      required: [thread_id, messages]
+      properties:
+        thread_id:
+          type: string
+          format: uuid
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThreadMessageResponse'
+    ThreadMessageResponse:
+      type: object
+      required: [message_id, role, text, created_at, visuals]
+      properties:
+        message_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+        text:
+          type: string
+          description: Empty for an assistant turn whose only output is a visual.
+        created_at:
+          type: string
+          format: date-time
+        visuals:
+          type: array
+          description: Successful CNB `concept_note_render_visual` results stored with this message.
+          items:
+            $ref: '#/components/schemas/ThreadMessageVisual'
+    ThreadMessageVisual:
+      type: object
+      required: [title, html]
+      properties:
+        title:
+          type: string
+        html:
+          type: string
+          description: Self-contained HTML document; render only in a sandboxed iframe.
     MessageCreateRequest:
       type: object
       required: [user_id, content]

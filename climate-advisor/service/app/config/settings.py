@@ -580,6 +580,10 @@ class Settings(BaseModel):
     cnb_structured_request_max_bytes: int = _parse_int(
         os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
+    # Experimental: lets CNB chat render sandboxed HTML charts and diagrams.
+    cnb_render_visual_enabled: bool = _parse_bool(
+        os.getenv("CNB_RENDER_VISUAL_ENABLED"), False
+    )
 
     def model_post_init(self, __context: Any) -> None:
         """Load non-secret OpenRouter and observability settings from llm_config.yaml."""

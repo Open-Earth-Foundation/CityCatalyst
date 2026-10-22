@@ -45,6 +45,7 @@ from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
+from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
 from app.tools.stationary_energy_review_tools import (
@@ -477,6 +478,8 @@ class AgentService:
                         user_id=str(self.cc_user_id),
                     )
                 )
+                if self.settings.cnb_render_visual_enabled:
+                    tools.append(concept_note_render_visual)
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")

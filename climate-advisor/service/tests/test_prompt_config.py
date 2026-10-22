@@ -253,6 +253,8 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "concept_note_edit_propose" in composed
+    assert "concept_note_render_visual" in composed
+    assert "https://cdn.jsdelivr.net" in composed
     assert "takes no arguments" in composed
     assert "A proposal does not apply changes" in composed
     assert "If the edit tool is unavailable" in composed

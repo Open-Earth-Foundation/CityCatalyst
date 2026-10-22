@@ -98,6 +98,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         settings = get_settings().model_copy(deep=True)
         settings.openrouter_api_key = "test-key"
         settings.langsmith_tracing_enabled = False
+        settings.cnb_render_visual_enabled = False
         monkeypatch.setattr(
             "app.services.agent_service.get_settings",
             lambda: settings,
@@ -156,6 +157,33 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         await service.close()
     finally:
         await engine.dispose()
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+async def test_render_visual_registration_follows_setting(monkeypatch, enabled):
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.langsmith_tracing_enabled = False
+    settings.cnb_render_visual_enabled = enabled
+    monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
+    monkeypatch.setattr(
+        "app.services.agent_service.load_agent_context",
+        AsyncMock(return_value={"workflow_step": None}),
+    )
+    service = AgentService(
+        cc_user_id="owner",
+        cc_thread_id=uuid4(),
+        session_factory=MagicMock(),
+        concept_note_run_id=uuid4(),
+    )
+    try:
+        agent = await service.create_agent()
+    finally:
+        await service.close()
+    expected = ["concept_note_help", "concept_note_gaps"]
+    if enabled:
+        expected.append("concept_note_render_visual")
+    assert [tool.name for tool in agent.tools] == expected
 
 
 async def test_help_receives_active_ui_locale(monkeypatch):

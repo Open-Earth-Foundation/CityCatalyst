@@ -10,11 +10,18 @@ class ThreadCreateResponse(BaseModel):
     context: Optional[Any] = None
 
 
+class ThreadMessageVisual(BaseModel):
+    title: str
+    html: str
+
+
 class ThreadMessageResponse(BaseModel):
     message_id: UUID
     role: str
     text: str
     created_at: datetime
+    # Successful CNB render-visual results stored with this message.
+    visuals: list[ThreadMessageVisual] = []
 
 
 class ThreadMessagesResponse(BaseModel):

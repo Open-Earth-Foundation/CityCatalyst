@@ -13,8 +13,9 @@ def format_sse(data: dict | str, event: Optional[str] = None, id: Optional[str] 
         payload = json.dumps(data, ensure_ascii=False)
     else:
         payload = str(data)
-    # Split payload by lines to respect SSE spec
-    for line in payload.splitlines() or [""]:
+    # Split on "\n" only: splitlines() also breaks on U+2028/U+2029/U+0085 that
+    # JSON keeps raw inside strings, which the client cannot rejoin.
+    for line in payload.split("\n"):
         lines.append(f"data: {line}")
     lines.append("")  # end of event
     return "\n".join(lines) + "\n"

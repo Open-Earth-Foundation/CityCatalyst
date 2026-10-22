@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import get_settings
 from app.models.db.message import Message, MessageRole
 from app.services.message_service import MessageService
+from app.utils.concept_note_context import omit_visual_html
 
 logger = logging.getLogger(__name__)
 
@@ -222,7 +223,8 @@ class HistoryManager:
         metadata must be expressed as plain text within role/content items.
 
         Returns a list of SYSTEM messages intended for internal grounding only.
-        These are appended only for preserved assistant messages.
+        These are appended only for preserved assistant messages. Rendered CNB
+        visual HTML is replaced by a short placeholder.
         """
         if not tools_used:
             return []
@@ -255,7 +257,7 @@ class HistoryManager:
                 item["result"] = str(inv.get("result"))
 
             if item:
-                compact.append(item)
+                compact.append(omit_visual_html(item))
 
         if not compact:
             return []

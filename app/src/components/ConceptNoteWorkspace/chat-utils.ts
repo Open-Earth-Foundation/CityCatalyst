@@ -1,7 +1,13 @@
+export interface ConceptNoteChatVisual {
+  title: string;
+  html: string;
+}
+
 export interface ConceptNoteChatMessage {
   id: string;
   role: "assistant" | "user";
   text: string;
+  visuals?: ConceptNoteChatVisual[];
 }
 
 export interface ConceptNoteReasoning {
@@ -54,6 +60,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** Model-authored HTML; render it only through the sandboxed visual frame. */
+export function readConceptNoteVisual(
+  value: unknown,
+): ConceptNoteChatVisual | null {
+  if (
+    !isRecord(value) ||
+    typeof value.title !== "string" ||
+    typeof value.html !== "string" ||
+    !value.html
+  )
+    return null;
+  return { title: value.title, html: value.html };
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -70,6 +90,9 @@ export function readConceptNoteThreadMessages(
     if ((role !== "assistant" && role !== "user") || typeof text !== "string") {
       return [];
     }
+    const visuals = Array.isArray(message.visuals)
+      ? message.visuals.flatMap((visual) => readConceptNoteVisual(visual) ?? [])
+      : [];
     return [
       {
         id:
@@ -78,6 +101,7 @@ export function readConceptNoteThreadMessages(
             : crypto.randomUUID(),
         role,
         text,
+        ...(visuals.length > 0 ? { visuals } : {}),
       },
     ];
   });

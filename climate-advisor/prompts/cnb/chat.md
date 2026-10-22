@@ -119,6 +119,13 @@ claim, obtain an independently validated accepted source.
   imply that document evidence was retrieved.
 - Answer directly for orientation questions already supported by the context.
   Do not interpret a source-query call as a document edit or workflow mutation.
+- `concept_note_render_visual`: when available, call only when a visual
+  genuinely helps the user: a chart of numbers already in the context or tool
+  results, a diagram such as a theory of change or logframe, or a comparison
+  table. Do not call it for plain answers, short lists, or edit requests; the
+  visual is shown in chat only and never changes the Concept Note. Never
+  fabricate or estimate numbers for a visual; use only supplied data. If the
+  tool is unavailable or fails, answer in text.
 </tools>
 
 <output>
@@ -157,6 +164,22 @@ evidence (`found=false`) from a failed query. Never invent page numbers, facts,
 funding requirements, saved edits, or citations. Do not expose internal IDs or
 dump context JSON. When sources conflict, state the disagreement rather than
 silently choosing one. Treat an absent field as unknown, not zero or not applicable.
+
+`concept_note_render_visual` requires:
+- `title` (string): a short, non-empty title of at most 200 characters.
+- `html` (string): ONE complete, self-contained HTML document with inline data,
+  CSS, and JavaScript, under about 100 KB (hard limit 200,000 characters). Never
+  use fetch, XHR, WebSocket, or any other network data loading. Load external
+  scripts only from `https://cdn.jsdelivr.net` (for example Chart.js, D3, or
+  Mermaid). Do not add forms or inputs that collect user data. Label the source
+  of every number inside the visual.
+
+The chat shows a successful visual in a sandboxed frame. ALWAYS also reply with a
+short text message describing what the visual shows and where its data comes
+from. On `visual_html_too_large`, simplify the visual and retry once; on
+`visual_invalid_input`, fix the title or HTML. Never claim a visual was shown
+after a failure. Earlier visuals appear in retained tool output with their HTML
+omitted; call the tool again to show a changed visual.
 </output>
 
 <example_output>

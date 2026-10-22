@@ -23,9 +23,12 @@ from sqlalchemy.pool import StaticPool
 
 from app.main import get_app
 from app.db import Base
-from app.models.requests import MessageCreateRequest
+from app.models.requests import MessageCreateRequest, ThreadCreateRequest
 from app.routes.messages import post_message
+from app.routes.threads import get_thread_messages
 from app.services.citycatalyst_client import CityCatalystClientError
+from app.services.message_service import MessageService
+from app.services.thread_service import ThreadService
 
 
 class HealthRouteTests(unittest.TestCase):
@@ -563,6 +566,70 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
             )
             
             self.assertIn(response.status_code, [200, 400])  # May fail if agent setup fails
+
+
+class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
+    """Tests for the thread history endpoint."""
+
+    async def test_messages_include_stored_visuals(self) -> None:
+        engine = create_async_engine(
+            "sqlite+aiosqlite:///:memory:",
+            poolclass=StaticPool,
+            connect_args={"check_same_thread": False},
+        )
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        visual = {"title": "Emissions by sector", "html": "<html></html>"}
+        try:
+            async with session_factory() as session:
+                thread = await ThreadService(session).create_thread(
+                    ThreadCreateRequest(user_id="owner")
+                )
+                message_service = MessageService(session)
+                await message_service.create_user_message(
+                    thread_id=thread.thread_id, user_id="owner", text="Chart it"
+                )
+                await message_service.create_assistant_message(
+                    thread_id=thread.thread_id,
+                    user_id="owner",
+                    text="",
+                    tools_used=[
+                        {
+                            "name": "concept_note_render_visual",
+                            "result_json": {
+                                "action": "concept_note.visual.render",
+                                "success": True,
+                                "data": visual,
+                                "error_code": None,
+                            },
+                        },
+                        {
+                            "name": "concept_note_render_visual",
+                            "result_json": {
+                                "action": "concept_note.visual.render",
+                                "success": False,
+                                "data": None,
+                                "error_code": "visual_invalid_input",
+                            },
+                        },
+                        {"name": "concept_note_gaps", "result_json": {"success": True}},
+                    ],
+                )
+                await session.commit()
+                response = await get_thread_messages(
+                    thread_id=thread.thread_id,
+                    user_id="owner",
+                    limit=None,
+                    session=session,
+                )
+        finally:
+            await engine.dispose()
+
+        by_role = {message.role: message for message in response.messages}
+        self.assertEqual(by_role["user"].visuals, [])
+        self.assertEqual(by_role["assistant"].text, "")
+        self.assertEqual(by_role["assistant"].model_dump()["visuals"], [visual])
 
 
 class ResponseFormatTests(unittest.TestCase):

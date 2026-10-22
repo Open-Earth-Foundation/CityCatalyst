@@ -149,6 +149,37 @@ describe("Concept Note chat helpers", () => {
     ]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
   });
+
+  it("keeps valid stored visuals, including on a visual-only reply", () => {
+    const chart = { title: "Emissions", html: "<svg></svg>" };
+    expect(
+      readConceptNoteThreadMessages({
+        messages: [
+          {
+            message_id: "message-1",
+            role: "assistant",
+            text: "",
+            visuals: [
+              chart,
+              { title: "No html", html: "" },
+              { title: 3, html: "<p></p>" },
+              "<script></script>",
+              null,
+            ],
+          },
+          {
+            message_id: "message-2",
+            role: "assistant",
+            text: "Plain",
+            visuals: "not-a-list",
+          },
+        ],
+      }),
+    ).toEqual([
+      { id: "message-1", role: "assistant", text: "", visuals: [chart] },
+      { id: "message-2", role: "assistant", text: "Plain" },
+    ]);
+  });
 });
 
 describe("uploaded file rows", () => {

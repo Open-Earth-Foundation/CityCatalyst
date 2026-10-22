@@ -20,6 +20,7 @@ from app.utils.citycatalyst_auth import (
     authenticate_write_request,
     normalize_write_context,
 )
+from app.utils.concept_note_context import rendered_visuals
 
 
 logger = logging.getLogger(__name__)
@@ -132,6 +133,7 @@ async def get_thread_messages(
                 role=message.role.value,
                 text=message.text,
                 created_at=message.created_at,
+                visuals=rendered_visuals(message.tools_used),
             )
             for message in messages
         ],

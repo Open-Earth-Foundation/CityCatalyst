@@ -37,6 +37,7 @@ import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
+import { ChatVisualFrame } from "./chat-visual-frame";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -535,6 +536,14 @@ export function ConceptNoteChatPanel({
                 ) : null}
               </Box>
             )}
+            {message.visuals?.map((visual, index) => (
+              <ChatVisualFrame
+                key={index}
+                html={visual.html}
+                lng={lng}
+                title={visual.title}
+              />
+            ))}
           </Fragment>
         ))}
 

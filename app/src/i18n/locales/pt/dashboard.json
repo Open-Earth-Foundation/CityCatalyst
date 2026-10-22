@@ -353,5 +353,6 @@
   "invite-email-failed-toast-description-many": "Não conseguimos enviar o convite para {{count}} convidados. Compartilhe os links de convite diretamente com eles.",
   "invite-link-in-clipboard": "O link está na sua área de transferência.",
   "inventory-versions-label-import-replace-before": "Dados de inventário antes de serem substituídos por um arquivo importado. Restaure esta versão para desfazer a substituição.",
-  "inventory-versions-label-import-replace": "Dados do inventário substituídos por uma importação de arquivo"
+  "inventory-versions-label-import-replace": "Dados do inventário substituídos por uma importação de arquivo",
+  "less-than-one-percent": "<1"
 }

@@ -352,5 +352,6 @@
   "invite-email-failed-toast-description-many": "Nous n'avons pas pu envoyer l'invitation à {{count}} invités. Partagez directement les liens d'invitation avec eux.",
   "invite-link-in-clipboard": "Le lien est dans votre presse-papiers.",
   "inventory-versions-label-import-replace-before": "Données d'inventaire avant qu'elles ne soient remplacées par un import de fichier. Restaurez cette version pour annuler le remplacement.",
-  "inventory-versions-label-import-replace": "Données d'inventaire remplacées par une importation de fichier"
+  "inventory-versions-label-import-replace": "Données d'inventaire remplacées par une importation de fichier",
+  "less-than-one-percent": "<1"
 }

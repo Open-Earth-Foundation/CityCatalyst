@@ -2,7 +2,11 @@ import { IconBaseProps } from "react-icons";
 import type { TFunction } from "i18next";
 import { SectorEmission } from "@/util/types";
 import { HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import { capitalizeFirstLetter, formatEmissionsOrRemoval } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  formatEmissionsOrRemoval,
+  formatShareOfTotalEmissions,
+} from "@/util/helpers";
 
 export const SectorHeader = ({
   icon,
@@ -46,9 +50,15 @@ export const SectorHeader = ({
         >
           {isNetRemoval
             ? t("net-removal")
-            : (dataForSector?.percentage || t("N/A") + " ") +
-              "% " +
-              t("of-total-emissions")}
+            : formatShareOfTotalEmissions({
+                percentage: dataForSector?.percentage,
+                // Prefer gross; fall back to net (already non-negative here).
+                grossCo2eqKg:
+                  dataForSector?.grossCo2eq ?? dataForSector?.co2eq,
+                notAvailableLabel: t("N/A"),
+                lessThanOnePercentLabel: t("less-than-one-percent"),
+                ofTotalEmissionsLabel: t("of-total-emissions"),
+              })}
         </Text>
       </VStack>
     </HStack>

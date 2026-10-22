@@ -389,6 +389,7 @@ export function AdaptationHomeNext({
                   rows={rows}
                   cityOrder={cityOrder}
                   notRanked={footnote}
+                  reasonOf={reasonOf}
                   filters={filters}
                   onFiltersChange={setFilters}
                   lng={lng}
@@ -480,6 +481,7 @@ export function AdaptationHomeNext({
           tResults={tResults}
           labels={labels}
           isRanked={(id) => rowById.has(id)}
+          reasonOf={reasonOf}
           onClose={() => setOpenId(null)}
           onOpenAction={setOpenId}
           isSelected={selectedIds.includes(openAction.id)}

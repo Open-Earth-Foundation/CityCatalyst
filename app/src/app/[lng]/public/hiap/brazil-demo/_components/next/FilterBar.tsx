@@ -8,7 +8,7 @@ import { ADAPTA_SECTORS, RISK_CELLS } from "../../_lib/riskCells";
 import { CO_BENEFIT_KEYS } from "../../_lib/coBenefits";
 import { pick } from "../../_lib/localized";
 import { TextLink } from "./TextLink";
-import { FacetMenu, FilterChip } from "./ListControls";
+import { FacetMenu, FilterChip, ShortcutChip } from "./ListControls";
 import {
   EMPTY_FILTERS,
   FACET_KEYS,
@@ -16,6 +16,7 @@ import {
   FACETS_TAKES,
   facetCount,
   LEVEL_TONE,
+  PRIORITY_SHORTCUTS,
   type FacetKey,
   type RankedRow,
   type RowFilters,
@@ -28,9 +29,10 @@ interface Option {
 
 /**
  * The list's filters, after the Booking-style pattern the review asked for:
- * eight facets in two groups (what the action addresses, what it takes),
- * live counts per option, options that would empty the list disabled, and
- * the active filters as removable chips. Filters never change a score.
+ * one-click shortcuts for what a city looks for first, then eight facets in
+ * two groups (what the action addresses, what it takes), live counts per
+ * option, options that would empty the list disabled, and the active
+ * filters as removable chips. Filters never change a score.
  */
 export function FilterBar({
   rows,
@@ -125,16 +127,51 @@ export function FilterBar({
       return label;
     return `${facets[key].title}: ${label}`;
   };
+  const isShortcut = (key: FacetKey, value: string) =>
+    PRIORITY_SHORTCUTS.some((s) => s.key === key && s.value === value);
+  const toggle = (key: FacetKey, value: string) =>
+    onChange({
+      ...filters,
+      [key]: filters[key].includes(value)
+        ? filters[key].filter((v) => v !== value)
+        : [...filters[key], value],
+    });
+  // A pressed shortcut is its own chip; it is not repeated below.
   const active = FACET_KEYS.flatMap((k) =>
-    filters[k].map((v) => ({
-      key: k,
-      value: v,
-      label: facets[k].options.find((o) => o.value === v)?.label ?? v,
-    })),
+    filters[k]
+      .filter((v) => !isShortcut(k, v))
+      .map((v) => ({
+        key: k,
+        value: v,
+        label: facets[k].options.find((o) => o.value === v)?.label ?? v,
+      })),
   );
+  const anyActive = FACET_KEYS.some((k) => filters[k].length > 0);
 
   return (
     <VStack alignItems="stretch" gap="m">
+      <HStack
+        gap="s"
+        flexWrap="wrap"
+        alignItems="center"
+        pb="m"
+        borderBottomWidth="1px"
+        borderColor="border.overlay"
+        data-testid="priority-shortcuts"
+      >
+        <Box w={{ base: "full", md: "150px" }} flexShrink={0}>
+          <Overline color="content.link">{t("next-shortcuts-title")}</Overline>
+        </Box>
+        {PRIORITY_SHORTCUTS.map((s) => (
+          <ShortcutChip
+            key={s.id}
+            label={t(`next-shortcut-${s.id}`)}
+            count={facetCount(rows, filters, s.key, s.value)}
+            pressed={filters[s.key].includes(s.value)}
+            onToggle={() => toggle(s.key, s.value)}
+          />
+        ))}
+      </HStack>
       {groups.map((g) => (
         <HStack key={g.title} gap="s" flexWrap="wrap" alignItems="center">
           <Box w={{ base: "full", md: "150px" }} flexShrink={0}>
@@ -154,7 +191,7 @@ export function FilterBar({
           ))}
         </HStack>
       ))}
-      {active.length > 0 && (
+      {anyActive && (
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           {active.map((a) => (
             <FilterChip

@@ -121,6 +121,50 @@ export function FacetMenu({
   );
 }
 
+/** A one-click filter that toggles on and off, with the count it would leave. */
+export function ShortcutChip({
+  label,
+  count,
+  pressed,
+  onToggle,
+}: {
+  label: string;
+  count: number;
+  pressed: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <chakra.button
+      type="button"
+      display="inline-flex"
+      alignItems="center"
+      gap="xs"
+      px="m"
+      py="s"
+      borderRadius="pill"
+      borderWidth="1px"
+      borderColor={pressed ? "content.link" : "border.neutral"}
+      bg={pressed ? "content.link" : "base.light"}
+      color={pressed ? "base.light" : "content.primary"}
+      fontFamily="heading"
+      fontSize="label.md"
+      fontWeight="medium"
+      aria-pressed={pressed}
+      disabled={count === 0 && !pressed}
+      onClick={onToggle}
+      _hover={{ borderColor: "content.link" }}
+      _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+      _focusVisible={FOCUS_RING}
+    >
+      {pressed && <Icon as={LuCheck} boxSize="14px" />}
+      <span>{label}</span>
+      <chakra.span color={pressed ? "base.light" : "content.tertiary"}>
+        {count}
+      </chakra.span>
+    </chakra.button>
+  );
+}
+
 /** An active filter, removable with one click. */
 export function FilterChip({
   label,

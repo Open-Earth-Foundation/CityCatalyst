@@ -42,6 +42,7 @@ import { indexTone } from "../RiskCellGrid";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
 import { TextLink } from "./TextLink";
+import { unrankedWhy } from "./unranked";
 import {
   COST_TONE,
   GAP_TONE,
@@ -94,6 +95,7 @@ export function ActionDrawer({
   tResults,
   labels,
   isRanked,
+  reasonOf,
   onClose,
   onOpenAction,
   isSelected,
@@ -108,6 +110,8 @@ export function ActionDrawer({
   tResults: TFunction;
   labels: ReturnType<typeof useLabels>;
   isRanked: (id: string) => boolean;
+  /** Why an action is outside the ranking, to say so on related actions. */
+  reasonOf: (id: string) => NotRankedReason | null;
   onClose: () => void;
   onOpenAction: (id: string) => void;
   isSelected: boolean;
@@ -134,6 +138,13 @@ export function ActionDrawer({
     : "neutral";
   const href = (segment: string) =>
     trackHref(lng, city.slug, "adaptation", segment);
+  // A related action outside the ranking says so, and why.
+  const unrankedLine = (other: AdaptationAction) => {
+    const why = reasonOf(other.id);
+    return why
+      ? t("next-unranked-line", { why: unrankedWhy(other, why, lng, t) })
+      : t("next-drawer-not-scored");
+  };
 
   return (
     <Drawer.Root
@@ -185,7 +196,9 @@ export function ActionDrawer({
                 <BodySmall color="content.secondary">
                   {row
                     ? explainRankingShort(row.scored, city, lng)
-                    : t(`reason-${reason}-body`)}
+                    : t("next-unranked-line", {
+                        why: unrankedWhy(action, reason!, lng, t),
+                      })}
                 </BodySmall>
               )}
               <HStack gap="l" flexWrap="wrap">
@@ -310,8 +323,11 @@ export function ActionDrawer({
                                   {pick(rationale, lng)}
                                 </BodySmall>
                                 {!isRanked(other.id) && (
-                                  <BodySmall color="content.tertiary">
-                                    {t("next-drawer-not-scored")}
+                                  <BodySmall
+                                    color="content.tertiary"
+                                    data-testid="related-unranked"
+                                  >
+                                    {unrankedLine(other)}
                                   </BodySmall>
                                 )}
                               </VStack>

@@ -32,16 +32,17 @@ import {
 import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { SelectActionCheckbox } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/SelectActionCheckbox";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
-import type { NotRankedAction } from "../../_lib/ranking";
+import type { NotRankedAction, NotRankedReason } from "../../_lib/ranking";
 import type { useLabels } from "../../_lib/useLabels";
 import { pick } from "../../_lib/localized";
-import { SECTOR_LABEL, UNCOVERED_HAZARD_LABEL } from "../../_lib/riskCells";
+import { SECTOR_LABEL } from "../../_lib/riskCells";
 import { relatedActions } from "../../_lib/relationships";
 import { FilterBar } from "./FilterBar";
 import { ReportControl } from "./ReportControl";
 import { Level } from "./Level";
 import { SectorLabel } from "./SectorIcon";
 import { TextLink } from "./TextLink";
+import { unrankedShort, unrankedWhy } from "./unranked";
 import {
   ChoiceMenu,
   ExportCsvButton,
@@ -146,6 +147,7 @@ export function RankedActionsTable({
   rows,
   cityOrder,
   notRanked,
+  reasonOf,
   filters,
   onFiltersChange,
   lng,
@@ -169,6 +171,8 @@ export function RankedActionsTable({
   rows: RankedRow[];
   cityOrder?: string[];
   notRanked?: NotRankedAction[];
+  /** Why an action is outside the ranking, for the "Depends on" line. */
+  reasonOf: (id: string) => NotRankedReason | null;
   filters: RowFilters;
   onFiltersChange: (next: RowFilters) => void;
   lng: string;
@@ -232,20 +236,25 @@ export function RankedActionsTable({
       ),
     [rows, order, hasOwnOrder],
   );
-  const summary = t("next-summary", {
+  // The counts per kind now sit on the shortcut chips above.
+  const summary = t("next-summary-shown", {
     shown: visible.length,
     total: rows.length,
-    high: visible.filter((r) => r.riskTone === "negative").length,
-    low: visible.filter((r) => r.cost === "low").length,
-    self: visible.filter(
-      (r) =>
-        r.funding === "self_deliverable" || r.funding === "credit_available",
-    ).length,
   });
+  // A prerequisite outside the ranking says so, with its reason.
   const dependsOn = (row: RankedRow) =>
     relatedActions(row.action)
       .filter((r) => r.role === "requires")
-      .map((r) => pick(r.action.name, lng));
+      .map((r) => {
+        const name = pick(r.action.name, lng);
+        const reason = reasonOf(r.action.id);
+        return reason
+          ? t("next-depends-on-item-unranked", {
+              name,
+              why: unrankedShort(r.action, reason, lng, t),
+            })
+          : name;
+      });
 
   return (
     <VStack alignItems="stretch" gap="m">
@@ -547,14 +556,7 @@ export function RankedActionsTable({
                     </TitleMedium>
                     <BodySmall color="content.secondary">
                       {pick(SECTOR_LABEL[action.sector], lng)} ·{" "}
-                      {action.uncoveredHazard
-                        ? t("not-ranked-hazard", {
-                            hazard: pick(
-                              UNCOVERED_HAZARD_LABEL[action.uncoveredHazard],
-                              lng,
-                            ),
-                          })
-                        : t(`reason-${reason}`)}
+                      {unrankedWhy(action, reason, lng, t)}
                     </BodySmall>
                   </VStack>
                   {reason === "excluded_by_city" ? (

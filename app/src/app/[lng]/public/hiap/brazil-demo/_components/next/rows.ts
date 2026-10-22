@@ -251,6 +251,23 @@ export function facetValues(row: RankedRow, key: FacetKey): string[] {
   }
 }
 
+/**
+ * One-click filters for what a city usually looks for first. Each is a
+ * plain facet value, so it stays in sync with the dropdowns and the URL;
+ * there is no priority label, the city finds its priorities itself.
+ */
+export const PRIORITY_SHORTCUTS: {
+  id: string;
+  key: FacetKey;
+  value: string;
+}[] = [
+  { id: "high-risk", key: "level", value: "high" },
+  { id: "low-cost", key: "cost", value: "low" },
+  { id: "feasible", key: "legal", value: "feasible" },
+  { id: "self", key: "funding", value: "self" },
+  { id: "short", key: "timeline", value: "<5 years" },
+];
+
 export const hasActiveFilters = (f: RowFilters) =>
   FACET_KEYS.some((k) => f[k].length > 0);
 

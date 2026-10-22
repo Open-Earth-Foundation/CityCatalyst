@@ -146,23 +146,28 @@ test.describe("BR-N1 proposal home", () => {
   }) => {
     await openHome(page);
 
-    // Pick "Low cost": the list shrinks to exactly the count the option showed.
+    // Pick "Medium cost": the list shrinks to exactly the count the option showed.
+    // (Low cost is a shortcut chip of its own; see decision C1.)
     await page.getByRole("button", { name: /^Cost/ }).click();
-    const low = page.getByRole("menuitemcheckbox", { name: /^Low cost/ });
-    const lowCount = Number((await low.innerText()).match(/(\d+)\s*$/)![1]);
-    expect(lowCount).toBeGreaterThan(0);
-    await low.click();
+    const medium = page.getByRole("menuitemcheckbox", { name: /^Medium cost/ });
+    const mediumCount = Number(
+      (await medium.innerText()).match(/(\d+)\s*$/)![1],
+    );
+    expect(mediumCount).toBeGreaterThan(0);
+    await medium.click();
     await page.keyboard.press("Escape");
-    await expect.poll(async () => (await rowNames(page)).length).toBe(lowCount);
-    await expect(page).toHaveURL(/[?&]cost=low/);
+    await expect
+      .poll(async () => (await rowNames(page)).length)
+      .toBe(mediumCount);
+    await expect(page).toHaveURL(/[?&]cost=medium/);
     await expect(
-      page.getByRole("button", { name: /Remove filter Cost: Low cost/ }),
+      page.getByRole("button", { name: /Remove filter Cost: Medium cost/ }),
     ).toBeVisible();
     await expect(
-      page.getByText(`Showing ${lowCount} of 10`, { exact: false }),
+      page.getByText(`Showing ${mediumCount} of 10`, { exact: false }),
     ).toBeVisible();
 
-    // With low cost on, sectors that would leave nothing are disabled.
+    // With medium cost on, sectors that would leave nothing are disabled.
     await page.getByRole("button", { name: /^Sector/ }).click();
     expect(
       await page.getByRole("menuitemcheckbox", { disabled: true }).count(),
@@ -173,11 +178,13 @@ test.describe("BR-N1 proposal home", () => {
     await page.reload();
     await expect(page.getByText("All actions, in order")).toBeVisible();
     await dismissOverlays(page);
-    await expect.poll(async () => (await rowNames(page)).length).toBe(lowCount);
+    await expect
+      .poll(async () => (await rowNames(page)).length)
+      .toBe(mediumCount);
 
     // Removing the chip restores the full list and cleans the URL.
     await page
-      .getByRole("button", { name: /Remove filter Cost: Low cost/ })
+      .getByRole("button", { name: /Remove filter Cost: Medium cost/ })
       .click();
     await expect.poll(async () => (await rowNames(page)).length).toBe(10);
     await expect(page).not.toHaveURL(/cost=/);
@@ -189,9 +196,12 @@ test.describe("BR-N1 proposal home", () => {
       timeout: 90_000,
     });
     await dismissOverlays(page);
+    // High risk is a shortcut: the link turns it on.
     await expect(
-      page.getByRole("button", { name: /Remove filter Risk level: High/ }),
-    ).toBeVisible();
+      page
+        .getByTestId("priority-shortcuts")
+        .getByRole("button", { name: /Reduces a high risk/ }),
+    ).toHaveAttribute("aria-pressed", "true");
     const names = await rowNames(page);
     expect(names.length).toBeGreaterThan(0);
     expect(names.length).toBeLessThan(10);
@@ -906,5 +916,38 @@ test.describe("Fixes from the UI review", () => {
     await expect(
       page.getByRole("button", { name: "Switch city" }),
     ).toBeVisible();
+  });
+});
+
+test.describe("Decisions from the deck review (C1, C2)", () => {
+  test("C1: shortcuts find priorities without a priority label", async ({
+    page,
+  }) => {
+    await openHome(page);
+    const shortcuts = page.getByTestId("priority-shortcuts");
+    const highRisk = shortcuts.getByRole("button", {
+      name: /Reduces a high risk/,
+    });
+    await highRisk.click();
+    await expect(highRisk).toHaveAttribute("aria-pressed", "true");
+    // A shortcut is a plain facet value: it lives in the URL.
+    await expect(page).toHaveURL(/level=high/);
+    for (const card of await page.getByTestId("ranked-action").all())
+      await expect(card.getByTestId("action-risk")).toContainText("High");
+    await expect(page.getByText(/high priority/i)).toHaveCount(0);
+    await highRisk.click();
+    await expect(page).not.toHaveURL(/level=high/);
+  });
+
+  test("C2: a prerequisite outside the ranking says why", async ({ page }) => {
+    await openHome(page);
+    await expect(
+      page.getByText(/\(not ranked, planning action\)/).first(),
+    ).toBeVisible();
+    await page.goto(`${home()}?action=top`);
+    await expect(page.getByTestId("related-unranked").first()).toContainText(
+      "Not ranked · A planning action",
+      { timeout: 90_000 },
+    );
   });
 });

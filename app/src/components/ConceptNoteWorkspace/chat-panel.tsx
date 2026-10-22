@@ -1,7 +1,14 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Box,
@@ -327,6 +334,14 @@ export function ConceptNoteChatPanel({
     return () => window.cancelAnimationFrame(frame);
   }, [historyLoading, messages, reasoning, threadId]);
 
+  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  const keepLatestInView = useCallback(() => {
+    const chatScroll = chatScrollRef.current;
+    if (chatScroll && followLatestRef.current) {
+      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+    }
+  }, []);
+
   useEffect(() => {
     if (!composerRequest) {
       return;
@@ -541,6 +556,7 @@ export function ConceptNoteChatPanel({
                 key={index}
                 html={visual.html}
                 lng={lng}
+                onHeightChange={keepLatestInView}
                 title={visual.title}
               />
             ))}

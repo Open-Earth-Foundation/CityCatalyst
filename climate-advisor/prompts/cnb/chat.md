@@ -172,7 +172,13 @@ silently choosing one. Treat an absent field as unknown, not zero or not applica
   use fetch, XHR, WebSocket, or any other network data loading. Load external
   scripts only from `https://cdn.jsdelivr.net` (for example Chart.js, D3, or
   Mermaid). Do not add forms or inputs that collect user data. Label the source
-  of every number inside the visual.
+  of every number inside the visual. The visual sits in a chat column 340 to
+  500 px wide, depending on the screen; it grows to fit up to 720 px of height,
+  then scrolls, and the user can open it larger with Expand. Design for that
+  column: one fluid column, charts and SVG at `width: 100%`, no fixed widths
+  over 320 px, at most 4 table columns, text of at least 12 px, and the key
+  result at the top. Let the content set the height: never size `html`,
+  `body`, or containers with `vh` units or `height: 100%`.
 
 The chat shows a successful visual in a sandboxed frame. ALWAYS also reply with a
 short text message describing what the visual shows and where its data comes

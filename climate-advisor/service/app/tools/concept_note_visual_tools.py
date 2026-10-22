@@ -25,6 +25,10 @@ async def concept_note_render_visual(title: str, html: str) -> str:
     collecting user data. Keep it under about 100 KB (hard limit 200,000
     characters). Never invent numbers: use only data from the context and label
     its sources. `title` is required, at most 200 characters.
+    It shows in a chat column 340 to 500 px wide that fits up to 720 px of
+    height before scrolling: use one fluid column at width 100%, no fixed
+    widths over 320 px, at most 4 table columns, the key result first, and no
+    vh or 100% heights.
     ALWAYS also reply with a short text message describing the visual. The visual
     is shown in chat only; it never changes the Concept Note.
     """

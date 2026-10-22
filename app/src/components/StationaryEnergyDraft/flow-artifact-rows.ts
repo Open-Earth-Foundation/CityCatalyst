@@ -119,7 +119,7 @@ export function buildArtifactRows(
         value: proposal.proposed_value ? proposedValueLabel(proposal, t) : null,
         sourceName: shortSourceName(recommendedSource),
         sourceFullName: sourceNameLabel(recommendedSource),
-        sourceMeta: sourceMetaLabel(recommendedSource),
+        sourceMeta: sourceMetaLabel(recommendedSource, t),
         status: artifactStatusLabel(proposal, t),
       };
     });

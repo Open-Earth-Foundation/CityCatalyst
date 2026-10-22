@@ -8,7 +8,10 @@ import {
   draftRunStatusLabel,
   formatDraftRunUpdatedAt,
 } from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
-import { proposalLabel } from "@/components/StationaryEnergyDraft/utils";
+import {
+  proposalLabel,
+  sourceGeographyLabel,
+} from "@/components/StationaryEnergyDraft/utils";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import { nameToI18NKey } from "@/util/helpers";
 import esData from "@/i18n/locales/es/data.json";
@@ -94,6 +97,18 @@ describe("stationary energy draft display", () => {
       .filter((key) => !es[key]);
 
     expect(missing).toEqual([]);
+  });
+
+  it("translates source geography labels", () => {
+    const es = esAgentic as Record<string, string>;
+    const t = ((key: string) => es[key] ?? key) as Parameters<
+      typeof sourceGeographyLabel
+    >[1];
+
+    expect(sourceGeographyLabel("locode", t)).toBe("ciudad");
+    expect(sourceGeographyLabel("country", t)).toBe("país");
+    expect(sourceGeographyLabel("global", t)).toBeNull();
+    expect(sourceGeographyLabel("country")).toBe("country");
   });
 
   it("has no English leftovers in the Spanish stationary energy copy", () => {

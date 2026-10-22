@@ -319,5 +319,8 @@
   "chat-pending-request-cancel": "Cancelar pedido anterior",
   "chat-pending-request-canceled": "O seu pedido anterior foi cancelado. Você pode enviar um novo pedido.",
   "chat-pending-request-failed": "A execução falhou, então não pude continuar com sua solicitação anterior. Por favor, tente novamente o rascunho e envie sua solicitação novamente.",
-  "chat-pending-request-ended": "A execução terminou, portanto, sua solicitação anterior não continuará automaticamente."
+  "chat-pending-request-ended": "A execução terminou, portanto, sua solicitação anterior não continuará automaticamente.",
+  "source-geography-city": "cidade",
+  "source-geography-country": "país",
+  "source-geography-region": "região"
 }

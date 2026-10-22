@@ -319,5 +319,8 @@
   "chat-pending-request-cancel": "Annuler la demande précédente",
   "chat-pending-request-canceled": "Votre demande précédente a été annulée. Vous pouvez envoyer une nouvelle demande.",
   "chat-pending-request-failed": "L'exécution a échoué, donc je ne pouvais pas continuer avec votre demande précédente. Veuillez essayer à nouveau le brouillon et renvoyer votre demande.",
-  "chat-pending-request-ended": "La course est terminée, donc votre demande précédente ne continuera pas automatiquement."
+  "chat-pending-request-ended": "La course est terminée, donc votre demande précédente ne continuera pas automatiquement.",
+  "source-geography-city": "ville",
+  "source-geography-country": "pays",
+  "source-geography-region": "région"
 }

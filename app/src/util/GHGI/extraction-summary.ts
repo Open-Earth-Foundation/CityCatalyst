@@ -55,6 +55,54 @@ export function isGrandTotal(total: ReportedTotal): boolean {
 /** Imported sum may differ from the document total by this fraction before the review screen warns. */
 export const RECONCILIATION_TOLERANCE = 0.01;
 
+/** Totals below this share of the largest reported total are sector or part totals. */
+export const MIN_GRAND_TOTAL_SHARE = 0.5;
+
+/**
+ * Label of a net total: the gross total minus forestry removals, so far below the
+ * gross figure ("Total Net Emissions (including Forestry)"). Only a total with such a
+ * label may stand below the share of the largest total.
+ */
+const NET_TOTAL_LABEL =
+  /\bnet\b|after\s+(?:removals?|sequestration)|incl(?:uding|\.)?\s+(?:forestry|removals?|sequestration)/i;
+
+export type ReconciliationTargets = {
+  /** City totals: at least the share of the largest reported total of the year. */
+  grand: number[];
+  /** Net totals: below the share but labeled as net. */
+  net: number[];
+};
+
+/**
+ * The totals an import may be reconciled against. A table that adds up to a small
+ * total of its own (a council-operations table with its own "Total") is not a target:
+ * it would make a wrong table look reconciled.
+ */
+export function reconciliationTargets(
+  totals: ReportedTotal[] | null | undefined,
+  targetYear?: number | null,
+): ReconciliationTargets {
+  const ofYear = (totals ?? []).filter(
+    (total) =>
+      isGrandTotal(total) &&
+      Number.isFinite(total.value) &&
+      total.value !== 0 &&
+      // A grand total of another year (a 2016 comparison) is no target.
+      (total.year == null || targetYear == null || total.year === targetYear),
+  );
+  const largest = Math.max(0, ...ofYear.map((total) => Math.abs(total.value)));
+  const grand = new Set<number>();
+  const net = new Set<number>();
+  for (const total of ofYear) {
+    if (Math.abs(total.value) >= largest * MIN_GRAND_TOTAL_SHARE) {
+      grand.add(total.value);
+    } else if (NET_TOTAL_LABEL.test(total.label)) {
+      net.add(total.value);
+    }
+  }
+  return { grand: [...grand], net: [...net] };
+}
+
 export type Reconciliation = {
   importedSum: number;
   /** Document total closest to the imported sum. */
@@ -77,23 +125,11 @@ export function reconcileExtraction(
   > | null,
 ): Reconciliation | null {
   if (!summary) return null;
-  const candidates = [
-    ...new Set(
-      (summary.reportedTotals ?? [])
-        .filter(
-          (total) =>
-            // A scope total is no city grand total.
-            isGrandTotal(total) &&
-            Number.isFinite(total.value) &&
-            total.value !== 0 &&
-            // A grand total of another year (a 2016 comparison) is no target.
-            (total.year == null ||
-              summary.targetYear == null ||
-              total.year === summary.targetYear),
-        )
-        .map((total) => total.value),
-    ),
-  ];
+  const targets = reconciliationTargets(
+    summary.reportedTotals,
+    summary.targetYear,
+  );
+  const candidates = [...targets.grand, ...targets.net];
   if (candidates.length === 0) return null;
 
   let best = candidates[0];

@@ -26,7 +26,7 @@ const {
   finalizeExtractedRows,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
-const { extractionReviewNotes } =
+const { extractionReviewNotes, reconciliationTargets } =
   await import("@/util/GHGI/extraction-summary");
 type ExtractedRow = import("@/backend/InventoryExtractionService").ExtractedRow;
 type ExtractionSummary =
@@ -852,5 +852,140 @@ describe("12. per-sector pages that reach a net total", () => {
     );
     expect(result.summary.selectedPages).toEqual([12, 13, 14, 15]);
     expect(result.summary.importedSum).toBe(1000);
+  });
+});
+
+describe("13. PR review 2026-10-22: units, repeated rows, small totals", () => {
+  const AFOLU = "Agriculture, Forestry And Other Land Use";
+  const livestock = (
+    category: string,
+    activityType: string,
+    value: number,
+  ): ExtractedRow =>
+    row("V.1", "1", value, {
+      sector: AFOLU,
+      subsector: "Livestock",
+      category,
+      activityType,
+    });
+
+  it("keeps rows in tCO2-eq and similar units", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        row("I.1.1", "1", 1, { unit: "tCO2eq" }),
+        row("I.1.2", "2", 2, { unit: "tCO2-eq" }),
+        row("I.1.3", "3", 3, { unit: "t CO2 eq." }),
+        row("I.2.1", "1", 4, { unit: "ktCO2eq" }),
+      ],
+      2021,
+    );
+    expect(rows.map((r) => r.totalCO2e)).toEqual([1, 2, 3, 4000]);
+    expect(summary.droppedRows.unsupported_unit).toBeUndefined();
+  });
+
+  it("does not take rows of different categories for repeats", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        livestock("Enteric fermentation", "Dairy cattle", 300),
+        livestock("Manure management", "Dairy cattle", 100),
+        livestock("Enteric fermentation", "Sheep", 250),
+        livestock("Manure management", "Sheep", 170),
+      ],
+      2021,
+    );
+    expect(rows).toHaveLength(4);
+    expect(summary.importedSum).toBe(820);
+    expect(summary.droppedRows.duplicate).toBeUndefined();
+  });
+
+  it("still drops the same row seen twice", () => {
+    const { rows, summary } = finalizeExtractedRows(
+      [
+        livestock("Enteric fermentation", "Dairy cattle", 300),
+        livestock("Enteric fermentation", "Dairy cattle", 300),
+      ],
+      2021,
+    );
+    expect(rows).toHaveLength(1);
+    expect(summary.droppedRows.duplicate).toBe(1);
+  });
+
+  describe("a small table with a total of its own", () => {
+    const small = (): ExtractedRow[] => [
+      row("I.6.1", "1", 20000, {
+        sector: "Council",
+        subsector: "Fleet",
+        category: "Council fleet",
+      }),
+      row("II.5.1", "1", 20000, {
+        sector: "Waste",
+        subsector: "Council waste",
+        category: "Council waste",
+      }),
+      row("III.2.1", "1", 10000, {
+        sector: "Energy",
+        subsector: "Offices",
+        category: "Council offices",
+      }),
+      row(null, null, 50000, {
+        ...CITY,
+        rowType: "total",
+        category: "Total",
+      }),
+    ];
+    const city = (): ExtractedRow[] => [
+      row("I.1.1", "1", 600000),
+      row("I.2.1", "1", 370000, { subsector: "Commercial Buildings" }),
+      grandTotal(1000000),
+    ];
+
+    it("is not a target: the city table is selected and the review warns", () => {
+      const result = selectReconciledPages(
+        [pageOf(5, city()), pageOf(60, small())],
+        2021,
+      );
+      expect(result.summary.selectedPages).toEqual([5]);
+      expect(result.summary.importedSum).toBe(970000);
+      const notes = extractionReviewNotes(result.summary);
+      expect(notes.reconciliation?.reportedTotal).toBe(1000000);
+      expect(notes.reconciliation?.mismatch).toBe(true);
+    });
+
+    it("is not a target in the review when the sum matches only it", () => {
+      const result = selectReconciledPages(
+        [pageOf(5, [grandTotal(1000000)]), pageOf(60, small())],
+        2021,
+      );
+      const notes = extractionReviewNotes({
+        ...result.summary,
+        importedSum: 50000,
+      });
+      expect(notes.reconciliation?.reportedTotal).toBe(1000000);
+      expect(notes.reconciliation?.mismatch).toBe(true);
+    });
+  });
+
+  it("accepts a net total below the share when its label says net", () => {
+    const targets = reconciliationTargets(
+      [
+        { label: "Gross", value: 785873, level: "total" },
+        {
+          label: "Total Net Emissions (including Forestry)",
+          value: -25639,
+          level: "total",
+        },
+        { label: "Total", value: 28289, level: "total" },
+      ].map((t) => ({
+        ...t,
+        level: "total" as const,
+        year: 2022,
+        scope: null,
+        sector: null,
+        subsector: null,
+      })),
+      2022,
+    );
+    expect(targets.grand).toEqual([785873]);
+    expect(targets.net).toEqual([-25639]);
   });
 });

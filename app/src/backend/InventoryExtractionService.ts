@@ -13,6 +13,7 @@ import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
+  reconciliationTargets,
   type DroppedRowReason,
   type ExtractionSummary,
   type ReportedTotal,
@@ -339,8 +340,6 @@ const MAX_CANDIDATE_PAGES = 150;
  * warning still tells the user.
  */
 const PAGE_SELECTION_TOLERANCE = 0.1;
-/** Totals below this share of the largest reported total are sector totals. */
-const MIN_GRAND_TOTAL_SHARE = 0.5;
 /**
  * Longest run of consecutive pages a single inventory table may span. A report that
  * gives one table per sector (agriculture, transport, stationary energy, waste, IPPU,
@@ -490,27 +489,13 @@ export function selectReconciledPages(
     ? RECONCILIATION_TOLERANCE
     : PAGE_SELECTION_TOLERANCE;
 
-  const yearTotals = reportedTotals
-    .filter(
-      (t) =>
-        isGrandTotal(t) &&
-        t.value !== 0 &&
-        (t.year == null || targetYear == null || t.year === targetYear),
-    )
-    .map((t) => t.value);
-  // A sector total the model marked "total" must not select a single sector.
-  const largest = Math.max(0, ...yearTotals.map((v) => Math.abs(v)));
-  const grandTotals = [
-    ...new Set(
-      yearTotals.filter((v) => Math.abs(v) >= largest * MIN_GRAND_TOTAL_SHARE),
-    ),
-  ];
-  // Net totals (gross minus forestry removals) fall below the share. A run that spans
-  // several sectors may match one; a single sector may not.
-  const minorTotals = [
-    ...new Set(yearTotals.filter((v) => !grandTotals.includes(v))),
-  ];
-  const allTotals = [...grandTotals, ...minorTotals];
+  // Same targets as the review screen. A sector total the model marked "total" must
+  // not select a single sector, and a small table with a total of its own is no
+  // target. A net total (gross minus forestry removals) is: a run that spans several
+  // sectors may match it, a single sector may not.
+  const targets = reconciliationTargets(reportedTotals, targetYear);
+  const grandTotals = targets.grand;
+  const allTotals = [...targets.grand, ...targets.net];
 
   type Run = {
     start: number;
@@ -638,7 +623,7 @@ export function selectReconciledPages(
     // whole document reconciles with a reported total.
     const fallback = buildFallback();
     const wholeDeviation = Math.min(
-      ...yearTotals.map(
+      ...allTotals.map(
         (total) =>
           Math.abs(fallback.summary.importedSum - total) / Math.abs(total),
       ),
@@ -651,7 +636,7 @@ export function selectReconciledPages(
         ),
         wholeSum: fallback.summary.importedSum,
         wholeDeviation,
-        totals: yearTotals,
+        totals: allTotals,
       },
       "Rough page run compared with the whole document",
     );
@@ -1511,7 +1496,7 @@ export function tonnesMultiplier(unit?: string | null): number | null {
   const raw = unit.trim();
   if (!raw) return 1;
   const cleaned = raw
-    .replace(/co[2\u2082]\s*-?\s*(e|eq|equiv\w*)?/gi, "")
+    .replace(/co[2\u2082]\s*-?\s*(equiv\w*|eq|e)?\.?/gi, "")
     .replace(/\bmetric\b/gi, "")
     .replace(/\bof\b/gi, "")
     .replace(/[()\s]/g, "");
@@ -1654,7 +1639,10 @@ function repeatKey(row: ExtractedRow): string {
     row.year ?? "",
     row.gpcRefNo ?? `${row.sector ?? ""}|${row.subsector ?? ""}`,
     row.scope ?? "",
-    (row.activityType ?? row.category ?? "").trim().toLowerCase(),
+    // Both labels: "Enteric / Dairy cattle" and "Manure / Dairy cattle" share the
+    // activity and differ in the category.
+    (row.activityType ?? "").trim().toLowerCase(),
+    (row.category ?? "").trim().toLowerCase(),
     row.notationKey ?? "",
   ].join("\t");
 }

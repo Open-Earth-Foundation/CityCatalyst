@@ -319,5 +319,8 @@
   "chat-pending-request-cancel": "Cancelar solicitud anterior",
   "chat-pending-request-canceled": "Tu solicitud anterior fue cancelada. Puedes enviar una nueva solicitud.",
   "chat-pending-request-failed": "La ejecución falló, por lo que no pude continuar con tu solicitud anterior. Por favor intenta de nuevo el borrador y envía tu solicitud de nuevo.",
-  "chat-pending-request-ended": "La ejecución ha terminado, por lo que tu solicitud anterior no continuará automáticamente."
+  "chat-pending-request-ended": "La ejecución ha terminado, por lo que tu solicitud anterior no continuará automáticamente.",
+  "source-geography-city": "ciudad",
+  "source-geography-country": "país",
+  "source-geography-region": "región"
 }

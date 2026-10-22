@@ -260,13 +260,14 @@ export function shortSourceName(
 
 export function sourceMetaLabel(
   candidate: SourceCandidate | undefined,
+  t?: TFunction,
 ): string | null {
   if (!candidate) {
     return null;
   }
   const meta = [
     candidate.dataset_year ? String(candidate.dataset_year) : null,
-    sourceGeographyLabel(candidate.geography_match),
+    sourceGeographyLabel(candidate.geography_match, t),
   ].filter(Boolean);
   return meta.length > 0 ? meta.join(" · ") : null;
 }
@@ -405,8 +406,15 @@ export function currentValueLabel(
     .join(" ");
 }
 
+const GEOGRAPHY_LABEL_KEYS: Record<string, string> = {
+  city: "source-geography-city",
+  country: "source-geography-country",
+  region: "source-geography-region",
+};
+
 export function sourceGeographyLabel(
   geographyMatch: string | null | undefined,
+  t?: TFunction,
 ): string | null {
   const text = String(geographyMatch ?? "")
     .trim()
@@ -414,10 +422,9 @@ export function sourceGeographyLabel(
   if (!text || text === "unknown" || text === "global") {
     return null;
   }
-  if (text === "locode") {
-    return "city";
-  }
-  return text;
+  const geography = text === "locode" ? "city" : text;
+  const key = GEOGRAPHY_LABEL_KEYS[geography];
+  return key && t ? t(key) : geography;
 }
 
 export function proposedValueLabel(

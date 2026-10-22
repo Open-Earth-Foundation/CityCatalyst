@@ -572,7 +572,7 @@ function buildDecisionOptionGroups(
       label: sourceDisplayName(recommended),
       shortLabel:
         shortSourceName(recommended) ?? sourceDisplayName(recommended),
-      meta: sourceMetaLabel(recommended),
+      meta: sourceMetaLabel(recommended, t),
       value: proposedValueLabel(proposal, t),
       recommended: true,
       datasourceId:
@@ -595,7 +595,7 @@ function buildDecisionOptionGroups(
       action: "override_source" as const,
       label: sourceDisplayName(candidate),
       shortLabel: shortSourceName(candidate) ?? sourceDisplayName(candidate),
-      meta: sourceMetaLabel(candidate),
+      meta: sourceMetaLabel(candidate, t),
       value: sourceCandidateValueLabel(candidate, t),
       recommended: false,
       datasourceId: candidate.details_datasource_id ?? candidate.datasource_id,
@@ -666,10 +666,10 @@ function sourceDisplayName(candidate: SourceCandidate): string {
   return candidate.name ?? candidate.publisher_name ?? candidate.datasource_id;
 }
 
-function sourceMetaLabel(candidate: SourceCandidate): string {
+function sourceMetaLabel(candidate: SourceCandidate, t?: TFunction): string {
   return [
     candidate.dataset_year ? String(candidate.dataset_year) : null,
-    sourceGeographyLabel(candidate.geography_match),
+    sourceGeographyLabel(candidate.geography_match, t),
   ]
     .filter(Boolean)
     .join(" / ");

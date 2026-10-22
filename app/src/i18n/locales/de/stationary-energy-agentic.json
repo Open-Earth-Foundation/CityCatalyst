@@ -319,5 +319,8 @@
   "chat-pending-request-cancel": "Frühere Anfrage abbrechen",
   "chat-pending-request-canceled": "Ihre frühere Anfrage wurde storniert. Sie können eine neue Anfrage senden.",
   "chat-pending-request-failed": "Der Durchlauf ist fehlgeschlagen, daher konnte ich Ihre frühere Anfrage nicht fortsetzen. Bitte versuchen Sie es erneut mit dem Entwurf und senden Sie Ihre Anfrage erneut.",
-  "chat-pending-request-ended": "Der Lauf ist beendet, daher wird Ihre frühere Anfrage nicht automatisch fortgesetzt."
+  "chat-pending-request-ended": "Der Lauf ist beendet, daher wird Ihre frühere Anfrage nicht automatisch fortgesetzt.",
+  "source-geography-city": "Stadt",
+  "source-geography-country": "Land",
+  "source-geography-region": "Region"
 }

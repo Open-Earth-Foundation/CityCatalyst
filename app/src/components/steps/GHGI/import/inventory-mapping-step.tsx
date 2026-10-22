@@ -15,6 +15,7 @@ import {
 import { MdError, MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
+import ImportRowIssues from "./import-row-issues";
 
 const MANDATORY_KEYS = new Set([
   "gpcRefNo",
@@ -234,6 +235,16 @@ export default function InventoryMappingStep({
             </Text>
           </Box>
         </Box>
+      )}
+
+      {canContinue && (
+        <ImportRowIssues
+          t={t}
+          cityId={cityId}
+          inventoryId={inventoryId}
+          importedFileId={importedFileId}
+          mappingOverrides={mappingOverrides}
+        />
       )}
 
       <Card.Root

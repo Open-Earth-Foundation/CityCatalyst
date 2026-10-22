@@ -20,6 +20,7 @@ import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mappi
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
+import ReplaceInventoryConfirmModal from "@/components/Modals/replace-inventory-confirm-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { getApiErrorMessage } from "@/util/helpers";
@@ -40,6 +41,9 @@ function resolveErrorMessage(
   return errorLog;
 }
 
+/** Error code from the approve route when the inventory has data and the user has not confirmed replacing it. */
+const INVENTORY_HAS_DATA_CODE = "inventory-has-data";
+
 function ImportButton({
   cityId,
   inventoryId,
@@ -47,6 +51,9 @@ function ImportButton({
   mappingOverrides,
   onImport,
   onImportProgressChange,
+  disabled,
+  inventoryHasData,
+  inventoryYear,
   t,
 }: {
   cityId: string;
@@ -55,12 +62,17 @@ function ImportButton({
   mappingOverrides: Record<string, string>;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
+  disabled?: boolean;
+  /** The import replaces existing data, so the user confirms first. */
+  inventoryHasData: boolean;
+  inventoryYear: number | null;
   t: TFunction;
 }) {
   const dispatch = useAppDispatch();
   const [approveImport, { isLoading: isImporting }] =
     api.useApproveImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
 
   /** Invalidate inventory-related caches so the GHGI page shows fresh totalEmissions. */
   const invalidateInventoryCache = () => {
@@ -71,6 +83,7 @@ function ImportButton({
         "InventoryValue",
         "ReportResults",
         "YearlyReportResults",
+        "VersionHistory",
       ]),
     );
   };
@@ -126,8 +139,8 @@ function ImportButton({
     intervalMs: 3000,
   });
 
-  const handleImport = async () => {
-    if (!importedFileId) return;
+  const handleImport = async (replaceExisting: boolean) => {
+    if (!importedFileId || disabled) return;
     stopImportPolling();
     // Swap ReviewConfirmStep for the importing panel before approve polling
     // can clear reviewData from the shared status cache.
@@ -145,6 +158,7 @@ function ImportButton({
         mappingOverrides: Object.keys(overridesToSend).length
           ? overridesToSend
           : undefined,
+        replaceExisting,
       }).unwrap();
 
       if ("accepted" in result && result.accepted) {
@@ -176,6 +190,13 @@ function ImportButton({
       onImportProgressChange(false);
     } catch (error: unknown) {
       onImportProgressChange(false);
+      // Data was added since the page loaded: ask before replacing it
+      const errorCode = (error as { data?: { error?: { code?: string } } })
+        ?.data?.error?.code;
+      if (errorCode === INVENTORY_HAS_DATA_CODE) {
+        setShowReplaceConfirm(true);
+        return;
+      }
       makeErrorToast(
         "Import failed",
         getApiErrorMessage(error, "Failed to import data"),
@@ -184,21 +205,35 @@ function ImportButton({
   };
 
   return (
-    <Button
-      w="auto"
-      gap="8px"
-      py="16px"
-      px="24px"
-      onClick={handleImport}
-      h="64px"
-      loading={isImporting || isImportPolling}
-      disabled={isImporting || isImportPolling}
-    >
-      <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-        {t("import-inventory")}
-      </Text>
-      <MdArrowForward height="24px" width="24px" />
-    </Button>
+    <>
+      <Button
+        w="auto"
+        gap="8px"
+        py="16px"
+        px="24px"
+        onClick={() =>
+          inventoryHasData ? setShowReplaceConfirm(true) : handleImport(false)
+        }
+        h="64px"
+        loading={isImporting || isImportPolling}
+        disabled={disabled || isImporting || isImportPolling}
+      >
+        <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+          {t("import-inventory")}
+        </Text>
+        <MdArrowForward height="24px" width="24px" />
+      </Button>
+      <ReplaceInventoryConfirmModal
+        isOpen={showReplaceConfirm}
+        year={inventoryYear}
+        onConfirm={() => {
+          setShowReplaceConfirm(false);
+          handleImport(true);
+        }}
+        onCancel={() => setShowReplaceConfirm(false)}
+        t={t}
+      />
+    </>
   );
 }
 
@@ -368,22 +403,35 @@ export default function GhgiImportWizard({
     inventory?.year != null && Number.isFinite(Number(inventory.year))
       ? Number(inventory.year)
       : null;
+  const reportedFileYear =
+    mappingStepData?.inferredYearFromFile ??
+    lastImportStatus?.inferredYearFromFile;
   const fileYear =
-    lastImportStatus?.inferredYearFromFile != null &&
-    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
-      ? Number(lastImportStatus.inferredYearFromFile)
+    reportedFileYear != null && Number.isFinite(Number(reportedFileYear))
+      ? Number(reportedFileYear)
       : null;
   const fileYearMismatch =
     inventoryYear != null && fileYear != null && inventoryYear !== fileYear;
+  const yearsAllowAdvance = (
+    status?: {
+      inferredYearFromFile?: number | null;
+    } | null,
+  ) => {
+    const raw = status?.inferredYearFromFile;
+    if (inventoryYear == null || raw == null || !Number.isFinite(Number(raw))) {
+      return true;
+    }
+    return Number(raw) === inventoryYear;
+  };
 
   useEffect(() => {
     if (!fileYearMismatch || fileYearMismatchToastShownRef.current) return;
     fileYearMismatchToastShownRef.current = true;
     makeErrorToast(
       t("file-year-mismatch-title"),
-      t("file-year-mismatch", { year: inventoryYear }),
+      t("file-year-mismatch", { year: inventoryYear, fileYear }),
     );
-  }, [fileYearMismatch, inventoryYear, t]);
+  }, [fileYearMismatch, fileYear, inventoryYear, t]);
 
   const {
     startPolling: startUploadPolling,
@@ -424,7 +472,10 @@ export default function GhgiImportWizard({
         setTabularPendingInterpretation(
           res.importStatus === "pending_ai_interpretation",
         );
-        if (res.importStatus === "waiting_for_approval")
+        if (
+          res.importStatus === "waiting_for_approval" &&
+          yearsAllowAdvance(res)
+        )
           setTimeout(() => goToNextStep(), 150);
       }
     },
@@ -477,7 +528,7 @@ export default function GhgiImportWizard({
       setIsExtractInProgress(false);
       setExtractionProgress(null);
       setPdfPendingExtraction(false);
-      setTimeout(() => goToNextStep(), 150);
+      if (yearsAllowAdvance(res)) setTimeout(() => goToNextStep(), 150);
     },
     onFailure: (res) => {
       setIsExtractInProgress(false);
@@ -526,7 +577,7 @@ export default function GhgiImportWizard({
       setIsInterpretInProgress(false);
       setExtractionProgress(null);
       setTabularPendingInterpretation(false);
-      setTimeout(() => goToNextStep(), 150);
+      if (yearsAllowAdvance(res)) setTimeout(() => goToNextStep(), 150);
     },
     onFailure: (res) => {
       setIsInterpretInProgress(false);
@@ -594,14 +645,21 @@ export default function GhgiImportWizard({
         // Sync upload path (no polling): polls do not run, so fetch status for year-mismatch / inferredYearFromFile
         getImportStatus({ cityId, inventoryId, importedFileId: result.id })
           .unwrap()
-          .then(setLastImportStatus)
-          .catch((err) =>
+          .then((status) => {
+            setLastImportStatus(status);
+            if (yearsAllowAdvance(status))
+              setTimeout(() => goToNextStep(), 150);
+          })
+          .catch((err) => {
             logger.debug(
               { err, cityId, inventoryId, importedFileId: result.id },
               "Import status fetch after sync upload failed",
-            ),
-          );
-        setTimeout(() => goToNextStep(), 150);
+            );
+            makeErrorToast(
+              t("import-status-check-failed"),
+              getApiErrorMessage(err, t("import-status-check-failed-detail")),
+            );
+          });
       }
     } catch (error: unknown) {
       const message = getApiErrorMessage(error, t("failed-to-upload-file"));
@@ -610,6 +668,7 @@ export default function GhgiImportWizard({
   };
 
   const handleContinue = () => {
+    if (fileYearMismatch) return;
     if (activeStep < importStepCount - 1) {
       // Small delay for smooth transition
       setTimeout(() => {
@@ -654,12 +713,13 @@ export default function GhgiImportWizard({
       stopExtractionPolling();
       setIsExtractInProgress(false);
       setPdfPendingExtraction(false);
-      await getImportStatus({
+      const status = await getImportStatus({
         cityId,
         inventoryId,
         importedFileId,
       }).unwrap();
-      setTimeout(() => goToNextStep(), 150);
+      setLastImportStatus(status);
+      if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
     } catch (error: unknown) {
       stopExtractionPolling();
       setIsExtractInProgress(false);
@@ -700,7 +760,13 @@ export default function GhgiImportWizard({
         return;
       }
       setTabularPendingInterpretation(false);
-      setTimeout(() => goToNextStep(), 150);
+      const status = await getImportStatus({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+      setLastImportStatus(status);
+      if (yearsAllowAdvance(status)) setTimeout(() => goToNextStep(), 150);
     } catch (error: unknown) {
       setIsInterpretInProgress(false);
       setExtractionProgress(null);
@@ -804,6 +870,37 @@ export default function GhgiImportWizard({
           minH="400px"
         >
           <Box w="full" position="relative" minH="400px" overflow="hidden">
+            {fileYearMismatch && (
+              <Box
+                mb="24px"
+                p="16px"
+                borderWidth="1px"
+                borderColor="sentiment.warningDefault"
+                bg="sentiment.warningOverlay"
+                borderRadius="md"
+                display="flex"
+                gap="8px"
+                alignItems="flex-start"
+              >
+                <Icon
+                  as={MdWarning}
+                  boxSize={5}
+                  color="sentiment.warningDefault"
+                  mt="2px"
+                />
+                <Box>
+                  <Text fontWeight="bold" color="content.primary">
+                    {t("file-year-mismatch-title")}
+                  </Text>
+                  <Text fontSize="body.md" color="content.secondary">
+                    {t("file-year-mismatch", {
+                      year: inventoryYear,
+                      fileYear,
+                    })}
+                  </Text>
+                </Box>
+              </Box>
+            )}
             <AnimatePresence mode="wait">
               {activeStep === 0 && (
                 <motion.div
@@ -842,10 +939,10 @@ export default function GhgiImportWizard({
                             color="orange.800"
                             fontSize="sm"
                           >
-                            {t("inventory-already-has-data-title")}
+                            {t("inventory-has-data-replace-title")}
                           </Text>
                           <Text color="orange.700" fontSize="sm" mt={1}>
-                            {t("inventory-already-has-data-description", {
+                            {t("inventory-has-data-replace-description", {
                               year: inventoryYear,
                             })}
                           </Text>
@@ -856,9 +953,7 @@ export default function GhgiImportWizard({
                       t={t}
                       cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={
-                        inventoryHasData ? () => {} : handleFileUpload
-                      }
+                      onFileUpload={handleFileUpload}
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
@@ -1037,6 +1132,7 @@ export default function GhgiImportWizard({
                       inventoryId={inventoryId}
                       importedFileId={importedFileId}
                       onEditMapping={goToPrevStep}
+                      mappingOverrides={mappingOverrides}
                     />
                   )}
                 </motion.div>
@@ -1081,7 +1177,7 @@ export default function GhgiImportWizard({
                   }
                   h="64px"
                   disabled={
-                    inventoryHasData ||
+                    fileYearMismatch ||
                     !uploadedFile ||
                     !importedFileId ||
                     (pdfPendingExtraction &&
@@ -1168,6 +1264,9 @@ export default function GhgiImportWizard({
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
                     onImportProgressChange={setIsImportInProgress}
+                    disabled={fileYearMismatch}
+                    inventoryHasData={inventoryHasData}
+                    inventoryYear={inventoryYear}
                     onImport={() => {
                       onComplete(inventoryId);
                     }}

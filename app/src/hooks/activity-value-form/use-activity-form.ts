@@ -14,6 +14,11 @@ export const generateDefaultActivityFormValues = (
   fields: ExtraField[],
   methodology: Methodology,
 ) => {
+  // direct measure emissions start empty (placeholder), emission factors start at 0
+  const emissionFactorDefault = (
+    methodology.id.includes("direct-measure") ? "" : 0
+  ) as number;
+
   return {
     activityType: selectedActivity?.id,
     ...(fields
@@ -36,9 +41,13 @@ export const generateDefaultActivityFormValues = (
     fuelType: "",
     dataQuality: "",
     dataComments: "",
-    CH4EmissionFactor: 0,
-    CO2EmissionFactor: 0,
-    N2OEmissionFactor: 0,
+    dataYear: "",
+    sourceDocument: "",
+    sourcePage: "",
+    sourceUrl: "",
+    CH4EmissionFactor: emissionFactorDefault,
+    CO2EmissionFactor: emissionFactorDefault,
+    N2OEmissionFactor: emissionFactorDefault,
     emissionFactorType: "",
     emissionFactorTypeReference: "",
     emissionsFactorName: "",
@@ -138,29 +147,33 @@ const useActivityForm = ({
               ],
           }),
           dataQuality: targetActivityValue?.metadata?.dataQuality as
-            | string
-            | undefined,
+            string | undefined,
           dataComments: targetActivityValue?.metadata?.sourceExplanation as
-            | string
-            | undefined,
+            string | undefined,
+          dataYear:
+            targetActivityValue?.metadata?.dataYear != null
+              ? String(targetActivityValue.metadata.dataYear)
+              : "",
+          sourceDocument: targetActivityValue?.metadata?.sourceDocument as
+            string | undefined,
+          sourcePage: targetActivityValue?.metadata?.sourcePage as
+            string | undefined,
+          sourceUrl: targetActivityValue?.metadata?.sourceUrl as
+            string | undefined,
           CH4EmissionFactor: (methodology.id === "direct-measure"
             ? targetActivityValue?.activityData?.ch4_amount
             : extractGasAmount("CH4", targetActivityValue).amount) as
-            | number
-            | undefined,
+            number | undefined,
           CO2EmissionFactor: (methodology.id === "direct-measure"
             ? targetActivityValue?.activityData?.co2_amount
             : extractGasAmount("CO2", targetActivityValue).amount) as
-            | number
-            | undefined,
+            number | undefined,
           N2OEmissionFactor: (methodology.id === "direct-measure"
             ? targetActivityValue?.activityData?.n2o_amount
             : extractGasAmount("N2O", targetActivityValue).amount) as
-            | number
-            | undefined,
-          emissionFactorType: targetActivityValue.metadata?.emissionFactorType as
-            | string
-            | undefined,
+            number | undefined,
+          emissionFactorType: targetActivityValue.metadata
+            ?.emissionFactorType as string | undefined,
           emissionFactorReference: targetActivityValue.metadata
             ?.emissionFactorTypeReference as string | undefined,
           emissionFactorName: targetActivityValue.metadata

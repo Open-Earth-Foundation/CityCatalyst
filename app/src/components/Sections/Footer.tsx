@@ -43,7 +43,7 @@ const Footer = ({ lng }: { lng: string }) => {
             display="grid"
             gridTemplateColumns="repeat(3, 1fr)"
             gap="xxl-2"
-            fontFamily="poppins"
+            fontFamily="heading"
           >
             <VStack align="flex-start" gap="l">
               <TitleSmall color="background.overlay" textTransform="uppercase">

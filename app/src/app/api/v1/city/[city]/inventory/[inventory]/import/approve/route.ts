@@ -40,6 +40,12 @@
  *                 description: |
  *                   Optional overrides. For xlsx/csv, maps column header to internal key (e.g. {"Sector Name": "sector"}).
  *                   For PDF imports, per-row field overrides keyed by row index (e.g. {"0": {"sector": "Stationary Energy", "subsector": "Residential Buildings"}}) to correct extracted values.
+ *               replaceExisting:
+ *                 type: boolean
+ *                 description: |
+ *                   Required when the inventory already has data. All existing values (manual data, connected
+ *                   third-party data and notation keys) are replaced by the file. The replaced data is kept in
+ *                   the inventory's version history and can be restored from there.
  *     responses:
  *       202:
  *         description: Import started; poll GET import status until completion.
@@ -47,6 +53,8 @@
  *         description: Invalid request or mappings cannot be approved.
  *       404:
  *         description: Import file not found.
+ *       409:
+ *         description: The inventory already has data and replaceExisting was not set (error code inventory-has-data).
  *       401:
  *         description: Unauthorized.
  */
@@ -54,70 +62,37 @@
 import UserService from "@/backend/UserService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
-import ECRFImportService, {
-  type ECRFImportResult,
-  type ECRFRowData,
-} from "@/backend/ECRFImportService";
+import {
+  buildImportResult,
+  type ImportValidationResults,
+} from "@/backend/ImportResultBuilder";
 import InventoryImportService from "@/backend/InventoryImportService";
+import InventoryReplaceService, {
+  IMPORT_REPLACE_LABEL,
+} from "@/backend/InventoryReplaceService";
 import {
   syncGHGIImportedInventorySource,
   syncGHGIInventory,
 } from "@/backend/GHGINativeInputCatalogService";
-import {
-  resolveGpcRefNo,
-  splitSectorSubsectorLabels,
-} from "@/util/GHGI/gpc-ref-resolver";
 import { db } from "@/models";
+import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
-import { Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
-
-interface ImportValidationResults {
-  adapterType?: string;
-  detectedColumns?: Record<string, number>;
-  headerKey?: string;
-}
 
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
+  replaceExisting: z.boolean().optional(),
 });
 
 /** Quick response so request returns before ingress timeout; import runs in background. */
 export const maxDuration = 30;
-
-/**
- * Apply user overrides to a PDF-extracted row. Only allowed keys are applied;
- * used for manual correction of sector/subsector/category etc. per row.
- */
-function applyPdfFieldOverrides(
-  base: ExtractedRow,
-  overrides: Record<string, unknown>,
-  allowedKeys: Set<string>,
-): ExtractedRow {
-  const out = { ...base };
-  for (const [key, value] of Object.entries(overrides)) {
-    if (!allowedKeys.has(key)) continue;
-    if (value === null || value === undefined) {
-      (out as Record<string, unknown>)[key] = null;
-      continue;
-    }
-    if (typeof value === "number" && Number.isFinite(value)) {
-      (out as Record<string, unknown>)[key] = value;
-      continue;
-    }
-    if (typeof value === "string") {
-      (out as Record<string, unknown>)[key] = value;
-    }
-  }
-  return out;
-}
 
 /**
  * Derive a column→field mapping from the raw file headers and the approved ExtractedRow[] set.
@@ -220,13 +195,52 @@ async function persistMappingFeedback(args: {
   }
 }
 
+/**
+ * Persist mapping feedback for Path B (AI-shaped) files so future uploads with
+ * the same header structure get a warm-start prompt hint.
+ */
+async function persistPathBMappingFeedback(
+  cityId: string,
+  importedFile: ImportedInventoryFile,
+  extractedRows: ExtractedRow[] | null,
+): Promise<void> {
+  if (!extractedRows || extractedRows.length === 0) return;
+  const vr = (importedFile.validationResults as ImportValidationResults) ?? {};
+  const headerKey = vr.headerKey;
+  if (!headerKey) return;
+
+  const feedbackBuffer =
+    await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+  const rawHeaders: string[] = feedbackBuffer
+    ? await FileParserService.parseFile(feedbackBuffer, importedFile.fileType)
+        .then((p) => p.primarySheet?.headers ?? [])
+        .catch(() => [])
+    : [];
+
+  const columnMapping =
+    rawHeaders.length > 0 ? deriveColumnMapping(rawHeaders, extractedRows) : {};
+  const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
+    string,
+    unknown
+  >[];
+
+  await persistMappingFeedback({
+    cityId,
+    headerKey,
+    adapterType: vr.adapterType,
+    columnMapping,
+    exampleRows,
+  });
+}
+
 async function runApproveImportInBackground(args: {
   cityId: string;
   inventoryId: string;
   importedFileId: string;
   userId: string;
+  replaceExisting: boolean;
 }): Promise<void> {
-  const { cityId, inventoryId, importedFileId, userId } = args;
+  const { cityId, inventoryId, importedFileId, userId, replaceExisting } = args;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: {
@@ -252,264 +266,11 @@ async function runApproveImportInBackground(args: {
       // For xlsx/csv: columnName -> internal key (string). For PDF imports:
       // row index (stringified) -> per-row field overrides (object).
       overrides?: Record<string, unknown>;
-      rows?: unknown;
-      keyValueShaped?: boolean;
     };
-    const mappingOverrides = mappingConfiguration.overrides;
-
-    const validationResults =
-      (importedFile.validationResults as ImportValidationResults) || {};
-    const adapterType = validationResults?.adapterType;
-    let importResult: ECRFImportResult;
-
-    // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
-    // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
-    const extractedRows = mappingConfiguration.rows as
-      | ExtractedRow[]
-      | undefined;
-    const keyValueShaped = mappingConfiguration.keyValueShaped === true;
-    const useExtractedRows =
-      Array.isArray(extractedRows) &&
-      extractedRows.length > 0 &&
-      (importedFile.fileType === "pdf" ||
-        keyValueShaped ||
-        adapterType === "near-ecrf");
-
-    if (useExtractedRows) {
-      const errors: string[] = [];
-      const warnings: string[] = [];
-      const rows: ECRFRowData[] = [];
-      let inferredYear: number | undefined;
-
-      const scopeByName = new Map<string, string>();
-      const scopeRecords = await db.models.Scope.findAll({
-        attributes: ["scopeId", "scopeName"],
-        where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
-      });
-      for (const s of scopeRecords) {
-        if (s.scopeName) scopeByName.set(s.scopeName, s.scopeId);
-      }
-
-      const allowedPdfOverrideKeys = new Set([
-        "year",
-        "sector",
-        "subsector",
-        "scope",
-        "category",
-        "totalCO2e",
-        "co2",
-        "ch4",
-        "n2o",
-        "gpcRefNo",
-        "source",
-        "methodology",
-        "activityAmount",
-        "activityUnit",
-        "activityType",
-        "activityDataSource",
-        "activityDataQuality",
-      ]);
-
-      for (let i = 0; i < extractedRows.length; i++) {
-        const baseRow = extractedRows[i];
-        const rowOverrides =
-          mappingOverrides &&
-          typeof mappingOverrides[String(i)] === "object" &&
-          mappingOverrides[String(i)] !== null
-            ? (mappingOverrides[String(i)] as Record<string, unknown>)
-            : null;
-        const row: ExtractedRow = rowOverrides
-          ? applyPdfFieldOverrides(
-              baseRow,
-              rowOverrides,
-              allowedPdfOverrideKeys,
-            )
-          : baseRow;
-
-        const { sector, subsector } = splitSectorSubsectorLabels(
-          row.sector?.trim() ?? "",
-          row.subsector?.trim() ?? "",
-        );
-        const activityHint =
-          row.activityType?.trim() || row.category?.trim() || undefined;
-        let gpcRefNo =
-          row.gpcRefNo?.trim() ||
-          resolveGpcRefNo(sector, subsector, activityHint) ||
-          null;
-        // Fallback: if the right side of " > " didn't resolve, try the left side
-        // e.g. "On-road > Other/uncategorized" → split gives subsector="Other/uncategorized" (fails)
-        //       → retry with left part "On-road" (resolves to on-road-transportation)
-        if (!gpcRefNo) {
-          const rawSub = row.subsector?.trim() ?? "";
-          if (rawSub.includes(" > ")) {
-            const leftPart = rawSub.split(" > ")[0].trim();
-            if (leftPart && leftPart !== subsector) {
-              gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
-            }
-          }
-          if (!gpcRefNo) {
-            const rawSec = row.sector?.trim() ?? "";
-            if (rawSec.includes(" > ")) {
-              const leftPart = rawSec.split(" > ")[0].trim();
-              if (leftPart && leftPart !== sector) {
-                gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityHint);
-              }
-            }
-          }
-        }
-
-        if (!gpcRefNo) {
-          errors.push(
-            `Row ${i + 1}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
-          );
-          rows.push({
-            gpcRefNo: "",
-            sectorId: "",
-            subsectorId: "",
-            subcategoryId: null,
-            scopeId: "",
-            rowIndex: i,
-            errors: [
-              `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
-            ],
-          });
-          continue;
-        }
-
-        const gpcMapping = await ECRFImportService.lookupGPCReference(gpcRefNo);
-        if (!gpcMapping) {
-          errors.push(
-            `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
-          );
-          rows.push({
-            gpcRefNo,
-            sectorId: "",
-            subsectorId: "",
-            subcategoryId: null,
-            scopeId: "",
-            rowIndex: i,
-            errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
-          });
-          continue;
-        }
-
-        const scopeFromFile = row.scope?.trim();
-        const resolvedScopeId =
-          scopeFromFile && scopeByName.has(scopeFromFile)
-            ? scopeByName.get(scopeFromFile)!
-            : gpcMapping.scopeId;
-
-        const num = (v: number | null | undefined): number | undefined =>
-          v != null && Number.isFinite(v) ? Number(v) : undefined;
-        if (row.year != null && Number.isFinite(row.year)) {
-          inferredYear =
-            inferredYear != null ? inferredYear : (row.year as number);
-        }
-
-        rows.push({
-          gpcRefNo,
-          sectorId: gpcMapping.sectorId,
-          subsectorId: gpcMapping.subsectorId,
-          subcategoryId: gpcMapping.subcategoryId,
-          scopeId: resolvedScopeId,
-          co2: num(row.co2),
-          ch4: num(row.ch4),
-          n2o: num(row.n2o),
-          totalCO2e: num(row.totalCO2e),
-          year:
-            row.year != null && Number.isFinite(row.year)
-              ? row.year
-              : undefined,
-          rowIndex: i,
-          methodology: row.methodology?.trim() || undefined,
-          activityAmount:
-            row.activityAmount != null && Number.isFinite(row.activityAmount)
-              ? row.activityAmount
-              : undefined,
-          activityUnit: row.activityUnit?.trim() || undefined,
-          activityType:
-            row.category?.trim() || row.activityType?.trim() || undefined,
-          activityDataSource: row.activityDataSource?.trim() || undefined,
-          activityDataQuality: row.activityDataQuality?.trim() || undefined,
-        });
-      }
-
-      importResult = {
-        rows,
-        errors,
-        warnings,
-        rowCount: extractedRows.length,
-        validRowCount: rows.filter((r) => !r.errors?.length).length,
-        inferredYearFromFile: inferredYear,
-      };
-
-      // Near-eCRF uploads stored before sector-column extraction was fixed may have
-      // no resolvable rows; re-parse from S3/BYTEA using the full eCRF pipeline.
-      if (
-        adapterType === "near-ecrf" &&
-        importResult.validRowCount === 0 &&
-        importResult.rowCount > 0
-      ) {
-        const fileBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(
-            importedFile,
-          );
-        if (fileBuffer) {
-          const parsedData = await FileParserService.parseFile(
-            fileBuffer,
-            importedFile.fileType,
-          );
-          const detectedColumns: Record<string, number> = {
-            ...(validationResults?.detectedColumns || {}),
-          };
-          importResult = await ECRFImportService.processECRFFile(
-            parsedData,
-            detectedColumns,
-          );
-        }
-      }
-    } else {
-      // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
-      const fileBuffer =
-        await InventoryFileStorageService.resolveImportedFileBuffer(
-          importedFile,
-        );
-      if (!fileBuffer) {
-        throw new Error("File data not found");
-      }
-
-      const parsedData = await FileParserService.parseFile(
-        fileBuffer,
-        importedFile.fileType,
-      );
-
-      const validationResults =
-        importedFile.validationResults as ImportValidationResults;
-      const detectedColumns: Record<string, number> = {
-        ...(validationResults?.detectedColumns || {}),
-      };
-
-      // Apply mapping overrides: columnName -> key; resolve column name to index
-      if (
-        mappingOverrides &&
-        Object.keys(mappingOverrides).length > 0 &&
-        parsedData.primarySheet
-      ) {
-        const headers = parsedData.primarySheet.headers;
-        for (const [columnName, key] of Object.entries(mappingOverrides)) {
-          if (!key || typeof key !== "string") continue;
-          const idx = headers.findIndex((h) => h === columnName);
-          if (idx !== -1) {
-            detectedColumns[key] = idx;
-          }
-        }
-      }
-
-      importResult = await ECRFImportService.processECRFFile(
-        parsedData,
-        detectedColumns,
-      );
-    }
+    const { importResult, extractedRows } = await buildImportResult(
+      importedFile,
+      mappingConfiguration.overrides,
+    );
 
     const defaultActivityDataSource =
       (importedFile.originalFileName as string) ||
@@ -518,61 +279,64 @@ async function runApproveImportInBackground(args: {
         ? "Imported from PDF"
         : "Imported from file");
 
-    const importSummary = await InventoryImportService.importECRFData(
-      inventoryId,
-      importResult,
-      { defaultActivityDataSource },
+    // Replace, import and the COMPLETED status share one transaction: if the
+    // import fails the existing data is still there, and the status can't
+    // disagree with whether the data change committed.
+    const { importSummary } = await db.sequelize!.transaction(
+      async (transaction) => {
+        const replacedData = replaceExisting
+          ? await InventoryReplaceService.replaceInventoryValues(
+              inventoryId,
+              userId,
+              transaction,
+            )
+          : null;
+        const didReplace = !!replacedData?.restoreVersionId;
+        // Version rows only when replacing: a first import has nothing to
+        // restore to, so writing thousands of Version rows for it is wasted.
+        const importSummary = await InventoryImportService.importECRFData(
+          inventoryId,
+          importResult,
+          {
+            defaultActivityDataSource,
+            authorId: didReplace ? userId : undefined,
+            versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
+            transaction,
+          },
+        );
+        if (didReplace && importSummary.importedRows === 0) {
+          throw new Error(
+            "No rows could be imported, so the existing inventory data was kept.",
+          );
+        }
+        await importedFile.update(
+          {
+            importStatus: ImportStatusEnum.COMPLETED,
+            processedRowCount: importSummary.importedRows,
+            completedAt: new Date(),
+            lastUpdated: new Date(),
+            validationResults: {
+              ...((importedFile.validationResults as ImportValidationResults) ??
+                {}),
+              importSummary: { ...importSummary, replacedData },
+            },
+          },
+          { transaction },
+        );
+        return { importSummary };
+      },
     );
 
-    await importedFile.update({
-      importStatus: ImportStatusEnum.COMPLETED,
-      processedRowCount: importSummary.importedRows,
-      completedAt: new Date(),
-      lastUpdated: new Date(),
-      validationResults: {
-        ...validationResults,
-        importSummary,
-      },
-    });
+    // Best-effort follow-ups: the import has committed, so a failure here must
+    // not reach the catch below and mark it FAILED.
     await syncGHGIInventory(importedFile);
-
-    // Persist mapping feedback for Path B (AI-shaped) files so future uploads
-    // with the same header structure get a warm-start prompt hint.
-    if (useExtractedRows && extractedRows && extractedRows.length > 0) {
-      const vr =
-        (importedFile.validationResults as ImportValidationResults) ?? {};
-      const headerKey = vr.headerKey;
-      if (headerKey) {
-        const feedbackBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(
-            importedFile,
-          );
-        const rawHeaders: string[] = feedbackBuffer
-          ? await FileParserService.parseFile(
-              feedbackBuffer,
-              importedFile.fileType,
-            )
-              .then((p) => p.primarySheet?.headers ?? [])
-              .catch(() => [])
-          : [];
-
-        const columnMapping =
-          rawHeaders.length > 0
-            ? deriveColumnMapping(rawHeaders, extractedRows)
-            : {};
-        const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
-          string,
-          unknown
-        >[];
-
-        await persistMappingFeedback({
-          cityId,
-          headerKey,
-          adapterType: vr.adapterType,
-          columnMapping,
-          exampleRows,
-        });
-      }
+    try {
+      await persistPathBMappingFeedback(cityId, importedFile, extractedRows);
+    } catch (err) {
+      logger.warn(
+        { err, importedFileId: importedFile.id },
+        "Failed to persist mapping feedback after import (non-fatal)",
+      );
     }
 
     logger.info(
@@ -611,7 +375,7 @@ export const POST = apiHandler(
 
     // Parse request body
     const body = await req.json();
-    const { importedFileId, mappingOverrides } =
+    const { importedFileId, mappingOverrides, replaceExisting } =
       approveImportSchema.parse(body);
 
     // Find the imported file
@@ -637,14 +401,15 @@ export const POST = apiHandler(
       );
     }
 
-    // Check if this inventory already contains data (InventoryValue records)
-    // to prevent duplicate imports
+    // Existing data is only replaced when the user confirmed it
     const existingValueCount = await db.models.InventoryValue.count({
       where: { inventoryId },
     });
-    if (existingValueCount > 0) {
-      throw new createHttpError.Conflict(
-        "This inventory already contains data. Clear existing data before importing again.",
+    if (existingValueCount > 0 && !replaceExisting) {
+      throw createHttpError(
+        409,
+        "This inventory already contains data. Confirm to replace it.",
+        { code: "inventory-has-data", data: { existingValueCount } },
       );
     }
 
@@ -675,6 +440,7 @@ export const POST = apiHandler(
       inventoryId,
       importedFileId,
       userId: session.user.id,
+      replaceExisting: existingValueCount > 0 && !!replaceExisting,
     }).catch((err) =>
       logger.error({ err, importedFileId }, "Approve/import background failed"),
     );

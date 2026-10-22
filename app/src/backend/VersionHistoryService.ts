@@ -1,4 +1,6 @@
+import "@/util/big_int_json";
 import { db } from "@/models";
+import type { Version } from "@/models/Version";
 import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
@@ -40,6 +42,15 @@ export default class VersionHistoryService {
     hiap: false,
   };
 
+  // Parents before children, so foreign keys resolve when deleted rows are re-created.
+  static RESTORE_ORDER: string[] = [
+    "EmissionsFactor",
+    "InventoryValue",
+    "ActivityValue",
+    "GasValue",
+    "HighImpactActionRanked",
+  ];
+
   static async getVersionHistory(
     inventoryId: string,
     moduleName: string = "ghgi",
@@ -75,6 +86,7 @@ export default class VersionHistoryService {
     isDeleted: boolean = false,
     transaction?: Transaction,
     moduleName: string = "ghgi",
+    options: { label?: string; created?: Date } = {},
   ) {
     if (!inventoryId) {
       throw new createHttpError.BadRequest("missing-inventory-id");
@@ -83,13 +95,22 @@ export default class VersionHistoryService {
       throw new createHttpError.BadRequest("missing-user-id");
     }
 
-    // find previous version (if available)
+    // find previous version (if available); inside the caller's transaction so a
+    // version written earlier in the same transaction is linked too
     const previousVersion = await db.models.Version.findOne({
       where: { inventoryId, entryId, table, moduleName },
       order: [["created", "DESC"]],
+      transaction,
     });
 
-    if (isDeepStrictEqual(previousVersion?.data, data)) {
+    // a deletion is a change even when it carries the same data as the previous
+    // version, and so is a labelled version (e.g. the snapshot before an import replace)
+    if (
+      !isDeleted &&
+      !previousVersion?.isDeleted &&
+      (previousVersion?.label ?? null) === (options.label ?? null) &&
+      isDeepStrictEqual(previousVersion?.data, data)
+    ) {
       logger.warn(
         { moduleName, table, inventoryId, entryId },
         "createVersion called with same data, skipping",
@@ -98,7 +119,7 @@ export default class VersionHistoryService {
     }
 
     // save version entry
-    await db.models.Version.create(
+    return await db.models.Version.create(
       {
         versionId: randomUUID(),
         inventoryId,
@@ -109,6 +130,9 @@ export default class VersionHistoryService {
         previousVersionId: previousVersion?.versionId,
         data: data as Record<string, unknown>,
         isDeleted,
+        label: options.label,
+        // an explicit time lets a bulk operation share one restore point
+        ...(options.created ? { created: options.created } : {}),
       },
       { transaction },
     );
@@ -141,10 +165,20 @@ export default class VersionHistoryService {
     );
   }
 
-  static async restoreVersion(versionId: string) {
+  /**
+   * Jumps the inventory back to the state it had at the given version. Every
+   * entry changed after that point is put back to its state at that point
+   * (updated, re-created, or deleted if it did not exist yet), and the newer
+   * version entries are removed, so there is no undo.
+   *
+   * @param versionId - version to restore to
+   * @param inventoryId - inventory the caller was authorized for; the version must belong to it
+   */
+  static async restoreVersion(versionId: string, inventoryId: string) {
     const restoredVersion = await db.models.Version.findOne({
       where: {
         versionId,
+        inventoryId,
       },
     });
 
@@ -152,16 +186,14 @@ export default class VersionHistoryService {
       throw new createHttpError.NotFound("version-not-found");
     }
 
-    // revert any versions made after this point
+    // revert any versions made after this point, oldest first
     const newerVersions = await db.models.Version.findAll({
       where: {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
         moduleName: restoredVersion.moduleName,
       },
-      // make sure newest versions are deleted first because of previousVersion constraint
-      // so a newer version doesn't refer to a previous version still while being deleted
-      order: [["created", "DESC"]],
+      order: [["created", "ASC"]],
       include: [
         {
           model: db.models.Version,
@@ -180,47 +212,76 @@ export default class VersionHistoryService {
       ? (VersionHistoryService.MODULE_HANDLES_DELETIONS[moduleName] ?? true)
       : true;
 
+    // The oldest newer version of each entry points at the entry's state at the
+    // restore point (its previous version), so later changes to it don't matter.
+    const firstChangeByEntry = new Map<string, Version>();
+    for (const version of newerVersions) {
+      const key = `${version.table}:${version.entryId}`;
+      if (!firstChangeByEntry.has(key)) {
+        firstChangeByEntry.set(key, version);
+      }
+    }
+    const restoreRank = (table?: string) => {
+      const rank = VersionHistoryService.RESTORE_ORDER.indexOf(table ?? "");
+      return rank === -1 ? VersionHistoryService.RESTORE_ORDER.length : rank;
+    };
+    const existedAtRestorePoint = (version: Version) =>
+      !!version.previousVersion &&
+      !version.previousVersion.isDeleted &&
+      !!version.previousVersion.data;
+    const firstChanges = [...firstChangeByEntry.values()];
+    // Entries created after the restore point are removed first (children
+    // first), so re-created entries don't collide with them on unique keys
+    // such as one InventoryValue per GPC reference number.
+    const toRemove = firstChanges
+      .filter((version) => !existedAtRestorePoint(version))
+      .sort((a, b) => restoreRank(b.table) - restoreRank(a.table));
+    const toRestore = firstChanges
+      .filter(existedAtRestorePoint)
+      .sort((a, b) => restoreRank(a.table) - restoreRank(b.table));
+
+    const modelFor = (version: Version) => {
+      const model = VersionHistoryService.MODELS[version.table!];
+      const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
+      if (!model || !idColumn) {
+        throw new createHttpError.InternalServerError(
+          "table-model-not-configured: " + version.table!,
+        );
+      }
+      return { model, idColumn };
+    };
+
     await db.sequelize?.transaction(async (transaction) => {
-      for (const version of newerVersions) {
-        const model = VersionHistoryService.MODELS[version.table!];
-        const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
-
-        if (!model || !idColumn) {
-          throw new createHttpError.InternalServerError(
-            "table-model-not-configured: " + version.table!,
-          );
-        }
-
-        if (
-          version.previousVersion &&
-          !version.previousVersion?.isDeleted &&
-          version.previousVersion?.data
-        ) {
-          // re-create entry in case it was deleted previously
-          if (version.isDeleted) {
-            await model.create(version.previousVersion.data, {
-              transaction,
-            });
-          } else {
-            // restore previous version of table entry
-            await model.update(version.previousVersion.data, {
-              where: { [idColumn]: version.entryId },
-              transaction,
-            });
-          }
-        } else if (moduleHandlesDeletions) {
-          // delete table entry as it didn't exist previously
+      if (moduleHandlesDeletions) {
+        for (const version of toRemove) {
+          const { model, idColumn } = modelFor(version);
           await model.destroy({
-            where: {
-              [idColumn]: version.entryId,
-            },
+            where: { [idColumn]: version.entryId },
             transaction,
           });
         }
-
-        // delete version entry
-        await version.destroy({ transaction });
       }
+
+      for (const version of toRestore) {
+        const { model, idColumn } = modelFor(version);
+        const previousData = version.previousVersion.data!;
+        // restore the entry's earlier state, re-creating it if it was deleted since
+        const [updatedCount] = await model.update(previousData, {
+          where: { [idColumn]: version.entryId },
+          transaction,
+        });
+        if (updatedCount === 0) {
+          await model.create(previousData, { transaction });
+        }
+      }
+
+      // one statement, so newer versions that point at each other go together
+      await db.models.Version.destroy({
+        where: {
+          versionId: newerVersions.map((version) => version.versionId),
+        },
+        transaction,
+      });
     });
   }
 }

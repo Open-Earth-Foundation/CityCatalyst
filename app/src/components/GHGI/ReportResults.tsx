@@ -112,6 +112,7 @@ function SectorTabs({
               value={name}
               minWidth="200px"
               height="64px"
+              fontFamily="heading"
             >
               <Icon
                 as={icon}
@@ -122,6 +123,7 @@ function SectorTabs({
                 }
               />
               <Text
+                fontFamily="heading"
                 fontSize="16"
                 lineClamp={2}
                 wordBreak="keep-all"
@@ -257,6 +259,7 @@ function EmissionsBreakdown({
         />
       </Heading>
       <Text
+        fontFamily="heading"
         fontWeight="regular"
         fontSize="body.lg"
         color="interactive.control"

@@ -21,7 +21,13 @@ import {
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
 
-type GpcRow = { sector: string; subsector: string };
+type GpcRow = {
+  gpcRefNo: string;
+  sector: string;
+  subsector: string;
+  scope?: number | null;
+  fuelTypeOrActivity?: string[];
+};
 const gpcTable = gpcReferenceTable as GpcRow[];
 
 /** GPC reference → scope in the taxonomy (null for I.4.4, which has no scope). */
@@ -137,6 +143,25 @@ const HIERARCHY_TEXT = [...SECTOR_SUBSECTOR_HIERARCHY.entries()]
   .map(([sector, subs]) => `- ${sector}: ${subs.join(", ")}`)
   .join("\n");
 
+/**
+ * Format the GPC references for the prompt: every valid reference under its sector and
+ * sub-sector, with its scope. The agriculture, forestry and land use (AFOLU) references
+ * also list their activities, because the report wording alone does not say which
+ * reference a row belongs to (manure on pasture is V.1, N2O from soils is V.3).
+ */
+const REFERENCE_TEXT = gpcTable
+  .map((row) => {
+    const scope = row.scope == null ? "no scope" : `scope ${row.scope}`;
+    const activities = row.sector.startsWith("agriculture")
+      ? ` (${(row.fuelTypeOrActivity ?? [])
+          .map((option) => option.replace(/^(type|activity-type|species)-/, ""))
+          .filter((option) => !option.startsWith("land-classification"))
+          .join(", ")})`
+      : "";
+    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${activities === " ()" ? "" : activities}`;
+  })
+  .join("\n");
+
 /** Format sector dictionary for the prompt: "report term" → use this sector. */
 const SECTOR_DICTIONARY_TEXT = Object.entries(SECTOR_VARIANT_TO_CANONICAL)
   .filter(([variant]) => variant !== SECTOR_VARIANT_TO_CANONICAL[variant]) // skip identity
@@ -248,7 +273,7 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
-- gpcRefNo (string | null): e.g. I.1.1, II.2.1 when present; else null.
+- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Never invent a reference or a sub-sector name.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
 - activityAmount (number | null): consumption/quantity value when table has such column.
@@ -264,6 +289,9 @@ Use JSON null for missing values. Never output "-", "N/A", or similar as strings
 Sector → Subsector hierarchy (use only these pairs):
 ${HIERARCHY_TEXT}
 
+GPC references (use only these for gpcRefNo):
+${REFERENCE_TEXT}
+
 Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"}. Subsector: ${SUBSECTOR_DICTIONARY_TEXT || "(none)"}.
 </taxonomy>
 
@@ -273,7 +301,9 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
-  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"}
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Livestock Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.1", "source": "Table 11"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
 ]}
 </example_output>`;
 

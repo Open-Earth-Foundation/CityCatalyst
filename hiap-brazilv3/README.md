@@ -44,6 +44,8 @@ Unsupported combinations return HTTP 422 with `detail.error.code = "unsupported_
 
 See `.env.example`: `API_HOST`, `API_PORT`, `LOG_LEVEL`, `LOG_FILE_ENABLED`, `LOG_DIR`.
 
+`LOG_LEVEL` is capped at `WARNING` (so `ERROR`/`CRITICAL` behave like `WARNING`) while the methodology is a scaffold, because the scaffold warnings must stay visible.
+
 ## Test
 
 ```bash

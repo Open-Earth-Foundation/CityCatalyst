@@ -14,6 +14,8 @@ load_dotenv()
 
 import logging
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
@@ -26,9 +28,17 @@ setup_logger()
 # Always log under the `app.*` namespace so `setup_logger()` captures it,
 # including when this module is executed as `__main__`.
 logger = logging.getLogger("app.main")
-logger.warning(SCAFFOLD_WARNING)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Log the scaffold warning once when the server starts."""
+    logger.warning(SCAFFOLD_WARNING)
+    yield
+
 
 app = FastAPI(
+    lifespan=lifespan,
     title="HIAP-BRAZILV3",
     description=(
         "SCAFFOLD of the Brazil v3 climate-action prioritization service. The "

@@ -7,10 +7,10 @@ policy, feasibility, ...) replace this once sources are approved.
 
 import json
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from app.methodologies.ccc.v1.config_schema import MethodologyConfig
 from app.shared.contracts import RankableItem
 
 REGION_DIR = Path(__file__).parent
@@ -40,11 +40,21 @@ def load_items(modality: str) -> list[RankableItem]:
     ]
 
 
-def load_ccc_v1_config() -> MethodologyConfig:
-    """Load the placeholder CCC v1 parameters from `config.yaml`.
+def load_methodology_params(methodology: str, version: str) -> dict[str, Any]:
+    """Load the raw region parameters for one methodology version from `config.yaml`.
+
+    The region does not know the methodology's schema: the registry validates
+    the returned mapping against the methodology's own config model.
+
+    Args:
+        methodology: Methodology identifier, e.g. `ccc`.
+        version: Methodology version, e.g. `v1`.
 
     Returns:
-        Validated methodology configuration for the BR region.
+        The unvalidated parameter mapping (placeholders while the methodology is a scaffold).
+
+    Raises:
+        KeyError: If the region has no parameters for that methodology version.
     """
     raw = yaml.safe_load((REGION_DIR / "config.yaml").read_text(encoding="utf-8"))
-    return MethodologyConfig(**raw["methodologies"]["ccc"]["v1"])
+    return raw["methodologies"][methodology][version]

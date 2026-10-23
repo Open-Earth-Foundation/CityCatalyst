@@ -7,10 +7,12 @@ combination. Unsupported combinations raise `UnsupportedCombinationError`.
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
+from typing import Any
 
 from app.methodologies.ccc.v1.config_schema import MethodologyConfig
 from app.methodologies.ccc.v1.pipeline import run_adaptation, run_mitigation
-from app.regions.BR.sources import load_ccc_v1_config, load_items
+from app.regions.BR.sources import load_items, load_methodology_params
 from app.shared.contracts import RankableItem, RankingResult
 
 Pipeline = Callable[[list[RankableItem], MethodologyConfig], RankingResult]
@@ -19,11 +21,23 @@ CombinationKey = tuple[str, str, str]
 
 @dataclass(frozen=True)
 class RegisteredCombination:
-    """Everything needed to run one region + methodology + version."""
+    """Everything needed to run one region + methodology + version.
+
+    The registry is the only place where region code and methodology code meet:
+    the region supplies raw parameters, the methodology's model validates them.
+    """
 
     pipelines: dict[str, Pipeline]
     load_items: Callable[[str], list[RankableItem]]
-    load_config: Callable[[], MethodologyConfig]
+    load_raw_config: Callable[[], dict[str, Any]]
+
+    def load_config(self) -> MethodologyConfig:
+        """Return the region parameters validated as a methodology config.
+
+        Raises:
+            pydantic.ValidationError: If the region parameters do not fit the methodology schema.
+        """
+        return MethodologyConfig(**self.load_raw_config())
 
 
 class UnsupportedCombinationError(Exception):
@@ -66,7 +80,7 @@ REGISTRY: dict[CombinationKey, RegisteredCombination] = {
     ("BR", "ccc", "v1"): RegisteredCombination(
         pipelines={"mitigation": run_mitigation, "adaptation": run_adaptation},
         load_items=load_items,
-        load_config=load_ccc_v1_config,
+        load_raw_config=partial(load_methodology_params, "ccc", "v1"),
     ),
 }
 

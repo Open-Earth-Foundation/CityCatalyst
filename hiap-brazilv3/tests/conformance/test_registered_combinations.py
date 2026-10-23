@@ -10,6 +10,7 @@ from app.shared.scoring.weights import validate_weights
 @pytest.mark.conformance
 @pytest.mark.parametrize("key", sorted(REGISTRY))
 def test_combination_produces_valid_ranking(key: tuple[str, str, str]) -> None:
+    """Each pipeline of a registered combination returns a consistent, complete ranking."""
     combination = REGISTRY[key]
     config = combination.load_config()
     validate_weights(config.weights)

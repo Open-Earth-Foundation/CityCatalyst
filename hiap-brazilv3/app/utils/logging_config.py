@@ -9,13 +9,17 @@ from pathlib import Path
 def setup_logger() -> None:
     """Configure application logging based on environment.
 
+    The level is capped at WARNING: while the methodology is a scaffold, the
+    scaffold warnings must stay visible, so `LOG_LEVEL=ERROR` or `CRITICAL`
+    behaves like `WARNING`.
+
     Env vars:
-    - `LOG_LEVEL`: logging level (e.g. `INFO`, `DEBUG`)
+    - `LOG_LEVEL`: logging level (e.g. `INFO`, `DEBUG`); values above WARNING are capped
     - `LOG_DIR`: directory for `app.log`
     - `LOG_FILE_ENABLED`: when falsey, disables writing `app.log` (keeps console logging)
     """
     env_level = os.getenv("LOG_LEVEL", "INFO").upper().strip()
-    level = getattr(logging, env_level, logging.INFO)
+    level = min(getattr(logging, env_level, logging.INFO), logging.WARNING)
     log_file_enabled_raw = os.getenv("LOG_FILE_ENABLED", "true").strip().lower()
     log_file_enabled = log_file_enabled_raw in {"1", "true", "yes", "y", "on"}
 

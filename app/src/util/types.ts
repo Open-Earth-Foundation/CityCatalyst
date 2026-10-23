@@ -18,6 +18,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import type {
   conceptNoteCustomTemplateRequest,
   conceptNoteFunderCreateRequest,
@@ -1025,6 +1026,8 @@ export interface ImportStatusResponse {
    */
   mappingConfiguration?: {
     extractionProgress?: { current: number; total?: number };
+    /** Totals and dropped-row counts from PDF extraction; drives the review warning. */
+    extractionSummary?: ExtractionSummary;
     [key: string]: unknown;
   } | null;
   rowCount: number;

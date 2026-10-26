@@ -147,7 +147,8 @@ const HIERARCHY_TEXT = [...SECTOR_SUBSECTOR_HIERARCHY.entries()]
  * Format the GPC references for the prompt: every valid reference under its sector and
  * sub-sector, with its scope. The agriculture, forestry and land use (AFOLU) references
  * also list their activities, because the report wording alone does not say which
- * reference a row belongs to (manure on pasture is V.1, N2O from soils is V.3).
+ * reference a row belongs to (enteric fermentation and managed manure are V.1; manure
+ * left on pasture and N2O from soils are V.3).
  */
 const REFERENCE_TEXT = gpcTable
   .map((row) => {
@@ -273,7 +274,7 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
-- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Never invent a reference or a sub-sector name.
+- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
 - activityAmount (number | null): consumption/quantity value when table has such column.
@@ -302,7 +303,7 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
   {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
   {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
-  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Livestock Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.1", "source": "Table 11"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
   {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
 ]}
 </example_output>`;

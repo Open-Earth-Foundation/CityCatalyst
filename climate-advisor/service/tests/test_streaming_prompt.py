@@ -59,7 +59,7 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
                 if False:
                     yield SimpleNamespace(type="agent_updated_stream_event")
 
-        def fake_run_streamed(agent, runner_input, run_config):
+        def fake_run_streamed(agent, runner_input, run_config, max_turns=None, error_handlers=None):
             recorded["agent_instructions"] = agent.instructions
             recorded["runner_input"] = runner_input
             recorded["run_config"] = run_config
@@ -142,7 +142,7 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
 
         agent.messages = FakeMessages()
 
-        def fail_run_streamed(agent, runner_input, run_config):
+        def fail_run_streamed(agent, runner_input, run_config, max_turns=None, error_handlers=None):
             recorded["runner_instructions"] = agent.instructions
             recorded["runner_input"] = runner_input
             raise RuntimeError("sdk stream unavailable")

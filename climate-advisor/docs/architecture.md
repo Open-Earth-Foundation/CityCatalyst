@@ -327,6 +327,10 @@ request JSON.
     arbitrary runtime routing/scope or credential arguments, redacts forbidden
     result fields, and closes the short-lived Core client after each read
     invocation.
+  - Validates the finite view arguments each capability accepts (`scope`,
+    `type`, `limit`, `offset` for HIAP and HIAP-MEED rankings, `chapters` for a
+    HIAP-MEED output plan) and passes a safe `displayName` from discovery
+    labels so plans can be told apart.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`
@@ -390,10 +394,15 @@ it affects, and each of their open gaps is asked of the verified source text.
 Only those chapters are redrafted with the cited answers, editing the current
 chapter text in place so accepted user edits survive. Each redraft appends a
 revision and reconciles gaps with the new evidence without replacing the last
-user-confirmed revision. Only gaps backed by a cited answer close; a redraft
-that drops any other gap or mismatches its markers is rejected. The re-check is
+user-confirmed revision. Only gaps backed by a cited answer close; any other
+gap a redraft drops is added back as a marker at the end of the chapter and
+stays open, and a redraft that mismatches its markers is rejected. The
+re-check is
 a durable job in `context_summary.source_revalidation`, queued with the bundle
 commit and retried by the context-bundle reconciler after failures or restarts.
+It needs no template: a note with nothing drafted finishes without a model
+call, and a note without a template is redrafted from its chapters' own titles
+and descriptions.
 
 ## SSE Contract
 

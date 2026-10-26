@@ -66,9 +66,10 @@ export function hasSignedNumericValue(
 }
 
 /**
- * Last `,` or `.` followed by 1–2 digits is the decimal separator.
- * `1.234,56` (EU) vs `1,234.56` (US). Groups of three with no other decimal
- * are thousands (`1.234` → 1234, `1,234` → 1234).
+ * When both separators appear, the last one is the decimal mark
+ * (`1.234,56` EU, `1,234.56` US). A separator is thousands only when the
+ * group of three repeats (`1.234.567`, `1,234,567`). One fractional group
+ * is a decimal, including exactly three places (`137.224`, `0.123`).
  */
 function normalizeDecimalAndThousands(text: string): string {
   const lastComma = text.lastIndexOf(",");
@@ -85,14 +86,15 @@ function normalizeDecimalAndThousands(text: string): string {
     return text.replace(/,/g, "");
   }
 
+  // Repeated groups only. A lone `1,234` is 1.234, not 1234.
   if (lastComma !== -1) {
-    if (/^\d{1,3}(,\d{3})+$/.test(text)) {
+    if (/^\d{1,3}(,\d{3}){2,}$/.test(text)) {
       return text.replace(/,/g, "");
     }
     return text.replace(/,/g, ".");
   }
 
-  if (/^\d{1,3}(\.\d{3})+$/.test(text)) {
+  if (/^\d{1,3}(\.\d{3}){2,}$/.test(text)) {
     return text.replace(/\./g, "");
   }
   return text;

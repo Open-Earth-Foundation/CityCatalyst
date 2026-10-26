@@ -45,10 +45,7 @@ export function iso2FromInventoryCountry(token: string): string {
 }
 
 /** `13112` / `CL-13112` / `CL13112` → `CL13112`. */
-export function formatIneCode(
-  raw: string,
-  countryIso2 = "CL",
-): string | null {
+export function formatIneCode(raw: string, countryIso2 = "CL"): string | null {
   const compact = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
   if (/^[A-Z]{2}\d{4,6}$/.test(compact)) return compact;
   if (/^\d{4,6}$/.test(compact)) {
@@ -61,6 +58,35 @@ export function lookupChileMeedCityByIne(
   ineCode: string,
 ): ChileMeedCity | undefined {
   return byIne.get(compactKey(ineCode));
+}
+
+/** Place fields for a locode that a national catalog knows. */
+export interface CatalogPlace {
+  name: string;
+  country: string;
+  countryLocode: string;
+  region?: string;
+  regionLocode?: string;
+  ineCode?: string;
+  unLocode: string | null;
+}
+
+/**
+ * Resolve region and country from a locode catalog.
+ * Callers stay free of per-country branches; an unknown locode returns nothing.
+ */
+export function lookupCatalogPlace(locode: string): CatalogPlace | undefined {
+  const city = lookupChileMeedCityByIne(locode);
+  if (!city) return undefined;
+  return {
+    name: city.name,
+    country: "Chile",
+    countryLocode: "CL",
+    region: city.regionName,
+    regionLocode: city.regionCode,
+    ineCode: city.ineCode,
+    unLocode: city.locode,
+  };
 }
 
 export function lookupChileMeedCityByName(

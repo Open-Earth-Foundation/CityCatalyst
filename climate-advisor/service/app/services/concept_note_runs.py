@@ -10,6 +10,10 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
+from app.models.cnb.concept_note_markdown import (
+    ConceptNoteUploadStatusResponse,
+    source_format_from_filename,
+)
 from app.models.cnb.concept_note_runs import (
     ConceptNotePopulationRequest,
     ConceptNoteRunListItemResponse,
@@ -17,10 +21,6 @@ from app.models.cnb.concept_note_runs import (
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
     ManualConceptNotePopulation,
-)
-from app.models.cnb.concept_note_markdown import (
-    ConceptNoteUploadStatusResponse,
-    source_format_from_filename,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
@@ -303,7 +303,7 @@ class ConceptNoteRunService:
 
         # Serialize the ordered rows into the stable list contract.
         return ConceptNoteRunListResponse(
-            runs=[_to_list_item(run) for run in runs]
+            runs=[_to_list_item(run, uploads=run.uploads) for run in runs]
         )
 
     async def _authorize_scope(
@@ -432,7 +432,7 @@ def _to_response(
     uploads: list[ConceptNoteUpload] | None = None,
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
-    list_item = _to_list_item(run)
+    list_item = _to_list_item(run, uploads=uploads)
     population = (run.context_summary or {}).get("manual_population")
     return ConceptNoteRunResponse(
         **list_item.model_dump(),
@@ -442,7 +442,6 @@ def _to_response(
             if population is not None
             else None
         ),
-        uploads=[_to_upload_response(upload) for upload in uploads or []],
         created=created,
         trace_id=run.trace_id,
     )
@@ -459,6 +458,7 @@ def _to_upload_response(
         filename=upload.filename,
         source_label=upload.source_label,
         source_format=source_format_from_filename(upload.filename),
+        source_role=upload.source_role,
         page_count=upload.page_count,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,
@@ -466,9 +466,12 @@ def _to_upload_response(
     )
 
 
-def _to_list_item(run: ConceptNoteRun) -> ConceptNoteRunListItemResponse:
+def _to_list_item(
+    run: ConceptNoteRun, *, uploads: list[ConceptNoteUpload] | None = None
+) -> ConceptNoteRunListItemResponse:
     """Serialize one run into the stable list and resume contract."""
     return ConceptNoteRunListItemResponse(
+        uploads=[_to_upload_response(upload) for upload in uploads or []],
         run_id=run.run_id,
         thread_id=run.thread_id,
         name=run.name,

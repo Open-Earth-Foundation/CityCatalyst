@@ -52,7 +52,8 @@ def build_suggestion_context(
         **request.model_dump(),
         "workspace": {
             "workflow_step": run.workflow_step,
-            "funding_selected": run.selected_funding_opportunity_id is not None,
+            "funding_selected": run.selected_funding_opportunity_id is not None
+            or bool(run.custom_template),
             "source_count": len(bundle.get("selected_sources") or []),
             "source_readiness": (run.context_summary or {})
             .get("context_bundle", {})

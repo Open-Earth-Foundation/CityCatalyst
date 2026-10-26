@@ -9,7 +9,7 @@ interface DisplayProps extends HeadingProps {
 export const DisplaySmall = ({ text, children, color = "content.alternative", ...props }: DisplayProps) => (
   <Heading
     as="h1"
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="display.sm"
     lineHeight="44px"
@@ -25,7 +25,7 @@ export const DisplaySmall = ({ text, children, color = "content.alternative", ..
 export const DisplayMedium = ({ children, color = "content.alternative", ...props }: HeadingProps) => (
   <Heading
     as="h1"
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="display.md"
     lineHeight="52px"
@@ -40,7 +40,7 @@ export const DisplayMedium = ({ children, color = "content.alternative", ...prop
 export const DisplayLarge = ({ children, color = "content.alternative", ...props }: HeadingProps) => (
   <Heading
     as="h1"
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="display.lg"
     lineHeight="64px"

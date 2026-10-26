@@ -30,7 +30,8 @@ function response(annotationMode: "none" | "visual_context" = "none") {
       pages: [
         {
           index: 0,
-          markdown: "# Title\n\n![img-0.jpeg](img-0.jpeg)\n\nFigure 1. Chart caption.",
+          markdown:
+            "# Title\n\n![img-0.jpeg](img-0.jpeg)\n\nFigure 1. Chart caption.",
           header: "Synthetic header",
           footer: null,
           dimensions: { width: 1000, height: 1000, dpi: 72 },
@@ -77,7 +78,8 @@ function response(annotationMode: "none" | "visual_context" = "none") {
               bottom_right_x: 500,
               bottom_right_y: 400,
               image_base64: "not-a-real-image",
-              image_annotation: annotationMode === "visual_context" ? annotation : null,
+              image_annotation:
+                annotationMode === "visual_context" ? annotation : null,
             },
           ],
           tables: [{ id: "table-1", markdown: "| A | 1 |" }],
@@ -148,7 +150,9 @@ describe("structured document artifact", () => {
           },
         ],
         trends: ["Transport declines", "Queda de 12.5%"],
-        targets: [{ label: "2030", value: "12.5%", value_kind: "printed" as const }],
+        targets: [
+          { label: "2030", value: "12.5%", value_kind: "printed" as const },
+        ],
         callouts: [],
         readable_values: [
           { label: "Fuel", value: null, value_kind: "unreadable" as const },
@@ -179,7 +183,10 @@ describe("structured document artifact", () => {
           },
         ],
       },
-      { annotationMode: "visual_context", requestedModel: "mistral-ocr-latest" },
+      {
+        annotationMode: "visual_context",
+        requestedModel: "mistral-ocr-latest",
+      },
     );
     const stored = document.document.pages[0].images[0].annotation;
     expect(stored?.source).toBe("image_annotation");
@@ -331,5 +338,52 @@ describe("structured document artifact", () => {
         { annotationMode: "none", requestedModel: "model" },
       ),
     ).toThrow(/missing table/i);
+  });
+});
+
+describe("image placeholders without a page image (CC-1008)", () => {
+  const dimensions = { width: 1000, height: 1000, dpi: 72 };
+  const box = {
+    top_left_x: 10,
+    top_left_y: 10,
+    bottom_right_x: 200,
+    bottom_right_y: 40,
+  };
+  const build = (headerContent: string) =>
+    buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        usage_info: { pages_processed: 1 },
+        pages: [
+          {
+            index: 0,
+            markdown: "Body",
+            header: null,
+            footer: null,
+            dimensions,
+            blocks: [
+              { type: "header", content: headerContent, ...box },
+              { type: "text", content: "Body", ...box },
+            ],
+            images: [],
+            tables: [],
+          },
+        ],
+      },
+      { annotationMode: "none", requestedModel: "model" },
+    );
+
+  it("keeps a logo whose target is a name, not an image id, as text", () => {
+    // Seen on the Auckland report: Mistral returned the organisation name as the target.
+    const doc = build(
+      "![LOGO](Auckland Council Te Kaunihera o Tāmaki Makaurau)",
+    );
+    const header = doc.document.pages[0].blocks[0];
+    expect(header.related_image_id).toBeNull();
+    expect(header.content).toContain("LOGO");
+  });
+
+  it("still rejects a reference that looks like an image id but is missing", () => {
+    expect(() => build("![img-3.jpeg](img-3.jpeg)")).toThrow(/missing image/i);
   });
 });

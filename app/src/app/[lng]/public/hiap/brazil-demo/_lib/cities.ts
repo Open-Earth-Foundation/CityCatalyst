@@ -30,7 +30,7 @@ export const CITIES: CityFixture[] = [
     slug: "caxias-do-sul",
     name: "Caxias do Sul",
     state: "RS",
-    locode: "BR CXJ",
+    locode: "BR CXL",
     population: 517451,
     coastal: false,
     risk: {
@@ -71,7 +71,7 @@ export const CITIES: CityFixture[] = [
     slug: "sobral",
     name: "Sobral",
     state: "CE",
-    locode: "BR SBL",
+    locode: "BR SOB",
     population: 210711,
     coastal: false,
     risk: {
@@ -113,7 +113,7 @@ export const CITIES: CityFixture[] = [
     slug: "santa-cruz",
     name: "Santa Cruz",
     state: "RN",
-    locode: "BR SCZ",
+    locode: "BR SNZ",
     population: 41049,
     coastal: false,
     risk: {
@@ -195,7 +195,7 @@ export const CITIES: CityFixture[] = [
     slug: "itaubal",
     name: "Itaubal",
     state: "AP",
-    locode: "BR ITB",
+    locode: "BR ITL",
     population: 6165,
     coastal: false,
     risk: {

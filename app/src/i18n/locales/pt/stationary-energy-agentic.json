@@ -1,13 +1,13 @@
 {
-  "draft-value-no-current": "No current inventory value",
-  "draft-value-no-source": "No source-backed draft value",
-  "draft-value-reported-notation": "Reported notation",
-  "draft-notation-key-NO": "Not occurring",
-  "draft-notation-key-NE": "Not estimated",
-  "draft-notation-key-IE": "Included elsewhere",
-  "draft-notation-key-C": "Confidential",
-  "draft-notation-key-NA": "Not applicable",
-  "error-failed-to-load-stationary-energy-draft-status": "Failed to load Stationary Energy draft status",
+  "draft-value-no-current": "Sem valor de inventário atual",
+  "draft-value-no-source": "Sem valor com fonte",
+  "draft-value-reported-notation": "Notação reportada",
+  "draft-notation-key-NO": "Não ocorre",
+  "draft-notation-key-NE": "Não estimado",
+  "draft-notation-key-IE": "Incluído em outro lugar",
+  "draft-notation-key-C": "Confidencial",
+  "draft-notation-key-NA": "Não aplicável",
+  "error-failed-to-load-stationary-energy-draft-status": "Não foi possível carregar o status do rascunho de Energia Estacionária",
   "sector-card-let-agent-draft": "Elaboração de agentes",
   "sector-card-review-before-saving": "Revise cada valor antes de salvar",
   "legacy-route-unavailable-title": "Rascunho de Energia Estacionária indisponível",
@@ -319,5 +319,8 @@
   "chat-pending-request-cancel": "Cancelar pedido anterior",
   "chat-pending-request-canceled": "O seu pedido anterior foi cancelado. Você pode enviar um novo pedido.",
   "chat-pending-request-failed": "A execução falhou, então não pude continuar com sua solicitação anterior. Por favor, tente novamente o rascunho e envie sua solicitação novamente.",
-  "chat-pending-request-ended": "A execução terminou, portanto, sua solicitação anterior não continuará automaticamente."
+  "chat-pending-request-ended": "A execução terminou, portanto, sua solicitação anterior não continuará automaticamente.",
+  "source-geography-city": "cidade",
+  "source-geography-country": "país",
+  "source-geography-region": "região"
 }

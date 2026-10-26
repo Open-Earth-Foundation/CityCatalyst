@@ -15,6 +15,7 @@ from app.utils.chat_workflow_context import (
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class ConceptNoteRunRepository:
@@ -135,6 +136,13 @@ class ConceptNoteRunRepository:
         """Load a user's runs for one city in deterministic activity order."""
         query = (
             select(ConceptNoteRun)
+            .options(
+                selectinload(
+                    ConceptNoteRun.uploads.and_(
+                        ConceptNoteUpload.uploaded_by_user_id == user_id
+                    )
+                )
+            )
             .where(
                 ConceptNoteRun.user_id == user_id,
                 ConceptNoteRun.city_id == city_id,
@@ -175,7 +183,7 @@ class ConceptNoteRunRepository:
         user_id: str,
         run_id: UUID,
     ) -> None:
-        """Persist the authorized Concept Note run on its owning chat thread."""
+        """Attach the chat thread to its authorized Concept Note run."""
         result = await self.session.execute(
             select(Thread).where(
                 Thread.thread_id == thread_id,
@@ -185,6 +193,7 @@ class ConceptNoteRunRepository:
         thread = result.scalar_one_or_none()
         if thread is None:
             return
+        thread.concept_note_run_id = run_id
         thread.context = bind_workflow_context(
             thread.context,
             workflow_key=CONCEPT_NOTE_RUN_ID_KEY,

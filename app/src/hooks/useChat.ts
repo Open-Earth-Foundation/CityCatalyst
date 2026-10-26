@@ -98,6 +98,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
         body: JSON.stringify({
           threadId: threadIdRef.current,
           content: text,
+          inventory_id: inventoryId,
         }),
       });
     } catch (error: unknown) {

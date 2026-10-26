@@ -105,17 +105,17 @@ Same 11 cases, same scorer, same 3 runs, on `c409059ea` merged with the head of 
 
 Same 11 cases, same scorer, same 3 runs, on `develop` `c141f52fa` (PR #3289 merged 2026-10-26). Extraction model `gpt-5.6-luna` (`LLM_EXTRACTION_MODEL`, as the Dev deploy sets it); OCR `mistral-ocr-latest`. The whole battery took about 31 minutes. Recall is the mean over runs that reached the import step.
 
-| Case                             | OCR step         | Row recall (runs)                | Notation keys | Total vs expected         |
-| -------------------------------- | ---------------- | -------------------------------- | ------------- | ------------------------- |
-| C-008 Auckland 2021              | ok               | 100% in all runs                 | 17/23         | 0.0% in all runs          |
-| C-014 São Paulo 2022             | ok               | 95.5% in all runs                | 25 to 26/32   | 0.0% in all runs          |
-| C-013 Buenos Aires 2022          | ok               | 89.5% in all runs                | 18/24         | -5.2% in all runs         |
-| C-006 Seattle 2022 (not GPC)     | ok               | 3.8% / 0% / 11.4%                | n/a           | -50.8% / 0.0% / -49.6%    |
-| C-009 Toronto 2019 (charts only) | ok               | 6.2% / 0% / 12.5% (1 run fails)  | 0/5           | -39.7% / -62.2%           |
-| C-005 New York City 2015         | ok               | 0% in all runs                   | 0/2           | +5370.6% / -93.6% / -100% |
-| C-004 Philadelphia 2022          | fails (image id) | 8.3% / 5.0% / 10.0% (diagnostic) | n/a           | -6.8% / -98.4% / -7.0%    |
-| C-010 Toronto 2020               | fails (image id) | import fails, 0 rows             | n/a           | n/a                       |
-| C-007a/b/s Miami                 | fails (image id) | import fails, 0 rows             | n/a           | n/a                       |
+| Case                             | OCR step         | Row recall (mean, range)             | Notation keys | Total vs expected         |
+| -------------------------------- | ---------------- | ------------------------------------ | ------------- | ------------------------- |
+| C-008 Auckland 2021              | ok               | 100% in all runs                     | 17/23         | 0.0% in all runs          |
+| C-014 São Paulo 2022             | ok               | 95.5% in all runs                    | 25 to 26/32   | 0.0% in all runs          |
+| C-013 Buenos Aires 2022          | ok               | 89.5% in all runs                    | 18/24         | -5.2% in all runs         |
+| C-006 Seattle 2022 (not GPC)     | ok               | mean 3.8% (0 to 11.4%)               | n/a           | -50.8% / 0.0% / -49.6%    |
+| C-009 Toronto 2019 (charts only) | ok               | mean 6.2% (0 to 12.5%; 1 run fails)  | 0/5           | -39.7% / -62.2%           |
+| C-005 New York City 2015         | ok               | 0% in all runs                       | 0/2           | +5370.6% / -93.6% / -100% |
+| C-004 Philadelphia 2022          | fails (image id) | mean 8.3% (5.0 to 10.0%; diagnostic) | n/a           | -6.8% / -98.4% / -7.0%    |
+| C-010 Toronto 2020               | fails (image id) | import fails, 0 rows                 | n/a           | n/a                       |
+| C-007a/b/s Miami                 | fails (image id) | import fails, 0 rows                 | n/a           | n/a                       |
 
 - **Confirmed:** the merged code gives the same picture as the pre-merge run of the PR. Auckland, São Paulo and Buenos Aires are at 90% to 100% of rows with stable totals.
 - **Still failing:** "image id does not match its markdown reference" fails the OCR step for 5 of 11 cases.

@@ -423,7 +423,7 @@ test.describe.serial("Manual Input", () => {
         await submitButton.click();
 
         await expect(
-          addEmissionModal.getByText(/Add any relevant context/i),
+          addEmissionModal.getByText(/Describe any relevant context/i),
         ).toBeVisible({ timeout: 10000 });
 
         await addEmissionModal

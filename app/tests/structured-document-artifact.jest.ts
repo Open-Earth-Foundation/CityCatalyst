@@ -387,3 +387,111 @@ describe("image placeholders without a page image (CC-1008)", () => {
     expect(() => build("![img-3.jpeg](img-3.jpeg)")).toThrow(/missing image/i);
   });
 });
+
+describe("block image id that differs from its markdown reference (CC-1132)", () => {
+  // Geometry copied from the Philadelphia 2022 report, page 5 (blocks 6 and 9), where
+  // Mistral returned `image_id` img-6 / img-7 for pictures that the text and the
+  // position identify as img-3 / img-4. No document text is reproduced.
+  const imageBox = (
+    id: string,
+    [x0, y0, x1, y1]: [number, number, number, number],
+  ) => ({
+    id,
+    top_left_x: x0,
+    top_left_y: y0,
+    bottom_right_x: x1,
+    bottom_right_y: y1,
+  });
+  const boxOf = ([x0, y0, x1, y1]: [number, number, number, number]) => ({
+    top_left_x: x0,
+    top_left_y: y0,
+    bottom_right_x: x1,
+    bottom_right_y: y1,
+  });
+  const IMG3: [number, number, number, number] = [432, 160, 729, 354];
+  const IMG4: [number, number, number, number] = [82, 420, 222, 589];
+  const build = (blocks: Record<string, unknown>[]) =>
+    buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        usage_info: { pages_processed: 1 },
+        pages: [
+          {
+            index: 0,
+            markdown: "Body",
+            header: null,
+            footer: null,
+            dimensions: { width: 1000, height: 1000, dpi: 72 },
+            blocks,
+            images: [
+              imageBox("img-3.jpeg", IMG3),
+              imageBox("img-4.jpeg", IMG4),
+              imageBox("img-5.jpeg", [321, 423, 462, 588]),
+              imageBox("img-6.jpeg", [564, 423, 709, 588]),
+              imageBox("img-7.jpeg", [52, 663, 345, 913]),
+            ],
+            tables: [],
+          },
+        ],
+      },
+      { annotationMode: "none", requestedModel: "model" },
+    );
+
+  it("uses the markdown reference when its image sits at the block position", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-6.jpeg",
+        ...boxOf(IMG3),
+      },
+      {
+        type: "image",
+        content: "![img-4.jpeg](img-4.jpeg)",
+        image_id: "img-7.jpeg",
+        ...boxOf(IMG4),
+      },
+    ]);
+    const blocks = doc.document.pages[0].blocks;
+    expect(blocks[0].related_image_id).toBe("img-3.jpeg");
+    expect(blocks[1].related_image_id).toBe("img-4.jpeg");
+  });
+
+  it("uses the block image_id when it is the one at the block position", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-4.jpeg](img-4.jpeg)",
+        image_id: "img-3.jpeg",
+        ...boxOf(IMG3),
+      },
+    ]);
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+
+  it("keeps the document and drops the link when the position confirms neither id", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-6.jpeg",
+        ...boxOf([10, 10, 60, 60]),
+      },
+    ]);
+    const block = doc.document.pages[0].blocks[0];
+    expect(block.related_image_id).toBeNull();
+    expect(block.content).toContain("img-3.jpeg");
+  });
+
+  it("does not change blocks whose ids agree", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-3.jpeg",
+        ...boxOf([10, 10, 60, 60]),
+      },
+    ]);
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+});

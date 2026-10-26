@@ -102,6 +102,21 @@ async function repairMissingContentDigest(
   }
 }
 
+/** Adds a missing safe display name so older rows become identifiable. */
+async function repairMissingDisplayName(
+  catalog: NativeInputCatalog,
+  input: RegisterNativeInputInput,
+  transaction?: Transaction,
+): Promise<void> {
+  const displayName = input.labels?.display_name;
+  if (typeof displayName !== "string" || !displayName) return;
+  if (catalog.labels?.display_name) return;
+  await catalog.update(
+    { labels: { ...(catalog.labels ?? {}), display_name: displayName } },
+    { transaction },
+  );
+}
+
 export async function registerNativeInput(
   input: RegisterNativeInputInput,
   transaction?: Transaction,
@@ -111,6 +126,7 @@ export async function registerNativeInput(
   const existing = await findNonWithdrawnBySource(input, transaction);
   if (existing) {
     await repairMissingContentDigest(existing, input, transaction);
+    await repairMissingDisplayName(existing, input, transaction);
     return { catalog: existing, created: false };
   }
 
@@ -128,6 +144,7 @@ export async function registerNativeInput(
     const racedCatalog = await findNonWithdrawnBySource(input, transaction);
     if (!racedCatalog) throw error;
     await repairMissingContentDigest(racedCatalog, input, transaction);
+    await repairMissingDisplayName(racedCatalog, input, transaction);
     return { catalog: racedCatalog, created: false };
   }
 }

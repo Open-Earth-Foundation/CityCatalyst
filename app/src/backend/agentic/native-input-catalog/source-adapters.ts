@@ -8,7 +8,9 @@ import {
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import { buildHiapInventoryContext } from "@/backend/agentic/hiap/context";
+import { buildHiapActionPlanContext } from "@/backend/agentic/hiap/plan-context";
 import {
+  HIAP_ACTION_PLAN_CONTEXT_CAPABILITY,
   HIAP_INVENTORY_CONTEXT_CAPABILITY,
   hiapInventoryContextInputSchema,
 } from "@/backend/agentic/hiap/registry";
@@ -19,7 +21,8 @@ import {
 import {
   HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY,
   HIAP_MEED_RANKING_CONTEXT_CAPABILITY,
-  hiapMeedContextInputSchema,
+  hiapMeedOutputPlanInputSchema,
+  hiapMeedRankingInputSchema,
 } from "@/backend/agentic/hiap-meed/registry";
 import {
   getNativeInputCapabilityDefinition,
@@ -114,7 +117,19 @@ const hiapInventoryAdapter = createNativeInputSourceAdapter({
       return buildHiapInventoryContext(
         entry.inventoryId,
         parsed.language ?? LANGUAGES.en,
+        {
+          scope: parsed.scope,
+          type: parsed.type,
+          limit: parsed.limit,
+          offset: parsed.offset,
+        },
       );
+    }
+    if (
+      capabilityId === HIAP_ACTION_PLAN_CONTEXT_CAPABILITY &&
+      entry.sourceId
+    ) {
+      return buildHiapActionPlanContext(entry.sourceId);
     }
     return null;
   },
@@ -134,12 +149,18 @@ const hiapMeedAdapter = createNativeInputSourceAdapter({
   },
   async executeSelected({ entry, capabilityId, input }) {
     if (!entry.sourceId) return null;
-    const parsed = hiapMeedContextInputSchema.parse(input);
     if (capabilityId === HIAP_MEED_RANKING_CONTEXT_CAPABILITY) {
-      return buildMeedRankingContext(entry.sourceId, parsed.language);
+      const parsed = hiapMeedRankingInputSchema.parse(input);
+      return buildMeedRankingContext(entry.sourceId, parsed.language, {
+        limit: parsed.limit,
+        offset: parsed.offset,
+      });
     }
     if (capabilityId === HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY) {
-      return buildMeedOutputPlanContext(entry.sourceId);
+      const parsed = hiapMeedOutputPlanInputSchema.parse(input);
+      return buildMeedOutputPlanContext(entry.sourceId, parsed.language, {
+        chapters: parsed.chapters,
+      });
     }
     return null;
   },

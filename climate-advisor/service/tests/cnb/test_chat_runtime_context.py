@@ -257,4 +257,39 @@ async def test_cnb_complete_source_text_follows_the_bundle_message(documents) ->
     assert messages[-1] == {"role": "user", "content": payload.content}
 
 
-from app.utils.streaming_context import load_concept_note_context_message
+async def test_edit_window_excludes_complete_source_text() -> None:
+    """The first edit after drafting must not carry uploads as user-typed history."""
+    handler = StreamingHandler(
+        thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
+    )
+    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+    draft_ready = {"role": "assistant", "content": "Your draft is ready to review."}
+    payload = MessageCreateRequest(user_id="owner", content="Set the capex to PLN 1.")
+    with (
+        patch(
+            "app.utils.streaming_handler.load_conversation_history",
+            new=AsyncMock(return_value=[draft_ready]),
+        ),
+        patch(
+            "app.utils.streaming_context.load_agent_context",
+            new=AsyncMock(return_value={"workflow_step": "editing_document"}),
+        ),
+        patch(
+            "app.utils.streaming_context.load_source_documents",
+            new=AsyncMock(return_value=[PLAN_DOCUMENT]),
+        ),
+    ):
+        messages = await handler._load_conversation_history(get_settings(), payload)
+
+    window = recent_concept_note_edit_messages(
+        messages, current_instruction=payload.content
+    )
+    assert window == [draft_ready]
+    assert recent_user_inputs(window) == []
+
+
+from app.services.cnb.edit_validation import recent_user_inputs
+from app.utils.streaming_context import (
+    load_concept_note_context_message,
+    recent_concept_note_edit_messages,
+)

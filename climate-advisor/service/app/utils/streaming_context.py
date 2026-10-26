@@ -24,6 +24,7 @@ from app.services.stationary_energy.stationary_energy_draft_repository import (
 from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.concept_note_context import (
+    SOURCE_DOCUMENTS_MESSAGE_HEADER,
     extract_concept_note_run_id,
     render_source_documents_message,
 )
@@ -186,6 +187,8 @@ def recent_concept_note_edit_messages(
         "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n",
         "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n",
         "INTERNAL_TOOL_OUTPUT_JSON\n",
+        # Uploaded source text is user-role runtime data, not something the user typed.
+        f"{SOURCE_DOCUMENTS_MESSAGE_HEADER}\n",
     )
     visible_messages = [
         {"role": message["role"], "content": message["content"]}

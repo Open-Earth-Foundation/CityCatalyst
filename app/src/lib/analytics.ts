@@ -2,11 +2,13 @@ import posthog from "posthog-js";
 import { env } from "@/lib/runtime-env";
 import Cookies from "js-cookie";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import {
+  CONSENT_COOKIE_NAME,
+  CONSENT_SUBJECT_COOKIE,
+} from "@/lib/analytics-constants";
 
 let isInitialized = false;
 
-const CONSENT_COOKIE_NAME = "cc_analytics_consent";
-const CONSENT_SUBJECT_COOKIE = "cc_consent_subject";
 const CONSENT_EXPIRY_DAYS = 365;
 
 function consentSubjectKey(): string {

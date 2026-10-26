@@ -1,6 +1,6 @@
 # Ingestion accuracy baseline
 
-**Status:** measured 2026-10-19 (first pass, `develop` `876eb4bba`) and 2026-10-26 (answer-key benchmark, `develop` `c409059ea`).
+**Status:** measured 2026-10-19 (first pass, `develop` `876eb4bba`) and 2026-10-26 (answer-key benchmark, `develop` `c409059ea`; rerun after the merge of PR #3289, `develop` `c141f52fa`).
 
 **Ticket:** CC-1132. Related: CC-950 (automated GHGI backtest), CC-951 (golden set), CC-960 (GHGI import rules), CC-1123 (PDF benchmark contract), CC-1008 (Auckland PDF fixes, PR #3289), CC-1080 (CAP test set), CC-1131 (CRVA adapter requirements), CC-953 and CC-989 (ingestion spine).
 
@@ -14,6 +14,7 @@
 - **No notation keys are imported from PDFs** (0 of 89 scored keys).
 - Run-to-run variation is large: the total of the same file moves by up to about 40 percentage points.
 - **PR #3289 (CC-1008) changes this a lot where it applies** (see [With PR #3289 applied](#with-pr-3289-applied)): Auckland, Buenos Aires and São Paulo go to 90% to 100% of rows, and 17 to 26 notation keys are recovered. But it fixes the OCR step for only 1 of the 6 failing cases, and it is worse on the chart-only and New York cases. It also used a different extraction model in this run, so code and model effects are mixed.
+- **PR #3289 is now merged** and the benchmark was rerun on `develop` `c141f52fa` (see [After the merge of PR #3289](#after-the-merge-of-pr-3289)). The numbers confirm the run above: Auckland 100% of rows, São Paulo 96%, Buenos Aires 90%; 5 of 11 cases still fail at OCR.
 - Structured Excel (eCRF) is much better: 3 Data Portal for Cities files went from 44% to 100% of rows after the fixes (measured by Product, not in this benchmark).
 - CRVA has no file ingestion. CAP has no extractor for actions or targets. OCR alone reads text and tables of scanned CRVA documents, but maps and figures come back only as image placeholders.
 
@@ -99,6 +100,29 @@ Same 11 cases, same scorer, same 3 runs, on `c409059ea` merged with the head of 
 - **Worse:** Toronto 2019 (numbers only in charts) and New York City. New York stores the grand total as a row in one run and an absurd +5757.9% in another.
 - **Slower:** 3 to 5 times longer per run, with about 7 times more LLM calls.
 - **Cannot separate code from model:** to see what the code does alone, rerun the PR with `LLM_EXTRACTION_MODEL` unset (it falls back to `gpt-4o-mini`).
+
+## After the merge of PR #3289
+
+Same 11 cases, same scorer, same 3 runs, on `develop` `c141f52fa` (PR #3289 merged 2026-10-26). Extraction model `gpt-5.6-luna` (`LLM_EXTRACTION_MODEL`, as the Dev deploy sets it); OCR `mistral-ocr-latest`. The whole battery took about 31 minutes. Recall is the mean over runs that reached the import step.
+
+| Case                             | OCR step         | Row recall (runs)                | Notation keys | Total vs expected         |
+| -------------------------------- | ---------------- | -------------------------------- | ------------- | ------------------------- |
+| C-008 Auckland 2021              | ok               | 100% in all runs                 | 17/23         | 0.0% in all runs          |
+| C-014 São Paulo 2022             | ok               | 95.5% in all runs                | 25 to 26/32   | 0.0% in all runs          |
+| C-013 Buenos Aires 2022          | ok               | 89.5% in all runs                | 18/24         | -5.2% in all runs         |
+| C-006 Seattle 2022 (not GPC)     | ok               | 3.8% / 0% / 11.4%                | n/a           | -50.8% / 0.0% / -49.6%    |
+| C-009 Toronto 2019 (charts only) | ok               | 6.2% / 0% / 12.5% (1 run fails)  | 0/5           | -39.7% / -62.2%           |
+| C-005 New York City 2015         | ok               | 0% in all runs                   | 0/2           | +5370.6% / -93.6% / -100% |
+| C-004 Philadelphia 2022          | fails (image id) | 8.3% / 5.0% / 10.0% (diagnostic) | n/a           | -6.8% / -98.4% / -7.0%    |
+| C-010 Toronto 2020               | fails (image id) | import fails, 0 rows             | n/a           | n/a                       |
+| C-007a/b/s Miami                 | fails (image id) | import fails, 0 rows             | n/a           | n/a                       |
+
+- **Confirmed:** the merged code gives the same picture as the pre-merge run of the PR. Auckland, São Paulo and Buenos Aires are at 90% to 100% of rows with stable totals.
+- **Still failing:** "image id does not match its markdown reference" fails the OCR step for 5 of 11 cases.
+- **Weak:** Seattle, Toronto 2019 and New York stay below 15% of rows; New York stores the grand total as a row in some runs.
+- **Time:** 27 to 165 s per run.
+- **Not done:** a run with `LLM_EXTRACTION_MODEL` unset, so code and model effects are still mixed against the first benchmark.
+- Raw results are not in the repository.
 
 ## Results: structured Excel (eCRF), measured by Product
 

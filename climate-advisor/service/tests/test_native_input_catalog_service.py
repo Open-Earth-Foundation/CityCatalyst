@@ -92,6 +92,33 @@ async def test_discovery_calls_core_for_each_invocation_and_returns_current_entr
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("labels", "expected"),
+    [
+        ({"display_name": "Solar rooftops", "actionPlanId": "private"}, "Solar rooftops"),
+        ({"display_name": ""}, None),
+        ({"display_name": "x" * 201}, None),
+        ({"display_name": 5}, None),
+        ({"other": "label"}, None),
+        (None, None),
+    ],
+)
+async def test_discovery_keeps_only_a_bounded_string_display_name(
+    labels: Any, expected: Any
+) -> None:
+    response = _discovery_response()
+    response["data"]["entries"][0]["labels"] = labels
+    service = NativeInputCatalogService(core_client=_client(response))
+
+    discovery = await service.discover(context=_context(), token="jwt-token")
+
+    entry = discovery.entries[0]
+    assert entry.get("display_name") == expected
+    assert "labels" not in entry
+    assert "actionPlanId" not in str(entry)
+
+
+@pytest.mark.asyncio
 async def test_discovery_requires_resolved_context_and_does_not_call_core_without_it() -> None:
     client = _client(_discovery_response())
     service = NativeInputCatalogService(core_client=client)

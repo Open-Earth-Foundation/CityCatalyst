@@ -69,8 +69,8 @@
   "legal-filter-info-label": "Sobre o filtro legal",
   "cobenefits-title": "Principais co-benefícios nessas ações",
   "cobenefits-description": "O que essas principais escolhas proporcionam além da redução de emissões.",
-  "tradeoffs-title": "Efeitos adversos entre estas ações",
-  "tradeoffs-description": "Onde uma ação prioritária pode atrasar outra meta.",
+  "tradeoffs-title": "Efeitos adversos nessas ações",
+  "tradeoffs-description": "Onde uma ação prioritária poderia atrasar outro objetivo.",
   "cobenefit-count": "{{count}} de {{total}} principais ações",
   "cobenefit-air-quality": "Qualidade do ar",
   "cobenefit-cost-of-living": "Custo de vida",
@@ -160,7 +160,7 @@
   "composition-alignment": "Alinhamento",
   "composition-feasibility": "Viabilidade",
   "composition-row": "{{score}} × {{weight}} = {{result}}",
-  "composition-weight-short": "× peso de {{weight}}%",
+  "composition-weight-short": "× {{weight}}% peso",
   "composition-aria": "Pontuação final {{final}}: impacto {{impact}}, alinhamento {{alignment}}, viabilidade {{feasibility}}",
   "score-formula-caption": "Pontuação final = impacto × {{wi}} + alinhamento × {{wa}} + viabilidade × {{wf}}",
   "glance-title": "Classificação num relance",
@@ -242,8 +242,5 @@
   "percent-value": "{{value}}%",
   "legend-item": "{{label}} · {{value}}",
   "route-own-budget": "Viável com orçamento próprio",
-  "route-technical-assistance": "Precisa de assistência técnica",
-  "tradeoffs-title": "Efeitos adversos nessas ações",
-  "tradeoffs-description": "Onde uma ação prioritária poderia atrasar outro objetivo.",
-  "composition-weight-short": "× {{weight}}% peso"
+  "route-technical-assistance": "Precisa de assistência técnica"
 }

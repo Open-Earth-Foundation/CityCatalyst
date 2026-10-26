@@ -301,6 +301,9 @@ export async function buildMEEDOutputPlanInput(
     labels: {
       reportId: report.id,
       actionId: report.actionId,
+      // MEED stores no action name and its action code must not reach the user,
+      // so the label carries only the languages; the plan read names its action.
+      display_name: `HIAP-MEED output plan (${languages.join(", ")})`,
       languages,
       languageKey: meedOutputPlanLanguageKey(languages),
       chapterCount,
@@ -530,9 +533,9 @@ export async function registerMEEDOutputPlan(
       return { catalog: existing, created: false };
     }
 
-    const registration = existing
-      ? { catalog: existing, created: false }
-      : await registerNativeInput(input, transaction);
+    // An existing row goes through the idempotent registration too, so it
+    // gains a missing display name.
+    const registration = await registerNativeInput(input, transaction);
     await reconcileMEEDCatalogInTransaction(
       report,
       input,

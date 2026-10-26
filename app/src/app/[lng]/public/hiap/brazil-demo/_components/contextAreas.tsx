@@ -23,7 +23,7 @@ import { sectorShares } from "@/app/[lng]/cities/[cityId]/MEED/components/sector
 import { SECTORS } from "@/util/constants";
 import type { SectorEmission } from "@/util/types";
 import type { TrackData } from "../_lib/useTrack";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { ADAPTATION_ACTIONS } from "../_lib/actions";
 import { creditScreen, CREDIT_LABEL, fundingResult } from "../_lib/finance";
 import { legalGrade } from "../_lib/legal";
@@ -47,6 +47,7 @@ export function useContextAreas({
   data: TrackData;
   tResults: TFunction;
 }) {
+  const trackHrefIn = useTrackHref();
   const { city, track, ranked, adaptation, state } = data;
   const { t } = useDemoT(lng);
 
@@ -182,18 +183,8 @@ export function useContextAreas({
       status: "complete" as const,
       sub: text,
     });
-    const topCell = RISK_CELLS.map((c) => ({
-      c,
-      v: city.risk[c.key]?.index ?? -1,
-    })).sort((a, b) => b.v - a.v)[0];
     return {
-      risk: sub(
-        "risk",
-        t("area-risk-sub", {
-          cell: pick(topCell.c.label, lng),
-          value: topCell.v.toFixed(2),
-        }),
-      ),
+      risk: sub("risk", t("area-risk-sub")),
       emissions: sub(
         "emissions",
         tResults("context-summary-emissions-year", {
@@ -418,7 +409,7 @@ export function useContextAreas({
   };
 
   const hrefFor = (segment: string) =>
-    trackHref(lng, city.slug, track, segment);
+    trackHrefIn(lng, city.slug, track, segment);
 
   // City context is inside the AdaptaBrasil Impact index already, so the
   // card's action says so instead of inviting the reader to "view details".

@@ -4,6 +4,8 @@
 
 **Ticket:** CC-1132. Related: CC-950 (automated GHGI backtest), CC-951 (golden set), CC-960 (GHGI import rules), CC-1123 (PDF benchmark contract), CC-1008 (Auckland PDF fixes, PR #3289), CC-1080 (CAP test set), CC-1131 (CRVA adapter requirements), CC-953 and CC-989 (ingestion spine).
 
+> Visual summary for the team: [IngestionCoverageTable.md](./IngestionCoverageTable.md).
+>
 > When to use this file: before prioritising ingestion work for GHGI, CRVA or CAP, or when you need numbers for what the current import accepts and where it breaks. Rerun the benchmark after any change to the upload flow (see [How to rerun](#how-to-rerun)).
 
 ## Summary

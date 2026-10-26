@@ -77,7 +77,11 @@ async function navigateToFirstSubsector(
     new RegExp(`/GHGI/${inventoryId}/data/${sector.sectorPath}/[^/]+`),
   );
   await expect(
-    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+    page
+      .getByText(
+        /Select methodology|Select The Methodology|Add data to sub-sector/i,
+      )
+      .first(),
   ).toBeVisible({ timeout: 30000 });
 }
 
@@ -103,7 +107,11 @@ async function navigateToResidentialSubsector(
   });
   // Both scope ActivityTabs mount headers; assert the selected scope content.
   await expect(
-    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+    page
+      .getByText(
+        /Select methodology|Select The Methodology|Add data to sub-sector/i,
+      )
+      .first(),
   ).toBeVisible({ timeout: 30000 });
 }
 
@@ -375,7 +383,9 @@ test.describe.serial("Manual Input", () => {
         }
 
         await expect(
-          scopeOnePanel.getByText(/Select methodology|Select The Methodology/i).first(),
+          scopeOnePanel
+            .getByText(/Select methodology|Select The Methodology/i)
+            .first(),
         ).toBeVisible({ timeout: 30000 });
         await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
         expect(await methodologyCards.count()).toBeGreaterThan(0);
@@ -465,13 +475,18 @@ test.describe.serial("Manual Input", () => {
         const activityTable = scopeOnePanel.locator("table");
         await expect(activityTable).toBeVisible({ timeout: 30000 });
 
-        await scopeOnePanel.getByTestId(testIds.activityMoreButton).first().click();
+        await scopeOnePanel
+          .getByTestId(testIds.activityMoreButton)
+          .first()
+          .click();
         await page.getByTestId(testIds.deleteActivityButton).click();
 
         const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);
         await expect(deleteModal).toBeVisible({ timeout: 10000 });
 
-        await page.getByTestId(testIds.deleteActivityModalConfirmButton).click();
+        await page
+          .getByTestId(testIds.deleteActivityModalConfirmButton)
+          .click();
         await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
       });
     });

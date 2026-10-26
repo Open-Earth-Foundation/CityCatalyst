@@ -51,10 +51,11 @@ function YearCard({
 
   return (
     <Card.Root
-      onClick={onClick}
-      key={year}
+      asChild
       display="flex"
-      w="242.5px"
+      w="full"
+      minW={0}
+      textAlign="start"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
@@ -69,6 +70,11 @@ function YearCard({
       borderStyle="solid"
       borderColor={isActive ? "interactive.secondary" : "border.overlay"}
       color={isActive ? "content.link" : "content.secondary"}
+      _focusVisible={{
+        outline: "2px solid",
+        outlineColor: "content.link",
+        outlineOffset: "2px",
+      }}
       _hover={
         !isActive
           ? {
@@ -77,39 +83,49 @@ function YearCard({
           : {}
       }
     >
-      <Box display="flex" flexDirection="column" gap={2}>
-        <Heading
-          fontFamily="heading"
-          fontSize="button.lg"
-          fontWeight="semibold"
-          lineHeight="24"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="content.link"
-          overflow="hidden"
-          whiteSpace="nowrap"
-          textOverflow="ellipsis"
+      <button type="button" aria-pressed={isActive} onClick={onClick}>
+        <Box
+          as="span"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          maxW="full"
         >
-          <span data-testid="inventory-year">{year}</span>
-        </Heading>
-        <Text
-          fontFamily="body"
-          fontSize="body.md"
-          fontWeight="regular"
-          color="content.tertiary"
-          lineHeight="20"
-          letterSpacing="wide"
-          overflow="hidden"
-          whiteSpace="nowrap"
-          textOverflow="ellipsis"
-          data-testid="inventory-last-updated"
-        >
-          {t("last-update")}:{" "}
-          {format(new Date(lastUpdate), "dd/MM/yyyy", {
-            locale: localesMap[lng],
-          })}
-        </Text>
-      </Box>
+          <Heading
+            as="span"
+            fontFamily="heading"
+            fontSize="button.lg"
+            fontWeight="semibold"
+            lineHeight="24"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            color="content.link"
+            overflow="hidden"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+          >
+            <span data-testid="inventory-year">{year}</span>
+          </Heading>
+          <Text
+            as="span"
+            fontFamily="body"
+            fontSize="body.md"
+            fontWeight="regular"
+            color="content.tertiary"
+            lineHeight="20"
+            letterSpacing="wide"
+            overflow="hidden"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+            data-testid="inventory-last-updated"
+          >
+            {t("last-update")}:{" "}
+            {format(new Date(lastUpdate), "dd/MM/yyyy", {
+              locale: localesMap[lng],
+            })}
+          </Text>
+        </Box>
+      </button>
     </Card.Root>
   );
 }
@@ -151,10 +167,14 @@ export function YearSelector({
       >
         {t("inventories-by-year")}
       </Heading>
-      <SimpleGrid columns={4} gap={4} py={4}>
+      <SimpleGrid
+        templateColumns="repeat(auto-fill, minmax(min(100%, 242.5px), 1fr))"
+        gap={4}
+        py={4}
+      >
         {inventories.slice(0, 4).map((yearData) => (
           <YearCard
-            key={yearData.year}
+            key={yearData.inventoryId}
             inventoryId={yearData.inventoryId}
             isActive={currentInventoryId === yearData.inventoryId}
             year={yearData.year}
@@ -177,10 +197,13 @@ export function YearSelector({
                 border="none"
               >
                 <AccordionItemContent padding={0}>
-                  <SimpleGrid columns={4} gap={4}>
+                  <SimpleGrid
+                    templateColumns="repeat(auto-fill, minmax(min(100%, 242.5px), 1fr))"
+                    gap={4}
+                  >
                     {inventories.slice(4).map((yearData) => (
                       <YearCard
-                        key={yearData.year}
+                        key={yearData.inventoryId}
                         inventoryId={yearData.inventoryId}
                         isActive={currentInventoryId === yearData.inventoryId}
                         year={yearData.year}

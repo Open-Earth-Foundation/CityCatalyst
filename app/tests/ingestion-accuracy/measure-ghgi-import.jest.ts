@@ -29,7 +29,7 @@ import env from "@next/env";
 import { NextRequest } from "next/server";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, extname, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import { Auth, type AppSession } from "@/lib/auth";
 import {
@@ -37,21 +37,33 @@ import {
   ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import { toCanonical } from "@/util/notation-keys";
 import { Roles } from "@/util/types";
+import { scoreFile, type KeyFile, type StoredValue } from "./score";
 
 const RUN = process.env.INGESTION_ACCURACY_RUN === "1";
 const TEST_USER_ID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const IMPORT_PATH = "@/app/api/v1/city/[city]/inventory/[inventory]/import";
 
 type FileSpec = {
+  /** File id in the answer keys when `answerKeys` is set, otherwise any label. */
   id: string;
   path: string;
-  targetYear: number;
-  kind: "pdf" | "csv" | "xlsx";
+  /** Defaults to the year in the answer keys. */
+  targetYear?: number;
+  /** Defaults to the file extension. */
+  kind?: "pdf" | "csv" | "xlsx";
   reference?: { total?: number; scopes?: Record<string, number> };
 };
 
-type Config = { runs: number; files: FileSpec[] };
+type Config = {
+  runs: number;
+  /** JSON produced by export-answer-keys.ts; enables row-level scoring. */
+  answerKeys?: string;
+  files: FileSpec[];
+};
+
+type AnswerKeys = { files: Record<string, KeyFile> };
 
 type ReadBackRow = {
   gpc: string;
@@ -59,6 +71,7 @@ type ReadBackRow = {
   omit: boolean;
   co2eq: string | null;
   activity_co2eq: string | null;
+  unavailable_reason: string | null;
 };
 
 function mockRequest(body?: unknown): NextRequest {
@@ -85,6 +98,7 @@ function pctDiff(actual: number, expected: number): number | null {
   let interpretRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/interpret/route");
   let approveRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route");
   let config: Config;
+  let answerKeys: AnswerKeys | null = null;
   const outDir = process.env.INGESTION_ACCURACY_OUT ?? ".";
   const uploadedKeys: string[] = [];
   const cityIds: string[] = [];
@@ -116,6 +130,11 @@ function pctDiff(actual: number, expected: number): number | null {
     config = JSON.parse(
       readFileSync(process.env.INGESTION_ACCURACY_CONFIG!, "utf8"),
     ) as Config;
+    if (config.answerKeys) {
+      answerKeys = JSON.parse(
+        readFileSync(config.answerKeys, "utf8"),
+      ) as AnswerKeys;
+    }
     mkdirSync(outDir, { recursive: true });
   }, 300_000);
 
@@ -162,6 +181,7 @@ function pctDiff(actual: number, expected: number): number | null {
       `SELECT iv.gpc_reference_number AS gpc,
               COALESCE(sc.scope_name, ss.scope_name) AS scope,
               iv.omit_from_total AS omit,
+              iv.unavailable_reason AS unavailable_reason,
               iv.co2eq::text AS co2eq,
               (SELECT SUM(av.co2eq)::text FROM "ActivityValue" av WHERE av.inventory_value_id = iv.id) AS activity_co2eq
          FROM "InventoryValue" iv
@@ -180,7 +200,17 @@ function pctDiff(actual: number, expected: number): number | null {
       const scope = row.scope ?? "?";
       byScope[scope] = (byScope[scope] ?? 0) + tonnes(row);
     }
+    const stored: StoredValue[] = rows.map((row) => ({
+      gpc: row.gpc,
+      scope: row.scope,
+      valueT: tonnes(row),
+      omit: row.omit,
+      notation: row.unavailable_reason
+        ? (toCanonical(row.unavailable_reason) ?? row.unavailable_reason)
+        : null,
+    }));
     return {
+      stored,
       storedRows: rows.length,
       omittedRows: rows.length - counted.length,
       total: counted.reduce((sum, row) => sum + tonnes(row), 0),
@@ -248,9 +278,16 @@ function pctDiff(actual: number, expected: number): number | null {
     for (const file of config.files) {
       const buffer = readFileSync(file.path);
       const fileName = basename(file.path);
+      const key = answerKeys?.files[file.id];
+      if (answerKeys && !key) {
+        throw new Error(`No answer key for file id ${file.id}`);
+      }
+      const targetYear = file.targetYear ?? key?.year;
+      if (!targetYear) throw new Error(`No year for ${file.id}`);
+      const extension = extname(file.path).slice(1).toLowerCase();
+      const kind = file.kind ?? (extension as "pdf" | "csv" | "xlsx");
       const runs: Record<string, unknown>[] = [];
-      const ocrResult =
-        file.kind === "pdf" ? await runOcr(buffer, fileName) : null;
+      const ocrResult = kind === "pdf" ? await runOcr(buffer, fileName) : null;
 
       for (let run = 1; run <= config.runs; run++) {
         const started = Date.now();
@@ -266,7 +303,7 @@ function pctDiff(actual: number, expected: number): number | null {
           inventoryId: randomUUID(),
           cityId: city.cityId,
           inventoryName: `IA_${file.id}_${run}`,
-          year: file.targetYear,
+          year: targetYear,
           totalEmissions: 0,
           inventoryType: InventoryTypeEnum.GPC_BASIC,
           globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
@@ -278,7 +315,7 @@ function pctDiff(actual: number, expected: number): number | null {
           if (ocrResult) {
             const rows = await extraction.extractInventoryRowsFromDocument(
               ocrResult.markdown,
-              { targetYear: file.targetYear },
+              { targetYear },
             );
             extractedRows = rows.length;
             importedFileId = randomUUID();
@@ -347,6 +384,7 @@ function pctDiff(actual: number, expected: number): number | null {
           ]);
           const back = await readBack(ids.inventory);
           const reference = file.reference;
+          const score = key ? scoreFile(key, back.stored) : null;
           runs.push({
             run,
             ok: done.importStatus === "completed",
@@ -354,6 +392,7 @@ function pctDiff(actual: number, expected: number): number | null {
             ms: Date.now() - started,
             extractedRows,
             ...back,
+            score,
             totalDiffPct: reference?.total
               ? pctDiff(back.total, reference.total)
               : null,
@@ -380,10 +419,13 @@ function pctDiff(actual: number, expected: number): number | null {
       results.push({
         id: file.id,
         file: fileName,
-        kind: file.kind,
-        targetYear: file.targetYear,
+        kind,
+        targetYear,
+        keyId: key?.id ?? null,
         reference: file.reference ?? null,
         ocr: ocrResult?.stage ?? null,
+        // When true, a user would see a failed import: the runs below measure the extraction on the raw OCR text only.
+        productFlowFailsAtOcr: ocrResult ? !ocrResult.stage.ok : false,
         runs,
         stableTotal: totals.length > 1 && new Set(totals).size === 1,
       });

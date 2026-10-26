@@ -104,6 +104,7 @@
   "total-emissions-CO2eq": "Total emissions (CO2eq)",
   "%-of-emissions": "% of emissions",
   "of-total-emissions": "of total emissions",
+  "less-than-one-percent": "<1",
   "removed": "removed",
   "net-removal": "Net removal",
   "removal": "Removal",

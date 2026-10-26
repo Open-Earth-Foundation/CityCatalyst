@@ -348,6 +348,7 @@ interface InventoryValueQueryResult {
   scope_name: string;
   datasource_id: string;
   datasource_name: string;
+  datasource_source_type: string | null;
   inventory_value_id: string;
 }
 
@@ -358,6 +359,7 @@ interface InventoryValuesBySector {
   co2eq: bigint;
   datasource_name: string;
   datasource_id: string;
+  datasource_source_type: string | null;
   inventory_value_id: string;
   activities: ActivityValue[];
 }
@@ -372,15 +374,25 @@ const fetchInventoryValuesBySector = async (
       iv.co2eq,
       ss.subsector_name,
       scope.scope_name,
-      iv.datasource_id,
+      COALESCE(iv.datasource_id, av_source.datasource_id) AS datasource_id,
       ds.datasource_name,
+      ds.source_type AS datasource_source_type,
       iv.id as inventory_value_id
     FROM "InventoryValue" iv
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
            LEFT JOIN "SubCategory" sc ON iv.sub_category_id = sc.subcategory_id
            LEFT JOIN "Scope" scope ON scope.scope_id = COALESCE(sc.scope_id, ss.scope_id)
-           LEFT JOIN "DataSourceI18n" ds ON iv.datasource_id = ds.datasource_id
+           -- File imports cite their source on the activities, not the inventory value
+           LEFT JOIN LATERAL (
+             SELECT av.datasource_id
+             FROM "ActivityValue" av
+             WHERE av.inventory_value_id = iv.id AND av.datasource_id IS NOT NULL
+             ORDER BY av.created
+             LIMIT 1
+           ) av_source ON true
+           LEFT JOIN "DataSourceI18n" ds
+             ON ds.datasource_id = COALESCE(iv.datasource_id, av_source.datasource_id)
     WHERE iv.inventory_id = (:inventoryId)
       and iv.co2eq IS NOT NULL
       AND (s.sector_name) = (:sectorName)
@@ -510,6 +522,7 @@ export const getEmissionsBreakdownBatch = async (
           percentage,
           datasource_id: scopeValues[0].datasource_id,
           datasource_name: scopeValues[0].datasource_name,
+          datasource_source_type: scopeValues[0].datasource_source_type,
           activities,
         };
       },

@@ -327,6 +327,10 @@ request JSON.
     arbitrary runtime routing/scope or credential arguments, redacts forbidden
     result fields, and closes the short-lived Core client after each read
     invocation.
+  - Validates the finite view arguments each capability accepts (`scope`,
+    `type`, `limit`, `offset` for HIAP and HIAP-MEED rankings, `chapters` for a
+    HIAP-MEED output plan) and passes a safe `displayName` from discovery
+    labels so plans can be told apart.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`

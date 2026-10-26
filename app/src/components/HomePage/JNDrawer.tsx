@@ -541,6 +541,14 @@ const JNDrawer = ({
   const activeOrganizationId =
     organization?.organizationId ?? resolvedOrganizationId;
 
+  const filteredProjectsData = useMemo(
+    () =>
+      (projectsData ?? []).filter(
+        (project) => project.organizationId === resolvedOrganizationId,
+      ),
+    [projectsData, resolvedOrganizationId],
+  );
+
   // Fetch the active organization directly so the name doesn't depend on the
   // organizations list having loaded (or containing a stale stored id).
   const { data: activeOrganization } = useGetOrganizationQuery(
@@ -831,7 +839,7 @@ const JNDrawer = ({
               >
                 <ProjectFilterSection
                   t={t}
-                  projectsData={projectsData}
+                  projectsData={filteredProjectsData}
                   lng={lng}
                   currentCityId={currentCityId}
                   organizationId={resolvedOrganizationId}

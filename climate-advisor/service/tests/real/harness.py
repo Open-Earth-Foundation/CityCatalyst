@@ -7,7 +7,11 @@ actually reach Core, the tool calls, the final answer, time and OpenRouter cost.
 Inputs (env): RUN_REAL_LLM=1, CC_BASE_URL (default http://localhost:3000),
 CC_SERVICE_API_KEY or CC_API_KEY, OPENROUTER_API_KEY, CC1021_FIXTURE_PATH
 (default tests/real/out/seed-fixture.json), REAL_LLM_RUNS (default 3),
-REAL_LLM_COST_CAP_USD (default 2).
+REAL_LLM_COST_CAP_USD (default 2). MLflow tracing is off unless
+REAL_LLM_MLFLOW=1 (then REAL_LLM_MLFLOW_EXPERIMENT, default cc1060-local-review,
+and REAL_LLM_MLFLOW_ENVIRONMENT, default local-david; credentials come from the
+environment or climate-advisor/.env and are never printed). Each trace is tagged
+with scenario_id and scenario_run, and the trace IDs go to records.jsonl.
 
 Outputs: tests/real/out/records.jsonl and tests/real/out/report.md. The runner
 never writes to the vault; a separate review step copies sanitized results.
@@ -52,7 +56,77 @@ _load_env_files()
 # Local test traces must not reach hosted tracing services.
 os.environ["LANGSMITH_TRACING"] = "false"
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
-os.environ["MLFLOW_ENABLED"] = "false"
+
+
+def tracing_requested() -> bool:
+    """Return True when REAL_LLM_MLFLOW=1 asks for MLflow traces of the runs."""
+    return os.getenv("REAL_LLM_MLFLOW") == "1"
+
+
+if tracing_requested():
+    # Opt-in: keep the MLflow settings from the environment/.env, but send the
+    # traces to a dedicated experiment and tag the environment as local evidence.
+    os.environ["MLFLOW_ENABLED"] = "true"
+    os.environ["MLFLOW_EXPERIMENT_NAME"] = (
+        os.getenv("REAL_LLM_MLFLOW_EXPERIMENT") or "cc1060-local-review"
+    )
+    os.environ["MLFLOW_ENVIRONMENT"] = os.getenv("REAL_LLM_MLFLOW_ENVIRONMENT") or "local-david"
+else:
+    os.environ["MLFLOW_ENABLED"] = "false"
+
+# Scenario id and run number stamped on every trace while tracing is on, and
+# the trace IDs seen since the last pop_trace_ids().
+_TRACE_CONTEXT: dict[str, str] = {}
+_TRACE_IDS: list[str] = []
+_TRACE_TAGGING_INSTALLED = False
+
+
+def set_trace_scenario(scenario_id: str, run_number: int) -> None:
+    """Name the scenario run whose traces the next requests create."""
+    _TRACE_CONTEXT.update(scenario_id=scenario_id, scenario_run=str(run_number))
+
+
+def pop_trace_ids() -> list[str]:
+    """Return and clear the trace IDs captured since the last call."""
+    ids = list(dict.fromkeys(_TRACE_IDS))
+    _TRACE_IDS.clear()
+    return ids
+
+
+def flush_traces() -> None:
+    """Wait for queued trace uploads so they are stored before the test process exits."""
+    if not tracing_requested():
+        return
+    import mlflow
+
+    flush = getattr(mlflow, "flush_trace_async_logging", None)
+    if callable(flush):
+        flush()
+
+
+def install_trace_tagging() -> None:
+    """Wrap mlflow.update_current_trace so each trace carries the scenario tags.
+
+    Test-harness only: the application code is untouched. The wrapper adds the
+    scenario id and run number as trace tags and remembers the trace ID.
+    """
+    global _TRACE_TAGGING_INSTALLED
+    if not tracing_requested() or _TRACE_TAGGING_INSTALLED:
+        return
+    import mlflow
+
+    original = mlflow.update_current_trace
+
+    def tagged(*args: Any, **kwargs: Any) -> Any:
+        if _TRACE_CONTEXT:
+            kwargs["tags"] = {**(kwargs.get("tags") or {}), **_TRACE_CONTEXT}
+        span = mlflow.get_current_active_span()
+        if span is not None:
+            _TRACE_IDS.append(span.trace_id)
+        return original(*args, **kwargs)
+
+    mlflow.update_current_trace = tagged
+    _TRACE_TAGGING_INSTALLED = True
 
 
 def core_url() -> str:
@@ -332,6 +406,7 @@ async def run_conversation(
     """Run a (possibly multi-turn) conversation as the seed user and capture it."""
     from app.main import app
 
+    install_trace_tagging()
     token = issue_token(fixture.user_id)
     headers = {"Authorization": f"Bearer {token}"}
     run = Run()

@@ -1,6 +1,10 @@
 "use client";
 
-import { compareGpcRefNumbers, convertKgToTonnes } from "@/util/helpers";
+import {
+  compareGpcRefNumbers,
+  convertKgToTonnes,
+  nameToI18NKey,
+} from "@/util/helpers";
 import type {
   DraftDecisionState,
   DraftProposal,
@@ -167,12 +171,24 @@ export function compareProposalsByGpcReference(
   );
 }
 
-export function proposalSubsectorLabel(proposal: DraftProposal): string {
-  return (
+// GPC names arrive in English from the catalogue; the "data" namespace already
+// translates them under nameToI18NKey keys, same as the inventory pages.
+function translateGpcName(name: string, t?: TFunction): string {
+  return name && t
+    ? t(nameToI18NKey(name), { ns: "data", defaultValue: name })
+    : name;
+}
+
+export function proposalSubsectorLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
+  return translateGpcName(
     proposal.target_ref.subsector_name ??
-    proposal.target_ref.subsector_reference_number ??
-    proposal.target_ref.subsector_id ??
-    ""
+      proposal.target_ref.subsector_reference_number ??
+      proposal.target_ref.subsector_id ??
+      "",
+    t,
   );
 }
 
@@ -180,22 +196,37 @@ export function proposalSubsectorRef(proposal: DraftProposal): string {
   return proposal.target_ref.subsector_reference_number ?? "";
 }
 
-export function proposalSubcategoryLabel(proposal: DraftProposal): string {
-  return (
+export function proposalSubcategoryLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
+  return translateGpcName(
     proposal.target_ref.subcategory_name ??
-    proposal.target_ref.subcategory_reference_number ??
-    proposal.target_ref.subcategory_id ??
-    ""
+      proposal.target_ref.subcategory_reference_number ??
+      proposal.target_ref.subcategory_id ??
+      "",
+    t,
   );
 }
 
-export function proposalLabel(proposal: DraftProposal): string {
-  const scope = proposal.target_ref.scope_name ?? proposal.target_ref.scope_id;
+export function proposalScopeLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
+  const scope =
+    proposal.target_ref.scope_name ?? proposal.target_ref.scope_id ?? "";
+  // The backend sends "Scope <n>"; only the word needs translating.
+  const scopeNumber = scope.match(/^scope\s+(.+)$/i)?.[1];
+  return scopeNumber && t
+    ? `${t("scope", { ns: "data" })} ${scopeNumber}`
+    : scope;
+}
 
+export function proposalLabel(proposal: DraftProposal, t?: TFunction): string {
   return [
-    proposalSubsectorLabel(proposal),
-    proposalSubcategoryLabel(proposal),
-    scope,
+    proposalSubsectorLabel(proposal, t),
+    proposalSubcategoryLabel(proposal, t),
+    proposalScopeLabel(proposal, t),
   ]
     .filter(Boolean)
     .join(" / ");
@@ -229,13 +260,14 @@ export function shortSourceName(
 
 export function sourceMetaLabel(
   candidate: SourceCandidate | undefined,
+  t?: TFunction,
 ): string | null {
   if (!candidate) {
     return null;
   }
   const meta = [
     candidate.dataset_year ? String(candidate.dataset_year) : null,
-    sourceGeographyLabel(candidate.geography_match),
+    sourceGeographyLabel(candidate.geography_match, t),
   ].filter(Boolean);
   return meta.length > 0 ? meta.join(" · ") : null;
 }
@@ -374,8 +406,15 @@ export function currentValueLabel(
     .join(" ");
 }
 
+const GEOGRAPHY_LABEL_KEYS: Record<string, string> = {
+  city: "source-geography-city",
+  country: "source-geography-country",
+  region: "source-geography-region",
+};
+
 export function sourceGeographyLabel(
   geographyMatch: string | null | undefined,
+  t?: TFunction,
 ): string | null {
   const text = String(geographyMatch ?? "")
     .trim()
@@ -383,10 +422,9 @@ export function sourceGeographyLabel(
   if (!text || text === "unknown" || text === "global") {
     return null;
   }
-  if (text === "locode") {
-    return "city";
-  }
-  return text;
+  const geography = text === "locode" ? "city" : text;
+  const key = GEOGRAPHY_LABEL_KEYS[geography];
+  return key && t ? t(key) : geography;
 }
 
 export function proposedValueLabel(

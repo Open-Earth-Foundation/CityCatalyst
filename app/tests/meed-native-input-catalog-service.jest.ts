@@ -600,6 +600,7 @@ describe("MeedNativeInputCatalogService", () => {
           languages: ["en"],
           languageKey: "en",
           chapterCount: 1,
+          display_name: "HIAP-MEED output plan (en)",
         }),
       }),
       transaction,
@@ -637,12 +638,18 @@ describe("MeedNativeInputCatalogService", () => {
   });
 
   it("reuses the same catalog entry when the same output plan is retried", async () => {
+    // The idempotent registration returns the existing row (and repairs a
+    // missing display name on it) instead of creating another.
     catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-existing" });
+    registerNativeInput.mockResolvedValueOnce({
+      catalog: { id: "catalog-existing" },
+      created: false,
+    });
     await expect(registerMEEDOutputPlan("report-1")).resolves.toEqual({
       catalog: { id: "catalog-existing" },
       created: false,
     });
-    expect(registerNativeInput).not.toHaveBeenCalled();
+    expect(registerNativeInput).toHaveBeenCalledTimes(1);
   });
 
   it("supersedes the previous active plan for the same inventory and action", async () => {
@@ -722,9 +729,7 @@ describe("MeedNativeInputCatalogService", () => {
     expect(sequelize.query).toHaveBeenCalledWith(
       "SELECT pg_advisory_xact_lock(hashtext($1))",
       expect.objectContaining({
-        bind: [
-          "citycatalyst:hiap-meed-output-plan:inventory-1:action-1:en",
-        ],
+        bind: ["citycatalyst:hiap-meed-output-plan:inventory-1:action-1:en"],
         transaction,
       }),
     );

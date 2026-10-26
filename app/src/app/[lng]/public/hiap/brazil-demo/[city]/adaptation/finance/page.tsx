@@ -1,70 +1,165 @@
 "use client";
-import React from "react";
-import { Card, HStack, SimpleGrid, Table, VStack } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
-import {
-  MeedStatusTag,
-  type MeedTone,
-} from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { MeedShareBar } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedShareBar";
+import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
-import { useDemoT } from "../../../_lib/useDemoT";
+import { useDemoT, useTrackT } from "../../../_lib/useDemoT";
+import { useLabels } from "../../../_lib/useLabels";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTATION_ACTIONS } from "../../../_lib/actions";
 import {
   creditScreen,
-  CREDIT_LABEL,
   formatBrl,
   fundingResult,
   GAP_LABEL,
   GAP_MEANING,
+  isPushStrong,
+  PATHWAY_BY_KEY,
   PATHWAYS,
   pushBucket,
-  PUSH_LABEL,
-  TIER_SCORE,
+  type CreditScreen,
   type FundingGap,
-  type FundingTier,
+  type FundingResult,
+  type PathwayMeta,
 } from "../../../_lib/finance";
+import { CAPAG_INFO_URL, PEF_INFO_URL } from "../../../_lib/links";
+import { ADAPTA_SECTORS, SECTOR_LABEL } from "../../../_lib/riskCells";
+import { downloadCsv } from "../../../_lib/csv";
 import { pick } from "../../../_lib/localized";
+import type { AdaptationAction } from "../../../_lib/types";
+import { Level } from "../../../_components/next/Level";
+import { SectorGlyph } from "../../../_components/next/SectorIcon";
+import { TextLink } from "../../../_components/next/TextLink";
+import { COST_TONE, GAP_TONE } from "../../../_components/next/rows";
+import {
+  ExpandableRow,
+  RowList,
+} from "../../../_components/next/ExpandableRow";
+import {
+  ExportCsvButton,
+  FacetFilters,
+  useLocationHash,
+  useUrlSelection,
+} from "../../../_components/next/ListControls";
+import { matchesFacets, type Facet } from "../../../_components/next/facets";
 
-const TIER_TONE: Record<FundingTier, MeedTone> = {
-  T1: "positive",
-  T2: "info",
-  T3: "warning",
-  T4: "caution",
+const CREDIT_TONE: Record<CreditScreen, MeedTone> = {
+  available: "positive",
+  to_verify: "warning",
+  not_indicated: "negative",
 };
 
-const GAP_TONE: Record<FundingGap, MeedTone> = {
-  self_deliverable: "positive",
-  credit_available: "positive",
-  needs_technical_assistance: "warning",
-  needs_cofinance: "info",
-  needs_cofinance_and_ta: "neutral",
+/** The three funding bins of the list's filter, same split as their colours. */
+const BIN: Record<FundingGap, "self" | "support" | "both"> = {
+  self_deliverable: "self",
+  credit_available: "self",
+  needs_technical_assistance: "support",
+  needs_cofinance: "support",
+  needs_cofinance_and_ta: "both",
 };
 
-/** BR-A8 — financing feasibility, laid out so the city profile can become flags-only. */
+interface FinanceRow {
+  a: AdaptationAction;
+  f: FundingResult;
+}
+
+/**
+ * BR-N8 — financing feasibility. CAPAG first, with what it is, why it
+ * matters and where to improve it (finance review, Oct 2026); then the
+ * financing routes in general, not tied to an action; then one row per
+ * action, as the methodology sets it (§5.2.6), that opens on what its gap
+ * means, the routes that fit it and comparable projects. No tier scores.
+ */
 export default function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
+  const tResults = useTrackT(lng, "adaptation", "meed-results");
+  const labels = useLabels(lng, "adaptation");
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
+  const [selected, setSelected] = useUrlSelection([
+    "sector",
+    "funding",
+    "cost",
+  ]);
+
   const credit = creditScreen(city.capag);
-  const bucket = pushBucket(city.financePush);
-  const rows = ADAPTATION_ACTIONS.filter((a) => a.kind === "direct").map(
-    (a) => ({ a, f: fundingResult(a, city) }),
+  // Whether a route is open to this city: credit routes follow CAPAG.
+  const gate = (p: PathwayMeta) => (
+    <Level tone={p.creditGated ? CREDIT_TONE[credit] : "positive"}>
+      {p.creditGated ? t(`next-gate-credit-${credit}`) : t("next-gate-open")}
+    </Level>
   );
-  const creditTone: MeedTone =
-    credit === "available"
-      ? "positive"
-      : credit === "to_verify"
-        ? "warning"
-        : "neutral";
+  const pushStrong = isPushStrong(city.financePush);
+  const rows: FinanceRow[] = ADAPTATION_ACTIONS.filter(
+    (a) => a.kind === "direct",
+  ).map((a) => ({ a, f: fundingResult(a, city) }));
+
+  const facets: Facet<FinanceRow>[] = [
+    {
+      key: "sector",
+      title: t("next-filter-sectors"),
+      options: ADAPTA_SECTORS.map((k) => ({
+        value: k,
+        label: labels.sector(k),
+      })),
+      values: (r) => [r.a.sector],
+      chip: (o) => o.label,
+    },
+    {
+      key: "funding",
+      title: t("next-filter-funding"),
+      options: ["self", "support", "both"].map((k) => ({
+        value: k,
+        label: t(`next-funding-bin-${k}`),
+      })),
+      values: (r) => [BIN[r.f.gap]],
+    },
+    {
+      key: "cost",
+      title: t("next-filter-cost"),
+      options: ["low", "medium", "high"].map((k) => ({
+        value: k,
+        label: t(`next-cost-${k}`),
+      })),
+      values: (r) => [r.a.costBand],
+      chip: (o) => o.label,
+    },
+  ];
+  const visible = rows.filter((r) => matchesFacets(r, facets, selected));
+  const binCount = (b: "self" | "support" | "both") =>
+    visible.filter((r) => BIN[r.f.gap] === b).length;
+
+  const exportCsv = () =>
+    downloadCsv(
+      `hiap-brazil-demo-${city.slug}-finance.csv`,
+      [
+        t("finance-col-action"),
+        t("next-col-sector"),
+        t("next-col-cost"),
+        t("next-finance-col-preparation"),
+        t("next-col-funding"),
+        t("finance-pathways-title"),
+      ],
+      visible.map(({ a, f }) => [
+        pick(a.name, lng),
+        pick(SECTOR_LABEL[a.sector], lng),
+        t(`next-cost-${a.costBand}`),
+        t(`prep-${a.preparationComplexity}`),
+        pick(GAP_LABEL[f.gap], lng),
+        a.pathways.map((k) => pick(PATHWAY_BY_KEY[k].label, lng)).join("; "),
+      ]),
+    );
 
   return (
     <DemoShell
@@ -72,299 +167,295 @@ export default function Page(props: {
       city={city}
       track="adaptation"
       segment="finance"
-      screenId={SCREEN_IDS.adaptation.finance}
+      screenId={SCREEN_IDS.next.finance}
       title={t("finance-title")}
-      description={t("finance-intro")}
+      description={t("next-finance-intro", { city: city.name })}
       backLabel={t("back-to-home")}
-      openPoints={[t("open-finance-profile"), t("open-finance-tiers")]}
+      openPoints={[
+        t("next-notice-proposal"),
+        t("next-notice-finance-level"),
+        t("next-notice-finance-categories"),
+        t("next-notice-finance-tiers"),
+      ]}
     >
-      {/* City profile — under review (Sep 16, see the corner notice): flags only. */}
-      <Card.Root borderColor="border.neutral">
+      {/* CAPAG first: the rating that opens or closes credit. */}
+      <Card.Root borderColor="border.overlay" id="capag" scrollMarginTop="96px">
         <Card.Body p="l">
-          <VStack alignItems="stretch" gap="m">
-            <HStack gap="s" alignItems="center" flexWrap="wrap">
-              <TitleMedium color="content.primary">
-                {t("finance-profile-title", { city: city.name })}
-              </TitleMedium>
-              <MeedStatusTag tone="warning" ml="auto">
-                {t("finance-profile-review-tag")}
-              </MeedStatusTag>
-            </HStack>
-            <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-              <VStack alignItems="stretch" gap="s">
-                <Overline color="content.tertiary">
-                  {t("finance-credit-label")}
-                </Overline>
-                <HStack gap="s" flexWrap="wrap">
-                  <MeedStatusTag tone={creditTone}>
-                    {pick(CREDIT_LABEL[credit], lng)}
-                  </MeedStatusTag>
-                  <BodySmall color="content.tertiary">
-                    {t("finance-capag-line", {
-                      grade: city.capag === "nd" ? "n.d." : city.capag,
-                    })}
-                  </BodySmall>
-                </HStack>
-                <BodySmall color="content.tertiary">
-                  {t(
-                    credit === "to_verify"
-                      ? "finance-credit-verify-note"
-                      : "finance-credit-note",
-                  )}
-                </BodySmall>
-              </VStack>
-              <VStack alignItems="stretch" gap="s">
-                <Overline color="content.tertiary">
-                  {t("finance-push-label")}
-                </Overline>
-                <MeedMeter
-                  value={city.financePush / 14}
-                  tone={city.financePush >= 7 ? "positive" : "warning"}
-                  valueText={`${city.financePush} / 14`}
-                  label={pick(PUSH_LABEL[bucket], lng)}
-                />
-                <BodySmall color="content.tertiary">
-                  {t("finance-push-note")}
-                </BodySmall>
-              </VStack>
-            </SimpleGrid>
-          </VStack>
+          <SimpleGrid columns={{ base: 1, lg: 3 }} gap="xl">
+            <VStack
+              alignItems="stretch"
+              gap="m"
+              gridColumn={{ base: "auto", lg: "span 2" }}
+            >
+              <Overline color="content.tertiary">
+                {t("next-capag-eyebrow")}
+              </Overline>
+              <HStack gap="l" alignItems="center" flexWrap="wrap">
+                <TitleLarge color="content.primary">
+                  {city.capag === "nd"
+                    ? t("next-capag-grade-nd")
+                    : t("next-capag-grade", { grade: city.capag })}
+                </TitleLarge>
+                <Level tone={CREDIT_TONE[credit]}>
+                  {t(`next-credit-${credit}`)}
+                </Level>
+              </HStack>
+              <BodySmall color="content.tertiary">
+                {t(
+                  city.capag === "nd"
+                    ? "next-capag-source-nd"
+                    : "next-capag-source",
+                )}
+              </BodySmall>
+              <BodyMedium color="content.secondary">
+                {t("next-capag-what")}
+              </BodyMedium>
+              <BodyMedium color="content.secondary">
+                {t("next-capag-why")}
+              </BodyMedium>
+              {credit === "to_verify" && (
+                <BodyMedium color="content.secondary">
+                  {t("next-capag-nd", { city: city.name })}
+                </BodyMedium>
+              )}
+              <HStack gap="xl" flexWrap="wrap">
+                <TextLink href={CAPAG_INFO_URL} external>
+                  {t("next-capag-link-capag")}
+                </TextLink>
+                <TextLink href={PEF_INFO_URL} external>
+                  {t("next-capag-link-pef")}
+                </TextLink>
+              </HStack>
+            </VStack>
+            <VStack
+              alignItems="stretch"
+              gap="xs"
+              pt={{ base: "l", lg: "0" }}
+              pl={{ base: "0", lg: "xl" }}
+              borderTopWidth={{ base: "1px", lg: "0" }}
+              borderLeftWidth={{ base: "0", lg: "1px" }}
+              borderColor="border.overlay"
+            >
+              <Level
+                tone={pushStrong ? "positive" : "warning"}
+                label={t("next-finance-push-label")}
+                info={t("finance-push-note")}
+              >
+                {t(`next-push-${pushBucket(city.financePush)}`)}
+              </Level>
+              <BodySmall color="content.tertiary">
+                {t("next-finance-push-source")}
+              </BodySmall>
+            </VStack>
+          </SimpleGrid>
         </Card.Body>
       </Card.Root>
 
-      {/* Funding gap per action */}
-      <Card.Root overflow="hidden" borderColor="border.neutral">
-        <HStack
-          px="l"
-          py="m"
+      {/* The routes in general, not tied to an action: they combine. */}
+      <VStack alignItems="stretch" gap="m" id="options" scrollMarginTop="96px">
+        <VStack alignItems="flex-start" gap="xs">
+          <TitleLarge color="content.primary">
+            {t("next-options-title", { city: city.name })}
+          </TitleLarge>
+          <BodySmall color="content.secondary">
+            {t("next-options-intro")}
+          </BodySmall>
+        </VStack>
+        <SimpleGrid
+          columns={{ base: 1, md: 2, xl: 3 }}
           gap="m"
-          alignItems="flex-start"
+          data-testid="financing-options"
+        >
+          {PATHWAYS.map((p) => (
+            <VStack
+              key={p.key}
+              alignItems="stretch"
+              gap="s"
+              p="l"
+              bg="base.light"
+              borderWidth="1px"
+              borderColor="border.neutral"
+              borderRadius="rounded"
+              boxShadow="1dp"
+            >
+              <TitleMedium as="h3" color="content.primary">
+                {pick(p.label, lng)}
+              </TitleMedium>
+              <BodySmall color="content.secondary">
+                {pick(p.access, lng)}
+              </BodySmall>
+              {p.key === "federal_transfer" && (
+                <BodySmall color="content.secondary">
+                  {t("next-pathway-note-federal_transfer")}
+                </BodySmall>
+              )}
+              {p.creditGated && (
+                <BodySmall color="content.secondary">
+                  {t("next-pathway-note-credit")}
+                </BodySmall>
+              )}
+              <Box flex="1" />
+              {gate(p)}
+            </VStack>
+          ))}
+        </SimpleGrid>
+      </VStack>
+
+      <VStack alignItems="stretch" gap="m">
+        <HStack
           justifyContent="space-between"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
+          alignItems="flex-end"
+          gap="m"
           flexWrap="wrap"
         >
           <VStack alignItems="flex-start" gap="xs">
-            <TitleMedium color="content.primary">
+            <TitleLarge color="content.primary">
               {t("finance-table-title")}
-            </TitleMedium>
-            <BodyMedium color="content.secondary">
-              {t("finance-table-description")}
-            </BodyMedium>
+            </TitleLarge>
+            <BodySmall color="content.secondary">
+              {t("next-finance-rows", { count: visible.length })}
+            </BodySmall>
+            <BodySmall color="content.tertiary">
+              {t("next-finance-scope")}
+            </BodySmall>
           </VStack>
-          <MeedStatusTag tone="warning">
-            {t("finance-tier-pending")}
-          </MeedStatusTag>
+          <ExportCsvButton onClick={exportCsv} t={t} />
         </HStack>
-        <Table.Root size="md">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>{t("finance-col-action")}</Table.ColumnHeader>
-              <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
-                {t("finance-col-cost")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader>{t("finance-col-gap")}</Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("finance-col-tier")}
-              </Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {rows.map(({ a, f }) => (
-              <Table.Row key={a.id}>
-                <Table.Cell>
-                  <BodyMedium color="content.primary" fontWeight="semibold">
-                    {pick(a.name, lng)}
+
+        <FacetFilters
+          items={rows}
+          facets={facets}
+          selected={selected}
+          onChange={setSelected}
+          t={t}
+        />
+
+        <Box>
+          <MeedShareBar
+            segments={[
+              {
+                label: t("next-funding-bin-self"),
+                value: binCount("self"),
+                color: "interactive.tertiary",
+              },
+              {
+                label: t("next-funding-bin-support"),
+                value: binCount("support"),
+                color: "sentiment.warningDefault",
+              },
+              {
+                label: t("next-funding-bin-both"),
+                value: binCount("both"),
+                color: "sentiment.negativeDefault",
+              },
+            ]}
+            formatValue={(s) => t("next-actions-count", { count: s.value })}
+            ariaLabel={t("finance-table-title")}
+            tipTitle={t("finance-table-title")}
+            t={tResults}
+          />
+        </Box>
+
+        <RowList>
+          {visible.map(({ a, f }) => (
+            <ExpandableRow
+              key={a.id}
+              id={a.id}
+              open={open === a.id}
+              onOpenChange={(o) => setOpen(o ? a.id : null)}
+              title={pick(a.name, lng)}
+              meta={
+                <>
+                  <SectorGlyph sector={a.sector} size="12px" />{" "}
+                  {pick(SECTOR_LABEL[a.sector], lng)} ·{" "}
+                  {t(`prep-${a.preparationComplexity}`)}
+                </>
+              }
+              aside={
+                <>
+                  <Level tone={COST_TONE[a.costBand]}>
+                    {t(`next-cost-${a.costBand}`)}
+                  </Level>
+                  <Level tone={GAP_TONE[f.gap]}>
+                    {pick(GAP_LABEL[f.gap], lng)}
+                  </Level>
+                </>
+              }
+            >
+              <SimpleGrid columns={{ base: 1, lg: 3 }} gap="xl">
+                <VStack alignItems="stretch" gap="s">
+                  <Overline color="content.tertiary">
+                    {t("next-finance-gap-means")}
+                  </Overline>
+                  <BodyMedium color="content.secondary">
+                    {pick(GAP_MEANING[f.gap], lng)}
                   </BodyMedium>
-                  <Caption color="content.tertiary">
-                    {a.pathways
-                      .map((k) =>
-                        pick(PATHWAYS.find((p) => p.key === k)!.label, lng),
-                      )
-                      .join(" · ")}
-                  </Caption>
-                </Table.Cell>
-                <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                  <BodySmall color="content.secondary">
-                    {t(`cost-${a.costBand}`)} ·{" "}
-                    {t(`prep-${a.preparationComplexity}`)}
-                  </BodySmall>
-                </Table.Cell>
-                <Table.Cell>
-                  <VStack alignItems="flex-start" gap="xs">
-                    <MeedStatusTag tone={GAP_TONE[f.gap]}>
-                      {pick(GAP_LABEL[f.gap], lng)}
-                    </MeedStatusTag>
-                    {f.ifCreditNotIndicated && (
-                      <Caption color="content.tertiary">
-                        {t("drawer-funding-verify", {
-                          alt: pick(GAP_LABEL[f.ifCreditNotIndicated], lng),
-                        })}
-                      </Caption>
-                    )}
-                  </VStack>
-                </Table.Cell>
-                <Table.Cell textAlign="end">
-                  <HStack justifyContent="flex-end" gap="s">
-                    <MeedStatusTag tone={TIER_TONE[f.tier]}>
-                      {f.tier}
-                    </MeedStatusTag>
-                    <LabelLarge
-                      color="content.primary"
-                      fontVariantNumeric="tabular-nums"
-                    >
-                      {TIER_SCORE[f.tier].toFixed(2)}
-                    </LabelLarge>
-                  </HStack>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Card.Root>
-
-      {/* What the labels mean */}
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap="m">
-        {(Object.keys(GAP_LABEL) as FundingGap[]).map((gap) => (
-          <Card.Root key={gap} borderColor="border.overlay">
-            <Card.Body>
-              <VStack alignItems="flex-start" gap="s">
-                <MeedStatusTag tone={GAP_TONE[gap]}>
-                  {pick(GAP_LABEL[gap], lng)}
-                </MeedStatusTag>
-                <BodyMedium color="content.secondary">
-                  {pick(GAP_MEANING[gap], lng)}
-                </BodyMedium>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
-        ))}
-      </SimpleGrid>
-
-      {/* Pathways */}
-      <VStack alignItems="stretch" gap="m">
-        <TitleMedium color="content.primary">
-          {t("finance-pathways-title")}
-        </TitleMedium>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>
-                  {t("finance-col-pathway")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-access")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader w="140px">
-                  {t("finance-col-gate")}
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {PATHWAYS.map((p) => (
-                <Table.Row key={p.key}>
-                  <Table.Cell>
-                    <LabelMedium color="content.primary">
-                      {pick(p.label, lng)}
-                    </LabelMedium>
-                  </Table.Cell>
-                  <Table.Cell>
+                  {f.ifCreditNotIndicated && (
                     <BodySmall color="content.secondary">
-                      {pick(p.access, lng)}
+                      {t("drawer-funding-verify", {
+                        alt: pick(GAP_LABEL[f.ifCreditNotIndicated], lng),
+                      })}
                     </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {p.creditGated ? (
-                      <MeedStatusTag
-                        tone={
-                          credit === "available"
-                            ? "positive"
-                            : credit === "to_verify"
-                              ? "warning"
-                              : "neutral"
-                        }
+                  )}
+                </VStack>
+                <VStack alignItems="stretch" gap="m">
+                  <Overline color="content.tertiary">
+                    {t("next-finance-pathways")}
+                  </Overline>
+                  {a.pathways.map((k) => {
+                    const p = PATHWAY_BY_KEY[k];
+                    return (
+                      <VStack key={k} alignItems="stretch" gap="xs">
+                        <BodyMedium
+                          color="content.primary"
+                          fontWeight="semibold"
+                        >
+                          {pick(p.label, lng)}
+                        </BodyMedium>
+                        {gate(p)}
+                      </VStack>
+                    );
+                  })}
+                  <TextLink href="#options">
+                    {t("next-finance-options-link")}
+                  </TextLink>
+                </VStack>
+                <VStack alignItems="stretch" gap="m">
+                  <Overline color="content.tertiary">
+                    {t("finance-projects-title")}
+                  </Overline>
+                  {a.comparableProjects.length === 0 ? (
+                    <BodySmall color="content.secondary">
+                      {t("next-finance-no-projects")}
+                    </BodySmall>
+                  ) : (
+                    a.comparableProjects.map((p, i) => (
+                      <VStack
+                        key={`${p.name}-${i}`}
+                        alignItems="stretch"
+                        gap="xs"
                       >
-                        {t("finance-gate-credit")}
-                      </MeedStatusTag>
-                    ) : (
-                      <MeedStatusTag tone="positive">
-                        {t("finance-gate-open")}
-                      </MeedStatusTag>
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
-      </VStack>
-
-      {/* Comparable projects */}
-      <VStack alignItems="stretch" gap="m">
-        <VStack alignItems="stretch" gap="xs">
-          <TitleMedium color="content.primary">
-            {t("finance-projects-title")}
-          </TitleMedium>
-          <BodyMedium color="content.secondary">
-            {t("finance-projects-description")}
-          </BodyMedium>
-        </VStack>
-        <Card.Root overflow="hidden" borderColor="border.neutral">
-          <Table.Root size="md">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>
-                  {t("finance-col-project")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-channel")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader textAlign="end">
-                  {t("finance-col-amount")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("finance-col-stage")}
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {ADAPTATION_ACTIONS.flatMap((a) =>
-                a.comparableProjects.map((p) => ({ a, p })),
-              ).map(({ a, p }, i) => (
-                <Table.Row key={i}>
-                  <Table.Cell>
-                    <LabelMedium color="content.primary">{p.name}</LabelMedium>
-                    <Caption color="content.tertiary">
-                      {p.city} · {pick(a.name, lng)}
-                    </Caption>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BodySmall color="content.secondary">
-                      {pick(p.channel, lng)}
-                    </BodySmall>
-                    <Caption color="content.tertiary">
-                      {pick(p.instrument, lng)}
-                    </Caption>
-                  </Table.Cell>
-                  <Table.Cell textAlign="end">
-                    <BodySmall
-                      color="content.primary"
-                      fontVariantNumeric="tabular-nums"
-                    >
-                      {formatBrl(p.amountBrl, lng)}
-                    </BodySmall>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <MeedStatusTag tone="neutral">
-                      {pick(p.stage, lng)}
-                    </MeedStatusTag>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        </Card.Root>
+                        <BodyMedium
+                          color="content.primary"
+                          fontWeight="semibold"
+                        >
+                          {p.name}
+                        </BodyMedium>
+                        <BodySmall color="content.secondary">
+                          {p.city} · {pick(p.channel, lng)} ·{" "}
+                          {pick(p.instrument, lng)}
+                        </BodySmall>
+                        <BodySmall color="content.tertiary">
+                          {formatBrl(p.amountBrl, lng)} · {pick(p.stage, lng)}
+                        </BodySmall>
+                      </VStack>
+                    ))
+                  )}
+                </VStack>
+              </SimpleGrid>
+            </ExpandableRow>
+          ))}
+        </RowList>
         <BodySmall color="content.tertiary">
           {t("finance-projects-note")}
         </BodySmall>

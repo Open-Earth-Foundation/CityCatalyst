@@ -14,6 +14,7 @@ import {
 } from "@/util/form-schema";
 import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
 import { toCanonical } from "@/util/notation-keys";
+import { FILE_IMPORT_SOURCE_TYPE } from "@/util/constants";
 import {
   hasSignedNumericValue,
   parseNumericCell,
@@ -72,6 +73,46 @@ export type ImportECRFDataOptions = {
 };
 
 type RowOutcome = "imported" | "skipped";
+
+/**
+ * Map each distinct value of the file's data source column (e.g. "MEED-CL-2022")
+ * to a DataSource row, reusing one an earlier import created with the same name.
+ * Runs in the import transaction, before any row savepoint, so a failed row
+ * cannot roll back a source that later rows reference.
+ *
+ * Only ActivityValues are linked: a datasource on the InventoryValue marks it as
+ * connected third-party data (read-only activity tab, third-party progress).
+ */
+async function resolveFileDataSourceIds(
+  rows: ECRFRowData[],
+  transaction: Transaction,
+): Promise<Map<string, string>> {
+  const names = new Set(
+    rows
+      .map((row) => row.activityDataSource?.trim())
+      .filter((name): name is string => !!name),
+  );
+  const ids = new Map<string, string>();
+  for (const name of names) {
+    const existing = await db.models.DataSource.findOne({
+      where: { datasourceName: name, sourceType: FILE_IMPORT_SOURCE_TYPE },
+      attributes: ["datasourceId"],
+      transaction,
+    });
+    const source =
+      existing ??
+      (await db.models.DataSource.create(
+        {
+          datasourceId: randomUUID(),
+          datasourceName: name,
+          sourceType: FILE_IMPORT_SOURCE_TYPE,
+        },
+        { transaction },
+      ));
+    ids.set(name, source.datasourceId);
+  }
+  return ids;
+}
 
 /**
  * Reverse map (value -> key) from manage-subsectors en locale.
@@ -413,9 +454,17 @@ export default class InventoryImportService {
       };
     }
 
+    const fileDataSourceIds = await resolveFileDataSourceIds(
+      validRows,
+      transaction,
+    );
+
     // Process each valid row
     for (const row of validRows) {
       const rowWarnings: string[] = [];
+      const fileDataSourceId = row.activityDataSource?.trim()
+        ? fileDataSourceIds.get(row.activityDataSource.trim())
+        : undefined;
       try {
         // Savepoint per row: a failed row is rolled back and skipped without
         // aborting the transaction the rest of the import runs in.
@@ -821,6 +870,7 @@ export default class InventoryImportService {
                           {
                             id: randomUUID(),
                             inventoryValueId: inventoryValue.id,
+                            datasourceId: fileDataSourceId,
                             co2eq: activityCO2eq,
                             co2eqYears: 100,
                             activityData:

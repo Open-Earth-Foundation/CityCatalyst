@@ -401,7 +401,14 @@ export function EmissionPerSectors({
     },
   ];
 
-  const containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+  // Placeholder only - `ref={containerRef}` below overwrites `.current` with
+  // the real DOM node on mount. `document` isn't defined during SSR, so this
+  // can't call `document.createElement` unconditionally (CC-835).
+  const containerRef = useRef<HTMLDivElement>(
+    typeof document === "undefined"
+      ? (null as unknown as HTMLDivElement)
+      : document.createElement("div"),
+  );
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">

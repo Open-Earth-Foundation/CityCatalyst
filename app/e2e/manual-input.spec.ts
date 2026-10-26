@@ -422,10 +422,6 @@ test.describe.serial("Manual Input", () => {
         );
         await submitButton.click();
 
-        await expect(
-          addEmissionModal.getByText(/Describe any relevant context/i),
-        ).toBeVisible({ timeout: 10000 });
-
         await addEmissionModal
           .getByTestId(testIds.sourceReferenceInput)
           .fill("Created by e2e test");

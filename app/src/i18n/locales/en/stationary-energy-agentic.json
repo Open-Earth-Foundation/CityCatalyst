@@ -319,5 +319,8 @@
   "error-chat-history-unavailable": "Clima chat history is unavailable, but the draft can still run.",
   "error-draft-start-response-missing-run-id": "Draft start response did not include draft_run_id.",
   "error-failed-to-send-message": "Failed to send message",
-  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target"
+  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target",
+  "source-geography-city": "city",
+  "source-geography-country": "country",
+  "source-geography-region": "region"
 }

@@ -7,6 +7,7 @@ import logging
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.funding_catalogue import (
     MANUAL_SOURCE_PREFIX,
+    UPLOAD_SOURCE_PREFIX,
     FundingAddedFrom,
     FundingCatalogueFunder,
     FundingCatalogueOpportunity,
@@ -109,6 +110,8 @@ async def load_funding_catalogue(
 
 def added_from(row: CnbFundingOpportunity) -> FundingAddedFrom | None:
     """Describe programmes users added; curated research rows return None."""
+    if row.source_run_id.startswith(UPLOAD_SOURCE_PREFIX):
+        return FundingAddedFrom(kind="document", filename=row.source_record_ref)
     if row.source_run_id.startswith(MANUAL_SOURCE_PREFIX):
         return FundingAddedFrom(kind="manual")
     return None

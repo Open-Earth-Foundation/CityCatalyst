@@ -9,9 +9,28 @@ import {
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
 import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
+import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 import type { ImportRowIssue } from "@/util/types";
+
+/**
+ * When activity_name holds a notation-key label (e.g. "Not Occuring") and
+ * there is no dedicated notation column, treat it as the notation key and
+ * clear the activity type so it is not stored as a fuel.
+ */
+function resolveNotationFromActivity(args: {
+  notationKey?: string;
+  activityType?: string;
+}): { notationKey?: string; activityType?: string } {
+  if (args.notationKey) {
+    return { notationKey: args.notationKey, activityType: args.activityType };
+  }
+  if (args.activityType && toCanonical(args.activityType)) {
+    return { notationKey: args.activityType, activityType: undefined };
+  }
+  return { notationKey: undefined, activityType: args.activityType };
+}
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -150,13 +169,19 @@ export default class ECRFImportService {
         const rawSubsector = hasSubsectorColumn
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
-        const activityHeader = this.findHeader(headers, [
-          "fuel type or activity",
-          "activity type",
-          "activity_type",
-          "fuel type",
-          "fuel_type",
-        ]);
+        const activityHeader =
+          detectedColumns.activityType !== undefined
+            ? headers[detectedColumns.activityType]
+            : this.findHeader(headers, [
+                "fuel type or activity",
+                "activity_name",
+                "activity name",
+                "activity type",
+                "activity_type",
+                "fuel type",
+                "fuel_type",
+                "fuel",
+              ]);
         const activityType = activityHeader
           ? row[activityHeader]?.toString().trim()
           : undefined;
@@ -290,7 +315,7 @@ export default class ECRFImportService {
               "notation_key",
               "notation",
             ]);
-      const notationKey = notationKeyHeader
+      const notationKeyFromColumn = notationKeyHeader
         ? row[notationKeyHeader]?.toString().trim()
         : undefined;
 
@@ -315,16 +340,27 @@ export default class ECRFImportService {
         }
       }
 
-      // Extract activity data fields (optional)
-      const activityTypeHeader = this.findHeader(headers, [
-        "activity type",
-        "activity_type",
-        "fuel type",
-        "fuel_type",
-      ]);
-      const activityType = activityTypeHeader
+      // Prefer the validator / mapping override index so activity_name is kept
+      const activityTypeHeader =
+        detectedColumns.activityType !== undefined
+          ? headers[detectedColumns.activityType]
+          : this.findHeader(headers, [
+              "activity_name",
+              "activity name",
+              "activity type",
+              "activity_type",
+              "fuel type",
+              "fuel_type",
+              "fuel",
+            ]);
+      const activityTypeRaw = activityTypeHeader
         ? row[activityTypeHeader]?.toString().trim()
         : undefined;
+
+      const { notationKey, activityType } = resolveNotationFromActivity({
+        notationKey: notationKeyFromColumn || undefined,
+        activityType: activityTypeRaw || undefined,
+      });
 
       // Get activity amount header name (using detectedColumns index or findHeader)
       const activityAmountHeader =
@@ -443,69 +479,37 @@ export default class ECRFImportService {
         ? row[emissionFactorUnitHeader]?.toString().trim()
         : undefined;
 
-      const emissionFactorCO2Idx =
-        detectedColumns.emissionFactorCO2 ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - co2",
-            "emission factor co2",
-            "ef co2",
-            "ef_co2",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorCO2 =
-        emissionFactorCO2Idx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorCO2Idx)
-          : undefined;
-
-      const emissionFactorCH4Idx =
-        detectedColumns.emissionFactorCH4 ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - ch4",
-            "emission factor ch4",
-            "ef ch4",
-            "ef_ch4",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorCH4 =
-        emissionFactorCH4Idx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorCH4Idx)
-          : undefined;
-
-      const emissionFactorN2OIdx =
-        detectedColumns.emissionFactorN2O ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - n2o",
-            "emission factor n2o",
-            "ef n2o",
-            "ef_n2o",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorN2O =
-        emissionFactorN2OIdx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorN2OIdx)
-          : undefined;
-
-      const emissionFactorTotalCO2eIdx =
-        detectedColumns.emissionFactorTotalCO2e ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - total co2e",
-            "emission factor total co2e",
-            "ef total co2e",
-            "ef_total co2e",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorTotalCO2e =
-        emissionFactorTotalCO2eIdx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorTotalCO2eIdx)
-          : undefined;
+      // Only read EF columns when the header itself looks like an EF column.
+      // detectedColumns can still carry a bad index from older validations.
+      const emissionFactorCO2 = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorCO2,
+        ["emission factor - co2", "emission factor co2", "ef co2", "ef_co2"],
+      );
+      const emissionFactorCH4 = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorCH4,
+        ["emission factor - ch4", "emission factor ch4", "ef ch4", "ef_ch4"],
+      );
+      const emissionFactorN2O = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorN2O,
+        ["emission factor - n2o", "emission factor n2o", "ef n2o", "ef_n2o"],
+      );
+      const emissionFactorTotalCO2e = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorTotalCO2e,
+        [
+          "emission factor - total co2e",
+          "emission factor total co2e",
+          "ef total co2e",
+          "ef_total co2e",
+        ],
+      );
 
       // 0 is empty (notation-key behaviour); negatives are real removals
       if (
@@ -772,11 +776,16 @@ export default class ECRFImportService {
             : undefined,
         activityUnit: row.activityUnit?.trim() || undefined,
         // Fuel/activity wins over category. Category used to be the sub-sector name.
-        activityType:
-          row.activityType?.trim() || row.category?.trim() || undefined,
+        ...(() => {
+          const activityType =
+            row.activityType?.trim() || row.category?.trim() || undefined;
+          return resolveNotationFromActivity({
+            notationKey: row.notationKey?.trim() || undefined,
+            activityType,
+          });
+        })(),
         activityDataSource: row.activityDataSource?.trim() || undefined,
         activityDataQuality: row.activityDataQuality?.trim() || undefined,
-        notationKey: row.notationKey?.trim() || undefined,
         emissionFactorUnit: row.emissionFactorUnit?.trim() || undefined,
         emissionFactorSource: row.emissionFactorSource?.trim() || undefined,
         emissionFactorDescription:
@@ -817,22 +826,102 @@ export default class ECRFImportService {
     return parseNumericCell(value);
   }
 
+  /** True when a header name is an emission-factor column, not a gas amount. */
+  private static isEmissionFactorHeader(header: string): boolean {
+    const h = header.toLowerCase().trim();
+    return (
+      h.includes("emission factor") ||
+      h.startsWith("ef ") ||
+      h.startsWith("ef_") ||
+      /^ef[\s_-]/.test(h)
+    );
+  }
+
   /**
-   * Find header by name (case-insensitive)
+   * Read an EF value only from a column whose header looks like an EF column.
+   * Rejects gas columns (co2, ch4, …) that older detectors may have bound.
+   */
+  private static extractEmissionFactorValue(
+    row: Record<string, unknown>,
+    headers: string[],
+    detectedIndex: number | undefined,
+    searchTerms: string[],
+  ): number | undefined {
+    if (
+      detectedIndex !== undefined &&
+      this.isEmissionFactorHeader(headers[detectedIndex] ?? "")
+    ) {
+      return this.extractGasValue(row, headers, detectedIndex);
+    }
+    const h = this.findHeader(headers, searchTerms, {
+      requireEmissionFactorHeader: true,
+    });
+    return h
+      ? this.extractGasValue(row, headers, headers.indexOf(h))
+      : undefined;
+  }
+
+  /**
+   * Find header by name (case-insensitive). Exact and "header contains term"
+   * first; reverse contains only for headers of length ≥ 4 so short names
+   * like "co2" do not match "emission factor - co2".
    */
   private static findHeader(
     headers: string[],
     searchTerms: string[],
+    options: { requireEmissionFactorHeader?: boolean } = {},
   ): string | undefined {
     const normalizedHeaders = headers.map((h) => h.toLowerCase().trim());
     const normalizedSearchTerms = searchTerms.map((t) =>
       t.toLowerCase().trim(),
     );
+    const sortedTerms = [...normalizedSearchTerms].sort(
+      (a, b) => b.length - a.length,
+    );
 
     for (let i = 0; i < normalizedHeaders.length; i++) {
       const header = normalizedHeaders[i];
+      if (
+        options.requireEmissionFactorHeader &&
+        !this.isEmissionFactorHeader(header)
+      ) {
+        continue;
+      }
       for (const term of normalizedSearchTerms) {
-        if (header.includes(term) || term.includes(header)) {
+        if (header === term) {
+          return headers[i];
+        }
+      }
+    }
+
+    for (const term of sortedTerms) {
+      for (let i = 0; i < normalizedHeaders.length; i++) {
+        const header = normalizedHeaders[i];
+        if (
+          options.requireEmissionFactorHeader &&
+          !this.isEmissionFactorHeader(header)
+        ) {
+          continue;
+        }
+        if (header.includes(term)) {
+          return headers[i];
+        }
+      }
+    }
+
+    for (let i = 0; i < normalizedHeaders.length; i++) {
+      const header = normalizedHeaders[i];
+      if (header.length < 4) {
+        continue;
+      }
+      if (
+        options.requireEmissionFactorHeader &&
+        !this.isEmissionFactorHeader(header)
+      ) {
+        continue;
+      }
+      for (const term of sortedTerms) {
+        if (term.includes(header)) {
           return headers[i];
         }
       }

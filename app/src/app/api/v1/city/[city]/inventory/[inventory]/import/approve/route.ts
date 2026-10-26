@@ -40,6 +40,12 @@
  *                 description: |
  *                   Optional overrides. For xlsx/csv, maps column header to internal key (e.g. {"Sector Name": "sector"}).
  *                   For PDF imports, per-row field overrides keyed by row index (e.g. {"0": {"sector": "Stationary Energy", "subsector": "Residential Buildings"}}) to correct extracted values.
+ *               replaceExisting:
+ *                 type: boolean
+ *                 description: |
+ *                   Required when the inventory already has data. All existing values (manual data, connected
+ *                   third-party data and notation keys) are replaced by the file. The replaced data is kept in
+ *                   the inventory's version history and can be restored from there.
  *     responses:
  *       202:
  *         description: Import started; poll GET import status until completion.
@@ -47,6 +53,8 @@
  *         description: Invalid request or mappings cannot be approved.
  *       404:
  *         description: Import file not found.
+ *       409:
+ *         description: The inventory already has data and replaceExisting was not set (error code inventory-has-data).
  *       401:
  *         description: Unauthorized.
  */
@@ -59,11 +67,15 @@ import {
   type ImportValidationResults,
 } from "@/backend/ImportResultBuilder";
 import InventoryImportService from "@/backend/InventoryImportService";
+import InventoryReplaceService, {
+  IMPORT_REPLACE_LABEL,
+} from "@/backend/InventoryReplaceService";
 import {
   syncGHGIImportedInventorySource,
   syncGHGIInventory,
 } from "@/backend/GHGINativeInputCatalogService";
 import { db } from "@/models";
+import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
@@ -76,6 +88,7 @@ import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
+  replaceExisting: z.boolean().optional(),
 });
 
 /** Quick response so request returns before ingress timeout; import runs in background. */
@@ -182,13 +195,52 @@ async function persistMappingFeedback(args: {
   }
 }
 
+/**
+ * Persist mapping feedback for Path B (AI-shaped) files so future uploads with
+ * the same header structure get a warm-start prompt hint.
+ */
+async function persistPathBMappingFeedback(
+  cityId: string,
+  importedFile: ImportedInventoryFile,
+  extractedRows: ExtractedRow[] | null,
+): Promise<void> {
+  if (!extractedRows || extractedRows.length === 0) return;
+  const vr = (importedFile.validationResults as ImportValidationResults) ?? {};
+  const headerKey = vr.headerKey;
+  if (!headerKey) return;
+
+  const feedbackBuffer =
+    await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+  const rawHeaders: string[] = feedbackBuffer
+    ? await FileParserService.parseFile(feedbackBuffer, importedFile.fileType)
+        .then((p) => p.primarySheet?.headers ?? [])
+        .catch(() => [])
+    : [];
+
+  const columnMapping =
+    rawHeaders.length > 0 ? deriveColumnMapping(rawHeaders, extractedRows) : {};
+  const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
+    string,
+    unknown
+  >[];
+
+  await persistMappingFeedback({
+    cityId,
+    headerKey,
+    adapterType: vr.adapterType,
+    columnMapping,
+    exampleRows,
+  });
+}
+
 async function runApproveImportInBackground(args: {
   cityId: string;
   inventoryId: string;
   importedFileId: string;
   userId: string;
+  replaceExisting: boolean;
 }): Promise<void> {
-  const { cityId, inventoryId, importedFileId, userId } = args;
+  const { cityId, inventoryId, importedFileId, userId, replaceExisting } = args;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: {
@@ -227,61 +279,64 @@ async function runApproveImportInBackground(args: {
         ? "Imported from PDF"
         : "Imported from file");
 
-    const importSummary = await InventoryImportService.importECRFData(
-      inventoryId,
-      importResult,
-      { defaultActivityDataSource },
+    // Replace, import and the COMPLETED status share one transaction: if the
+    // import fails the existing data is still there, and the status can't
+    // disagree with whether the data change committed.
+    const { importSummary } = await db.sequelize!.transaction(
+      async (transaction) => {
+        const replacedData = replaceExisting
+          ? await InventoryReplaceService.replaceInventoryValues(
+              inventoryId,
+              userId,
+              transaction,
+            )
+          : null;
+        const didReplace = !!replacedData?.restoreVersionId;
+        // Version rows only when replacing: a first import has nothing to
+        // restore to, so writing thousands of Version rows for it is wasted.
+        const importSummary = await InventoryImportService.importECRFData(
+          inventoryId,
+          importResult,
+          {
+            defaultActivityDataSource,
+            authorId: didReplace ? userId : undefined,
+            versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
+            transaction,
+          },
+        );
+        if (didReplace && importSummary.importedRows === 0) {
+          throw new Error(
+            "No rows could be imported, so the existing inventory data was kept.",
+          );
+        }
+        await importedFile.update(
+          {
+            importStatus: ImportStatusEnum.COMPLETED,
+            processedRowCount: importSummary.importedRows,
+            completedAt: new Date(),
+            lastUpdated: new Date(),
+            validationResults: {
+              ...((importedFile.validationResults as ImportValidationResults) ??
+                {}),
+              importSummary: { ...importSummary, replacedData },
+            },
+          },
+          { transaction },
+        );
+        return { importSummary };
+      },
     );
 
-    await importedFile.update({
-      importStatus: ImportStatusEnum.COMPLETED,
-      processedRowCount: importSummary.importedRows,
-      completedAt: new Date(),
-      lastUpdated: new Date(),
-      validationResults: {
-        ...((importedFile.validationResults as ImportValidationResults) ?? {}),
-        importSummary,
-      },
-    });
+    // Best-effort follow-ups: the import has committed, so a failure here must
+    // not reach the catch below and mark it FAILED.
     await syncGHGIInventory(importedFile);
-
-    // Persist mapping feedback for Path B (AI-shaped) files so future uploads
-    // with the same header structure get a warm-start prompt hint.
-    if (extractedRows && extractedRows.length > 0) {
-      const vr =
-        (importedFile.validationResults as ImportValidationResults) ?? {};
-      const headerKey = vr.headerKey;
-      if (headerKey) {
-        const feedbackBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(
-            importedFile,
-          );
-        const rawHeaders: string[] = feedbackBuffer
-          ? await FileParserService.parseFile(
-              feedbackBuffer,
-              importedFile.fileType,
-            )
-              .then((p) => p.primarySheet?.headers ?? [])
-              .catch(() => [])
-          : [];
-
-        const columnMapping =
-          rawHeaders.length > 0
-            ? deriveColumnMapping(rawHeaders, extractedRows)
-            : {};
-        const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
-          string,
-          unknown
-        >[];
-
-        await persistMappingFeedback({
-          cityId,
-          headerKey,
-          adapterType: vr.adapterType,
-          columnMapping,
-          exampleRows,
-        });
-      }
+    try {
+      await persistPathBMappingFeedback(cityId, importedFile, extractedRows);
+    } catch (err) {
+      logger.warn(
+        { err, importedFileId: importedFile.id },
+        "Failed to persist mapping feedback after import (non-fatal)",
+      );
     }
 
     logger.info(
@@ -320,7 +375,7 @@ export const POST = apiHandler(
 
     // Parse request body
     const body = await req.json();
-    const { importedFileId, mappingOverrides } =
+    const { importedFileId, mappingOverrides, replaceExisting } =
       approveImportSchema.parse(body);
 
     // Find the imported file
@@ -346,14 +401,15 @@ export const POST = apiHandler(
       );
     }
 
-    // Check if this inventory already contains data (InventoryValue records)
-    // to prevent duplicate imports
+    // Existing data is only replaced when the user confirmed it
     const existingValueCount = await db.models.InventoryValue.count({
       where: { inventoryId },
     });
-    if (existingValueCount > 0) {
-      throw new createHttpError.Conflict(
-        "This inventory already contains data. Clear existing data before importing again.",
+    if (existingValueCount > 0 && !replaceExisting) {
+      throw createHttpError(
+        409,
+        "This inventory already contains data. Confirm to replace it.",
+        { code: "inventory-has-data", data: { existingValueCount } },
       );
     }
 
@@ -384,6 +440,7 @@ export const POST = apiHandler(
       inventoryId,
       importedFileId,
       userId: session.user.id,
+      replaceExisting: existingValueCount > 0 && !!replaceExisting,
     }).catch((err) =>
       logger.error({ err, importedFileId }, "Approve/import background failed"),
     );

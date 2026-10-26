@@ -1,65 +1,110 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  Collapsible,
-  HStack,
-  Icon,
-  SimpleGrid,
-  Table,
-  VStack,
-} from "@chakra-ui/react";
-import { LuChevronDown, LuChevronUp, LuInfo } from "react-icons/lu";
+import { Box, HStack, VStack } from "@chakra-ui/react";
+import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { MeedMeter } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedMeter";
-import { MeedScoreRing } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedScoreRing";
-import {
-  MeedStatusTag,
-  type MeedTone,
-} from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
-import { useDemoT, useTrackT } from "../../../_lib/useDemoT";
+import { useDemoT } from "../../../_lib/useDemoT";
+import { useLabels } from "../../../_lib/useLabels";
 import { SCREEN_IDS } from "../../../_lib/hrefs";
 import { ADAPTATION_ACTIONS } from "../../../_lib/actions";
+import {
+  planoClimaPlans,
+  planShortName,
+} from "../../../_components/next/planoClima";
+import { ADAPTA_SECTORS, SECTOR_LABEL } from "../../../_lib/riskCells";
 import { pick } from "../../../_lib/localized";
+import type { AdaptationAction, PolicyMatch } from "../../../_lib/types";
+import { Level } from "../../../_components/next/Level";
+import { SectorGlyph } from "../../../_components/next/SectorIcon";
+import { TextLink } from "../../../_components/next/TextLink";
+import {
+  POLICY_TONE,
+  policyGrade,
+  type PolicyGrade,
+} from "../../../_components/next/rows";
+import {
+  ExpandableRow,
+  RowList,
+} from "../../../_components/next/ExpandableRow";
+import {
+  FacetFilters,
+  useLocationHash,
+  useUrlSelection,
+} from "../../../_components/next/ListControls";
+import { matchesFacets, type Facet } from "../../../_components/next/facets";
 
-const gradeOf = (score: number) =>
-  score >= 66 ? "strong" : score >= 33 ? "medium" : score > 0 ? "weak" : "none";
-const GRADE_TONE: Record<string, MeedTone> = {
-  strong: "positive",
-  medium: "warning",
-  weak: "neutral",
-  none: "neutral",
+const GRADES: PolicyGrade[] = ["strong", "medium", "weak", "none"];
+const MATCH_TONE: Record<PolicyMatch, MeedTone> = {
+  direct: "positive",
+  partial: "warning",
+  adjacent: "neutral",
 };
 
-/** BR-A9 — policy alignment: match × strength, Portuguese authoritative. */
+/**
+ * BR-N9 — proposal: policy alignment, the expandable pattern the reviewers
+ * liked, restyled to the proposal's rules. Each action reads as a level of
+ * policy backing; the evidence opens below it, and the score sits behind
+ * "Show the calculation", as in the drawer.
+ */
 export default function Page(props: {
   params: Promise<{ lng: string; city: string }>;
 }) {
   const { lng, city: slug } = React.use(props.params);
   const city = cityFromSlug(slug);
   const { t } = useDemoT(lng);
-  const tResults = useTrackT(lng, "adaptation", "meed-results");
-  const [open, setOpen] = useState<string | null>(null);
-  const actions = [...ADAPTATION_ACTIONS].sort(
+  const labels = useLabels(lng, "adaptation");
+  // A deep link (#<id>, e.g. from the action drawer) opens its row.
+  const hash = useLocationHash();
+  const [openState, setOpen] = useState<string | null | undefined>(undefined);
+  const open = openState === undefined ? hash || null : openState;
+  const [calcOpen, setCalcOpen] = useState<string | null>(null);
+  const [selected, setSelected] = useUrlSelection(["sector", "policy", "plan"]);
+
+  const all = [...ADAPTATION_ACTIONS].sort(
     (a, b) => b.policy.score - a.policy.score,
   );
-  const mean =
-    actions.reduce((s, a) => s + a.policy.score, 0) / actions.length / 100;
+  const facets: Facet<AdaptationAction>[] = [
+    {
+      key: "sector",
+      title: t("next-filter-sectors"),
+      options: ADAPTA_SECTORS.map((k) => ({
+        value: k,
+        label: labels.sector(k),
+      })),
+      values: (a) => [a.sector],
+      chip: (o) => o.label,
+    },
+    {
+      key: "policy",
+      title: t("next-col-policy"),
+      options: GRADES.map((g) => ({
+        value: g,
+        label: t(`next-policy-${g}`),
+      })),
+      values: (a) => [policyGrade(a.policy.score)],
+      chip: (o) => o.label,
+    },
+  ];
+  // Plano Clima: the strategy and sectoral plans the evidence cites.
+  const planDocs = [
+    ...new Set(all.flatMap((a) => planoClimaPlans(a).map((p) => p.document))),
+  ].sort();
+  facets.push({
+    key: "plan",
+    title: t("next-filter-plan"),
+    options: planDocs.map((d) => ({ value: d, label: planShortName(d) })),
+    values: (a) => planoClimaPlans(a).map((p) => p.document),
+    chip: (o) => o.label,
+  });
+  const visible = all.filter((a) => matchesFacets(a, facets, selected));
+  // Counted on what is shown, so the line follows the filters.
   const docs = new Set(
-    actions.flatMap((a) => a.policy.evidence.map((e) => e.document)),
+    visible.flatMap((a) => a.policy.evidence.map((e) => e.document)),
   );
-  const counts = ["strong", "medium", "weak", "none"].map((g) => ({
-    g,
-    n: actions.filter((a) => gradeOf(a.policy.score) === g).length,
-  }));
 
   return (
     <DemoShell
@@ -67,261 +112,176 @@ export default function Page(props: {
       city={city}
       track="adaptation"
       segment="policy"
-      screenId={SCREEN_IDS.adaptation.policy}
+      screenId={SCREEN_IDS.next.policy}
       title={t("policy-title")}
-      description={t("policy-intro")}
+      description={t("next-policy-intro")}
       backLabel={t("back-to-home")}
-      openPoints={[t("open-policy-corpus")]}
+      openPoints={[
+        t("next-notice-proposal"),
+        t("open-policy-corpus"),
+        t("next-notice-policy-plans"),
+      ]}
     >
-      <HStack
-        gap="s"
-        px="m"
-        py="s"
-        borderRadius="rounded"
-        bg="background.neutral"
-        alignItems="flex-start"
-        alignSelf="flex-start"
-      >
-        <Icon as={LuInfo} boxSize="16px" color="content.link" mt="2px" />
+      <VStack alignItems="stretch" gap="m">
+        <HStack
+          justifyContent="space-between"
+          alignItems="flex-end"
+          gap="m"
+          flexWrap="wrap"
+        >
+          <VStack alignItems="flex-start" gap="xs">
+            <TitleLarge color="content.primary">
+              {t("policy-table-title")}
+            </TitleLarge>
+            <BodySmall color="content.secondary">
+              {t("next-policy-rows", {
+                count: visible.length,
+                docs: docs.size,
+              })}
+            </BodySmall>
+          </VStack>
+          <HStack gap="l" flexWrap="wrap">
+            {GRADES.map((g) => (
+              <Level key={g} tone={POLICY_TONE[g]}>
+                {t(`next-policy-${g}`)} ·{" "}
+                {all.filter((a) => policyGrade(a.policy.score) === g).length}
+              </Level>
+            ))}
+          </HStack>
+        </HStack>
         <BodySmall color="content.secondary">
           {t("policy-city-independent-short")}
         </BodySmall>
-      </HStack>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
-        <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="l">
-            <HStack alignItems="center" gap="m">
-              <MeedScoreRing
-                value={mean}
-                tone={
-                  mean >= 0.66
-                    ? "positive"
-                    : mean >= 0.33
-                      ? "warning"
-                      : "neutral"
-                }
-                size="lg"
-                ariaLabel={t("policy-mean-aria", {
-                  value: Math.round(mean * 100),
-                })}
-                t={tResults}
-              />
-              <VStack alignItems="stretch" gap="xs" flex="1" minW={0}>
-                <Overline>{t("policy-mean-label")}</Overline>
-                <LabelMedium color="content.primary">
-                  {t("policy-mean-value", { value: Math.round(mean * 100) })}
-                </LabelMedium>
-                <BodySmall color="content.tertiary">
-                  {t("policy-mean-note")}
-                </BodySmall>
-              </VStack>
-            </HStack>
-          </Card.Body>
-        </Card.Root>
-        <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="l">
-            <VStack alignItems="flex-start" gap="s">
-              <Overline>{t("policy-corpus-label")}</Overline>
-              <TitleMedium color="content.primary">{docs.size}</TitleMedium>
-              <BodySmall color="content.tertiary">
-                {t("policy-corpus-note")}
-              </BodySmall>
-            </VStack>
-          </Card.Body>
-        </Card.Root>
-        <Card.Root borderColor="border.overlay" h="full">
-          <Card.Body p="l">
-            <VStack alignItems="flex-start" gap="s">
-              <Overline>{t("policy-grades-label")}</Overline>
-              <HStack gap="xs" flexWrap="wrap">
-                {counts.map(({ g, n }) => (
-                  <MeedStatusTag key={g} tone={GRADE_TONE[g]}>
-                    {t(`policy-grade-${g}`)} · {n}
-                  </MeedStatusTag>
-                ))}
-              </HStack>
-              <BodySmall color="content.tertiary">
-                {t("policy-grades-note")}
-              </BodySmall>
-            </VStack>
-          </Card.Body>
-        </Card.Root>
-      </SimpleGrid>
+        <FacetFilters
+          items={all}
+          facets={facets}
+          selected={selected}
+          onChange={setSelected}
+          t={t}
+        />
 
-      <Card.Root overflow="hidden" borderColor="border.neutral">
-        <HStack
-          px="l"
-          py="m"
-          borderBottomWidth="1px"
-          borderColor="border.overlay"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          gap="m"
-        >
-          <VStack alignItems="flex-start" gap="xs">
-            <TitleMedium color="content.primary">
-              {t("policy-table-title")}
-            </TitleMedium>
-            <BodyMedium color="content.secondary">
-              {t("policy-table-description")}
-            </BodyMedium>
-          </VStack>
-          <MeedStatusTag tone="info">
-            {t("policy-pt-authoritative")}
-          </MeedStatusTag>
-        </HStack>
-        <VStack alignItems="stretch" gap="0">
-          {actions.map((a) => {
-            const g = gradeOf(a.policy.score);
-            const isOpen = open === a.id;
+        <RowList>
+          {visible.map((a) => {
+            const g = policyGrade(a.policy.score);
             return (
-              <Collapsible.Root
+              <ExpandableRow
                 key={a.id}
-                open={isOpen}
-                onOpenChange={(d) => setOpen(d.open ? a.id : null)}
+                id={a.id}
+                open={open === a.id}
+                onOpenChange={(o) => setOpen(o ? a.id : null)}
+                title={pick(a.name, lng)}
+                meta={
+                  <>
+                    <SectorGlyph sector={a.sector} size="12px" />{" "}
+                    {pick(SECTOR_LABEL[a.sector], lng)} ·{" "}
+                    {t("policy-evidence-count", {
+                      count: a.policy.evidence.length,
+                    })}
+                  </>
+                }
+                aside={
+                  <Level tone={POLICY_TONE[g]}>{t(`next-policy-${g}`)}</Level>
+                }
               >
-                <Collapsible.Trigger asChild>
-                  <Box
-                    as="button"
-                    w="full"
-                    textAlign="start"
-                    px="l"
-                    py="m"
-                    borderBottomWidth="1px"
-                    borderColor="border.overlay"
-                    _hover={{ bg: "background.neutral" }}
-                    _focusVisible={FOCUS_RING}
-                  >
-                    <HStack
-                      justifyContent="space-between"
-                      gap="m"
-                      flexWrap="wrap"
-                    >
-                      <VStack
-                        alignItems="flex-start"
-                        gap="xs"
-                        flex="1"
-                        minW="240px"
-                      >
-                        <LabelLarge color="content.primary">
-                          {pick(a.name, lng)}
-                        </LabelLarge>
-                        <Caption color="content.tertiary">
-                          {t("policy-evidence-count", {
-                            count: a.policy.evidence.length,
-                          })}
-                        </Caption>
-                      </VStack>
-                      <Box w="200px">
-                        <MeedMeter
-                          value={a.policy.score / 100}
-                          tone={GRADE_TONE[g]}
-                          valueText={a.policy.score.toFixed(1)}
-                        />
-                      </Box>
-                      <MeedStatusTag tone={GRADE_TONE[g]}>
-                        {t(`policy-grade-${g}`)}
-                      </MeedStatusTag>
-                      <Icon
-                        as={isOpen ? LuChevronUp : LuChevronDown}
-                        boxSize="16px"
-                        color="content.tertiary"
-                      />
-                    </HStack>
-                  </Box>
-                </Collapsible.Trigger>
-                <Collapsible.Content>
-                  <Box
-                    px="l"
-                    py="m"
-                    bg="background.neutral"
-                    borderBottomWidth="1px"
-                    borderColor="border.overlay"
-                  >
-                    {a.policy.evidence.length === 0 ? (
-                      <BodySmall color="content.secondary">
-                        {t("policy-no-evidence")}
+                <VStack alignItems="stretch" gap="l">
+                  {a.policy.evidence.length === 0 ? (
+                    <BodyMedium color="content.secondary">
+                      {t("policy-no-evidence")}
+                    </BodyMedium>
+                  ) : (
+                    <>
+                      <Overline color="content.tertiary">
+                        {t("next-policy-evidence")}
+                      </Overline>
+                      {a.policy.evidence.map((e, i) => (
+                        <VStack
+                          key={`${e.document}-${e.page}-${i}`}
+                          alignItems="stretch"
+                          gap="xs"
+                          pb="m"
+                          borderBottomWidth={
+                            i < a.policy.evidence.length - 1 ? "1px" : "0"
+                          }
+                          borderColor="border.overlay"
+                        >
+                          <HStack
+                            justifyContent="space-between"
+                            gap="m"
+                            flexWrap="wrap"
+                          >
+                            <BodyMedium
+                              color="content.primary"
+                              fontWeight="semibold"
+                            >
+                              {e.document} ·{" "}
+                              {t("policy-page-short", { page: e.page })}
+                            </BodyMedium>
+                            <Level tone={MATCH_TONE[e.match]}>
+                              {t(`next-match-${e.match}`)}
+                            </Level>
+                          </HStack>
+                          <BodySmall color="content.tertiary">
+                            {t(`tier-${e.documentTier}`)} ·{" "}
+                            {t(`record-type-${e.recordType}`)} ·{" "}
+                            {t(`strength-${e.strength}`)} ·{" "}
+                            {t(e.explicit ? "explicit" : "inferred")} ·{" "}
+                            {t(`confidence-${e.confidence}`)}
+                          </BodySmall>
+                          <BodyMedium color="content.primary" lang="pt-BR">
+                            {e.pt}
+                          </BodyMedium>
+                          {/* The English aid helps non-Portuguese reviewers only. */}
+                          {lng !== "pt" && (
+                            <BodySmall color="content.secondary">
+                              {t("policy-en-aid")}: {e.en}
+                            </BodySmall>
+                          )}
+                        </VStack>
+                      ))}
+                      <BodySmall color="content.tertiary">
+                        {t("policy-pt-authoritative")}
                       </BodySmall>
-                    ) : (
-                      <Table.Root size="md">
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.ColumnHeader>
-                              {t("policy-col-document")}
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader w="60px">
-                              {t("policy-col-page")}
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader>
-                              {t("policy-col-match")}
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader>
-                              {t("policy-col-text")}
-                            </Table.ColumnHeader>
-                          </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                          {a.policy.evidence.map((e, i) => (
-                            <Table.Row key={i}>
-                              <Table.Cell>
-                                <LabelMedium color="content.primary">
-                                  {e.document}
-                                </LabelMedium>
-                                <Caption color="content.tertiary">
-                                  {t(`tier-${e.documentTier}`)} · {e.recordType}
-                                </Caption>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <BodySmall color="content.secondary">
-                                  {t("policy-page-short", { page: e.page })}
-                                </BodySmall>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <VStack alignItems="flex-start" gap="xs">
-                                  <MeedStatusTag
-                                    tone={
-                                      e.match === "direct"
-                                        ? "positive"
-                                        : e.match === "partial"
-                                          ? "warning"
-                                          : "neutral"
-                                    }
-                                  >
-                                    {t(`match-${e.match}`)}
-                                  </MeedStatusTag>
-                                  <Caption color="content.tertiary">
-                                    {t(`strength-${e.strength}`)} ·{" "}
-                                    {t(e.explicit ? "explicit" : "inferred")} ·{" "}
-                                    {t(`confidence-${e.confidence}`)}
-                                  </Caption>
-                                </VStack>
-                              </Table.Cell>
-                              <Table.Cell>
-                                <BodyMedium
-                                  color="content.primary"
-                                  fontSize="body.sm"
-                                  lang="pt-BR"
-                                >
-                                  {e.pt}
-                                </BodyMedium>
-                                <BodySmall color="content.tertiary" mt="xs">
-                                  {t("policy-en-aid")}: {e.en}
-                                </BodySmall>
-                              </Table.Cell>
-                            </Table.Row>
-                          ))}
-                        </Table.Body>
-                      </Table.Root>
-                    )}
+                    </>
+                  )}
+                  <Box>
+                    <TextLink
+                      arrow={false}
+                      onClick={() =>
+                        setCalcOpen(calcOpen === a.id ? null : a.id)
+                      }
+                    >
+                      {calcOpen === a.id
+                        ? t("next-drawer-method-hide")
+                        : t("next-drawer-method-show")}
+                    </TextLink>
                   </Box>
-                </Collapsible.Content>
-              </Collapsible.Root>
+                  {calcOpen === a.id && (
+                    <VStack alignItems="stretch" gap="xs">
+                      <BodyMedium color="content.primary">
+                        {t("next-policy-score", {
+                          value: new Intl.NumberFormat(
+                            lng === "pt" ? "pt-BR" : "en",
+                            {
+                              maximumFractionDigits: 1,
+                            },
+                          ).format(a.policy.score),
+                        })}
+                      </BodyMedium>
+                      <BodySmall color="content.secondary">
+                        {t("policy-formula-note")}
+                      </BodySmall>
+                      <BodySmall color="content.secondary">
+                        {t("policy-grades-note")}
+                      </BodySmall>
+                    </VStack>
+                  )}
+                </VStack>
+              </ExpandableRow>
             );
           })}
-        </VStack>
-      </Card.Root>
-      <BodySmall color="content.tertiary">{t("policy-formula-note")}</BodySmall>
+        </RowList>
+      </VStack>
     </DemoShell>
   );
 }

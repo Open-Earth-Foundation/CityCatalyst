@@ -51,6 +51,11 @@ class ConceptNoteRun(Base):
         nullable=True,
         comment="External funding-opportunity identifier validated against managed CNB reference data",
     )
+    custom_template: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONBCompat(),
+        nullable=True,
+        comment="User-defined application template used instead of a funder programme",
+    )
     status: Mapped[str] = mapped_column(
         String(64),
         nullable=False,

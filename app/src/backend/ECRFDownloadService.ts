@@ -200,9 +200,12 @@ export default class ECRFDownloadService {
 
             // build up the justification string for each row
             if (targetIdentifier === "notation-key") {
-              justificationString +=
-                (justificationString ? `, ` : "") +
+              const explanation =
                 updatedDataDictionary[referenceNoIdentifier]?.["explanation"];
+              if (explanation) {
+                justificationString +=
+                  (justificationString ? `, ` : "") + explanation;
+              }
             }
             // build up the totals for each sector scope combo
             if (
@@ -223,7 +226,18 @@ export default class ECRFDownloadService {
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }
-          cell.value = replacementValue?.toString() ?? "";
+          // Inventory co2eq is stored in kg; eCRF_2 expects tCO2e.
+          if (
+            (targetIdentifier === "total" ||
+              targetIdentifier === "full-total") &&
+            replacementValue != null &&
+            replacementValue !== ""
+          ) {
+            const kg = this.toNullableBigInt(replacementValue) ?? 0n;
+            cell.value = Number(kg) / 1000;
+          } else {
+            cell.value = replacementValue?.toString() ?? "";
+          }
         }
       });
     });
@@ -249,34 +263,41 @@ export default class ECRFDownloadService {
 
     const visitedScopes = {};
 
-    worksheet?.eachRow((row, rowNumber) => {
-      // maintain the styling
-      row.eachCell((cell) => {
-        cell.style = { ...cell.style };
-      });
+    // Walk bottom → top so inserting extra activity rows does not shift
+    // unprocessed template GPC refs (which left III.4.x etc. as NE).
+    if (worksheet) {
+      for (let rowNumber = worksheet.rowCount; rowNumber >= 2; rowNumber--) {
+        const row = worksheet.getRow(rowNumber);
+        row.eachCell((cell) => {
+          cell.style = { ...cell.style };
+        });
 
-      if (rowNumber === 1) return; // Skip the first row (contains the header)
+        const referenceNumberCell = row.getCell(2);
+        const referenceNumberValue = referenceNumberCell.value;
 
-      const referenceNumberCell = row.getCell(2);
-      const referenceNumberValue = referenceNumberCell.value;
-
-      if (referenceNumberCell && typeof referenceNumberValue === "string") {
-        const dataSection = dataDictionary[referenceNumberValue];
-        // if the activityValues > 1, then we need to add rows
-        if (dataSection) {
-          this.replacePlaceholdersInRow(
-            row,
-            dataSection,
-            rowNumber,
-            visitedScopes,
-            worksheet,
-          );
+        if (referenceNumberCell && typeof referenceNumberValue === "string") {
+          const dataSection = dataDictionary[referenceNumberValue];
+          if (dataSection) {
+            this.replacePlaceholdersInRow(
+              row,
+              dataSection,
+              rowNumber,
+              visitedScopes,
+              worksheet,
+            );
+          } else {
+            this.markRowAsNotEstimated(row);
+          }
         } else {
           this.markRowAsNotEstimated(row);
         }
       }
-      this.markRowAsNotEstimated(row);
-    });
+
+      // Clear any {{…}} still left on non-data rows.
+      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+        this.markRowAsNotEstimated(worksheet.getRow(rowNumber));
+      }
+    }
   }
 
   private static groupFugitiveEmissionData(
@@ -325,13 +346,15 @@ export default class ECRFDownloadService {
     const dataDictionary: Record<string, Template2Entry> = {};
 
     output.inventoryValues.map((inventoryValue) => {
+      const total =
+        inventoryValue.unavailableReason
+          ? 0n
+          : (this.toNullableBigInt(inventoryValue.co2eq) ?? 0n);
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
         "notation-key":
           toShort(inventoryValue.unavailableReason) ?? undefined,
         explanation: inventoryValue.unavailableExplanation ?? undefined,
-        total: inventoryValue.unavailableReason
-          ? 0n
-          : BigInt(inventoryValue.co2eq ?? 0),
+        total,
       };
     });
 
@@ -383,18 +406,13 @@ export default class ECRFDownloadService {
         );
         const activityKey = methodology?.activityTypeField as string;
 
-        dataDictionary[gpcRefNo as string] = {
-          // InventoryValue fields
-          inventory_year: inventoryYear,
-          gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key:
-            toShort(inventoryValue.unavailableReason) ?? undefined,
-          input_methodology: t(inventoryValue.inputMethodology ?? ""),
-          activityValues: activityValues.map((activityValue) => {
+        const mappedActivities = activityValues.map((activityValue) => {
             const activityTitleKey =
               activityValue.metadata?.activityTitle?.toString() ?? "";
             const dataQuality = activityValue.metadata?.dataQuality;
-            const dataSource = activityValue.activityData?.["data-source"];
+            const dataSource =
+              activityValue.activityData?.["data-source"] ??
+              activityValue.metadata?.sourceExplanation;
             const activityAmount =
               activityValue.activityData?.[activityTitleKey];
             const activityUnit = t(
@@ -403,36 +421,53 @@ export default class ECRFDownloadService {
                   "",
               ),
             );
-            let emission_co2 = null;
-            let emission_ch4 = null;
-            let emission_n2o = null;
-            let ghg_co2 = null;
-            let ghg_ch4 = null;
-            let ghg_n2o = null;
+            // eCRF imports often have empty gasValues on the ActivityValue
+            // (gases live on InventoryValue / activityData). Treat missing
+            // gases and missing emissions factors as null — never BigInt(undefined).
+            const gasValues = activityValue.gasValues ?? [];
+            const co2_gas = gasValues.find((g) => g.gas === "CO2");
+            const ch4_gas = gasValues.find((g) => g.gas === "CH4");
+            const n2o_gas = gasValues.find((g) => g.gas === "N2O");
 
-            if (activityValue.gasValues) {
-              const co2_gas = activityValue.gasValues.find(
-                (g) => g.gas === "CO2",
-              );
-              const ch4_gas = activityValue.gasValues.find(
-                (g) => g.gas === "CH4",
-              );
-              const n2o_gas = activityValue.gasValues.find(
-                (g) => g.gas === "N2O",
-              );
+            const emission_co2 =
+              co2_gas?.emissionsFactor?.emissionsPerActivity ?? null;
+            const emission_ch4 =
+              ch4_gas?.emissionsFactor?.emissionsPerActivity ?? null;
+            const emission_n2o =
+              n2o_gas?.emissionsFactor?.emissionsPerActivity ?? null;
 
-              emission_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
-              emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
-              emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
+            let ghg_co2_kg = this.toNullableBigInt(co2_gas?.gasAmount);
+            let ghg_ch4_kg = this.toNullableBigInt(ch4_gas?.gasAmount);
+            let ghg_n2o_kg = this.toNullableBigInt(n2o_gas?.gasAmount);
 
-              ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
-              ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
-              ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
+            // Fallback: eCRF import stores tonnes on activityData without
+            // attaching GasValue rows to the activity.
+            const activityData = activityValue.activityData ?? {};
+            if (ghg_co2_kg == null) {
+              ghg_co2_kg = this.tonnesFieldToKg(activityData.co2_amount);
             }
+            if (ghg_ch4_kg == null) {
+              ghg_ch4_kg = this.tonnesFieldToKg(activityData.ch4_amount);
+            }
+            if (ghg_n2o_kg == null) {
+              ghg_n2o_kg = this.tonnesFieldToKg(activityData.n2o_amount);
+            }
+
+            // Template columns are "GHGs (metric tonnes CO2e)" — convert kg → t.
             return {
-              ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
-              ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
-              ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
+              ghg_co2:
+                ghg_co2_kg != null
+                  ? bigIntToDecimal(ghg_co2_kg).div(1000).toNumber()
+                  : null,
+              // AR5 GWP factors (same as pre-fix export behaviour)
+              ghg_ch4:
+                ghg_ch4_kg != null
+                  ? bigIntToDecimal(ghg_ch4_kg * 28n).div(1000).toNumber()
+                  : null,
+              ghg_n2o:
+                ghg_n2o_kg != null
+                  ? bigIntToDecimal(ghg_n2o_kg * 265n).div(1000).toNumber()
+                  : null,
               activity_type: t(
                 String(activityValue.activityData?.[activityKey] ?? ""),
               ),
@@ -453,7 +488,37 @@ export default class ECRFDownloadService {
                 ?.div(new Decimal("1e3"))
                 .toNumber(),
             };
-          }),
+          });
+
+        // No activity rows: still emit inventory total so sheet 3 is not NE-only.
+        const activityRows =
+          mappedActivities.length > 0
+            ? mappedActivities
+            : [
+                {
+                  activity_type: null,
+                  emission_factor_unit: null,
+                  emission_co2: null,
+                  emission_ch4: null,
+                  emission_n2o: null,
+                  activity_amount: null,
+                  activity_unit: null,
+                  activity_data_quality: null,
+                  activity_data_source: null,
+                  methodology: t(methodologyDescription ?? ""),
+                  total_co2e: toDecimal(inventoryValue.co2eq as bigint)
+                    ?.div(new Decimal("1e3"))
+                    .toNumber(),
+                },
+              ];
+
+        dataDictionary[gpcRefNo as string] = {
+          inventory_year: inventoryYear,
+          gpc_reference_number: inventoryValue.gpcReferenceNumber,
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
+          input_methodology: t(inventoryValue.inputMethodology ?? ""),
+          activityValues: activityRows,
         };
       }
     });
@@ -471,6 +536,9 @@ export default class ECRFDownloadService {
     const referenceValue = referenceCell.value;
 
     if (typeof referenceValue == "string" && referenceValue in visitedScopes) {
+      // Extra template rows for the same GPC ref (e.g. I.4.4 CHP/heat) after
+      // multi-activity insert — clear placeholders rather than leave {{…}}.
+      this.markRowAsNotEstimated(row);
       return;
     }
 
@@ -541,6 +609,26 @@ export default class ECRFDownloadService {
         }
       }
     });
+  }
+
+  /** Safe BigInt for optional gas amounts — never throw on null/undefined. */
+  private static toNullableBigInt(value: unknown): bigint | null {
+    if (value == null || value === "") return null;
+    try {
+      return BigInt(value as bigint | number | string);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Convert activityData tonne fields (eCRF import) to kg bigint. */
+  private static tonnesFieldToKg(value: unknown): bigint | null {
+    if (typeof value !== "number" || Number.isNaN(value)) return null;
+    try {
+      return BigInt(new Decimal(value).mul(1000).trunc().toString());
+    } catch {
+      return null;
+    }
   }
 
   private static cloneRowAndInsertInWorkSheet(

@@ -1,5 +1,6 @@
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { loadConceptNoteRunCity } from "@/backend/ConceptNoteUploadService";
 import {
@@ -8,10 +9,15 @@ import {
 } from "@/backend/concept-notes";
 import type { AppSession } from "@/lib/auth";
 
+const publicErrorSchema = z.object({
+  code: z.string(),
+  message: z.string().optional().catch(undefined),
+});
+
 /**
  * Forward a run-scoped request to Climate Advisor after checking that the
- * caller can access the run's city. Keeps the upstream status and JSON body so
- * the browser can map structured error codes.
+ * caller can access the run's city. Error responses expose only the public
+ * code/message contract, excluding internal URLs and exception metadata.
  */
 export async function proxyConceptNoteRunRequest(
   req: Request,
@@ -19,11 +25,15 @@ export async function proxyConceptNoteRunRequest(
   {
     runId,
     path,
+    method = "GET",
     body,
+    searchParams,
   }: {
     runId: string;
     path: string;
-    body: Record<string, unknown>;
+    method?: "GET" | "POST" | "DELETE";
+    body?: Record<string, unknown>;
+    searchParams?: Record<string, string>;
   },
 ): Promise<NextResponse> {
   if (!session?.user?.id) {
@@ -36,12 +46,23 @@ export async function proxyConceptNoteRunRequest(
     cityId,
     session,
     path,
-    method: "POST",
+    method,
     body,
     requestId,
-    searchParams: { user_id: userId },
+    searchParams: { ...searchParams, user_id: userId },
   });
-  return NextResponse.json(await readConceptNoteApiPayload(response), {
+  if (response.status === 204) {
+    return new NextResponse(null, { status: 204 });
+  }
+  const payload = await readConceptNoteApiPayload(response);
+  if (!response.ok) {
+    const error = z.object({ detail: publicErrorSchema }).safeParse(payload);
+    return NextResponse.json(
+      { detail: error.success ? error.data.detail : "" },
+      { status: response.status },
+    );
+  }
+  return NextResponse.json(payload, {
     status: response.status,
   });
 }

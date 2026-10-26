@@ -1,10 +1,18 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { NextRequest, NextResponse } from "next/server";
 import type { NextRequestWithAuth } from "next-auth/middleware";
 
 // `after()` needs a real Next.js request-context store, which doesn't exist
 // under Jest — run the callback immediately instead so trackServerPageView
-// calls are observable synchronously.
+// calls are observable synchronously. NextRequest/NextResponse are captured
+// from the real module before mocking so the test's own request-building
+// and assertions keep using the genuine classes.
+const { NextRequest, NextResponse } = await import("next/server");
+
+jest.unstable_mockModule("next/server", () => ({
+  NextRequest,
+  NextResponse,
+  after: jest.fn((cb: () => void) => cb()),
+}));
 jest.mock("next/server", () => {
   const actual = jest.requireActual("next/server") as typeof import("next/server");
   return {
@@ -13,22 +21,33 @@ jest.mock("next/server", () => {
   };
 });
 
+jest.unstable_mockModule("next-auth/middleware", () => ({
+  withAuth: jest.fn(),
+}));
 jest.mock("next-auth/middleware", () => ({
   withAuth: jest.fn(),
 }));
 
+jest.unstable_mockModule("@/util/legacy-inventory-middleware", () => ({
+  maybeRedirectLegacyInventoryUrl: jest.fn(),
+}));
 jest.mock("@/util/legacy-inventory-middleware", () => ({
   maybeRedirectLegacyInventoryUrl: jest.fn(),
 }));
 
+jest.unstable_mockModule("@/lib/analytics-server", () => ({
+  trackServerPageView: jest.fn(),
+}));
 jest.mock("@/lib/analytics-server", () => ({
   trackServerPageView: jest.fn(),
 }));
 
-import { withAuth } from "next-auth/middleware";
-import { maybeRedirectLegacyInventoryUrl } from "@/util/legacy-inventory-middleware";
-import { trackServerPageView } from "@/lib/analytics-server";
-import { proxy } from "@/proxy";
+const { withAuth } = await import("next-auth/middleware");
+const { maybeRedirectLegacyInventoryUrl } = await import(
+  "@/util/legacy-inventory-middleware"
+);
+const { trackServerPageView } = await import("@/lib/analytics-server");
+const { proxy } = await import("@/proxy");
 
 // `withAuth` is overloaded in a way TS can't express via a single mocked
 // signature, so cast to a plain async-function mock for setting its resolved value.

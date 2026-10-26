@@ -7,18 +7,24 @@ import {
   afterEach,
 } from "@jest/globals";
 
+jest.unstable_mockModule("@/util/feature-flags", () => ({
+  FeatureFlags: { ANALYTICS_ENABLED: "ANALYTICS_ENABLED" },
+  hasServerFeatureFlag: jest.fn(),
+}));
 jest.mock("@/util/feature-flags", () => ({
   FeatureFlags: { ANALYTICS_ENABLED: "ANALYTICS_ENABLED" },
   hasServerFeatureFlag: jest.fn(),
 }));
-
+jest.unstable_mockModule("@/lib/runtime-env", () => ({
+  env: jest.fn(),
+}));
 jest.mock("@/lib/runtime-env", () => ({
   env: jest.fn(),
 }));
 
-import { hasServerFeatureFlag } from "@/util/feature-flags";
-import { env } from "@/lib/runtime-env";
-import { trackServerPageView } from "@/lib/analytics-server";
+const { hasServerFeatureFlag } = await import("@/util/feature-flags");
+const { env } = await import("@/lib/runtime-env");
+const { trackServerPageView } = await import("@/lib/analytics-server");
 
 const mockedHasServerFeatureFlag = hasServerFeatureFlag as jest.MockedFunction<
   typeof hasServerFeatureFlag

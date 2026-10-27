@@ -138,4 +138,19 @@ describe("proxy middleware server-side page-view tracking", () => {
       subjectKey: undefined,
     });
   });
+
+  it("does not track a request withAuth redirects (e.g. to login)", async () => {
+    mockedWithAuth.mockResolvedValue(
+      NextResponse.redirect(new URL("http://localhost:3000/en/auth/login")),
+    );
+
+    const req = buildRequest({
+      pathname: "/en/cities/city-1",
+      cookie: "cc_analytics_consent=true; cc_consent_subject=subject-123",
+    });
+
+    await proxy(req);
+
+    expect(mockedTrackServerPageView).not.toHaveBeenCalled();
+  });
 });

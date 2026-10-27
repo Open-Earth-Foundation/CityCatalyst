@@ -65,8 +65,14 @@ export function initializeAnalytics() {
       api_host: posthogHost || "https://eu.i.posthog.com",
       person_profiles: "identified_only",
       autocapture: false, // Disable automatic event capture to prevent duplicates
+      capture_pageview: false, // trackServerPageView in proxy.ts covers pageviews now
       loaded: (posthog) => {
         if (process.env.NODE_ENV === "development") posthog.debug();
+
+        // Align the client's distinct_id with the consent-subject cookie used by
+        // trackServerPageView, so server- and client-captured events land on the
+        // same person. identifyUser() on login then aliases this id to the real one.
+        posthog.identify(consentSubjectKey());
 
         // Check existing consent and apply it
         const consent = getAnalyticsConsent();

@@ -130,4 +130,20 @@ describe("trackServerPageView", () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("does not capture when running under Playwright", () => {
+    process.env.PLAYWRIGHT_TEST = "1";
+
+    try {
+      trackServerPageView({
+        pathname: "/en/cities/city-1",
+        consentCookie: "true",
+        subjectKey: "subject-123",
+      });
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      delete process.env.PLAYWRIGHT_TEST;
+    }
+  });
 });

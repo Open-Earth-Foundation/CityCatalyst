@@ -20,6 +20,14 @@ export function trackServerPageView({
     return;
   }
 
+  // Edge-safe counterpart to the client's 127.0.0.1 check in analytics.ts: proxy.ts
+  // runs against a production build in Playwright, so build-time NODE_ENV is baked
+  // in as "production" and the check above never fires. PLAYWRIGHT_TEST is read at
+  // request time instead, matching the env var playwright.config.ts's webServer sets.
+  if (process.env.PLAYWRIGHT_TEST === "1") {
+    return;
+  }
+
   if (!hasServerFeatureFlag(FeatureFlags.ANALYTICS_ENABLED)) {
     return;
   }

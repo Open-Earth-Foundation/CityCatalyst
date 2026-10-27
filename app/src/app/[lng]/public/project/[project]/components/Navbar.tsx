@@ -7,14 +7,16 @@ import { useTranslation } from "@/i18n/client";
 const ProjectDashboardNavbar = ({
   lng,
   project,
+  logoUrl,
 }: {
   lng: string;
   project: string;
+  logoUrl?: string | null;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
 
   return (
-    <NavigationBar lng={lng} isPublic>
+    <NavigationBar lng={lng} isPublic publicLogoUrl={logoUrl}>
       <>
         <Link
           href={`/${lng}/public/project/${project}`}

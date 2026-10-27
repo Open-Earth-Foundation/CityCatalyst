@@ -71,6 +71,7 @@ export function NavigationBar({
   isPublic = false,
   showMenu = false,
   isAuth = false,
+  publicLogoUrl,
   children,
   restrictAccess,
 }: {
@@ -79,6 +80,7 @@ export function NavigationBar({
   isPublic?: boolean;
   showMenu?: boolean;
   isAuth?: boolean;
+  publicLogoUrl?: string | null;
   children?: React.ReactNode;
   restrictAccess?: boolean;
   isOrgOwner?: boolean;
@@ -88,7 +90,10 @@ export function NavigationBar({
   const { t } = useTranslation(activeLng, "navigation");
   const { organization, setOrganization, clearOrganization } =
     useOrganizationContext();
-  const logoUrl = organization?.logoUrl;
+  // Public pages have no logged-in org context - use the project's own
+  // server-fetched logo instead of whatever this browser's authenticated
+  // session last left in local storage (a different org entirely).
+  const logoUrl = isPublic ? publicLogoUrl : organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
   // Use custom hook to extract route params - more reliable for route changes
   const { cityId: cityIdFromRoute, pathname } = useRouteParams();

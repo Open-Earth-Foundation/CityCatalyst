@@ -3,11 +3,16 @@ import { Box, Container, Text, Heading, Flex, Strong } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
 import Image from "next/image";
+import { PublicProjectService } from "@/backend/PublicProjectService";
 
 const Collaborators = async (props: {
   params: Promise<{ project: string; lng: string }>;
 }) => {
   const { lng, project } = await props.params;
+
+  const shell = await PublicProjectService.getProjectShell(project);
+  const logoUrl =
+    shell.status === "ok" ? shell.organization?.logoUrl : undefined;
 
   const footerProps = {
     copyright: "© 2025 CHAMP Brazil Cities Initiative",
@@ -19,7 +24,7 @@ const Collaborators = async (props: {
   };
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
-      <NavigationBar lng={lng} project={project} />
+      <NavigationBar lng={lng} project={project} logoUrl={logoUrl} />
       <Box as="main" flexGrow={1}>
         {/* Example conversion for just one section, all others follow this pattern */}
         <Box py={16} px={{ base: 6, md: 10, lg: 16 }} w="full" bg="white">

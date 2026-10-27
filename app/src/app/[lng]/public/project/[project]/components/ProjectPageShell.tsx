@@ -83,6 +83,7 @@ function LinkCard({
 export function ProjectPageShell({
   lng,
   project,
+  organization,
   cities,
   summary,
   boundaries,
@@ -124,7 +125,7 @@ export function ProjectPageShell({
 
   return (
     <VStack minH="100vh" gap={0} flexDirection="column">
-      <Navbar lng={lng} project={project} />
+      <Navbar lng={lng} project={project} logoUrl={organization?.logoUrl} />
       <Box flex={1} flexGrow={1} w="100%">
         <Hero />
         <PartnerLogos partners={partners} />

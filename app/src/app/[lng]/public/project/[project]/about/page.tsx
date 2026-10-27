@@ -12,11 +12,16 @@ import {
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
+import { PublicProjectService } from "@/backend/PublicProjectService";
 
 const About = async (props: {
   params: Promise<{ project: string; lng: string }>;
 }) => {
   const { project, lng } = await props.params;
+
+  const shell = await PublicProjectService.getProjectShell(project);
+  const logoUrl =
+    shell.status === "ok" ? shell.organization?.logoUrl : undefined;
 
   const footerProps = {
     copyright: "© 2025 CHAMP Brazil Cities Initiative",
@@ -29,7 +34,7 @@ const About = async (props: {
 
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
-      <NavigationBar lng={lng} project={project} />
+      <NavigationBar lng={lng} project={project} logoUrl={logoUrl} />
       <Box as="main" flexGrow={1}>
         {/* Project Overview Section */}
         <Box py={16} px={{ base: 4, md: 8 }}>

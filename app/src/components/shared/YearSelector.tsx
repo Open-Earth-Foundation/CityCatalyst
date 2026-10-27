@@ -1,5 +1,12 @@
 "use client";
-import { Card, Box, Text, Heading, SimpleGrid } from "@chakra-ui/react";
+import {
+  Card,
+  Box,
+  Text,
+  Heading,
+  SimpleGrid,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { de, enUS, es, fr, it, pt } from "date-fns/locale";
 import { format, Locale } from "date-fns";
 import React, { useState } from "react";
@@ -147,6 +154,20 @@ export function YearSelector({
 }: YearSelectorProps) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
+  const selectedInventory =
+    inventories.find((item) => item.inventoryId === currentInventoryId) ??
+    inventories[0];
+  const visibleCount =
+    useBreakpointValue({ base: 1, md: 2, lg: 3, xl: 4 }) ?? 1;
+  const visibleInventories =
+    visibleCount === 1
+      ? selectedInventory
+        ? [selectedInventory]
+        : []
+      : inventories.slice(0, visibleCount);
+  const otherInventories = inventories.filter(
+    (item) => !visibleInventories.includes(item),
+  );
 
   return (
     <Box
@@ -167,12 +188,8 @@ export function YearSelector({
       >
         {t("inventories-by-year")}
       </Heading>
-      <SimpleGrid
-        templateColumns="repeat(auto-fill, minmax(min(100%, 242.5px), 1fr))"
-        gap={4}
-        py={4}
-      >
-        {inventories.slice(0, 4).map((yearData) => (
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={4} py={4}>
+        {visibleInventories.map((yearData) => (
           <YearCard
             key={yearData.inventoryId}
             inventoryId={yearData.inventoryId}
@@ -185,63 +202,58 @@ export function YearSelector({
           />
         ))}
       </SimpleGrid>
-      {
-        /*if more than 4*/
-        inventories.length > 4 && (
-          <Box w="full" alignItems="center" justifyContent="center">
-            <AccordionRoot border="none" collapsible w="full">
-              <AccordionItem
-                value=""
-                backgroundColor="transparent"
-                padding={0}
-                border="none"
+      {otherInventories.length > 0 && (
+        <Box w="full" alignItems="center" justifyContent="center">
+          <AccordionRoot border="none" collapsible w="full">
+            <AccordionItem
+              value=""
+              backgroundColor="transparent"
+              padding={0}
+              border="none"
+            >
+              <AccordionItemContent padding={0}>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={4}>
+                  {otherInventories.map((yearData) => (
+                    <YearCard
+                      key={yearData.inventoryId}
+                      inventoryId={yearData.inventoryId}
+                      isActive={currentInventoryId === yearData.inventoryId}
+                      year={yearData.year}
+                      lastUpdate={yearData.lastUpdate}
+                      lng={lng}
+                      t={t}
+                      onYearSelect={onYearSelect}
+                    />
+                  ))}
+                </SimpleGrid>
+              </AccordionItemContent>
+              <AccordionItemTrigger
+                onClick={toggleAccordion}
+                mt={isAccordionOpen ? 4 : 0}
+                display="flex"
+                justifyContent="center"
+                background="none"
+                color="content.tertiary"
+                gap={2}
               >
-                <AccordionItemContent padding={0}>
-                  <SimpleGrid
-                    templateColumns="repeat(auto-fill, minmax(min(100%, 242.5px), 1fr))"
-                    gap={4}
-                  >
-                    {inventories.slice(4).map((yearData) => (
-                      <YearCard
-                        key={yearData.inventoryId}
-                        inventoryId={yearData.inventoryId}
-                        isActive={currentInventoryId === yearData.inventoryId}
-                        year={yearData.year}
-                        lastUpdate={yearData.lastUpdate}
-                        lng={lng}
-                        t={t}
-                        onYearSelect={onYearSelect}
-                      />
-                    ))}
-                  </SimpleGrid>
-                </AccordionItemContent>
-                <AccordionItemTrigger
-                  onClick={toggleAccordion}
-                  display="flex"
-                  justifyContent="center"
-                  background="none"
-                  color="content.tertiary"
-                  gap={2}
+                <Text
+                  fontFamily="heading"
+                  fontWeight="semibold"
+                  fontSize="button.md"
+                  letterSpacing="wider"
+                  fontStyle="normal"
+                  _hover={{
+                    textDecoration: "underline",
+                    color: "content.alternative",
+                  }}
                 >
-                  <Text
-                    fontFamily="heading"
-                    fontWeight="semibold"
-                    fontSize="button.md"
-                    letterSpacing="wider"
-                    fontStyle="normal"
-                    _hover={{
-                      textDecoration: "underline",
-                      color: "content.alternative",
-                    }}
-                  >
-                    {isAccordionOpen ? t("view-less") : t("view-more")}
-                  </Text>
-                </AccordionItemTrigger>
-              </AccordionItem>
-            </AccordionRoot>
-          </Box>
-        )
-      }
+                  {isAccordionOpen ? t("view-less") : t("view-more")}
+                </Text>
+              </AccordionItemTrigger>
+            </AccordionItem>
+          </AccordionRoot>
+        </Box>
+      )}
     </Box>
   );
 }

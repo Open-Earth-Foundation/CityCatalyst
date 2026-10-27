@@ -171,10 +171,16 @@ Needs a throwaway Postgres 16 migrated and seeded (the sequelize config has no p
 4. Run the script (the test is skipped without `INGESTION_ACCURACY_RUN=1`):
 
    ```bash
-   INGESTION_ACCURACY_RUN=1 INGESTION_ACCURACY_CONFIG=/path/to/config.json INGESTION_ACCURACY_OUT=/tmp/ingestion-accuracy \
+   INGESTION_ACCURACY_RUN=1 INGESTION_ACCURACY_CONFIG=/path/to/config.json INGESTION_ACCURACY_OUT=../docs/ingestion-accuracy-runs \
    NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test npx jest tests/ingestion-accuracy/measure-ghgi-import.jest.ts --runInBand --coverage=false
    ```
 
-5. Read `results.json`: per run, the OCR stage, extracted rows, stored groups, the full score object (recall, precision, value and classification accuracy, notation keys, distractors, missing and unexpected rows) and whether the total was identical across runs. Test cities, inventories and bucket objects are removed at the end.
+5. Every run writes a folder `docs/ingestion-accuracy-runs/<date>-<time>-<sha>/` and appends a line to `docs/ingestion-accuracy-runs/INDEX.md`, so anyone can read the outcome from the PR without running anything:
+   - `report.md`: summary, one row per case (OCR, recall, precision, value and classification accuracy, notation keys, total vs key, stability, time) and the change in points vs the previous run folder.
+   - `results.json`: the full output.
+   - `cases/<id>/answer-key.json`, `extracted-values.json` and, when the config has `"publishInputs": true`, `original.<ext>`. Leave `publishInputs` off for documents that must not be published.
+
+   Run folders stay on the PR branch for review and are removed before merging into `develop`.
+6. Read `results.json`: per run, the OCR stage, extracted rows, stored groups, the full score object (recall, precision, value and classification accuracy, notation keys, distractors, missing and unexpected rows) and whether the total was identical across runs. Test cities, inventories and bucket objects are removed at the end.
 
 `score.ts` has its own unit tests (`score.jest.ts`) that run without a database. Do not commit the PDFs, the workbook or a config with real paths.

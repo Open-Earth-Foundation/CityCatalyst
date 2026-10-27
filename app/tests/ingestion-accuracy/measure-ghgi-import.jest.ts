@@ -20,7 +20,7 @@
  *
  *   INGESTION_ACCURACY_RUN=1 \
  *   INGESTION_ACCURACY_CONFIG=tests/ingestion-accuracy/config.example.json \
- *   INGESTION_ACCURACY_OUT=/tmp/ingestion-accuracy \
+ *   INGESTION_ACCURACY_OUT=../docs/ingestion-accuracy-runs \
  *   NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test \
  *   npx jest tests/ingestion-accuracy --runInBand --coverage=false
  */
@@ -28,7 +28,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import env from "@next/env";
 import { NextRequest } from "next/server";
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import { Auth, type AppSession } from "@/lib/auth";
@@ -39,6 +39,11 @@ import {
 } from "@/util/enums";
 import { toCanonical } from "@/util/notation-keys";
 import { Roles } from "@/util/types";
+import {
+  gitInfo,
+  writeRunArtifact,
+  type CaseResult,
+} from "./report";
 import { scoreFile, type KeyFile, type StoredValue } from "./score";
 
 const RUN = process.env.INGESTION_ACCURACY_RUN === "1";
@@ -60,6 +65,8 @@ type Config = {
   runs: number;
   /** JSON produced by export-answer-keys.ts; enables row-level scoring. */
   answerKeys?: string;
+  /** Copy the input files into the run folder (they are third-party documents). */
+  publishInputs?: boolean;
   files: FileSpec[];
 };
 
@@ -99,7 +106,8 @@ function pctDiff(actual: number, expected: number): number | null {
   let approveRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route");
   let config: Config;
   let answerKeys: AnswerKeys | null = null;
-  const outDir = process.env.INGESTION_ACCURACY_OUT ?? ".";
+  const outDir =
+    process.env.INGESTION_ACCURACY_OUT ?? "../docs/ingestion-accuracy-runs";
   const uploadedKeys: string[] = [];
   const cityIds: string[] = [];
 
@@ -431,19 +439,26 @@ function pctDiff(actual: number, expected: number): number | null {
       });
     }
 
-    writeFileSync(
-      join(outDir, "results.json"),
-      JSON.stringify(
-        {
-          measuredAt: new Date().toISOString(),
-          llmModel: process.env.LLM_MODEL,
-          ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
-          results,
-        },
-        null,
-        2,
-      ),
-    );
+    // One folder per run (report.md, results.json, per-case inputs) so the team
+    // can read the outcome from the PR without running anything.
+    const artifactDir = writeRunArtifact({
+      root: outDir,
+      summary: {
+        measuredAt: new Date().toISOString(),
+        ...gitInfo(),
+        llmModel: process.env.LLM_MODEL,
+        ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+        runsPerFile: config.runs,
+        results: results as CaseResult[],
+      },
+      inputs: config.files.map((file) => ({
+        id: file.id,
+        path: file.path,
+        key: answerKeys?.files[file.id] ?? null,
+      })),
+      publishInputs: config.publishInputs === true,
+    });
+    console.log(`Ingestion accuracy artifact: ${artifactDir}`);
     expect(results.length).toBe(config.files.length);
   }, 3_600_000);
 });

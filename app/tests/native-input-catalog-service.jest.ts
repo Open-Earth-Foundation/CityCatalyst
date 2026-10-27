@@ -99,6 +99,33 @@ describe("NativeInputCatalogService", () => {
     );
   });
 
+  it("adds a missing display name to an existing row and keeps its other labels", async () => {
+    const existing = makeCatalog({ labels: { actionId: "a1" } });
+    catalogModel.findOne.mockResolvedValue(existing);
+
+    await registerNativeInput({
+      ...registration,
+      labels: { actionId: "a1", display_name: "Solar rooftops" },
+    });
+
+    expect(existing.update).toHaveBeenCalledWith(
+      { labels: { actionId: "a1", display_name: "Solar rooftops" } },
+      { transaction: undefined },
+    );
+  });
+
+  it("does not overwrite an existing display name", async () => {
+    const existing = makeCatalog({ labels: { display_name: "Kept" } });
+    catalogModel.findOne.mockResolvedValue(existing);
+
+    await registerNativeInput({
+      ...registration,
+      labels: { display_name: "New" },
+    });
+
+    expect(existing.update).not.toHaveBeenCalled();
+  });
+
   it("creates a new active registration", async () => {
     const created = makeCatalog();
     catalogModel.findOne.mockResolvedValue(null);

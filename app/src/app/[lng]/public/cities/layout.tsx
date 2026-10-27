@@ -1,14 +1,11 @@
-"use client";
-
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
-import { use } from "react";
 
-export default function DataLayout(props: {
+export default async function DataLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = use(props.params);
+  const { lng } = await props.params;
 
   return (
     <Box

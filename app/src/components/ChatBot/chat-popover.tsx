@@ -155,7 +155,7 @@ export default function ChatPopover({
         </PopoverTrigger>
         <PopoverContent
           p={0}
-          w="533px"
+          w="min(533px, calc(100vw - 2rem))"
           maxHeight={"76vh"}
           display="flex"
           flexDirection="column"

@@ -138,12 +138,10 @@ export function ActionDrawer({
     : "neutral";
   const href = (segment: string) =>
     trackHref(lng, city.slug, "adaptation", segment);
-  // A related action outside the ranking says so, and why.
-  const unrankedLine = (other: AdaptationAction) => {
+  // Why a related action is outside the ranking, from the method's reason.
+  const unrankedWhyOf = (other: AdaptationAction) => {
     const why = reasonOf(other.id);
-    return why
-      ? t("next-unranked-line", { why: unrankedWhy(other, why, lng, t) })
-      : t("next-drawer-not-scored");
+    return why ? unrankedWhy(other, why, lng, t) : t("next-drawer-not-scored");
   };
 
   return (
@@ -319,17 +317,24 @@ export function ActionDrawer({
                                 <TitleMedium as="h3" color="content.primary">
                                   {pick(other.name, lng)}
                                 </TitleMedium>
+                                {/* Outside the ranking: said first, with why. */}
+                                {!isRanked(other.id) && (
+                                  <VStack
+                                    alignItems="flex-start"
+                                    gap="xs"
+                                    data-testid="related-unranked"
+                                  >
+                                    <Level tone="neutral">
+                                      {t("next-unranked-tag")}
+                                    </Level>
+                                    <BodySmall color="content.secondary">
+                                      {unrankedWhyOf(other)}
+                                    </BodySmall>
+                                  </VStack>
+                                )}
                                 <BodySmall color="content.secondary">
                                   {pick(rationale, lng)}
                                 </BodySmall>
-                                {!isRanked(other.id) && (
-                                  <BodySmall
-                                    color="content.tertiary"
-                                    data-testid="related-unranked"
-                                  >
-                                    {unrankedLine(other)}
-                                  </BodySmall>
-                                )}
                               </VStack>
                               <Box flexShrink={0}>
                                 <TextLink

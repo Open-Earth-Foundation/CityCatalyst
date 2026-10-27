@@ -399,7 +399,8 @@ def test_overview_instructions_extend_the_cnb_chat_prompt():
     assert "<turn_instructions>" in instructions
     assert "CONCEPT_NOTE_DRAFT_OVERVIEW_JSON" in instructions
     assert DRAFT_OVERVIEW_REQUEST in instructions
-    assert "Do not call any tool in this turn" in instructions
+    assert "`concept_note_ask_question` is optional" in instructions
+    assert "Otherwise return the overview directly" in instructions
 
 
 async def test_overview_turn_orders_context_facts_then_hidden_trigger():

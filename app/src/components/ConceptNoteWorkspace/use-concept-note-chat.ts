@@ -16,6 +16,7 @@ import {
   type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
+  readConceptNoteChoices,
 } from "./chat-utils";
 
 // The service replaces this content with its own hidden overview trigger.
@@ -142,6 +143,15 @@ export function useConceptNoteChat({
       }
     },
     onToolResult: (result) => {
+      const choices = readConceptNoteChoices(result);
+      const assistantId = assistantMessageIdRef.current;
+      if (choices && assistantId) {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId ? { ...message, choices } : message,
+          ),
+        );
+      }
       const data = result.data;
       if (
         result.action === "concept_note.edit.propose" &&
@@ -297,7 +307,12 @@ export function useConceptNoteChat({
 
   async function sendMessage(content: string): Promise<void> {
     const normalizedContent = content.trim();
-    if (!normalizedContent || !threadId || isGenerating) {
+    if (
+      !normalizedContent ||
+      !threadId ||
+      isGenerating ||
+      currentTurnRef.current
+    ) {
       return;
     }
 
@@ -322,7 +337,7 @@ export function useConceptNoteChat({
 
   // Starts the hidden first turn that summarises a finished drafting pass.
   async function requestDraftOverview(): Promise<void> {
-    if (!threadId || isGenerating) {
+    if (!threadId || isGenerating || currentTurnRef.current) {
       return;
     }
     draftOverviewTurnRef.current = true;

@@ -180,6 +180,8 @@ Needs a throwaway Postgres 16 migrated and seeded (the sequelize config has no p
    - `results.json`: the full output.
    - `cases/<id>/answer-key.json`, `extracted-values.json` and, when the config has `"publishInputs": true`, `original.<ext>`. Leave `publishInputs` off for documents that must not be published.
 
+   - Cost: every run also records LLM calls and input/output tokens (read from the product's own LLM log lines) and the OCR pages per file, and the report shows totals and a per-case column. For a dollar figure add `"prices": {"llmInputPerMTok": ..., "llmOutputPerMTok": ..., "ocrPerPage": ...}` (USD) to the config; without all three the report shows tokens and pages and "n/a" for dollars. OCR is counted once per file because its runs share the text.
+
    Run folders stay on the PR branch for review and are removed before merging into `develop`.
 6. Read `results.json`: per run, the OCR stage, extracted rows, stored groups, the full score object (recall, precision, value and classification accuracy, notation keys, distractors, missing and unexpected rows) and whether the total was identical across runs. Test cities, inventories and bucket objects are removed at the end.
 

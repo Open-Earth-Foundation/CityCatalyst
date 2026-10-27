@@ -27,6 +27,7 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import env from "@next/env";
 import { NextRequest } from "next/server";
+import pino from "pino";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
@@ -40,13 +41,20 @@ import {
 import { toCanonical } from "@/util/notation-keys";
 import { Roles } from "@/util/types";
 import {
+  ZERO_TOKENS,
   gitInfo,
   writeRunArtifact,
   type CaseResult,
+  type Prices,
+  type Tokens,
 } from "./report";
 import { scoreFile, type KeyFile, type StoredValue } from "./score";
 
 const RUN = process.env.INGESTION_ACCURACY_RUN === "1";
+// 22 cases x 3 runs takes about 2 hours; raise it for bigger sets.
+const TEST_TIMEOUT_MS = Number(
+  process.env.INGESTION_ACCURACY_TIMEOUT_MS ?? 4 * 3_600_000,
+);
 const TEST_USER_ID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const IMPORT_PATH = "@/app/api/v1/city/[city]/inventory/[inventory]/import";
 
@@ -67,6 +75,8 @@ type Config = {
   answerKeys?: string;
   /** Copy the input files into the run folder (they are third-party documents). */
   publishInputs?: boolean;
+  /** USD unit prices; without all three the report shows tokens and pages but no dollar figure. */
+  prices?: Prices;
   files: FileSpec[];
 };
 
@@ -87,6 +97,39 @@ function mockRequest(body?: unknown): NextRequest {
     Promise.resolve(body),
   ) as unknown as typeof request.json;
   return request;
+}
+
+// Product code logs every LLM call with its token usage; read those lines from
+// the shared pino stream so the benchmark needs no product change.
+const meter: Tokens = { ...ZERO_TOKENS };
+const snapshot = (): Tokens => ({ ...meter });
+const since = (before: Tokens): Tokens => ({
+  calls: meter.calls - before.calls,
+  promptTokens: meter.promptTokens - before.promptTokens,
+  completionTokens: meter.completionTokens - before.completionTokens,
+});
+
+function installUsageMeter(logger: object) {
+  const stream = (logger as Record<symbol, { write: (c: string) => boolean }>)[
+    pino.symbols.streamSym
+  ];
+  const write = stream.write.bind(stream);
+  stream.write = (chunk: string) => {
+    if (typeof chunk === "string" && chunk.includes('"LLM complete response"')) {
+      try {
+        const entry = JSON.parse(chunk) as {
+          promptTokens?: number;
+          completionTokens?: number;
+        };
+        meter.calls += 1;
+        meter.promptTokens += entry.promptTokens ?? 0;
+        meter.completionTokens += entry.completionTokens ?? 0;
+      } catch {
+        // a malformed log line only loses one call from the count
+      }
+    }
+    return write(chunk);
+  };
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -113,6 +156,7 @@ function pctDiff(actual: number, expected: number): number | null {
 
   beforeAll(async () => {
     env.loadEnvConfig(process.cwd());
+    installUsageMeter((await import("@/services/logger")).logger);
     ({ db } = await import("@/models"));
     Storage = (await import("@/backend/InventoryFileStorageService")).default;
     ocr = await import("@/backend/MistralOcrService");
@@ -275,6 +319,7 @@ function pctDiff(actual: number, expected: number): number | null {
           ok: false,
           code: (error as { code?: string }).code ?? null,
           message: (error as Error).message,
+          pages: payload.pages?.length ?? null,
           ms: Date.now() - started,
         } as Record<string, unknown>,
       };
@@ -295,10 +340,16 @@ function pctDiff(actual: number, expected: number): number | null {
       const extension = extname(file.path).slice(1).toLowerCase();
       const kind = file.kind ?? (extension as "pdf" | "csv" | "xlsx");
       const runs: Record<string, unknown>[] = [];
+      const beforeOcr = snapshot();
       const ocrResult = kind === "pdf" ? await runOcr(buffer, fileName) : null;
+      const ocrUsage = {
+        ...since(beforeOcr),
+        pages: (ocrResult?.stage.pages as number | null | undefined) ?? null,
+      };
 
       for (let run = 1; run <= config.runs; run++) {
         const started = Date.now();
+        const beforeRun = snapshot();
         const city = await db.models.City.create({
           cityId: randomUUID(),
           name: `Ingestion accuracy ${file.id} r${run}`,
@@ -399,6 +450,7 @@ function pctDiff(actual: number, expected: number): number | null {
             finalStatus: done.importStatus,
             ms: Date.now() - started,
             extractedRows,
+            usage: since(beforeRun),
             ...back,
             score,
             totalDiffPct: reference?.total
@@ -416,6 +468,7 @@ function pctDiff(actual: number, expected: number): number | null {
             run,
             ok: false,
             ms: Date.now() - started,
+            usage: since(beforeRun),
             message: (error as Error).message,
           });
         }
@@ -432,6 +485,7 @@ function pctDiff(actual: number, expected: number): number | null {
         keyId: key?.id ?? null,
         reference: file.reference ?? null,
         ocr: ocrResult?.stage ?? null,
+        ocrUsage,
         // When true, a user would see a failed import: the runs below measure the extraction on the raw OCR text only.
         productFlowFailsAtOcr: ocrResult ? !ocrResult.stage.ok : false,
         runs,
@@ -447,6 +501,9 @@ function pctDiff(actual: number, expected: number): number | null {
         measuredAt: new Date().toISOString(),
         ...gitInfo(),
         llmModel: process.env.LLM_MODEL,
+        extractionModel:
+          process.env.LLM_EXTRACTION_MODEL || process.env.LLM_MODEL,
+        prices: config.prices,
         ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
         runsPerFile: config.runs,
         results: results as CaseResult[],
@@ -460,5 +517,5 @@ function pctDiff(actual: number, expected: number): number | null {
     });
     console.log(`Ingestion accuracy artifact: ${artifactDir}`);
     expect(results.length).toBe(config.files.length);
-  }, 3_600_000);
+  }, TEST_TIMEOUT_MS);
 });

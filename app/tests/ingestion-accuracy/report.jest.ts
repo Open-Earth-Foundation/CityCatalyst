@@ -5,6 +5,9 @@ import { join } from "node:path";
 import {
   aggregate,
   caseMetrics,
+  caseUsage,
+  costUsd,
+  totalUsage,
   renderReport,
   runFolderName,
   writeRunArtifact,
@@ -74,6 +77,48 @@ function summary(
     results,
   };
 }
+
+describe("usage and cost", () => {
+  const withUsage = (id: string, pages: number | null): CaseResult => ({
+    ...result(id, 0.5),
+    ocrUsage: { calls: 0, promptTokens: 0, completionTokens: 0, pages },
+    runs: [
+      {
+        ...result(id, 0.5).runs[0],
+        usage: { calls: 2, promptTokens: 1_000_000, completionTokens: 500_000 },
+      },
+      {
+        ...result(id, 0.5).runs[0],
+        run: 2,
+        usage: { calls: 1, promptTokens: 1_000_000, completionTokens: 0 },
+      },
+    ],
+  });
+  const prices = { llmInputPerMTok: 1, llmOutputPerMTok: 4, ocrPerPage: 0.01 };
+
+  it("sums OCR once and every run", () => {
+    const usage = caseUsage(withUsage("A", 10));
+    expect(usage.promptTokens).toBe(2_000_000);
+    expect(usage.calls).toBe(3);
+    expect(usage.ocrPages).toBe(10);
+  });
+
+  it("prices tokens and pages, and refuses to guess missing prices", () => {
+    const usage = totalUsage([withUsage("A", 10), withUsage("B", 20)]);
+    expect(costUsd(usage, prices)).toBeCloseTo(2 * (2 + 2) + 0.3);
+    expect(costUsd(usage, { llmInputPerMTok: 1 })).toBeNull();
+    expect(costUsd(usage)).toBeNull();
+  });
+
+  it("flags unknown OCR pages and renders the cost section", () => {
+    const run = summary([withUsage("A", null)]);
+    run.prices = prices;
+    const report = renderReport(run, null);
+    expect(report).toContain("## Cost of this run");
+    expect(report).toContain("0+ pages");
+    expect(report).toContain("Estimated cost: $4.00");
+  });
+});
 
 describe("report", () => {
   const dirs: string[] = [];

@@ -19,6 +19,19 @@ import {
 import { extname, join } from "node:path";
 import type { FileScore, KeyFile, StoredValue } from "./score";
 
+export type Tokens = {
+  calls: number;
+  promptTokens: number;
+  completionTokens: number;
+};
+
+/** Unit prices in USD. Any missing price makes the cost "n/a" instead of a guess. */
+export type Prices = {
+  llmInputPerMTok?: number;
+  llmOutputPerMTok?: number;
+  ocrPerPage?: number;
+};
+
 export type RunEntry = {
   run: number;
   ok: boolean;
@@ -28,6 +41,8 @@ export type RunEntry = {
   stored?: StoredValue[];
   score?: FileScore | null;
   total?: number;
+  /** LLM usage of this run (extraction). */
+  usage?: Tokens;
 };
 
 export type CaseResult = {
@@ -40,6 +55,8 @@ export type CaseResult = {
   productFlowFailsAtOcr: boolean;
   runs: RunEntry[];
   stableTotal: boolean;
+  /** OCR is done once per file and shared by its runs. */
+  ocrUsage?: Tokens & { pages: number | null };
 };
 
 export type RunSummary = {
@@ -47,7 +64,9 @@ export type RunSummary = {
   commit: string;
   branch: string;
   llmModel?: string;
+  extractionModel?: string;
   ocrModel?: string;
+  prices?: Prices;
   runsPerFile: number;
   results: CaseResult[];
 };
@@ -122,6 +141,67 @@ export function aggregate(results: CaseResult[]): Aggregate {
   };
 }
 
+export const ZERO_TOKENS: Tokens = {
+  calls: 0,
+  promptTokens: 0,
+  completionTokens: 0,
+};
+
+const addTokens = (a: Tokens, b?: Tokens): Tokens => ({
+  calls: a.calls + (b?.calls ?? 0),
+  promptTokens: a.promptTokens + (b?.promptTokens ?? 0),
+  completionTokens: a.completionTokens + (b?.completionTokens ?? 0),
+});
+
+export type CaseUsage = Tokens & { ocrPages: number; ocrPagesKnown: boolean };
+
+/** Everything one case spent: OCR once plus every run's extraction. */
+export function caseUsage(result: CaseResult): CaseUsage {
+  const tokens = result.runs.reduce(
+    (sum, run) => addTokens(sum, run.usage),
+    addTokens(ZERO_TOKENS, result.ocrUsage),
+  );
+  return {
+    ...tokens,
+    ocrPages: result.ocrUsage?.pages ?? 0,
+    ocrPagesKnown: result.ocrUsage?.pages != null,
+  };
+}
+
+export function totalUsage(results: CaseResult[]): CaseUsage {
+  return results.map(caseUsage).reduce(
+    (sum, usage) => ({
+      ...addTokens(sum, usage),
+      ocrPages: sum.ocrPages + usage.ocrPages,
+      ocrPagesKnown: sum.ocrPagesKnown && usage.ocrPagesKnown,
+    }),
+    { ...ZERO_TOKENS, ocrPages: 0, ocrPagesKnown: true },
+  );
+}
+
+/** USD, or null when a price needed for the usage is missing. */
+export function costUsd(usage: CaseUsage, prices?: Prices): number | null {
+  const { llmInputPerMTok, llmOutputPerMTok, ocrPerPage } = prices ?? {};
+  if (
+    llmInputPerMTok === undefined ||
+    llmOutputPerMTok === undefined ||
+    ocrPerPage === undefined
+  ) {
+    return null;
+  }
+  return (
+    (usage.promptTokens / 1e6) * llmInputPerMTok +
+    (usage.completionTokens / 1e6) * llmOutputPerMTok +
+    usage.ocrPages * ocrPerPage
+  );
+}
+
+const money = (value: number | null) =>
+  value === null ? "n/a" : `$${value.toFixed(value < 1 ? 3 : 2)}`;
+
+const tokensText = (usage: CaseUsage) =>
+  `${(usage.promptTokens / 1000).toFixed(0)}k / ${(usage.completionTokens / 1000).toFixed(0)}k`;
+
 const pct = (ratio: number | null) =>
   ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
 
@@ -146,11 +226,16 @@ export function renderReport(
   const previousById = new Map(
     (previous?.results ?? []).map((result) => [result.id, caseMetrics(result)]),
   );
+  const usage = totalUsage(summary.results);
+  const cost = costUsd(usage, summary.prices);
+  const beforeCost = previous
+    ? costUsd(totalUsage(previous.results), previous.prices)
+    : null;
   const lines: string[] = [
     `# Ingestion accuracy run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC`,
     "",
     `- Commit: \`${summary.commit}\` on \`${summary.branch}\``,
-    `- LLM model: ${summary.llmModel ?? "default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; OCR model: ${summary.ocrModel ?? "default"}`,
     `- Runs per file: ${summary.runsPerFile}`,
     `- Compared with: ${previous ? `previous run \`${previous.commit}\` (${previous.measuredAt.slice(0, 10)})` : "no previous run"}`,
     "",
@@ -163,12 +248,18 @@ export function renderReport(
     `- Mean value accuracy: ${pct(total.valueAccuracy)}${delta(total.valueAccuracy, before?.valueAccuracy)}`,
     `- Mean classification accuracy: ${pct(total.classificationAccuracy)}${delta(total.classificationAccuracy, before?.classificationAccuracy)}`,
     "",
+    "## Cost of this run",
+    "",
+    `- LLM: ${usage.calls} calls, ${usage.promptTokens.toLocaleString("en-US")} input and ${usage.completionTokens.toLocaleString("en-US")} output tokens`,
+    `- OCR: ${usage.ocrPagesKnown ? `${usage.ocrPages} pages` : `${usage.ocrPages}+ pages (some OCR calls failed before reporting pages)`}`,
+    `- Estimated cost: ${money(cost)}${beforeCost !== null && cost !== null ? ` (previous run: ${money(beforeCost)})` : ""}${cost === null ? " (set llmInputPerMTok, llmOutputPerMTok and ocrPerPage under `prices` in the config to get a dollar figure)" : ""}`,
+    "",
     "## Per case",
     "",
     "Recall, precision and accuracies are means over the runs that finished. Change vs the previous run is in points.",
     "",
-    "| Case | File | OCR | Rows | Recall | Precision | Value acc. | Class. acc. | Notation keys | Total vs key | Stable total | Time |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Case | File | OCR | Rows | Recall | Precision | Value acc. | Class. acc. | Notation keys | Total vs key | Stable total | Time | Tokens in / out | OCR pages | Est. cost |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
   for (const result of summary.results) {
     const m = caseMetrics(result);
@@ -176,7 +267,7 @@ export function renderReport(
     const ocr =
       m.ocrOk === null ? "n/a" : m.ocrOk ? "ok" : `fails ${m.ocrCode ?? ""}`;
     lines.push(
-      `| ${cell(result.keyId ?? result.id)} | ${cell(result.file)} | ${ocr.trim()} | ${m.extractedRows === null ? "n/a" : Math.round(m.extractedRows)} | ${pct(m.rowRecall)}${delta(m.rowRecall, old?.rowRecall)} | ${pct(m.rowPrecision)}${delta(m.rowPrecision, old?.rowPrecision)} | ${pct(m.valueAccuracy)}${delta(m.valueAccuracy, old?.valueAccuracy)} | ${pct(m.classificationAccuracy)} | ${m.notationRecovered}/${m.notationScored} | ${signedPct(m.totalDiffPct)}${m.totalWithinTolerance === null ? "" : m.totalWithinTolerance ? " (within tolerance)" : " (outside tolerance)"} | ${m.stableTotal ? "yes" : "no"} | ${m.seconds === null ? "n/a" : `${Math.round(m.seconds)} s`} |`,
+      `| ${cell(result.keyId ?? result.id)} | ${cell(result.file)} | ${ocr.trim()} | ${m.extractedRows === null ? "n/a" : Math.round(m.extractedRows)} | ${pct(m.rowRecall)}${delta(m.rowRecall, old?.rowRecall)} | ${pct(m.rowPrecision)}${delta(m.rowPrecision, old?.rowPrecision)} | ${pct(m.valueAccuracy)}${delta(m.valueAccuracy, old?.valueAccuracy)} | ${pct(m.classificationAccuracy)} | ${m.notationRecovered}/${m.notationScored} | ${signedPct(m.totalDiffPct)}${m.totalWithinTolerance === null ? "" : m.totalWithinTolerance ? " (within tolerance)" : " (outside tolerance)"} | ${m.stableTotal ? "yes" : "no"} | ${m.seconds === null ? "n/a" : `${Math.round(m.seconds)} s`} | ${tokensText(caseUsage(result))} | ${result.ocrUsage?.pages ?? "n/a"} | ${money(costUsd(caseUsage(result), summary.prices))} |`,
     );
   }
 
@@ -229,7 +320,8 @@ export function renderReport(
 
 export function renderIndexLine(summary: RunSummary, folder: string): string {
   const total = aggregate(summary.results);
-  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")} | \`${summary.commit}\` | ${total.cases} | ${total.ocrFailures} | ${pct(total.rowRecall)} | ${pct(total.valueAccuracy)} | [${folder}](./${folder}/report.md) |`;
+  const cost = costUsd(totalUsage(summary.results), summary.prices);
+  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")} | \`${summary.commit}\` | ${total.cases} | ${total.ocrFailures} | ${pct(total.rowRecall)} | ${pct(total.valueAccuracy)} | ${money(cost)} | [${folder}](./${folder}/report.md) |`;
 }
 
 const INDEX_HEADER = [
@@ -237,8 +329,8 @@ const INDEX_HEADER = [
   "",
   "One line per benchmark run, oldest first. Open the report for per-case numbers and the change vs the previous run.",
   "",
-  "| Run (UTC) | Commit | Cases | OCR failures | Mean recall | Mean value acc. | Report |",
-  "| --- | --- | --- | --- | --- | --- | --- |",
+  "| Run (UTC) | Commit | Cases | OCR failures | Mean recall | Mean value acc. | Est. cost | Report |",
+  "| --- | --- | --- | --- | --- | --- | --- | --- |",
   "",
 ].join("\n");
 

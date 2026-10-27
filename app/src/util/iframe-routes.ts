@@ -25,3 +25,9 @@ export function isPreAuthRoute(pathname: string) {
     /^\/[^/]+\/authorize(\/|$)/.test(pathname)
   );
 }
+
+// Unauthenticated public pages (project/city dashboards, landing pages) —
+// nothing under here has a concept of a logged-in user.
+export function isPublicRoute(pathname: string) {
+  return /^\/[^/]+\/public(\/|$)/.test(pathname);
+}

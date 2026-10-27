@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import {
@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import i18next from "i18next";
-import { signOut, useSession } from "next-auth/react";
+import { signOut, SessionContext } from "next-auth/react";
 import Image from "next/image";
 
 import { CircleFlag } from "react-circle-flags";
@@ -100,7 +100,12 @@ export function NavigationBar({
     },
   );
 
-  const { data: session, status } = useSession();
+  // Public routes don't mount <SessionProvider> at all (see app/providers.tsx),
+  // so reading the context directly - rather than next-auth's useSession(),
+  // which throws without a provider - lets this component render either way.
+  const sessionContext = useContext(SessionContext);
+  const session = sessionContext?.data;
+  const status = sessionContext?.status ?? "unauthenticated";
   const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
     skip: isPublic,
   });
@@ -478,7 +483,7 @@ export function NavigationBar({
               </Box>
             )}
             <Box>
-              {!isPublic && status === "authenticated" && session.user && (
+              {!isPublic && status === "authenticated" && session?.user && (
                 <MenuRoot
                   onOpenChange={(details) => {
                     setUserMenuOpen(details.open);
@@ -504,8 +509,8 @@ export function NavigationBar({
                           width="32px"
                           bg="interactive.connected"
                           color="base.light"
-                          name={session.user?.name ?? ""}
-                          src={session.user?.image}
+                          name={session?.user?.name ?? ""}
+                          src={session?.user?.image}
                         />
                         <Text
                           display={{ base: "none", md: "block" }}
@@ -519,7 +524,7 @@ export function NavigationBar({
                           letterSpacing="wide"
                           lineHeight="20"
                         >
-                          {session.user?.name}
+                          {session?.user?.name}
                         </Text>
                         <Icon
                           as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}

@@ -300,7 +300,10 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             assert service.system_prompt == "Core + cnb_chat"
             asyncio.run(service.create_agent())
             assert agent_class.call_args.kwargs["instructions"] == "Core + cnb_chat"
-            assert agent_class.call_args.kwargs["tools"] == []
+            # Choices need no context bundle, so they stay available without one.
+            assert [tool.name for tool in agent_class.call_args.kwargs["tools"]] == [
+                "concept_note_ask_question"
+            ]
 
             assert isinstance(
                 agent_class.call_args.kwargs["model"], OpenAIResponsesModel

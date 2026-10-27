@@ -1,19 +1,9 @@
 "use client";
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  Box,
-  Drawer,
-  Grid,
-  HStack,
-  Icon,
-  Portal,
-  useBreakpointValue,
-  VStack,
-} from "@chakra-ui/react";
-import { LuChevronLeft, LuSlidersHorizontal } from "react-icons/lu";
-import { CloseButton } from "@/components/ui/close-button";
+import { Box, Icon, VStack } from "@chakra-ui/react";
+import { LuSlidersHorizontal } from "react-icons/lu";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
@@ -21,17 +11,22 @@ import { useTrack } from "../../_lib/useTrack";
 import { useDemoT, useTrackT } from "../../_lib/useDemoT";
 import { useLabels } from "../../_lib/useLabels";
 import { SCREEN_IDS, trackHref } from "../../_lib/hrefs";
-import { RISK_CELLS } from "../../_lib/riskCells";
-import { ACTION_BY_ID } from "../../_lib/actions";
+import { RISK_CELL_BY_KEY, RISK_CELLS } from "../../_lib/riskCells";
+import { ACTION_BY_ID, ADAPTATION_ACTIONS } from "../../_lib/actions";
 import { buildDemoReport } from "../../_lib/report";
 import { downloadCsv } from "../../_lib/csv";
-import type { NotRankedAction } from "../../_lib/ranking";
+import { rankAdaptation, type NotRankedAction } from "../../_lib/ranking";
 import { pick } from "../../_lib/localized";
 import { DemoHero } from "../DemoHero";
 import { TrackTabs } from "../TrackTabs";
 import { ConceptNotice } from "../ConceptNotice";
 import { useSearchParam, writeSearchParams } from "./ListControls";
-import { RankingControls } from "./RankingControls";
+import {
+  DEFAULT_PRIORITIES,
+  PreferencesSheet,
+  type RankingPriorities,
+} from "./PreferencesSheet";
+import { RankingBasis } from "./RankingBasis";
 import { RankingRecipe } from "./RankingRecipe";
 import { TopRisks } from "./TopRisks";
 import { TopActions } from "./TopActions";
@@ -53,16 +48,18 @@ import {
 
 /** A section of the home: title, one line, content. The same frame four times. */
 function Section({
+  id,
   title,
   body,
   children,
 }: {
+  id?: string;
   title: string;
   body?: string;
   children: React.ReactNode;
 }) {
   return (
-    <VStack alignItems="stretch" gap="l">
+    <VStack id={id} alignItems="stretch" gap="l" scrollMarginTop="l">
       <VStack alignItems="stretch" gap="xs">
         <TitleLarge color="content.primary">{title}</TitleLarge>
         {body && <BodyMedium color="content.secondary">{body}</BodyMedium>}
@@ -76,7 +73,8 @@ function Section({
  * BR-N1 — the proposed adaptation home, in the order a city officer reads:
  * where the city is exposed; what to do first; the full list to explore and
  * rework; how the ranking was built. Preferences that change the ranking
- * live in the side panel; filters that narrow the list sit on the list.
+ * open in a sheet and apply as a new ranking; filters that narrow the list
+ * sit on the list.
  */
 export function AdaptationHomeNext({
   lng,
@@ -101,7 +99,6 @@ export function AdaptationHomeNext({
   const tResults = useTrackT(lng, track, "meed-results");
   const tPre = useTrackT(lng, track, "meed-preflight");
   const labels = useLabels(lng, track);
-  const isNarrow = useBreakpointValue({ base: true, lg: false }) ?? false;
 
   // Panel and drawer can be opened from the URL (?panel=open, ?action=<id>
   // or ?action=top), so old wizard links and the review guide land on them.
@@ -138,6 +135,8 @@ export function AdaptationHomeNext({
   }, []);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  // How many actions changed place in the last new ranking, shown once.
+  const [movedAfterUpdate, setMovedAfterUpdate] = useState<number | null>(null);
 
   const rows = useMemo(() => buildRows(data, lng), [data, lng]);
   const openId =
@@ -179,6 +178,37 @@ export function AdaptationHomeNext({
     prefs.excludedActionIds.length > 0 ||
     isCustomWeights(prefs.weights);
   const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
+  const applied: RankingPriorities = {
+    coBenefits: prefs.coBenefits,
+    priorityRisks: prefs.priorityRisks,
+    sectors: prefs.sectors,
+    timeline: prefs.timeline,
+    weights: prefs.weights,
+  };
+  const priorityLabels = [
+    ...prefs.coBenefits.map((k) => labels.coBenefit(k)),
+    ...prefs.priorityRisks.map((k) => pick(RISK_CELL_BY_KEY[k].label, lng)),
+    ...prefs.sectors.map((k) => labels.sector(k)),
+    ...prefs.timeline.map((k) => labels.timeline(k)),
+  ];
+
+  // A new ranking from the city's priorities: apply, say how many actions
+  // changed place, and bring the list into view where that is said.
+  const runRanking = (next: RankingPriorities) => {
+    const before = rows.map((r) => r.action.id);
+    const after = rankAdaptation(city, ADAPTATION_ACTIONS, {
+      ...prefs,
+      ...next,
+    }).ranked.map((s) => s.action.id);
+    setMovedAfterUpdate(after.filter((id, i) => before[i] !== id).length);
+    setPreferences(next);
+    setPanelOpen(false);
+    requestAnimationFrame(() =>
+      document
+        .getElementById("all-actions")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  };
 
   const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) =>
@@ -265,9 +295,6 @@ export function AdaptationHomeNext({
   const openRow: RankedRow | null = openId
     ? (rowById.get(openId) ?? null)
     : null;
-  const controls = (
-    <RankingControls lng={lng} data={data} labels={labels} t={t} tPre={tPre} />
-  );
 
   return (
     <Box
@@ -297,25 +324,16 @@ export function AdaptationHomeNext({
           <MeedButton
             minW="auto"
             px="l"
-            // Open: an outlined button on the blue band, so it never reads
-            // as disabled; closed: the solid white primary.
-            bg={panelOpen ? "transparent" : "base.light"}
-            color={panelOpen ? "base.light" : "content.link"}
+            bg="base.light"
+            color="content.link"
             borderWidth="1px"
             borderColor="base.light"
-            _hover={{
-              bg: panelOpen ? "whiteAlpha.200" : "background.neutral",
-            }}
-            leftIcon={
-              <Icon
-                as={panelOpen ? LuChevronLeft : LuSlidersHorizontal}
-                boxSize="16px"
-              />
-            }
-            onClick={() => setPanelOpen(!panelOpen)}
+            _hover={{ bg: "background.neutral" }}
+            leftIcon={<Icon as={LuSlidersHorizontal} boxSize="16px" />}
+            onClick={() => setPanelOpen(true)}
             _focusVisible={FOCUS_RING}
           >
-            {panelOpen ? t("next-customize-close") : t("next-customize")}
+            {t("next-customize")}
           </MeedButton>
         }
       />
@@ -327,139 +345,102 @@ export function AdaptationHomeNext({
         pb="xxl-6"
         px="l"
         w="full"
-        // Same column as the hero, tabs and sub-pages; wider with the panel.
-        maxW={panelOpen ? "1440px" : "1090px"}
+        // Same column as the hero, tabs and sub-pages.
+        maxW="1090px"
       >
         {!isReady ? null : (
-          <Grid
-            templateColumns={{
-              base: "1fr",
-              lg: panelOpen ? "320px minmax(0, 1fr)" : "1fr",
-            }}
-            gap="xl"
-            alignItems="start"
-          >
-            {panelOpen && !isNarrow && (
-              <Box
-                position="sticky"
-                top="l"
-                // Leaves room above the corner notice at the bottom.
-                maxH="calc(100vh - 120px)"
-                overflowY="auto"
-                bg="base.light"
-                borderRadius="rounded"
-                boxShadow="1dp"
-                p="xl"
-              >
-                {controls}
-              </Box>
-            )}
-            <VStack alignItems="stretch" gap="xxl-6" minW={0}>
-              <Section
-                title={t("next-section-risks", { city: city.name })}
-                body={t("next-section-risks-body")}
-              >
-                <TopRisks
-                  city={city}
-                  lng={lng}
-                  t={t}
-                  href={trackHref(lng, city.slug, track, "risk")}
-                  onContext={() => setContextOpen(true)}
-                />
-              </Section>
-              <Section
-                title={t("next-section-actions")}
-                body={t("next-section-actions-body", { city: city.name })}
-              >
-                <TopActions
-                  rows={topRows}
-                  lng={lng}
-                  t={t}
-                  tResults={tResults}
-                  selectedIds={selectedIds}
-                  onToggleSelect={toggleSelect}
-                  onOpen={(row) => setOpenId(row.action.id)}
-                />
-              </Section>
-              <Section
-                title={t("next-section-list")}
-                body={t("next-section-list-body")}
-              >
-                <RankedActionsTable
-                  rows={rows}
-                  cityOrder={cityOrder}
-                  notRanked={footnote}
-                  reasonOf={reasonOf}
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  lng={lng}
-                  t={t}
-                  tResults={tResults}
-                  labels={labels}
-                  selectedIds={selectedIds}
-                  onToggleSelect={toggleSelect}
-                  onOpen={(row) => setOpenId(row.action.id)}
-                  onOpenUnranked={(item) => setOpenId(item.action.id)}
-                  onExclude={exclude}
-                  onInclude={include}
-                  onMove={move}
-                  onPin={pin}
-                  onResetOrder={() => setCityOrder([])}
-                  onExportCsv={exportCsv}
-                  report={{
-                    onGenerate: generateReport,
-                    isGenerating,
-                    progress: null,
-                  }}
-                  onAdjust={() => setPanelOpen(true)}
-                />
-              </Section>
-              <Section title={t("next-section-built")}>
-                <RankingRecipe
-                  lng={lng}
-                  data={data}
-                  hasPreferences={hasPreferences}
-                  t={t}
-                />
-              </Section>
-            </VStack>
-          </Grid>
+          <VStack alignItems="stretch" gap="xxl-6" minW={0}>
+            <Section
+              title={t("next-section-risks", { city: city.name })}
+              body={t("next-section-risks-body")}
+            >
+              <TopRisks
+                city={city}
+                lng={lng}
+                t={t}
+                href={trackHref(lng, city.slug, track, "risk")}
+                onContext={() => setContextOpen(true)}
+              />
+            </Section>
+            <Section
+              title={t("next-section-actions")}
+              body={t("next-section-actions-body", { city: city.name })}
+            >
+              <TopActions
+                rows={topRows}
+                lng={lng}
+                t={t}
+                tResults={tResults}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+                onOpen={(row) => setOpenId(row.action.id)}
+              />
+            </Section>
+            <Section
+              id="all-actions"
+              title={t("next-section-list")}
+              body={t("next-section-list-body")}
+            >
+              <RankingBasis
+                priorities={priorityLabels}
+                customWeights={isCustomWeights(prefs.weights)}
+                movedAfterUpdate={movedAfterUpdate}
+                onAdjust={() => setPanelOpen(true)}
+                onDefault={() => runRanking({ ...DEFAULT_PRIORITIES })}
+                t={t}
+              />
+              <RankedActionsTable
+                rows={rows}
+                cityOrder={cityOrder}
+                notRanked={footnote}
+                reasonOf={reasonOf}
+                filters={filters}
+                onFiltersChange={setFilters}
+                lng={lng}
+                t={t}
+                tResults={tResults}
+                labels={labels}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+                onOpen={(row) => setOpenId(row.action.id)}
+                onOpenUnranked={(item) => setOpenId(item.action.id)}
+                onOpenAction={setOpenId}
+                onExclude={exclude}
+                onInclude={include}
+                onMove={move}
+                onPin={pin}
+                onResetOrder={() => setCityOrder([])}
+                onExportCsv={exportCsv}
+                report={{
+                  onGenerate: generateReport,
+                  isGenerating,
+                  progress: null,
+                }}
+              />
+            </Section>
+            <Section title={t("next-section-built")}>
+              <RankingRecipe
+                lng={lng}
+                data={data}
+                hasPreferences={hasPreferences}
+                t={t}
+              />
+            </Section>
+          </VStack>
         )}
       </Box>
 
-      {panelOpen && isNarrow && (
-        <Drawer.Root
-          open
-          onOpenChange={(e) => !e.open && setPanelOpen(false)}
-          placement="start"
-          size="sm"
-        >
-          <Portal>
-            <Drawer.Backdrop />
-            <Drawer.Positioner>
-              <Drawer.Content bg="base.light">
-                <Drawer.Header
-                  borderBottomWidth="1px"
-                  borderColor="border.overlay"
-                >
-                  <HStack justifyContent="space-between">
-                    <TitleMedium as="span" color="content.primary">
-                      {t("next-customize")}
-                    </TitleMedium>
-                    <Drawer.CloseTrigger asChild>
-                      <CloseButton
-                        size="sm"
-                        color="content.secondary"
-                        aria-label={t("next-drawer-close")}
-                      />
-                    </Drawer.CloseTrigger>
-                  </HStack>
-                </Drawer.Header>
-                <Drawer.Body>{controls}</Drawer.Body>
-              </Drawer.Content>
-            </Drawer.Positioner>
-          </Portal>
-        </Drawer.Root>
+      {panelOpen && isReady && (
+        <PreferencesSheet
+          cityName={city.name}
+          applied={applied}
+          onApply={runRanking}
+          onClose={() => setPanelOpen(false)}
+          lng={lng}
+          labels={labels}
+          t={t}
+          tPre={tPre}
+        />
       )}
 
       <CityContextDialog

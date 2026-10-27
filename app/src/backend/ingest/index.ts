@@ -1,3 +1,4 @@
+export { unpackArchive, UnpackArchiveError, isUnsafeZipPath } from "./unpack-archive";
 export { IngestRunner } from "./IngestRunner";
 export { MemoryIngestStore } from "./MemoryIngestStore";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";

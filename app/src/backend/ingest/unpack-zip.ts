@@ -1,8 +1,8 @@
+import { type IngestFileInput, IngestItemError } from "./types";
 import {
-  BulkInventoryImportZipError,
-  unpackBulkInventoryImportZip,
-} from "@/backend/BulkInventoryImportZip";
-import { IngestItemError, type IngestFileInput } from "./types";
+  UnpackArchiveError,
+  unpackArchive,
+} from "./unpack-archive";
 
 const ZIP_ERROR_MAP: Record<string, IngestItemError["code"]> = {
   not_zip: "not_zip",
@@ -27,16 +27,12 @@ export async function expandIngestInputs(
       continue;
     }
     try {
-      const unpacked = await unpackBulkInventoryImportZip(
-        file.buffer,
-        file.name,
-        { maxFiles: 50, maxZipBytes: 20 * 1024 * 1024 },
-      );
+      const unpacked = await unpackArchive(file.buffer, file.name);
       for (const entry of unpacked.entries) {
         expanded.push({ name: entry.basename, buffer: entry.buffer });
       }
     } catch (err) {
-      if (err instanceof BulkInventoryImportZipError) {
+      if (err instanceof UnpackArchiveError) {
         throw new IngestItemError(ZIP_ERROR_MAP[err.code] ?? "not_zip");
       }
       throw err;

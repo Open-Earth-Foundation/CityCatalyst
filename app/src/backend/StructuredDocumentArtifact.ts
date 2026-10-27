@@ -311,7 +311,8 @@ function normalizeBlocks(
     // Mistral sometimes returns a block `image_id` that differs from the image written in
     // the block's own markdown (seen on Philadelphia, Toronto 2020 and Miami). Trust
     // whichever id belongs to the page image drawn at the block's position; if neither
-    // does, drop the link instead of guessing. The document is kept either way.
+    // does, drop the link instead of guessing. In `none` mode the document is kept;
+    // `visual_context` requires a linked annotation and fails validation if absent.
     if (
       providerImageId &&
       markdownImageId &&
@@ -329,7 +330,9 @@ function normalizeBlocks(
           markdownImageId,
           resolvedImageId: relatedImageId,
         },
-        "Mistral OCR block image id differs from its markdown reference; resolved by position",
+        relatedImageId
+          ? "Mistral OCR block image id differs from its markdown reference; resolved by position"
+          : "Mistral OCR block image id differs from its markdown reference; no image at the block position, link dropped",
       );
     }
     providerLevels.push(readProviderLevel(block.level));

@@ -1,4 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
+import { logger } from "@/services/logger";
 import { buildStructuredDocument } from "@/backend/StructuredDocumentArtifact";
 import { VISUAL_ANNOTATION_SCHEMA_VERSION } from "@/backend/MistralVisualAnnotation";
 
@@ -410,7 +411,11 @@ describe("block image id that differs from its markdown reference (CC-1132)", ()
   });
   const IMG3: [number, number, number, number] = [432, 160, 729, 354];
   const IMG4: [number, number, number, number] = [82, 420, 222, 589];
-  const build = (blocks: Record<string, unknown>[]) =>
+  const build = (
+    blocks: Record<string, unknown>[],
+    mode: "none" | "visual_context" = "none",
+    extraImages: ReturnType<typeof imageBox>[] = [],
+  ) =>
     buildStructuredDocument(
       {
         model: "mistral-ocr-latest",
@@ -429,12 +434,16 @@ describe("block image id that differs from its markdown reference (CC-1132)", ()
               imageBox("img-5.jpeg", [321, 423, 462, 588]),
               imageBox("img-6.jpeg", [564, 423, 709, 588]),
               imageBox("img-7.jpeg", [52, 663, 345, 913]),
-            ],
+              ...extraImages,
+            ].map((image) => ({
+              ...image,
+              image_annotation: mode === "visual_context" ? annotation : null,
+            })),
             tables: [],
           },
         ],
       },
-      { annotationMode: "none", requestedModel: "model" },
+      { annotationMode: mode, requestedModel: "model" },
     );
 
   it("uses the markdown reference when its image sits at the block position", () => {
@@ -481,6 +490,80 @@ describe("block image id that differs from its markdown reference (CC-1132)", ()
     const block = doc.document.pages[0].blocks[0];
     expect(block.related_image_id).toBeNull();
     expect(block.content).toContain("img-3.jpeg");
+  });
+
+  it("accepts a 2 px difference but rejects a 3 px difference", () => {
+    for (const [offset, expected] of [
+      [2, "img-3.jpeg"],
+      [3, null],
+    ] as const) {
+      const doc = build([
+        {
+          type: "image",
+          content: "![img-3.jpeg](img-3.jpeg)",
+          image_id: "img-6.jpeg",
+          ...boxOf([IMG3[0] + offset, IMG3[1], IMG3[2], IMG3[3]]),
+        },
+      ]);
+      expect(doc.document.pages[0].blocks[0].related_image_id).toBe(expected);
+    }
+  });
+
+  it("prefers the markdown image when both candidates match", () => {
+    const doc = build(
+      [
+        {
+          type: "image",
+          content: "![img-3.jpeg](img-3.jpeg)",
+          image_id: "img-8.jpeg",
+          ...boxOf(IMG3),
+        },
+      ],
+      "none",
+      [imageBox("img-8.jpeg", IMG3)],
+    );
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+
+  it("rejects an unmatched figure in visual_context despite annotated images", () => {
+    expect(() =>
+      build(
+        [
+          {
+            type: "image",
+            content: "![img-3.jpeg](img-3.jpeg)",
+            image_id: "img-6.jpeg",
+            ...boxOf([10, 10, 60, 60]),
+          },
+        ],
+        "visual_context",
+      ),
+    ).toThrow(/Requested annotation is missing for figure p0-b0/);
+  });
+
+  it("logs whether a conflicting image link was resolved or dropped", () => {
+    const warning = jest.spyOn(logger, "warn").mockImplementation(() => logger);
+    try {
+      for (const box of [
+        IMG3,
+        [10, 10, 60, 60] as [number, number, number, number],
+      ]) {
+        build([
+          {
+            type: "image",
+            content: "![img-3.jpeg](img-3.jpeg)",
+            image_id: "img-6.jpeg",
+            ...boxOf(box),
+          },
+        ]);
+      }
+      expect(warning.mock.calls[0][1]).toContain("resolved by position");
+      expect(warning.mock.calls[1][1]).toContain(
+        "no image at the block position, link dropped",
+      );
+    } finally {
+      warning.mockRestore();
+    }
   });
 
   it("does not change blocks whose ids agree", () => {

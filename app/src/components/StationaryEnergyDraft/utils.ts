@@ -456,6 +456,28 @@ export function proposedValueLabel(
   return emissionsLabel ?? translateDraftLabel(t, "draft-value-no-source");
 }
 
+const RATIONALE_KEYS_BY_STATUS: Record<string, string> = {
+  ready: "review-rationale-single-source",
+  needs_review: "review-rationale-sources-agree",
+  conflict: "review-rationale-sources-conflict",
+};
+
+// The backend writes `rationale` in English only, so rebuild it from the
+// proposal shape to follow the UI language.
+export function proposalRationaleLabel(
+  proposal: DraftProposal,
+  t: TFunction,
+): string | null {
+  const notationKey = proposal.proposed_value?.["notation_key"];
+  if (typeof notationKey === "string" && notationKey.trim()) {
+    return t("review-rationale-notation", {
+      notation: proposedValueLabel(proposal, t),
+    });
+  }
+  const key = RATIONALE_KEYS_BY_STATUS[proposal.status];
+  return key ? t(key) : proposal.rationale?.trim() || null;
+}
+
 export function sourceLabel(candidate: SourceCandidate | undefined): string {
   if (!candidate) {
     return "No source selected";

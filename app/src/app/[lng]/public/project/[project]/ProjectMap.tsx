@@ -1,10 +1,43 @@
-import { api } from "@/services/api";
+"use client";
+
 import { getBoundsZoomLevel } from "@/util/geojson";
-import { Box, Center, Spinner } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { Box } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
+import type { ProjectBoundary } from "@/util/types";
 
 type BoundingBox = [number, number, number, number];
+
+const DEFAULT_CENTER: [number, number] = [34.0, -37.0];
+const DEFAULT_ZOOM = 9;
+
+// boundaries is server-resolved and fixed for the lifetime of this
+// component, so the initial map view can be computed once (lazy useState
+// initializer) rather than synchronized via an effect.
+function getInitialView(
+  boundaries: ProjectBoundary[],
+  width: number,
+  height: number,
+): { center: [number, number]; zoom: number } {
+  if (boundaries.length === 0) {
+    return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
+  }
+
+  const combinedBoundingBox = getCombinedBoundingBox(
+    boundaries.map((boundary) => boundary.boundingBox as BoundingBox),
+  );
+  if (!combinedBoundingBox || combinedBoundingBox.some(isNaN)) {
+    return { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM };
+  }
+
+  return {
+    zoom: getBoundsZoomLevel(combinedBoundingBox, { width, height }),
+    center: [
+      (combinedBoundingBox[1] + combinedBoundingBox[3]) / 2,
+      (combinedBoundingBox[0] + combinedBoundingBox[2]) / 2,
+    ],
+  };
+}
 
 function getCombinedBoundingBox(boundingBoxes: BoundingBox[]): BoundingBox {
   const result = [...boundingBoxes[0]] as BoundingBox;
@@ -117,9 +150,9 @@ export interface CityMetadata {
 }
 
 export interface ProjectMapProps {
-  projectId: string | null;
   width: number;
   height: number;
+  boundaries: ProjectBoundary[];
   setSelectedCity: (city: CityMetadata) => void;
   selectedCity?: CityMetadata;
 }
@@ -128,21 +161,15 @@ const defaultColor = "#648bff";
 const highlightColor = "#ffc363";
 
 export const ProjectMap: FC<ProjectMapProps> = ({
-  projectId,
   width,
   height,
+  boundaries: projectBoundaries,
   setSelectedCity,
   selectedCity,
 }) => {
-  const {
-    data: projectBoundaries,
-    isLoading,
-  } = api.useGetProjectBoundariesQuery(projectId!, {
-    skip: !projectId,
-  });
-
-  const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
-  const [zoom, setZoom] = useState(9);
+  const [{ center, zoom }, setView] = useState(() =>
+    getInitialView(projectBoundaries, width, height),
+  );
   const onBoundsChanged = ({
     center: newCenter,
     zoom: newZoom,
@@ -150,48 +177,11 @@ export const ProjectMap: FC<ProjectMapProps> = ({
     center: [number, number];
     zoom: number;
   }) => {
-    setCenter(newCenter);
-    setZoom(newZoom);
+    setView({ center: newCenter, zoom: newZoom });
   };
-
-  useEffect(() => {
-    if (projectBoundaries) {
-      const boundingBoxes = projectBoundaries.map(
-        (boundary) => boundary.boundingBox,
-      );
-      const combinedBoundingBox = getCombinedBoundingBox(boundingBoxes);
-      if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
-        const newZoom = getBoundsZoomLevel(combinedBoundingBox, {
-          width,
-          height,
-        });
-        const newCenter: [number, number] = [
-          (combinedBoundingBox[1] + combinedBoundingBox[3]) / 2,
-          (combinedBoundingBox[0] + combinedBoundingBox[2]) / 2,
-        ];
-        setCenter(newCenter);
-        setZoom(newZoom);
-      }
-    }
-  }, [projectBoundaries, height, width]);
 
   return (
     <Box w={width} h={height} position="relative">
-      {isLoading && (
-        <Box
-          w={width}
-          h={height}
-          position="absolute"
-          top={0}
-          left={0}
-          zIndex={1000}
-          pointerEvents="none"
-        >
-          <Center h="full">
-            <Spinner size="lg" />
-          </Center>
-        </Box>
-      )}
       <Map
         height={height}
         center={center}
@@ -206,7 +196,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
             stroke: defaultColor,
           }}
         >
-          {projectBoundaries?.map(
+          {projectBoundaries.map(
             (boundary) =>
               boundary.data && (
                 <GeoJsonFeature
@@ -221,7 +211,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           )}
         </GeoJson>
 
-        {projectBoundaries?.map(
+        {projectBoundaries.map(
           (boundary) =>
             boundary.boundingBox && (
               <Marker

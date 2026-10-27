@@ -1,6 +1,6 @@
 import { Box, SimpleGrid, Image } from "@chakra-ui/react";
 
-interface PartnerLogo {
+export interface PartnerLogo {
   id: string;
   name: string;
   logo?: string;

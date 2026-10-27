@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable i18next/no-literal-string */
 import { Box, Link, Text } from "@chakra-ui/react";
 import Image from "next/image";

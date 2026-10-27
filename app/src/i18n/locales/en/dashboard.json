@@ -303,6 +303,8 @@
   "possible-mistake": "If you think this is a mistake",
   "please-contact-us": "please contact us",
   "go-back": "Go Back",
+  "project-not-found": "Project Not Found",
+  "project-not-found-description": "The project you're looking for doesn't exist or has been moved.",
   "publish-success-title": "Published Successfully",
   "publish-success-description": "Your inventory has been successfully published to the web.",
   "unpublish-success-title": "Unpublished Successfully",

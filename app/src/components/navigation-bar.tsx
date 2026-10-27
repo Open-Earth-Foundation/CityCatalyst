@@ -101,8 +101,12 @@ export function NavigationBar({
   );
 
   const { data: session, status } = useSession();
-  const { data: userInfo } = api.useGetUserInfoQuery();
-  const { data: allModules } = useGetModulesQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
+    skip: isPublic,
+  });
+  const { data: allModules } = useGetModulesQuery(undefined, {
+    skip: isPublic,
+  });
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
     undefined,
     {
@@ -270,7 +274,11 @@ export function NavigationBar({
                 </Heading>
               </Link>
               {moduleName && (
-                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
+                <Box
+                  display={{ base: "none", md: "flex" }}
+                  alignItems="center"
+                  gap={2}
+                >
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -286,7 +294,11 @@ export function NavigationBar({
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
+        <Box
+          display="flex"
+          gap={{ base: "12px", md: "48px" }}
+          alignItems="center"
+        >
           {children}
           <Box display="flex" gap={{ base: "8px", md: "32px" }}>
             <MenuRoot

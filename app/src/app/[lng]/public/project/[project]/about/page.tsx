@@ -1,7 +1,4 @@
 /* eslint-disable i18next/no-literal-string */
-"use client";
-
-import { use } from "react";
 import Image from "next/image";
 import {
   Box,
@@ -15,13 +12,11 @@ import {
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
-import { useTranslation } from "@/i18n/client";
 
-const About = (props: {
+const About = async (props: {
   params: Promise<{ project: string; lng: string }>;
 }) => {
-  const { project, lng } = use(props.params);
-  const { t } = useTranslation(lng, "dashboard");
+  const { project, lng } = await props.params;
 
   const footerProps = {
     copyright: "© 2025 CHAMP Brazil Cities Initiative",
@@ -34,7 +29,7 @@ const About = (props: {
 
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
-      <NavigationBar lng={lng} project={project} t={t} />
+      <NavigationBar lng={lng} project={project} />
       <Box as="main" flexGrow={1}>
         {/* Project Overview Section */}
         <Box py={16} px={{ base: 4, md: 8 }}>

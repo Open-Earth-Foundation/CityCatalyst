@@ -1,16 +1,18 @@
+"use client";
+
 import { Heading, Link } from "@chakra-ui/react";
 import { NavigationBar } from "@/components/navigation-bar";
-import type { TFunction } from "i18next";
+import { useTranslation } from "@/i18n/client";
 
 const ProjectDashboardNavbar = ({
   lng,
   project,
-  t,
 }: {
   lng: string;
   project: string;
-  t: TFunction;
 }) => {
+  const { t } = useTranslation(lng, "dashboard");
+
   return (
     <NavigationBar lng={lng} isPublic>
       <>

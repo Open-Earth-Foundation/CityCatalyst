@@ -241,7 +241,7 @@ const EmissionDataSection = ({
               </Button>
             )}
             <MenuRoot>
-              <MenuTrigger>
+              <MenuTrigger asChild>
                 <IconButton
                   aria-label="more-icon"
                   variant="ghost"

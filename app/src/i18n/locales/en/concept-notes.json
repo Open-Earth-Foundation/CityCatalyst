@@ -544,6 +544,7 @@
   "gap-answer-later": "Answer later",
   "gap-preview-change": "Preview chapter change",
   "gap-acceptance-hint": "Nothing is applied until you accept. Questions left unanswered keep this gap open.",
+  "gap-answer-too-long": "Your answers are too long to send. Shorten them and try again.",
   "gap-complete-hint": "Your answers will fill this gap once you accept the change.",
   "gap-chat-placeholder": "Or explain it in your own words…",
   "gap-answer-request": "For the missing information in \"{{chapter}}\":\n{{question}}\n\nMy answer:\n{{answer}}\n\nPropose a chapter update for me to review. Keep any information I have not supplied marked as missing. Do not apply changes without my acceptance.",

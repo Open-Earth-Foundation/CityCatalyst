@@ -158,7 +158,7 @@ async def propose_gap_question(
                 "chapter_excerpt": (chapter.body_markdown or "")[:12000],
                 "question": question,
                 "why_asking": gap.why_asking if gap else "",
-                "previous_answers": [answer[:2000] for answer in previous_answers],
+                "previous_answers": previous_answers,
             },
             "cnb_gap_question",
             GapQuestionOutput,

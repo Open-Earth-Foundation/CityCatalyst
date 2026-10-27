@@ -30,8 +30,11 @@ interface GapAnswerFormProps {
   request: GapAnswerRequest;
   lng: string;
   disabled: boolean;
-  /** complete is true when every question has a substantive answer. */
-  onAnswer: (answer: string, complete: boolean) => void;
+  /**
+   * complete is true when every question has a substantive answer. Returns
+   * false when the request is too long to send, so the form keeps the answers.
+   */
+  onAnswer: (answer: string, complete: boolean) => boolean;
   onClose: () => void;
   onAddSource: () => void;
 }
@@ -75,24 +78,31 @@ export function GapAnswerForm({
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
   const [choices, setChoices] = useState<Record<number, string>>({});
-  const [customAnswers, setCustomAnswers] = useState<Record<number, string>>(
+  // Keyed by question text so a retry that changes the questions cannot
+  // attach earlier text to a different question.
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
     {},
   );
   const [details, setDetails] = useState("");
   const [showRequest, setShowRequest] = useState(false);
+  const [tooLong, setTooLong] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
   const whyAsking = question?.why_asking ?? request.row.whyAsking;
   // Without generated questions, the original gap is one free-text question.
   const questions = question?.questions ?? [
     { question: request.row.question, options: [] },
   ];
+  const answerKey = (index: number) => `${index}:${questions[index].question}`;
   const answers = questions.map(({ options }, index) => {
     const choice = choices[index];
-    if (choice === "custom") return customAnswers[index]?.trim() || undefined;
+    if (choice === "custom")
+      return customAnswers[answerKey(index)]?.trim() || undefined;
     if (choice === "unknown") return undefined;
     return options.find((_, option) => choice === String(option));
   });
-  const complete = answers.every(Boolean);
+  // Edit validation only lets a marker be replaced for a recorded open gap, so
+  // legacy inline markers (no gap record) are answered without replacing them.
+  const complete = request.row.gap !== null && answers.every(Boolean);
   const answered = answers.some(Boolean);
 
   useEffect(() => {
@@ -100,7 +110,7 @@ export function GapAnswerForm({
     const timer = window.setTimeout(async () => {
       try {
         const response = await fetch(
-          `/api/v1/concept-notes/${runId}/gap-question`,
+          `/api/v1/concept-notes/${runId}/gap-question/`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -156,7 +166,7 @@ export function GapAnswerForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (disabled || loading || !answered) return;
-        onAnswer(
+        const sent = onAnswer(
           [
             ...questions.map(
               ({ question: text }, index) =>
@@ -168,6 +178,7 @@ export function GapAnswerForm({
             .join("\n\n"),
           complete,
         );
+        setTooLong(!sent);
       }}
     >
       <VStack align="stretch" gap={3}>
@@ -331,11 +342,11 @@ export function GapAnswerForm({
               </RadioGroup>
               {choices[index] === "custom" && (
                 <Textarea
-                  value={customAnswers[index] ?? ""}
+                  value={customAnswers[answerKey(index)] ?? ""}
                   onChange={(event) =>
                     setCustomAnswers((current) => ({
                       ...current,
-                      [index]: event.target.value,
+                      [answerKey(index)]: event.target.value,
                     }))
                   }
                   aria-label={text}
@@ -370,6 +381,15 @@ export function GapAnswerForm({
             {t("gap-answer-later")}
           </Button>
         </HStack>
+        {tooLong && (
+          <Text
+            role="alert"
+            fontSize="body.sm"
+            color="sentiment.negativeDefault"
+          >
+            {t("gap-answer-too-long")}
+          </Text>
+        )}
         <Button
           type="submit"
           bg="content.link"

@@ -288,6 +288,16 @@ async def test_edit_window_excludes_complete_source_text() -> None:
     assert recent_user_inputs(window) == []
 
 
+def test_edit_window_excludes_draft_overview_facts() -> None:
+    overview = {"role": "user", "content": f"{DRAFT_OVERVIEW_JSON_MARKER}\n{{}}"}
+    current = {"role": "user", "content": "Set the capex to PLN 1."}
+    window = recent_concept_note_edit_messages(
+        [overview, current], current_instruction=current["content"]
+    )
+    assert window == []
+
+
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_JSON_MARKER
 from app.services.cnb.edit_validation import recent_user_inputs
 from app.utils.streaming_context import (
     load_concept_note_context_message,

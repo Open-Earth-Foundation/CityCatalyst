@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
@@ -10,10 +11,13 @@ from app.models.cnb.gap_question import (
     GapQuestionRequest,
     GapSubQuestion,
 )
+from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.persistence.concept_notes.edits import applied_gap_answers
 from app.routes.concept_note_runs import propose_gap_question
 from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
 from pydantic import ValidationError
+from tests.test_concept_note_lifecycle import _workspace_repository
 
 
 @pytest.mark.parametrize(
@@ -155,7 +159,8 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert len(context["chapter_excerpt"]) == 12000
     # Earlier accepted answers steer the model away from re-asking them.
     assert gap_route.previous.call_args.kwargs["question"] == "Original question"
-    assert [len(answer) for answer in context["previous_answers"]] == [2000]
+    # Whole entries: truncating would drop later answers and undecided parts.
+    assert context["previous_answers"] == ["Earlier answer " * 300]
     gap_route.args["session"].commit.assert_not_called()
 
 
@@ -164,3 +169,48 @@ async def test_provider_failure_is_explicit_and_retryable(gap_route):
     with pytest.raises(HTTPException) as error:
         await propose_gap_question(**gap_route.args)
     assert error.value.status_code == 503
+
+
+async def test_previous_answers_keep_only_accepted_text_within_budget():
+    run_id, accepted, rejected = uuid4(), str(uuid4()), str(uuid4())
+    question = "What is the requested instrument?"
+
+    def proposal(minute, status, instruction, **values):
+        return ConceptNoteEditProposal(
+            run_id=run_id,
+            actor_user_id="owner",
+            idempotency_key=uuid4(),
+            request_fingerprint="a" * 64,
+            instruction=instruction,
+            scope={},
+            status=status,
+            created_at=datetime(2026, 10, 26, 12, minute, tzinfo=UTC),
+            **values,
+        )
+
+    async with _workspace_repository() as (_, factory):
+        async with factory() as session, session.begin():
+            session.add_all(
+                [
+                    proposal(1, "applied", f"{question}\n1. Instrument?\nLoan"),
+                    proposal(2, "applied", f"{question}\n{'x' * 200}"),
+                    proposal(3, "rejected", f"{question}\nGuarantee"),
+                    proposal(4, "applied", "Another gap\nGrant"),
+                    proposal(
+                        5,
+                        "partially_applied",
+                        f"{question}\n1. Instrument?\nGrant\n\n2. Amount?\nEUR 2m",
+                        changes=[
+                            {"change_id": accepted, "user_input_quote": "Grant"},
+                            {"change_id": rejected, "user_input_quote": "EUR 2m"},
+                        ],
+                        applied_result={"accepted_change_ids": [accepted]},
+                    ),
+                ]
+            )
+        async with factory() as session:
+            answers = await applied_gap_answers(
+                session, run_id=run_id, question=question, limit=5, max_chars=100
+            )
+    # The rejected amount is asked again; the over-budget entry is skipped whole.
+    assert answers == ["Grant", "1. Instrument?\nLoan"]

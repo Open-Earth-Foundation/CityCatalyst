@@ -42,7 +42,10 @@ import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
 import type { EditController } from "./document-review";
-import type { EditScope } from "@/util/concept-note-edit-types";
+import {
+  EDIT_INSTRUCTION_MAX_CHARS,
+  type EditScope,
+} from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftState } from "@/util/types";
 
 // About eight lines of composer text before it scrolls.
@@ -366,17 +369,19 @@ export function ConceptNoteChatPanel({
     if (chatDisabled || !content) {
       return;
     }
+    if (gapAnswer) {
+      // Keep the typed text when the gap request would be too long to send.
+      if (answerGap(content)) setInput("");
+      return;
+    }
     setInput("");
     followLatestRef.current = true;
-    if (gapAnswer) {
-      await answerGap(content);
-    } else {
-      await sendChatMessage(content);
-    }
+    await sendChatMessage(content);
   }
 
-  async function answerGap(answer: string, complete = false): Promise<void> {
-    if (!gapAnswer || chatDisabled) return;
+  /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
+  function answerGap(answer: string, complete = false): boolean {
+    if (!gapAnswer || chatDisabled) return false;
     // Only a complete answer may replace the marker; that is what closes the gap.
     const content = t(
       complete ? "gap-answer-complete-request" : "gap-answer-request",
@@ -387,6 +392,7 @@ export function ConceptNoteChatPanel({
         interpolation: { escapeValue: false },
       },
     );
+    if (content.length > EDIT_INSTRUCTION_MAX_CHARS) return false;
     const scope: EditScope = {
       kind: "auto",
       focused_chapter_id: gapAnswer.chapterId,
@@ -394,7 +400,8 @@ export function ConceptNoteChatPanel({
     onCloseGap();
     onOpenDraft?.();
     followLatestRef.current = true;
-    await sendChatMessage(content, scope);
+    void sendChatMessage(content, scope);
+    return true;
   }
 
   return (
@@ -497,7 +504,7 @@ export function ConceptNoteChatPanel({
             request={gapAnswer}
             lng={lng}
             disabled={chatDisabled}
-            onAnswer={(answer, complete) => void answerGap(answer, complete)}
+            onAnswer={answerGap}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
           />

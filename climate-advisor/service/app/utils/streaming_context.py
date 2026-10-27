@@ -12,6 +12,7 @@ from app.persistence.concept_notes.context_bundle import (
     load_agent_context,
     load_source_documents,
 )
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_JSON_MARKER
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_stationary_energy_context_payload,
@@ -187,8 +188,10 @@ def recent_concept_note_edit_messages(
         "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n",
         "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n",
         "INTERNAL_TOOL_OUTPUT_JSON\n",
-        # Uploaded source text is user-role runtime data, not something the user typed.
+        # Uploaded source text and draft facts are user-role runtime data, not
+        # something the user typed.
         f"{SOURCE_DOCUMENTS_MESSAGE_HEADER}\n",
+        f"{DRAFT_OVERVIEW_JSON_MARKER}\n",
     )
     visible_messages = [
         {"role": message["role"], "content": message["content"]}

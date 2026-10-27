@@ -8,12 +8,15 @@ export const editScopeSchema = z
   })
   .strict();
 
+/** Climate Advisor rejects longer edit instructions; chat messages are instructions. */
+export const EDIT_INSTRUCTION_MAX_CHARS = 8_000;
+
 export const editProposalRequestSchema = z
   .object({
     instruction: z
       .string()
       .min(1)
-      .max(8_000)
+      .max(EDIT_INSTRUCTION_MAX_CHARS)
       .refine((value) => value.trim().length > 0),
     scope: editScopeSchema,
     idempotency_key: z.string().uuid(),

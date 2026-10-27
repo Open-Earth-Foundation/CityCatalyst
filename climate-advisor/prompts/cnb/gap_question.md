@@ -35,8 +35,10 @@ Input is a JSON object with:
 - chapter_excerpt (string): up to 12000 characters of its current draft.
 - question (string): the original missing-information question.
 - why_asking (string): explanation of why the original gap matters, if available.
-- previous_answers (array of strings): earlier accepted answer requests for this
-  gap, newest first; empty when the gap has not been answered before.
+- previous_answers (array of strings): the user's earlier accepted answers for this
+  gap, newest first; only the parts the user accepted into the draft, so anything
+  missing from them is still unconfirmed. Empty when the gap has not been answered
+  before.
 </input>
 
 <output>

@@ -469,9 +469,72 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
     row: { ...gapAnswer.row, gap: null },
   });
   await act(async () => answer.form!.requestSubmit());
+  // A legacy marker has no gap record, which edit validation requires before a
+  // marker may be replaced, so even a full answer keeps the marker.
   expect(sendMessage.mock.calls[0][0]).toContain(
-    "My answers:\n1. What amount?\nLoan",
+    "My answer:\n1. What amount?\nLoan",
   );
+  expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
+});
+
+it("requests questions at the trailing-slash route", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(fetchQuestion.mock.calls[0][0]).toBe(
+    "/api/v1/concept-notes/run/gap-question/",
+  );
+});
+
+it("does not attach fallback text to a different question after a retry", async () => {
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await writeAnswer(0, "Loan");
+  fetchQuestion.mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({
+      why_asking: "Timing matters.",
+      questions: [{ question: "What completion year?", options: [] }],
+    }),
+  } as Response);
+  const retry = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "gap-retry-question",
+  )!;
+  await act(async () => retry.click());
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(subQuestion(0).textContent).toContain("What completion year?");
+  expect(
+    subQuestion(0).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toBe("");
+  expect(previewButton().disabled).toBe(true);
+});
+
+it("keeps the form and answers when the request exceeds the edit limit", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "Several parts are missing.",
+      questions: [1, 2, 3, 4].map((part) => ({
+        question: `Part ${part}?`,
+        options: [],
+      })),
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  for (const index of [0, 1, 2, 3]) await writeAnswer(index, "x".repeat(2000));
+  await act(async () => previewButton().click());
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(closeGap).not.toHaveBeenCalled();
+  expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+    "gap-answer-too-long",
+  );
+  expect(
+    subQuestion(3).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toHaveLength(2000);
 });
 
 it("keeps an undecided answer explicit instead of selecting an invented fact", async () => {

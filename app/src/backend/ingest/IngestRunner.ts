@@ -1,4 +1,8 @@
 import { createHash } from "node:crypto";
+import {
+  coarseKindsFromExtensions,
+  detectCoarseFileKind,
+} from "./coarse-kind";
 import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
@@ -24,11 +28,6 @@ export interface EnqueueIngestJobInput {
 
 function hasScope(scope: IngestScope): boolean {
   return Boolean(scope.organizationId || scope.projectId || scope.cityId);
-}
-
-function extensionOf(fileName: string): string {
-  const parts = fileName.toLowerCase().split(".");
-  return parts.length > 1 ? (parts[parts.length - 1] ?? "") : "";
 }
 
 function contentHash(buffer: Buffer): string {
@@ -101,10 +100,6 @@ export class IngestRunner {
 
     try {
       await this.setStage(item.id, "receive");
-      const ext = extensionOf(item.originalFileName);
-      if (ext && ext !== "zip" && !plugin.allowedExtensions.includes(ext)) {
-        throw new IngestItemError("unsupported_extension");
-      }
 
       await this.setStage(item.id, "store");
       // Bytes and hash are already on the item (S3 comes in CC-955).
@@ -113,11 +108,23 @@ export class IngestRunner {
       await plugin.match?.({ job, item: await this.requireItem(item.id), scope });
 
       await this.setStage(item.id, "detect");
-      await plugin.detect({
-        job,
-        item: await this.requireItem(item.id),
-        scope,
-      });
+      const current = await this.requireItem(item.id);
+      const coarse = detectCoarseFileKind(
+        current.originalFileName,
+        current.buffer,
+      );
+      await this.store.updateItem(item.id, { coarseKind: coarse });
+      if (coarse === "unknown") {
+        throw new IngestItemError("unsupported_extension");
+      }
+      const allowedKinds = coarseKindsFromExtensions(plugin.allowedExtensions);
+      if (!allowedKinds.includes(coarse)) {
+        throw new IngestItemError("unsupported_extension");
+      }
+      await plugin.detect(
+        { job, item: await this.requireItem(item.id), scope },
+        coarse,
+      );
 
       await this.setStage(item.id, "parse");
       const parsed = await plugin.parse({

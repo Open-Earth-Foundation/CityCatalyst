@@ -10,6 +10,7 @@ import {
 } from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
 import {
   proposalLabel,
+  proposalRationaleLabel,
   sourceGeographyLabel,
 } from "@/components/StationaryEnergyDraft/utils";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
@@ -109,6 +110,40 @@ describe("stationary energy draft display", () => {
     expect(sourceGeographyLabel("country", t)).toBe("país");
     expect(sourceGeographyLabel("global", t)).toBeNull();
     expect(sourceGeographyLabel("country")).toBe("country");
+  });
+
+  it("translates the review card rationale instead of the English backend text", () => {
+    const es = esAgentic as Record<string, string>;
+    const t = ((key: string, opts?: Record<string, string>) =>
+      (es[key] ?? key).replace(
+        "{{- notation}}",
+        opts?.notation ?? "",
+      )) as Parameters<typeof proposalRationaleLabel>[1];
+    const proposal = {
+      proposal_id: "p1",
+      target_ref: {},
+      alternative_candidate_ids: [],
+      rationale:
+        "Single applicable source; value taken directly from the connected dataset.",
+      status: "ready",
+    };
+
+    expect(proposalRationaleLabel(proposal, t)).toBe(
+      es["review-rationale-single-source"],
+    );
+    expect(
+      proposalRationaleLabel(
+        {
+          ...proposal,
+          status: "gap",
+          proposed_value: { notation_key: "NO" },
+        },
+        t,
+      ),
+    ).toBe("La fuente conectada reporta No ocurre (NO) para esta fila.");
+    expect(
+      proposalRationaleLabel({ ...proposal, status: "future_status" }, t),
+    ).toBe(proposal.rationale);
   });
 
   it("has no English leftovers in the Spanish stationary energy copy", () => {

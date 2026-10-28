@@ -276,6 +276,8 @@ export default function HomePage({
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between"
+                    flexWrap="wrap"
+                    gap={4}
                   >
                     <Text
                       color="content.secondary"
@@ -288,7 +290,7 @@ export default function HomePage({
                     >
                       {t("inventories")}
                     </Text>
-                    <Box display="flex" alignItems="center" gap="16px">
+                    <Box display="flex" flexWrap="wrap" alignItems="center" gap="16px">
                       <AddCollaboratorButton
                         lng={language}
                         organizationId={organization?.organizationId}
@@ -341,7 +343,7 @@ export default function HomePage({
                     lazyMount
                     defaultValue="tab-emission-inventory-calculation-title"
                   >
-                    <Tabs.List>
+                    <Tabs.List flexWrap="wrap">
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",

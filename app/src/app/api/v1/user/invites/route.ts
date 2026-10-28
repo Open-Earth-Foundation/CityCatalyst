@@ -8,6 +8,13 @@
  *     operationId: getUserInvites
  *     summary: List city invites sent by current user
  *     description: Retrieves all city invitations sent by the current user. Automatically updates invites that have been pending for more than 30 days to EXPIRED status. Returns invite details including associated cities and user information. Requires authentication.
+ *     parameters:
+ *       - in: query
+ *         name: inviteId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     responses:
  *       200:
  *         description: Invites returned with status updates.
@@ -31,7 +38,7 @@ import { InviteStatus, Roles } from "@/util/types";
 import { subDays } from "date-fns";
 import EmailService from "@/backend/EmailService";
 
-export const GET = apiHandler(async (req, { session }) => {
+export const GET = apiHandler(async (req, { session, searchParams }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
@@ -39,6 +46,7 @@ export const GET = apiHandler(async (req, { session }) => {
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
+      inviteId: !!searchParams.inviteId ? searchParams.inviteId : undefined, // only filter if not empty
       status: { [Op.ne]: InviteStatus.CANCELED },
     },
     include: [
@@ -202,19 +210,20 @@ export const POST = apiHandler(async (req, { session }) => {
   const failedInvites: { email: string; cityIds: string[] }[] = [];
   const inviteUrls: Record<string, string> = {};
   const emailFailures: string[] = [];
+  const inviteId = randomUUID();
 
   await Promise.all(
     invites.map(async ({ email, role }) => {
       const inviteData = { email, cityIds };
       try {
         const invitationCode = jwt.sign(
-          { email, reason: "invite", cities: cityIds, role, projectId },
+          { email, reason: "invite", role, projectId, inviteId },
           process.env.VERIFICATION_TOKEN_SECRET!,
           {
             expiresIn: "30d",
           },
         );
-        const cityInvites = await Promise.all(
+        await Promise.all(
           cityIds.map(async (cityId) => {
             const existingInvite = await db.models.CityInvite.findOne({
               where: { email, cityId },
@@ -232,6 +241,7 @@ export const POST = apiHandler(async (req, { session }) => {
                 id: randomUUID(),
                 cityId,
                 email,
+                inviteId,
                 invitingUserId: session.user.id,
               });
 
@@ -252,7 +262,8 @@ export const POST = apiHandler(async (req, { session }) => {
         const params = new URLSearchParams();
 
         // Add query parameters
-        params.set("cityIds", cityInvites.map((i) => i.cityId).join(","));
+        params.set("inviteType", "city");
+        params.set("inviteId", inviteId);
         params.set("token", invitationCode);
         params.set("email", email);
         params.set(

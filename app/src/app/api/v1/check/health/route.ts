@@ -59,12 +59,11 @@ const checkDatabase = async () => {
   try {
     await db.sequelize?.query("SELECT 1");
     lastCheckResult = true;
-  } catch (error: any) {
+  } catch (error: unknown) {
     lastCheckResult = false;
     logger.error(
-      "Database connection is not working: " + (error instanceof Error)
-        ? error.message
-        : "unknown reason",
+      "Database connection is not working: " +
+        (error instanceof Error ? error.message : "unknown reason"),
     );
   }
   lastCheckTime = now;

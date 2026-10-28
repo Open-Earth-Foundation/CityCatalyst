@@ -268,8 +268,8 @@ function buildManualActivityData(
   manualValue: number,
   manualUnit: ManualEmissionsUnit,
   note?: string,
-): Record<string, unknown> | null {
-  const activityData: Record<string, unknown> = {
+): Record<string, string | string[] | number> | null {
+  const activityData: Record<string, string | string[] | number> = {
     co2_amount: manualValue,
     co2_unit: manualUnit,
   };

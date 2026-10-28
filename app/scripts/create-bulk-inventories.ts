@@ -78,7 +78,7 @@ const baseConnectBody = {
   years
 };
 
-function createRequest(body: any, method: string = "POST") {
+function createRequest(body: unknown, method: string = "POST") {
   return fetch(createUrl, {
     method,
     headers: {
@@ -89,7 +89,7 @@ function createRequest(body: any, method: string = "POST") {
   });
 }
 
-function connectRequest(body: any, method: string = "POST") {
+function connectRequest(body: unknown, method: string = "POST") {
   return fetch(connectUrl, {
     method,
     headers: {

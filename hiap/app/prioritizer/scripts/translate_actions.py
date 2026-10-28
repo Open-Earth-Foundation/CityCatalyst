@@ -1,35 +1,33 @@
-"""
-This script translates the climate actions into the specified language.
+"""Translate selected climate-action fields into another language.
 
-It translates the following fields:
-- ActionName
-- Description
-- Dependencies
-- KeyPerformanceIndicators
-- EquityAndInclusionConsiderations
+Inputs:
+- CLI args: ``--language`` is a two-letter target language code and ``--filename``
+  is a JSON filename under ``app/prioritizer/data/excel``.
+- Env vars: ``OPENAI_API_KEY`` authenticates OpenAI requests and
+  ``OPENAI_MODEL_NAME_ACTION_TRANSLATION`` selects the translation model.
 
-Execute the script with the following command:
-python hiap/app/prioritizer/scripts/translate_actions.py --language <language_code> --filename <filename.json>
+Outputs:
+- Writes ``translation_<language>.json`` beside the input file and logs progress.
 
-Example:
-python hiap/app/prioritizer/scripts/translate_actions.py --language es --filename merged.json
+Usage (from the ``hiap`` project root):
+- ``python -m app.prioritizer.scripts.translate_actions --language es --filename merged.json``
 """
 
 import argparse
 import json
+import logging
 import os
-from openai import OpenAI
 from pathlib import Path
-from typing import Dict, Any, List
+
 from dotenv import load_dotenv
+from openai import OpenAI
+
+from app.utils.logging_config import setup_logger
 
 BASE_DIR = Path(__file__).parent.parent
+logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_dotenv()
-
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+OPENAI_MODEL_NAME_ACTION_TRANSLATION = "OPENAI_MODEL_NAME_ACTION_TRANSLATION"
 
 FIELDS_TO_TRANSLATE = [
     "ActionName",
@@ -40,12 +38,16 @@ FIELDS_TO_TRANSLATE = [
 ]
 
 
+def get_openai_client() -> OpenAI:
+    """Load local configuration and construct the OpenAI client."""
+    load_dotenv()
+    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
 def translate_text(text: str | None, target_language: str | None) -> str | None:
-    """
-    Translate text using OpenAI API
-    """
+    """Translate text, returning the original text when the API call fails."""
     if text is None or target_language is None:
-        print("Text or target language is None - skipping translation")
+        logger.warning("Text or target language is None; skipping translation")
         return None
 
     system_prompt = """
@@ -79,26 +81,25 @@ This is the climate actions:
 """
 
     try:
+        client = get_openai_client()
         response = client.chat.completions.create(
-            model="gpt-4.1",
+            model=os.environ[OPENAI_MODEL_NAME_ACTION_TRANSLATION],
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.0,
+            reasoning_effort="none",
             seed=42,
         )
         translated_text = response.choices[0].message.content
         return translated_text.strip() if translated_text else None
-    except Exception as e:
-        print(f"Error translating text: {e}")
+    except Exception:
+        logger.exception("Failed to translate text")
         return text
 
 
-def translate_list(items: List[str], target_language: str) -> List[str]:
-    """
-    Translate a list of strings
-    """
+def translate_list(items: list[str], target_language: str) -> list[str]:
+    """Translate a list while preserving its item boundaries."""
     if not items:
         return items
 
@@ -115,10 +116,8 @@ def translate_list(items: List[str], target_language: str) -> List[str]:
     return items
 
 
-def translate_action(action: Dict[str, Any], target_language: str) -> Dict[str, Any]:
-    """
-    Translate specific fields in an action
-    """
+def translate_action(action: dict[str, object], target_language: str) -> dict[str, object]:
+    """Translate the configured textual fields in one climate action."""
     translated_action = action.copy()
 
     for field in FIELDS_TO_TRANSLATE:
@@ -134,7 +133,8 @@ def translate_action(action: Dict[str, Any], target_language: str) -> Dict[str, 
     return translated_action
 
 
-def main():
+def parse_args() -> argparse.Namespace:
+    """Parse translation command-line arguments."""
     parser = argparse.ArgumentParser(
         description="Translate climate actions to specified language"
     )
@@ -150,7 +150,12 @@ def main():
         required=True,
         help="Input JSON filename located under data/excel (e.g., merged.json)",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main() -> None:
+    """Read climate actions, translate them, and write the translated JSON file."""
+    args = parse_args()
 
     # Input and output paths (read from data/excel/{filename}, write translation_{language}.json into same folder)
     input_path = Path(BASE_DIR / "data/excel" / args.filename)
@@ -159,27 +164,31 @@ def main():
     output_path = input_path.parent / f"translation_{args.language}.json"
 
     # Read input file
-    print(f"Reading actions from {input_path}")
-    with open(input_path, "r", encoding="utf-8") as f:
+    logger.info("Reading actions from %s", input_path)
+    with input_path.open("r", encoding="utf-8") as f:
         actions = json.load(f)
 
     # Translate actions
-    print(f"Translating {len(actions)} actions to {args.language}")
+    logger.info("Translating %s actions to %s", len(actions), args.language)
     translated_actions = []
     for i, action in enumerate(actions, 1):
-        print(
-            f"Translating action {i}/{len(actions)}: {action.get('ActionID', 'Unknown ID')}"
+        logger.info(
+            "Translating action %s/%s: %s",
+            i,
+            len(actions),
+            action.get("ActionID", "Unknown ID"),
         )
         translated_action = translate_action(action, args.language)
         translated_actions.append(translated_action)
 
     # Write output file
-    print(f"Writing translated actions to {output_path}")
-    with open(output_path, "w", encoding="utf-8") as f:
+    logger.info("Writing translated actions to %s", output_path)
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(translated_actions, f, ensure_ascii=False, indent=2)
 
-    print("Translation completed successfully!")
+    logger.info("Translation completed successfully")
 
 
 if __name__ == "__main__":
+    setup_logger()
     main()

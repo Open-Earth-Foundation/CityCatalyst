@@ -12,7 +12,7 @@ export interface FormulaInputAttributes {
   formulaInputValue: number;
   formulaInputUnits: string;
   formulaName: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, object>;
   region: string;
   actorId: string;
   datasource: string;
@@ -48,7 +48,7 @@ export class FormulaInput
   declare formulaInputValue: number;
   declare formulaInputUnits: string;
   declare formulaName: string;
-  declare metadata?: Record<string, any>;
+  declare metadata?: Record<string, object>;
   declare region: string;
   declare actorId: string;
   declare datasource: string;

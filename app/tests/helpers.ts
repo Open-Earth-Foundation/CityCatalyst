@@ -1,6 +1,6 @@
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { jest } from "@jest/globals";
 import stream from "stream";
 import { Blob } from "fetch-blob";
@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const mockUrl = "http://localhost:3000/api/v1";
 
-export function createRequest(url: string, body?: any) {
+export function createRequest(url: string, body?: unknown) {
   const request = new NextRequest(new URL(url));
   request.json = jest.fn(() =>
     Promise.resolve(body),
@@ -27,7 +27,7 @@ export function createRequest(url: string, body?: any) {
 }
 
 export function mockRequest(
-  body?: any,
+  body?: unknown,
   searchParams?: Record<string, string>,
   headers?: Record<string, string>,
 ): NextRequest {
@@ -162,7 +162,10 @@ export async function expectStatusCodes(
   }
 }
 
-export const expectToBeLooselyEqual = (received: any, expected: any) => {
+export const expectToBeLooselyEqual = (
+  received: unknown,
+  expected: unknown,
+) => {
   const pass = received == expected;
   if (pass) {
     return {

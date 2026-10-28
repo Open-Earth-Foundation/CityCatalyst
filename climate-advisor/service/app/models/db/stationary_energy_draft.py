@@ -278,6 +278,15 @@ class StationaryEnergyReviewDecision(Base):
     )
     manual_value: Mapped[Optional[Decimal]] = mapped_column(Numeric(), nullable=True)
     manual_unit: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    notation_key: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    unavailable_reason: Mapped[Optional[str]] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+    unavailable_explanation: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+    )
     note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     commit_status: Mapped[str] = mapped_column(
         String(32),
@@ -345,6 +354,15 @@ class StationaryEnergyStagedReviewSelection(Base):
     selected_source_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     selected_candidate_id: Mapped[Optional[UUID]] = mapped_column(
         PGUUID(as_uuid=True),
+        nullable=True,
+    )
+    notation_key: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    unavailable_reason: Mapped[Optional[str]] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+    unavailable_explanation: Mapped[Optional[str]] = mapped_column(
+        Text,
         nullable=True,
     )
     rationale: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

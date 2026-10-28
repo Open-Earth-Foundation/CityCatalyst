@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.query(`
       UPDATE "ActivityValue" av
       SET metadata = COALESCE(av.metadata, '{}'::jsonb) || jsonb_build_object(
@@ -15,7 +15,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.query(`
       UPDATE "ActivityValue" av
       SET metadata = av.metadata - 'sourceExplanation' - 'dataQuality'

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { logger } from "@/services/logger";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 
 export type LoginData = {
   email: string;
   password: string;
+  securityToken?: string;
 };
 
 export type UseLoginReturn = {
@@ -22,7 +23,6 @@ export type UseLoginReturn = {
 export const useLogin = (): UseLoginReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
   const { lng } = useParams();
   const clearError = () => setError("");
 
@@ -38,12 +38,16 @@ export const useLogin = (): UseLoginReturn => {
         redirect: false,
         email: data.email,
         password: data.password,
+        securityToken: data.securityToken,
         callbackUrl: callbackUrl || `/${lng}/cities`,
       });
 
       if (result?.error) {
         logger.error({ err: result.error }, "Sign in failure:");
-        const errorMessage = "invalid-email-or-password";
+        const errorMessage =
+          result.error === "rate-limited"
+            ? "too-many-login-attempts"
+            : "invalid-email-or-password";
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

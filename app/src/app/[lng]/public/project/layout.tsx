@@ -1,13 +1,13 @@
-import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 
+// Every page under /public/project/[project] renders its own tabbed
+// navbar (components/Navbar.tsx, wrapping NavigationBar with
+// Dashboard/About/Collaborators links) - this layout must not render
+// NavigationBar itself, or it shows twice.
 export default async function DataLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = await props.params;
-
   return (
     <Box
       h="full"
@@ -15,8 +15,6 @@ export default async function DataLayout(props: {
       flexDirection="column"
       bg="background.backgroundLight"
     >
-      <NavigationBar lng={lng} isPublic={true} />
-      <Toaster />
       <Box w="full" h="full">
         {props.children}
       </Box>

@@ -7,7 +7,7 @@
  *       - results
  *     operationId: getInventoryResults
  *     summary: Get emissions totals by sector and top emitters for an inventory.
- *     description: Computes the inventory's total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data: { totalEmissions, topEmissions } '}'.
+ *     description: "Computes the inventory's total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data: { totalEmissions, topEmissions } '}'."
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -75,14 +75,21 @@ export const GET = apiHandler(
     // ensure inventory belongs to user (read-only access)
     await PermissionService.canAccessInventory(session, inventory);
 
-    const { totalEmissionsBySector, topEmissionsBySubSector, totalEmissions } =
-      await getEmissionResults(inventory);
+    const {
+      totalEmissionsBySector,
+      topEmissionsBySubSector,
+      totalEmissions,
+      grossEmissions,
+      removals,
+    } = await getEmissionResults(inventory);
 
     return NextResponse.json({
       data: {
         totalEmissions: {
           bySector: totalEmissionsBySector || [],
           total: totalEmissions || 0,
+          grossTotal: grossEmissions || 0,
+          removalsTotal: removals || 0,
         },
         topEmissions: { bySubSector: topEmissionsBySubSector || [] },
       },

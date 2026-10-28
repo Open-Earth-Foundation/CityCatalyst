@@ -8,7 +8,7 @@ export interface UserFileAttributes {
   userId: string;
   cityId: string;
   fileReference?: string;
-  data?: Buffer | any;
+  data?: Buffer;
   fileType?: string;
   fileName?: string;
   sector?: string;

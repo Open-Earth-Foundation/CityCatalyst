@@ -1,18 +1,31 @@
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 
 export enum FeatureFlags {
   ENTERPRISE_MODE = "ENTERPRISE_MODE",
   PROJECT_OVERVIEW_ENABLED = "PROJECT_OVERVIEW_ENABLED",
   ACCOUNT_SETTINGS_ENABLED = "ACCOUNT_SETTINGS_ENABLED",
   UPLOAD_OWN_DATA_ENABLED = "UPLOAD_OWN_DATA_ENABLED",
-  JN_ENABLED = "JN_ENABLED",
   OAUTH_ENABLED = "OAUTH_ENABLED",
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
   CCRA_MODULE = "CCRA_MODULE",
   CA_SERVICE_INTEGRATION = "CA_SERVICE_INTEGRATION",
+  CONCEPT_NOTE_BUILDER = "CONCEPT_NOTE_BUILDER",
   STATIONARY_ENERGY_AGENTIC = "STATIONARY_ENERGY_AGENTIC",
   HIGHLIGHT_ENABLED = "HIGHLIGHT_ENABLED",
   NUMERICAL_FORMATS = "NUMERICAL_FORMATS",
+  /**
+   * Fills the results screens with a stand-in ranking built from the live
+   * action catalog, so they can be reviewed before the prioritization
+   * service exists. Never enable outside local review.
+   */
+  MEED_MOCK_RANKING = "MEED_MOCK_RANKING",
+  /**
+   * Serves the Brazil Phase 3 HIAP UI demo at /public/hiap/brazil-demo: a
+   * clickable, fixture-only preview of the adaptation and mitigation tracks
+   * for C40 / I Care review. Public and unauthenticated by design, so enable
+   * it on the dev deployment only.
+   */
+  HIAP_BR_DEMO = "HIAP_BR_DEMO",
 }
 
 const QA_FLAGS_STORAGE_KEY = "qa_feature_flags";
@@ -141,7 +154,7 @@ export function getServerFeatureFlags(): string[] {
     return cachedServerFeatureFlags;
   }
 
-  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+  const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
   if (!flags) {
     cachedServerFeatureFlags = [];
     return cachedServerFeatureFlags;
@@ -262,9 +275,22 @@ export function debugFeatureFlags(): void {
   console.groupEnd();
 }
 
+declare global {
+  interface Window {
+    qaFlags?: {
+      set: typeof setQAFeatureFlag;
+      clear: typeof clearQAFeatureFlag;
+      clearAll: typeof clearAllQAFeatureFlags;
+      list: typeof listQAFeatureFlags;
+      debug: typeof debugFeatureFlags;
+      FeatureFlags: typeof FeatureFlags;
+    };
+  }
+}
+
 // Make QA functions globally available in browser console for easy testing
 if (typeof window !== "undefined") {
-  (window as any).qaFlags = {
+  window.qaFlags = {
     set: setQAFeatureFlag,
     clear: clearQAFeatureFlag,
     clearAll: clearAllQAFeatureFlags,

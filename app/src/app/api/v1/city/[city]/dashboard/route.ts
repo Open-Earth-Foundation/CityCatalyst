@@ -16,6 +16,7 @@ import { Inventory } from "@/models/Inventory";
 import type { AppSession } from "@/lib/auth";
 import { logger } from "@/services/logger";
 import { QueryTypes } from "sequelize";
+import { sqlOmitFromTotal } from "@/util/GHGI/reported-totals";
 
 /**
  * @swagger
@@ -130,8 +131,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
           cityId,
           latestInventory,
           lng,
-          session,
-          false,
         ).catch((err) => {
           logger.error({ error: err }, "Error fetching HIAP dashboard");
           return null;
@@ -161,7 +160,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     await Promise.all(widgetPromises);
 
   // Compute totalEmissions for all inventories from InventoryValue.co2eq sums
-  let totalEmissionsByInventory: Record<string, number | null> = {};
+  const totalEmissionsByInventory: Record<string, number | null> = {};
   if (inventories.length > 0) {
     const inventoryIds = inventories.map((inv) => inv.inventoryId);
     const emissionRows = (await db.sequelize!.query(
@@ -169,6 +168,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         CASE WHEN COUNT(*) > 0 THEN COALESCE(SUM(co2eq), 0) ELSE NULL END AS sum
        FROM "InventoryValue"
        WHERE inventory_id IN (:inventoryIds)
+         AND ${sqlOmitFromTotal()}
        GROUP BY inventory_id`,
       {
         replacements: { inventoryIds },
@@ -211,7 +211,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
     city: cityWithRelations as CityDashboardResponse["city"],
     inventories: inventories.map((inv) => ({
       ...inv.toJSON(),
-      totalEmissions: totalEmissionsByInventory[inv.inventoryId] ?? inv.totalEmissions ?? undefined,
+      totalEmissions:
+        totalEmissionsByInventory[inv.inventoryId] ??
+        inv.totalEmissions ??
+        undefined,
     })),
     population:
       populationData &&

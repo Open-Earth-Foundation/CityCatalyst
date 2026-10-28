@@ -173,7 +173,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *       - projects
  *     operationId: deleteProject
  *     summary: Delete a project by ID (admin only).
- *     description: Permanently deletes the project and all associated cities. Organization admins are notified via email about the deletion. Cannot delete the default project. Requires an admin session. Response is { deleted: true }.
+ *     description: "Permanently deletes the project and all associated cities. Organization admins are notified via email about the deletion. Cannot delete the default project. Requires an admin session. Response is { deleted: true }."
  *     parameters:
  *       - in: path
  *         name: project

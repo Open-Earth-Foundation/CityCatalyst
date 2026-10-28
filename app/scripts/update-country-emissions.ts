@@ -147,7 +147,7 @@ async function updateBrazilCountryEmissions() {
         where: {
           cityId: city.cityId,
           [Op.or]: [
-            { totalCountryEmissions: null as any },
+            { totalCountryEmissions: null as unknown as number },
             { totalCountryEmissions: 0 },
           ],
         },
@@ -197,7 +197,7 @@ async function updateBrazilCountryEmissions() {
 
         try {
           await inventory.update({
-            totalCountryEmissions: BigInt(emissions) as any,
+            totalCountryEmissions: BigInt(emissions) as unknown as number,
           });
 
           logger.info(

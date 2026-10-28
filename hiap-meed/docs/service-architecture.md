@@ -1,88 +1,87 @@
 ﻿# Service Architecture
 
-This document describes how `hiap-meed` fits into the current caller setup and how a prioritization request flows through the service.
+This document describes how `hiap-meed` fits into the current caller setup and how prioritization and output-plan report requests flow through the service.
 
 ---
 
 ## System overview
 
+Prioritization:
+
 ```mermaid
 graph TD
     FE["External hiap-meed frontend / caller"]
+    Request["PrioritizerApiRequest"]
+    Router["POST /v1/prioritize"]
+    Orch["run_prioritization()"]
+    Fetch["Fetch required source data through data clients"]
+    Sources["Global API and private S3 legal CSV"]
+    Inputs["Validated city/action/legal/policy/feasibility inputs"]
+    HF["Hard Filter"]
+    Impact["Impact block"]
+    Align["Alignment block"]
+    Feas["Feasibility block"]
+    WS["Weighted Sum"]
+    Response["PrioritizerApiResponse returned to caller"]
 
-    subgraph hiap-meed ["hiap-meed (FastAPI service)"]
-        Router["POST /v1/prioritize (sync route -> threadpool)"]
-        Orch["Orchestrator run_prioritization()"]
-
-        subgraph pipeline ["Prioritization pipeline"]
-            HF["Hard Filter"]
-            Impact["Impact block"]
-            Align["Alignment block"]
-            Feas["Feasibility block"]
-            WS["Weighted Sum"]
-        end
-
-        CityClient["City data client (sync data client)"]
-        ActionClient["Action pathways data client (sync data client)"]
-        LegalClient["Legal data client (sync data client)"]
-        PolicyClient["Action policy scores data client (sync data client)"]
-        MitFeasClient["Action mitigation feasibility scores data client (sync data client)"]
-        FinFeasClient["Action financial feasibility scores data client (sync data client)"]
-    end
-
-    GlobalAPI["Global API"]
-
-    FE -->|"POST /v1/prioritize JSON body: PrioritizerApiRequest (meta + requestData.cityDataList)"| Router
+    FE --> Request
+    Request --> Router
     Router --> Orch
-
-    Orch -->|"getCityContext(locode)"| CityClient
-    Orch -->|"listActions()"| ActionClient
-    Orch -->|"getActionLegalAssessments(country_code)"| LegalClient
-    Orch -->|"getActionPolicyScores(locode)"| PolicyClient
-    Orch -->|"getActionMitigationFeasibilityScores(locode, country_code)"| MitFeasClient
-    Orch -->|"getActionFinancialFeasibilityScores(locode, country_code)"| FinFeasClient
-
-    CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
-    ActionClient -.->|"API mode: GET /api/v1/action-pathways"| GlobalAPI
-    LegalClient -.->|"S3 mode: GetObject legal classification CSV"| S3[(Private S3)]
-    LegalClient -.->|"deprecated API guard: raises before HTTP"| GlobalAPI
-    PolicyClient -.->|"API mode: GET /api/v1/cities/{locode}/action-policy-scores"| GlobalAPI
-    MitFeasClient -.->|"API mode: GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=..."| GlobalAPI
-    FinFeasClient -.->|"API mode: GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=..."| GlobalAPI
-
-    GlobalAPI -.->|"CityData"| CityClient
-    GlobalAPI -.->|"Action list"| ActionClient
-    S3 -.->|"Legal classification CSV"| LegalClient
-    GlobalAPI -.->|"Action policy scores"| PolicyClient
-    GlobalAPI -.->|"Action mitigation feasibility scores"| MitFeasClient
-    GlobalAPI -.->|"Action financial feasibility scores"| FinFeasClient
-
-    CityClient --> Orch
-    ActionClient --> Orch
-    LegalClient --> Orch
-    PolicyClient --> Orch
-    MitFeasClient --> Orch
-    FinFeasClient --> Orch
-
-    Orch --> HF
-    HF -->|"eligible actions"| Impact
-    HF -->|"eligible actions"| Align
-    HF -->|"eligible actions"| Feas
+    Orch --> Fetch
+    Fetch --> Sources
+    Sources --> Inputs
+    Inputs --> HF
+    HF --> Impact
+    HF --> Align
+    HF --> Feas
     Impact --> WS
     Align --> WS
     Feas --> WS
+    WS --> Response
+```
 
-    WS -->|"PrioritizationResponse (per city: ranked_action_ids + ranked_actions + metadata)"| Router
-    Router -->|"JSON response PrioritizerApiResponse (results[])"| FE
+Output-plan report:
+
+```mermaid
+graph TD
+    FE["External hiap-meed frontend / caller"]
+    Request["CityActionReportApiRequest"]
+    Snapshot["Prioritization snapshot in request"]
+    Router["POST /v1/reports/output-plan"]
+    Validate["Validate selected locode and actionId against snapshot"]
+    Fetch["Fetch additional source data through data clients"]
+    Sources["Global API and private S3 legal CSV"]
+    Context["ReportContext enrichment"]
+    Queue["Per-pod report slots (3)"]
+    ChapterInputs["English per-chapter input builder"]
+    LLM["8 concurrent English chapter calls"]
+    Translate["One batched translation call"]
+    Response["CityActionReportApiResponse returned to caller"]
+
+    FE --> Request
+    Request --> Snapshot
+    Request --> Router
+    Router --> Queue
+    Queue --> Validate
+    Snapshot --> Validate
+    Validate --> Fetch
+    Fetch --> Sources
+    Sources --> Context
+    Context --> ChapterInputs
+    ChapterInputs --> LLM
+    LLM --> Translate
+    Translate --> Response
 ```
 
 ---
 
 ## Concurrency model
 
-The `/v1/prioritize` route is a **synchronous** FastAPI route (`def`, not `async def`). FastAPI automatically offloads sync routes to a threadpool worker, so the event loop thread remains free to accept and dispatch other requests.
+The `/v1/prioritize` and `/v1/reports/output-plan` routes are **synchronous** FastAPI routes (`def`, not `async def`). FastAPI automatically offloads sync routes to a threadpool worker, so the event loop thread remains free to accept and dispatch other requests.
 
-This is the right choice as long as the orchestrator and data clients are synchronous. If the data clients are later replaced with async counterparts (e.g. `httpx.AsyncClient`), the orchestrator and route should both be converted to `async def` / `await` end-to-end.
+Output-plan requests use a per-process asynchronous bounded semaphore before enrichment or LLM work. Each pod admits three active report requests by default (`OUTPUT_PLAN_MAX_CONCURRENT_REPORTS=3`); additional callers wait up to `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS=120` without occupying FastAPI thread-pool workers or creating chapter workers, then receive HTTP `429`. Every admitted production report runs its eight isolated English chapter calls through an eight-worker pool, assembles and validates the canonical report, and makes one additional translation call covering all non-English target languages. Each pod owns its semaphore, so multiple Kubernetes replicas increase throughput independently.
+
+This is the right choice as long as the orchestrator, report context enrichment, and data clients are synchronous. If the data clients are later replaced with async counterparts (e.g. `httpx.AsyncClient`), the orchestrator, report path, and routes should be converted to `async def` / `await` end-to-end.
 
 ---
 
@@ -91,7 +90,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog plus fetch metadata; `mock` is file-backed and returns the same shape | Global API |
+| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways?lang=all` and returns the full upstream catalog, multilingual text maps, and fetch metadata; `mock` is file-backed and returns the same shape | Global API |
 | Legal data client         | `get_action_legal_assessments(country_code)` | S3/mock/deprecated API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `s3` is the default and reads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`; `mock` is file-backed; `api` raises before HTTP as a deprecated guard | private S3 legal classification CSV |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API |
 | Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
@@ -100,7 +99,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 Clients are injected via FastAPI's `Depends()` pattern. The city, action, action policy scores, mitigation feasibility, and financial feasibility clients default to their live upstream APIs. The legal client defaults to the internal S3-backed CSV source.
 
 Action API note:
-- `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
+- `GET /api/v1/action-pathways` is called with `lang=all` and without `limit` so all available localized text maps are retained
 - the old live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` is intentionally retained only as a deprecated failure path; legal rows now come from the internal S3 CSV and are mapped into the existing legal record contract
 - legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return an upstream dependency error instead of running ranking with neutral legal defaults
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
@@ -118,6 +117,8 @@ Feasibility artifact note:
 
 ## Request lifecycle
 
+Prioritization:
+
 ```mermaid
 sequenceDiagram
     participant FE as External hiap-meed frontend
@@ -125,15 +126,52 @@ sequenceDiagram
     participant Orch as Orchestrator
     participant Clients as Data clients (mock by default)
 
-    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
+    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta.requestId + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
     Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_scores / feasibility score fetches
     Clients-->>Orch: CityData / Action[] / legal assessments / action policy scores / mitigation and financial feasibility scores
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
+    Orch->>LLM: Generate one canonical English explanation batch
+    LLM-->>Orch: Validated English explanations
+    Orch->>LLM: Translate canonical batch into all non-English requested languages
+    LLM-->>Orch: Vocabulary-constrained translations
     Orch-->>API: PrioritizationResponse (per city)
     API-->>FE: 200 PrioritizerApiResponse (results[])
 ```
+
+Output-plan report:
+
+```mermaid
+sequenceDiagram
+    participant FE as External hiap-meed frontend
+    participant API as hiap-meed FastAPI
+    participant Context as Report context builders
+    participant Clients as Data clients
+    participant LLM as OpenAI
+
+    FE->>API: POST /v1/reports/output-plan CityActionReportApiRequest
+    Note over API: Queue for one of 3 per-pod report slots and prepend canonical en
+    API->>Context: build_enriched_report_context(...)
+    Context->>Context: Validate selected city/action against snapshot
+    Context->>Clients: Fetch live city/action/policy/legal/feasibility enrichment
+    Clients-->>Context: Source data and source metadata
+    Context-->>API: ReportContext
+    API->>Context: Build 8 isolated English chapter inputs
+    par Eight English chapter calls
+        API->>LLM: Generate one strict structured English chapter
+        LLM-->>API: Validated English chapter
+    end
+    API->>Context: Build deterministic terminology for target languages
+    API->>LLM: Translate complete English report into all target languages
+    LLM-->>API: Strict batched translation response
+    Note over API: Validate language/chapter coverage, order, URLs, and aggregate localized dictionaries
+    API-->>FE: 200 CityActionReportApiResponse (localized chapters[] for one action)
+```
+
+The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report. Report requests always include canonical English in their normalized response language list. English chapters are generated once, while all additional requested languages are faithful translations of that completed report. Reports, post-ranking action explanations, and the separate explanation-translation endpoint share recurring frontend terminology from `app/modules/prioritizer/translations.yaml`; official names remain unchanged while descriptive prose is generated or translated.
+
+Freshness caveat: the report exactly reflects the prioritization run only if the supplied snapshot is the one used for that run. Frontend/product still need to define staleness checks and user warnings when inputs or upstream source data changed after prioritization.
 
 ---
 

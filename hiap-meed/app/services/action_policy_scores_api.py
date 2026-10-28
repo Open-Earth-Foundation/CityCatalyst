@@ -73,7 +73,13 @@ class ActionPolicyScoresApiService:
     def get_scores_by_action_id(
         self, locode: str
     ) -> ActionPolicyScoresFetchResult:
-        """Fetch one city-scoped policy payload and map it by action ID."""
+        """
+        Fetch all available policy scores and evidence for one city.
+
+        No evidence limit is added, so public reads and processing use the same
+        evidence set. A missing city release returns an empty result with a
+        warning. Invalid data or duplicate action IDs raise ``UpstreamApiError``.
+        """
         policy_url = self._build_action_policy_scores_url(locode)
 
         # Fetch the upstream policy scores; a 404 means the city has no score release.

@@ -98,9 +98,9 @@ export const GET = apiHandler(
         activityValueVersions,
         (version) => version.data?.inventoryValueId,
       );
-      const dataSourcesUsed = inventoryValueVersions.map(
-        (version) => version.data?.datasourceId,
-      );
+      const dataSourcesUsed = inventoryValueVersions
+        .map((version) => version.data?.datasourceId as string | undefined)
+        .filter((datasourceId): datasourceId is string => !!datasourceId);
 
       const dataSources = await db.models.DataSource.findAll({
         where: {
@@ -111,17 +111,18 @@ export const GET = apiHandler(
 
       // add metadata required by frontend to GHGI version history data
       versions = inventoryValueVersions.map((version) => {
-        let subCategoryId = version.data?.subCategoryId;
+        let subCategoryId = version.data?.subCategoryId as string | undefined;
         // try to get the subCategoryId from the previous version if available (necessary for deletes)
         if (!subCategoryId && version.previousVersion?.data) {
-          subCategoryId = version.previousVersion.data?.subCategoryId;
+          subCategoryId = version.previousVersion.data?.subCategoryId as
+            string | undefined;
         }
         let subCategory = undefined;
         if (subCategoryId) {
           subCategory = findSubCategory(subCategoryId);
         }
 
-        let activities = version.entryId
+        const activities = version.entryId
           ? activitiesByInventoryValue[version.entryId]
           : undefined;
 
@@ -137,9 +138,14 @@ export const GET = apiHandler(
           : undefined;
 
         const scope = subCategory ? subCategory.scope.scopeName : undefined;
+        // same label: a replace snapshot and its deletions are 1ms apart but
+        // must restore to different points
         const mostRecentAssociatedVersion = versionHistory.find(
           (historyVersion) => {
             if (!historyVersion.created || !version.created) {
+              return false;
+            }
+            if ((historyVersion.label ?? null) !== (version.label ?? null)) {
               return false;
             }
             const timeDelta =

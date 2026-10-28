@@ -7,11 +7,12 @@
  *       - inventory
  *       - import
  *     operationId: extractInventoryFromPdf
- *     summary: Start AI extraction on an uploaded PDF (Path C).
+ *     summary: Queue durable OCR and AI extraction for an uploaded PDF.
  *     description: |
- *       Returns 202 Accepted and runs extraction in the background. Client should poll
- *       GET .../import/{importedFileId} until importStatus is waiting_for_approval or failed.
- *       Only allowed when fileType is pdf and importStatus is pending_ai_extraction.
+ *       Returns 202 Accepted after creating or reusing a durable PDF OCR job.
+ *       A deployment-managed scheduler performs Mistral OCR and downstream row extraction.
+ *       Poll GET .../import/{importedFileId} until importStatus is
+ *       waiting_for_approval or failed. PDF sources must be stored in S3.
  *     parameters:
  *       - in: path
  *         name: city
@@ -33,206 +34,87 @@
  *           format: uuid
  *     responses:
  *       202:
- *         description: Extraction started; poll GET import status until completion.
+ *         description: Extraction queued; poll the import resource for completion.
  *       400:
- *         description: File is not a PDF or not in pending_ai_extraction status.
- *       404:
- *         description: Import file not found or access denied.
+ *         description: File is not a PDF or is not ready for extraction.
  *       401:
  *         description: Unauthorized.
+ *       404:
+ *         description: Import file not found or access denied.
+ *       503:
+ *         description: PDF OCR storage is not configured.
  */
 
 import UserService from "@/backend/UserService";
-import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
+import { enqueueInventoryPdfOcr } from "@/backend/PdfOcrService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { pdfBufferToText } from "@/backend/PdfToTextService";
-import {
-  extractInventoryRowsFromDocument,
-  type ExtractedRow,
-} from "@/backend/InventoryExtractionService";
-import { LLMError, LLMErrorCode } from "@/backend/llm";
-import { logger } from "@/services/logger";
 
-/** Quick response so request returns before ingress timeout; extraction runs in background. */
+/** Queue-only endpoint; a deployment-managed scheduler triggers processing. */
 export const maxDuration = 30;
 
-async function runExtractionInBackground(
-  cityId: string,
-  inventoryId: string,
-  importedFileId: string,
-  text: string,
-  targetYear: number | undefined,
-): Promise<void> {
+export const POST = apiHandler(async (_req, { session, params }) => {
+  if (!session) throw new createHttpError.Unauthorized("Not signed in");
+
+  const cityId = z.string().uuid().parse(params.city);
+  const inventoryId = z.string().uuid().parse(params.inventory);
+  const importedFileId = z.string().uuid().parse(params.importedFileId);
+  await UserService.findUserInventory(inventoryId, session);
+
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: {
       id: importedFileId,
       inventoryId,
       cityId,
+      userId: session.user.id,
     },
   });
   if (!importedFile) {
-    logger.warn({ importedFileId }, "Background extract: file no longer found");
-    return;
-  }
-  try {
-    const rows = await extractInventoryRowsFromDocument(text, {
-      targetYear,
-      onChunkProgress: async (current, total) => {
-        await importedFile.update({
-          mappingConfiguration: {
-            ...(importedFile.mappingConfiguration || {}),
-            extractionProgress: { current, total },
-          },
-        });
-      },
-    });
-    if (!rows || rows.length === 0) {
-      await importedFile.update({
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: "PDF does not contain extractable inventory data",
-        lastUpdated: new Date(),
-      });
-      return;
-    }
-    const mappingConfiguration = {
-      ...(importedFile.mappingConfiguration || {}),
-      rows,
-      extractionProgress: undefined,
-    };
-    await importedFile.update({
-      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-      mappingConfiguration,
-      rowCount: rows.length,
-      lastUpdated: new Date(),
-    });
-    logger.info(
-      { importedFileId, rowCount: rows.length },
-      "Background PDF extraction completed",
+    throw new createHttpError.NotFound(
+      "Imported file not found or access denied",
     );
-  } catch (err) {
-    const message =
-      err instanceof LLMError
-        ? err.message
-        : err instanceof Error
-          ? err.message
-          : "AI extraction failed";
-    logger.warn({ err, importedFileId }, "Background PDF extraction failed");
-    await importedFile.update({
-      importStatus: ImportStatusEnum.FAILED,
-      errorLog: message,
-      lastUpdated: new Date(),
-    });
   }
-}
+  if (importedFile.fileType !== "pdf") {
+    throw new createHttpError.BadRequest(
+      "Extract is only supported for PDF files",
+    );
+  }
 
-export const POST = apiHandler(
-  async (_req, { session, params }) => {
-    if (!session) {
-      throw new createHttpError.Unauthorized("Not signed in");
-    }
+  const existingJob = await db.models.PdfOcrJob.findOne({
+    where: { sourceType: "inventory_import", sourceId: importedFile.id },
+  });
+  const mayResumeStoredMarkdown =
+    importedFile.importStatus === ImportStatusEnum.FAILED &&
+    existingJob?.status === "succeeded";
+  if (
+    importedFile.importStatus !== ImportStatusEnum.PENDING_AI_EXTRACTION &&
+    importedFile.importStatus !== ImportStatusEnum.EXTRACTING &&
+    !mayResumeStoredMarkdown
+  ) {
+    throw new createHttpError.BadRequest(
+      "File is not ready for PDF extraction",
+    );
+  }
+  if (!importedFile.s3Key) {
+    throw new createHttpError.ServiceUnavailable(
+      "PDF OCR requires S3-backed file storage; please re-upload after S3 is configured",
+    );
+  }
 
-    const cityId = z.string().uuid().parse(params.city);
-    const inventoryId = z.string().uuid().parse(params.inventory);
-    const importedFileId = z.string().uuid().parse(params.importedFileId);
-
-    const inventory = await UserService.findUserInventory(inventoryId, session);
-
-    const importedFile = await db.models.ImportedInventoryFile.findOne({
-      where: {
+  await enqueueInventoryPdfOcr(importedFile);
+  return NextResponse.json(
+    {
+      data: {
+        accepted: true,
         id: importedFileId,
-        inventoryId,
-        cityId,
-        userId: session.user.id,
+        message:
+          "Extraction queued; poll GET import status until importStatus is waiting_for_approval or failed.",
       },
-    });
-
-    if (!importedFile) {
-      throw new createHttpError.NotFound(
-        "Imported file not found or access denied",
-      );
-    }
-
-    if (importedFile.fileType !== "pdf") {
-      throw new createHttpError.BadRequest(
-        "Extract is only supported for PDF files",
-      );
-    }
-
-    if (importedFile.importStatus !== ImportStatusEnum.PENDING_AI_EXTRACTION) {
-      throw new createHttpError.BadRequest(
-        "File is not in pending AI extraction status",
-      );
-    }
-
-    let pdfBuffer: Buffer;
-    if (importedFile.s3Key) {
-      try {
-        pdfBuffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
-      } catch (err) {
-        logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Failed to fetch PDF from S3");
-        throw new createHttpError.InternalServerError(
-          "Could not retrieve uploaded file from storage.",
-        );
-      }
-    } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
-      pdfBuffer = importedFile.data as Buffer;
-    } else {
-      throw new createHttpError.BadRequest(
-        "File reference is missing — please re-upload the file.",
-      );
-    }
-
-    let text: string;
-    try {
-      const result = await pdfBufferToText(pdfBuffer);
-      text = result.text;
-      if (!text || !text.trim()) {
-        throw new createHttpError.BadRequest(
-          "PDF produced no extractable text",
-        );
-      }
-    } catch (err) {
-      if (createHttpError.isHttpError(err)) throw err;
-      logger.warn({ err, importedFileId }, "PDF to text failed");
-      throw new createHttpError.BadRequest(
-        err instanceof Error ? err.message : "PDF text extraction failed",
-      );
-    }
-
-    const targetYear =
-      inventory.year != null && Number.isInteger(Number(inventory.year))
-        ? Number(inventory.year)
-        : undefined;
-
-    await importedFile.update({
-      importStatus: ImportStatusEnum.EXTRACTING,
-      lastUpdated: new Date(),
-    });
-
-    runExtractionInBackground(
-      cityId,
-      inventoryId,
-      importedFileId,
-      text,
-      targetYear,
-    ).catch((err) => {
-      logger.error({ err, importedFileId }, "Background extraction promise rejected");
-    });
-
-    return NextResponse.json(
-      {
-        data: {
-          accepted: true,
-          id: importedFileId,
-          message: "Extraction started; poll GET import status until importStatus is waiting_for_approval or failed.",
-        },
-      },
-      { status: 202 },
-    );
-  },
-);
+    },
+    { status: 202 },
+  );
+});

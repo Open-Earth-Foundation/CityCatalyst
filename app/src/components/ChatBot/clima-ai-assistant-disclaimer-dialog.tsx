@@ -14,6 +14,7 @@ import {
   AboutPrivacyIcon,
 } from "../icons";
 import DialogItem from "./DialogItem";
+import { env } from "@/lib/runtime-env";
 
 export default function ClimaAIAssistantDisclaimerDialog({
   t,
@@ -82,7 +83,7 @@ export default function ClimaAIAssistantDisclaimerDialog({
                         color="content.link"
                         textDecoration="underline"
                         fontWeight="bold"
-                        href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}
+                        href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}
                       >
                         {t("contact-support")}
                       </Link>

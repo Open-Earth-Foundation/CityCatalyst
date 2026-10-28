@@ -1,10 +1,18 @@
 import createHttpError from "http-errors";
-import FileParserService, { type ParsedFileData } from "./FileParserService";
-import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
 
-// File size limit: 20MB (in bytes)
-export const MAX_FILE_SIZE_MB = 20;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+import FileParserService, {
+  type ParsedFileData,
+} from "@/backend/FileParserService";
+import FormatAdapterService, {
+  type AdapterType,
+} from "@/backend/FormatAdapterService";
+import {
+  INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
+  INVENTORY_IMPORT_MAX_FILE_SIZE_MB,
+} from "@/backend/inventory-import-file-limits";
+
+export const MAX_FILE_SIZE_MB = INVENTORY_IMPORT_MAX_FILE_SIZE_MB;
+export const MAX_FILE_SIZE = INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES;
 
 // Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
 export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;
@@ -48,6 +56,8 @@ export default class FileValidatorService {
    * @returns true if file type is accepted, throws error otherwise
    */
   public static validateFileType(file: File): AcceptedFileFormat {
+    // GHGI wizard still allowlists xlsx/csv/pdf. Core ingest uses
+    // detectCoarseFileKind (CC-959) for pdf|xlsx|csv|md|zip|unknown.
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
     if (!fileExtension) {
@@ -330,6 +340,8 @@ export default class FileValidatorService {
     // GPC ref no is required OR sector + subsector (to resolve ref from reference table)
     const gpcRefFound =
       FileParserService.detectColumn(sheet.headers, [
+        "gpc_ref_no",
+        "gpc_ref",
         "GPC ref. no.",
         "gpc ref",
         "gpc ref no",
@@ -378,6 +390,7 @@ export default class FileValidatorService {
       {
         name: "GHGs (metric tonnes CO2e) - Total CO2e",
         alternatives: [
+          "total_co2e",
           "total co2e",
           "co2e",
           "total emissions",
@@ -484,7 +497,15 @@ export default class FileValidatorService {
     const columnsToDetect = [
       {
         key: "gpcRefNo",
-        terms: ["gpc ref", "gpc ref no", "reference number", "gpc reference"],
+        terms: [
+          "gpc_ref_no",
+          "gpc_ref",
+          "gpc ref. no.",
+          "gpc ref",
+          "gpc ref no",
+          "reference number",
+          "gpc reference",
+        ],
       },
       {
         key: "sector",
@@ -533,6 +554,7 @@ export default class FileValidatorService {
         key: "totalCO2e",
         // Prioritize the exact eCRF format first, then fallback to other variations
         terms: [
+          "total_co2e",
           "ghgs (metric tonnes co2e) - total co2e", // Exact eCRF format - highest priority
           "ghgs (metric tonnes co2e) - total", // Alternative eCRF format
           "total co2e", // Fallback
@@ -555,6 +577,8 @@ export default class FileValidatorService {
       {
         key: "activityType",
         terms: [
+          "activity_name",
+          "activity name",
           "activity type",
           "activity_type",
           "fuel type",
@@ -606,7 +630,14 @@ export default class FileValidatorService {
       },
       {
         key: "methodology",
-        terms: ["methodology", "input methodology", "input_methodology"],
+        terms: [
+          "activity data - description and methodology",
+          "activity data - description",
+          "activity data description",
+          "methodology",
+          "input methodology",
+          "input_methodology",
+        ],
       },
       {
         key: "activityDataSource",
@@ -709,6 +740,26 @@ export default class FileValidatorService {
             `[FileValidator] Column "${column.key}" NOT FOUND. Searched terms: ${column.terms.join(", ")}`,
           );
         }
+      }
+    }
+
+    // Drop EF bindings that landed on gas / total columns (legacy reverse-match)
+    const gasIndexes = new Set(
+      [mapping.co2, mapping.ch4, mapping.n2o, mapping.totalCO2e].filter(
+        (index): index is number => index !== undefined,
+      ),
+    );
+    for (const efKey of [
+      "emissionFactorCO2",
+      "emissionFactorCH4",
+      "emissionFactorN2O",
+      "emissionFactorTotalCO2e",
+    ] as const) {
+      if (mapping[efKey] !== undefined && gasIndexes.has(mapping[efKey])) {
+        console.log(
+          `[FileValidator] Clearing "${efKey}" — it matched gas column index ${mapping[efKey]}`,
+        );
+        delete mapping[efKey];
       }
     }
 

@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     // 1. Fix CityUser table - make userId and cityId required
     await queryInterface.sequelize.query(`
       -- First, remove any orphaned records
@@ -73,7 +73,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Revert all changes
     await queryInterface.sequelize.query(`
       -- Remove unique constraints

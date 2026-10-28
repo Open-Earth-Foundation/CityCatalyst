@@ -1,5 +1,9 @@
+import type Decimal from "decimal.js";
+import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
+  GlobalAPISourceResponse,
   InventoryValueData,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
@@ -13,6 +17,12 @@ import {
 } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
+import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import type {
+  conceptNoteCustomTemplateRequest,
+  conceptNoteFunderCreateRequest,
+} from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -20,7 +30,11 @@ import type {
   EmissionsFactorAttributes,
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
-import type Decimal from "decimal.js";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -28,6 +42,8 @@ import type {
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
+import type { BoundingBox } from "@/util/geojson";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -47,8 +63,6 @@ export interface CountryEmissionsResponse {
   countryCode: string;
   inventoryYear: number;
 }
-
-interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
   activityValues: (ActivityValue & {
@@ -70,7 +84,7 @@ export type InventoryDownloadResponse = InventoryAttributes & {
   };
 };
 
-export type InventoryResponse = RequiredInventoryAttributes & {
+export type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
@@ -81,6 +95,11 @@ export type InventoryResponse = RequiredInventoryAttributes & {
     };
   };
   inventoryValues: FullInventoryValue[];
+  gwp?: {
+    version: GlobalWarmingPotentialTypeEnum;
+    ch4: number | null;
+    n2o: number | null;
+  } | null;
 };
 
 export interface InventoryPopulationsResponse {
@@ -121,9 +140,11 @@ export interface UserInfoResponse {
   defaultInventoryId: string | null;
   defaultCityId: string | null;
   role: Roles;
+  title?: string;
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -134,7 +155,7 @@ export type DataSource = DataSourceAttributes & {
 };
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
-  data: any;
+  data: GlobalAPISourceResponse;
 };
 
 export interface GetDataSourcesResult {
@@ -190,7 +211,14 @@ export interface InventoryDeleteQuery {
 
 export interface InventoryUpdateQuery {
   inventoryId: string;
-  data: { isPublic: boolean };
+  data:
+    | { isPublic: boolean }
+    | {
+        inventoryName: string;
+        year: number;
+        inventoryType: InventoryTypeEnum;
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum;
+      };
 }
 
 export type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
@@ -204,8 +232,25 @@ export interface OCCityAttributes {
   actor_id: string;
   name: string;
   is_part_of: string;
-  root_path_geo: any;
+  root_path_geo: { actor_id: string; name: string; type: string }[];
   area: number;
+}
+
+export interface OCPopulationEntry {
+  year: number;
+  population: number;
+  datasource: { name: string };
+}
+
+/**
+ * Full response shape from OpenClimate's actor endpoint (used by
+ * getOCCityData), which includes population history and — for countries —
+ * emissions data keyed by source ID. OCCityAttributes covers just the
+ * subset used by city search results.
+ */
+export interface OCCityDataResponse extends OCCityAttributes {
+  population: OCPopulationEntry[];
+  emissions: Record<string, { data: GHGICountryEmissionsEntry[] }>;
 }
 
 declare module "next-auth" {
@@ -289,6 +334,11 @@ export interface GetUserCityInvitesResponse {
 export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
+  cities?: Array<{
+    cityId: string;
+    name: string | null;
+    countryLocode: string | null;
+  }>;
 }
 
 export interface AcceptInviteRequest {
@@ -298,12 +348,17 @@ export interface AcceptInviteRequest {
 }
 
 export interface UsersInvitesRequest {
+  projectId: string;
   cityIds: string[];
-  emails: string[];
+  invites: { email: string; role: "admin" | "collaborator" }[];
 }
 
 export interface UsersInvitesResponse {
   success: boolean;
+  /** email -> invitation URL (returned so admins can copy if email delivery fails) */
+  inviteUrls: Record<string, string>;
+  /** emails of invitees whose invitation email could not be sent */
+  emailFailures?: string[];
 }
 
 export interface OrganizationInviteResponse {
@@ -320,19 +375,26 @@ export interface TopEmission {
   co2eq: bigint;
   sectorName: string;
   subsectorName: string;
-  percentage: number;
+  /** null when co2eq is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
 }
 
 export interface SectorEmission {
   sectorName: string;
+  /** net (emissions + removals) */
   co2eq: bigint;
+  grossCo2eq?: bigint;
+  removalsCo2eq?: bigint;
   percentage: number;
 }
 
 export interface ResultsResponse {
   totalEmissions: {
     bySector: SectorEmission[];
+    /** net (emissions + removals) */
     total: bigint;
+    grossTotal?: bigint;
+    removalsTotal?: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
 }
@@ -362,7 +424,7 @@ export interface YearOverYearResultResponse {
   topEmissionsBySubSector: {
     inventoryId: string;
     co2eq: bigint;
-    percentage: number;
+    percentage: number | null;
     scopeName: string;
     sectorName: string;
     subsectorName: string;
@@ -404,15 +466,20 @@ export interface ActivityDataByScope {
   activityTitle: string;
   scopes: { [key: string]: Decimal };
   totalEmissions: Decimal;
-  percentage: number;
+  /** null when totalEmissions is a removal - % of emissions isn't meaningful there, see CC-749 */
+  percentage: number | null;
   datasource_id: string;
   datasource_name: string;
+  /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
+  datasource_source_type: string | null;
   activities?: ActivityValue[];
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
+  grossTotalEmissions: Decimal;
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {
@@ -430,6 +497,8 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  planType: OrganizationPlanType;
+  trialEndsAt?: string | null;
   themeId?: string;
   theme?: {
     themeId: string;
@@ -483,19 +552,18 @@ export type CityResponse = {
   name: string;
   country: string;
   countryLocode: string;
+  region?: string;
+  regionLocode?: string;
   locode: string;
-  inventories: {
-    inventoryId: string;
-    year: number;
-    lastUpdated: string;
-  }[];
+  inventories: InventoryResponse[];
 };
 
 export type ProjectWithCities = {
   projectId: string;
   name: string;
+  organizationId: string;
   description?: string;
-  cityCountLimit?: Number;
+  cityCountLimit?: number;
   cities: CityResponse[];
 };
 
@@ -503,9 +571,11 @@ export type ProjectWithCitiesResponse = ProjectWithCities[];
 
 export type ProjectUserResponse = {
   email: string;
+  name?: string | null;
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;
+  twoFactorEnabled?: boolean;
 };
 
 export type UserAccessResponse = {
@@ -529,11 +599,11 @@ export type ThemeResponse = {
 };
 
 export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-  "de" = "de",
-  "fr" = "fr",
+  en = "en",
+  es = "es",
+  pt = "pt",
+  de = "de",
+  fr = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
@@ -552,9 +622,9 @@ export type OrganizationWithThemeResponse = {
 };
 
 export interface UpdateUserPayload {
-  name: string;
-  email: string;
-  userId: string;
+  userId?: string;
+  name?: string;
+  email?: string;
   title?: string;
   preferredLanguage?: string;
   numberFormat?: string;
@@ -577,15 +647,6 @@ export enum HighImpactActionRankingStatus {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
   EXCLUDED = "EXCLUDED",
-}
-
-export interface BulkHiapPrioritizationResult {
-  cityId: string;
-  cityName: string;
-  inventoryId: string;
-  status: HighImpactActionRankingStatus;
-  taskId: string;
-  error?: string;
 }
 
 export interface HiapJob {
@@ -765,19 +826,6 @@ export interface GHGInventorySummary {
   year: number;
 }
 
-export interface ModuleDataSummaryResponse {
-  [key: string]: GHGInventorySummary | HIAPSummary | CCRASummary | any;
-}
-
-export interface DashboardResponseType {
-  data: ModuleDataSummaryResponse;
-  metadata: {
-    cityId: string;
-    cityName: string;
-    projectId: string;
-  };
-}
-
 export interface CityDashboardResponse {
   city: CityAttributes & {
     project?: {
@@ -904,17 +952,55 @@ export interface ImportSummary {
   formatDetected: string;
   rowsFound: number;
   fieldsMapped: number;
+  /**
+   * Rows in the file that will not be imported because CO2, CH4, N2O, and
+   * total CO2e are empty and there is no notation key.
+   */
+  rowsSkippedEmptyEmissions?: number;
 }
 
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
+}
+
+/** Why an uploaded row is skipped on import, or imported without counting. */
+export type ImportRowIssue =
+  | "missing-gpc-reference"
+  | "gpc-reference-unresolved"
+  | "gpc-reference-unknown"
+  | "unknown-notation-key"
+  | "no-value-or-notation-key"
+  | "invalid-row"
+  | "outside-inventory-type";
+
+export interface ImportRowOutcome {
+  /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
+  rowNumber: number;
+  gpcRefNo: string | null;
+  /** Sector / subsector text when no GPC reference could be resolved. */
+  sourceLabel: string | null;
+  /** Notation key as written in the file, for unknown-notation-key rows. */
+  notationKey: string | null;
+  status: "skipped" | "not-counted";
+  issue: ImportRowIssue;
+}
+
+export interface ImportRowPreview {
+  totalRows: number;
+  importedRows: number;
+  skippedRows: number;
+  /** Counts of skipped rows by reason, for the review summary line. */
+  skippedByIssue: Partial<Record<ImportRowIssue, number>>;
+  /** Only rows that are skipped or will not count toward completion. */
+  rows: ImportRowOutcome[];
 }
 
 export interface ReviewData {
   importSummary: ImportSummary;
   fieldMappings: FieldMapping[];
-  mappingPreview?: any;
+  mappingPreview?: unknown;
 }
 
 export interface ImportStatusResponse {
@@ -932,6 +1018,18 @@ export interface ImportStatusResponse {
   reviewData: ReviewData | null;
   /** Year inferred from file data (eCRF); used to check match with inventory target year. */
   inferredYearFromFile?: number;
+  /** GPC references in the file the inventory type does not require (e.g. Scope 3 in GPC BASIC). */
+  rowsOutsideInventoryType?: string[];
+  /**
+   * Full mapping payload from the imported file (Path B/C).
+   * Includes `extractionProgress` while AI chunk work is in flight.
+   */
+  mappingConfiguration?: {
+    extractionProgress?: { current: number; total?: number };
+    /** Totals and dropped-row counts from PDF extraction; drives the review warning. */
+    extractionSummary?: ExtractionSummary;
+    [key: string]: unknown;
+  } | null;
   rowCount: number;
   processedRowCount: number;
   errorLog: string | null;
@@ -981,4 +1079,434 @@ export interface PersonalAccessTokenCreateResponse {
   scopes: string[];
   expiresAt: string | null;
   created: string;
+}
+
+export interface WebhookSubscriptionResponse {
+  id: string;
+  organizationId: string;
+  name: string;
+  url: string;
+  secretPrefix: string;
+  events: string[];
+  enabled: boolean;
+  consecutiveFailures: number;
+  disabledAt: string | null;
+  createdBy: string | null;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface WebhookSubscriptionSecretResponse extends WebhookSubscriptionResponse {
+  secret: string;
+}
+
+export interface CreateWebhookSubscriptionRequest {
+  name: string;
+  url: string;
+  events: string[];
+}
+
+export interface UpdateWebhookSubscriptionRequest {
+  name?: string;
+  url?: string;
+  events?: string[];
+  enabled?: boolean;
+}
+
+export type UserOrganizationsResponse = {
+  organizationId: string;
+  name: string;
+  role: OrganizationRole;
+}[];
+
+export interface ProjectBoundary {
+  city: {
+    id: string;
+    name: string;
+    locode: string;
+    latestInventoryId: string;
+  };
+  boundingBox: BoundingBox;
+  data: GeoJSON;
+}
+
+export interface ConceptNoteRun {
+  run_id: string;
+  thread_id: string | null;
+  name: string;
+  city_id: string;
+  project_id: string | null;
+  funder_id: string | null;
+  selected_funding_opportunity_id: string | null;
+  status: string;
+  workflow_step: string;
+  progress_summary: Record<string, unknown>;
+  manual_population?: { population: number; year: number } | null;
+  uploads?: Array<{
+    upload_id: string;
+    run_id: string;
+    status: ConceptNoteUploadStatus;
+    filename: string;
+    source_label?: string | null;
+    source_role?: ConceptNoteSourceRole;
+    source_format: "pdf" | "markdown";
+    page_count?: number | null;
+    error_code?: string | null;
+    received_at: string;
+    completed_at?: string | null;
+  }>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptNoteRunListResponse {
+  runs: ConceptNoteRun[];
+}
+
+export interface ConceptNoteChatThread {
+  thread_id: string;
+  title: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  message_count: number;
+  preview: string | null;
+}
+
+export interface ConceptNoteChatThreadListResponse {
+  active_thread_id: string | null;
+  threads: ConceptNoteChatThread[];
+}
+
+export interface ConceptNoteTemplateChapter {
+  chapter_ref: string;
+  title: string;
+  description?: string | null;
+  required?: boolean | null;
+  required_fields?: string[] | null;
+}
+
+export interface ConceptNoteApplicationContext {
+  run_id: string;
+  city_id: string;
+  funder: {
+    id: string;
+    name: string;
+  } | null;
+  opportunity: {
+    id: string;
+    name: string;
+  } | null;
+  template: {
+    id: string;
+    name: string;
+    output_format: string | null;
+    chapter_schema: ConceptNoteTemplateChapter[];
+    required_fields: string[];
+  } | null;
+  /** Set only when the note uses its own template instead of a funder's. */
+  template_source?: ConceptNoteFundingAddedFrom | null;
+  included_sources: {
+    city: boolean;
+    project: boolean;
+    ghgi: boolean;
+    ccra: boolean;
+    hiap: boolean;
+  };
+}
+
+export interface ConceptNoteFundingOpportunity {
+  id: string;
+  name: string;
+  applicant_type: string | null;
+  category: string | null;
+  sector: string | null;
+  region_scope: string | null;
+  finance_route: string | null;
+  instrument_type: string | null;
+  min_award: string | null;
+  max_award: string | null;
+  currency: string | null;
+  status: string | null;
+  summary: string | null;
+  hazards: string[];
+  interventions: string[];
+  known_gaps: string[];
+  /** Set for programmes a user added from a document or by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
+  template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "document" | "manual";
+  filename: string | null;
+}
+
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
+/** Reviewable `funders` columns. */
+export type ConceptNoteFunderFields = ConceptNoteFunderCreateRequest["funder"];
+/** Reviewable `funding_opportunities` columns. */
+export type ConceptNoteProgrammeFields =
+  ConceptNoteFunderCreateRequest["opportunity"];
+/** Reviewable `funder_templates` columns; `required_fields` is derived. */
+export type ConceptNoteTemplateFields =
+  ConceptNoteFunderCreateRequest["template"];
+
+/** A note's own template; see `conceptNoteCustomTemplateRequest`. */
+export type ConceptNoteCustomTemplateRequest = z.infer<
+  typeof conceptNoteCustomTemplateRequest
+>;
+
+/** Values extracted from a funder document, awaiting review. */
+export interface ConceptNoteFunderImportDraft extends Omit<
+  ConceptNoteFunderCreateRequest,
+  "import_id"
+> {
+  /** Field paths the document did not state, e.g. `funder.region`. */
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  /** A funder import fills every section; a template import only `template`. */
+  kind: "funder" | "template";
+  status: "processing" | "ready" | "failed";
+  /** While processing: whether the upload is still converting to text. */
+  stage?: "converting" | "reading" | null;
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
+}
+
+export interface ConceptNoteFunder {
+  id: string;
+  name: string;
+  funder_type: string | null;
+  country: string | null;
+  region: string | null;
+  profile: Record<string, unknown>;
+  opportunities: ConceptNoteFundingOpportunity[];
+}
+
+export interface ConceptNoteFundingSelection {
+  funder_id: string | null;
+  selected_funding_opportunity_id: string | null;
+  expected_funder_id: string | null;
+  expected_funding_opportunity_id: string | null;
+  /** The note's own template; replaces the funder and programme. */
+  custom_template: ConceptNoteCustomTemplateRequest | null;
+  expected_custom_template_id: string | null;
+  acknowledge_draft_review: boolean;
+}
+
+export type ConceptNoteDraftRunStatus =
+  "not_started" | "running" | "failed" | "complete";
+
+export type ConceptNoteDraftChapterStatus =
+  "empty" | "draft" | "needs_review" | "ready";
+
+export type ConceptNoteGapSeverity = "critical" | "noncritical";
+export type ConceptNoteGapState =
+  "open" | "processing" | "resolved" | "dismissed" | "caveat";
+export type ConceptNoteGapResolutionAction =
+  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+
+export interface ConceptNoteGapSuggestion {
+  value: string;
+  source_refs: string[];
+}
+
+export interface ConceptNoteGapResolution {
+  resolution_id: string;
+  action: ConceptNoteGapResolutionAction;
+  answer: string | null;
+  actor_user_id: string;
+  source_refs: string[];
+  created_at: string;
+}
+
+export interface ConceptNoteGap {
+  gap_id: string;
+  field_key: string;
+  question: string;
+  why_asking: string;
+  severity: ConceptNoteGapSeverity;
+  state: ConceptNoteGapState;
+  suggestions: ConceptNoteGapSuggestion[];
+  source_refs: string[];
+  version: number;
+  resolution: ConceptNoteGapResolution | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ConceptNoteChapterValidationStatus =
+  "ready" | "needs_review" | "incomplete";
+
+export type ConceptNoteChapterValidationCheckStatus =
+  "pass" | "warning" | "fail";
+
+export type ConceptNoteChapterValidationFindingPhase =
+  "completeness" | "consistency" | "evidence";
+
+export type ConceptNoteChapterValidationFindingSeverity =
+  "warning" | "blocking";
+
+export interface ConceptNoteChapterValidationCheck {
+  key: string;
+  label?: string | null;
+  status: ConceptNoteChapterValidationCheckStatus;
+  message?: string | null;
+}
+
+export interface ConceptNoteChapterValidationEvidence {
+  selected_source_label: string;
+  source_location: string | null;
+  claim_ref: string | null;
+  quote_or_summary: string | null;
+}
+
+export interface ConceptNoteChapterValidationFinding {
+  phase: ConceptNoteChapterValidationFindingPhase;
+  category: string;
+  severity: ConceptNoteChapterValidationFindingSeverity;
+  message: string;
+  suggested_action: string;
+  involved_chapter_ids: string[];
+  excerpts?: string[];
+  evidence: ConceptNoteChapterValidationEvidence[];
+}
+
+export interface ConceptNoteChapterValidation {
+  status: ConceptNoteChapterValidationStatus;
+  is_stale: boolean;
+  validated_revision_number: number | null;
+  validated_at: string | null;
+  checks: ConceptNoteChapterValidationCheck[];
+  findings: ConceptNoteChapterValidationFinding[];
+}
+
+export interface ConceptNoteChapterValidationResponse extends ConceptNoteChapterValidation {
+  chapter_id: string;
+}
+
+export interface ValidateConceptNoteChapterRequest {
+  chapterId: string;
+  runId: string;
+}
+
+export interface ConceptNoteDraftChapter {
+  description?: string;
+  chapter_id: string;
+  template_section_id: string | null;
+  title: string;
+  position: number;
+  status: ConceptNoteDraftChapterStatus;
+  required: boolean;
+  user_locked: boolean;
+  body_markdown: string | null;
+  gaps: ConceptNoteGap[];
+  open_gap_count: number;
+  caveat_count: number;
+  revision_number: number | null;
+  confirmed_body_markdown: string | null;
+  confirmed_revision_number: number | null;
+  validation?: ConceptNoteChapterValidation | null;
+}
+
+export interface ConceptNoteDraftState {
+  run_id: string;
+  status: ConceptNoteDraftRunStatus;
+  completed_chapters: number;
+  total_chapters: number;
+  current_chapter_id: string | null;
+  error_code: string | null;
+  overview_pending?: boolean;
+  chapters: ConceptNoteDraftChapter[];
+}
+
+export interface ConfirmConceptNoteChapterRequest {
+  runId: string;
+  chapterId: string;
+  expectedRevision: number;
+  idempotencyKey: string;
+}
+
+export interface InitialConceptNoteUpload {
+  upload_id: string;
+  filename: string;
+  sha256: string;
+  accepted?: boolean;
+}
+
+export interface StartConceptNoteRunRequest {
+  initialUploads?: InitialConceptNoteUpload[];
+  cityId: string;
+  idempotencyKey: string;
+  name: string;
+  projectId?: string | null;
+  funderId?: string | null;
+  selectedFundingOpportunityId?: string | null;
+  threadId?: string | null;
+}
+
+export type ConceptNoteUploadStatus =
+  "queued" | "processing" | "ready" | "failed";
+export type ConceptNoteSourceRole = "reference" | "climate_action_plan";
+
+export interface ConceptNoteUploadResponse {
+  uploadId: string;
+  runId?: string;
+  status: ConceptNoteUploadStatus;
+  pageCount?: number | null;
+  errorCode?: string;
+  stage?: string;
+  canRetry?: boolean;
+  retryKind?: string | null;
+  filename?: string;
+  sourceLabel?: string | null;
+  sourceRole?: ConceptNoteSourceRole;
+  receivedAt?: string;
+  completedAt?: string | null;
+}
+
+export interface ConceptNoteUploadRequest {
+  cityId: string;
+  formData: FormData;
+  runId: string;
+}
+
+export interface ConceptNoteUploadStatusRequest {
+  runId: string;
+  uploadId: string;
+}
+
+export interface ConceptNoteWorkspaceSnapshot {
+  edits?: EditProposal[];
+  sequence: number;
+  run?: ConceptNoteRun;
+  draft?: ConceptNoteDraftState;
+  upload?: ConceptNoteUploadResponse;
+}
+
+export interface ConceptNoteContextBundleRetryResponse {
+  run_id: string;
+  status: "queued";
+}
+
+export interface ConceptNoteContextBundleRefreshResponse {
+  run_id: string;
+  status: "queued" | "current" | "building";
 }

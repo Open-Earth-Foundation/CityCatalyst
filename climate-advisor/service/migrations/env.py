@@ -44,6 +44,11 @@ from app.models.db.stationary_energy_draft import (  # noqa: F401
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
 )
+from app.models.db.concept_note import (  # noqa: F401
+    ConceptNoteContextBundle,
+    ConceptNoteRun,
+    ConceptNoteUpload,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,16 +1,11 @@
 ---
 name: docs-after-change
-description: Mandatory after any code change. Ensures docstrings, README, and architecture/docs stay consistent with the new behavior.
+description: Inspect documentation impact after modifying code, configuration, deployment files, migrations, or runtime behavior. Update only the docstrings, READMEs, architecture docs, and developer instructions whose documented contract actually changed.
 ---
 
 # docs-after-change
 
-This skill is **mandatory** after any code change (including refactors). It is optimized to keep repository documentation accurate without doing unnecessary full-repo audits.
-
-## When to use
-
-- Use this skill **after you make any code changes** (add/edit/delete/rename).
-- Use this skill **before** finishing the task / handing control back to the user.
+Run this inspection before finishing any task that changes code or runtime configuration. The inspection is mandatory; documentation edits are not. A valid outcome is that the affected documentation remains accurate and no edit is needed.
 
 ## Goal
 
@@ -28,7 +23,7 @@ Keep documentation and developer UX up-to-date by validating and updating:
 - Migrations / schema changes / database models
 - Anything that changes CLI flags, environment variables, output folders, or the pipeline stages
 
-## Instructions (do these steps in order)
+## Instructions
 
 ### 1) Identify what changed and what it impacts
 
@@ -38,6 +33,15 @@ Keep documentation and developer UX up-to-date by validating and updating:
   - **Outputs** (folders, file formats, naming conventions)
   - **Architecture** (module boundaries, new stages, new services, data flow)
   - **Tests** (new workflows, changed assumptions)
+
+- Decide whether the change affects a documented contract:
+  - public behavior or user-visible workflows
+  - setup, configuration, environment variables, or deployment
+  - CLI commands, flags, entrypoints, inputs, outputs, or file locations
+  - module responsibilities, service boundaries, persistence, or data flow
+  - developer procedures needed to run, test, debug, or operate the system
+
+If none of these changed, do not edit documentation merely because code was touched. Record that the relevant docs were checked and remain accurate, then stop the documentation pass.
 
 ### 2) Docstrings: update runnable scripts and public entrypoints
 
@@ -51,12 +55,9 @@ For any file intended to be executed as a script or documented as an entrypoint:
 - Ensure side effects do not run at import time (work in `main()`).
 - Ensure CLI args in docstring match actual `argparse` behavior.
 
-If the file is not runnable but is a “public” module (commonly imported or referenced in docs), ensure key functions/classes have docstrings where they clarify non-obvious behavior or invariants.
+If the file is not runnable but is a “public” module (commonly imported or referenced in docs), update key function or class docstrings only when the change affects a non-obvious contract, invariant, side effect, input, output, or raised exception.
 
-Additionally (general rule): ensure **every function and method** you touched has a docstring.
-
-- Trivial functions/methods: a one-liner is enough.
-- Non-trivial or side-effecting functions/methods: describe inputs/outputs, side effects, and raised exceptions when non-obvious.
+Do not add or rewrite docstrings for trivial private helpers solely because they were touched.
 
 ### 3) README updates: keep developer instructions truthful
 
@@ -101,7 +102,7 @@ In the final response, include:
 
 - Which docs you reviewed
 - Which docs you changed and why (1–3 bullets)
-- Any docs you intentionally did **not** change (and why)
+- If no docs changed, state that the documentation impact check passed and briefly explain why no update was required
 
 ## Non-goals (what NOT to do)
 

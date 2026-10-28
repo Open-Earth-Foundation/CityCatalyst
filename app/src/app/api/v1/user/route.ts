@@ -38,6 +38,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
       "title",
       "preferredLanguage",
       "numberFormat",
+      "twoFactorEnabled",
     ],
     where: {
       userId: context.session.user.id,
@@ -98,7 +99,7 @@ export const PATCH = apiHandler(async (req: Request, context) => {
       body.defaultInventoryId,
       context.session,
     );
-  } catch (error) {
+  } catch {
     // we will arrive here if a logged in user attempts to access a public view of an inventory they are not part of.
     // It's not an error, but we don't want to update the user's default inventory in this case.
   }

@@ -1,0 +1,111 @@
+"use client";
+
+import { Box, HStack, Input } from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { Field } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
+
+interface CreateTokenFormProps {
+  t: TFunction;
+  tokenName: string;
+  onTokenNameChange: (value: string) => void;
+  expiresIn: string;
+  onExpiresInChange: (value: string) => void;
+  onCancel: () => void;
+  onSubmit: () => void;
+  isSubmitting?: boolean;
+}
+
+/** Inline create-token form. */
+export default function CreateTokenForm({
+  t,
+  tokenName,
+  onTokenNameChange,
+  expiresIn,
+  onExpiresInChange,
+  onCancel,
+  onSubmit,
+  isSubmitting = false,
+}: CreateTokenFormProps) {
+  return (
+    <Box
+      w="full"
+      borderWidth="1px"
+      borderColor="border.overlay"
+      borderRadius="rounded"
+      bg="white"
+      shadow="1dp"
+      p="6"
+    >
+      <HStack gap="6" align="flex-start" mb="9">
+        <Field
+          label={t("token-name")}
+          required
+          flex="1"
+          labelColor="content.secondary"
+        >
+          <Input
+            placeholder={t("token-name-placeholder")}
+            value={tokenName}
+            onChange={(e) => onTokenNameChange(e.target.value)}
+            size="lg"
+            borderRadius="minimal"
+            borderColor="border.default"
+            bg="base.light"
+            _placeholder={{ color: "content.tertiary" }}
+          />
+        </Field>
+
+        <Field label={t("expiration")} flex="1" labelColor="content.secondary">
+          <NativeSelectRoot w="full" size="lg">
+            <NativeSelectField
+              value={expiresIn}
+              onChange={(e) => onExpiresInChange(e.target.value)}
+              borderRadius="minimal"
+              borderColor="border.neutral"
+              shadow="sm"
+              bg="base.light"
+            >
+              <option value="30">30 {t("days")}</option>
+              <option value="90">90 {t("days")}</option>
+              <option value="365">1 {t("year")}</option>
+              <option value="never">{t("never")}</option>
+            </NativeSelectField>
+          </NativeSelectRoot>
+        </Field>
+      </HStack>
+
+      <HStack justifyContent="flex-end" gap="4">
+        <Button
+          variant="outline"
+          h="63px"
+          minW="171px"
+          onClick={onCancel}
+          textTransform="uppercase"
+          letterSpacing="wider"
+          fontWeight="semibold"
+          fontSize="button.md"
+        >
+          {t("cancel")}
+        </Button>
+        <Button
+          variant="solid"
+          h="63px"
+          minW="171px"
+          onClick={onSubmit}
+          loading={isSubmitting}
+          textTransform="uppercase"
+          letterSpacing="wider"
+          fontWeight="semibold"
+          fontSize="button.md"
+        >
+          {t("save-changes")}
+        </Button>
+      </HStack>
+    </Box>
+  );
+}

@@ -18,7 +18,6 @@ export const RiskCard = ({
   risk,
   resilienceScore = null,
   t,
-  onSeeMoreClick,
 }: {
   risk: RiskAssessment;
   resilienceScore?: number | null;

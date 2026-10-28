@@ -1,16 +1,11 @@
 "use server";
 
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { redirect } from "next/navigation";
 import { Inventory } from "@/models/Inventory";
 import { db } from "@/models";
 
 export async function checkInventoryRedirect(inventoryId: string, lng: string) {
-  if (!hasServerFeatureFlag(FeatureFlags.JN_ENABLED)) {
-    return null; // No redirect needed
-  }
-
   try {
     if (!db.initialized) {
       await db.initialize();

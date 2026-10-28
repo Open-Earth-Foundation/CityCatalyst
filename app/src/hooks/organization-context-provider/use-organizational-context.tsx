@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useEffect,
@@ -6,6 +6,11 @@ import React, {
   ReactNode,
 } from "react";
 import AccountFrozenWarningModal from "@/components/Modals/account-frozen-warning-modal";
+import { useAppDispatch } from "@/lib/hooks";
+import {
+  set as setOrganizationAction,
+  clear as clearOrganizationAction,
+} from "@/features/organization/organizationSlice";
 
 type OrganizationState = {
   logoUrl: string | null;
@@ -69,16 +74,34 @@ export const OrganizationContextProvider = ({
     });
 
   const [showFrozenModal, setShowFrozenModal] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const stored = localStorage.getItem("organization");
     if (stored) {
       const parsed = JSON.parse(stored) as OrganizationState;
-      setOrganizationState((prev) => {
-        return hasOrganizationChanged(prev, parsed) ? parsed : prev;
-      });
+      setOrganizationState(parsed);
+      dispatch(setOrganizationAction(parsed));
     }
-  }, []);
+    setHasHydrated(true);
+  }, [dispatch]);
+
+  // Keep Redux + localStorage in sync after React state commits.
+  // Side effects must not run inside the setState updater (that updates
+  // NavigationBar while OrganizationContextProvider is still rendering).
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    if (!organization) {
+      localStorage.removeItem("organization");
+      dispatch(clearOrganizationAction());
+      return;
+    }
+    localStorage.setItem("organization", JSON.stringify(organization));
+    dispatch(setOrganizationAction(organization));
+  }, [organization, dispatch, hasHydrated]);
 
   const setOrganization = (updates: Partial<OrganizationState>) => {
     setOrganizationState((prev) => {
@@ -87,15 +110,12 @@ export const OrganizationContextProvider = ({
         active: true,
         organizationId: undefined,
       };
-      const next = { ...baseState, ...updates };
-      localStorage.setItem("organization", JSON.stringify(next));
-      return next;
+      return { ...baseState, ...updates };
     });
   };
 
   const clearOrganization = () => {
     setOrganizationState(null);
-    localStorage.removeItem("organization");
   };
 
   const isFrozenCheck = (): boolean => {

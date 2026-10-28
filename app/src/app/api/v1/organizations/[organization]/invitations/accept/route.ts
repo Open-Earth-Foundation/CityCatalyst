@@ -41,11 +41,10 @@
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { AcceptInvite, AcceptOrganizationInvite } from "@/util/validation";
+import { AcceptOrganizationInvite } from "@/util/validation";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { InviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
@@ -62,14 +61,15 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   }
   const inviteRequest = AcceptOrganizationInvite.parse(await req.json());
   logger.info(inviteRequest, "[OrgInviteAccept] Parsed invite request");
-  const { email, token, organizationId } = inviteRequest;
+  const { email: rawEmail, token, organizationId } = inviteRequest;
+  const email = rawEmail.toLowerCase();
   const verifiedToken = jwt.verify(
     token,
     process.env.VERIFICATION_TOKEN_SECRET!,
   );
   logger.info({ email, organizationId }, "[OrgInviteAccept] Token verified");
   const tokenContent = {
-    email: (verifiedToken as JwtPayload).email,
+    email: ((verifiedToken as JwtPayload).email as string).toLowerCase(),
     organizationId: (verifiedToken as JwtPayload).organizationId,
   };
 
@@ -113,7 +113,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw createHttpError.InternalServerError("Configuration error");
   }
 
-  if (session.user.email !== email) {
+  if (session.user.email?.toLowerCase() !== email) {
     logger.error({
       sessionEmail: session.user.email,
       email,

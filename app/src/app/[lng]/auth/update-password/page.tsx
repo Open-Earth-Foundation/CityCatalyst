@@ -2,13 +2,12 @@
 
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
-import { MdInfoOutline } from "react-icons/md";
-import { Button, Heading, Text, Icon, Box } from "@chakra-ui/react";
+import { Button, Heading, Text, Box } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { logger } from "@/services/logger";
-import { Field } from "@/components/ui/field";
+import { getApiErrorMessage } from "@/util/helpers";
 
 type Inputs = {
   password: string;
@@ -60,8 +59,8 @@ export default function UpdatePassword(props: {
 
       setError("");
       router.push(`/auth/reset-successful`);
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     }
   };
 
@@ -73,29 +72,14 @@ export default function UpdatePassword(props: {
       </Text>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box display="flex" flexDirection="column" gap="16px">
-          <Field
-            helperText={
-              <>
-                <Icon
-                  as={MdInfoOutline}
-                  color="#2351DC"
-                  mr={1.5}
-                  mt={-0.5}
-                  boxSize={4}
-                />
-                {t("password-hint")}
-              </>
-            }
-          >
-            <PasswordInput
-              register={register}
-              error={errors.password}
-              name={t("new-password")}
-              t={t}
-              shouldValidate
-              watchPassword={watchPassword}
-            ></PasswordInput>
-          </Field>
+          <PasswordInput
+            register={register}
+            error={errors.password}
+            name={t("new-password")}
+            t={t}
+            shouldValidate
+            watchPassword={watchPassword}
+          />
           <PasswordInput
             register={register}
             error={errors.confirmPassword}

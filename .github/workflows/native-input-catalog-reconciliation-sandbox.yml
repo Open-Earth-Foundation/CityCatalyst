@@ -1,0 +1,123 @@
+name: Native input catalog reconciliation sandbox
+
+on:
+  workflow_dispatch:
+    inputs:
+      page_size:
+        description: "Records requested per stream page"
+        required: true
+        default: "2"
+        type: string
+      max_pages:
+        description: "Maximum number of pages per stream"
+        required: true
+        default: "10"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-input-catalog-reconciliation-sandbox
+  cancel-in-progress: false
+
+env:
+  COMPOSE_FILE: app/validation/native-input-catalog-reconciliation/docker-compose.yml
+  RECONCILIATION_PAGE_SIZE: ${{ inputs.page_size }}
+  RECONCILIATION_MAX_PAGES: ${{ inputs.max_pages }}
+
+jobs:
+  dry-run:
+    name: Isolated dry-run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run dry-run against disposable Postgres
+        id: dry-run
+        shell: bash
+        run: |
+          set +e
+          docker compose -f "$COMPOSE_FILE" up --build --abort-on-container-exit --exit-code-from dry-run dry-run
+          status=$?
+          mkdir -p artifacts
+          docker compose -f "$COMPOSE_FILE" cp dry-run:/tmp/reconciliation-dry-run-report.json artifacts/dry-run-report.json || true
+          docker compose -f "$COMPOSE_FILE" logs --no-color dry-run > artifacts/dry-run.log || true
+          docker compose -f "$COMPOSE_FILE" down --remove-orphans
+          exit "$status"
+
+      - name: Publish dry-run summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f artifacts/dry-run-report.json ]; then
+            {
+              echo "## Reconciliation sandbox dry-run"
+              jq -r '"- Complete: `\(.complete)` | truncated: `\(.truncated)`"
+                + "\n- Pages processed: `\(.pagesProcessed)` | records scanned: `\(.recordsScanned)`"
+                + "\n- Outcomes: matched `\(.counts.matched)`, missing `\(.counts.missing)`, duplicate `\(.counts.duplicate)`, dangling `\(.counts.dangling)`, scope-inconsistent `\(.counts["scope-inconsistent"])`, ambiguous `\(.counts.ambiguous)`, failed `\(.counts.failed)`"
+                + "\n- Duration: `\(.durationMs) ms`"' artifacts/dry-run-report.json
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Reconciliation sandbox dry-run" >> "$GITHUB_STEP_SUMMARY"
+            echo "No JSON report was produced; inspect the uploaded log artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload dry-run report and logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: native-input-catalog-reconciliation-dry-run
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+  isolated-apply-rollback:
+    name: Isolated apply and rollback
+    needs: dry-run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run apply and rollback against disposable Postgres
+        shell: bash
+        run: |
+          set +e
+          docker compose -f "$COMPOSE_FILE" up --build --abort-on-container-exit --exit-code-from apply-and-rollback apply-and-rollback
+          status=$?
+          mkdir -p artifacts
+          docker compose -f "$COMPOSE_FILE" cp apply-and-rollback:/tmp/reconciliation-apply-rollback-report.json artifacts/apply-rollback-report.json || true
+          docker compose -f "$COMPOSE_FILE" logs --no-color apply-and-rollback > artifacts/apply-rollback.log || true
+          docker compose -f "$COMPOSE_FILE" down --remove-orphans
+          exit "$status"
+
+      - name: Publish apply/rollback summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f artifacts/apply-rollback-report.json ]; then
+            {
+              echo "## Reconciliation sandbox apply/rollback"
+              jq -r '"- Apply complete: `\(.apply.complete)` | pages processed: `\(.apply.pagesProcessed)`"
+                + "\n- Repaired: `\(.apply.counts.repaired)` | rollback catalog rows remaining: `\(.rollback.rolledBackCatalogRows)`"
+                + "\n- Source rows after rollback: `\(.rollback.sourceRows)` | source mutation: `\(.sourceMutation)`"' artifacts/apply-rollback-report.json
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Reconciliation sandbox apply/rollback" >> "$GITHUB_STEP_SUMMARY"
+            echo "No JSON report was produced; inspect the uploaded log artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload apply/rollback report and logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: native-input-catalog-reconciliation-apply-rollback
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14

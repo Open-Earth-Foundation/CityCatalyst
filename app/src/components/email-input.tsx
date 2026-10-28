@@ -1,28 +1,35 @@
 import { emailPattern } from "@/util/validation";
-import { Icon, Input, Text } from "@chakra-ui/react";
-import { FieldError } from "react-hook-form";
-import { Fieldset } from "@chakra-ui/react";
+import { Input, InputProps } from "@chakra-ui/react";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
+import type { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import LabelLarge from "@/components/package/Texts/Label";
 
-export default function EmailInput({
+export default function EmailInput<TFieldValues extends FieldValues>({
   children,
   error,
   register,
   t,
   name = t("email-address"),
-  id = "email",
+  id = "email" as Path<TFieldValues>,
   disabled = false,
   defaultValue = "",
+  inputProps,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
-  register: Function;
-  t: Function;
-  name?: String;
-  id?: String;
+  register: UseFormRegister<TFieldValues>;
+  t: TFunction;
+  name?: string;
+  id?: Path<TFieldValues>;
   disabled?: boolean;
   defaultValue?: string;
+  inputProps?: InputProps;
 }) {
   return (
     <Field
@@ -41,7 +48,7 @@ export default function EmailInput({
           error
             ? "sentiment.negativeOverlay"
             : disabled
-              ? "background.neutral"
+              ? "background.graySubtle"
               : "background.default"
         }
         {...register(id, {
@@ -51,6 +58,7 @@ export default function EmailInput({
             message: t("email-invalid"),
           },
         })}
+        {...inputProps}
       />
       {children}
     </Field>

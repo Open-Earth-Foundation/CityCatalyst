@@ -1,0 +1,138 @@
+{
+  "locode": "CL IQQ",
+  "action_id": "icare_0040",
+  "language": "en",
+  "format": "json_chapters_markdown",
+  "chapters": [
+    {
+      "key": "snapshot",
+      "title": "Snapshot",
+      "markdown": "For **Iquique, Tarapacá, Chile** (locode **CL IQQ**), the selected action is **Deploy energy-efficient and solar-powered street lighting across all neighborhoods**. In the supplied ranking, it places **8th out of 20** actions, with a **final score of 0.476**.\n\nThe score signals are mixed but generally supportive: **feasibility is strongest (0.883)**, followed by **alignment (0.575)**, while **impact is lower (0.255)**. The explanation says the action has a strong impact driver because residential buildings account for 97% of the city’s inventory, and that it is backed by the **Plan de Mitigación Sector Energía** and fits the city’s medium timeframe preference.\n\nThe main tension is that the action does **not** match the city’s selected priority sector, and the explanation flags **financial feasibility as a caveat** because capacity is the constraint rather than money, with **technical assistance needed**.",
+      "source_refs": [
+        "ranking_snapshot",
+        "city",
+        "action_pathways"
+      ],
+      "limitations": [
+        "Comparable project evidence is not available in the supplied context.",
+        "City-level quantified emissions reductions are not available for this action in the supplied context."
+      ]
+    },
+    {
+      "key": "the_action",
+      "title": "The Action",
+      "markdown": "This action is to deploy energy-efficient and solar-powered street lighting across all neighborhoods. The supplied pathway describes an infrastructure intervention in which the city installs LED-based or other low-emission streetlights, with solar power prioritized where feasible, especially in areas with limited grid coverage or high carbon intensity.\n\nLocally, the change is a shift in street lighting toward efficient LED and solar-powered fixtures. The action is framed as supporting safety, accessibility, and social inclusion while reducing energy costs and environmental impacts. Where the electricity grid is already clean, the emphasis shifts to maximizing lighting efficiency through LED retrofits and smart controls.\n\nThe implementation scope supported by the evidence includes municipal procurement of equipment, establishment of public–private financing mechanisms, and contracting long-term maintenance services to support reliability. The action is described as medium-cost with a 5–10 year implementation timeline, and it is intended to deliver low positive co-benefits for air quality, cost of living, mobility, and stakeholder engagement.",
+      "source_refs": [
+        "action_pathways"
+      ],
+      "limitations": [
+        "Detailed local implementation scope is not available in the supplied context."
+      ]
+    },
+    {
+      "key": "action_impact",
+      "title": "Action Impact",
+      "markdown": "Deploying energy-efficient and solar-powered street lighting across all neighborhoods has a **very low** direct emissions impact in the supplied evidence, but it still contributes positively to the city’s mitigation pathway. The ranking snapshot places the action **8th out of 20**, with an impact score of **0.2548** and a final score of **0.4765**, indicating a moderate overall ranking signal even where the direct mitigation effect is limited.\n\nThe impact evidence shows a matched city subsector and a positive emissions-reduction component, alongside a timeline component score that supports the action’s relevance over a **5–10 year** horizon. The action shifts street lighting toward efficient LED and solar-powered fixtures, which is consistent with the supplied intervention and outcome summaries.\n\nBeyond mitigation, the action has several co-benefits rated **low** in the supplied evidence: air quality, cost of living, mobility, and stakeholder engagement. The action matters for the city because it combines infrastructure improvement with safety, accessibility, and social inclusion benefits, while also reducing energy costs and environmental impacts.\n\nThe supplied description also notes that implementation requires planning for maintenance and operational challenges, especially where long-term reliability is important.",
+      "source_refs": [
+        "ranking_snapshot",
+        "action_pathways"
+      ],
+      "limitations": [
+        "City-level quantified emissions reductions are not available for this action in the supplied context."
+      ]
+    },
+    {
+      "key": "city_fit",
+      "title": "City Fit",
+      "markdown": "**Deploy energy-efficient and solar-powered street lighting across all neighborhoods** shows strong fit in the supplied evidence. It ranks 8th out of 20 returned actions, with a high feasibility score of 0.88285 and a direct action mapping. The mitigation-feasibility score is also high at 0.945, with especially strong scores for technological, institutional, environmental, and geophysical dimensions.\n\nSeveral local conditions support the action. The city’s very high median household income is aligned with the economic cost-effectiveness signal, and the high electricity access rate supports technical scalability. These indicators suggest favorable conditions for a citywide lighting upgrade, at least from the perspective of the supplied fit evidence.\n\nThe main limiting conditions are socio-cultural. Very low home ownership and very high renter share are both flagged as negative for public acceptance. The supplied evidence therefore suggests that acceptance-related constraints may need attention even where the technical and economic fit is strong.\n\nThe chapter cannot assess local implementation capacity beyond the supplied evidence.",
+      "source_refs": [
+        "ranking_snapshot",
+        "city",
+        "mitigation_feasibility"
+      ],
+      "limitations": [
+        "Local implementation capacity is not available in the supplied context."
+      ]
+    },
+    {
+      "key": "policy_backing",
+      "title": "Policy Backing",
+      "markdown": "The supplied evidence indicates **medium policy backing** for deploying energy-efficient and solar-powered street lighting across all neighborhoods. The policy support score is **0.65**, based on **42 findings across 6 documents**, which suggests a moderate level of alignment between the action and the available policy context.\n\nThe strongest evidence is explicit and action-oriented. One sector plan commits to developing financing lines and models to reduce fossil fuel use through electrification of consumption, and another states that 13 key measures are to be implemented during 2025–2030 with coordination and support from identified actors. These findings provide direct policy support for an energy-efficiency and electrification-oriented action.\n\nAdditional governance evidence also supports the action indirectly. The supplied documents identify the ministry as an enabling actor for sector development, assign responsibility for mainstreaming gender and human-rights approaches in design, formulation, implementation, and monitoring, and list co-supporting ministries in the transport sector. Taken together, the evidence suggests the action is policy-backed, though the support is moderate rather than strong.",
+      "source_refs": [
+        "ranking_snapshot",
+        "policy_scores"
+      ],
+      "limitations": [
+        "The evidence is concentrated in sector plans and does not show a single dedicated policy for street lighting.",
+        "The supplied context does not provide implementation status or binding force beyond the quoted evidence.",
+        "Some supporting evidence is governance-oriented rather than directly specific to street lighting."
+      ]
+    },
+    {
+      "key": "legal_mandate_delivery",
+      "title": "Legal Mandate & Delivery",
+      "markdown": "The supplied legal assessment classifies this action as **enabled**. The municipality has **explicit legal authority to act directly**, with **ownership enabled** and **no legal restrictions** identified in the supplied context.\n\nThe legal justification states that **public lighting is a privative municipal function** under **Ley 18.695 (LOCM) art. 3° letra d)**. It also notes that **DL 3.063** regulates financing for public lighting and that **Ley 21.305** promotes energy efficiency in public lighting as part of the national energy-efficiency plan.\n\nFor delivery, this means the municipality can proceed within its own competence and does **not require authorization from another level of government**. The supplied evidence indicates that coordination with the electricity distributor is **technical rather than decision-making**.\n\nThe legal assessment is therefore fully supportive of municipal implementation, while the available evidence does not provide permit or SEIA applicability details.",
+      "source_refs": [
+        "legal"
+      ],
+      "limitations": [
+        "Permit and SEIA applicability are not available in the supplied legal context."
+      ]
+    },
+    {
+      "key": "financing_precedents_pathway",
+      "title": "Financing, Precedents & Pathway",
+      "markdown": "The supplied finance evidence points to a route that needs technical assistance rather than a funding shortfall. The action is scored at 0.7 on the financial component, with the stated reason that capacity is the constraint, not money. The input also indicates direct fund access and 17 reachable opportunities, which supports a financing pathway that can be pursued without assuming a specific named fund or instrument.\n\nThe legal facts are enabling: there are no legal restrictions and no additional authorization is required. That means the main delivery constraint in the supplied evidence is preparation capacity, not legal permission.\n\nPrecedent evidence is limited in the supplied context. The finance record notes 47 comparable projects on record, but no named precedents or track-record details are provided here, so they should not be expanded beyond that count. A conservative next step is to use technical assistance to strengthen project preparation and then match the action to the reachable opportunities already identified in the finance inputs.",
+      "source_refs": [
+        "financial_feasibility",
+        "legal"
+      ],
+      "limitations": [
+        "Comparable project and track-record data are not available in the supplied context.",
+        "Named financing opportunities are not available in the supplied context."
+      ]
+    },
+    {
+      "key": "sources_assumptions",
+      "title": "Where The Information Comes From",
+      "markdown": "- **Source categories:** The chapter is based on the supplied ranking snapshot for **CL IQQ**, where the selected action is **icare_0040** and its rank is **8 of 20** returned actions.\n- **Live enrichment context:** The supplied context indicates that live enrichment sources were available for **city**, **action_pathways**, **policy_scores**, **legal**, **mitigation_feasibility**, and **financial_feasibility**.\n- **Assumptions:** The report should rely only on the evidence provided in the supplied snapshot and enrichment context. It should avoid adding unsupported claims about emissions reductions, comparable projects, permit or SEIA applicability, or other details not present in the input.\n- **Evidence limitations:** The report should treat the available evidence as incomplete where the supplied context does not provide quantified outcomes, comparable project evidence, or legal applicability details.",
+      "source_refs": [
+        "ranking_snapshot",
+        "city",
+        "action_pathways",
+        "policy_scores",
+        "legal",
+        "mitigation_feasibility",
+        "financial_feasibility"
+      ],
+      "limitations": [
+        "Snapshot-to-live source staleness was not evaluated for this report.",
+        "Comparable project evidence is not available in the supplied context.",
+        "City-level quantified emissions reductions are not available for this action in the supplied context.",
+        "Permit and SEIA applicability are not available in the supplied legal context."
+      ]
+    }
+  ],
+  "metadata": {
+    "frontend_request_id": "output-plan-mock-req-1",
+    "internal_request_id": "7fcb7c45-3a3a-46eb-a9d1-001e5bc00527",
+    "source_prioritization_request_id": "1234567890",
+    "source_context": {
+      "ranking_basis": "frontend_prioritization_snapshot",
+      "additional_context_basis": "live_backend_refetch",
+      "staleness_evaluated": false,
+      "changed_sources": [],
+      "staleness_notes": [
+        "Ranking-specific context came from the frontend snapshot. Additional report context was fetched live by the backend.",
+        "Staleness checks require product-defined comparison rules and are not fully implemented in this first slice."
+      ]
+    },
+    "required_sources_ok": true,
+    "limitations": [
+      "Snapshot-to-live source staleness was not evaluated for this report.",
+      "Comparable project evidence is not available in the supplied context.",
+      "City-level quantified emissions reductions are not available for this action in the supplied context.",
+      "Permit and SEIA applicability are not available in the supplied legal context."
+    ]
+  }
+}

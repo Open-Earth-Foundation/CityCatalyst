@@ -9,6 +9,25 @@ import {
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
+import {
+  recoveryTokenLength as recoveryTokenMinLength,
+  verifyRecoveryCode,
+  verifyToken,
+} from "./2fa";
+import { RateLimiter } from "@/util/rate-limiter";
+
+const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
+// 5 attempts/15 minutes per email — brute-force throttle for the login path.
+// A 1-minute window barely slows an attacker (just wait it out between
+// bursts); 15 minutes is a standard OWASP-aligned balance between blocking
+// sustained guessing and not locking out a real user for long.
+// Per-email keying only (per CC-875): an attacker who knows a victim's email
+// could transiently lock out that victim's real logins by repeatedly guessing
+// their password. Combining with IP is a reasonable follow-up but out of
+// scope here — the ticket is explicit about per-email.
+const loginLimiter = isPlaywrightTest
+  ? null
+  : new RateLimiter(15 * 60 * 1000, 5);
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -25,7 +44,7 @@ export default function Credentials<
     id: "credentials",
     name: "Credentials",
     type: "credentials",
-    credentials: {} as any,
+    credentials: {} as C,
     authorize: () => null,
     options,
   };
@@ -62,10 +81,24 @@ export const authOptions: NextAuthOptions = {
           placeholder: "yourname@city.example",
         },
         password: { label: "Password", type: "password" },
+        securityToken: { label: "Security token", type: "securityToken" },
       },
-      async authorize(credentials): Promise<any> {
+      async authorize(credentials): Promise<{
+        id: string;
+        name?: string;
+        email?: string;
+        image?: string | null;
+        role?: Roles;
+      } | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
+        }
+
+        const email = credentials.email.toLowerCase();
+
+        if (loginLimiter && !loginLimiter.checkLimit(email)) {
+          logger.error({ email }, "Login rate limit exceeded");
+          throw new Error("rate-limited");
         }
 
         let user: User | null = null;
@@ -74,14 +107,14 @@ export const authOptions: NextAuthOptions = {
             await db.initialize();
           }
           user = await db.models.User.findOne({
-            where: { email: credentials.email.toLowerCase() },
+            where: { email },
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");
           return null;
         }
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.passwordHash || user.anonymizedAt) {
           logger.error("No user found!");
           return null;
         }
@@ -94,6 +127,36 @@ export const authOptions: NextAuthOptions = {
           logger.error("Invalid password!");
           return null;
         }
+
+        if (user.twoFactorEnabled && user.twoFactorSecret) {
+          if (!credentials.securityToken) {
+            logger.error("No securityToken passed for user with 2FA enabled");
+            return null;
+          }
+          let isValid = false;
+          if (credentials.securityToken.length >= recoveryTokenMinLength) {
+            // allow using a single-use recovery code and delete it from user record if successful
+            isValid = await verifyRecoveryCode(user, credentials.securityToken);
+          } else {
+            isValid = await verifyToken(
+              credentials.securityToken,
+              user.twoFactorSecret,
+            );
+          }
+          if (!isValid) {
+            logger.error("Invalid securityToken for 2FA");
+            return null;
+          }
+        }
+
+        // Inactivity for retention is measured from a successful sign-in.
+        // A failed stamp must not block the login itself.
+        try {
+          await user.update({ lastActiveAt: new Date() });
+        } catch (err: unknown) {
+          logger.error({ err }, "Failed to record lastActiveAt");
+        }
+
         return {
           id: user.userId,
           name: user.name,
@@ -112,8 +175,9 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as unknown as User).role;
         token.picture = user.image;
         token.name = user.name;
-        token.csrfSecret = crypto.randomBytes(32).toString('hex');
+        token.csrfSecret = crypto.randomBytes(32).toString("hex");
       }
+
       return token;
     },
     session: ({ session, token }) => {
@@ -124,7 +188,7 @@ export const authOptions: NextAuthOptions = {
           id: token.sub,
           role: token.role,
         },
-        csrfSecret: token.csrfSecret
+        csrfSecret: token.csrfSecret,
       };
     },
   },

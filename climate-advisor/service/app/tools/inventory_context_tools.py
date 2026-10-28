@@ -62,7 +62,6 @@ def build_inventory_context_tools(
             client = client_factory()
             try:
                 result = await loader(client, request_payload, token)
-                _update_token_ref_from_client(client, token_ref)
             finally:
                 await _close_client(client)
 
@@ -173,7 +172,6 @@ def build_inventory_capability_tools(
             client = client_factory()
             try:
                 result = await loader(client, request_payload, token)
-                _update_token_ref_from_client(client, token_ref)
             finally:
                 await _close_client(client)
 
@@ -208,9 +206,10 @@ def build_inventory_capability_tools(
     ) -> str:
         """List city/year inventories the user can access.
 
-        Use optional city/year filters to narrow choices. Set
-        include_all_city_years when the user asks for every inventory year for a
-        matching city.
+        Returns totals plus organization/project breakdown fields so count
+        questions can be answered as access summaries. Use optional city/year
+        filters to narrow choices. Set include_all_city_years when the user asks
+        for every inventory year for a matching city.
         """
 
         request_payload: Dict[str, Any] = {
@@ -310,16 +309,6 @@ async def _close_client(client: object) -> None:
     close_result = close()
     if inspect.isawaitable(close_result):
         await close_result
-
-
-def _update_token_ref_from_client(
-    client: object,
-    token_ref: Dict[str, Optional[str]],
-) -> None:
-    """Copy a refreshed client token into the shared tool token reference."""
-    refreshed_token = getattr(client, "last_refreshed_token", None)
-    if isinstance(refreshed_token, str) and refreshed_token:
-        token_ref["value"] = refreshed_token
 
 
 def _explicit_inventory_payload(

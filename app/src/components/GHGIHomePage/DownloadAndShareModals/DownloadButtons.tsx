@@ -1,10 +1,17 @@
 import type { TFunction } from "i18next";
-import { Badge, Box, Button, Icon, Spacer, Text } from "@chakra-ui/react";
-import React, { MouseEventHandler } from "react";
-import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
-import { FiDownload } from "react-icons/fi";
+import {
+  Badge,
+  Box,
+  Button,
+  Checkbox,
+  HStack,
+  Separator,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import React, { useState } from "react";
 
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { logger } from "@/services/logger";
 import { trackEvent } from "@/lib/analytics";
 
@@ -14,17 +21,26 @@ const DownloadButtons = ({
   inventoryId,
   cityLocode,
   inventoryYear,
+  onClose,
 }: {
   t: TFunction;
   lng: string;
   inventoryId: string | undefined;
   cityLocode: string | undefined;
   inventoryYear: number | undefined;
+  onClose: () => void;
 }) => {
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+
+  const toggleFormat = (format: string, checked: boolean) => {
+    setSelectedFormats((prev) =>
+      checked ? [...prev, format] : prev.filter((f) => f !== format),
+    );
+  };
   const DOWNLOAD_BUTTONS = {
     // ciris: { isAvailable: false },
-    ecrf: { isAvailable: true },
     csv: { isAvailable: true },
+    ecrf: { isAvailable: true },
     // pdf: { isAvailable: false },
   };
 
@@ -37,10 +53,8 @@ const DownloadButtons = ({
   const showToast = (
     title: string,
     description: string,
-    status: any,
+    status: STATUS,
     duration: number | null,
-    bgColor: string,
-    showAnimatedGradient: boolean = false,
   ) => {
     // Replace previous toast notifications
     if (duration == null) {
@@ -102,14 +116,7 @@ const DownloadButtons = ({
   };
 
   const handleDownload = (format: string) => {
-    showToast(
-      "preparing-dataset",
-      "wait-fetch-data",
-      STATUS.INFO,
-      null,
-      "semantic.info",
-      true, // animated gradient
-    );
+    showToast("preparing-dataset", "wait-fetch-data", STATUS.INFO, null);
     fetch(
       `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
     )
@@ -144,7 +151,6 @@ const DownloadButtons = ({
               "downloading-data",
               STATUS.SUCCESS,
               null,
-              "interactive.primary",
             );
             URL.revokeObjectURL(downloadLink.href);
             downloadLink.remove();
@@ -158,65 +164,114 @@ const DownloadButtons = ({
             inventoryId,
             format,
             cityLocode,
-            inventoryYear
+            inventoryYear,
           },
-          "Failed to download inventory"
+          "Failed to download inventory",
         );
-        showToast(
-          "download-failed",
-          "download-error",
-          STATUS.ERROR,
-          null,
-          "semantic.danger",
-        );
+        showToast("download-failed", "download-error", STATUS.ERROR, null);
       });
   };
 
+  const handleConfirmDownload = () => {
+    selectedFormats.forEach((format) => handleDownload(format));
+    onClose();
+  };
+
   return (
-    <Box display="flex" flexDirection="column">
-      {Object.entries(DOWNLOAD_BUTTONS).map(([format, { isAvailable }]) => (
-        <Button
-          key={format}
-          my="16px"
-          mx="24px"
-          variant="ghost"
-          disabled={!isAvailable}
-          data-testid={`download-${format}-button`}
-          style={{
-            backgroundColor: "white",
-            color: "black",
-          }}
-          textTransform="none"
-          justifyContent="flex-start"
-          onClick={() => handleDownload(format)}
-        >
-          <Icon as={FiDownload} fontSize="32px" />
-          <Text
-            fontSize="body.lg"
-            color="body"
-            opacity={isAvailable ? 1 : 0.5}
-            mx="16px"
-          >
-            {t(`download-${format}`)}
-          </Text>
-          {!isAvailable && (
-            <Badge
-              mx="16px"
-              borderWidth="1px"
-              borderColor="border.neutral"
-              py="4px"
-              px="8px"
-              borderRadius="16px"
-              color="content.secondary"
-              fontSize="body.sm"
-              bg="base.light"
+    <Box display="flex" flexDirection="column" pb="l">
+      {Object.entries(DOWNLOAD_BUTTONS).map(
+        ([format, { isAvailable }], index) => (
+          <React.Fragment key={format}>
+            {index > 0 && <Separator borderColor="border.overlay" my="l" />}
+            <Checkbox.Root
+              mx="l"
+              alignItems="flex-start"
+              disabled={!isAvailable}
+              checked={selectedFormats.includes(format)}
+              onCheckedChange={(details) =>
+                toggleFormat(format, !!details.checked)
+              }
+              data-testid={`download-${format}-checkbox`}
             >
-              <Text>{t("coming-soon")}</Text>
-            </Badge>
-          )}
+              <Checkbox.HiddenInput />
+              <Checkbox.Control
+                borderRadius="full"
+                mt="4px"
+                bg="transparent"
+                borderWidth="2px"
+                borderColor="border.neutral"
+                _checked={{
+                  bg: "colorPalette.solid",
+                  borderColor: "colorPalette.solid",
+                }}
+              >
+                {null}
+              </Checkbox.Control>
+              <Checkbox.Label>
+                <VStack
+                  align="flex-start"
+                  gap="4px"
+                  opacity={isAvailable ? 1 : 0.5}
+                >
+                  <HStack>
+                    <Text
+                      color="content.secondary"
+                      fontFamily="heading"
+                      fontSize="title.md"
+                      fontWeight="semibold"
+                      lineHeight="24"
+                    >
+                      {t(`download-${format}-format`)}
+                    </Text>
+                    {!isAvailable && (
+                      <Badge
+                        borderWidth="1px"
+                        borderColor="border.neutral"
+                        py="4px"
+                        px="8px"
+                        borderRadius="16px"
+                        color="content.secondary"
+                        fontSize="body.sm"
+                        bg="base.light"
+                      >
+                        <Text>{t("coming-soon")}</Text>
+                      </Badge>
+                    )}
+                  </HStack>
+                  <Text
+                    color="content.tertiary"
+                    fontFamily="body"
+                    fontSize="body.md"
+                    fontWeight="regular"
+                    lineHeight="20"
+                    letterSpacing="wide"
+                  >
+                    {t(`download-${format}-format-description`)}
+                  </Text>
+                </VStack>
+              </Checkbox.Label>
+            </Checkbox.Root>
+          </React.Fragment>
+        ),
+      )}
+      <Separator borderColor="border.overlay" my="l" />
+      <HStack justify="flex-end" mx="l" gap="m">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          data-testid="download-cancel-button"
+        >
+          {t("cancel")}
         </Button>
-      ))}
-      <Toaster />
+        <Button
+          variant="solid"
+          disabled={selectedFormats.length === 0}
+          onClick={handleConfirmDownload}
+          data-testid="download-confirm-button"
+        >
+          {t("download")}
+        </Button>
+      </HStack>
     </Box>
   );
 };

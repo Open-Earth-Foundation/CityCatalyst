@@ -1,8 +1,4 @@
-import {
-  DashboardResponseType,
-  GHGInventorySummary,
-  HIAPSummary,
-} from "@/util/types";
+import { GHGInventorySummary, HIAPSummary } from "@/util/types";
 
 export interface DashboardWidgetProps {
   moduleId: string;

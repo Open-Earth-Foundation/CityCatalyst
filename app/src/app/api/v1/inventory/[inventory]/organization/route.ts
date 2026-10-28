@@ -64,7 +64,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req, { session, params }) => {
-  let inventoryId = params.inventory;
+  const inventoryId = params.inventory;
 
   const inventory = await UserService.findUserInventory(
     inventoryId,

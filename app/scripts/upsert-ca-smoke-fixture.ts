@@ -6,6 +6,7 @@ import {
   InventoryTypeEnum,
 } from "@/util/enums";
 import { Roles } from "@/util/types";
+import { Modules } from "@/util/constants";
 import bcrypt from "bcrypt";
 
 const DEFAULT_FIXTURE = {
@@ -180,6 +181,16 @@ async function upsertCaSmokeFixture() {
         },
         { transaction },
       );
+
+      // Without a module grant, useModuleAccess denies the seeded city and the
+      // Concept Note routes redirect away with a not-found toast.
+      await db.models.ProjectModules.findOrCreate({
+        where: {
+          projectId: fixture.projectId,
+          moduleId: Modules.CONCEPT_NOTE_BUILDER.id,
+        },
+        transaction,
+      });
     });
 
     logger.info(

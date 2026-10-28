@@ -5,7 +5,8 @@
     "declaration": true,
     "emitDeclarationOnly": false,
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "skipLibCheck": true
   },
   "include": ["./index.ts", "package/**/*.ts", "package/**/*.tsx"]

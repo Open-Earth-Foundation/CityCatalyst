@@ -5,10 +5,9 @@ import {
 } from "@/components/icons";
 import ProgressLoader from "@/components/ProgressLoader";
 import { api } from "@/services/api";
-import { InventoryResponse, ACTION_TYPES, LANGUAGES } from "@/util/types";
+import { InventoryResponse, ACTION_TYPES } from "@/util/types";
 import { Box, Icon, Text, Button } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import i18next from "i18next";
 import { useState } from "react";
 import { BiSolidError } from "react-icons/bi";
 
@@ -21,7 +20,6 @@ const TopActionsDataState = ({
   t,
   inventory,
   hasActions = false,
-  actionType,
   onRefetch,
   isActionsPending,
   error,
@@ -32,7 +30,7 @@ const TopActionsDataState = ({
   actionType: ACTION_TYPES;
   onRefetch: () => void;
   isActionsPending: boolean;
-  error?: any;
+  error?: unknown;
 }) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventory?.inventoryId || "", {
@@ -292,7 +290,6 @@ const GeneratedActions = ({ t }: { t: TFunction }) => {
 
 const GeneratingClimateActions = ({
   t,
-  isActionsPending,
 }: {
   t: TFunction;
   isActionsPending: boolean;

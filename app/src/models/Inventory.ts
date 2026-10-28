@@ -12,7 +12,7 @@ export interface InventoryAttributes {
   inventoryId: string;
   inventoryName?: string;
   year?: number;
-  totalEmissions?: number;
+  totalEmissions?: number | null;
   cityId?: string;
   totalCountryEmissions?: number;
   isPublic?: boolean;
@@ -48,7 +48,7 @@ export class Inventory
   declare inventoryId: string;
   declare inventoryName?: string;
   declare year?: number;
-  declare totalEmissions?: number;
+  declare totalEmissions?: number | null;
   declare cityId?: string;
   declare totalCountryEmissions?: number;
   declare isPublic?: boolean;

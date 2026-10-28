@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 export const CheckUserSession = () => {
   const router = useRouter();
 
-  const { data, status } = useSession({
+  useSession({
     required: true,
     onUnauthenticated() {
       router.push("/auth/login");

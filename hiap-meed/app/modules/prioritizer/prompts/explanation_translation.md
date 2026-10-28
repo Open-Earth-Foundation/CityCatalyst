@@ -10,6 +10,8 @@ Apply these rules:
 - Preserve meaning closely. Do not add new claims, evidence, or caveats.
 - Keep action IDs exactly as provided.
 - Keep each translation concise and natural for the target language.
+- When a recurring term from `terminology` occurs in the source text, use its exact `target` value for that language. Do not invent or paraphrase catalogue terminology.
+- Keep official document, programme, agency, law, place, and action names in their source form.
 - Assess whether the provided canonical explanation actually appears to be English.
 - If the source text appears non-English or mixed-language, still translate it and set the warning flag for that action.
 - Return valid JSON only.
@@ -19,6 +21,7 @@ Apply these rules:
 Input is a rendered prompt context with:
 - `source_language` (string): Expected source language label. This will be `en`.
 - `target_languages` (list[string]): Languages to produce for each action.
+- `terminology` (object): Deterministic recurring terms keyed by target language, category, and stable term key. Each term contains its English `source` form and exact localized `target` form.
 - `actions_json` (list[object]): Canonical explanation rows.
   - `action_id` (string): Stable action identifier.
   - `canonical_explanation` (string): Canonical explanation text provided by the caller.
@@ -26,6 +29,8 @@ Input is a rendered prompt context with:
 Runtime values:
 - `source_language`: {source_language}
 - `target_languages`: {target_languages}
+- `terminology`:
+{terminology_json}
 - `actions_json`:
 {actions_json}
 </input>
@@ -54,8 +59,8 @@ Output rules:
       "action_id": "c40_0010",
       "translations": [
         {{
-          "language": "pt",
-          "text": "Esta acao tem classificacao elevada porque a evidencia indica forte impacto esperado e alinhamento claro com as prioridades da cidade."
+          "language": "es",
+          "text": "Esta acción ocupa una posición alta porque la información indica un impacto esperado fuerte y una clara alineación con las prioridades de la ciudad."
         }}
       ],
       "source_language_warning": false

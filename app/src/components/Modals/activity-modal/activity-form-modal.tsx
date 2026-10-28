@@ -1,12 +1,13 @@
 "use client";
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
-import { Button } from "@chakra-ui/react";
-import { FC } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { Button, DialogOpenChangeDetails } from "@chakra-ui/react";
+import { Dispatch, FC, SetStateAction, useRef } from "react";
+import { Control, FieldValues, SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
+import type { ManualValidationErrorDetails } from "@/lib/custom-errors/manual-input-error";
 import ActivityModalBody, { Inputs } from "./activity-modal-body";
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
@@ -32,9 +33,13 @@ interface AddActivityModalProps {
   onClose: () => void;
   t: TFunction;
   defaultCityId?: string;
-  setHasActivityData: Function;
+  setHasActivityData: Dispatch<SetStateAction<boolean>>;
   hasActivityData: boolean;
   inventoryId: string;
+  // Can be Methodology | DirectMeasure at runtime (see activity-tab.tsx),
+  // but internal usage here assumes Methodology-only fields (activitySelectionField,
+  // fields, etc.) without narrowing -- needs a proper fix reconciling the two shapes
+  // across this file, use-activity-form.ts, and emission-data-section.tsx.
   methodology: any;
   selectedActivity?: SuggestedActivity;
   referenceNumber: string;
@@ -42,8 +47,18 @@ interface AddActivityModalProps {
   targetActivityValue?: ActivityValue;
   inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
-  setAddActivityDialogOpen: Function;
+  setAddActivityDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
+
+type ActivityData = Inputs["activity"] & Record<string, unknown>;
+
+type ActivityValueErrorResponse = {
+  error?: {
+    type?: string;
+    issues: ManualValidationErrorDetails;
+    data?: { type?: string; errorKey: string };
+  };
+};
 
 const AddActivityModal: FC<AddActivityModalProps> = ({
   isOpen,
@@ -104,8 +119,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     setFocus,
   });
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // wait for the errors to render, then bring the first one (in page order) into view
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      contentRef.current
+        ?.querySelector<HTMLElement>("[data-modal-error]")
+        ?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 50);
+  };
+
   const submit = () => {
-    handleSubmit(onSubmit)();
+    handleSubmit(onSubmit, scrollToFirstError)();
   };
 
   const [createActivityValue, { isLoading }] =
@@ -122,7 +148,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     duration: 1200,
   });
 
-  function extractGasesAndUnits(data: any): {
+  function extractGasesAndUnits(data: ActivityData): {
     gas: string;
     factor: number;
     unit: string;
@@ -136,7 +162,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         const gasObject = {
           ...gasValue,
           gas: gasValue.gas as string,
-          factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
+          factor: parseFloat(data[`${gasValue.gas}EmissionFactor`] as string),
           unit: data[
             `${gasValue.gas?.toLocaleLowerCase()}EmissionFactorUnit`
           ] as string,
@@ -152,8 +178,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       const gasUnitKey = `${gas?.toLocaleLowerCase()}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
-        factor: parseFloat(data[gasFactorKey]),
-        unit: data[gasUnitKey],
+        factor: parseFloat(data[gasFactorKey] as string),
+        unit: data[gasUnitKey] as string,
       };
 
       gasArray.push(gasObject);
@@ -165,18 +191,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasValues = extractGasesAndUnits(activity);
 
     // extract field values
-    const values: Record<string, any> = {};
+    const values: Record<string, unknown> = {};
+    const activityData = activity as ActivityData;
     fields?.forEach((field) => {
       if (field.id in activity) {
-        values[field.id] = (activity as any)[field.id];
+        values[field.id] = activityData[field.id];
       }
       if (field.units) {
-        values[`${field.id}-unit`] = (activity as any)[`${field.id}-unit`];
+        values[`${field.id}-unit`] = activityData[`${field.id}-unit`];
       }
     });
     if (!methodology?.id.includes("direct-measure")) {
-      values[title] = (activity as any)[title];
-      values[`${title}-unit`] = (activity as any)[`${title}-unit`];
+      values[title] = activityData[title];
+      values[`${title}-unit`] = activityData[`${title}-unit`];
     }
 
     const requestData = {
@@ -198,12 +225,15 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         activityId: activityId,
         activityTitle: title,
         ...(methodology.activitySelectionField && {
-          [methodology.activitySelectionField.id]: (activity as any)[
-            methodology.activitySelectionField.id
-          ],
+          [methodology.activitySelectionField.id]:
+            activityData[methodology.activitySelectionField.id],
         }),
         dataQuality: activity.dataQuality,
         sourceExplanation: activity.dataComments,
+        dataYear: activity.dataYear ? Number(activity.dataYear) : undefined,
+        sourceDocument: activity.sourceDocument?.trim() || undefined,
+        sourcePage: activity.sourcePage?.trim() || undefined,
+        sourceUrl: activity.sourceUrl?.trim() || undefined,
         ...(activity.wasteCompositionType && {
           wasteCompositionType: activity.wasteCompositionType,
         }),
@@ -259,8 +289,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       resetSelectedActivityValue();
     } else {
       const error = response.error as FetchBaseQueryError;
-      const errorData = error.data as any;
+      const errorData = error.data as ActivityValueErrorResponse;
       if (errorData.error?.type === "ManualInputValidationError") {
+        scrollToFirstError();
         handleManalInputValidationError(errorData.error.issues);
       } else if (errorData.error?.data?.type === "CalculationError") {
         showErrorToast({
@@ -290,19 +321,26 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       <DialogRoot
         preventScroll
         open={isOpen}
-        onOpenChange={(e: any) => setAddActivityDialogOpen(e.open)}
+        onOpenChange={(e: DialogOpenChangeDetails) =>
+          setAddActivityDialogOpen(e.open)
+        }
         onExitComplete={onCloseDialog}
       >
         <DialogBackdrop />
         <DialogContent
+          ref={contentRef}
           data-testid="add-emission-modal"
           minH="300px"
           minW="768px"
+          maxH="90vh"
           marginTop="2%"
+          display="flex"
+          flexDirection="column"
         >
           <DialogHeader
             display="flex"
-            justifyContent="center"
+            justifyContent="flex-start"
+            flexShrink={0}
             fontWeight="semibold"
             fontSize="headline.sm"
             fontFamily="heading"
@@ -314,7 +352,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           >
             {edit ? t("update-emission-data") : t("add-emission-data")}
           </DialogHeader>
-          <DialogCloseTrigger />
+          <DialogCloseTrigger color="content.tertiary" />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
             inventoryId={inventoryId}
@@ -324,7 +362,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             submit={submit}
             register={register}
             watch={watch}
-            control={control}
+            control={control as unknown as Control<FieldValues>}
             fields={fields}
             units={units}
             targetActivityValue={targetActivityValue}
@@ -345,14 +383,26 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             display="flex"
             alignItems="center"
             p="24px"
-            justifyContent="center"
+            gap="16px"
+            flexShrink={0}
+            justifyContent="flex-end"
           >
+            <Button
+              data-testid="add-emission-modal-cancel"
+              variant="outline"
+              h="56px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+              onClick={() => setAddActivityDialogOpen(false)}
+            >
+              {t("cancel")}
+            </Button>
             <Button
               data-testid="add-emission-modal-submit"
               h="56px"
-              w="full"
-              paddingTop="16px"
-              paddingBottom="16px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"
@@ -361,8 +411,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               type="submit"
               loading={isLoading || updateLoading}
               onClick={submit}
-              p={0}
-              m={0}
             >
               {edit ? t("update-emission-data") : t("add-emission-data")}
             </Button>

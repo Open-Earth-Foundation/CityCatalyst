@@ -2,7 +2,7 @@
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
 import ProgressLoader from "@/components/ProgressLoader";
 import { BodyLarge } from "@/components/package/Texts/Body";
-import { ButtonMedium, ButtonSmall } from "@/components/package/Texts/Button";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 import {
   HeadlineLarge,
   HeadlineSmall,
@@ -17,7 +17,7 @@ import { Box, Card, Icon, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useMemo } from "react";
-import { MdArrowBack, MdArrowForward, MdNavigateNext } from "react-icons/md";
+import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 
 export default function ProjectPage(props: {
@@ -80,15 +80,15 @@ export default function ProjectPage(props: {
             <VStack spaceY="24px" alignItems="start" justifyContent="start">
               <Button
                 variant="ghost"
+                fontSize="14px"
+                color="content.link"
                 alignSelf="flex-start"
-                color="content.primary"
                 onClick={() =>
                   router.push(`/${lng}/organization/${organizationId}/project/`)
                 }
-                textTransform="unset"
               >
-                <Icon as={MdArrowBack} boxSize={4} />
-                {t("all-projects")}
+                <Icon as={MdArrowBack} boxSize={6} />
+                {t("go-back")}
               </Button>
               <HeadlineLarge>
                 {project?.name === "cc_project_default"
@@ -99,7 +99,13 @@ export default function ProjectPage(props: {
             </VStack>
             {project?.cities && project.cities.length > 0 && (
               <Suspense fallback={<ProgressLoader />}>
-                <CitiesTable cities={project.cities} lng={lng} t={t} />
+                <CitiesTable
+                  cities={project.cities}
+                  lng={lng}
+                  t={t}
+                  organizationId={organizationId}
+                  projectId={projectId}
+                />
               </Suspense>
             )}
             <NextLink
@@ -108,14 +114,28 @@ export default function ProjectPage(props: {
               rel="noopener noreferrer"
               style={{ width: "100%" }}
             >
-              <Card.Root w="full">
+              <Card.Root
+                w="full"
+                borderRadius="rounded-xl"
+                border="1px solid"
+                borderColor="border.neutral"
+              >
                 <Card.Header>
                   <LabelLarge>{t("learning")}</LabelLarge>
                   <HeadlineSmall color="content.link">
                     {t("learn-more-blog")}
                   </HeadlineSmall>
                 </Card.Header>
-                <Card.Body>{t("read-blog-description")}</Card.Body>
+                <Card.Body
+                  color="content.secondary"
+                  fontFamily="body"
+                  fontSize="body.lg"
+                  fontWeight="regular"
+                  lineHeight="24"
+                  letterSpacing="wide"
+                >
+                  {t("read-blog-description")}
+                </Card.Body>
                 <Card.Footer justifyContent="right">
                   <ButtonMedium color="content.link" textTransform="uppercase">
                     {t("visit-blog")}

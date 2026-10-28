@@ -6,7 +6,7 @@ if (typeof window !== "undefined") {
   if (window.__ENV) {
     initializeAnalytics();
   } else {
-    // If not, wait for it to be injected by PublicEnvScript
+    // If not, wait for it to be injected by RuntimeEnvScript
     const checkInterval = setInterval(() => {
       if (window.__ENV) {
         clearInterval(checkInterval);

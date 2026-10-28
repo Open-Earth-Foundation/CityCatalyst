@@ -1,7 +1,6 @@
 import { Box, Link, SimpleGrid, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import MethodologyCard from "@/components/Cards/methodology-card";
-import React, { useState } from "react";
 import { DirectMeasure, Methodology } from "@/util/form-schema";
 import { TFunction } from "i18next";
 import HeadingText from "@/components/heading-text";
@@ -17,8 +16,6 @@ const SelectMethodology = ({
   handleMethodologySelected: (methodology: Methodology | DirectMeasure) => void;
   directMeasure?: DirectMeasure;
 }) => {
-  const [selectedMethodology, setSelectedMethodology] = useState("");
-
   function handleCardSelect(selectedOption: Methodology | DirectMeasure) {
     return () => handleMethodologySelected(selectedOption);
   }
@@ -72,7 +69,6 @@ const SelectMethodology = ({
                 id={id}
                 key={id}
                 inputRequired={inputRequired}
-                isSelected={selectedMethodology === id}
                 disabled={!!disabled}
                 t={t}
                 handleCardSelect={handleCardSelect({
@@ -89,7 +85,6 @@ const SelectMethodology = ({
             <MethodologyCard
               id={directMeasure.id}
               key={directMeasure.id}
-              isSelected={selectedMethodology === directMeasure.id}
               t={t}
               handleCardSelect={handleCardSelect({
                 disabled: false,

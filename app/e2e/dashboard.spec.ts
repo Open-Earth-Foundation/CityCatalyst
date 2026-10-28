@@ -9,7 +9,7 @@ test.describe("Dashboard", () => {
       test.setTimeout(180000);
 
       // Create inventory through onboarding
-      const { cityId, inventoryYear } =
+      const { cityId, cityName, inventoryYear } =
         await createCityAndInventoryThroughOnboarding(page);
       await page.goto(`/en/cities/${cityId}/GHGI`);
       // Verify Dashboard
@@ -19,15 +19,17 @@ test.describe("Dashboard", () => {
 
       // Verify project name is displayed
       const projectName = page.getByTestId("hero-project-name");
-      await expect(projectName).toHaveText("CityCatalyst Demo");
+      await expect(projectName).toHaveText("CityCatalyst Demo", {
+        timeout: 10000,
+      });
 
       // Verify city name is displayed
-      const cityName = page.getByTestId("hero-city-name");
-      await expect(cityName).toHaveText("Chicago");
+      const heroCityName = page.getByTestId("hero-city-name");
+      await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
 
       // Verify inventory year title is displayed
       const inventoryYearTitle = page.getByTestId("inventory-year-title");
-      await expect(inventoryYearTitle).toHaveText("Inventory year");
+      await expect(inventoryYearTitle).toHaveText("Inventories");
 
       // Note: Add inventory button is only visible for ORG_ADMIN and PROJECT_ADMIN users
       // Test user is now an admin user, so the button should be visible

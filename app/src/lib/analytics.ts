@@ -1,16 +1,45 @@
 import posthog from "posthog-js";
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 import Cookies from "js-cookie";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import {
-  FeatureFlags,
-  hasFeatureFlag,
-  hasServerFeatureFlag,
-} from "@/util/feature-flags";
+  CONSENT_COOKIE_NAME,
+  CONSENT_SUBJECT_COOKIE,
+} from "@/lib/analytics-constants";
 
 let isInitialized = false;
 
-const CONSENT_COOKIE_NAME = "cc_analytics_consent";
 const CONSENT_EXPIRY_DAYS = 365;
+
+function consentSubjectKey(): string {
+  const existing = Cookies.get(CONSENT_SUBJECT_COOKIE);
+  if (existing) return existing;
+  const key = crypto.randomUUID();
+  Cookies.set(CONSENT_SUBJECT_COOKIE, key, {
+    expires: CONSENT_EXPIRY_DAYS,
+    sameSite: "Lax",
+    path: "/",
+  });
+  return key;
+}
+
+/** Best-effort server ledger write. The cookie remains the immediate analytics switch. */
+function persistAnalyticsConsent(granted: boolean) {
+  void fetch("/api/v1/consent", {
+    method: "POST",
+    credentials: "include",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      consentType: "analytics",
+      granted,
+      subjectKey: consentSubjectKey(),
+      source: "cookie_banner",
+    }),
+  }).catch((error: unknown) => {
+    console.warn("Failed to persist analytics consent", error);
+  });
+}
 
 export function initializeAnalytics() {
   if (
@@ -36,8 +65,14 @@ export function initializeAnalytics() {
       api_host: posthogHost || "https://eu.i.posthog.com",
       person_profiles: "identified_only",
       autocapture: false, // Disable automatic event capture to prevent duplicates
+      capture_pageview: false, // trackServerPageView in proxy.ts covers pageviews now
       loaded: (posthog) => {
         if (process.env.NODE_ENV === "development") posthog.debug();
+
+        // Align the client's distinct_id with the consent-subject cookie used by
+        // trackServerPageView, so server- and client-captured events land on the
+        // same person. identifyUser() on login then aliases this id to the real one.
+        posthog.identify(consentSubjectKey());
 
         // Check existing consent and apply it
         const consent = getAnalyticsConsent();
@@ -64,6 +99,7 @@ export function setAnalyticsConsent(consent: boolean) {
   Cookies.set(CONSENT_COOKIE_NAME, consent.toString(), {
     expires: CONSENT_EXPIRY_DAYS,
   });
+  persistAnalyticsConsent(consent);
 
   if (!isInitialized) return;
 
@@ -108,7 +144,7 @@ function shouldTrack(): boolean {
 
 export function trackEvent(
   eventName: string,
-  properties?: Record<string, any>,
+  properties?: Record<string, unknown>,
 ) {
   if (!shouldTrack()) {
     return;
@@ -118,21 +154,23 @@ export function trackEvent(
   const enhancedProperties = {
     ...properties,
     environment: process.env.NODE_ENV,
-    deployment_env:
-       env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   };
 
   posthog.capture(eventName, enhancedProperties);
 }
 
-export function identifyUser(userId: string, properties?: Record<string, any>) {
+export function identifyUser(
+  userId: string,
+  properties?: Record<string, unknown>,
+) {
   if (!shouldTrack()) {
     return;
   }
   posthog.identify(userId, {
     ...properties,
     environment: process.env.NODE_ENV,
-      deployment_env: env('NEXT_PUBLIC_DEPLOYMENT_ENV') || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   });
 }
 
@@ -143,7 +181,7 @@ export function resetUser() {
   posthog.reset();
 }
 
-export function setUserProperties(properties: Record<string, any>) {
+export function setUserProperties(properties: Record<string, unknown>) {
   if (!shouldTrack()) {
     return;
   }
@@ -157,8 +195,7 @@ export function trackPageView(url?: string) {
   posthog.capture("$pageview", {
     $current_url: url || window.location.href,
     environment: process.env.NODE_ENV,
-    deployment_env:
-      env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
+    deployment_env: env("NEXT_PUBLIC_DEPLOYMENT_ENV") || process.env.NODE_ENV,
   });
 }
 

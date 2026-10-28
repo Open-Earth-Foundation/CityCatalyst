@@ -1,16 +1,16 @@
 import React from "react";
-import { Card, useDisclosure } from "@chakra-ui/react";
+import { Box, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
-import type { TFunction } from "i18next";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
-import ModalPublish from "./DownloadAndShareModals/ModalPublish";
-import ActionCardSmall from "./ActionCardSmall";
+import ToolbarActionButton from "./ToolbarActionButton";
 import { useTranslation } from "@/i18n/client";
+import type { CityAttributes } from "@/models/City";
+import type { InventoryResponse } from "@/util/types";
 
 interface DownloadButtonProps {
   inventoryId: string;
-  city: any;
-  inventory: any;
+  city?: CityAttributes;
+  inventory?: InventoryResponse;
   lng: string;
   children?: React.ReactNode;
 }
@@ -28,12 +28,6 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     onClose: onDownloadShareClose,
   } = useDisclosure();
 
-  const {
-    open: isPublishOpen,
-    onOpen: onPublishOpen,
-    onClose: onPublishClose,
-  } = useDisclosure();
-
   const { t } = useTranslation(lng, "dashboard");
 
   return (
@@ -43,28 +37,21 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}
         onDownloadShareClose={onDownloadShareClose}
-        onPublishOpen={onPublishOpen}
         inventoryId={inventoryId}
         inventory={inventory}
         cityLocode={city?.locode}
       />
-      <ModalPublish
-        // Todo: add close state action
-        setModalOpen={() => {}}
-        t={t}
-        isPublishOpen={isPublishOpen}
-        onPublishClose={onPublishClose}
-        inventoryId={inventoryId}
-        inventory={inventory}
-      />
       {children ? (
-        <button onClick={onDownloadShareOpen} data-testid="download-button">{children}</button>
+        <Box onClick={onDownloadShareOpen} data-testid="download-button">
+          {children}
+        </Box>
       ) : (
         <div data-testid="download-action-card">
-          <ActionCardSmall
+          <ToolbarActionButton
             onClick={onDownloadShareOpen}
-            icon={<FiDownload color="white" size={24} />}
-            title={t("download-and-report")}
+            icon={<FiDownload size={24} />}
+            label={t("download-inventory")}
+            dataTestId="download-and-report-button"
           />
         </div>
       )}

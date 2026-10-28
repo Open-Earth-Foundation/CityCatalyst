@@ -36,6 +36,7 @@ from app.modules.prioritizer.internal_models import (
     BlockScoreResult,
     LegalAssessmentRecord,
 )
+from app.modules.prioritizer.localization import localized_text_map
 
 NEUTRAL_COMPONENT_SCORE = 0.5
 
@@ -203,11 +204,38 @@ def run(
             "ownership_score": (
                 assessment.ownership_score if assessment is not None else None
             ),
+            "ownership_description": (
+                localized_text_map(
+                    localized=assessment.ownership_description_i18n,
+                    fallback_language="en",
+                    fallback=assessment.ownership_description,
+                )
+                if assessment is not None
+                else {}
+            ),
             "restrictions_category": (
                 assessment.restrictions_category if assessment is not None else None
             ),
             "restrictions_score": (
                 assessment.restrictions_score if assessment is not None else None
+            ),
+            "restrictions_description": (
+                localized_text_map(
+                    localized=assessment.restrictions_description_i18n,
+                    fallback_language="en",
+                    fallback=assessment.restrictions_description,
+                )
+                if assessment is not None
+                else {}
+            ),
+            "legal_justification": (
+                localized_text_map(
+                    localized=assessment.legal_justification_i18n,
+                    fallback_language="es",
+                    fallback=assessment.legal_justification,
+                )
+                if assessment is not None
+                else {}
             ),
             "legal_analysis_date": (
                 assessment.analysis_date if assessment is not None else None

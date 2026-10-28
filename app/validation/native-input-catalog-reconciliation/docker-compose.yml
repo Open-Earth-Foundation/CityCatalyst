@@ -1,0 +1,84 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: citycatalyst_validation
+      POSTGRES_USER: validation_admin
+      POSTGRES_PASSWORD: validation_admin_password
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U validation_admin -d citycatalyst_validation",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  migrate-and-seed:
+    build:
+      context: ../..
+      dockerfile: validation/native-input-catalog-reconciliation/Dockerfile
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: citycatalyst_validation
+      DATABASE_USER: validation_admin
+      DATABASE_PASSWORD: validation_admin_password
+      DATABASE_USE_SSL: "false"
+      RECONCILIATION_READER_PASSWORD: validation_reader_password
+      RECONCILIATION_WRITER_PASSWORD: validation_writer_password
+    command:
+      [
+        "sh",
+        "-c",
+        "npm run db:migrate && npm run reconciliation:prepare && touch /tmp/reconciliation-ready && tail -f /dev/null",
+      ]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/reconciliation-ready"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    depends_on:
+      db:
+        condition: service_healthy
+
+  dry-run:
+    build:
+      context: ../..
+      dockerfile: validation/native-input-catalog-reconciliation/Dockerfile
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: citycatalyst_validation
+      DATABASE_USER: validation_reader
+      DATABASE_PASSWORD: validation_reader_password
+      DATABASE_USE_SSL: "false"
+      RECONCILIATION_MODE: dry-run
+      RECONCILIATION_PAGE_SIZE: "${RECONCILIATION_PAGE_SIZE:-2}"
+      RECONCILIATION_MAX_PAGES: "${RECONCILIATION_MAX_PAGES:-10}"
+      RECONCILIATION_REPORT_PATH: /tmp/reconciliation-dry-run-report.json
+    command: ["npm", "run", "reconciliation:dry-run"]
+    depends_on:
+      migrate-and-seed:
+        condition: service_healthy
+
+  apply-and-rollback:
+    build:
+      context: ../..
+      dockerfile: validation/native-input-catalog-reconciliation/Dockerfile
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: citycatalyst_validation
+      DATABASE_USER: validation_writer
+      DATABASE_PASSWORD: validation_writer_password
+      DATABASE_USE_SSL: "false"
+      VALIDATION_ADMIN_USER: validation_admin
+      VALIDATION_ADMIN_PASSWORD: validation_admin_password
+      VALIDATION_READER_USER: validation_reader
+      VALIDATION_READER_PASSWORD: validation_reader_password
+      RECONCILIATION_PAGE_SIZE: "${RECONCILIATION_PAGE_SIZE:-2}"
+      RECONCILIATION_MAX_PAGES: "${RECONCILIATION_MAX_PAGES:-10}"
+      RECONCILIATION_REPORT_PATH: /tmp/reconciliation-apply-rollback-report.json
+    command: ["npm", "run", "reconciliation:apply-rollback"]
+    depends_on:
+      migrate-and-seed:
+        condition: service_healthy

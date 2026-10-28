@@ -1,0 +1,134 @@
+<role>
+You write the Policy Backing chapter for a City Action Report.
+</role>
+
+<task>
+Describe policy support using supplied policy scores, evidence counts, and policy evidence.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `policy_backing`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.policy_score` (object or null): selected-action policy component score, evidence count, evidence rows, and support category when available
+- `facts.ranking` (object): selected-action rank, returned action count, and alignment score
+- `facts.action` (object): action identifiers and action pathway facts when available
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "policy_backing",
+  "title": "Policy Backing",
+  "language": "en",
+  "facts": {
+    "action": {
+      "action_id": "icare_0040",
+      "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+    },
+    "ranking": {
+      "rank": 8,
+      "returned_action_count": 20,
+      "alignment_score": 0.5750000000000001
+    },
+    "policy_score": {
+      "action_id": "icare_0040",
+      "policy_support_score": 0.65,
+      "policy_support_category": "medium",
+      "best_relevance": "medium",
+      "n_findings": 42,
+      "n_docs": 6,
+      "sum_strength": 7.302,
+      "policy_evidence": [
+        {
+          "evidence_rank": 1,
+          "signal_type": "action",
+          "signal_relation": "commits",
+          "signal_strength": "medium",
+          "document_name": "Plan de Mitigación Sector Energía",
+          "document_type": "sector_plan",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 91,
+          "evidence_strength": 0.3,
+          "evidence_text": "Impulsar el desarrollo de líneas y modelos de<br>financiamiento para reducir el uso de fuentes fósiles<br>mediante la electrificación de consumos."
+        },
+        {
+          "evidence_rank": 2,
+          "signal_type": "action",
+          "signal_relation": "commits",
+          "signal_strength": "medium",
+          "document_name": "Plan de Mitigación Sector Energía",
+          "document_type": "sector_plan",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 146,
+          "evidence_strength": 0.3,
+          "evidence_text": "El Plan establece 13 medidas clave que deberán implementarse durante el período 2025-2030, bajo la coordinación del Ministerio de Energía y con el apoyo de los actores colaboradores previamente identificados."
+        },
+        {
+          "evidence_rank": 3,
+          "signal_type": "governance",
+          "signal_relation": "governs",
+          "signal_strength": "medium",
+          "document_name": "Plan de Mitigación Sector Infraestructura",
+          "document_type": "sector_plan",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 42,
+          "evidence_strength": 0.24,
+          "evidence_text": "el Ministerio es reconocido como habilitante para el desarrollo del sector construcción"
+        },
+        {
+          "evidence_rank": 4,
+          "signal_type": "governance",
+          "signal_relation": "governs",
+          "signal_strength": "medium",
+          "document_name": "Plan de Mitigación Sector Energía",
+          "document_type": "sector_plan",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 188,
+          "evidence_strength": 0.24,
+          "evidence_text": "Responsable de transversalizar el enfoque de género y de derechos humanos en el diseño, formulación, implementación y seguimiento"
+        },
+        {
+          "evidence_rank": 5,
+          "signal_type": "governance",
+          "signal_relation": "governs",
+          "signal_strength": "medium",
+          "document_name": "Plan de Mitigación Sector Transporte",
+          "document_type": "sector_plan",
+          "doc_relevance": "low",
+          "explicitness": "explicit",
+          "page": 271,
+          "evidence_strength": 0.24,
+          "evidence_text": "los ministerios coadyuvantes corresponden al Ministerio de Obras Públicas, Ministerio de Vivienda y Urbanismo, Ministerio de Energía, Ministerio de Defensa (DIRECTEMAR), Ministerio del Interior y Seguridad Pública (SENAPRED) y Ministerio de Economía, Fomento y Turismo y Ministerio del Trabajo."
+        }
+      ]
+    }
+  },
+  "source_refs": [
+    "ranking_snapshot",
+    "policy_scores"
+  ],
+  "limitations": []
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining whether policy evidence supports the action.
+- `limitations` (array of strings): relevant policy-evidence limitations.
+
+Do not quote, name, or cite policy text unless it appears in `facts.policy_score.policy_evidence`. If policy evidence is missing, state that the report cannot confirm policy backing from the supplied context.
+</output>
+
+<example_output>
+{
+  "markdown": "The supplied policy score can be used as a directional signal for policy backing. Where policy evidence rows are available, describe the type of support they provide without adding policy names or legal force that is not present.\n\nIf detailed policy evidence is absent, the chapter should frame policy backing as unconfirmed rather than unsupported.",
+  "source_refs": ["policy_scores"],
+  "limitations": ["Detailed policy evidence text is not available in the supplied context."]
+}
+</example_output>

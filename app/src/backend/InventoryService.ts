@@ -1,17 +1,35 @@
+import createHttpError from "http-errors";
+
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import { PermissionService } from "./permissions/PermissionService";
-import { type AppSession } from "@/lib/auth";
-import { Inventory } from "@/models/Inventory";
+import type { AppSession } from "@/lib/auth";
+import type { Inventory } from "@/models/Inventory";
+import type { ActivityValue } from "@/models/ActivityValue";
+import type { InventoryValue } from "@/models/InventoryValue";
+import {
+  findMethodology,
+  MANUAL_INPUT_HIERARCHY,
+  type DirectMeasure,
+  type Methodology,
+} from "@/util/form-schema";
+import { sqlOmitFromTotal } from "@/util/GHGI/reported-totals";
+
+type ResolvedMethodology = Methodology | DirectMeasure;
 
 export class InventoryService {
   static async getInventoryIdByCityId(cityId: string): Promise<string> {
     const inventory = await db.models.Inventory.findOne({
       where: { cityId },
-      order: [["year", "DESC"]], // get the most recent one
+      // Same newest-first order the Climate Advisor uses to build concept-note context.
+      order: [
+        ["year", "DESC NULLS LAST"],
+        ["lastUpdated", "DESC NULLS LAST"],
+        ["inventoryId", "ASC"],
+      ],
     });
     if (!inventory) {
-      throw new Error("Inventory not found");
+      throw new createHttpError.NotFound("Inventory not found");
     }
     return inventory.inventoryId;
   }
@@ -60,13 +78,14 @@ export class InventoryService {
     }
 
     // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
-    // Returns 0 when inventory values exist but all co2eq are null (e.g. notation-key-only prefill),
-    // and NULL only when no inventory values exist at all.
+    // NULL when no activity data has been recorded yet (no inventory values, or all
+    // co2eq are null, e.g. notation-key-only prefill) so the UI can show "No data"
+    // instead of a misleading 0kg.
     const rawQuery = `
-    SELECT
-      CASE WHEN COUNT(*) > 0 THEN COALESCE(SUM(co2eq), 0) ELSE NULL END AS sum
+    SELECT SUM(co2eq) AS sum
     FROM "InventoryValue"
     WHERE inventory_id = :inventoryId
+      AND ${sqlOmitFromTotal()}
   `;
 
     const [{ sum }] = (await db.sequelize!.query(rawQuery, {
@@ -75,7 +94,72 @@ export class InventoryService {
       raw: true,
     })) as unknown as { sum: number | null }[];
 
-    inventory.totalEmissions = sum != null ? Number(sum) : 0;
+    inventory.totalEmissions = sum != null ? Number(sum) : null;
     return inventory;
+  }
+
+  static resolveMethodology(
+    inventoryValue: InventoryValue,
+  ): ResolvedMethodology | undefined {
+    const gpcRefNo = inventoryValue.gpcReferenceNumber;
+    const methodologyId = inventoryValue.inputMethodology;
+    if (!gpcRefNo || !methodologyId) return undefined;
+
+    if (methodologyId === "direct-measure") {
+      return MANUAL_INPUT_HIERARCHY[gpcRefNo]?.directMeasure;
+    }
+    return findMethodology(methodologyId, gpcRefNo);
+  }
+
+  static getActivityTitleKey(
+    activity: ActivityValue,
+    methodology?: ResolvedMethodology,
+  ): string {
+    const fromMetadata = activity.metadata?.activityTitle?.toString();
+    if (fromMetadata) return fromMetadata;
+
+    if (methodology && "activities" in methodology) {
+      const fromSchema = methodology.activities?.[0]?.["activity-title"];
+      if (fromSchema) return fromSchema;
+    }
+
+    if (methodology?.activityUnitsField) {
+      return `activity-${methodology.activityUnitsField}`;
+    }
+
+    return "activity-value";
+  }
+
+  static extractActivityFields(
+    activity: ActivityValue,
+    inventoryValue: InventoryValue,
+  ) {
+    const methodology = this.resolveMethodology(inventoryValue);
+    const data = activity.activityData ?? {};
+    const titleKey = this.getActivityTitleKey(activity, methodology);
+    const notationKey =
+      inventoryValue.unavailableReason &&
+      inventoryValue.unavailableReason.length > 0
+        ? inventoryValue.unavailableReason
+        : undefined;
+    let activityUnit = (
+      data[`${titleKey}-unit`] ?? data["activity-unit"]
+    )?.toString();
+    if (activityUnit?.startsWith("units-")) {
+      activityUnit = activityUnit.slice("units-".length);
+    }
+
+    return {
+      activityType:
+        methodology?.activityTypeField && data[methodology.activityTypeField]
+          ? data[methodology.activityTypeField]
+          : undefined,
+      totalEmissions: activity.co2eq,
+      totalEmissionsUnit: "kg",
+      activityValue: data[titleKey] ?? data["activity-value"],
+      activityUnit,
+      dataSource: activity.dataSource?.datasourceName ?? data["data-source"],
+      notationKey,
+    };
   }
 }

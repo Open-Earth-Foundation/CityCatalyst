@@ -2,7 +2,6 @@
 import { use } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 import Footer from "@/components/Sections/Footer";
 
@@ -19,7 +18,6 @@ export default function OrganizationLayout(props: {
       className="h-full flex flex-col"
     >
       <NavigationBar showMenu lng={lng} showNav={false} />
-      <Toaster />
       <Box w="full" h="full">
         {props.children}
       </Box>

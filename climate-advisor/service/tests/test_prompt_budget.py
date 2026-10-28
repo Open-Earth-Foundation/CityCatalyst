@@ -20,10 +20,17 @@ def test_stationary_energy_prompt_budget_loads_from_llm_config() -> None:
     assert chat_budget.max_normalized_rows_per_candidate == 3
 
 
-def test_count_prompt_tokens_falls_back_for_openrouter_gpt_5_4_slug() -> None:
+def test_cnb_validation_prompt_budget_loads_from_llm_config() -> None:
+    config = _load_llm_config()
+
+    assert config.generation.prompt_budget.tokenizer_encoding == "o200k_base"
+    assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
+
+
+def test_count_prompt_tokens_falls_back_for_openrouter_gpt_5_6_sol_slug() -> None:
     token_count = count_prompt_tokens(
         ["Stationary Energy prompt"],
-        model="openai/gpt-5.4",
+        model="openai/gpt-5.6-sol",
         fallback_encoding="o200k_base",
     )
 
@@ -113,7 +120,7 @@ def test_trim_messages_to_budget_preserves_stationary_context_and_current_user()
     trimmed, token_count, removed = trim_messages_to_budget(
         messages,
         instruction_text="system prompt",
-        model="openai/gpt-5.4",
+        model="openai/gpt-5.6-sol",
         budget=StationaryEnergyPromptBudget(max_prompt_tokens=80),
     )
 
@@ -141,7 +148,7 @@ def test_trim_messages_to_budget_preserves_embedded_stationary_context() -> None
     trimmed, token_count, removed = trim_messages_to_budget(
         messages,
         instruction_text="",
-        model="openai/gpt-5.4",
+        model="openai/gpt-5.6-sol",
         budget=StationaryEnergyPromptBudget(max_prompt_tokens=80),
     )
 

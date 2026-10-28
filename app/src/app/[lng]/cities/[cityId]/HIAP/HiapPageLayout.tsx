@@ -1,8 +1,7 @@
-import { Box, Flex, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { InventoryResponse, CityWithProjectDataResponse } from "@/util/types";
 import { PopulationAttributes } from "@/models/Population";
-import { TFunction } from "i18next";
 
 interface HiapPageLayoutProps {
   inventory: InventoryResponse | null;

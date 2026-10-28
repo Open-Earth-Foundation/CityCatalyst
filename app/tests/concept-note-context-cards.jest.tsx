@@ -1,0 +1,782 @@
+/** @jest-environment jsdom */
+
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { act, type ComponentProps, type ReactNode } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { LuDatabase } from "react-icons/lu";
+
+import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
+import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
+import type {
+  CityDashboardResponse,
+  ConceptNoteApplicationContext,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatus,
+} from "@/util/types";
+
+jest.unstable_mockModule("@/i18n/client", () => ({
+  useTranslation: () => ({
+    t: (key: string, values?: Record<string, unknown>) =>
+      key === "uploaded-files-count" && values
+        ? `${values.uploaded} of ${values.max} files`
+        : key,
+  }),
+}));
+jest.unstable_mockModule("next/link", () => ({
+  default: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: ReactNode;
+    href: string;
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+// Failed rows without retry eligibility look up their own upload status.
+const uploadStatusById = new Map<string, ConceptNoteUploadResponse>();
+const getUploadStatus = jest.fn(
+  (
+    { uploadId }: { runId: string; uploadId: string },
+    options: { skip: boolean },
+  ) => ({
+    currentData: options.skip ? undefined : uploadStatusById.get(uploadId),
+  }),
+);
+jest.unstable_mockModule("@/services/api", () => ({
+  api: { useGetConceptNoteUploadStatusQuery: getUploadStatus },
+}));
+
+let ContextTab: typeof import("@/components/ConceptNoteWorkspace/context-tab").ContextTab;
+let container: HTMLDivElement;
+let root: Root;
+
+const onRetryBundle = jest.fn();
+const onSelectFunding = jest.fn();
+
+function bundle(
+  overrides: Partial<ConceptNoteBundleProgress> = {},
+  availableContext: Partial<ConceptNoteBundleProgress["availableContext"]> = {},
+): ConceptNoteBundleProgress {
+  return {
+    status: "ready",
+    documentGrounding: null,
+    availableContext: {
+      city: true,
+      project: false,
+      ghgi: false,
+      ccra: false,
+      hiap: false,
+      uploadedDocuments: false,
+      ...availableContext,
+    },
+    missingContext: [],
+    readySources: 0,
+    queuedSources: 0,
+    processingSources: 0,
+    failedSources: 0,
+    cityPopulation: null,
+    ghgiStatus: null,
+    hiapStatus: null,
+    sourceProvenance: { ghgi: null },
+    buildId: null,
+    contextChanges: [],
+    selectedInventoryId: null,
+    retryable: false,
+    ...overrides,
+  };
+}
+
+const applicationContext: ConceptNoteApplicationContext = {
+  run_id: "run-1",
+  city_id: "city-1",
+  funder: null,
+  opportunity: null,
+  template: null,
+  included_sources: {
+    city: true,
+    project: false,
+    ghgi: false,
+    ccra: false,
+    hiap: false,
+  },
+};
+
+type ContextTabProps = ComponentProps<
+  typeof import("@/components/ConceptNoteWorkspace/context-tab").ContextTab
+>;
+
+async function renderTab(overrides: Partial<ContextTabProps> = {}) {
+  const props: ContextTabProps = {
+    applicationContext,
+    onSelectFunding,
+    fundingLoading: false,
+    fundingError: false,
+    onRetryFunding: () => {},
+    bundle: bundle(),
+    contextStatus: {
+      state: "ready",
+      busy: false,
+      blocked: false,
+      actionIcon: LuDatabase,
+      icon: LuDatabase,
+    } as unknown as ConceptNoteContextPresentation,
+    cityDashboard: null,
+    cityDashboardFailed: false,
+    cityDashboardLoading: false,
+    cityFilesCount: 0,
+    cityId: "city-1",
+    cityName: "Test City",
+    country: null,
+    firstCityFile: null,
+    inventoryAvailable: false,
+    inventoryFailed: false,
+    inventoryHasData: false,
+    inventoryId: null,
+    inventoryLoading: false,
+    inventoryOptions: [],
+    inventorySelectionSaving: false,
+    inventoryYear: null,
+    onSelectInventory: async () => {},
+    isDraftRunning: false,
+    isRetryingBundle: false,
+    retryingUploadId: null,
+    isUploading: false,
+    lng: "en",
+    manualPopulation: null,
+    manualPopulationSaving: false,
+    onRetryBundle,
+    onRetryUpload: () => {},
+    onSaveManualPopulation: async () => {},
+    onUploadFile: async () => {},
+    populationFailed: false,
+    populationLabel: "population",
+    populationLoading: false,
+    livePopulation: null,
+    runId: "run-1",
+    uploads: [],
+    uploadError: null,
+    ...overrides,
+  };
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ContextTab {...props} />
+      </ChakraProvider>,
+    ),
+  );
+}
+
+function control(label: string): HTMLElement | undefined {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>("a, button"),
+  ).filter((element) => element.textContent?.trim() === label)[0];
+}
+
+/** The inventory year chip; its tooltip names the action. */
+function inventoryChip(): HTMLButtonElement | null {
+  return container.querySelector<HTMLButtonElement>(
+    'button[title="inventory-choose-different"]',
+  );
+}
+
+beforeAll(async () => {
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  globalThis.structuredClone = (value) =>
+    value === undefined ? value : JSON.parse(JSON.stringify(value));
+  ({ ContextTab } =
+    await import("@/components/ConceptNoteWorkspace/context-tab"));
+});
+
+afterAll(() => {
+  globalThis.IS_REACT_ACT_ENVIRONMENT = false;
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  uploadStatusById.clear();
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
+});
+
+afterEach(async () => {
+  await act(async () => root.unmount());
+  container.remove();
+});
+
+const withInventory = {
+  inventoryAvailable: true,
+  inventoryHasData: true,
+  inventoryId: "inv-1",
+  inventoryYear: 2023,
+};
+const withPlan = {
+  cityDashboard: {
+    widgets: { hiap: { mitigation: { rankedActions: [{ id: "action" }] } } },
+  } as unknown as CityDashboardResponse,
+};
+
+describe("Context tab missing-state cards", () => {
+  it("keeps population refresh disabled while drafting runs", async () => {
+    await renderTab({
+      livePopulation: { population: 1000000, year: 2025 },
+      isDraftRunning: true,
+    });
+
+    const refresh = control("population-refresh") as HTMLButtonElement;
+    expect(refresh.disabled).toBe(true);
+    expect(container.textContent).toContain("population-draft-running");
+    await act(async () => refresh.click());
+    expect(onRetryBundle).not.toHaveBeenCalled();
+  });
+
+  it("keeps population refresh disabled while a rebuild request is pending", async () => {
+    await renderTab({
+      livePopulation: { population: 1000000, year: 2025 },
+      isRetryingBundle: true,
+    });
+
+    const refresh = control("population-refresh") as HTMLButtonElement;
+    expect(refresh.disabled).toBe(true);
+    await act(async () => refresh.click());
+    expect(onRetryBundle).not.toHaveBeenCalled();
+  });
+
+  it("hides the climate risk assessment card", async () => {
+    await renderTab();
+
+    expect(container.textContent).not.toContain("climate-risk-assessment");
+    expect(container.textContent).not.toContain("ccra-not-in-bundle");
+  });
+
+  it("links to inventory setup in a new tab when the city has no inventory", async () => {
+    await renderTab();
+
+    const create = control("create-inventory") as HTMLAnchorElement;
+    expect(create.getAttribute("href")).toBe(
+      "/en/cities/city-1/GHGI/onboarding",
+    );
+    expect(create.getAttribute("target")).toBe("_blank");
+    expect(container.textContent).toContain("ghgi-why");
+    expect(container.textContent).toContain("source-help-run-unavailable");
+    expect(inventoryChip()).toBeNull();
+    expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
+  });
+
+  it("flags an empty inventory and links to filling it", async () => {
+    await renderTab({ ...withInventory, inventoryHasData: false });
+
+    expect(container.textContent).toContain("inventory-empty");
+    expect(container.textContent).toContain("inventory-empty-detail");
+    expect(inventoryChip()).toBeNull();
+    const add = control("add-inventory-data") as HTMLAnchorElement;
+    expect(add.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1/data");
+    expect(add.getAttribute("target")).toBe("_blank");
+  });
+
+  it("flags an empty inventory even when the run already includes it", async () => {
+    await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
+      bundle: bundle({}, { ghgi: true }),
+    });
+
+    expect(container.textContent).toContain("inventory-empty");
+    expect(control("add-inventory-data")).toBeDefined();
+  });
+
+  const twoInventories = [
+    { year: 2025, inventoryId: "inv-1", lastUpdate: new Date() },
+    { year: 2023, inventoryId: "inv-old", lastUpdate: new Date() },
+  ] as unknown as ContextTabProps["inventoryOptions"];
+
+  it("keeps choosing available when the newest inventory is empty", async () => {
+    await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
+      inventoryOptions: twoInventories,
+    });
+
+    expect(container.textContent).toContain("inventory-empty");
+    const add = control("add-inventory-data") as HTMLAnchorElement;
+    expect(add.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1/data");
+    await act(async () => inventoryChip()?.click());
+    expect(document.body.textContent).toContain("inventory-choose-title");
+  });
+
+  it("does not judge a chosen older inventory by the newest one's data", async () => {
+    await renderTab({
+      ...withInventory,
+      inventoryHasData: false,
+      inventoryOptions: twoInventories,
+      bundle: bundle(
+        {
+          selectedInventoryId: "inv-old",
+          sourceProvenance: {
+            ghgi: { inventoryId: "inv-old", inventoryYear: 2023 },
+          },
+        },
+        { ghgi: true },
+      ),
+    });
+
+    expect(container.textContent).toContain("included-in-run");
+    expect(container.textContent).not.toContain("inventory-empty");
+    expect(control("add-inventory-data")).toBeUndefined();
+    expect(inventoryChip()).not.toBeNull();
+  });
+
+  it("explains that an inventory with data is picked up automatically", async () => {
+    await renderTab(withInventory);
+
+    expect(container.textContent).toContain("available-in-city");
+    expect(container.textContent).toContain("source-help-run-available");
+    expect(control("refresh-run-context")).toBeUndefined();
+    expect(inventoryChip()).not.toBeNull();
+  });
+
+  it("shows the inventory year as a chip beside the status, with a GHGI link", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle(
+        {
+          sourceProvenance: {
+            ghgi: { inventoryId: "inv-1", inventoryYear: 2023 },
+          },
+        },
+        { ghgi: true },
+      ),
+    });
+
+    const chip = inventoryChip() as HTMLButtonElement;
+    expect(chip.textContent).toContain("inventory-year");
+    expect(chip.getAttribute("aria-haspopup")).toBe("dialog");
+    // The chip shares a row with the status badge instead of a second line.
+    expect(chip.parentElement?.textContent).toContain("included-in-run");
+    const ghgiLink = container.querySelector<HTMLAnchorElement>(
+      'a[title="inventory-open-in-ghgi"]',
+    );
+    expect(ghgiLink?.getAttribute("href")).toBe("/en/cities/city-1/GHGI/inv-1");
+    expect(ghgiLink?.getAttribute("target")).toBe("_blank");
+  });
+
+  it("opens the inventory picker from Choose different", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle({}, { ghgi: true }),
+      inventoryOptions: [
+        { year: 2024, inventoryId: "inv-1", lastUpdate: new Date() },
+      ] as unknown as ContextTabProps["inventoryOptions"],
+    });
+
+    await act(async () => inventoryChip()?.click());
+    expect(document.body.textContent).toContain("inventory-choose-title");
+  });
+
+  it("marks an included inventory with missing sectors as partial", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle({ ghgiStatus: "partial" }, { ghgi: true }),
+    });
+
+    expect(container.textContent).toContain("included-partial");
+    expect(container.textContent).toContain("inventory-partial");
+  });
+
+  it("explains why choosing is unavailable while drafting runs", async () => {
+    await renderTab({ ...withInventory, isDraftRunning: true });
+
+    const choose = inventoryChip() as HTMLButtonElement;
+    expect(choose.disabled).toBe(true);
+    const reason = document.getElementById(
+      choose.getAttribute("aria-describedby") ?? "",
+    );
+    expect(reason?.textContent).toBe("context-action-draft-running");
+  });
+
+  it("shows processing while the context rebuilds", async () => {
+    await renderTab({
+      ...withInventory,
+      bundle: bundle({ status: "building" }),
+    });
+
+    expect(container.textContent).toContain("status-processing");
+    expect(inventoryChip()).toBeNull();
+  });
+
+  it("shows the included state and no refresh control", async () => {
+    await renderTab({
+      ...withInventory,
+      ...withPlan,
+      bundle: bundle({}, { ghgi: true, hiap: true }),
+    });
+
+    expect(container.textContent).toContain("included-in-run");
+    expect(control("refresh-run-context")).toBeUndefined();
+    expect(control("create-inventory")).toBeUndefined();
+  });
+
+  it("opens a role-specific upload picker on the Climate Action Plan card", async () => {
+    const onUploadFile = jest
+      .fn<ContextTabProps["onUploadFile"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({ ...withInventory, ...withPlan, onUploadFile });
+
+    expect(container.textContent).toContain("bundle-source-available");
+    expect(
+      container.querySelectorAll('button[title="inventory-choose-different"]'),
+    ).toHaveLength(1);
+    expect(container.querySelector('a[href*="/HIAP/"]')).toBeNull();
+    expect(container.textContent).toContain("plan-upload-limits");
+    const planButton = control("upload-climate-action-plan")!;
+    const inputs =
+      container.querySelectorAll<HTMLInputElement>('input[type="file"]');
+    expect(inputs).toHaveLength(1);
+    const planInput = inputs[0];
+    const picker = jest.spyOn(planInput, "click");
+    await act(async () => planButton.click());
+    expect(picker).toHaveBeenCalledTimes(1);
+    expect(onUploadFile).not.toHaveBeenCalled();
+    const file = new File(["%PDF-1.7"], "city-plan.pdf", {
+      type: "application/pdf",
+    });
+    Object.defineProperty(planInput, "files", {
+      value: [file],
+      configurable: true,
+    });
+    await act(async () =>
+      planInput.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenCalledWith(file, "climate_action_plan");
+  });
+
+  it("resets the shared picker role for ordinary and recommended sources", async () => {
+    const onUploadFile = jest
+      .fn<ContextTabProps["onUploadFile"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({ onUploadFile });
+    const input =
+      container.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const file = new File(["# Plan"], "plan.md", { type: "text/markdown" });
+    Object.defineProperty(input, "files", {
+      value: [file],
+      configurable: true,
+    });
+
+    await act(async () => control("upload-climate-action-plan")!.click());
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "climate_action_plan");
+
+    await act(async () => uploadButton().click());
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "reference");
+
+    // A cancelled plan picker must not affect the recommended source action.
+    await act(async () => control("upload-climate-action-plan")!.click());
+    await renderTab({ onUploadFile, uploadPickerRequest: 1 });
+    await act(async () =>
+      input.dispatchEvent(new Event("change", { bubbles: true })),
+    );
+    expect(onUploadFile).toHaveBeenLastCalledWith(file, "reference");
+    expect(onUploadFile).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(["upload-climate-action-plan", "upload-pdf"])(
+    "blocks both picker actions until %s finishes validation and upload",
+    async (label) => {
+      let finishUpload!: () => void;
+      const onUploadFile = jest.fn<ContextTabProps["onUploadFile"]>(
+        () =>
+          new Promise<void>((resolve) => {
+            finishUpload = resolve;
+          }),
+      );
+      await renderTab({ onUploadFile });
+      await act(async () => control(label)!.click());
+      const input =
+        container.querySelector<HTMLInputElement>('input[type="file"]')!;
+      Object.defineProperty(input, "files", {
+        value: [new File(["# Plan"], "plan.md", { type: "text/markdown" })],
+      });
+      await act(async () =>
+        input.dispatchEvent(new Event("change", { bubbles: true })),
+      );
+
+      expect(uploadButton().disabled).toBe(true);
+      expect(
+        (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+      ).toBe(true);
+      // An external picker request must not start a second, overlapping upload.
+      const picker = jest.spyOn(input, "click");
+      await renderTab({ onUploadFile, uploadPickerRequest: 1 });
+      expect(picker).not.toHaveBeenCalled();
+      await act(async () => finishUpload());
+      expect(uploadButton().disabled).toBe(false);
+      expect(
+        (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+      ).toBe(false);
+    },
+  );
+
+  it("shows a persisted plan and waits for its own bundle inclusion", async () => {
+    const uploads: ConceptNoteUploadResponse[] = [
+      {
+        uploadId: "cap",
+        filename: "city-plan.pdf",
+        sourceRole: "climate_action_plan",
+        status: "ready",
+      },
+    ];
+    const planCard = () =>
+      container.querySelector('input[type="file"]')!.parentElement!;
+    await renderTab({
+      uploads,
+      bundle: bundle({ includedUploadIds: ["other-source"] }),
+    });
+    expect(planCard().textContent).toContain("city-plan.pdf");
+    expect(planCard().textContent).toContain("status-processing");
+    expect(planCard().textContent).not.toContain("included-in-run");
+    await renderTab({
+      uploads,
+      bundle: bundle({ includedUploadIds: ["cap"] }),
+    });
+    expect(planCard().textContent).toContain("included-in-run");
+    expect(planCard().textContent).toContain("plan-upload-provenance");
+  });
+
+  it("withholds the inventory action while the inventory loads", async () => {
+    await renderTab({ inventoryLoading: true });
+
+    expect(control("create-inventory")).toBeUndefined();
+    expect(container.textContent).toContain("status-processing");
+  });
+
+  it("shows an included replacement with a warning while retaining the failed file", async () => {
+    await renderTab({
+      uploads: [
+        {
+          uploadId: "bad-plan",
+          filename: "broken.pdf",
+          sourceRole: "climate_action_plan",
+          status: "failed",
+          errorCode: "pdf_parse_failed",
+          canRetry: false,
+        },
+        {
+          uploadId: "good-plan",
+          filename: "corrected.pdf",
+          sourceRole: "climate_action_plan",
+          status: "ready",
+        },
+      ],
+      bundle: bundle({ includedUploadIds: ["good-plan"] }),
+    });
+    const planCard =
+      container.querySelector('input[type="file"]')!.parentElement!;
+    expect(planCard.textContent).toContain("plan-included-with-failures");
+    expect(planCard.textContent).toContain("plan-upload-partial-help");
+    expect(planCard.textContent).toContain("broken.pdf");
+    expect(planCard.textContent).toContain("corrected.pdf");
+    expect(planCard.textContent).not.toContain("plan-upload-failed-help");
+    expect(
+      Array.from(planCard.querySelectorAll("button")).some(
+        (button) => button.textContent === "retry",
+      ),
+    ).toBe(false);
+  });
+
+  it("shows a plan parse failure and retries that document from its card", async () => {
+    const onRetryUpload = jest
+      .fn<ContextTabProps["onRetryUpload"]>()
+      .mockResolvedValue(undefined);
+    await renderTab({
+      onRetryUpload,
+      uploads: [
+        {
+          uploadId: "failed-plan",
+          filename: "city-plan.pdf",
+          sourceRole: "climate_action_plan",
+          status: "failed",
+          errorCode: "pdf_parse_failed",
+          canRetry: true,
+        },
+      ],
+    });
+    const planCard =
+      container.querySelector('input[type="file"]')!.parentElement!;
+    expect(planCard.textContent).toContain("status-failed");
+    expect(planCard.textContent).toContain("context-error-code");
+    const retry = Array.from(planCard.querySelectorAll("button")).find(
+      (button) => button.textContent === "retry",
+    )!;
+    await act(async () => retry.click());
+    expect(onRetryUpload).toHaveBeenCalledWith("failed-plan");
+  });
+
+  it("does not offer to create an inventory when the lookup failed", async () => {
+    await renderTab({ inventoryFailed: true });
+
+    expect(control("create-inventory")).toBeUndefined();
+    expect(container.textContent).toContain("status-failed");
+    expect(container.textContent).toContain("source-help-failed");
+  });
+
+  it("opens funding selection from the missing template card", async () => {
+    await renderTab();
+
+    expect(container.textContent).toContain("template-why");
+    expect(container.textContent).toContain("funder-why");
+    await act(async () => control("template-choose")?.click());
+    expect(onSelectFunding).toHaveBeenCalledTimes(1);
+  });
+});
+
+function uploaded(
+  id: string,
+  status: ConceptNoteUploadStatus,
+  extra: Partial<ConceptNoteUploadResponse> = {},
+): ConceptNoteUploadResponse {
+  return { uploadId: id, status, filename: `${id}.pdf`, ...extra };
+}
+
+function fileRows(): HTMLLIElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLLIElement>('ul[aria-label="your-files"] li'),
+  );
+}
+
+function uploadButton(): HTMLButtonElement {
+  return control("upload-pdf") as HTMLButtonElement;
+}
+
+describe("Context tab uploaded files", () => {
+  const evidenceBundle = bundle({
+    documentGrounding: "uploaded_evidence",
+    readySources: 1,
+  });
+
+  it("lists every uploaded file with its own status, newest first", async () => {
+    const onRetryUpload = jest.fn();
+    await renderTab({
+      bundle: evidenceBundle,
+      onRetryUpload,
+      uploads: [
+        uploaded("budget", "processing"),
+        uploaded("baseline", "failed", { canRetry: true }),
+        uploaded("plan", "ready", { pageCount: 12 }),
+      ],
+    });
+
+    const rows = fileRows();
+    expect(rows.map((row) => row.querySelector("p")?.textContent)).toEqual([
+      "budget.pdf",
+      "baseline.pdf",
+      "plan.pdf",
+    ]);
+    expect(rows[0].textContent).toContain("status-converting");
+    expect(rows[1].textContent).toContain("status-failed");
+    expect(rows[2].textContent).toContain("status-ready");
+    expect(rows[2].textContent).toContain("pages-count");
+    expect(
+      container.querySelector('[data-testid="concept-note-upload-count"]')
+        ?.textContent,
+    ).toBe("3 of 10 files");
+
+    // Only the failed file offers a retry.
+    expect(rows[1].querySelector("button")?.textContent).toContain("retry");
+    expect(rows[0].querySelector("button")).toBeNull();
+    expect(rows[2].querySelector("button")).toBeNull();
+    await act(async () => rows[1].querySelector("button")!.click());
+    expect(onRetryUpload).toHaveBeenCalledTimes(1);
+    expect(onRetryUpload).toHaveBeenCalledWith("baseline");
+    expect(uploadButton().disabled).toBe(false);
+    expect(container.textContent).not.toContain("upload-limit-reason");
+  });
+
+  it("offers retry on an older failed row by looking up its own status", async () => {
+    const onRetryUpload = jest.fn();
+    uploadStatusById.set(
+      "older",
+      uploaded("older", "failed", { canRetry: true }),
+    );
+    uploadStatusById.set(
+      "stuck",
+      uploaded("stuck", "failed", { canRetry: false }),
+    );
+    await renderTab({
+      bundle: evidenceBundle,
+      onRetryUpload,
+      retryingUploadId: "stuck",
+      uploads: [
+        // The newer tracked upload carries its own eligibility.
+        uploaded("newer", "processing", { canRetry: false }),
+        // Older rows come from the run list without retry eligibility.
+        uploaded("older", "failed"),
+        uploaded("stuck", "failed"),
+      ],
+    });
+
+    expect(getUploadStatus).toHaveBeenCalledWith(
+      { runId: "run-1", uploadId: "older" },
+      { skip: false },
+    );
+    const rows = fileRows();
+    expect(rows[0].querySelector("button")).toBeNull();
+    expect(rows[2].querySelector("button")).toBeNull();
+    const retry = rows[1].querySelector("button")!;
+    expect(retry.textContent).toContain("retry");
+    // Only the row whose retry is in flight shows as loading.
+    expect(retry.disabled).toBe(false);
+    await act(async () => retry.click());
+    expect(onRetryUpload).toHaveBeenCalledWith("older");
+  });
+
+  it("keeps the fallback row when the note has no uploads", async () => {
+    await renderTab({ uploads: [] });
+
+    expect(fileRows()).toHaveLength(0);
+    expect(container.textContent).toContain("no-run-sources");
+    expect(container.textContent).toContain("upload-source-help");
+    expect(container.textContent).toContain("0 of 10 files");
+  });
+
+  it("disables uploading at 10 files, whatever their status, and says why", async () => {
+    await renderTab({
+      bundle: evidenceBundle,
+      uploads: Array.from({ length: 10 }, (_, index) =>
+        uploaded(`file-${index}`, index === 0 ? "failed" : "ready"),
+      ),
+    });
+
+    expect(fileRows()).toHaveLength(10);
+    expect(container.textContent).toContain("10 of 10 files");
+    const button = uploadButton();
+    expect(button.disabled).toBe(true);
+    expect(
+      (control("upload-climate-action-plan") as HTMLButtonElement).disabled,
+    ).toBe(true);
+    const reason = document.getElementById(
+      button.getAttribute("aria-describedby") ?? "",
+    );
+    expect(reason?.textContent).toBe("upload-limit-reason");
+  });
+});

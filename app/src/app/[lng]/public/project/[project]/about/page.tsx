@@ -2,6 +2,7 @@
 "use client";
 
 import { use } from "react";
+import Image from "next/image";
 import {
   Box,
   Container,
@@ -86,9 +87,11 @@ const About = (props: {
                   </Box>
                 </Box>
                 <Box ml="200px" borderRadius="xl">
-                  <img
+                  <Image
                     src="/assets/projects_dashboard/about_map_view.png"
                     alt="about map view"
+                    width={390}
+                    height={753}
                   />
                 </Box>
               </Grid>
@@ -200,9 +203,11 @@ const About = (props: {
                   </Text>
                 </Box>
                 <Box ml="200px">
-                  <img
+                  <Image
                     src="/assets/projects_dashboard/about_insights.png"
                     alt="about insights"
+                    width={650}
+                    height={364}
                   />
                 </Box>
               </Grid>

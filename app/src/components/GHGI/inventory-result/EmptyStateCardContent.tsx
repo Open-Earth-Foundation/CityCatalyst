@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 export const EmptyStateCardContent = ({
   t,
-  inventoryId,
   width,
   height,
   isPublic,

@@ -3,7 +3,11 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
 import { logger } from "@/services/logger";
 
@@ -31,6 +35,18 @@ function assertConfigured(): void {
   }
 }
 
+async function bodyToBuffer(body: unknown): Promise<Buffer> {
+  const stream = body as Readable;
+  return new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on("data", (chunk: Buffer | Uint8Array) =>
+      chunks.push(Buffer.from(chunk)),
+    );
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+  });
+}
+
 /**
  * Handles S3 storage for uploaded inventory import files.
  *
@@ -42,6 +58,24 @@ function assertConfigured(): void {
  *   AWS_FILE_UPLOAD_REGION        — AWS region (default: us-east-1)
  */
 export default class InventoryFileStorageService {
+  /** Store a file at an already-authorized deterministic object key. */
+  static async putFile(
+    s3Key: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<void> {
+    assertConfigured();
+    await getS3Client().send(
+      new PutObjectCommand({
+        Bucket: BUCKET!,
+        Key: s3Key,
+        Body: buffer,
+        ContentType: contentType,
+        ServerSideEncryption: "AES256",
+      }),
+    );
+  }
+
   /**
    * Upload a file buffer to S3 and return the object key.
    */
@@ -69,6 +103,39 @@ export default class InventoryFileStorageService {
     return key;
   }
 
+  /** Object key family for a bulk inventory-file import job. */
+  static bulkImportObjectKey(jobId: string, relativePath: string): string {
+    const safeJobId = jobId.replace(/[^0-9a-f-]/gi, "");
+    const safeRelative = relativePath
+      .replace(/\\/g, "/")
+      .split("/")
+      .filter((part) => part && part !== "." && part !== "..")
+      .join("/");
+    return `bulk-import/${safeJobId}/${safeRelative}`;
+  }
+
+  /**
+   * Store a bulk-import zip or inner file. Returns null when S3 is not
+   * configured (local/dev fallback — items are still inserted).
+   */
+  static async uploadBulkImportFile(
+    jobId: string,
+    relativePath: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<string | null> {
+    if (!isS3Configured()) {
+      logger.warn(
+        { jobId, relativePath },
+        "AWS_FILE_UPLOAD_S3_BUCKET_ID not set — skipping S3 store for bulk import file",
+      );
+      return null;
+    }
+    const key = this.bulkImportObjectKey(jobId, relativePath);
+    await this.putFile(key, buffer, contentType);
+    return key;
+  }
+
   /**
    * Load an imported file from S3 or the legacy BYTEA column on ImportedInventoryFile.
    */
@@ -78,7 +145,9 @@ export default class InventoryFileStorageService {
   }): Promise<Buffer | null> {
     if (importedFile.s3Key) {
       try {
-        return await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+        return await InventoryFileStorageService.getFileBuffer(
+          importedFile.s3Key,
+        );
       } catch (err) {
         logger.error(
           { err, s3Key: importedFile.s3Key },
@@ -105,13 +174,53 @@ export default class InventoryFileStorageService {
       new GetObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
     );
 
-    const stream = response.Body as Readable;
-    return new Promise<Buffer>((resolve, reject) => {
-      const chunks: Buffer[] = [];
-      stream.on("data", (chunk: Buffer) => chunks.push(chunk));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", reject);
-    });
+    return bodyToBuffer(response.Body);
+  }
+
+  static async getFilePrefix(
+    s3Key: string,
+    byteCount: number,
+  ): Promise<Buffer> {
+    assertConfigured();
+    const response = await getS3Client().send(
+      new GetObjectCommand({
+        Bucket: BUCKET!,
+        Key: s3Key,
+        Range: `bytes=0-${Math.max(0, byteCount - 1)}`,
+      }),
+    );
+    return bodyToBuffer(response.Body);
+  }
+
+  static async getFileMetadata(s3Key: string) {
+    assertConfigured();
+    return getS3Client().send(
+      new HeadObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
+    );
+  }
+
+  static async createSignedDownloadUrl(
+    s3Key: string,
+    expiresIn: number,
+  ): Promise<string> {
+    assertConfigured();
+    return getSignedUrl(
+      getS3Client(),
+      new GetObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
+      { expiresIn },
+    );
+  }
+
+  static async putTextFile(s3Key: string, text: string): Promise<void> {
+    await this.putFile(
+      s3Key,
+      Buffer.from(text, "utf8"),
+      "text/markdown; charset=utf-8",
+    );
+  }
+
+  static async getTextFile(s3Key: string): Promise<string> {
+    return (await this.getFileBuffer(s3Key)).toString("utf8");
   }
 
   /**
@@ -123,6 +232,55 @@ export default class InventoryFileStorageService {
       new DeleteObjectCommand({ Bucket: BUCKET, Key: s3Key }),
     );
     logger.debug({ key: s3Key }, "Inventory file deleted from S3");
+  }
+
+  /** Remove the uploaded file and every OCR attempt under its upload-specific prefixes. */
+  static async deleteConceptNoteSource(uploadId: string): Promise<void> {
+    assertConfigured();
+    if (!/^[0-9a-f-]{36}$/i.test(uploadId)) {
+      throw new Error("Invalid Concept Note upload identity");
+    }
+    const client = getS3Client();
+    for (const kind of ["sources", "results"]) {
+      const prefix = `pdf-ocr/${kind}/concept_note_upload/${uploadId}/`;
+      let continuationToken: string | undefined;
+      do {
+        const page = await client.send(
+          new ListObjectsV2Command({
+            Bucket: BUCKET!,
+            Prefix: prefix,
+            ContinuationToken: continuationToken,
+          }),
+        );
+        const objects = (page.Contents ?? []).flatMap((item) =>
+          item.Key ? [{ Key: item.Key }] : [],
+        );
+        if (objects.length) {
+          const result = await client.send(
+            new DeleteObjectsCommand({
+              Bucket: BUCKET!,
+              Delete: { Objects: objects, Quiet: true },
+            }),
+          );
+          if (result.Errors?.length) {
+            logger.error(
+              {
+                uploadId,
+                bucket: BUCKET,
+                prefix,
+                errors: result.Errors.map(({ Code, Message }) => ({
+                  Code,
+                  Message,
+                })),
+              },
+              "Concept Note source cleanup failed",
+            );
+            throw new Error("Concept Note source cleanup failed");
+          }
+        }
+        continuationToken = page.NextContinuationToken;
+      } while (continuationToken);
+    }
   }
 
   /**

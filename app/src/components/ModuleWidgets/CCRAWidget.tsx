@@ -3,8 +3,6 @@ import { CCRARiskAssessment } from "@/util/types";
 import { useTranslation } from "@/i18n/client";
 import { RiskCard } from "@/components/RiskCard";
 import { Box, HStack } from "@chakra-ui/react";
-import { HeadlineLarge } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface TopRisksWidgetProps {
   cityId: string;
@@ -16,7 +14,6 @@ interface TopRisksWidgetProps {
 }
 
 const TopRisksWidget: React.FC<TopRisksWidgetProps> = ({
-  cityId,
   cityName = "your-city",
   riskAssessment,
   resilienceScore = null, // Default to null if not provided

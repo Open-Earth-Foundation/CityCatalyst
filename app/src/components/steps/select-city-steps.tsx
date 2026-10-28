@@ -1,10 +1,11 @@
-import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { TFunction } from "i18next";
 import {
-  OCCityAttributes,
-  ProjectResponse,
-  ProjectWithCities,
-} from "@/util/types";
+  Control,
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
+import { TFunction } from "i18next";
+import { OCCityAttributes, ProjectWithCities } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
@@ -22,7 +23,6 @@ import {
   Heading,
   Icon,
   Input,
-  InputAddon,
   Link,
   Spinner,
   Stack,
@@ -89,7 +89,6 @@ export type OnboardingData = {
 export default function SelectCityStep({
   errors,
   register,
-  control,
   t,
   setValue,
   watch,
@@ -104,8 +103,8 @@ export default function SelectCityStep({
   register: UseFormRegister<Inputs>;
   control: Control<Inputs>;
   t: TFunction;
-  setValue: any;
-  watch: Function;
+  setValue: UseFormSetValue<Inputs>;
+  watch: (name: string) => unknown;
   ocCityData?: OCCityAttributes;
   setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
@@ -117,8 +116,6 @@ export default function SelectCityStep({
   const cityFromUrl = searchParams.get("city");
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
-  const currentYear = new Date().getFullYear();
-
   const numberOfYearsDisplayed = 10;
 
   const dispatch = useAppDispatch();
@@ -127,9 +124,9 @@ export default function SelectCityStep({
   const [isCityNew, setIsCityNew] = useState<boolean>(false);
   const [locode, setLocode] = useState<string | null>();
 
-  const yearInput = watch("year");
+  const yearInput = watch("year") as string | undefined;
   const year: number | null = yearInput ? parseInt(yearInput) : null;
-  const cityInputQuery = watch("city");
+  const cityInputQuery = watch("city") as string;
 
   const handleSetCity = (city: OCCityAttributes) => {
     setValue("city", city.name);
@@ -202,7 +199,7 @@ export default function SelectCityStep({
 
   useEffect(() => {
     if (CCCityData) {
-      setValue("city", CCCityData.name);
+      setValue("city", CCCityData.name ?? "");
       setLocode(CCCityData.locode);
       setOcCityData({
         actor_id: CCCityData.locode?.split("-").join(" ") as string,
@@ -276,7 +273,7 @@ export default function SelectCityStep({
         if (emissions == null) {
           logger.error({ year: year }, "Failed to find country emissions for ");
         }
-        setValue("totalCountryEmissions", emissions);
+        setValue("totalCountryEmissions", emissions ?? 0);
       }
     }
   }, [countryData, year, setValue]);
@@ -290,14 +287,14 @@ export default function SelectCityStep({
     skip: cityInputQuery?.length <= 2,
   });
 
-  const renderParentPath = (path: []) => {
+  const renderParentPath = (path: { name: string }[]) => {
     let pathString = "";
     const pathCopy = [...path];
 
     pathCopy
       ?.reverse()
       .slice(1)
-      .map((parent: any) => {
+      .map((parent) => {
         if (pathString) {
           pathString = pathString + " > ";
         }
@@ -316,7 +313,7 @@ export default function SelectCityStep({
 
   // Fetch city area/boundary for the selected city to display "Total land area"
   const { data: cityBoundary, isFetching: isAreaLoading } =
-    api.useGetCityBoundaryQuery(ocCityData?.actor_id!, {
+    api.useGetCityBoundaryQuery(ocCityData?.actor_id ?? "", {
       skip: !ocCityData?.actor_id,
     });
   const area = cityBoundary?.area ?? ocCityData?.area ?? 0;
@@ -462,7 +459,7 @@ export default function SelectCityStep({
                     border="1px solid #E6E7FF"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
-                    {isLoading && <Text px={4}>Fetching Cities...</Text>}
+                    {isLoading && <Text px={4}>{t("fetching-cities")}</Text>}
                     {isSuccess &&
                       cities &&
                       cities.map((city: OCCityAttributes) => {

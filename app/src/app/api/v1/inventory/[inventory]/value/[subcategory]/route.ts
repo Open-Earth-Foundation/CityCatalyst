@@ -29,11 +29,14 @@
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import VersionHistoryService from "@/backend/VersionHistoryService";
+import CalculationService from "@/backend/CalculationService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { createInventoryValue } from "@/util/validation";
+import { decimalToBigInt } from "@/util/big_int";
+import { Decimal } from "decimal.js";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
@@ -323,11 +326,17 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       const gases: string[] = newGasValues
         .map((value) => value.gas!)
         .filter((value) => !!value);
+      const gwpVersion = CalculationService.resolveGwpVersion(
+        inventory.globalWarmingPotentialType,
+      );
       const gasesToCo2Eq =
         gases.length === 0
           ? []
           : await db.models.GasToCO2Eq.findAll({
-              where: { gas: { [Op.any]: gases } },
+              where: {
+                gas: { [Op.any]: gases },
+                gwpVersion,
+              },
             });
       inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
         (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
@@ -357,21 +366,18 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
           return acc;
         }
 
-        let gasAmount: bigint;
+        let gasAmount: Decimal;
         if (hasActivityValue) {
-          gasAmount = BigInt(
-            Math.floor(
-              // TODO sum all activity values in InventoryValue here
-              inventoryValue!.activityValue! *
-                gasValue.emissionsFactor.emissionsPerActivity!,
-            ),
+          gasAmount = new Decimal(
+            inventoryValue!.activityValue! *
+              gasValue.emissionsFactor.emissionsPerActivity!,
           );
         } else {
-          gasAmount = BigInt(gasValue.gasAmount!);
+          gasAmount = new Decimal(gasValue.gasAmount!.toString());
         }
 
-        // this assumes GWP values in the GasToCO2Eq table are always ints
-        return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
+        const co2eq = Decimal.mul(gasAmount, gasToCo2Eq.co2eqPerKg ?? 0);
+        return acc + decimalToBigInt(co2eq);
       }, 0n);
       await inventoryValue.save();
     }

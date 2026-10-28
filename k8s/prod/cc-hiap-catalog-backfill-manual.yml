@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-hiap-catalog-backfill-manual-
+spec:
+  ttlSecondsAfterFinished: 86400
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: citycatalyst-manual
+        job: hiap-catalog-backfill
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: hiap-catalog-backfill
+          image: ghcr.io/open-earth-foundation/citycatalyst:stable
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: cc-db-configmap
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: HIAP_CATALOG_BACKFILL_BATCH_SIZE
+              value: "25"
+            # Keep the default manual invocation read-only; set to "false" for repair.
+            - name: HIAP_CATALOG_BACKFILL_DRY_RUN
+              value: "true"
+          command: ["npm"]
+          args: ["run", "hiap-catalog-backfill"]
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"

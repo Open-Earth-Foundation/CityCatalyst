@@ -1,17 +1,18 @@
 import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
-import { Publisher } from "@/models/Publisher";
-import { Scope, ScopeAttributes } from "@/models/Scope";
+import type { Publisher } from "@/models/Publisher";
+import type { Scope, ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
-import { SubCategoryAttributes } from "@/models/SubCategory";
-import { SubSectorAttributes } from "@/models/SubSector";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
+import type { ElementType } from "react";
 
 export interface DataStep {
   name: string;
   description: string;
-  icon: any;
+  icon: ElementType;
   connectedProgress: number;
   addedProgress: number;
   reasonNEProgress: number;
@@ -110,9 +111,20 @@ export type DataSourceWithRelations = DataSourceAttributes & {
   scopes: Scope[];
 };
 
-export type DataSourceData = {
-  totals: {
-    emissions: {
+export interface DataSourceActivityDataGas {
+  gas_name: string;
+  emissions_value: number;
+  emissionfactor_value: number;
+  emissionfactor_source: string;
+  activity_value: number;
+  gwp: number;
+  emissions_value_100yr: number;
+  emissions_value_20yr: number;
+}
+
+export interface GlobalAPISourceResponse {
+  totals?: {
+    emissions?: {
       co2_mass: string;
       co2_co2eq: string;
       ch4_mass: string;
@@ -126,21 +138,14 @@ export type DataSourceData = {
       gpc_quality: string;
     };
   };
-  points?: any;
-  scaleFactor: number;
-  issue: string | null;
-  records: DataSourceActivityDataRecord[];
-};
-
-export interface DataSourceActivityDataGas {
-  gas_name: string;
-  emissions_value: number;
-  emissionfactor_value: number;
-  emissionfactor_source: string;
-  activity_value: number;
-  gwp: number;
-  emissions_value_100yr: number;
-  emissions_value_20yr: number;
+  points?: unknown;
+  records?: DataSourceActivityDataRecord[];
+  // inserted from DataSourceService.getSourceWithData
+  scaleFactor?: number;
+  issue?: string | null;
+  // for notation key sources, they don't have other keys
+  notation_key_name?: string;
+  unavailable_explanation?: string;
 }
 
 export interface DataSourceActivityDataRecord {

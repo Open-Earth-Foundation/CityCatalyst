@@ -1,6 +1,43 @@
 import { logger } from "@/services/logger";
 import createHttpError from "http-errors";
 
+export interface CDPQuestionOption {
+  id: string;
+  name: string;
+}
+
+export interface CDPMatrixColumn {
+  id: string;
+  text: string;
+}
+
+export interface CDPMatrixRow {
+  id: string;
+  title: string;
+}
+
+export interface CDPQuestion {
+  id: string;
+  text: string;
+  options?: CDPQuestionOption[];
+  columns?: CDPMatrixColumn[];
+  rows?: CDPMatrixRow[];
+}
+
+export interface CDPSection {
+  questions: CDPQuestion[];
+}
+
+export interface CDPQuestionnaire {
+  sections: CDPSection[];
+}
+
+interface CDPOrganization {
+  id: string;
+  name: string;
+  country: string;
+}
+
 export default class CDPService {
   static get mode(): string {
     return process.env.CDP_MODE || "disabled";
@@ -35,11 +72,13 @@ export default class CDPService {
         `Failed to get city ID from CDP: ${response.statusText}`,
       );
     }
-    const data = await response.json();
+    const data = (await response.json()) as {
+      organizations: CDPOrganization[];
+    };
     const organizations = data.organizations;
     logger.info(`Got ${organizations.length} organizations`);
     logger.debug(`Organizations: ${JSON.stringify(organizations)}`);
-    const cityOrg = organizations.find((org: any) => {
+    const cityOrg = organizations.find((org) => {
       return org.name === city && org.country === country;
     });
     if (!cityOrg) {
@@ -48,7 +87,7 @@ export default class CDPService {
     return cityOrg.id;
   }
 
-  public static async getQuestions(cityID: string): Promise<any> {
+  public static async getQuestions(cityID: string): Promise<CDPQuestionnaire> {
     const url = this.url(`response/questionnaire/questions`);
     const response = await fetch(url, {
       headers: [

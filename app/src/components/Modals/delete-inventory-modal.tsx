@@ -25,7 +25,7 @@ import { logger } from "@/services/logger";
 
 interface DeleteInventoryDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   userData: UserAttributes;
   t: TFunction;
   inventoryId: string;
@@ -64,12 +64,12 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
 
     await requestPasswordConfirm({
       password: data.password!,
-      token: token?.verificationToken!,
-    }).then(async (res: any) => {
+      token: token?.verificationToken,
+    }).then(async (res) => {
       if (res.data?.comparePassword) {
         await deleteInventory({
           inventoryId,
-        }).then((_res: any) => {
+        }).then(() => {
           reset();
           onClose();
           setIsPasswordCorrect(true);

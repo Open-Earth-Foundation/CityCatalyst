@@ -19,6 +19,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field } from "@/components/ui/field";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
+import { OrganizationPlanType } from "@/util/enums";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
+import { getTrialDaysRemaining } from "@/util/plan-details";
 import ProgressLoader from "@/components/ProgressLoader";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 
@@ -40,6 +46,7 @@ const AdminOrganizationIdProfilePage = (props: {
   const schema = z.object({
     email: z.string().email("invalid-email").min(1, "required"),
     name: z.string().min(3, "required"),
+    planType: z.nativeEnum(OrganizationPlanType),
   });
 
   type Schema = z.infer<typeof schema>;
@@ -48,6 +55,7 @@ const AdminOrganizationIdProfilePage = (props: {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = useForm<Schema>({
     mode: "all",
@@ -59,6 +67,7 @@ const AdminOrganizationIdProfilePage = (props: {
       reset({
         email: organization.contactEmail,
         name: organization.name,
+        planType: organization.planType ?? OrganizationPlanType.FULL,
       });
     }
   }, [reset, organization]);
@@ -72,13 +81,14 @@ const AdminOrganizationIdProfilePage = (props: {
   });
 
   const handleFormSubmit = async (data: Schema) => {
-    const { name, email } = data;
+    const { name, email, planType } = data;
 
     // TODO prevent users from editing the default organization
     const response = await updateOrganization({
       id: organization?.organizationId as string,
       name,
       contactEmail: email,
+      planType,
     });
 
     if (response.error) {
@@ -122,6 +132,12 @@ const AdminOrganizationIdProfilePage = (props: {
   if (isOrganizationLoading) {
     return <ProgressLoader />;
   }
+
+  const selectedPlanType = watch("planType");
+  const trialDaysRemaining =
+    selectedPlanType === OrganizationPlanType.TRIAL
+      ? getTrialDaysRemaining(organization?.trialEndsAt)
+      : null;
 
   return (
     <Box>
@@ -195,6 +211,32 @@ const AdminOrganizationIdProfilePage = (props: {
                 </Text>
               </Box>
             )}
+          </Field>
+          <Field labelClassName="font-semibold" label={t("plan-type")}>
+            <NativeSelectRoot
+              shadow="2dp"
+              borderRadius="4px"
+              border="inputBox"
+              background="background.default"
+            >
+              <NativeSelectField {...register("planType")}>
+                <option value={OrganizationPlanType.TRIAL}>
+                  {t("trial-plan")}
+                </option>
+                <option value={OrganizationPlanType.DEMO}>
+                  {t("demo-plan")}
+                </option>
+                <option value={OrganizationPlanType.FULL}>
+                  {t("full-plan")}
+                </option>
+              </NativeSelectField>
+            </NativeSelectRoot>
+            {selectedPlanType === OrganizationPlanType.TRIAL &&
+              trialDaysRemaining !== null && (
+                <Text mt={2} color="content.tertiary" fontSize="body.sm">
+                  {t("days-remaining", { count: trialDaysRemaining })}
+                </Text>
+              )}
           </Field>
         </HStack>
         <Box display="flex" justifyContent="flex-end">

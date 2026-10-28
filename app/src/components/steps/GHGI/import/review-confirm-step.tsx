@@ -6,12 +6,21 @@ import {
   Card,
   Heading,
   Spinner,
+  Table,
   Text,
   VStack,
   HStack,
   Icon,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
+import { Trans } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { MdOutlineMap, MdWarning } from "react-icons/md";
+import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
+import { LuRows4 } from "react-icons/lu";
+import ReportingLevelWarning from "./reporting-level-warning";
+import { activityDescriptionSample } from "@/util/activity-description-sample";
+import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -19,7 +28,8 @@ interface ReviewConfirmStepProps {
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
-  onImport: () => void;
+  mappingOverrides?: Record<string, string>;
+  onEditMapping?: () => void;
 }
 
 export default function ReviewConfirmStep({
@@ -27,14 +37,20 @@ export default function ReviewConfirmStep({
   cityId,
   cityName,
   importedFileId,
-  onImport,
+  onEditMapping,
   inventoryId,
+  mappingOverrides,
 }: ReviewConfirmStepProps) {
-  const { data, isLoading } = api.useGetImportStatusQuery(
+  const { data, isLoading, refetch } = api.useGetImportStatusQuery(
     {
       cityId,
       inventoryId,
       importedFileId,
+      mappingOverrides: mappingOverrides
+        ? Object.fromEntries(
+            Object.entries(mappingOverrides).filter(([, key]) => key !== ""),
+          )
+        : undefined,
     },
     {
       skip: !cityId || !inventoryId || !importedFileId,
@@ -46,13 +62,23 @@ export default function ReviewConfirmStep({
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
           {cityName && (
-            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            <Text
+              fontSize="body.md"
+              color="content.tertiary"
+              fontWeight="medium"
+            >
               {cityName}
             </Text>
           )}
           <Heading size="lg">{t("review-confirm-heading")}</Heading>
           <Text fontSize="body.lg" color="content.tertiary">
-            {t("review-confirm-description")}
+            <Trans
+              i18nKey="review-confirm-description"
+              t={t}
+              components={[
+                <Text as="span" fontWeight="bold" key="0" />,
+              ]}
+            />
           </Text>
         </Box>
         <Card.Root
@@ -84,6 +110,13 @@ export default function ReviewConfirmStep({
   const reviewData = data?.reviewData;
   const fileInfo = data?.fileInfo;
   const validationResults = data?.validationResults;
+  const importWarnings = (validationResults?.warnings ?? []).filter((warning) =>
+    warning.startsWith("Row "),
+  );
+
+  const extractionSummary = data?.mappingConfiguration?.extractionSummary;
+  const { reconciliation, reconciledPages, failedPages, droppedReasons } =
+    extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
@@ -92,19 +125,29 @@ export default function ReviewConfirmStep({
     rowsFound: data?.rowCount || 0,
     fieldsMapped:
       reviewData?.fieldMappings?.length ||
-      validationResults?.columns?.filter((col: any) => col.interpretedAs)
-        .length ||
+      validationResults?.columns?.filter((col) => col.interpretedAs).length ||
       0,
   };
 
-  // Use field mappings from reviewData, or fallback to validation results
-  const fieldMappings =
-    reviewData?.fieldMappings ||
+  interface FieldMappingRow {
+    sourceColumn: string;
+    mappedField: string;
+    sampleValue: string | null;
+  }
+
+  // Use field mappings from reviewData, or fallback to validation results.
+  // Activity data description is the one example the review should show.
+  const fieldMappings: FieldMappingRow[] =
+    reviewData?.fieldMappings?.map((mapping) => ({
+      ...mapping,
+      sampleValue: activityDescriptionSample(mapping),
+    })) ||
     validationResults?.columns
-      ?.filter((col: any) => col.interpretedAs)
-      .map((col: any) => ({
+      ?.filter((col) => col.interpretedAs)
+      .map((col) => ({
         sourceColumn: col.columnName,
-        mappedField: col.interpretedAs,
+        mappedField: col.interpretedAs ?? "",
+        sampleValue: col.exampleValue || null,
       })) ||
     [];
 
@@ -116,113 +159,271 @@ export default function ReviewConfirmStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg">{t("review-confirm-heading")}</Heading>
-        <Text fontSize="body.lg" color="content.tertiary">
-          {t("review-confirm-description")}
+        <Heading size="lg" fontSize="display.sm">
+          {t("review-confirm-heading")}
+        </Heading>
+        <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
+          <Trans
+            i18nKey="review-confirm-description"
+            t={t}
+            components={[
+              <Text as="span" fontWeight="bold" key="0" />,
+            ]}
+          />
         </Text>
       </Box>
-
-      <HStack gap="24px" alignItems="flex-start" mb={8}>
-        <Card.Root
-          px={6}
-          py={8}
-          shadow="none"
-          bg="white"
-          flex="1"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="border.default"
+      <ReportingLevelWarning
+        t={t}
+        inventoryId={inventoryId}
+        references={data?.rowsOutsideInventoryType ?? []}
+        onSwitched={refetch}
+      />
+      <VStack gap="32px" shadow="sm" borderRadius="8px" p="24px" mb="32px">
+        <HStack justifyContent="space-between" alignItems="flex-start" w="full">
+          <Box display="flex" alignItems="flex-start" gap="4px">
+            <Icon as={ConfirmDocumentIcon} w={8} h={8} />
+            <VStack alignItems="flex-start" gap="4px">
+              <Text fontSize="headline.sm" fontWeight="bold">
+                {importSummary.sourceFile}
+              </Text>
+              <Text fontSize="body.sm" color="content.tertiary">
+                {t("file-name")}
+              </Text>
+            </VStack>
+          </Box>
+          <Button p="24px" onClick={onEditMapping}>
+            <Icon as={EditIconOutlineSquare} />
+            {t("edit-mapping")}
+          </Button>
+        </HStack>
+        <HStack w="full" alignItems="flex-start" gap="16px">
+          <HStack w="174px" alignItems="flex-start">
+            <Box display="flex" alignItems="flex-start" gap="4px">
+              <Icon
+                as={LuRows4}
+                boxSize={6}
+                color="content.tertiary"
+                mt="2px"
+              />
+              <VStack alignItems="flex-start" gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">
+                  {importSummary.rowsFound}
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("rows-in-file")}
+                </Text>
+              </VStack>
+            </Box>
+          </HStack>
+          <HStack w="174px" alignItems="flex-start">
+            <Box display="flex" alignItems="flex-start" gap="4px">
+              <Icon
+                as={MdOutlineMap}
+                boxSize={6}
+                color="content.tertiary"
+                mt="2px"
+              />
+              <VStack alignItems="flex-start" gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">
+                  {importSummary.fieldsMapped}
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("columns-mapped-in-file")}
+                </Text>
+              </VStack>
+            </Box>
+          </HStack>
+        </HStack>
+      </VStack>
+      {reconciliation?.mismatch && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
         >
-          <Heading size="md" mb={6}>
-            {t("import-summary")}
-          </Heading>
-          <VStack gap="16px" alignItems="flex-start">
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("source-file")}
-              </Text>
-              <Text
-                fontWeight={importSummary.sourceFile ? "medium" : undefined}
-                color={
-                  importSummary.sourceFile ? undefined : "content.tertiary"
-                }
-              >
-                {importSummary.sourceFile || t("not-specified")}
-              </Text>
-            </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("format-detected")}
-              </Text>
-              <Text
-                fontWeight={
-                  importSummary.formatDetected ? "medium" : undefined
-                }
-                color={
-                  importSummary.formatDetected ? undefined : "content.tertiary"
-                }
-              >
-                {importSummary.formatDetected || t("not-specified")}
-              </Text>
-            </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("rows-found")}
-              </Text>
-              <Text fontWeight="medium">{importSummary.rowsFound}</Text>
-            </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("fields-mapped")}
-              </Text>
-              <Text fontWeight="medium">{importSummary.fieldsMapped}</Text>
-            </Box>
-          </VStack>
-        </Card.Root>
-
-        <Card.Root
-          px={6}
-          py={8}
-          shadow="none"
-          bg="white"
-          flex="1"
-          borderRadius="lg"
-          borderWidth="1px"
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Box>
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
+              {t("import-reconciliation-title")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary" mt={1}>
+              {t("import-reconciliation-detail", {
+                imported: Math.round(
+                  reconciliation.importedSum,
+                ).toLocaleString(),
+                reported: Math.round(
+                  reconciliation.reportedTotal,
+                ).toLocaleString(),
+                deviation: (reconciliation.deviation * 100).toFixed(1),
+              })}
+            </Text>
+          </Box>
+        </Box>
+      )}
+      {(droppedReasons.length > 0 ||
+        extractionSummary?.yearAssumed ||
+        reconciledPages.length > 0 ||
+        failedPages.length > 0) && (
+        <Box
+          bg="background.neutral"
+          border="1px solid"
           borderColor="border.default"
+          borderRadius="md"
+          p={4}
+          mb={8}
         >
-          <Heading size="md" mb={6}>
-            {t("field-mappings")}
-          </Heading>
-          <VStack
-            gap="12px"
-            alignItems="flex-start"
-            maxH="400px"
-            overflowY="auto"
-          >
+          {droppedReasons.length > 0 && (
+            <>
+              <Text fontWeight="semibold" fontSize="body.md">
+                {t("import-dropped-rows-title")}
+              </Text>
+              <VStack alignItems="flex-start" gap="4px" mt={2}>
+                {droppedReasons.map((reason) => (
+                  <Text
+                    key={reason}
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {t(`import-dropped-reason-${reason}`, {
+                      count: extractionSummary?.droppedRows?.[reason] ?? 0,
+                    })}
+                  </Text>
+                ))}
+              </VStack>
+            </>
+          )}
+          {reconciledPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-reconciled", {
+                pages: reconciledPages.join(", "),
+              })}
+            </Text>
+          )}
+          {failedPages.length > 0 && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-pages-failed", { pages: failedPages.join(", ") })}
+            </Text>
+          )}
+          {extractionSummary?.yearAssumed && (
+            <Text fontSize="body.sm" color="content.secondary" mt={2}>
+              {t("import-year-assumed")}
+            </Text>
+          )}
+        </Box>
+      )}
+      {importWarnings.length > 0 && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
+        >
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Box>
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
+              {t("import-warnings-title")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary" mt={1}>
+              {t("import-warnings-detail")}
+            </Text>
+            <VStack
+              alignItems="flex-start"
+              gap="4px"
+              mt={3}
+              maxH="240px"
+              overflowY="auto"
+            >
+              {importWarnings.map((warning, index) => (
+                <Text key={index} fontSize="body.sm" color="content.secondary">
+                  {warning}
+                </Text>
+              ))}
+            </VStack>
+          </Box>
+        </Box>
+      )}
+      <Box
+        w="full"
+        borderWidth="1px"
+        borderColor="border.default"
+        borderRadius="lg"
+        overflow="hidden"
+        mb={8}
+      >
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("example-value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {fieldMappings && fieldMappings.length > 0 ? (
-              fieldMappings.map((mapping: any, index: number) => (
-                <Box
-                  key={index}
-                  w="full"
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  py={2}
-                  borderBottomWidth="1px"
-                  borderColor="border.overlay"
-                >
-                  <Text fontWeight="medium">{mapping.sourceColumn}</Text>
-                  <Text color="content.secondary">{mapping.mappedField}</Text>
-                </Box>
+              fieldMappings.map((mapping, index: number) => (
+                <Table.Row key={index} h="72px">
+                  <Table.Cell>
+                    <Text fontWeight="medium">{mapping.sourceColumn}</Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text
+                      color={
+                        mapping.sampleValue
+                          ? "content.secondary"
+                          : "content.tertiary"
+                      }
+                    >
+                      {mapping.sampleValue || t("not-specified")}
+                    </Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text color="content.secondary">{mapping.mappedField}</Text>
+                  </Table.Cell>
+                </Table.Row>
               ))
             ) : (
-              <Text color="content.tertiary" fontSize="body.sm">
-                {t("no-field-mappings")}
-              </Text>
+              <Table.Row>
+                <Table.Cell colSpan={3}>
+                  <Text color="content.tertiary" fontSize="body.sm">
+                    {t("no-field-mappings")}
+                  </Text>
+                </Table.Cell>
+              </Table.Row>
             )}
-          </VStack>
-        </Card.Root>
-      </HStack>
+          </Table.Body>
+        </Table.Root>
+      </Box>
     </Box>
   );
 }

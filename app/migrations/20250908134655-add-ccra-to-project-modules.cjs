@@ -2,7 +2,7 @@
 
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
-  async up(queryInterface) {
+  async up() {
     // Disabled, now handled by Module seeder
     /*
     // Get all project IDs and create ProjectModules entries for CCRA
@@ -24,7 +24,7 @@ module.exports = {
     */
   },
 
-  async down(queryInterface) {
+  async down() {
     /* await queryInterface.bulkDelete("ProjectModules", {
       module_id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a",
     }); */

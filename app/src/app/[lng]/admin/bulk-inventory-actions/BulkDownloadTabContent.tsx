@@ -27,8 +27,7 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   // React hook form to manage form state
   const { register, handleSubmit, reset } = useForm<BulkDownloadInputs>();
 
-  const { data: projectsList, isLoading: isProjectListLoading } =
-    api.useGetUserProjectsQuery({});
+  const { data: projectsList } = api.useGetUserProjectsQuery({});
   const [isDownloadLoading, setDownloadLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 

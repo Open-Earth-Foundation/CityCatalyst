@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - city
-         - files
+ *       - files
  *     operationId: getCityFiles
  *     summary: List uploaded files for a city.
  *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in data object.
@@ -128,7 +128,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
  *   post:
  *     tags:
  *       - city
-         - files
+ *       - files
  *     operationId: postCityFile
  *     summary: Upload a file for a city to attach to inventory data.
  *     description: Accepts multipart/form-data to upload and register a file with sector/scopes metadata. Requires a signed‑in session and the UPLOAD_OWN_DATA_ENABLED feature flag. Returns the normalized file metadata in data object.
@@ -238,6 +238,12 @@ export const POST = apiHandler(
 
     const city = await UserService.findUserCity(cityId, session);
 
+    // findUserCity throws Unauthorized above unless the caller is an admin or
+    // has a valid session, so `user` is guaranteed defined past this point.
+    if (!user) {
+      throw new createHttpError.Unauthorized("Not signed in");
+    }
+
     const formData = await req.formData();
     const file = formData?.get("data") as unknown as File;
 
@@ -316,8 +322,8 @@ export const POST = apiHandler(
 
     await NotificationService.sendNotificationEmail({
       user: {
-        email: user?.email!,
-        name: user?.name!,
+        email: user.email ?? "",
+        name: user.name ?? "",
         // default to english since the email goes to admins
         preferredLanguage: LANGUAGES.en,
       },

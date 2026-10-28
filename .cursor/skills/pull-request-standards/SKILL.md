@@ -111,6 +111,24 @@ ON-1234
 - Preserve existing PR body sections that are clearly hand-authored and still relevant. Replace stale generated summaries, changes, or commit lists.
 - If the branch is missing remotely, report that clearly and ask whether to push unless the user already requested a push.
 
+## Attach Demo Videos
+
+When the user asks to include a demo video in a PR, prefer GitHub CLI's native attachment upload over browser automation. Use the existing requested recording, including any requested trim.
+
+- Check `gh --version` and `gh pr edit --help` for `--attach`; attachment support requires GitHub CLI 2.99.0 or newer. If unavailable, report that the CLI needs updating or use the browser upload flow.
+- Read the current PR body and comments first to avoid duplicating a video the user already attached.
+- For an existing PR, omit body flags to preserve its description and append the uploaded video as an inline player:
+
+  ```powershell
+  gh pr edit <number> --repo <owner/repo> --attach "C:\absolute\path\demo.mp4"
+  ```
+
+- When creating a PR through the CLI, add `--attach` to `gh pr create` alongside the usual title, base, head, draft setting, and `--body-file` arguments. For an explicitly requested separate comment, use `gh pr comment <number> --repo <owner/repo> --attach "C:\absolute\path\demo.mp4"`.
+- Upload the media as a GitHub attachment; a local filesystem path in the PR body is not accessible to reviewers. Do not commit the recording merely to host it.
+- Read back the PR body or posted comment and verify the uploaded asset URL. If an upload fails or only partially succeeds, inspect the result before retrying so successful attachments are not duplicated.
+
+See [GitHub CLI attachment documentation](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli) for supported files and authentication requirements.
+
 ## Push Policy
 
 - Assume the branch is already pushed when the user only asks to create or update PR metadata.

@@ -207,6 +207,11 @@ if __name__ == "__main__":
     - return value (and what it represents)
     - side effects (filesystem/DB/network, mutations, logging, caching)
     - raised exceptions (when non-obvious)
+- Write docstrings in simple, direct language. Start with what the function does
+  for its caller; avoid internal jargon when an everyday term is clearer.
+- For public API handlers and the services behind them, explicitly distinguish
+  caller-selectable inputs from backend-owned filters, defaults, ordering, and
+  limits. Mention important empty-result or fallback behavior where it applies.
 
 ### Logical block comments inside functions
 

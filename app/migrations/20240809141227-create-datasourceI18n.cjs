@@ -37,11 +37,11 @@ const sql_up = `create table if not exists public."DataSourceI18n"
 const sql_down = `drop table if exists public."DataSourceI18n";`;
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.query(sql_up);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.query(sql_down);
   },
 };

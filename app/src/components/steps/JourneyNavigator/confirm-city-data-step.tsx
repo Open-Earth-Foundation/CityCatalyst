@@ -13,7 +13,7 @@ export default function ConfirmStep({
   locode,
   area,
 }: {
-  cityName: String;
+  cityName: string;
   t: TFunction;
   locode: string;
   area: number;

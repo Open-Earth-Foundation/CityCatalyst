@@ -102,7 +102,6 @@
  * */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
-import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
@@ -135,9 +134,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
       session?.user.id,
     );
     return NextResponse.json({ success: !!result, data: result });
-  } catch (error: any) {
+  } catch (error) {
     // Check for database bigint conversion errors
     if (
+      error instanceof Error &&
       error.message &&
       error.message.includes("is out of range for type bigint")
     ) {
@@ -154,6 +154,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     }
     // Handle JavaScript BigInt conversion errors
     if (
+      error instanceof Error &&
       error.message &&
       error.message.includes("Cannot convert") &&
       error.message.includes("to a BigInt")
@@ -184,7 +185,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *       - activity
  *     operationId: getInventoryActivityValue
  *     summary: List activity values for an inventory (edit access).
- *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'.
+ *     description: "Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'."
  *     parameters:
  *       - in: path
  *         name: inventory

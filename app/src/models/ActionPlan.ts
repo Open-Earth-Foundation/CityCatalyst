@@ -21,15 +21,15 @@ export interface ActionPlanAttributes {
   nationalStrategyExplanation?: string | null;
 
   // Structured plan data (JSON arrays)
-  subactions?: any | null;
-  institutions?: any | null;
-  milestones?: any | null;
-  timeline?: any | null;
-  costBudget?: any | null;
-  merIndicators?: any | null;
-  mitigations?: any | null;
-  adaptations?: any | null;
-  sdgs?: any | null;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 
   // Tracking fields
   createdBy?: string | null;
@@ -89,15 +89,15 @@ export class ActionPlan
   declare nationalStrategyExplanation?: string | null;
 
   // Structured plan data (JSON arrays)
-  declare subactions?: any | null;
-  declare institutions?: any | null;
-  declare milestones?: any | null;
-  declare timeline?: any | null;
-  declare costBudget?: any | null;
-  declare merIndicators?: any | null;
-  declare mitigations?: any | null;
-  declare adaptations?: any | null;
-  declare sdgs?: any | null;
+  declare subactions?: object | null;
+  declare institutions?: object | null;
+  declare milestones?: object | null;
+  declare timeline?: object | null;
+  declare costBudget?: object | null;
+  declare merIndicators?: object | null;
+  declare mitigations?: object | null;
+  declare adaptations?: object | null;
+  declare sdgs?: object | null;
 
   // Tracking fields
   declare createdBy?: string | null;

@@ -2,14 +2,7 @@ import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next";
 import { useState } from "react";
 import { GrowthRatesExplanationModal } from "@/components/GHGI/inventory-result/EmissionsForecast/GrowthRatesExplanationModal";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  HStack,
-  Icon,
-  IconButton,
-} from "@chakra-ui/react";
+import { Card, HStack, Icon } from "@chakra-ui/react";
 import { EmissionsForecastChart } from "@/components/GHGI/inventory-result/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -38,7 +31,7 @@ export const EmissionsForecastCard = ({
       />
 
       <Card.Root paddingY="0px" paddingX="0px" minHeight="650px" width="100%">
-        <CardHeader>
+        <Card.Header>
           <HStack>
             <TitleMedium>
               {t("no-action-emissions-forecast-by-sector")}
@@ -55,8 +48,8 @@ export const EmissionsForecastCard = ({
               <Icon as={MdInfoOutline} boxSize={5} ml={2} />
             </TitleMedium>
           </HStack>
-        </CardHeader>
-        <CardBody
+        </Card.Header>
+        <Card.Body
           py={6}
           paddingLeft={4}
           paddingRight={0}
@@ -68,7 +61,7 @@ export const EmissionsForecastCard = ({
             t={t}
             numberFormat={numberFormat}
           />
-        </CardBody>
+        </Card.Body>
       </Card.Root>
     </>
   );

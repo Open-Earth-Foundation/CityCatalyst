@@ -1,0 +1,178 @@
+# NativeInputCatalog Foundation
+
+Implementation contract for [CC-636](https://linear.app/openearth/issue/CC-636/implement-the-nativeinputcatalog-foundation-in-citycatalyst-core), based on the [native document storage architecture](./NativeDocumentStorageArchitecture.md).
+
+## Role
+
+`NativeInputCatalog` is a CityCatalyst Core lookup table. It stores pointers and scope metadata so consumers can discover durable city inputs and generated artifacts. The owning module remains the source of truth for the underlying data and files.
+
+The catalog does not copy module content, grant access, or expose S3 credentials. Access continues through CityCatalyst authentication and module capability boundaries.
+
+## Row contract
+
+| Field | Contract |
+|---|---|
+| `id` | Immutable UUID catalog identity |
+| `kind` | Soft string describing the input or artifact kind |
+| `owning_module` | Soft string identifying the source module |
+| `source_type`, `source_id` | Pointer to the authoritative module record |
+| `user_id`, `inventory_id`, `city_id`, `project_id`, `organization_id` | Nullable scope identifiers; the service requires at least one |
+| `availability` | `active`, `withdrawn`, or `superseded` |
+| `superseded_by_id` | New catalog ID replacing a superseded row |
+| `content_digest` | Optional content/result digest |
+| `markdown_ready` | Optional readiness flag for Markdown-capable artifacts |
+| `labels` | Optional JSON metadata |
+
+`source_id` is stored as a string and the scope fields have no cross-database foreign keys. The database has a partial unique index on `(source_type, source_id)` for rows that are not withdrawn.
+
+## Lifecycle invariants
+
+1. Registration is idempotent for a non-withdrawn source identity.
+2. A withdrawn source can be registered again with a new immutable catalog ID.
+3. Withdrawal preserves the catalog row for auditability and excludes it from normal active lookup.
+4. Supersession creates a new row, then marks the previous active row as `superseded` and points it to the replacement.
+5. Scope validation is enforced in the registration service; future product rules may refine allowed scope combinations.
+6. `kind`, `owning_module`, and `source_type` remain soft strings so new producers do not require a Core migration.
+
+## Internal endpoints
+
+All endpoints require non-empty `X-Service-Name` and a matching `X-Service-Key` (`CC_SERVICE_API_KEY`).
+
+- `POST /api/v1/internal/native-input-catalog` — idempotently register a pointer.
+- `DELETE /api/v1/internal/native-input-catalog/{id}` — withdraw a pointer.
+- `POST /api/v1/internal/native-input-catalog/{id}/supersede` — create a replacement and supersede the current row.
+
+Producer modules call this contract at their durable write boundaries. CC-636 established the shared contract; producer mappings below document the follow-up integrations.
+
+## GHGI producer mapping (CC-637)
+
+GHGI registers three durable identities through the shared service:
+
+| Catalog kind | Source type / identity | Registration boundary | Markdown |
+|---|---|---|---|
+| `inventory_source_file` | `imported_inventory_file` / `ImportedInventoryFile.id` | After the uploaded file row and its storage object are durable | `false` |
+| `inventory_import` | `inventory` / `Inventory.inventoryId` | After `ImportedInventoryFile.importStatus` becomes `completed` | `null` |
+| `inventory_ocr` | `pdf_ocr_job` / `PdfOcrJob.id` | After the OCR job is `succeeded` with result digest, page count, and stored Markdown | `true` |
+
+`PdfOcrJob.id` is the stable OCR-result identity across retries. A new uploaded source creates a new imported-file row and a new OCR job, while repeated registration of an existing identity remains idempotent. Catalog failures are logged and retried from normal status polling or the OCR cron without rerunning import extraction or OCR. Inventory and city deletion withdraws active GHGI rows before the owning records are removed.
+
+## Legacy HIAP producer mapping (CC-638)
+
+Legacy HIAP remains authoritative in its existing CityCatalyst tables. The adapter registers only durable, reusable pointers after the corresponding write boundary completes.
+
+| Catalog kind | Source type / identity | Registration boundary | Version / withdrawal |
+|---|---|---|---|
+| `hiap_ranking` | `hiap_ranking` / `HighImpactActionRanking.id + ranked-content-digest` | Ranking status is `SUCCESS` and ranked rows exist | A changed persisted result gets a new source identity; older versions are superseded |
+| `hiap_selection` | `hiap_ranked_selection` / `rankingId + actionId` | Ranked selection commit completes | One row per selected action; stale selections are withdrawn |
+| `hiap_selection` | `hiap_unranked_selection` / `inventoryId + actionType + actionId` | Unranked selection commit completes | One row per selected action; stale selections are withdrawn |
+| `hiap_action_plan` | `action_plan` / `ActionPlan.id + content-digest` | Action plan row is created or updated | A changed upsert gets a new catalog ID and supersedes the previous version |
+
+Selection identities use logical action IDs rather than language-specific row UUIDs because legacy HIAP mirrors ranked selection flags across languages. The catalog stores scope, source identity, digest, and small provenance labels; it does not copy ranking, selection, or plan content.
+
+Action-plan deletion withdraws all active versions before the source row is removed. Inventory and city deletion withdraw all active HIAP rows before the owning records are removed. Failed, pending, incomplete, or temporary HIAP results are never registered. The HIAP cron backfills successful rankings and persisted action plans that are missing their current active catalog entry, so a transient catalog failure can be retried on a later run. HIAP-MEED uses a separate adapter and is intentionally not covered by CC-638.
+
+## Legacy HIAP catalog scope audit (CC-768)
+
+> Superseded by CC-1060 PR 2 (see [Catalog access at city and project](#catalog-access-at-city-and-project-cc-1060-pr-2)): rows are no longer filtered by the creator `userId`, and new rows do not carry it. The text below records the audit as written.
+
+Audit of the CC-638 producers against the inventory-owned model used by HIAP-MEED. This section documents behavior only; no code or data changes are included. Line references are from `develop` at `4775ca348`.
+
+### Current behavior
+
+`resolveScope` in `HiapNativeInputCatalogService.ts` returns the resolved inventory, city, project and organization IDs plus an optional `userId`. The legacy producers fill `userId` with the source author:
+
+| Artifact | Producer | Catalog `userId` source |
+|---|---|---|
+| Ranking | `buildHIAPRankingInput` | `ranking.userId` (`:205`) |
+| Action plan | `buildHIAPActionPlanInput` | `plan.createdBy` (`:420`) |
+| Selection | `registerHIAPSelections` | request `authorId` (`:644`) |
+
+Discovery treats a populated catalog `userId` as a hard identity filter. `authorizeCatalogScope` in `NativeInputCatalogCapabilityService.ts:250` returns false when `entry.userId` differs from the session user, before it checks inventory, city, project or organization permissions. `requestMatchesEntry` (`:201`) applies the same equality when a request carries a `userId`.
+
+`HIAP_INVENTORY_DEFINITION` in `registry.ts:92` declares `requiredResourceScope: ["user", "city", "inventory"]`, although the capability reads through the inventory adapter.
+
+### Comparison
+
+| Producer | Catalog `userId` | Ownership model |
+|---|---|---|
+| Legacy HIAP (ranking, plan, selection) | Source author | Inventory data, plus a user filter |
+| HIAP-MEED | Not set | Inventory-scoped; user only as `createdBy` on `MeedRanking` |
+| GHGI import and OCR | `importedFile.userId` (`GHGINativeInputCatalogService.ts:40,84,104,144`) | Uploader recorded as `userId` |
+
+### Inconsistencies
+
+1. Legacy HIAP and HIAP-MEED use opposite scope models.
+2. A collaborator with access to the inventory cannot discover a legacy ranking or action plan created by another user.
+3. The HIAP capability declares a `user` scope that the HIAP data model does not have.
+4. Active `owningModule=hiap` rows registered under CC-638 keep the author `userId`, so changing new registrations alone would not repair them.
+5. GHGI rows also carry the uploader as `userId`. This may be intended for private uploads and is not assessed here.
+
+### Proposed follow-up
+
+Pending product confirmation, in a separate change:
+
+- Stop writing the author `userId` for new legacy HIAP rows. `HighImpactActionRanking.userId` and `ActionPlan.createdBy` keep the attribution.
+- Remove `user` from the HIAP `requiredResourceScope`.
+- Backfill active `owningModule=hiap` rows with a source-validated, idempotent job that clears `userId` only when the source row and its ownership graph match.
+- Cover creator A, collaborator B with inventory access (can discover and read) and outsider C (cannot).
+
+Open product questions: whether any legacy HIAP artifact is meant to be private to its creator, whether existing rows may become visible to collaborators who cannot see them today, and whether uploader-scoped GHGI discovery is intended.
+
+## HIAP-MEED ranking producer mapping (CC-736)
+
+The first CC-736 slice registers the completed MEED ranking artifact produced by the CityCatalyst ranking route. `MeedRanking` is the durable source record; `MeedActionRanked` and `MeedActionRemoved` are version-linked child rows.
+
+| Catalog kind | Source type / identity | Registration boundary | Version / withdrawal |
+|---|---|---|---|
+| `hiap_meed_ranking` | `hiap_meed_ranking` / `MeedRanking.id` | After a successful MEED response is persisted as a completed `MeedRanking` with at least one child action | Each successful invocation creates a new source/version and supersedes the prior active catalog row for the inventory, even when the result matches an older run |
+
+The catalog stores the parent pointer, digests, action count, language/top-N metadata, and resolved inventory/city/project/organization scope. The requesting user remains audit metadata on `MeedRanking`; it is not part of the catalog scope or ranking identity. It does not copy ranked actions, removed actions, explanations, evidence, or legal payloads. Incomplete, failed, empty, or request-local results are not registered. Inventory and city deletion withdraw active MEED ranking entries while retaining catalog audit rows. The operational `npm run hiap-catalog-backfill` runner scans completed rankings in bounded, resumable pages and retries failed catalog writes using the shared `HiapCatalogBackfillCheckpoint` state.
+
+Report/output-plan artifacts and caller-provided city data, context, preferences, and exclusions remain out of scope until each has a durable, reusable CityCatalyst source record.
+
+## Climate Advisor read capabilities (CC-1060)
+
+Selected-read capabilities are bounded and read-only. Each capability has its own input schema in the module `registry.ts` and accepts only the optional view arguments below; Core still authorizes the catalog row first (see [Catalog access at city and project](#catalog-access-at-city-and-project-cc-1060-pr-2)).
+
+| Capability | Catalog rows | Optional input |
+|---|---|---|
+| `hiap.inventory.context` | `hiap_ranking`, `hiap_selection` | `language`, `scope` (`selected`, `ranked`), `type` (`mitigation`, `adaptation`), `limit` (1-50), `offset` |
+| `hiap.action_plan.context` | `hiap_action_plan` | none; returns the plan summary (`timeline`, `costBudget`, `milestones`, `institutions`, `merIndicators`, ...) and lists sections left out for size in `omitted_sections` |
+| `hiap_meed.ranking.context` | `hiap_meed_ranking` | `language`, `limit` (1-50, default 25), `offset` |
+| `hiap_meed.output_plan.context` | `hiap_meed_output_plan` | `language`, `chapters` (stored chapter keys, for example `legal_mandate_delivery`, `financing_precedents_pathway`, `city_fit`) |
+
+- Without `scope`, `hiap.inventory.context` returns the city selection when one exists, else the ranked fallback (the pre-CC-1060 output). `selected` returns every selected action (no selection limit) and does not fall back; `ranked` returns the ranking in rank order, flagging selected actions, 25 per page by default.
+- Paged results carry `counts.total`, `counts.offset`, `counts.returned` and `truncated`; the caller reads the next page with `offset` = `counts.offset` + `counts.returned`. A page is also cut when it would exceed the tool size bound.
+- A plan row's `labels.display_name` is a safe, content-free name shown by discovery: the action name for a HIAP plan and `HIAP-MEED output plan (<languages>)` for a HIAP-MEED plan (MEED stores no action name and its action code must not reach the user, so the plan read, which returns `action_id`, identifies the action). Registration adds a missing name to an existing row, so re-running the existing `npm run hiap-catalog-backfill` (a deployment step that needs David's go-ahead per environment) fills the names of rows registered before CC-1060.
+- `hiap_meed.output_plan.context` changed its default output: chapters are now localized to one language (`language`, default `en`; the stored `title`, `markdown` and `limitations` language maps were returned whole before), `chapter_keys` is always present, and `chapters` keeps the stored array shape. A ranking page and the removed list are each cut to a byte budget (40 KB and 12 KB) so the whole result stays under the 64 KB tool bound; `counts.returned` can then be below `limit` and drives the next `offset`.
+- Prompts treat tool results (explanations, plan and chapter text, labels) as untrusted data, never instructions.
+- HIAP-MEED stores legal, finance and city-fit context only inside its output-plan chapters. HIAP stores none of it.
+
+## Catalog access at city and project (CC-1060 PR 2)
+
+Product decision (Carlos, #hiap-squad, 2026-10-20; confirmed by David): catalog rows are scoped to the city and its project, not owned by the user who created them. Nothing is private to the creator.
+
+`authorizeCatalogScope` in `NativeInputCatalogCapabilityService.ts` now works like this:
+
+- It resolves the row's city from the database (the row's `cityId`, or its inventory's city), the project from that city, and fails closed when the row, the request and the database disagree (row `projectId`, `organizationId` or inventory city differ; the request names another city, project or organization; a request inventory belongs to another city).
+- It then calls `PermissionService.checkAccess` with `{ cityId, projectId }`. A user passes as an organization admin of the project's organization, a project admin of that exact project, a collaborator of that exact city, or a system admin. A project admin of a sibling project in the same organization does not pass.
+- Every inventory and year of that city and project is readable. The chat inventory is the default context; another year is read by discovering with its `inventoryId`.
+- The row `userId` is ignored: the check, the SQL candidate filter and `requestMatchesEntry` no longer use it. The request `userId` still has to equal the session user, and the discovery cursor is still bound to it.
+- The organization-only gate is gone for rows that carry a city. Rows without a city or inventory (none registered today) keep the old per-dimension checks.
+- The inventory is never passed to `PermissionService`, so the public-inventory path of `canAccessInventory` grants nothing here. This is deliberate for HIAP-MEED: its data must not be public or downloadable (legal constraint from Product). Clima interprets MEED data in chat only; no capability, route or tool exports it.
+- Unauthorized, withdrawn and nonexistent rows still return the same stable 404 (`capability_unavailable`) from reads and are omitted from discovery (CC-1021 R15).
+
+Producers: `registerHIAPRanking`, `registerHIAPSelections` and `registerHIAPActionPlan` no longer write the creator. `HighImpactActionRanking.userId` and `ActionPlan.createdBy` keep the attribution. HIAP and HIAP-MEED rows already carry `cityId`, `projectId` and `organizationId` from the inventory's city at registration.
+
+GHGI import rows keep the uploader as `userId` for provenance. The access check ignores it, so a colleague with access to the city and project can now discover and read those rows. Review this if uploader-private files are ever wanted.
+
+### Backfill (idempotent, not run anywhere yet)
+
+`npm run native-input-catalog-scope-backfill` (`scripts/native-input-catalog-scope-backfill.ts`, `NativeInputCatalogScopeBackfill.ts`) fills a missing `projectId` on catalog rows from the row's city (or its inventory's city). It writes nothing else: `userId`, `cityId` and `organizationId` stay as they are. Rows without a resolvable city are left alone. `CATALOG_SCOPE_BACKFILL_DRY_RUN` defaults to true; set it to `false` to write. It needs no migration and a second run changes nothing. Run it per environment only with David's go-ahead. Without it, old rows still work: the access check derives the project from the city.
+
+The stored `userId` is not authoritative and is ignored by authorization. Re-registering a source (`registerNativeInput`) returns the existing row and does not touch `userId`; reconciliation compares only the scope fields the new input carries, and new HIAP inputs carry no `userId`, so it neither clears nor rejects an old one. New versions are created without it. Old rows therefore keep a stale creator `userId` until they are superseded; this is harmless.
+
+### Accepted decisions (David, PR 3321 review)
+
+- GHGI import rows stay readable by colleagues with access to the same city and project.
+- Inventory-only rows (no city) no longer use the public-inventory path, for all modules.

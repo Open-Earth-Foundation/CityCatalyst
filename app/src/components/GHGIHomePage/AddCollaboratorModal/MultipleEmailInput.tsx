@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Input,
-  Tag,
-  HStack,
-  Separator,
-  Icon,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Input, Tag, HStack, Icon, Flex } from "@chakra-ui/react";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";

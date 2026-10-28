@@ -40,8 +40,9 @@ import { NextResponse } from "next/server";
 import { db } from "@/models";
 import PopulationService from "@/backend/PopulationService";
 import { QueryTypes } from "sequelize";
+import { sqlOmitFromTotal } from "@/util/GHGI/reported-totals";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { params }) => {
   const { project: projectId } = params;
 
   // TODO perform access control/ only show public inventories
@@ -78,6 +79,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     SELECT SUM(co2eq)
     FROM "InventoryValue"
     WHERE inventory_id IN (:inventoryIds)
+      AND ${sqlOmitFromTotal()}
   `;
 
   const inventoryIds = inventories.map((inventory) => inventory.inventoryId);

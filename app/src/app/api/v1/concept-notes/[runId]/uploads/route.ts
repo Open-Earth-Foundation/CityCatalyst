@@ -1,0 +1,393 @@
+/**
+ * @swagger
+ * /api/v1/concept-notes/{runId}/uploads:
+ *   post:
+ *     operationId: createConceptNoteUpload
+ *     summary: Register and process an authorized Concept Note source upload
+ *     description: Initial uploads replay a persisted identity bound to the original file bytes; a failed replay is re-queued before the handoff is acknowledged. Other uploads receive a new UUID v4.
+ *     tags:
+ *       - concept-notes
+ *     parameters:
+ *       - in: path
+ *         name: runId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file]
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               initialUploadId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Persisted creation-manifest identity; retries must contain the original file bytes.
+ *               sourceLabel:
+ *                 type: string
+ *                 maxLength: 255
+ *                 nullable: true
+ *               sourceRole:
+ *                 type: string
+ *                 enum: [reference, climate_action_plan]
+ *                 default: reference
+ *     responses:
+ *       202:
+ *         description: Upload registered and processing accepted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [uploadId, status, stage, canRetry, filename]
+ *               properties:
+ *                 uploadId:
+ *                   type: string
+ *                   format: uuid
+ *                 status:
+ *                   type: string
+ *                   enum: [queued, processing, ready, failed]
+ *                 stage:
+ *                   type: string
+ *                   enum: [ocr, delivery, complete]
+ *                 canRetry:
+ *                   type: boolean
+ *                 filename:
+ *                   type: string
+ *                 sourceLabel:
+ *                   type: string
+ *                   nullable: true
+ *                 sourceRole:
+ *                   type: string
+ *                   enum: [reference, climate_action_plan]
+ *                 retryKind:
+ *                   type: string
+ *                   enum: [ocr, delivery]
+ *       400:
+ *         description: Invalid multipart request
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: City or run access denied
+ *       409:
+ *         description: A retried initial upload does not match the original file, or the note already has the maximum of 10 uploads. Climate Advisor enforces the limit; its body is forwarded unchanged.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   enum: [concept_note_upload_limit_reached]
+ *                 detail:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *       413:
+ *         description: Source exceeds the 20 MiB limit
+ *       415:
+ *         description: Only PDF or Markdown uploads are accepted
+ *       422:
+ *         description: Invalid filename, label, empty source, PDF signature, or Markdown encoding
+ *       502:
+ *         description: Climate Advisor returned an invalid upload identity
+ *       503:
+ *         description: Source storage or OCR queueing is unavailable
+ */
+import { createHash, randomUUID } from "node:crypto";
+
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import {
+  loadConceptNoteUploadRun,
+  updateConceptNoteUpload,
+} from "@/backend/ConceptNoteUploadService";
+import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
+import {
+  conceptNotePdfSourceKey,
+  enqueueConceptNotePdfOcr,
+  normalizeConceptNoteMarkdown,
+  normalizeConceptNotePdfOcrStatus,
+  registerConceptNoteMarkdownUpload,
+  retryConceptNotePdfOcr,
+} from "@/backend/PdfOcrService";
+import {
+  callConceptNoteApi,
+  readConceptNoteApiPayload,
+} from "@/backend/concept-notes";
+import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "@/backend/inventory-import-file-limits";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { apiHandler } from "@/util/api";
+
+const paramsSchema = z.object({ runId: z.string().uuid() });
+const markdownMimeTypes = new Set([
+  "",
+  "application/octet-stream",
+  "text/markdown",
+  "text/plain",
+  "text/x-markdown",
+]);
+const createResponseWireSchema = z
+  .object({
+    upload_id: z.string().uuid(),
+    status: z.enum(["queued", "processing", "ready", "failed"]),
+  })
+  .transform((payload) => ({
+    uploadId: payload.upload_id,
+    status: payload.status,
+  }));
+
+function requestId(req: Request): string | undefined {
+  return req.headers.get("x-request-id")?.trim() || undefined;
+}
+
+function isMarkdownUpload(filename: string): boolean {
+  return filename.toLowerCase().endsWith(".md");
+}
+
+function decodeMarkdownUpload(fileBuffer: Buffer): string {
+  if (fileBuffer.includes(0)) {
+    throw new createHttpError.UnprocessableEntity(
+      "Markdown uploads cannot contain NUL bytes",
+    );
+  }
+  let decoded: string;
+  try {
+    decoded = new TextDecoder("utf-8", { fatal: true }).decode(fileBuffer);
+  } catch {
+    throw new createHttpError.UnprocessableEntity(
+      "Markdown uploads must be valid UTF-8 text",
+    );
+  }
+  try {
+    return normalizeConceptNoteMarkdown(decoded);
+  } catch (error) {
+    throw new createHttpError.UnprocessableEntity(
+      error instanceof Error ? error.message : "Markdown uploads are invalid",
+    );
+  }
+}
+
+export const POST = apiHandler(async (req, { session, params }) => {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("Authentication required");
+  }
+  const { runId } = paramsSchema.parse(params);
+  const userId = session.user.id;
+  const currentRequestId = requestId(req);
+
+  // Authenticate the run and city before consuming the multipart file body.
+  const { cityId, initialUploads } = await loadConceptNoteUploadRun({
+    runId,
+    userId,
+    requestId: currentRequestId,
+  });
+  await PermissionService.canAccessCity(session, cityId, {
+    includeResource: false,
+  });
+
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    throw new createHttpError.BadRequest("Invalid multipart upload");
+  }
+  const fileEntry = formData.get("file");
+  if (!(fileEntry instanceof File)) {
+    throw new createHttpError.BadRequest("A source file is required");
+  }
+  const filename = fileEntry.name.trim();
+  if (!filename || filename.length > 255) {
+    throw new createHttpError.UnprocessableEntity("Invalid source filename");
+  }
+  const isPdf = filename.toLowerCase().endsWith(".pdf");
+  const isMarkdown = isMarkdownUpload(filename);
+  if (!isPdf && !isMarkdown) {
+    throw new createHttpError.UnsupportedMediaType(
+      "Only PDF or Markdown uploads are accepted",
+    );
+  }
+  if (fileEntry.size === 0) {
+    throw new createHttpError.UnprocessableEntity("Source file is empty");
+  }
+  if (fileEntry.size > INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES) {
+    throw new createHttpError.PayloadTooLarge(
+      "Source exceeds the 20 MiB upload limit",
+    );
+  }
+  const fileBuffer = Buffer.from(await fileEntry.arrayBuffer());
+  if (isPdf) {
+    if (fileEntry.type !== "application/pdf") {
+      throw new createHttpError.UnsupportedMediaType(
+        "Only application/pdf uploads are accepted for PDF files",
+      );
+    }
+    if (fileBuffer.subarray(0, 5).toString("ascii") !== "%PDF-") {
+      throw new createHttpError.UnprocessableEntity(
+        "Uploaded file does not have a valid PDF signature",
+      );
+    }
+  } else if (!markdownMimeTypes.has(fileEntry.type)) {
+    throw new createHttpError.UnsupportedMediaType(
+      "Only Markdown uploads are accepted for .md files",
+    );
+  }
+  const markdownText = isMarkdown
+    ? decodeMarkdownUpload(fileBuffer)
+    : undefined;
+
+  const sourceLabelEntry = formData.get("sourceLabel");
+  const sourceLabel =
+    typeof sourceLabelEntry === "string" && sourceLabelEntry.trim()
+      ? sourceLabelEntry.trim()
+      : null;
+  if (sourceLabel && sourceLabel.length > 255) {
+    throw new createHttpError.UnprocessableEntity("Source label is too long");
+  }
+  const sourceRole = z
+    .enum(["reference", "climate_action_plan"])
+    .parse(formData.get("sourceRole") ?? "reference");
+
+  // Only persisted creation identities may be replayed; bind them to file bytes.
+  const requestedUploadId = formData.get("initialUploadId");
+  const initialUpload =
+    requestedUploadId === null
+      ? undefined
+      : initialUploads.find((source) => source.upload_id === requestedUploadId);
+  if (
+    requestedUploadId !== null &&
+    (!initialUpload ||
+      initialUpload.filename !== filename ||
+      initialUpload.sha256 !==
+        createHash("sha256").update(fileBuffer).digest("hex"))
+  ) {
+    throw new createHttpError.Conflict(
+      "Select the original source file to retry this upload",
+    );
+  }
+  const uploadId = initialUpload?.upload_id ?? randomUUID();
+  const createResponse = await callConceptNoteApi({
+    path: `/v1/concept-notes/${runId}/uploads`,
+    userId,
+    method: "POST",
+    requestId: currentRequestId,
+    body: {
+      upload_id: uploadId,
+      user_id: userId,
+      filename,
+      source_label: sourceLabel,
+      source_format: isPdf ? "pdf" : "markdown",
+      // CA defaults to reference; omitting it keeps ordinary uploads working on a CA without roles.
+      ...(sourceRole === "climate_action_plan" && { source_role: sourceRole }),
+    },
+  });
+  const createPayload = await readConceptNoteApiPayload(createResponse);
+  // Forward CA rejections unchanged, e.g. the 409 upload-limit code the UI reads.
+  if (!createResponse.ok) {
+    return NextResponse.json(createPayload, { status: createResponse.status });
+  }
+  const created = createResponseWireSchema.safeParse(createPayload);
+  if (!created.success || created.data.uploadId !== uploadId) {
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "failed",
+      requestId: currentRequestId,
+      errorCode: "ca_upload_response_invalid",
+    }).catch(() => {});
+    throw new createHttpError.BadGateway(
+      "Climate Advisor returned an invalid upload identity",
+    );
+  }
+  // Idempotent create keeps a failed row failed; re-queue it before replaying.
+  if (created.data.status === "failed") {
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "retry",
+      requestId: currentRequestId,
+    });
+  }
+
+  let failureCode = "source_storage_failed";
+  let job:
+    | Awaited<ReturnType<typeof enqueueConceptNotePdfOcr>>
+    | Awaited<ReturnType<typeof registerConceptNoteMarkdownUpload>>;
+  try {
+    if (isPdf) {
+      await InventoryFileStorageService.putFile(
+        conceptNotePdfSourceKey(uploadId),
+        fileBuffer,
+        "application/pdf",
+      );
+      failureCode = "ocr_enqueue_failed";
+      job = await enqueueConceptNotePdfOcr(uploadId);
+    } else {
+      failureCode = "markdown_registration_failed";
+      job = await registerConceptNoteMarkdownUpload(
+        uploadId,
+        markdownText ?? "",
+      );
+    }
+    // A replay can find the job from an earlier failed attempt.
+    if (normalizeConceptNotePdfOcrStatus(job).status === "failed") {
+      await retryConceptNotePdfOcr(job);
+    }
+  } catch (error) {
+    if (createHttpError.isHttpError(error)) {
+      throw error;
+    }
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "failed",
+      requestId: currentRequestId,
+      errorCode: failureCode,
+    }).catch(() => {});
+    throw new createHttpError.ServiceUnavailable(
+      "Source processing could not be prepared",
+    );
+  }
+
+  if (initialUpload) {
+    const receipt = await callConceptNoteApi({
+      path: `/v1/concept-notes/${runId}/initial-uploads/${uploadId}/accepted`,
+      userId,
+      method: "POST",
+      requestId: currentRequestId,
+      searchParams: { user_id: userId },
+    });
+    if (!receipt.ok) {
+      throw new createHttpError.ServiceUnavailable(
+        "Source handoff confirmation is unavailable",
+      );
+    }
+  }
+  triggerConceptNoteSourceProcessing();
+  const state = normalizeConceptNotePdfOcrStatus(job);
+
+  return NextResponse.json(
+    {
+      uploadId,
+      status: state.status,
+      stage: state.stage,
+      canRetry: state.canRetry,
+      filename,
+      sourceLabel,
+      sourceRole,
+      ...(state.retryKind ? { retryKind: state.retryKind } : {}),
+    },
+    { status: 202 },
+  );
+});

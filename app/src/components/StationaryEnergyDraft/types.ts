@@ -36,6 +36,9 @@ export type ReviewDecision = {
   selected_candidate_id?: string | null;
   manual_value?: string | number | null;
   manual_unit?: string | null;
+  notation_key?: string | null;
+  unavailable_reason?: string | null;
+  unavailable_explanation?: string | null;
   commit_status?: string;
   note?: string | null;
   decision_version?: number;
@@ -49,6 +52,9 @@ export type StagedReviewSelection = {
   action: string;
   selected_source_id?: string | null;
   selected_candidate_id?: string | null;
+  notation_key?: string | null;
+  unavailable_reason?: string | null;
+  unavailable_explanation?: string | null;
   rationale?: string | null;
   tool_call_id?: string | null;
   status: string;
@@ -108,6 +114,7 @@ export type DraftDecisionAction =
   | "accept"
   | "override_source"
   | "override_manual"
+  | "set_notation_key"
   | "leave_draft";
 
 export type DraftDecisionState = {
@@ -115,5 +122,8 @@ export type DraftDecisionState = {
   selectedSourceId: string;
   manualValue: string;
   manualUnit: string;
+  notationKey?: string;
+  unavailableReason?: string;
+  unavailableExplanation?: string;
   note: string;
 };

@@ -177,9 +177,11 @@ async function syncDataCatalogue() {
 
   // convert keys from snake_case to camelCase
   const sources: DataSourceCreationAttributes[] = dataSources.map((source) => {
-    const result: Record<string, any> = {};
+    const result: Record<string, unknown> = {};
     for (const key in source) {
-      result[snakeToCamel(key as string)] = (source as any)[key];
+      result[snakeToCamel(key as string)] = (
+        source as unknown as Record<string, unknown>
+      )[key];
     }
     return result as DataSourceCreationAttributes;
   });

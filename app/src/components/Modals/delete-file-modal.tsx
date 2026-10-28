@@ -21,7 +21,7 @@ import { logger } from "@/services/logger";
 
 interface DeleteFileDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   fileData: UserFileAttributes | undefined;
   t: TFunction;
 }

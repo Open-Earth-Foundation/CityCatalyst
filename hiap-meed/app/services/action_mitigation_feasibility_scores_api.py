@@ -83,7 +83,14 @@ class ActionMitigationFeasibilityScoresApiService:
     def get_scores_by_action_id(
         self, locode: str, country_code: str
     ) -> ActionMitigationFeasibilityScoresFetchResult:
-        """Fetch one city-scoped payload and map it by action ID."""
+        """
+        Fetch mitigation-feasibility scores for a city and country.
+
+        The caller supplies both values; this service normalizes them and maps
+        each returned row by action ID. A missing score release returns an empty
+        result with a warning. It never creates the neutral fallback score used
+        later by prioritization. Other upstream failures raise ``UpstreamApiError``.
+        """
         scores_url = self._build_action_mitigation_feasibility_scores_url(
             locode,
             country_code,

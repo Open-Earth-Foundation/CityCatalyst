@@ -12,7 +12,11 @@ from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 OPENAI_MODEL_NAME_PLAN_CREATOR = os.environ["OPENAI_MODEL_NAME_PLAN_CREATOR"]
 
 # Create the agents
-model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=42)
+model = ChatOpenAI(
+    model=OPENAI_MODEL_NAME_PLAN_CREATOR,
+    seed=42,
+    reasoning_effort="none",
+)
 
 # Define prompts for each agent
 system_prompt_agent_translate = SystemMessage(agent_translate_system_prompt)

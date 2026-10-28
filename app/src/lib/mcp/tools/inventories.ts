@@ -4,7 +4,8 @@ import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { InventoryService } from "@/backend/InventoryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import { Op } from "sequelize";
+import { Includeable, Op, WhereOptions } from "sequelize";
+import { InventoryAttributes } from "@/models/Inventory";
 
 export const getUserInventoriesTool: Tool = {
   name: "get_user_inventories",
@@ -47,6 +48,35 @@ export const getUserInventoriesTool: Tool = {
   },
 };
 
+interface EnrichedInventory {
+  inventoryId: string;
+  inventoryName?: string;
+  year?: number;
+  isPublic?: boolean;
+  cityId?: string;
+  cityName?: string;
+  cityLocode?: string;
+  totalEmissions?: number | null;
+  city?: {
+    id?: string;
+    name?: string;
+    country?: string;
+    region?: string;
+    locode?: string;
+  };
+  project?: {
+    id?: string;
+    name?: string;
+  };
+  organization?: {
+    id?: string;
+    name?: string;
+    active?: boolean;
+  };
+  created?: Date;
+  lastUpdated?: Date | null;
+}
+
 export async function execute(
   params: {
     cityId?: string;
@@ -58,7 +88,19 @@ export async function execute(
     includeDetails?: boolean;
   },
   session: AppSession
-): Promise<any> {
+): Promise<
+  | {
+      success: true;
+      data: EnrichedInventory[];
+      pagination: {
+        total: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+      };
+    }
+  | { success: false; error: string; data: [] }
+> {
   try {
     const userId = session.user.id;
     const limit = Math.min(params.limit || 50, 100);
@@ -116,23 +158,18 @@ export async function execute(
       const cityIds = userCities.map(uc => uc.cityId);
       
       // Build query conditions
-      const whereConditions: any = {};
-      
-      if (params.includePublic) {
-        whereConditions[Op.or] = [
-          { cityId: { [Op.in]: cityIds } },
-          { isPublic: true }
-        ];
-      } else {
-        whereConditions.cityId = { [Op.in]: cityIds };
-      }
-      
-      if (params.year) {
-        whereConditions.year = params.year;
-      }
+      const yearFilter = params.year ? { year: params.year } : {};
+      const whereConditions: WhereOptions<InventoryAttributes> = params.includePublic
+        ? {
+            [Op.or]: [
+              { cityId: { [Op.in]: cityIds }, ...yearFilter },
+              { isPublic: true, ...yearFilter },
+            ],
+          }
+        : { cityId: { [Op.in]: cityIds }, ...yearFilter };
       
       // Fetch inventories with optional includes
-      const includeOptions: any[] = [];
+      const includeOptions: Includeable[] = [];
       if (params.includeDetails) {
         includeOptions.push({
           model: db.models.City,
@@ -203,7 +240,7 @@ export async function execute(
     // Enrich inventories based on requested details
     const enrichedInventories = await Promise.all(
       paginatedInventories.map(async (inv) => {
-        const result: any = {
+        const result: EnrichedInventory = {
           inventoryId: inv.inventoryId,
           inventoryName: inv.inventoryName,
           year: inv.year,
@@ -221,7 +258,7 @@ export async function execute(
               session
             );
             result.totalEmissions = fullInventory.totalEmissions;
-          } catch (error) {
+          } catch {
             logger.debug({ inventoryId: inv.inventoryId }, "Could not fetch emissions");
             result.totalEmissions = null;
           }
@@ -244,7 +281,7 @@ export async function execute(
             id: inv.city?.project?.organization?.organizationId,
             name: inv.city?.project?.organization?.name,
             active: inv.city?.project?.organization?.active,
-          },
+          };
           result.created = inv.created;
           result.lastUpdated = inv.lastUpdated;
         }

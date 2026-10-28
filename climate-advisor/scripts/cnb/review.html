@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Review CNB funded-project research and similar-project search results." />
+    <title>CNB Local Review</title>
+    <link rel="stylesheet" href="review.css" />
+    <script src="review-support.js" defer></script>
+    <script src="review-renderer.js" defer></script>
+    <script src="review.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">CNB</span>
+        <div><small>Concept Note Builder</small><h1 id="pageTitle">Research review</h1></div>
+      </div>
+      <div class="actions">
+        <span class="local-state">Local review</span>
+        <label class="button secondary" for="bundleInput">Open review JSON</label>
+        <input id="bundleInput" type="file" accept="application/json,.json" hidden />
+        <button id="saveButton" class="button primary" type="button" disabled>
+          Save review
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="emptyState" class="empty-state">
+        <small>Pending-review artifacts</small>
+        <h2>Open a CNB review artifact</h2>
+        <p>
+          Choose a funded-project <code>&lt;run_id&gt;.research.json</code>, an
+          older <code>research_bundle.json</code>, or a matching
+          <code>&lt;run_id&gt;.similar-projects.json</code>. The page adapts the
+          fields, evidence, and saved review to that artifact.
+        </p>
+        <label class="button primary" for="bundleInput">Choose JSON file</label>
+        <p id="loadError" class="error" role="alert"></p>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="run-header">
+          <div>
+            <small>Current bundle</small>
+            <h2 id="programName"></h2>
+            <p id="runMeta"></p>
+          </div>
+          <dl class="counts">
+            <div><dt id="countLabel1">Sources</dt><dd id="sourceCount">0</dd></div>
+            <div><dt id="countLabel2">Evidence</dt><dd id="evidenceCount">0</dd></div>
+            <div><dt id="countLabel3">Gaps</dt><dd id="gapCount">0</dd></div>
+            <div><dt id="countLabel4">Conflicts</dt><dd id="conflictCount">0</dd></div>
+          </dl>
+        </div>
+
+        <nav id="sectionNav" class="section-nav" aria-label="Research sections"></nav>
+
+        <div id="reviewLayout" class="review-layout">
+          <section class="editor" aria-label="Editable findings">
+            <p id="selectionSummary" class="selection-summary"></p>
+            <div id="editorSections"></div>
+          </section>
+
+          <aside id="inspectorPanel" class="inspector" aria-label="Evidence and review" hidden>
+            <section id="inspectorEvidence">
+              <div class="inspector-heading">
+                <small>Field evidence</small>
+                <button id="closeInspector" class="inspector-close" type="button" aria-label="Close evidence panel">Close</button>
+              </div>
+              <h2 id="inspectorTitle"></h2>
+              <p id="inspectorPath" class="inspector-path"></p>
+              <div id="inspectorContent"></div>
+            </section>
+            <section class="review-details">
+              <small>Review metadata</small>
+              <label>Decision
+                <select id="reviewStatus">
+                  <option value="pending_review">Pending review</option>
+                  <option value="approved">Approved</option>
+                  <option value="needs_changes">Needs changes</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </label>
+              <label>Reviewer
+                <input id="reviewerName" type="text" placeholder="Name or team" />
+              </label>
+              <label>Notes
+                <textarea id="reviewNotes" rows="4" placeholder="One note per line"></textarea>
+              </label>
+              <p class="muted">
+                Saving creates a local <code>&lt;run_id&gt;.review.json</code> file.
+                The research JSON is unchanged and the browser never writes to the database.
+              </p>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <p id="statusMessage" class="status" role="status"></p>
+  </body>
+</html>

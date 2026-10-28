@@ -16,7 +16,9 @@ OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY = os.environ[
 
 # Create the agents
 model = ChatOpenAI(
-    model=OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY, temperature=0.0, seed=42
+    model=OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY,
+    seed=42,
+    reasoning_effort="none",
 )
 
 # Define tools for the agent

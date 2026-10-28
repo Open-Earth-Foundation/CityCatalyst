@@ -1,13 +1,9 @@
-import { Box, Field, Icon, Input, Link, Tag, Text } from "@chakra-ui/react";
+import { Box, Field, Input, Tag, Text } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
-import {
-  ControllerFieldState,
-  FieldErrors,
-  UseFormRegister,
-} from "react-hook-form";
+import { ControllerFieldState } from "react-hook-form";
 
 import { TFunction } from "i18next";
-import { MdInfoOutline, MdWarning } from "react-icons/md";
+import { MdWarning } from "react-icons/md";
 
 interface CommaSeperatedInputProps {
   errors: ControllerFieldState["error"];
@@ -21,8 +17,8 @@ interface CommaSeperatedInputProps {
     | "connectSources";
   inputType: string;
   tipContent: React.ReactNode;
-  initialValues?: any[];
-  onChange: (values: any) => void;
+  initialValues?: string[];
+  onChange: (values: string[]) => void;
 }
 
 const CommaSeperatedInput: FC<CommaSeperatedInputProps> = ({
@@ -108,7 +104,7 @@ const CommaSeperatedInput: FC<CommaSeperatedInputProps> = ({
           >
             <MdWarning height="16px" width="16px" />
             <Text fontSize="body.md" fontStyle="normal">
-              {(errors as any)?.message as string}
+              {errors?.message}
             </Text>
           </Box>
         )}

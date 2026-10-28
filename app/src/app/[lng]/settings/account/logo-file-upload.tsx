@@ -1,0 +1,120 @@
+import {
+  FileUploadDropzone,
+  FileUploadList,
+} from "@/components/ui/file-upload";
+import {
+  Box,
+  Icon,
+  IconButton,
+  Image,
+  useFileUploadContext,
+} from "@chakra-ui/react";
+import { MdOutlineAddAPhoto } from "react-icons/md";
+import { useEffect } from "react";
+import { CiCircleRemove } from "react-icons/ci";
+
+const LogoUploadCard = ({
+  defaultUrl,
+  setFile,
+  clearImage,
+}: {
+  defaultUrl?: string;
+  setFile: (file: File | null) => void;
+  clearImage: () => void;
+}) => {
+  const { acceptedFiles: files, clearFiles } = useFileUploadContext();
+
+  // Only relevant when there's a saved logo and no new file staged - see the
+  // comment by its usage below for why the icon is scoped to that case.
+  const canClearSavedLogo = files.length === 0 && Boolean(defaultUrl);
+
+  const handleDelete = () => {
+    clearFiles();
+    clearImage();
+  };
+
+  useEffect(() => {
+    setFile(files.length > 0 ? files[0] : null);
+  }, [files]);
+
+  return (
+    <>
+      <FileUploadDropzone
+        h="80px"
+        minH="80px"
+        p={0}
+        label={
+          <Box
+            borderRadius="rounded"
+            w="250px"
+            h="80px"
+            textAlign="center"
+            color="gray.200"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            border="1px solid"
+            borderColor="border.neutral"
+            overflow="hidden"
+          >
+            <Box
+              bg="base.dark/60"
+              position="absolute"
+              borderRadius="full"
+              display="flex"
+              alignItems="center"
+              h={12}
+              w={12}
+              justifyContent="center"
+            >
+              <Icon as={MdOutlineAddAPhoto} boxSize={6} />
+            </Box>
+            {files.length > 0 ? (
+              <Image
+                src={URL.createObjectURL(files[0])}
+                alt="Uploaded preview"
+                objectFit="cover"
+                w="100%"
+                h="100%"
+                borderRadius="2xl"
+              />
+            ) : (
+              <Image
+                src={defaultUrl ? defaultUrl : "/assets/wide-logo.png"}
+                alt="Uploaded preview"
+                objectFit="cover"
+                w="100%"
+                h="100%"
+                borderRadius="2xl"
+              />
+            )}
+            {/* Cancelling a newly-picked file is handled by that file's own
+                remove control in the list below; this icon only clears the
+                already-saved logo, so it's hidden while a new file is staged. */}
+            {canClearSavedLogo && (
+              <IconButton
+                data-testid="activity-more-icon"
+                aria-label="more-icon"
+                variant="ghost"
+                position="absolute"
+                top={1}
+                right={1}
+                color="content.tertiary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete();
+                }}
+              >
+                <Icon as={CiCircleRemove} size="lg" />
+              </IconButton>
+            )}
+          </Box>
+        }
+      />
+      <FileUploadList files={files} clearable />
+    </>
+  );
+};
+
+export default LogoUploadCard;

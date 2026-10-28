@@ -96,7 +96,7 @@ describe.skip("UserFile API", () => {
     if (db.sequelize) await db.sequelize.close();
 
     // deletes the file once test are done
-    fs.unlink(await filePath(), (err: any) => {
+    fs.unlink(await filePath(), (err) => {
       if (err) console.error(err);
     });
   });

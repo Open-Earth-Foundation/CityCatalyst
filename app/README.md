@@ -3,14 +3,24 @@
 This is the main CityCatalyst Web app. This directory includes both the
 frontend and backend code for the app, as well as database management scripts.
 
+## Concept Note chat errors
+
+Concept Note chat keeps request rejections separate from connection failures:
+HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
+asks them to reload the workspace. Other non-transient 4xx responses ask the
+user to check the request. These errors clear any previous failed turn and do
+not offer Retry. HTTP 408/429, server errors, transport failures, and stream
+failures remain retryable. A context-not-ready response also clears a previous
+failed turn because Clima answered successfully and declined that new request.
+
 ## Prerequisites
 
 This guide assumes you have installed and access to the following tools:
 
 1. git command line interface. Please follow [this link](https://git-scm.com/downloads) for installation instructions.
 2. Node.js and the node package manager npm. Please follow [this link](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) for installation instructions.
-3. (optional) docker engine. Docker is not strictly necessary but recommended. It makes the setup of the database service much easier. Please follow [this link](https://docs.docker.com/engine/install/) for installation instructions. 
-4. (optional, Windows OS only) Windows Subsystem for Linux WSL2. This step is only needed for running the convenience shell scripts below e.g. for setting up the Postgres database via docker. Different Linux subsystems can be installed. The following link is for Ubuntu. Please follow [this link](https://ubuntu.com/desktop/wsl) for installation instructions. 
+3. (optional) docker engine. Docker is not strictly necessary but recommended. It makes the setup of the database service much easier. Please follow [this link](https://docs.docker.com/engine/install/) for installation instructions.
+4. (optional, Windows OS only) Windows Subsystem for Linux WSL2. This step is only needed for running the convenience shell scripts below e.g. for setting up the Postgres database via docker. Different Linux subsystems can be installed. The following link is for Ubuntu. Please follow [this link](https://ubuntu.com/desktop/wsl) for installation instructions.
 
 ## Installation
 
@@ -92,6 +102,7 @@ npm run db:seed
 If necessary, you can undo individual migrations with `npm run db:migrate:undo` and seeders with `npm run db:seed:undo`.
 
 To download the current set of data sources from the global API, run the following command:
+
 ```bash
 npm run sync-catalogue
 ```
@@ -101,22 +112,70 @@ npm run sync-catalogue
 Copy `env.example` to a file called `.env`.  
 The environment variables `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are required for running unless `NODE_ENV` is set to a value that's different than `production`.
 
+GHGI inventory PDFs use the durable CC-owned Mistral OCR pipeline. PDF uploads
+require `AWS_FILE_UPLOAD_S3_BUCKET_ID`, `AWS_FILE_UPLOAD_REGION`, and AWS
+credentials because Mistral receives a short-lived presigned URL. Set
+`MISTRAL_API_KEY` and `CC_CRON_JOB_API_KEY`; a separately managed scheduler must
+invoke the processor endpoint. CSV/XLSX imports retain the local BYTEA fallback.
+Outbound webhooks encrypt subscription signing secrets with
+`WEBHOOK_SECRET_ENCRYPTION_KEY` (32-byte AES-256-GCM key, base64) and drain
+deliveries via the same cron auth as PDF OCR. See `docs/WebhooksArchitecture.md`.
+Source PDFs have one fixed 20 MB product limit
+(`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
+`env.example` for timeout, lease, concurrency, and model configuration.
+
+To use Concept Note Builder locally, run the sibling `climate-advisor` service
+at `http://localhost:8081`. The copied `env.example` enables
+both `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` and sets
+`CA_BASE_URL` to that address. Climate Advisor must also have its independent
+`CNB_DATABASE_URL` configured and migrated.
+
+### CityCatalyst-to-Climate-Advisor user tokens
+
+CNB, chat, PDF OCR delivery, and Stationary Energy use the shared server-side
+`src/backend/climate-advisor-token.ts` client. It caches validated user tokens
+until 10 minutes before expiry and shares one pending issuance (including retries)
+between concurrent calls for the same user. Tokens are user-scoped; inventory IDs
+remain request context. Returned `expires_in` is the remaining lifetime, including
+when a cached token is attached to a new chat thread.
+
+The cache holds at most 1,000 tokens per process, evicts least-recently-used entries,
+and resets when `HOST`, `CC_SERVICE_API_KEY`, or `VERIFICATION_TOKEN_SECRET` changes.
+Expired entries are removed on access or insertion. Tokens are not written to the
+Next.js fetch cache. New processes and different pods start cold independently;
+no sticky sessions or distributed cache are required. Identity and resource
+permissions are still checked by the existing authorization boundaries.
+
+Cold-cache issuance retries transport failures, timeouts, and HTTP 502/503/504 at
+most twice after the initial attempt. Each attempt has a three-second deadline
+covering headers and body reading. Backoff is 200 ms then 400 ms, each with 0–100 ms
+jitter, for a maximum configured budget of 9.8 seconds. Other HTTP failures and
+malformed token responses are not retried or cached. Actual CA operations are
+not replayed by this client; OCR retains its separate durable delivery retries.
+
+Exhausted issuance preserves its final upstream HTTP status; network failures map
+to 502 and timeouts to 504. JSON routes use the existing API error envelope with a
+sanitized message. Chat messages retain their SSE error-event contract. Logs
+include attempt, status, failure category, duration, and whether another retry
+will follow, without tokens, service keys, headers, or upstream response bodies.
+After deployment, compare token issuance volume and exhausted-retry logs during
+workspace refreshes, including after a pod restart. Rollback requires only a code
+revert, with no database migration.
+
 ## Running
 
 ### Development
-
-
 
 To run the app in development mode, run:
 
 ```bash
 cd CityCatalyst/app
 
-## if you have copied and renamed the env.example file in the step under 'Environment', 
+## if you have copied and renamed the env.example file in the step under 'Environment',
 ## skip the next line otherwise remove the comment in the next line
 #cp env.example .env
 
-## set up your database credentials in .env file 
+## set up your database credentials in .env file
 
 npm run db:migrate
 
@@ -133,6 +192,7 @@ The standard port is 3000 and the application can be opend at http://localhost:3
 Use `johndoe@example.com` and `password` to login.
 
 #### HIAP
+
 To connect to the HIAP prioritizer/plan creator, run
 kubectl port-forward svc/hiap-service-dev 8080:8080
 
@@ -158,6 +218,20 @@ We use Playwright to run automated E2E tests.
 Setup: `npx playwright install --with-deps`
 
 Run: `npm run e2e:test`
+
+Concept Note Builder (CNB) tests use `e2e/concept-note-*.spec.ts` filenames.
+The default Playwright configuration excludes these files unless
+`NEXT_PUBLIC_FEATURE_FLAGS` contains both `CONCEPT_NOTE_BUILDER` and
+`CA_SERVICE_INTEGRATION`. Other E2E tests remain selected regardless of these flags.
+Keep new CNB feature tests under the same filename pattern.
+
+Playwright loads the app's test environment before selecting tests: shell variables
+take precedence over `.env.test.local`, `.env.test`, and `.env`, in that order.
+`.env.local` is not loaded in test mode. When reusing an existing local server,
+ensure its feature flags match the test runner's environment.
+
+From `app/`, inspect the selected tests with `npx playwright test --list`, or run
+only CNB tests with `npx playwright test concept-note-` when both flags are enabled.
 
 ### API unit tests
 

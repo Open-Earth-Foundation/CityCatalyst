@@ -1,13 +1,15 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
+import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 
 export interface GasToCO2EqAttributes {
   gas: string;
+  gwpVersion: GlobalWarmingPotentialTypeEnum;
   co2eqPerKg?: number;
   co2eqYears?: number;
 }
 
-export type GasToCO2EqPk = "gas";
+export type GasToCO2EqPk = "gas" | "gwpVersion";
 export type GasToCO2EqId = GasToCO2Eq[GasToCO2EqPk];
 export type GasToCO2EqOptionalAttributes = "co2eqPerKg" | "co2eqYears";
 export type GasToCO2EqCreationAttributes = Optional<
@@ -20,6 +22,7 @@ export class GasToCO2Eq
   implements Partial<GasToCO2EqAttributes>
 {
   declare gas: string;
+  declare gwpVersion: GlobalWarmingPotentialTypeEnum;
   declare co2eqPerKg?: number;
   declare co2eqYears?: number;
 
@@ -30,6 +33,12 @@ export class GasToCO2Eq
           type: DataTypes.STRING(255),
           allowNull: false,
           primaryKey: true,
+        },
+        gwpVersion: {
+          type: DataTypes.STRING(16),
+          allowNull: false,
+          primaryKey: true,
+          field: "gwp_version",
         },
         co2eqPerKg: {
           type: DataTypes.FLOAT,
@@ -51,7 +60,7 @@ export class GasToCO2Eq
           {
             name: "GasToCO2Eq_pkey",
             unique: true,
-            fields: [{ name: "gas" }],
+            fields: [{ name: "gas" }, { name: "gwp_version" }],
           },
         ],
       },

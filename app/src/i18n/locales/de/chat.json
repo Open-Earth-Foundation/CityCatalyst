@@ -23,5 +23,7 @@
   "about-privacy-description": "Durch die Nutzung von Clima AI stimmen Sie der anonymen Speicherung und Analyse Ihrer Gesprächsdaten zur Verbesserung der Genauigkeit und Effizienz der KI zu.",
   "about-privacy-bold": "Keine persönlichen Daten werden veröffentlicht oder über das Modelltraining hinaus verwendet.",
   "about-privacy-contact": "Bei Datenschutzbedenken wenden Sie sich bitte an den",
-  "contact-support": "Support"
+  "contact-support": "Support",
+  "ask-clima": "Frag Clima",
+  "an-error-occurred": "Ein Fehler ist aufgetreten"
 }

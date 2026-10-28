@@ -6,7 +6,6 @@ import { useTranslation } from "@/i18n/client";
 import {
   useGetOrganizationQuery,
   useGetProjectsQuery,
-  useGetProjectModulesQuery,
 } from "@/services/api";
 
 import ProgressLoader from "@/components/ProgressLoader";
@@ -30,16 +29,6 @@ const AdminOrganizationModulesPage = (props: {
     return <ProgressLoader />;
   }
 
-  const handleModuleToggle = (
-    projectId: string,
-    moduleName: string,
-    hasAccess: boolean,
-  ) => {
-    // TODO: implement module access update logic
-    console.log(
-      `Toggle ${moduleName} for project ${projectId} to ${hasAccess}`,
-    );
-  };
   return (
     <Box>
       <Box display="flex" alignItems="center" justifyContent="space-between">

@@ -45,7 +45,9 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
           <ChakraField.HelperText>{helperText}</ChakraField.HelperText>
         )}
         {errorText && (
-          <ChakraField.ErrorText>{errorText}</ChakraField.ErrorText>
+          <ChakraField.ErrorText fontFamily="body" fontWeight="regular">
+            {errorText}
+          </ChakraField.ErrorText>
         )}
       </ChakraField.Root>
     );

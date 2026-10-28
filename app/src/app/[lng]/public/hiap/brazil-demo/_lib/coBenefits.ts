@@ -1,0 +1,116 @@
+/**
+ * Co-benefits — methodology §6.1: eight categories on a −2…+2 scale, with
+ * per-link suppression where a co-benefit is already credited in the
+ * AdaptaBrasil Impact score. The overlap map below follows the document's
+ * example table (water quality ↔ water stress; habitat and housing partially).
+ */
+import type {
+  AdaptationAction,
+  CoBenefitKey,
+  Localized,
+  RiskCellKey,
+} from "./types";
+import { localized as l } from "./localized";
+
+export const CO_BENEFIT_KEYS: CoBenefitKey[] = [
+  "social_equity",
+  "public_health",
+  "housing",
+  "air_quality",
+  "water_quality",
+  "biodiversity",
+  "mobility",
+  "local_economy",
+];
+
+export const CO_BENEFIT_LABEL: Record<CoBenefitKey, Localized> = {
+  social_equity: l(
+    "Social equity and community capacity",
+    "Equidade social e capacidade comunitária",
+  ),
+  public_health: l("Public health", "Saúde pública"),
+  housing: l("Affordable and adequate housing", "Moradia adequada e acessível"),
+  air_quality: l("Air quality", "Qualidade do ar"),
+  water_quality: l("Water quality", "Qualidade da água"),
+  biodiversity: l(
+    "Biodiversity, habitats and ecosystem services",
+    "Biodiversidade, habitats e serviços ecossistêmicos",
+  ),
+  mobility: l(
+    "Mobility and access to services",
+    "Mobilidade e acesso a serviços",
+  ),
+  local_economy: l(
+    "Local economic development",
+    "Desenvolvimento econômico local",
+  ),
+};
+
+/** Co-benefit → risk cells whose Impact credit already contains it. */
+const OVERLAP: Partial<Record<CoBenefitKey, RiskCellKey[]>> = {
+  water_quality: ["water_stress"],
+  biodiversity: ["biome_integrity"],
+  housing: ["floods", "landslide"],
+};
+
+/** Each suppressed co-benefit with the credited risk cell that already carries it. */
+export function suppressionSources(
+  action: AdaptationAction,
+): { key: CoBenefitKey; cell: RiskCellKey }[] {
+  const credited = new Set(
+    action.links
+      .filter((link) => link.directness === "direct")
+      .map((link) => link.cell),
+  );
+  return (Object.keys(action.coBenefits) as CoBenefitKey[]).flatMap((key) => {
+    const cell = (OVERLAP[key] ?? []).find((c) => credited.has(c));
+    return cell ? [{ key, cell }] : [];
+  });
+}
+
+/** Co-benefits suppressed for this action because a credited link overlaps. */
+export function suppressedCoBenefits(action: AdaptationAction): CoBenefitKey[] {
+  const credited = new Set(
+    action.links
+      .filter((link) => link.directness === "direct")
+      .map((link) => link.cell),
+  );
+  return (Object.keys(action.coBenefits) as CoBenefitKey[]).filter((key) =>
+    (OVERLAP[key] ?? []).some((cell) => credited.has(cell)),
+  );
+}
+
+/** Mean of the city's priority co-benefits, mapped to 0–1; 0.5 with no input. */
+export function coBenefitMatch(
+  action: AdaptationAction,
+  priorities: CoBenefitKey[],
+): number {
+  if (priorities.length === 0) return 0.5;
+  const suppressed = new Set(suppressedCoBenefits(action));
+  const scored = priorities
+    .filter((key) => !suppressed.has(key))
+    .map((key) => ((action.coBenefits[key] ?? 0) + 2) / 4);
+  if (scored.length === 0) return 0.5;
+  return scored.reduce((sum, v) => sum + v, 0) / scored.length;
+}
+
+export type CoBenefitCell =
+  | { key: CoBenefitKey; kind: "score"; value: number }
+  | { key: CoBenefitKey; kind: "in_impact" };
+
+/**
+ * One action's co-benefit assessment as the proposal screens print it: a
+ * score per category it touches, or "counted in Impact" where a credited risk
+ * cell already carries the category. Zero scores are left out.
+ */
+export function coBenefitCells(action: AdaptationAction): CoBenefitCell[] {
+  const suppressed = new Map(
+    suppressionSources(action).map(({ key, cell }) => [key, cell]),
+  );
+  return CO_BENEFIT_KEYS.flatMap((key): CoBenefitCell[] => {
+    if (suppressed.has(key)) return [{ key, kind: "in_impact" }];
+    const value = action.coBenefits[key];
+    if (value === undefined || value === 0) return [];
+    return [{ key, kind: "score", value }];
+  });
+}

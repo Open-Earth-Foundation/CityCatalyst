@@ -2,6 +2,7 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { Project } from "@/models/Project";
 import { Theme } from "@/models/Theme";
+import { OrganizationPlanType } from "@/util/enums";
 
 export interface OrganizationAttributes {
   organizationId: string;
@@ -12,11 +13,17 @@ export interface OrganizationAttributes {
   themeId?: string | null;
   logoUrl?: string | null;
   active: boolean;
+  planType: OrganizationPlanType;
+  trialEndsAt?: Date | null;
 }
 
 export type OrganizationPk = "organizationId";
 export type OrganizationId = Organization[OrganizationPk];
-export type OrganizationOptionalAttributes = "created" | "lastUpdated";
+export type OrganizationOptionalAttributes =
+  | "created"
+  | "lastUpdated"
+  | "planType"
+  | "trialEndsAt";
 export type OrganizationCreationAttributes = Optional<
   OrganizationAttributes,
   OrganizationOptionalAttributes
@@ -34,6 +41,8 @@ export class Organization
   declare themeId?: string | null;
   declare logoUrl?: string | null;
   declare active: boolean;
+  declare planType: OrganizationPlanType;
+  declare trialEndsAt?: Date | null;
   declare theme: Theme;
   declare projects: Project[];
 
@@ -59,6 +68,17 @@ export class Organization
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: true,
+        },
+        planType: {
+          type: DataTypes.STRING(20),
+          allowNull: false,
+          defaultValue: OrganizationPlanType.FULL,
+          field: "plan_type",
+        },
+        trialEndsAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "trial_ends_at",
         },
         themeId: {
           type: DataTypes.UUID,

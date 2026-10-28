@@ -4090,19 +4090,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "first-order-of-decay-solid-waste-inboundary-methodology",
-        "activityTypeField": "total-municipal-solid-waste-disposed",
-        "inputRequired": [
-          "landfill-id",
-          "landfill-address",
-          "total-municipal-solid-waste-disposed",
-          "methane-collected-and-removed",
-          "waste-composition"
-        ],
-        "formula": "first-order-of-decay",
-        "disabled": true
       }
     ],
     "directMeasure": {
@@ -4203,18 +4190,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "first-order-of-decay-solid-waste-outboundary-methodology",
-        "inputRequired": [
-          "landfill-id",
-          "landfill-address",
-          "total-municipal-solid-waste-disposed",
-          "methane-collected-and-removed",
-          "waste-composition"
-        ],
-        "formula": "first-order-of-decay",
-        "disabled": true
       }
     ],
     "directMeasure": {
@@ -5281,6 +5256,7 @@
     "methodologies": [],
     "directMeasure": {
       "id": "industrial-processes-direct-measure-methodology",
+      "activityTypeField": "industrial-processes-industry-type",
       "extra-fields": [
         {
           "id": "industrial-processes-industry-type",
@@ -5360,6 +5336,7 @@
     "methodologies": [],
     "directMeasure": {
       "id": "product-use-direct-measure-methodology",
+      "activityTypeField": "product-use-fuel-used",
       "extra-fields": [
         {
           "id": "product-use-fuel-used",
@@ -5400,6 +5377,8 @@
     "methodologies": [],
     "directMeasure": {
       "id": "livestock-direct-measure-methodology",
+      "activityTypeField": "livestock-activity-type",
+      "group-by": "livestock-species",
       "extra-fields": [
         {
           "id": "livestock-activity-type",
@@ -5436,6 +5415,7 @@
     "methodologies": [],
     "directMeasure": {
       "id": "land-direct-measure-methodology",
+      "activityTypeField": "land-land-classification-type",
       "extra-fields": [
         {
           "id": "land-land-classification-type",
@@ -5514,6 +5494,7 @@
     "methodologies": [],
     "directMeasure": {
       "id": "aggregate-sources-and-non-co2-emission-sources-direct-measure-methodology",
+      "activityTypeField": "aggregate-sources-activity-type",
       "extra-fields": [
         {
           "id": "aggregate-sources-activity-type",
@@ -5556,6 +5537,10 @@
               "activity-name-harvested-wood-products"
             ]
           }
+        },
+        {
+          "id": "aggregate-sources-source",
+          "type": "text"
         }
       ]
     }

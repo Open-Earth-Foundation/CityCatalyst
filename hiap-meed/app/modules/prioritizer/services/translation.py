@@ -6,11 +6,15 @@ import json
 import logging
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from app.modules.prioritizer.llm_config import (
     get_explanation_translations_model,
     get_explanation_translations_temperature,
+)
+from app.modules.prioritizer.localization import (
+    terminology_for_translation,
+    validate_generated_language,
 )
 from app.services.openai_client import create_openai_client
 
@@ -25,10 +29,13 @@ SYSTEM_PROMPT_FILE_PATH = (
     / "prompts"
     / "explanation_translation_system.md"
 )
+MAX_TRANSLATION_ATTEMPTS = 2
 
 
 class TranslationItem(BaseModel):
     """One translated text row for a single target language."""
+
+    model_config = ConfigDict(extra="forbid")
 
     language: str
     text: str
@@ -37,6 +44,8 @@ class TranslationItem(BaseModel):
 class ActionTranslationRow(BaseModel):
     """Structured translation row returned by the LLM for one action."""
 
+    model_config = ConfigDict(extra="forbid")
+
     action_id: str
     translations: list[TranslationItem]
     source_language_warning: bool
@@ -44,6 +53,8 @@ class ActionTranslationRow(BaseModel):
 
 class TranslationBatch(BaseModel):
     """Top-level translation output returned by the LLM."""
+
+    model_config = ConfigDict(extra="forbid")
 
     translations: list[ActionTranslationRow]
 
@@ -58,7 +69,8 @@ def translate_explanations(
 
     The LLM returns an internal per-action `source_language_warning` flag. This
     service aggregates flagged action IDs into public top-level warning strings
-    for the API response instead of exposing the raw flag directly.
+    for the API response instead of exposing the raw flag directly. Invalid
+    structured or wrong-language output is retried once before failing.
     """
     normalized_target_languages = [
         language.strip().lower() for language in target_languages if language.strip()
@@ -79,10 +91,12 @@ def translate_explanations(
         }
         for action_id in sorted(canonical_explanations_by_action_id.keys())
     ]
+    terminology = terminology_for_translation(normalized_target_languages)
     prompt = _build_prompt(
         source_language="en",
         target_languages=normalized_target_languages,
         actions_payload=actions_payload,
+        terminology=terminology,
     )
     system_prompt = _read_system_prompt_template()
     logger.info(
@@ -93,24 +107,40 @@ def translate_explanations(
     )
 
     client = create_openai_client()
-    completion = client.chat.completions.parse(
-        model=model_name,
-        temperature=get_explanation_translations_temperature(),
-        response_format=TranslationBatch,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-    )
-    parsed = completion.choices[0].message.parsed
-    if parsed is None:
-        raise ValueError("LLM did not return parsable translation output")
+    attempts: list[dict[str, object]] = []
+    # Retry model-validation drift once using a focused correction prompt.
+    for attempt in range(1, MAX_TRANSLATION_ATTEMPTS + 1):
+        completion = client.chat.completions.create(
+            model=model_name,
+            temperature=get_explanation_translations_temperature(),
+            response_format=_translation_response_format(),
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        content = completion.choices[0].message.content
+        try:
+            if not content:
+                raise ValueError("LLM did not return structured translation output")
+            parsed = TranslationBatch.model_validate_json(content)
+            translations_by_action_id, warning_action_ids = _rows_to_translations(
+                translation_rows=parsed.translations,
+                expected_action_ids=set(canonical_explanations_by_action_id.keys()),
+                target_languages=normalized_target_languages,
+            )
+            _validate_translation_languages(translations_by_action_id)
+        except ValueError as error:
+            attempts.append({"attempt": attempt, "validation_error": str(error)})
+            if attempt == MAX_TRANSLATION_ATTEMPTS:
+                raise
+            prompt = _build_retry_prompt(prompt)
+            continue
+        attempts.append(
+            {"attempt": attempt, "parsed": parsed.model_dump(mode="json")}
+        )
+        break
 
-    translations_by_action_id, warning_action_ids = _rows_to_translations(
-        translation_rows=parsed.translations,
-        expected_action_ids=set(canonical_explanations_by_action_id.keys()),
-        target_languages=normalized_target_languages,
-    )
     warnings = _build_translation_warnings(warning_action_ids=warning_action_ids)
     llm_io_payload = {
         "status": "completed",
@@ -125,15 +155,41 @@ def translate_explanations(
             "system_prompt": system_prompt,
             "prompt_text": prompt,
             "actions_payload": actions_payload,
+            "terminology": terminology,
         },
         "llm_output": {
             "parsed": parsed.model_dump(mode="json"),
             "translations_by_action_id": translations_by_action_id,
             "warning_action_ids": warning_action_ids,
             "warnings": warnings,
+            "attempts": attempts,
         },
     }
     return translations_by_action_id, warnings, llm_io_payload
+
+
+def _translation_response_format() -> dict[str, object]:
+    """Return the strict JSON Schema for explanation translations."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "explanation_translation_response",
+            "strict": True,
+            "schema": TranslationBatch.model_json_schema(),
+        },
+    }
+
+
+def _build_retry_prompt(prompt: str) -> str:
+    """Add a focused correction after invalid explanation translations."""
+    return (
+        f"{prompt}\n\n"
+        "<retry_correction>\n"
+        "Return every input action exactly once with every requested target "
+        "language exactly once. Preserve action IDs, use the declared target "
+        "language, and match the required JSON schema.\n"
+        "</retry_correction>"
+    )
 
 
 def _rows_to_translations(
@@ -237,6 +293,21 @@ def _build_translation_warnings(*, warning_action_ids: list[str]) -> list[str]:
     ]
 
 
+def _validate_translation_languages(
+    translations_by_action_id: dict[str, dict[str, str]],
+) -> None:
+    """Require each substantive translation to use its declared target language."""
+    for action_id, translations in translations_by_action_id.items():
+        for language, translated_text in translations.items():
+            validate_generated_language(
+                translated_text,
+                language,
+                content_label=(
+                    f"Translation for action `{action_id}` and language `{language}`"
+                ),
+            )
+
+
 def _sorted_detail_map(detail_map: dict[str, set[str]]) -> dict[str, list[str]]:
     """Convert a string->set mapping into a deterministic string->sorted-list mapping."""
     return {
@@ -250,12 +321,14 @@ def _build_prompt(
     source_language: str,
     target_languages: list[str],
     actions_payload: list[dict[str, str]],
+    terminology: dict[str, object],
 ) -> str:
     """Build translation prompt from markdown template and canonical explanation rows."""
     template = _read_prompt_template()
     return template.format(
         source_language=source_language,
         target_languages=json.dumps(target_languages, ensure_ascii=False),
+        terminology_json=json.dumps(terminology, ensure_ascii=False, indent=2),
         actions_json=json.dumps(actions_payload, ensure_ascii=False, indent=2),
     )
 

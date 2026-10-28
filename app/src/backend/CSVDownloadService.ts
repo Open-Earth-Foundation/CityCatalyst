@@ -3,10 +3,11 @@ import { sortGpcReferenceNumbers, toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import i18next from "@/i18n/server";
 import { stringify } from "csv-stringify/sync";
-import { db } from "@/models";
+import CalculationService from "@/backend/CalculationService";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import createHttpError from "http-errors";
 import { logger } from "@/services/logger";
+import { toShort } from "@/util/notation-keys";
 
 type InventoryLine = (string | number | null | undefined)[];
 
@@ -27,11 +28,11 @@ export type CSVActivityEntry = {
   emission_ch4?: bigint | null;
   emission_n2o?: bigint | null;
   activity_type?: string | null;
-  activity_amount?: string | null;
+  activity_amount?: string | number | null;
   activity_unit?: string | null;
   data_source_id?: string;
-  data_source_name?: string;
-  data_quality?: string;
+  data_source_name?: string | number;
+  data_quality?: string | number;
   total_co2e?: number | null;
 };
 
@@ -68,7 +69,10 @@ export default class CSVDownloadService {
 
     const sortedKeys = sortGpcReferenceNumbers(Object.keys(dataDictionary));
 
-    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    const gwpVersion = CalculationService.resolveGwpVersion(
+      output.globalWarmingPotentialType,
+    );
+    const gasToCO2Eqs = await CalculationService.loadGasToCO2Eqs(gwpVersion);
     const gwps = gasToCO2Eqs.reduce(
       (acc, curr) => {
         acc[curr.gas] = {
@@ -89,22 +93,22 @@ export default class CSVDownloadService {
         const co2Amount =
           activityValue?.emission_co2 != null
             ? Decimal.mul(
-                (activityValue?.emission_co2 as any) ?? 0,
-                gwps["CO2"].co2eqPerKg ?? 0,
+                activityValue?.emission_co2 ?? 0,
+                gwps["CO2"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const ch4Amount =
           activityValue?.emission_ch4 != null
             ? Decimal.mul(
-                (activityValue?.emission_ch4 as any) ?? 0,
-                gwps["CH4"].co2eqPerKg ?? 0,
+                activityValue?.emission_ch4 ?? 0,
+                gwps["CH4"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const n2oAmount =
           activityValue?.emission_n2o != null
             ? Decimal.mul(
-                (activityValue?.emission_n2o as any) ?? 0,
-                gwps["N2O"].co2eqPerKg ?? 0,
+                activityValue?.emission_n2o ?? 0,
+                gwps["N2O"]?.co2eqPerKg ?? 0,
               ).toNumber()
             : "";
 
@@ -173,22 +177,30 @@ export default class CSVDownloadService {
 
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
-          let activityTitleKey = activityValue.metadata?.activityTitle;
-          let data_quality = activityValue.metadata?.dataQuality;
-          let dataSource = activityValue.activityData?.["data-source"];
+          const activityTitleKey = activityValue.metadata?.activityTitle;
+          const data_quality =
+            activityValue.metadata?.dataQuality?.toString() ?? "";
+          const dataSource =
+            activityValue.activityData?.["data-source"]?.toString() ?? "";
 
-          let activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
+          const activity_type = t(
+            (activityValue?.activityData?.[activityTypeKey] ?? "").toString(),
+          ); // activityValue.metadata?.activityId;
           console.log(
             { activityTypeKey, activity_type },
             activityValue?.activityData?.[activityTypeKey],
             "tried translatin",
           );
-          let activity_amount =
-            activityValue.activityData?.[activityTitleKey] ??
-            activityValue.activityData?.["activity-value"];
-          let activity_unit = t(
-            activityValue.activityData?.[`${activityTitleKey}-unit`] ??
-              activityValue.activityData?.["activity-unit"],
+          const activity_amount = Number(
+            activityValue.activityData?.[activityTitleKey?.toString() ?? ""] ??
+              activityValue.activityData?.["activity-value"],
+          );
+          const activity_unit = t(
+            (
+              activityValue.activityData?.[`${activityTitleKey}-unit`] ??
+              activityValue.activityData?.["activity-unit"] ??
+              ""
+            ).toString(),
           );
           console.log(
             { activity_unit },
@@ -205,9 +217,15 @@ export default class CSVDownloadService {
           let emission_n2o = null;
 
           if (activityValue.gasValues) {
-            let co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
-            let ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
-            let n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
+            const co2_gas = activityValue.gasValues.find(
+              (g) => g.gas === "CO2",
+            );
+            const ch4_gas = activityValue.gasValues.find(
+              (g) => g.gas === "CH4",
+            );
+            const n2o_gas = activityValue.gasValues.find(
+              (g) => g.gas === "N2O",
+            );
 
             emission_factor_co2 =
               co2_gas?.emissionsFactor?.emissionsPerActivity;
@@ -220,13 +238,13 @@ export default class CSVDownloadService {
             emission_n2o = n2o_gas?.gasAmount;
           }
           // if there is an existing emission factor value
-          let usesEmissionFactor =
+          const usesEmissionFactor =
             inventoryValue.gpcReferenceNumber?.split(".")?.includes("I") ||
             inventoryValue.gpcReferenceNumber?.split(".").includes("II");
           let emission_factor_unit: string | null = null;
 
           if (usesEmissionFactor) {
-            let scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
+            const scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
             emission_factor_unit = scope === "1" ? "kg/m3" : "kg/TJ";
           }
 
@@ -287,10 +305,7 @@ export default class CSVDownloadService {
         inventory_reference: inventoryValue.subCategoryId,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason
-          ?.split("-")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join(""),
+        notation_key: toShort(inventoryValue.unavailableReason) ?? undefined,
         activityValues: finalActivityValues,
       };
 
@@ -307,14 +322,14 @@ export default class CSVDownloadService {
   > {
     const subsectorKeys = Object.keys(MANUAL_INPUT_HIERARCHY);
     const result: Record<string, Record<string, string>> = {};
-    for (let subsectorKey of subsectorKeys) {
-      let methodologyMapping: Record<string, string> = {};
+    for (const subsectorKey of subsectorKeys) {
+      const methodologyMapping: Record<string, string> = {};
       const subsector = MANUAL_INPUT_HIERARCHY[subsectorKey];
       if (
         "methodologies" in subsector &&
         Array.isArray(subsector.methodologies)
       ) {
-        for (let methodology of subsector.methodologies) {
+        for (const methodology of subsector.methodologies) {
           methodologyMapping[methodology.id] =
             methodology.activityTypeField as string;
         }

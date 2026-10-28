@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up (queryInterface) {
     await queryInterface.sequelize.query(`
       -- GPC reference number the EF corresponds to (ex. I.1.2)
       ALTER TABLE "EmissionsFactor"
@@ -26,7 +26,7 @@ module.exports = {
     `);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down (queryInterface) {
     await queryInterface.sequelize.query(`
       -- (optional) reference or citation for the EF
       ALTER TABLE "EmissionsFactor"

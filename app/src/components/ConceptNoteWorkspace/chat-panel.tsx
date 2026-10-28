@@ -1,0 +1,704 @@
+"use client";
+
+import type { FormEvent } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+import {
+  Box,
+  chakra,
+  Flex,
+  HStack,
+  Icon,
+  Spinner,
+  Text,
+  Textarea,
+  VStack,
+} from "@chakra-ui/react";
+import type { IconType } from "react-icons";
+import { LuArrowUp, LuCircleAlert, LuRotateCw } from "react-icons/lu";
+import { BsStars } from "react-icons/bs";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
+import { useEnterSubmit } from "@/hooks/useEnterSubmit";
+import { ReviewButton as Button } from "./review-button";
+import { useTranslation } from "@/i18n/client";
+import {
+  useConceptNoteChat,
+  type ChatConnectionState,
+} from "./use-concept-note-chat";
+import {
+  ChatThreadSwitcher,
+  OlderChatNotice,
+  useConceptNoteChatThreads,
+} from "./chat-threads";
+import { ChatProgress } from "./chat-progress";
+import { DraftingProgressCard } from "./drafting-progress-card";
+import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
+import { ChatSuggestions } from "./chat-suggestions";
+import type { ConceptNoteContextPresentation } from "./context-status";
+import { ContextChangesNotice } from "./context-changes-notice";
+import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
+import type { EditController } from "./document-review";
+import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteDraftState } from "@/util/types";
+
+// About eight lines of composer text before it scrolls.
+const COMPOSER_MAX_HEIGHT_PX = 190;
+
+const CONNECTION_BADGE: Record<
+  ChatConnectionState,
+  { color: string; label: string }
+> = {
+  connecting: { color: "content.tertiary", label: "connection-connecting" },
+  connected: { color: "sentiment.positiveDefault", label: "connected" },
+  retrying: { color: "sentiment.warningDefault", label: "connection-retrying" },
+  error: { color: "sentiment.negativeDefault", label: "connection-error" },
+};
+
+interface ConceptNoteChatPanelProps {
+  cityId: string;
+  contextStatus: ConceptNoteContextPresentation;
+  contextBuildId?: string | null;
+  contextChanges?: ConceptNoteContextChange[];
+  composerRequest: { content: string; id: string } | null;
+  draftOverviewPending: boolean;
+  lng: string;
+  onOpenContext: () => void;
+  runId: string;
+  threadId: string | null;
+  editScope: EditScope;
+  edits: EditController;
+  draft?: ConceptNoteDraftState | null;
+  draftStartedAt?: string | null;
+  draftCompletedAt?: string | null;
+  welcomeStage?: ChatWelcomeStage | null;
+  onOpenDraft?: () => void;
+  onOpenFundingSetup?: () => void;
+  onDraftOverviewComplete?: () => void;
+  activeTab?: "draft" | "structure" | "context";
+  suggestionRevision?: string;
+  hasDocument?: boolean;
+}
+
+interface ContextStatusNoticeProps {
+  autoDismissAfterMs?: number;
+  busy?: boolean;
+  onOpenContext: () => void;
+  status: {
+    actionIcon: IconType;
+    actionLabel: string;
+    color: string;
+    description: string;
+    icon: IconType;
+    surface: string;
+    title: string;
+  };
+}
+
+const CONTEXT_READY_NOTICE_DURATION_MS = 30_000;
+function ContextStatusNotice({
+  autoDismissAfterMs,
+  busy,
+  onOpenContext,
+  status,
+}: ContextStatusNoticeProps) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (!autoDismissAfterMs) {
+      return;
+    }
+
+    const timeout = window.setTimeout(
+      () => setVisible(false),
+      autoDismissAfterMs,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [autoDismissAfterMs]);
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <Flex
+      align="start"
+      gap={3}
+      border="1px solid"
+      borderColor={status.color}
+      borderRadius="rounded"
+      bg={status.surface}
+      p={4}
+      role="status"
+    >
+      {busy ? (
+        <Spinner size="sm" mt={0.5} color={status.color} />
+      ) : (
+        <Icon as={status.icon} mt={0.5} color={status.color} />
+      )}
+      <Box flex={1}>
+        <Text
+          fontFamily="heading"
+          fontSize="body.sm"
+          fontWeight="semibold"
+          color="content.primary"
+        >
+          {status.title}
+        </Text>
+        <Text
+          mt={1}
+          fontSize="label.sm"
+          lineHeight="20px"
+          color="content.secondary"
+        >
+          {status.description}
+        </Text>
+        <Button mt={3} size="xs" variant="outline" onClick={onOpenContext}>
+          <Icon as={status.actionIcon} />
+          {status.actionLabel}
+        </Button>
+      </Box>
+    </Flex>
+  );
+}
+
+const assistantMarkdownComponents = createChatMarkdownComponents({
+  paragraph: {
+    fontSize: "body.sm",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  h1: {
+    fontSize: "title.md",
+    lineHeight: "24px",
+    color: "content.primary",
+  },
+  h2: {
+    fontSize: "body.md",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  h3: {
+    fontSize: "body.sm",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  list: {
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  inlineColor: "content.primary",
+  code: {
+    bg: "background.neutral",
+    fontSize: "label.sm",
+    color: "content.primary",
+  },
+  pre: {
+    bg: "background.neutral",
+    borderRadius: "rounded",
+    fontSize: "label.sm",
+  },
+  table: {
+    fontSize: "label.sm",
+    headBg: "background.neutral",
+    color: "content.primary",
+  },
+  borderColor: "border.overlay",
+  link: {
+    color: "interactive.primary",
+    fontWeight: "semibold",
+    textDecoration: "underline",
+  },
+  blockquote: {
+    borderColor: "border.overlay",
+    color: "content.tertiary",
+  },
+});
+
+export function ConceptNoteChatPanel({
+  cityId,
+  contextStatus,
+  contextBuildId = null,
+  contextChanges = [],
+  composerRequest,
+  draftOverviewPending,
+  lng,
+  onOpenContext,
+  runId,
+  threadId,
+  editScope,
+  edits,
+  draft = null,
+  draftStartedAt = null,
+  draftCompletedAt = null,
+  welcomeStage = null,
+  onOpenDraft,
+  onOpenFundingSetup,
+  onDraftOverviewComplete,
+  activeTab = "draft",
+  suggestionRevision = "",
+  hasDocument = false,
+}: ConceptNoteChatPanelProps) {
+  const { t } = useTranslation(lng, "concept-notes");
+  const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
+  const {
+    connection,
+    error: chatError,
+    canRetry,
+    overviewFailed,
+    historyLoading,
+    isGenerating,
+    reasoning,
+    progress,
+    messages,
+    sendMessage: sendChatMessage,
+    requestDraftOverview,
+    retry,
+  } = useConceptNoteChat({
+    lng,
+    runId,
+    threadId,
+    editScope,
+    onProposal: edits.loadProposal,
+    onDraftOverviewComplete,
+  });
+  const chatThreads = useConceptNoteChatThreads({
+    cityId,
+    lng,
+    runId,
+    threadId,
+  });
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  const followLatestRef = useRef(true);
+  const initiallyScrolledThreadRef = useRef<string | null>(null);
+  const contextState = contextStatus.state;
+  const hasUploadedEvidence = contextState === "ready";
+  const contextBlocked = contextStatus.blocked;
+  const chatDisabled =
+    contextBlocked || !threadId || historyLoading || isGenerating;
+  // Switching chats mid-turn or mid-drafting would strand the reply.
+  const threadSwitchDisabled =
+    historyLoading || isGenerating || draft?.status === "running";
+  // Typing stays open while context is processing or Clima responds.
+  // Only submission waits for context readiness and the current turn.
+  const composerDisabled = !threadId;
+  const requestedOverviewThreadRef = useRef<string | null>(null);
+
+  // Ask Clima once for the drafting overview; the service claims it per build.
+  useEffect(() => {
+    if (!draftOverviewPending) {
+      requestedOverviewThreadRef.current = null;
+      return;
+    }
+    if (chatDisabled || requestedOverviewThreadRef.current === threadId) {
+      return;
+    }
+    requestedOverviewThreadRef.current = threadId;
+    void requestDraftOverview();
+  }, [chatDisabled, draftOverviewPending, requestDraftOverview, threadId]);
+
+  useEffect(() => {
+    if (
+      !threadId ||
+      historyLoading ||
+      messages.length === 0 ||
+      (initiallyScrolledThreadRef.current === threadId &&
+        !followLatestRef.current)
+    ) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const chatScroll = chatScrollRef.current;
+      if (!chatScroll) {
+        return;
+      }
+      chatScroll.scrollTo({
+        behavior: "auto",
+        top: chatScroll.scrollHeight,
+      });
+      initiallyScrolledThreadRef.current = threadId;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [historyLoading, messages, reasoning, threadId]);
+
+  useEffect(() => {
+    if (!composerRequest) {
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      setInput(composerRequest.content);
+      inputRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [composerRequest]);
+
+  // Grow the composer with its content, then scroll past the max height.
+  useLayoutEffect(() => {
+    const composer = inputRef.current;
+    if (!composer) {
+      return;
+    }
+    composer.style.height = "auto";
+    const height = Math.min(composer.scrollHeight, COMPOSER_MAX_HEIGHT_PX);
+    composer.style.height = `${height}px`;
+    composer.style.overflowY =
+      composer.scrollHeight > COMPOSER_MAX_HEIGHT_PX ? "auto" : "hidden";
+  }, [input]);
+
+  async function submitMessage(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+    const content = input.trim();
+    if (chatDisabled || !content) {
+      return;
+    }
+    setInput("");
+    followLatestRef.current = true;
+    await sendChatMessage(content);
+  }
+
+  return (
+    <VStack
+      align="stretch"
+      gap={0}
+      h="full"
+      minH={0}
+      overflow="hidden"
+      border="1px solid"
+      borderColor="border.neutral"
+      borderRadius="rounded"
+      bg="base.light"
+      boxShadow="1dp"
+    >
+      <Flex
+        align="center"
+        gap={3}
+        borderBottom="1px solid"
+        borderColor="border.neutral"
+        px={4}
+        py={3}
+      >
+        <Flex
+          boxSize="44px"
+          align="center"
+          justify="center"
+          borderRadius="full"
+          bg="sentiment.positiveDefault"
+          color="base.light"
+        >
+          <Icon as={BsStars} boxSize={6} />
+        </Flex>
+        <Box flex={1} minW={0}>
+          <Text
+            fontFamily="heading"
+            fontSize="18px"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {t("clima")}
+          </Text>
+          {/* One line, so the header keeps its height as the badge label changes. */}
+          <Text fontSize="label.sm" color="content.tertiary" truncate>
+            {t("concept-note-copilot")}
+          </Text>
+        </Box>
+        <HStack
+          gap={1.5}
+          flexShrink={0}
+          whiteSpace="nowrap"
+          color={CONNECTION_BADGE[connection].color}
+          role="status"
+          aria-live="polite"
+          data-testid="concept-note-connection-status"
+          data-state={connection}
+        >
+          {connection === "connecting" || connection === "retrying" ? (
+            <Spinner size="xs" boxSize="9px" borderWidth="1.5px" />
+          ) : (
+            <Box
+              boxSize="7px"
+              borderRadius="full"
+              bg={CONNECTION_BADGE[connection].color}
+            />
+          )}
+          <Text fontSize="label.sm">
+            {t(CONNECTION_BADGE[connection].label)}
+          </Text>
+        </HStack>
+        <ChatThreadSwitcher
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+          threadId={threadId}
+        />
+      </Flex>
+
+      <VStack
+        ref={chatScrollRef}
+        onScroll={(event) => {
+          const scroll = event.currentTarget;
+          followLatestRef.current =
+            scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 48;
+        }}
+        data-testid="concept-note-chat-scroll"
+        align="stretch"
+        gap={4}
+        flex={1}
+        minH={0}
+        overflowY="auto"
+        bg="base.light"
+        p={4}
+      >
+        <OlderChatNotice
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+        />
+        <ContextStatusNotice
+          key={contextState}
+          busy={contextBlocked && contextState !== "failed"}
+          autoDismissAfterMs={
+            hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
+          }
+          onOpenContext={onOpenContext}
+          status={contextStatus}
+        />
+        {!contextBlocked && (
+          <ContextChangesNotice
+            buildId={contextBuildId}
+            changes={contextChanges}
+            lng={lng}
+            onOpenContext={onOpenContext}
+            runId={runId}
+          />
+        )}
+
+        {welcomeStage &&
+          threadId &&
+          !historyLoading &&
+          messages.length === 0 &&
+          draft?.status !== "running" && (
+            <ChatWelcome
+              lng={lng}
+              stage={welcomeStage}
+              onOpenDraft={onOpenDraft}
+              onOpenFundingSetup={onOpenFundingSetup}
+            />
+          )}
+
+        {messages.map((message) => (
+          <Fragment key={message.id}>
+            {message.role === "assistant" &&
+              message.id === messages.at(-1)?.id && (
+                <ChatProgress
+                  lng={lng}
+                  reasoning={reasoning}
+                  progress={progress}
+                  isGenerating={isGenerating}
+                />
+              )}
+            {(message.text || message.role === "user") && (
+              <Box
+                alignSelf={message.role === "user" ? "end" : "start"}
+                maxW="92%"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg={
+                  message.role === "user" ? "background.neutral" : "base.light"
+                }
+                px={3}
+                py={2.5}
+              >
+                {message.role === "assistant" && message.text ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={assistantMarkdownComponents}
+                  >
+                    {message.text}
+                  </ReactMarkdown>
+                ) : message.role === "user" ? (
+                  <Text
+                    fontSize="body.sm"
+                    lineHeight="22px"
+                    color="content.primary"
+                    whiteSpace="pre-wrap"
+                  >
+                    {message.text}
+                  </Text>
+                ) : null}
+              </Box>
+            )}
+          </Fragment>
+        ))}
+
+        {draft && (
+          <DraftingProgressCard
+            draft={draft}
+            lng={lng}
+            startedAt={draftStartedAt}
+            completedAt={draftCompletedAt}
+            summaryFailed={overviewFailed && !isGenerating}
+          />
+        )}
+
+        {edits.error && (
+          <Text role="alert" fontSize="label.sm" color="content.primary">
+            {t(
+              edits.error === "stale_base"
+                ? "edit-stale-hint"
+                : "edit-request-error",
+            )}
+          </Text>
+        )}
+        {edits.error && (
+          <Button
+            size="xs"
+            minH="36px"
+            variant="outline"
+            data-testid="concept-note-edit-refresh"
+            onClick={() => void edits.refresh()}
+          >
+            {t("edit-refresh")}
+          </Button>
+        )}
+        {chatError && (
+          <HStack
+            role="alert"
+            align="start"
+            gap={2}
+            color="sentiment.negativeDefault"
+            data-testid="concept-note-chat-error"
+          >
+            <Icon as={LuCircleAlert} mt={0.5} />
+            <Text fontSize="label.sm" flex={1}>
+              {chatError}
+            </Text>
+            {canRetry && (
+              <Button
+                size="xs"
+                variant="outline"
+                flexShrink={0}
+                data-testid="concept-note-chat-retry"
+                onClick={() => void retry()}
+              >
+                <Icon as={LuRotateCw} boxSize={3.5} />
+                {t("chat-retry")}
+              </Button>
+            )}
+          </HStack>
+        )}
+      </VStack>
+
+      <chakra.form
+        ref={formRef}
+        borderTop="1px solid"
+        borderColor="border.neutral"
+        p={4}
+        flexShrink={0}
+        onSubmit={submitMessage}
+      >
+        <Box mb={!chatDisabled && threadId ? 3 : 0}>
+          {!chatDisabled && threadId && (
+            <ChatSuggestions
+              runId={runId}
+              threadId={threadId}
+              lng={lng}
+              tab={activeTab}
+              revision={suggestionRevision}
+              lastMessageId={messages.at(-1)?.id}
+              hasDocument={hasDocument}
+              onSelect={(question) => {
+                setInput(question);
+                inputRef.current?.focus();
+              }}
+            />
+          )}
+        </Box>
+        <Flex align="flex-end" gap={3}>
+          <Textarea
+            data-testid="concept-note-chat-input"
+            aria-label={t("chat-input-placeholder")}
+            ref={inputRef}
+            value={input}
+            rows={1}
+            resize="none"
+            disabled={composerDisabled}
+            aria-describedby={
+              contextBlocked ? "concept-note-chat-blocked" : undefined
+            }
+            placeholder={
+              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+            }
+            bg="base.light"
+            borderColor="border.neutral"
+            minH="52px"
+            minW={0}
+            flex={1}
+            py="15px"
+            fontSize="14px"
+            lineHeight="20px"
+            borderRadius="rounded"
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={submitOnEnter}
+          />
+          <Button
+            type="submit"
+            data-testid="concept-note-chat-send"
+            boxSize="48px"
+            minW="48px"
+            flexShrink={0}
+            bg="interactive.primary"
+            _hover={{
+              bg: "interactive.primary",
+              color: "base.light",
+              opacity: 0.9,
+            }}
+            _disabled={{
+              bg: "interactive.primary",
+              color: "base.light",
+              opacity: 1,
+              cursor: "not-allowed",
+              _hover: {
+                bg: "interactive.primary",
+                color: "base.light",
+                opacity: 1,
+              },
+            }}
+            p={0}
+            disabled={chatDisabled || !input.trim()}
+            loading={isGenerating}
+            size="xs"
+            variant="solid"
+            aria-label={t("send-message")}
+          >
+            <Icon as={LuArrowUp} boxSize={5} />
+          </Button>
+        </Flex>
+        {contextBlocked && (
+          <Text
+            id="concept-note-chat-blocked"
+            mt={2}
+            fontSize="label.sm"
+            color="content.secondary"
+          >
+            {contextState === "failed"
+              ? t("chat-context-failed-help")
+              : t("chat-waiting-for-context-help")}
+          </Text>
+        )}
+        {!threadId && (
+          <Text mt={2} fontSize="label.sm" color="content.tertiary">
+            {t("chat-thread-unavailable")}
+          </Text>
+        )}
+      </chakra.form>
+    </VStack>
+  );
+}

@@ -10,10 +10,6 @@ import React, { FC } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { DataAlertIcon } from "../icons";
 import type { TFunction } from "i18next";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { clamp } from "@/util/helpers";
 
 interface SubSectorCardProps {

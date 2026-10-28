@@ -10,15 +10,6 @@ import { Box, Heading, Text, Link } from "@chakra-ui/react";
  * @param ctaLink - Link for the call-to-action button
  */
 
-interface HeroProps {
-  overviewLabel: string;
-  heading: string;
-  mainParagraph: string;
-  secondaryParagraph: string;
-  ctaText: string;
-  ctaLink: string;
-}
-
 const Hero = () => {
   const heroText = {
     overviewLabel: "PROJECT OVERVIEW",

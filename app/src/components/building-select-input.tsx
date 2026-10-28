@@ -1,8 +1,10 @@
-import { Box, Icon, NativeSelectRoot, Text } from "@chakra-ui/react";
-import React, { FC, use, useEffect, useRef, useState } from "react";
+import { Box } from "@chakra-ui/react";
+import { FC, useEffect, useState } from "react";
 import {
   Control,
   Controller,
+  FieldValues,
+  Path,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -10,8 +12,11 @@ import { Inputs } from "./Modals/activity-modal/activity-modal-body";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
 import MultiSelectInput from "@/components/MultiSelectInput";
-import { MdWarning } from "react-icons/md";
-import { NativeSelectField } from "./ui/native-select";
+import {
+  ModalFieldError,
+  ModalLabel,
+  ModalSelect,
+} from "./Modals/activity-modal/sections/ModalField";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -19,10 +24,10 @@ interface BuildingTypeSelectInputProps {
   placeholder: string;
   register: UseFormRegister<Inputs>;
   activity: string;
-  errors: Record<string, any>;
+  errors: Record<string, unknown>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
-  control: Control<Inputs, any>;
+  control: Control<FieldValues>;
   multiselect?: boolean;
   required?: boolean;
   setValue: UseFormSetValue<Inputs>;
@@ -49,7 +54,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   useEffect(() => {
     if (prefilledValue) {
       setSelectedActivityValue(prefilledValue);
-      setValue(activity as any, prefilledValue);
+      setValue(activity as Path<Inputs>, prefilledValue);
     }
   }, [activity, prefilledValue, setValue]);
 
@@ -57,6 +62,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
     return (
       <MultiSelectInput
         title={title}
+        required={required}
         options={options}
         placeholder={placeholder}
         control={control}
@@ -68,21 +74,18 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
     );
   }
 
-  const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  const error = activity
+    .split(".")
+    .reduce<unknown>(
+      (acc, key) => (acc as Record<string, unknown> | undefined)?.[key],
+      errors,
+    ) as { message?: string } | undefined;
   const labelText = t(title);
   return (
     <Box display="flex" flexDirection="column" gap="8px" w="full">
-      <Text
-        fontSize="label.lg"
-        fontStyle="normal"
-        fontWeight="medium"
-        letterSpacing="wide"
-        fontFamily="heading"
-      >
-        {labelText}
-      </Text>
+      <ModalLabel required={required !== false}>{labelText}</ModalLabel>
       <Controller
-        name={activity as any}
+        name={activity as Path<Inputs>}
         control={control}
         defaultValue={selectedActivityValue || ""}
         rules={{
@@ -90,51 +93,24 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         }}
         render={({ field }) => (
           <>
-            <NativeSelectRoot
-              shadow="1dp"
-              borderRadius="4px"
-              borderWidth={error ? "1px" : 0}
-              border="inputBox"
-              borderColor={error ? "sentiment.negativeDefault" : ""}
-              background={error ? "sentiment.negativeOverlay" : ""}
-              fontSize="body.lg"
-              h="full"
-              w="full"
-              _focus={{
-                borderWidth: "1px",
-                borderColor: "content.link",
-                shadow: "none",
+            <ModalSelect
+              aria-label={labelText}
+              placeholder={placeholder}
+              invalid={!!error}
+              value={field.value || ""}
+              onChange={(e) => {
+                const value = e.currentTarget.value;
+                field.onChange(value);
+                setValue(activity as Path<Inputs>, value);
               }}
-              {...register(activity as any, {
-                required: required === false ? false : t("option-required"),
-              })}
             >
-              <NativeSelectField
-                aria-label={labelText}
-                placeholder={placeholder}
-                value={field.value || ""}
-                onChange={(e) => {
-                  const value = e.currentTarget.value;
-                  field.onChange(value);
-                  setValue(activity as any, value);
-                }}
-              >
-                <option value="" disabled hidden>
-                  {placeholder}
+              {options?.map((item: string) => (
+                <option key={item} value={item}>
+                  {t(item)}
                 </option>
-                {options?.map((item: string) => (
-                  <option key={item} value={item}>
-                    {t(item)}
-                  </option>
-                ))}
-              </NativeSelectField>
-            </NativeSelectRoot>
-            {error ? (
-              <Box display="flex" gap="6px" alignItems="center">
-                <Icon as={MdWarning} color="sentiment.negativeDefault" />
-                <Text fontSize="body.md">{error?.message}</Text>
-              </Box>
-            ) : null}
+              ))}
+            </ModalSelect>
+            {error ? <ModalFieldError message={error.message} /> : null}
           </>
         )}
       />

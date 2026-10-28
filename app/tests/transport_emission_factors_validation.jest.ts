@@ -9,10 +9,14 @@ import {
   GlobalWarmingPotentialTypeEnum,
 } from "@/util/enums";
 import { randomUUID } from "crypto";
-import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
 import { TransportTestData, TestResult } from "@/data/transport-test-types";
 import transportSampleData from "@/data/transport-test-sample-data.json";
+import {
+  City,
+  EmissionsFactorAttributes,
+  Inventory,
+} from "@/models/init-models";
 
 // Test configuration constants
 const SAMPLE_SIZE = 29; // Test 20 random samples (adjust based on available data)
@@ -20,8 +24,8 @@ const TOLERANCE = 0.01; // ±0.01 tonnes CO2e tolerance
 
 describe("Transport Emission Factor Validation Tests", () => {
   let testData: TransportTestData[] = [];
-  let testInventory: any;
-  let testCity: any;
+  let testInventory: Inventory;
+  let testCity: City;
 
   beforeAll(async () => {
     // Load environment configuration
@@ -40,7 +44,8 @@ describe("Transport Emission Factor Validation Tests", () => {
       inventoryName: "Test Inventory for Transport EF Validation",
       cityId: testCity.cityId,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      // CSV expected CO2e totals were computed with AR5 GWPs (CH4=28, N2O=265).
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar5,
       year: 2023,
     });
 
@@ -151,24 +156,60 @@ describe("Transport Emission Factor Validation Tests", () => {
   });
 });
 
-// Helper function to map CSV units to system units
-function mapCsvUnitsToSystemUnits(csvUnit: string): string {
-  const unitMapping: { [key: string]: string } = {
-    m3: "units-cubic-meters",
-    kg: "units-kilograms",
-    l: "units-liters",
-    t: "units-tonnes",
-    gallons: "units-gallons",
-    "cubic-meters": "units-cubic-meters",
-    kilograms: "units-kilograms",
-    liters: "units-liters",
-    tonnes: "units-tonnes",
-    "kg/m3": "units-kilograms-per-cubic-meter",
-    "kg/kg": "units-kilograms-per-kilogram",
-    kWh: "units-kilowatt-hours",
-  };
+/**
+ * Map emission-factor units from the CSV to the activity amount unit that
+ * matches those factors (volume for kg/m³, mass for kg/kg).
+ */
+function mapEmissionFactorUnitsToActivityUnits(efUnits: string): string {
+  if (efUnits === "kg/m3") return "units-cubic-meters";
+  if (efUnits === "kg/kg") return "units-kilograms";
+  return efUnits;
+}
 
-  return unitMapping[csvUnit] || csvUnit;
+/** CSV sometimes stores the activity id; CalculationService needs the methodology id. */
+function normalizeFuelSalesMethodologyId(methodologyId: string): string {
+  if (methodologyId === "fuel-sales-off-road-transport-activity") {
+    return "fuel-sales-off-road-transport-methodology";
+  }
+  return methodologyId;
+}
+
+/** Fuel-sales form field ids differ per transport subsector methodology. */
+function fuelSalesActivityFieldIds(methodologyId: string): {
+  fuelType: string;
+  vehicleType: string;
+} {
+  const normalized = normalizeFuelSalesMethodologyId(methodologyId);
+  const byMethodology: Record<string, { fuelType: string; vehicleType: string }> =
+    {
+      "fuel-sales-on-road-transport-methodology": {
+        fuelType: "on-road-transport-fuel-type",
+        vehicleType: "on-road-transport-vehicle-type",
+      },
+      "fuel-sales-railways-methodology": {
+        fuelType: "railways-fuel-type",
+        vehicleType: "railways-vehicle-type",
+      },
+      "fuel-sales-waterborne-navigation-methodology": {
+        fuelType: "waterborne-navigation-fuel-type",
+        vehicleType: "waterborne-navigation-vehicle-type",
+      },
+      "fuel-sales-aviation-methodology": {
+        fuelType: "aviation-fuel-type",
+        vehicleType: "aviation-vehicle-type",
+      },
+      "fuel-sales-off-road-transport-methodology": {
+        fuelType: "off-road-transport-fuel-type",
+        vehicleType: "off-road-transport-vehicle-type",
+      },
+    };
+
+  return (
+    byMethodology[normalized] ?? {
+      fuelType: "on-road-transport-fuel-type",
+      vehicleType: "on-road-transport-vehicle-type",
+    }
+  );
 }
 
 async function loadTransportTestData(): Promise<TransportTestData[]> {
@@ -206,9 +247,10 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
           return;
         }
 
+        const efUnits = row["Units Global API"] || "kg/m3";
         results.push({
           subsector: row.subsector,
-          methodology_id: row.methodology_id,
+          methodology_id: normalizeFuelSalesMethodologyId(row.methodology_id),
           methodology_name: row.methodology_name || "fuel-sales",
           methodology_status: row.methodology_status || "Active",
           fuel_type: row.fuel_type,
@@ -216,13 +258,14 @@ async function loadTransportTestData(): Promise<TransportTestData[]> {
           co2_global_api: parseFloat(row["CO2 Global API"]) || 0,
           ch4_global_api: parseFloat(row["CH4 Global API"]) || 0,
           n2o_global_api: parseFloat(row["N2O Global API"]) || 0,
-          units_in_global_api: row["Units Global API"] || "",
-          // Use IPCC AR6 standard values since they're not in the CSV
+          units_in_global_api: efUnits,
+          // AR5 GWP100 values (match inventory GWP used by these fixtures)
           co2_gwp: 1,
           ch4_gwp: 28,
           n2o_gwp: 265,
           total_fuel_value: parseFloat(row["Test fuel value"]),
-          total_fuel_units: row["Units Global API"] || "kg/m3", // Use the same units as emission factors
+          // Activity amount unit must match EF dimension (m³ for kg/m³, kg for kg/kg)
+          total_fuel_units: mapEmissionFactorUnitsToActivityUnits(efUnits),
           expected_co2e_tonnes: parseFloat(
             row["Final emissions CO2e (prod) (tonnes)"],
           ),
@@ -263,7 +306,7 @@ function sampleTestData(
 
 async function performTransportCalculationTest(
   testData: TransportTestData,
-  inventory: any,
+  inventory: Inventory,
 ): Promise<TestResult> {
   try {
     // Query emission factors
@@ -288,41 +331,46 @@ async function performTransportCalculationTest(
     }
 
     // Prepare gas values for CalculationService
-    const gasValues = availableFactors.map((gas) => ({
-      id: randomUUID(),
-      gas,
-      gasAmount: 0n, // Will be calculated
-      emissionsFactor: {
+    const gasValues = availableFactors.map((gas) => {
+      const gasValue = new db.models.GasValue({
+        id: randomUUID(),
+        gas,
+        gasAmount: 0n, // Will be calculated
+      });
+      gasValue.emissionsFactor = new db.models.EmissionsFactor({
+        id: randomUUID(),
         emissionsPerActivity: emissionFactors[gas].emissionsPerActivity,
         gas,
         units: emissionFactors[gas].units,
-      },
-    }));
+      });
+      return gasValue;
+    });
 
     // Create mock inventory value and activity value
-    const inventoryValue = {
+    const inventoryValue = new db.models.InventoryValue({
       id: randomUUID(),
       gpcReferenceNumber: testData.subsector,
       inputMethodology: testData.methodology_id,
       inventoryId: inventory.inventoryId,
       activityValue: testData.total_fuel_value,
-    };
+    });
 
-    const activityValue = {
+    // Fuel-sales methodologies use activity-total-fuel-sales + sector-specific
+    // fuel/vehicle field ids (see manual-input-hierarchy.json).
+    const fieldIds = fuelSalesActivityFieldIds(testData.methodology_id);
+    const activityValue = new db.models.ActivityValue({
       id: randomUUID(),
       activityData: {
-        "activity-total-fuel-consumption": testData.total_fuel_value,
-        "activity-total-fuel-consumption-unit": mapCsvUnitsToSystemUnits(
-          testData.total_fuel_units,
-        ),
-        "transport-fuel-type": testData.fuel_type,
-        "transport-vehicle-type": testData.vehicle_type,
+        "activity-total-fuel-sales": testData.total_fuel_value,
+        "activity-total-fuel-sales-unit": testData.total_fuel_units,
+        [fieldIds.fuelType]: testData.fuel_type,
+        [fieldIds.vehicleType]: testData.vehicle_type,
       },
       metadata: {
-        activityTitle: "activity-total-fuel-consumption",
+        activityTitle: "activity-total-fuel-sales",
       },
       inventoryValueId: inventoryValue.id,
-    };
+    });
 
     // Use the system's calculation method
     console.log(`   🧮 Using methodology ID: ${testData.methodology_id}`);
@@ -330,14 +378,18 @@ async function performTransportCalculationTest(
     let calculationResult;
     try {
       calculationResult = await CalculationService.calculateGasAmount(
-        inventoryValue as any,
-        activityValue as any,
+        inventoryValue,
+        activityValue,
         testData.methodology_id,
-        gasValues as any,
+        gasValues,
       );
-    } catch (error: any) {
+    } catch (error) {
       // Handle missing fuel density or other calculation errors
-      if (error.message && error.message.includes("Density for fuel type")) {
+      if (
+        error instanceof Error &&
+        error.message &&
+        error.message.includes("Density for fuel type")
+      ) {
         console.log(`   ⚠️  SKIPPED - ${error.message}`);
         return {
           success: false,
@@ -388,10 +440,11 @@ async function performTransportCalculationTest(
       availableFactors,
       emissionFactorValues: emissionFactors,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      error: error.message || "Unknown error occurred",
+      error:
+        (error instanceof Error && error.message) || "Unknown error occurred",
       testData: formatTransportTestData(testData),
       expected: testData.expected_co2e_tonnes,
       tolerance: TOLERANCE,
@@ -403,7 +456,7 @@ async function performTransportCalculationTest(
 async function createTransportEmissionFactorsFromGlobalAPI(
   testData: TransportTestData,
 ) {
-  const emissionFactors: any = {};
+  const emissionFactors: Record<string, EmissionsFactorAttributes> = {};
 
   console.log(`   📊 Using Global API values from CSV:`);
   console.log(
@@ -419,6 +472,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
   // Create emission factor objects using Global API values from CSV
   if (testData.co2_global_api > 0) {
     emissionFactors["CO2"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.co2_global_api,
       gas: "CO2",
       units: testData.units_in_global_api,
@@ -431,6 +485,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
 
   if (testData.ch4_global_api > 0) {
     emissionFactors["CH4"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.ch4_global_api,
       gas: "CH4",
       units: testData.units_in_global_api,
@@ -443,6 +498,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
 
   if (testData.n2o_global_api > 0) {
     emissionFactors["N2O"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.n2o_global_api,
       gas: "N2O",
       units: testData.units_in_global_api,

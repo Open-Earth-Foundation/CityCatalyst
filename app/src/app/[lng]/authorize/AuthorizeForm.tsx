@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 import { useEffect, useMemo } from "react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useGetClientQuery, useGenerateCodeMutation } from "@/services/api";
@@ -37,8 +37,7 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
   const { data: client, isLoading: isClientLoading } =
     useGetClientQuery(clientId);
 
-  const [generateCode, { isLoading: isGeneratingCode }] =
-    useGenerateCodeMutation();
+  const [generateCode] = useGenerateCodeMutation();
 
   useEffect(() => {
     if (!clientId || !redirectUri) {

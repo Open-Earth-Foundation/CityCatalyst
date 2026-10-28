@@ -21,7 +21,9 @@ import InventoryCalculationTab from "./InventoryCalculationTab";
 import InventoryReportTab from "@/components/GHGI/inventory-result";
 import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "./Hero";
-import { ActionCards } from "./ActionCards";
+import { AddCollaboratorButton } from "./AddCollaboratorButton";
+import DownloadButton from "./DownloadButton";
+import { PublishButton } from "./PublishButton";
 import { InventoryPreferencesCard } from "./InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +32,6 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 import InventoryVersions from "@/components/GHGI/inventory-versions/InventoryVersions";
 
@@ -51,7 +52,9 @@ export default function HomePage({
   const cookieLanguage = Cookies.get("i18next");
   const router = useRouter();
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
   const inventoryParamValue: string | undefined = Array.isArray(inventoryParam)
@@ -66,21 +69,17 @@ export default function HomePage({
 
   function redirectToOnboarding() {
     setTimeout(() => {
-      if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-        if (!cityIdParamValue || cityIdParamValue === "null") {
-          // Check if user has a default city
-          if (userInfo?.defaultCityId) {
-            router.push(`/${language}/cities/${userInfo.defaultCityId}`);
-            return;
-          }
-          router.push(`/${language}/onboarding`);
+      if (!cityIdParamValue || cityIdParamValue === "null") {
+        // Check if user has a default city
+        if (userInfo?.defaultCityId) {
+          router.push(`/${language}/cities/${userInfo.defaultCityId}`);
           return;
         }
-
-        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
-      } else {
         router.push(`/${language}/onboarding`);
+        return;
       }
+
+      router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
     }, 0);
   }
 
@@ -183,12 +182,12 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
-  const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
+  const { data: city } = api.useGetCityQuery(inventory?.cityId ?? "", {
     skip: !inventory?.cityId,
   });
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
@@ -197,10 +196,9 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const formattedEmissions =
-    inventory?.totalEmissions != null
-      ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
-      : { value: t("N/A"), unit: "" };
+  const formattedEmissions = inventory?.totalEmissions
+    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
+    : { value: t("no-data-for-inventory-yet"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];
@@ -259,16 +257,6 @@ export default function HomePage({
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
-              {!isPublic && (
-                <ActionCards
-                  inventoryId={inventory?.inventoryId}
-                  t={t}
-                  lng={language}
-                  city={city}
-                  inventory={inventory}
-                  organizationId={organization?.organizationId}
-                />
-              )}
             </VStack>
           </Box>
           <Box
@@ -290,38 +278,55 @@ export default function HomePage({
                     justifyContent="space-between"
                   >
                     <Text
-                      color="content.primary"
-                      fontWeight="bold"
-                      lineHeight="24px"
+                      color="content.secondary"
+                      fontWeight="semibold"
+                      lineHeight="32px"
                       fontSize="headline.sm"
                       fontFamily="heading"
                       fontStyle="normal"
                       data-testid="inventory-year-title"
                     >
-                      {t("inventory-year")}
+                      {t("inventories")}
                     </Text>
-                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
-                    {userRole !== UserRole.COLLABORATOR &&
-                      userRole !== UserRole.NO_ACCESS && (
-                        <Button
-                          data-testid="add-new-inventory-button"
-                          title={t("add-new-inventory")}
-                          h="48px"
-                          aria-label="activity-button"
-                          fontSize="button.md"
-                          gap="8px"
-                          onClick={() => {
-                            if (isFrozenCheck()) {
-                              return;
-                            }
+                    <Box display="flex" alignItems="center" gap="16px">
+                      <AddCollaboratorButton
+                        lng={language}
+                        organizationId={organization?.organizationId}
+                      />
+                      <DownloadButton
+                        lng={language}
+                        inventoryId={inventory.inventoryId}
+                        city={city}
+                        inventory={inventory}
+                      />
+                      <PublishButton
+                        lng={language}
+                        inventoryId={inventory.inventoryId}
+                        inventory={inventory}
+                      />
+                      {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
+                      {userRole !== UserRole.COLLABORATOR &&
+                        userRole !== UserRole.NO_ACCESS && (
+                          <Button
+                            data-testid="add-new-inventory-button"
+                            title={t("add-new-inventory")}
+                            h="48px"
+                            aria-label="activity-button"
+                            fontSize="button.md"
+                            gap="8px"
+                            onClick={() => {
+                              if (isFrozenCheck()) {
+                                return;
+                              }
 
-                            redirectToOnboarding();
-                          }}
-                        >
-                          <Icon as={BsPlus} h="16px" w="16px" />
-                          {t("add-new-inventory")}
-                        </Button>
-                      )}
+                              redirectToOnboarding();
+                            }}
+                          >
+                            <Icon as={BsPlus} h="16px" w="16px" />
+                            {t("add-new-inventory")}
+                          </Button>
+                        )}
+                    </Box>
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}

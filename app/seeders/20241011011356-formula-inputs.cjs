@@ -50,7 +50,11 @@ async function parseFile(filename, folder) {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
+    // Skip seeding - formula inputs are now managed by sync script
+    console.log("Skipping formula inputs rollback - managed by sync script");
+    return;
+
     await queryInterface.sequelize.transaction(async (transaction) => {
       for (const folder of folders) {
         console.log("Loading Formula Value  folder " + folder + "...");

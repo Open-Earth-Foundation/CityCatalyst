@@ -65,16 +65,16 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import TTLCache from "@isaacs/ttlcache";
+import { TTLCache } from "@isaacs/ttlcache";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 // 10-minute cache, for checking jwtid replay
 
-const cache = new TTLCache({ max: 10000, ttl: 10 * 60 * 1000 })
+const cache = new TTLCache({ max: 10000, ttl: 10 * 60 * 1000 });
 
 const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
@@ -94,18 +94,17 @@ const authorizationCodeRequest = z.object({
   code: z.string().min(1, "code is required"),
   redirect_uri: z.string().url("redirect_uri must be a valid URI"),
   client_id: z.string().min(1, "client_id is required"),
-  code_verifier: z.string()
+  code_verifier: z.string(),
 });
 
 const refreshTokenRequest = z.object({
   grant_type: z.literal("refresh_token"),
   refresh_token: z.string().min(1, "refresh_token is required"),
-  scope: z.string().optional()
-})
+  scope: z.string().optional(),
+});
 
 /** accept an authorization code and return an access token  */
-export const POST = apiHandler(async (_req, { params, session }) => {
-
+export const POST = apiHandler(async (_req) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
@@ -116,16 +115,16 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   }
 
   const key = process.env.VERIFICATION_TOKEN_SECRET;
-  const contentType = _req.headers.get('content-type') || ''
+  const contentType = _req.headers.get("content-type") || "";
 
-  if (!contentType.includes('application/x-www-form-urlencoded')) {
+  if (!contentType.includes("application/x-www-form-urlencoded")) {
     return NextResponse.json(
-      { error: 'unsupported_content_type' },
-      { status: 415 }
-    )
+      { error: "unsupported_content_type" },
+      { status: 415 },
+    );
   }
 
-  const formData = await _req.formData()
+  const formData = await _req.formData();
 
   const formObj: Record<string, unknown> = {};
   for (const [key, value] of formData.entries()) {
@@ -133,54 +132,52 @@ export const POST = apiHandler(async (_req, { params, session }) => {
   }
 
   switch (formObj.grant_type) {
-    case 'authorization_code': {
+    case "authorization_code": {
       const tr = authorizationCodeRequest.parse(formObj);
-      return await handleAuthorizationCodeRequest(_req, tr, key)
+      return await handleAuthorizationCodeRequest(_req, tr, key);
     }
-    case 'refresh_token': {
+    case "refresh_token": {
       const rtr = refreshTokenRequest.parse(formObj);
       return await handleRefreshTokenRequest(_req, rtr, key);
     }
     default: {
-      throw createHttpError.BadRequest("Only 'authorization_code' or 'refresh_token' grant_type allowed")
+      throw createHttpError.BadRequest(
+        "Only 'authorization_code' or 'refresh_token' grant_type allowed",
+      );
     }
   }
-})
+});
 
 async function handleAuthorizationCodeRequest(
   _req: NextRequest,
-  tr: any,
-  key: string
+  tr: z.infer<typeof authorizationCodeRequest>,
+  key: string,
 ) {
-
   const client = await OAuthClient.findByPk(tr.client_id);
 
   if (!client) {
-    throw new createHttpError.BadRequest("Unrecognized client_id")
+    throw new createHttpError.BadRequest("Unrecognized client_id");
   }
 
   if (client.redirectURI !== tr.redirect_uri) {
-    throw new createHttpError.BadRequest("redirect_uri mismatch")
+    throw new createHttpError.BadRequest("redirect_uri mismatch");
   }
 
-  let decoded: any;
+  let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(
-      tr.code,
-      key
-    )
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+    decoded = jwt.verify(tr.code, key) as JwtPayload;
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");
     }
   }
 
-  logger.debug({decoded}, 'Decoded authorization code');
+  logger.debug({ decoded }, "Decoded authorization code");
 
-  const origin = process.env.HOST || (new URL(_req.url)).origin;
+  const origin = process.env.HOST || new URL(_req.url).origin;
 
   if (decoded.iss !== origin) {
     throw createHttpError.BadRequest("code issued by a different server.");
@@ -213,51 +210,47 @@ async function handleAuthorizationCodeRequest(
   }
 
   logger.debug(
-    {jwtid},
-    'Checking for replay of jwtid for authorization token'
+    { jwtid },
+    "Checking for replay of jwtid for authorization token",
   );
 
   if (cache.has(jwtid)) {
-    logger.debug(
-      {jwtid},
-      'Cache hit'
-    );
+    logger.debug({ jwtid }, "Cache hit");
     throw createHttpError.BadRequest("Single-use code.");
   }
 
-  logger.debug(
-    {jwtid},
-    'Cache miss'
-  );
+  logger.debug({ jwtid }, "Cache miss");
 
   cache.set(jwtid, true);
 
   const scope = decoded.scope;
 
-  const accessToken = jwt.sign({
+  const accessToken = jwt.sign(
+    {
       client_id: tr.client_id,
-      scope
+      scope,
     },
     key,
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,
       audience: origin,
-      subject: decoded.sub
-    }
+      subject: decoded.sub,
+    },
   );
 
-  const refreshToken = jwt.sign({
+  const refreshToken = jwt.sign(
+    {
       client_id: tr.client_id,
-      scope
+      scope,
     },
     key,
     {
       expiresIn: REFRESH_TOKEN_EXPIRY,
       issuer: origin,
       audience: origin,
-      subject: decoded.sub
-    }
+      subject: decoded.sub,
+    },
   );
 
   return NextResponse.json({
@@ -265,34 +258,30 @@ async function handleAuthorizationCodeRequest(
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_EXPIRY,
     refresh_token: refreshToken,
-    scope
+    scope,
   });
 }
 
 async function handleRefreshTokenRequest(
   _req: NextRequest,
-  rtr: any,
-  key: string
+  rtr: z.infer<typeof refreshTokenRequest>,
+  key: string,
 ) {
-
-  let decoded: any;
+  let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(
-      rtr.refresh_token,
-      key
-    )
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+    decoded = jwt.verify(rtr.refresh_token, key) as JwtPayload;
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");
     }
   }
 
-  logger.debug({decoded}, 'Decoded refresh_token');
+  logger.debug({ decoded }, "Decoded refresh_token");
 
-  const origin = process.env.HOST || (new URL(_req.url)).origin;
+  const origin = process.env.HOST || new URL(_req.url).origin;
 
   if (decoded.iss !== origin) {
     throw createHttpError.BadRequest("code issued by a different server.");
@@ -305,7 +294,7 @@ async function handleRefreshTokenRequest(
   const client = await OAuthClient.findByPk(decoded.client_id);
 
   if (!client) {
-    throw new createHttpError.BadRequest("Unrecognized client_id")
+    throw new createHttpError.BadRequest("Unrecognized client_id");
   }
 
   const authz = await OAuthClientAuthz.findOne({
@@ -321,23 +310,24 @@ async function handleRefreshTokenRequest(
 
   const scope = decoded.scope;
 
-  const accessToken = jwt.sign({
+  const accessToken = jwt.sign(
+    {
       client_id: decoded.client_id,
-      scope
+      scope,
     },
     key,
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,
       audience: origin,
-      subject: decoded.sub
-    }
+      subject: decoded.sub,
+    },
   );
 
   return NextResponse.json({
     access_token: accessToken,
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_EXPIRY,
-    scope
+    scope,
   });
 }

@@ -1,9 +1,18 @@
 import React, { useState } from "react";
+import Decimal from "decimal.js";
 import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
-import { InventoryTypeEnum, SECTORS } from "@/util/constants";
+import {
+  formatEmissionsOrRemoval,
+  formatNumber,
+  toKebabCase,
+} from "@/util/helpers";
+import {
+  FILE_IMPORT_SOURCE_TYPE,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
@@ -11,16 +20,19 @@ import { LuChevronDown } from "react-icons/lu";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
+  /** sum of non-negative (emissions-only) totalEmissions across `data` - % denominator, see CC-749 */
+  grossTotalEmissions: Decimal;
   tData: TFunction;
   tDashboard: TFunction;
   sectorName: string;
-  inventoryType: InventoryTypeEnum;
+  inventoryType?: InventoryTypeEnum;
   inventoryId: string;
   numberFormat?: string;
 }
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
   data,
+  grossTotalEmissions,
   tData,
   tDashboard,
   sectorName,
@@ -28,9 +40,10 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   inventoryId,
   numberFormat,
 }) => {
-  const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
-    inventoryType
-  ].scopes;
+  const scopes = inventoryType
+    ? SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[inventoryType]
+        .scopes
+    : [];
   const [selectedSourceId, setSelectedSourceId] = useState<string>("");
   const [expandedSubsectors, setExpandedSubsectors] = useState<Set<string>>(
     new Set(),
@@ -52,11 +65,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     groupedData[subsector].push(item);
   });
 
-  // Calculate sector total emissions for correct percentage calculation
-  const sectorTotalEmissions = data.reduce(
-    (sum, item) => sum + Number(item.totalEmissions),
-    0,
-  );
+  const hasRemoval = data.some((item) => item.percentage === null);
 
   const toggleSubsector = (subsector: string) => {
     const newExpanded = new Set(expandedSubsectors);
@@ -83,21 +92,36 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {convertKgToTonnes(item.totalEmissions, numberFormat)}
+          {formatEmissionsOrRemoval(
+            item.totalEmissions,
+            numberFormat,
+            tDashboard("removed"),
+          )}
         </BodyMedium>
       </Table.Cell>
       <Table.Cell>
-        <BodyMedium color="content.secondary">{item.percentage}%</BodyMedium>
+        <BodyMedium color="content.secondary">
+          {item.percentage === null ? "*" : `${item.percentage}%`}
+        </BodyMedium>
       </Table.Cell>
       {scopes.map((s) => (
         <Table.Cell key={s}>
           <BodyMedium color="content.secondary">
-            {convertKgToTonnes(item.scopes[s] || 0, numberFormat)}
+            {formatEmissionsOrRemoval(
+              item.scopes[s] || 0,
+              numberFormat,
+              tDashboard("removed"),
+            )}
           </BodyMedium>
         </Table.Cell>
       ))}
       <Table.Cell>
-        {item.datasource_name ? (
+        {item.datasource_name &&
+        item.datasource_source_type === FILE_IMPORT_SOURCE_TYPE ? (
+          <BodyMedium color="content.secondary" textTransform={"uppercase"}>
+            {item.datasource_name}
+          </BodyMedium>
+        ) : item.datasource_name ? (
           <BodyMedium
             color="content.link"
             textDecoration={"underline"}
@@ -112,7 +136,9 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
             {item.datasource_name}
           </BodyMedium>
         ) : (
-          <BodyMedium color="content.secondary">{tDashboard("n-a")}</BodyMedium>
+          <BodyMedium color="content.secondary">
+            {tDashboard("no-cited-source")}
+          </BodyMedium>
         )}
       </Table.Cell>
       <Table.Cell></Table.Cell>
@@ -131,11 +157,22 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
 
     // Multiple activities - create manual accordion
     const totalEmissions = activities.reduce(
-      (sum, item) => sum + Number(item.totalEmissions),
-      0,
+      (sum, item) => sum.plus(new Decimal(item.totalEmissions)),
+      new Decimal(0),
     );
-    // Calculate correct percentage based on subsector total emissions relative to sector total
-    const totalPercentage = (totalEmissions / sectorTotalEmissions) * 100;
+    // The API only returns a percentage per subsector+datasource group (one entry
+    // per `activities` item here); this re-aggregates across datasources for the
+    // subsector as a whole, so it mirrors ResultsService.ts's calculatePercentage
+    // (gross-emissions denominator, null for removals) rather than duplicating it.
+    const totalPercentage = totalEmissions.isNegative()
+      ? null
+      : grossTotalEmissions.lessThanOrEqualTo(0)
+        ? 0
+        : totalEmissions
+            .times(100)
+            .div(grossTotalEmissions)
+            .round()
+            .toNumber();
     const uniqueSources = [
       ...new Set(activities.map((item) => item.datasource_name)),
     ];
@@ -159,23 +196,30 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {convertKgToTonnes(totalEmissions, numberFormat)}
+              {formatEmissionsOrRemoval(
+                totalEmissions,
+                numberFormat,
+                tDashboard("removed"),
+              )}
             </BodyMedium>
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {formatNumber(totalPercentage, numberFormat, 1)}%
+              {totalPercentage === null
+                ? "*"
+                : `${formatNumber(totalPercentage, numberFormat, 1)}%`}
             </BodyMedium>
           </Table.Cell>
           {scopes.map((s) => (
             <Table.Cell key={s}>
               <BodyMedium color="content.secondary">
-                {convertKgToTonnes(
+                {formatEmissionsOrRemoval(
                   activities.reduce(
-                    (sum, item) => sum + Number(item.scopes[s] || 0),
-                    0,
+                    (sum, item) => sum.plus(new Decimal(item.scopes[s] || 0)),
+                    new Decimal(0),
                   ),
                   numberFormat,
+                  tDashboard("removed"),
                 )}
               </BodyMedium>
             </Table.Cell>
@@ -234,6 +278,11 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           )}
         </Table.Body>
       </Table.Root>
+      {hasRemoval && (
+        <BodyMedium color="content.tertiary" pt={2}>
+          {tDashboard("removals-not-countable-footnote")}
+        </BodyMedium>
+      )}
       <ByScopeViewSourceDrawer
         sourceId={selectedSourceId}
         sector={{ sectorName }}

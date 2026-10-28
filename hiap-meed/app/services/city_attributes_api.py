@@ -74,7 +74,15 @@ class CityAttributesApiService:
         }
 
     def get_city(self, locode: str, version_label: str | None = None) -> CityData:
-        """Fetch one city payload from the upstream API and map it to `CityData`."""
+        """
+        Fetch and validate the Global API record for one city.
+
+        ``locode`` selects the city. ``version_label`` is an internal source
+        option and is not exposed by the public reference-data endpoint. The
+        returned ``CityData`` keeps normalized fields for application code and
+        raw/source details for backend diagnostics. Network or schema failures
+        raise ``UpstreamApiError``.
+        """
         city_url = self._build_city_url(locode, version_label)
 
         # Fetch and validate the upstream response in one small, synchronous path.

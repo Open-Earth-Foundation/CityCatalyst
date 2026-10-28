@@ -8,11 +8,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
-import type { DataSourceData, DataSourceWithRelations } from "./types";
+import type { DataSourceWithRelations, GlobalAPISourceResponse } from "./types";
 import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -37,7 +36,6 @@ export function SourceDrawer({
   isOpen,
   onClose,
   onConnectClick,
-  finalFocusRef,
   isConnectLoading,
   t,
   hideActions,
@@ -48,13 +46,12 @@ export function SourceDrawer({
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
-  sourceData?: DataSourceData | null;
+  sourceData?: GlobalAPISourceResponse | null;
   sector?: { sectorName?: string };
   loading?: boolean;
   isOpen: boolean;
   onClose: () => void;
   onConnectClick?: () => void;
-  finalFocusRef?: RefObject<any>;
   isConnectLoading?: boolean;
   totalEmissionsData?: string;
   t: TFunction;
@@ -70,35 +67,43 @@ export function SourceDrawer({
   }
 
   const onUrlClick = () => {
-    window.open(source?.url, "_blank");
+    const url = source?.url ?? source?.publisher?.url ?? source?.methodologyUrl;
+
+    if (url) {
+      window.open(ensureProtocol(url), "_blank", "noreferrer");
+    }
   };
+
   const emissionsToBeIncluded = () => {
-    let converted;
+    let converted: string | undefined;
+
+    // Prefer an explicit override when provided (already in kg).
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
       converted = convertKgToTonnes(
         parseFloat(totalEmissionsData),
         numberFormat,
       );
     }
+
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
-    let totalEmissions = emissionsData
-      ? formatNumber(
-          (Number(emissionsData) * sourceData?.scaleFactor) / 1000,
-          numberFormat,
-          2,
-        )
-      : "?";
-    if (sourceData?.issue) {
-      totalEmissions = "?";
+    // Issue on the API payload means totals are unreliable — but an explicit
+    // totalEmissionsData override (e.g. from activity-tab) may still be valid.
+    if (sourceData?.issue && !converted) {
+      return { number: "?", unit: "" };
     }
-    if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(
-        parseFloat(totalEmissions) * 1000,
-        numberFormat,
-      );
+
+    // Format kg directly — do not round-trip through formatNumber/parseFloat
+    // (thousands separators break parseFloat, e.g. "6,790" → 6).
+    if (!sourceData?.issue && emissionsData != null && emissionsData !== "") {
+      const kg =
+        Number(emissionsData) * (sourceData?.scaleFactor ?? 1.0);
+      if (Number.isFinite(kg)) {
+        converted = convertKgToTonnes(kg, numberFormat);
+      }
     }
+
     if (!converted) {
-      return { number: totalEmissionsData ?? totalEmissions, unit: "" };
+      return { number: totalEmissionsData ?? "?", unit: "" };
     }
     return {
       number: converted.split(" ")[0],
@@ -210,7 +215,7 @@ export function SourceDrawer({
                             content={
                               t("total-emissions-tooltip") +
                               ".\nScale factor: " +
-                              sourceData?.scaleFactor.toFixed(4)
+                              sourceData?.scaleFactor?.toFixed(4)
                             }
                             positioning={{ placement: "bottom-end" }}
                           >

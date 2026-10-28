@@ -23,5 +23,7 @@
   "about-privacy-description": "En utilisant Clima AI, vous acceptez le stockage anonyme et l'analyse de vos données de conversation pour améliorer la précision et l'efficacité de l'IA.",
   "about-privacy-bold": "Aucune donnée personnelle n'est publiée ou utilisée au-delà de l'entraînement du modèle.",
   "about-privacy-contact": "Pour les préoccupations de confidentialité, veuillez",
-  "contact-support": "contacter le support"
+  "contact-support": "contacter le support",
+  "ask-clima": "Demander Clima",
+  "an-error-occurred": "Une erreur s'est produite"
 }

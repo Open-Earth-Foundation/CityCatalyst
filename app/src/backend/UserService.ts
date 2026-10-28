@@ -2,6 +2,7 @@ import { db } from "@/models";
 import createHttpError from "http-errors";
 
 import {
+  CityResponse,
   InviteStatus,
   OrganizationRole,
   ProjectWithCitiesResponse,
@@ -14,7 +15,10 @@ import { User } from "@/models/User";
 import { Includeable, QueryTypes, Transaction } from "sequelize";
 import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
-import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
+import {
+  hasOrgOwnerLevelAccess,
+  hasProjectOwnerLevelAccess,
+} from "@/backend/RoleBasedAccessService";
 import { logger } from "@/services/logger";
 import EmailService from "@/backend/EmailService";
 import uniqBy from "lodash/uniqBy";
@@ -68,7 +72,16 @@ export default class UserService {
             {
               model: db.models.Organization,
               as: "organization",
-              attributes: ["organizationId", "name"],
+              // Include branding fields used by GET /city/:city/organization
+              // (logoUrl/theme). Omitting them made Home sync wipe logoUrl and
+              // fight cities/layout's getOrganization sync (CC-621 blink).
+              attributes: [
+                "organizationId",
+                "name",
+                "logoUrl",
+                "active",
+                "themeId",
+              ],
             },
           ],
         },
@@ -89,6 +102,14 @@ export default class UserService {
     );
 
     if (hasOrgLevelAccess) {
+      return city;
+    }
+
+    // Project admins are not CityUser members, but own every city in their project.
+    const hasProjectLevelAccess = city.projectId
+      ? await hasProjectOwnerLevelAccess(city.projectId, session.user.id)
+      : false;
+    if (hasProjectLevelAccess) {
       return city;
     }
 
@@ -156,12 +177,19 @@ export default class UserService {
       session.user?.id,
     );
 
+    const hasProjectLevelAccess = inventory.city?.projectId
+      ? await hasProjectOwnerLevelAccess(
+          inventory.city.projectId,
+          session.user.id,
+        )
+      : false;
+
     const hasNoCityAccess =
       inventory.city.users.length === 0 ||
       !session?.user?.id ||
       !inventory.city.users.map((u) => u.userId).includes(session?.user?.id);
 
-    if (!hasOrgLevelAccess && hasNoCityAccess) {
+    if (!hasOrgLevelAccess && !hasProjectLevelAccess && hasNoCityAccess) {
       throw new createHttpError.Unauthorized(
         "User is not part of this inventory's city",
       );
@@ -528,7 +556,13 @@ export default class UserService {
   private static async findAllProjectForAdminAndOwner(organizationId: string) {
     return await Project.findAll({
       where: { organizationId },
-      attributes: ["projectId", "name", "description", "cityCountLimit"],
+      attributes: [
+        "projectId",
+        "name",
+        "organizationId",
+        "description",
+        "cityCountLimit",
+      ],
       include: [
         {
           model: db.models.ProjectAdmin,
@@ -545,7 +579,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode", "country"],
+          attributes: ["cityId", "name", "countryLocode", "country", "region"],
           include: [
             {
               model: db.models.Inventory,
@@ -572,7 +606,13 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode", "country"],
+            attributes: [
+              "cityId",
+              "name",
+              "countryLocode",
+              "country",
+              "region",
+            ],
             include: [
               {
                 model: db.models.Inventory,
@@ -593,12 +633,25 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode", "country"],
+        attributes: [
+          "cityId",
+          "name",
+          "countryLocode",
+          "country",
+          "locode",
+          "region",
+        ],
         include: [
           {
             model: db.models.Project,
             as: "project",
-            attributes: ["projectId", "name"],
+            attributes: [
+              "projectId",
+              "name",
+              "organizationId",
+              "cityCountLimit",
+              "description",
+            ],
           },
           {
             model: db.models.Inventory,
@@ -610,6 +663,10 @@ export default class UserService {
     });
   }
 
+  /**
+   * List projects (with cities) visible to the session user inside one organization.
+   * Org/system admins see every project; project admins and collaborators are scoped.
+   */
   public static async findUserProjectsAndCitiesInOrganization(
     organizationId: string,
     session: AppSession | null,
@@ -632,36 +689,67 @@ export default class UserService {
       UserService.findAllProjectForCollaborators(session.user.id),
     ]);
 
-    // Project admin can see projects they are admin of and the cities in those projects
-    const projectsAndCities: ProjectWithCitiesResponse = [];
+    // Seed with projects the user administers (concat returns a new array — do not discard it).
+    const projectsById: Record<string, ProjectWithCitiesResponse[0]> = {};
+    for (const projectAdmin of projectAdminProjects) {
+      const project = projectAdmin.project;
+      if (!project) {
+        continue;
+      }
+      projectsById[project.projectId] = {
+        projectId: project.projectId,
+        name: project.name,
+        organizationId: project.organizationId,
+        cityCountLimit: project.cityCountLimit,
+        description: project.description,
+        cities: (project.cities ?? []).map((city) => ({
+          name: city.name as string,
+          cityId: city.cityId as string,
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
+          country: city.country as string,
+          countryLocode: city.countryLocode as string,
+          locode: city.locode as string,
+          region: city.region as string,
+        })),
+      };
+    }
 
-    // @ts-ignore
-    projectsAndCities.concat(projectAdminProjects.map((pa) => pa.project));
-
-    const groupedByProject: Record<string, ProjectWithCitiesResponse[0]> = {};
-
+    // Merge collaborator city memberships for this organization only.
     for (const { city } of cityUsersProjects) {
-      const projectName = city.project.name;
-      const projectId = city.project.projectId;
-      if (!groupedByProject[projectId]) {
-        groupedByProject[projectId] = {
+      const project = city?.project;
+      if (!project || project.organizationId !== organizationId) {
+        continue;
+      }
+      const projectId = project.projectId;
+      if (!projectsById[projectId]) {
+        projectsById[projectId] = {
           projectId,
-          name: projectName,
-          cityCountLimit: city.project.cityCountLimit,
+          name: project.name,
+          organizationId: project.organizationId,
+          cityCountLimit: project.cityCountLimit,
+          description: project.description,
           cities: [],
         };
       }
-      groupedByProject[projectId].cities.push({
-        name: city.name as string,
-        cityId: city.cityId as string,
-        inventories: city.inventories as any,
-        country: city.country as string,
-        countryLocode: city.countryLocode as string,
-        locode: city.locode as string,
-      });
+      const alreadyListed = projectsById[projectId].cities.some(
+        (listed) => listed.cityId === city.cityId,
+      );
+      if (!alreadyListed) {
+        projectsById[projectId].cities.push({
+          name: city.name as string,
+          cityId: city.cityId as string,
+          inventories:
+            city.inventories as unknown as CityResponse["inventories"],
+          country: city.country as string,
+          countryLocode: city.countryLocode as string,
+          locode: city.locode as string,
+          region: city.region as string,
+        });
+      }
     }
 
-    return projectsAndCities.concat(Object.values(groupedByProject));
+    return Object.values(projectsById);
   }
 
   public static async findUsersInProject(projectId: string) {
@@ -672,6 +760,7 @@ export default class UserService {
 
     const users: {
       email: string;
+      name?: string | null;
       status: InviteStatus;
       role: OrganizationRole;
       cityId?: string;
@@ -692,26 +781,32 @@ export default class UserService {
       ],
     });
 
-    const invitedEmails = new Set(orgInvites.map((invite) => invite.email));
+    const adminEmails = new Set(orgAdmins.map((admin) => admin.user.email));
 
     const dedupedOrgAdmin: {
       email: string;
+      name?: string | null;
       status: InviteStatus;
       role: OrganizationRole;
     }[] = orgAdmins
-      .filter((orgAdmin) => !invitedEmails.has(orgAdmin.user.email))
+      .filter((orgAdmin) => !!orgAdmin.user.email)
       .map((orgAdmin) => ({
         email: orgAdmin.user.email as string,
+        name: orgAdmin.user.name ?? null,
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.ORG_ADMIN,
+        twoFactorEnabled: orgAdmin.user.twoFactorEnabled ?? false,
       }));
 
     users.push(
-      ...orgInvites.map((invite) => ({
-        email: invite?.email as string,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.ORG_ADMIN,
-      })),
+      ...orgInvites
+        .filter((invite) => !!invite?.email && !adminEmails.has(invite?.email)) // make sure accepted admin entries take precedent over invites
+        .map((invite) => ({
+          email: invite.email as string,
+          name: null,
+          status: invite?.status as InviteStatus,
+          role: OrganizationRole.ORG_ADMIN,
+        })),
       ...dedupedOrgAdmin,
     );
 
@@ -743,20 +838,27 @@ export default class UserService {
       ],
     });
 
-    const cityUsers = cityUsersData.map((cityUser) => ({
-      email: cityUser.user.email as string,
-      status: InviteStatus.ACCEPTED,
-      role: OrganizationRole.COLLABORATOR,
-      cityId: cityUser.cityId as string,
-    }));
+    const cityUsers = cityUsersData
+      .filter((cityUser) => !!cityUser.user.email)
+      .map((cityUser) => ({
+        email: cityUser.user.email as string,
+        name: cityUser.user.name ?? null,
+        status: InviteStatus.ACCEPTED,
+        role: OrganizationRole.COLLABORATOR,
+        cityId: cityUser.cityId as string,
+        twoFactorEnabled: cityUser.user.twoFactorEnabled ?? false,
+      }));
 
     const cityInvites = cities.flatMap((city) =>
-      city.cityInvites.map((invite) => ({
-        email: invite?.email as string,
-        status: invite?.status as InviteStatus,
-        role: OrganizationRole.COLLABORATOR,
-        cityId: city.cityId as string,
-      })),
+      city.cityInvites
+        .filter((invite) => !!invite?.email)
+        .map((invite) => ({
+          email: invite.email as string,
+          name: null,
+          status: invite?.status as InviteStatus,
+          role: OrganizationRole.COLLABORATOR,
+          cityId: city.cityId as string,
+        })),
     );
 
     users.push(...cityUsers, ...cityInvites);
@@ -967,6 +1069,10 @@ export default class UserService {
     }
   }
 
+  /**
+   * Summarize the user's highest-privilege access path and the related org/project
+   * IDs used by navigation (e.g. All projects drawer link).
+   */
   public static async findUserAccessStatus(userId: string) {
     const responseObject: {
       isOrgOwner: boolean;
@@ -982,6 +1088,7 @@ export default class UserService {
       projectId: null,
     };
 
+    // TODO a user can own multiple organizations now
     const orgOwner = await db.models.OrganizationAdmin.findOne({
       where: { userId },
     });
@@ -990,25 +1097,56 @@ export default class UserService {
       responseObject.organizationId = orgOwner.organizationId;
       return responseObject;
     }
+
+    // TODO might be able to have multiple project admin roles as well
     const projectAdmin = await db.models.ProjectAdmin.findOne({
       where: { userId },
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          attributes: ["projectId", "organizationId"],
+        },
+      ],
     });
     if (projectAdmin) {
       responseObject.isProjectAdmin = true;
+      responseObject.projectId = projectAdmin.projectId;
+      responseObject.organizationId =
+        projectAdmin.project?.organizationId ?? null;
       return responseObject;
     }
 
+    // Collaborators only have CityUser rows — resolve org/project via city.
     const collaborator = await db.models.CityUser.findOne({
       where: { userId },
+      include: [
+        {
+          model: db.models.City,
+          as: "city",
+          attributes: ["cityId", "projectId"],
+          include: [
+            {
+              model: db.models.Project,
+              as: "project",
+              attributes: ["projectId", "organizationId"],
+            },
+          ],
+        },
+      ],
     });
     if (collaborator) {
       responseObject.isCollaborator = true;
+      responseObject.projectId =
+        collaborator.city?.project?.projectId ??
+        collaborator.city?.projectId ??
+        null;
+      responseObject.organizationId =
+        collaborator.city?.project?.organizationId ?? null;
       return responseObject;
     }
     return responseObject;
   }
-
-  public async fetchUserProjects(userId: string) {}
 
   public static ensureIsAdmin(session: AppSession | null) {
     // Ensure user is signed in

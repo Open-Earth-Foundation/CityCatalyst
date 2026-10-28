@@ -16,6 +16,7 @@ import { POST as startDraft } from "@/app/api/v1/stationary-energy-drafts/start/
 import { Auth, type AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
+import { setupTests } from "../helpers";
 
 const TEST_USER_ID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const TEST_CITY_ID = "11111111-1111-4111-8111-111111111111";
@@ -56,10 +57,12 @@ describe("Stationary Energy draft routes", () => {
   const originalCaBaseUrl = process.env.CA_BASE_URL;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
   const originalHost = process.env.HOST;
-  const originalDbInitialized = db.initialized;
   let sessionSpy: ReturnType<typeof jest.spyOn>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
 
@@ -76,12 +79,15 @@ describe("Stationary Energy draft routes", () => {
   });
 
   beforeEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
-    db.initialized = true;
     global.fetch = jest.fn() as unknown as typeof fetch;
   });
 
@@ -90,8 +96,8 @@ describe("Stationary Energy draft routes", () => {
     jest.clearAllMocks();
   });
 
-  afterAll(() => {
-    db.initialized = originalDbInitialized;
+  afterAll(async () => {
+    if (db.sequelize) await db.sequelize.close();
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
@@ -149,10 +155,25 @@ describe("Stationary Energy draft routes", () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     const gasToCo2EqSpy = jest.spyOn(db.models.GasToCO2Eq, "findAll");
     gasToCo2EqSpy.mockResolvedValue([
-      { gas: "CO2", co2eqPerKg: 1, co2eqYears: 100 },
-      { gas: "CH4", co2eqPerKg: 28, co2eqYears: 100 },
-      { gas: "N2O", co2eqPerKg: 265, co2eqYears: 100 },
-    ] as any);
+      db.models.GasToCO2Eq.build({
+        gas: "CO2",
+        gwpVersion: "ar5",
+        co2eqPerKg: 1,
+        co2eqYears: 100,
+      }),
+      db.models.GasToCO2Eq.build({
+        gas: "CH4",
+        gwpVersion: "ar5",
+        co2eqPerKg: 28,
+        co2eqYears: 100,
+      }),
+      db.models.GasToCO2Eq.build({
+        gas: "N2O",
+        gwpVersion: "ar5",
+        co2eqPerKg: 265,
+        co2eqYears: 100,
+      }),
+    ]);
     fetchMock
       .mockResolvedValueOnce(
         jsonResponse({
@@ -435,7 +456,7 @@ describe("Stationary Energy draft routes", () => {
     }
   });
 
-  it("preserves JSON token-issuance errors from the shared CA helper", async () => {
+  it("preserves sanitized token-issuance errors from the shared CA helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(
       jsonResponse(
@@ -461,11 +482,7 @@ describe("Stationary Energy draft routes", () => {
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
       error: {
-        message: "service token rejected",
-        code: undefined,
-        data: {
-          detail: "service token rejected",
-        },
+        message: "Unable to obtain Climate Advisor access token",
       },
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);

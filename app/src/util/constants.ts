@@ -1,11 +1,16 @@
-import { BsTruck } from "react-icons/bs";
-import { PiTrashLight } from "react-icons/pi";
-import { TbBuildingCommunity } from "react-icons/tb";
 import { LuWheat } from "react-icons/lu";
 import { IconBaseProps } from "react-icons";
-import { LiaIndustrySolid } from "react-icons/lia";
+import {
+  MdOutlineHomeWork,
+  MdOutlineLocalShipping,
+  MdOutlineDeleteOutline,
+  MdOutlineFactory,
+} from "react-icons/md";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
 import { logger } from "@/services/logger";
+
+ 
+export const SUPPORT_EMAIL = "info@openearth.org";
 
 export const maxPopulationYearDifference = 5;
 
@@ -77,7 +82,7 @@ export const SECTORS: ISector[] = [
     number: 1,
     name: "stationary-energy",
     description: "stationary-energy-description",
-    icon: TbBuildingCommunity,
+    icon: MdOutlineHomeWork,
     color: SectorColors.I,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
@@ -91,7 +96,7 @@ export const SECTORS: ISector[] = [
     number: 2,
     name: "transportation",
     description: "transportation-description",
-    icon: BsTruck,
+    icon: MdOutlineLocalShipping,
     color: SectorColors.II,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
@@ -105,7 +110,7 @@ export const SECTORS: ISector[] = [
     number: 3,
     name: "waste",
     description: "waste-description",
-    icon: PiTrashLight,
+    icon: MdOutlineDeleteOutline,
     color: SectorColors.III,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 3] },
@@ -119,7 +124,7 @@ export const SECTORS: ISector[] = [
     number: 4,
     name: "ippu",
     description: "ippu-description",
-    icon: LiaIndustrySolid,
+    icon: MdOutlineFactory,
     color: SectorColors.IV,
     testId: "ippu-sector-card",
     inventoryTypes: {
@@ -193,6 +198,13 @@ export const getSubSectorByReferenceNumber = (referenceNumber: string) => {
 
 export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";
 
+/**
+ * DataSource.sourceType for sources created from an imported file's data
+ * source column (e.g. "MEED-CL-2022"). They are not in the Global API catalogue,
+ * so they have no details to show in the source drawer.
+ */
+export const FILE_IMPORT_SOURCE_TYPE = "file_import";
+
 export const DEFAULT_ORGANIZATION_ID = "5a84ebff-33ee-457e-ab52-512b5731978b";
 
 export enum StageNames {
@@ -206,6 +218,8 @@ export const Modules = {
   GHGI: { id: "077690c6-6fa3-44e1-84b7-6d758a6a4d88" },
   HIAP: { id: "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8" },
   CCRA: { id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a" },
+  CONCEPT_NOTE_BUILDER: { id: "7a2d4acc-230f-4810-ace6-a3c339f1f60e" },
+  MEED: { id: "9f622243-fba8-4f32-a000-ce6e66982bd1" },
 };
 
 export const MAX_POPULATION_YEAR_DIFFERENCE = 20;

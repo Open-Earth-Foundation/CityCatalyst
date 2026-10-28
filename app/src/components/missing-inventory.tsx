@@ -10,6 +10,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { env } from "@/lib/runtime-env";
 
 const MissingInventory = ({
   lng,
@@ -100,7 +101,7 @@ const MissingInventory = ({
               whiteSpace="nowrap"
               fontWeight="semibold"
               color="content.link"
-              href={"mailto:" + process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
+              href={"mailto:" + env("NEXT_PUBLIC_SUPPORT_EMAILS")}
             >
               {t("please_contact_us")}
             </Link>{" "}

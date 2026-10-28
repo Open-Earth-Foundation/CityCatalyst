@@ -41,19 +41,13 @@ import InventoryDownloadService from "@/backend/InventoryDownloadService";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { getTranslationFromDictionary, keyBy } from "@/util/helpers";
+import { toShort } from "@/util/notation-keys";
 import type {
   InventoryDownloadResponse,
   InventoryWithInventoryValuesAndActivityValues,
 } from "@/util/types";
 
 const CIRIS_TEMPLATE_PATH = "./templates/CIRIS_template.xlsm";
-
-const notationKeyMapping: { [key: string]: string } = {
-  "no-occurrance": "NO",
-  "not-estimated": "NE",
-  "confidential-information": "C",
-  "included-elsewhere": "IE",
-};
 
 // converts sector GPC reference number to index of sheet in CIRIS file
 const sectorSheetMapping: { [key: string]: number } = {
@@ -191,8 +185,7 @@ async function inventoryXLS(
       }
 
       if (inventoryValue.unavailableReason) {
-        row.getCell("AM").value =
-          notationKeyMapping[inventoryValue.unavailableReason];
+        row.getCell("AM").value = toShort(inventoryValue.unavailableReason);
         row.getCell("AQ").value = inventoryValue.unavailableExplanation;
       } else {
         row.getCell("AO").value = inventoryValue.dataSource?.notes;

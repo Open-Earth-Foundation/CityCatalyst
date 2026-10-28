@@ -99,6 +99,10 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.content.primary}",
             },
           },
+          /** Disabled primary button label. */
+          disabled: {
+            value: "#6E6E6E",
+          },
         },
         interactive: {
           secondary: {
@@ -206,6 +210,14 @@ export const appTheme = createSystem(defaultConfig, {
           /** Disabled controls and non-interactive surfaces. */
           backgroundDisabled: {
             value: "#D9D9D9",
+          },
+          /** Disabled primary button background. */
+          disabledDefault: {
+            value: "#EBEBEB",
+          },
+          /** Hover / pressed background for icon control buttons (e.g. more-vert). */
+          controlHover: {
+            value: "#D1D1DC",
           },
         },
         border: {
@@ -493,6 +505,7 @@ export const appTheme = createSystem(defaultConfig, {
           tertiary: { value: "#7A7B9A" }, // validated
           link: { value: "#2351DC" }, // validated
           alternative: { value: "#001EA7" }, // validated
+          disabled: { value: "#6E6E6E" },
         },
 
         sectors: {
@@ -522,6 +535,11 @@ export const appTheme = createSystem(defaultConfig, {
           neutral: { value: "#D7D8FA" },
           overlay: { value: "#E6E7FF" },
         },
+        gray: {
+          focusRing: { value: "#A1A1AA" }, // gray-focusRing
+          muted: { value: "#E4E4E7" }, // gray-muted
+          medium: { value: "#999999" }, // Neutral/Neutral Medium
+        },
         divider: {
           neutral: { value: "#F0F0F0" },
         },
@@ -530,12 +548,14 @@ export const appTheme = createSystem(defaultConfig, {
           default: { value: "#FFFFFF" }, // validated
           neutral: { value: "#E8EAFB" }, // validated
           alternative: { value: "#EFFDE5" }, // validated
+          info: { value: "#DBEAFE" },
           overlay: { value: "#C5CBF5" }, // validated
           transparentGrey: { value: "rgba(232, 234, 251, 0.20)" },
           backgroundLight: { value: "#FAFAFA" },
           backgroundGreyFlat: { value: "#FAFBFE" },
           backgroundLoading: { value: "#E8EAFB" },
           backgroundDisabled: { value: "#D9D9D9" },
+          disabledDefault: { value: "#EBEBEB" },
         },
 
         interactive: {
@@ -558,6 +578,9 @@ export const appTheme = createSystem(defaultConfig, {
           positiveDefault: { value: "#24BE00" }, // stays the same
           warningDefault: { value: "#F9A200" }, // validated changed but stays the same across themes.
           warningOverlay: { value: "#FEF8E1" }, // stays the same
+          warningSubtle: { value: "#FFEDD5" }, // orange-subtle
+          warningMuted: { value: "#FED7AA" }, // orange-muted
+          warningFg: { value: "#92310A" }, // orange-fg
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
           backgroundOverlay: { value: "#E8FBEC" },
@@ -569,6 +592,10 @@ export const appTheme = createSystem(defaultConfig, {
         },
 
         body: { value: "#232640" },
+
+        icon: {
+          default: { value: "#1C1B1F" },
+        },
       },
 
       fonts: {
@@ -645,7 +672,7 @@ export const appTheme = createSystem(defaultConfig, {
       },
 
       letterSpacings: {
-        normal: { value: 0 },
+        normal: { value: "0px" },
         wide: { value: "0.5px" },
         wider: { value: "1.25px" },
         widest: { value: "1.5px" },
@@ -663,6 +690,7 @@ export const appTheme = createSystem(defaultConfig, {
         "xxl-4": { value: "64px" },
         "xxl-5": { value: "72px" },
         "xxl-6": { value: "80px" },
+        "xxl-7": { value: "100px" },
       },
 
       shadows: {
@@ -679,14 +707,31 @@ export const appTheme = createSystem(defaultConfig, {
           value: "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A",
         },
         "12dp": { value: "0px 25px 50px -12px #00000040" },
+        "shadow-light-md": {
+          value:
+            "0 0 1px 0 rgba(24, 24, 27, 0.30), 0 4px 8px 0 rgba(24, 24, 27, 0.10)",
+        },
+        "shadow-lg": {
+          value:
+            "0 1px 3px 0 rgba(0, 0, 31, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10)",
+        },
+        "shadow-lg-top": {
+          value:
+            "0 -1px 3px 0 rgba(0, 0, 31, 0.10), 0 -1px 2px -1px rgba(0, 0, 0, 0.10)",
+        },
       },
 
       radii: {
-        full: { value: "50%" },
+        // Chakra's `full` is a stadium/pill radius, not a percentage. Using 50%
+        // here made every wide, short element (progress tracks, sliders, pills)
+        // render as an ellipse. A square element rounds to the same circle
+        // either way, so this is safe for avatars, dots and icon buttons.
+        full: { value: "9999px" },
         minimal: { value: "4px" },
         rounded: { value: "8px" },
         "rounded-xl": { value: "16px" },
         "rounded-xxl": { value: "20px" },
+        pill: { value: "40px" },
       },
       borders: {
         inputBox: { value: "1px solid #D7D8FB" },

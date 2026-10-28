@@ -42,13 +42,15 @@ import { whiteLabelSchema } from "@/util/validation";
 import { FileUploadService } from "@/backend/FileUploadService";
 import { S3FileStorageProvider } from "@/backend/S3FileUploadService";
 import { db } from "@/models";
-import { Organization } from "@/models/Organization";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
+import UserService from "@/backend/UserService";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
+
   const org = await db.models.Organization.findOne({
     where: {
       organizationId,
@@ -102,6 +104,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
         credentials: {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+          sessionToken: process.env.AWS_SESSION_TOKEN,
         },
       }),
     );

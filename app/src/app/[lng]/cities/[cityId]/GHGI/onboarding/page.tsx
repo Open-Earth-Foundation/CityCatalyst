@@ -1,86 +1,207 @@
 "use client";
-import { use } from "react";
+import { use, useState } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
-import { MdArrowForward, MdUpload } from "react-icons/md";
+import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import ProgressSteps from "@/components/steps/progress-steps";
+import { Trans } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Radio, RadioGroup } from "@/components/ui/radio";
+import { api } from "@/services/api";
+
+type InventoryCreationMode = "upload" | "create" | "";
 
 export default function Onboarding(props: {
-  params: Promise<{ lng: string }>;
+  params: Promise<{ lng: string; cityId: string }>;
 }) {
-  const { lng } = use(props.params);
+  const { lng, cityId } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const [selection, setSelection] = useState<InventoryCreationMode>("");
 
-  const steps = [
-    { title: t("ghgi-onboarding-inventory-step") },
-    { title: t("ghgi-onboarding-population-step") },
-    { title: t("ghgi-onboarding-confirm-step") },
-  ];
+  const { data: city } = api.useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
+
+  const handleContinue = () => {
+    if (selection === "upload") {
+      router.push("setup?mode=upload");
+    } else if (selection === "create") {
+      router.push("setup");
+    }
+  };
 
   return (
     <>
-      <Box w={"1090px"} maxW="full" mx="auto">
-        <Box display="flex" gap="55px" alignItems="center">
-          <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
-            <Text
-              fontFamily="heading"
-              fontWeight="600"
-              lineHeight="16px"
-              letterSpacing="1.5px"
-              textTransform="uppercase"
-              color="content.tertiary"
-              fontSize="title.sm"
-              data-testid="start-page-title"
+      <Box w="1090px" maxW="full" mx="auto" pt="48px" pb="137px">
+        <VStack alignItems="flex-start">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            color="content.link"
+            mb="40px"
+          >
+            <Icon as={MdArrowBack} boxSize={6} />
+            {t("go-back")}
+          </Button>
+          {/* city name */}
+          <Text
+            fontSize="body.lg"
+            fontWeight="600"
+            color="content.tertiary"
+            mb="24px"
+          >
+            {city?.name}
+          </Text>
+          <Heading
+            as="h1"
+            color="content.primary"
+            fontSize="display.sm"
+            lineHeight="44px"
+            fontWeight="600"
+            mb="24px"
+            data-testid="start-page-heading"
+          >
+            {t("select-inventory-creation-method")}
+          </Heading>
+          {/* Inventory creation method */}
+          <Box
+            bg="base.light"
+            borderRadius="xl"
+            p="24px"
+            display="flex"
+            alignItems="center"
+            gap="24px"
+            shadow="sm"
+          >
+            <RadioGroup
+              value={selection}
+              onValueChange={(details) =>
+                setSelection(details.value as InventoryCreationMode)
+              }
+              display="flex"
+              flexDirection="column"
+              gap="40px"
+              flex="1"
             >
-              {t("create-inventory")}
-            </Text>
-            <Heading
-              as="h1"
-              color="content.alternative"
-              fontSize="display.sm"
-              lineHeight="44px"
-              fontWeight="600"
-              fontStyle="normal"
-              data-testid="start-page-heading"
-            >
-              {t("create-ghg-inventory")}
-            </Heading>
-            <Text
-              color="content.tertiary"
-              fontSize="body.lg"
-              lineHeight="24px"
-              fontWeight="400"
-              letterSpacing="wide"
-              data-testid="start-page-description"
-            >
-              {t("inventory-creation-description")}
-            </Text>
+              {/* Create new option */}
+              <Radio
+                value="create"
+                variant="filled"
+                alignItems="flex-start"
+                gap="16px"
+                p="12px"
+                cursor="pointer"
+                borderRadius="lg"
+                _hover={{ bg: "background.backgroundLight" }}
+                data-testid="create-inventory-option"
+              >
+                <Box>
+                  <Text
+                    fontWeight="600"
+                    fontSize="body.lg"
+                    color="content.primary"
+                    lineHeight="24px"
+                    fontFamily="body"
+                  >
+                    {t("create-new-inventory-option")}
+                  </Text>
+                  <Text
+                    fontSize="body.md"
+                    color="content.tertiary"
+                    mt="4px"
+                    lineHeight="20px"
+                    fontFamily="body"
+                  >
+                    <Trans
+                      i18nKey="create-new-inventory-option-description"
+                      t={t}
+                      components={[
+                        <span key="0" />,
+                        <strong key="1" />,
+                        <strong key="2" />,
+                        <strong key="3" />,
+                      ]}
+                    />
+                  </Text>
+                </Box>
+              </Radio>
+
+              {/* Upload option */}
+              <Radio
+                value="upload"
+                variant="filled"
+                alignItems="flex-start"
+                gap="16px"
+                p="12px"
+                cursor="pointer"
+                borderRadius="lg"
+                _hover={{ bg: "background.backgroundLight" }}
+                data-testid="upload-inventory-option"
+              >
+                <Box>
+                  <Text
+                    fontWeight="600"
+                    fontSize="body.lg"
+                    color="content.primary"
+                    lineHeight="24px"
+                    fontFamily="body"
+                  >
+                    {t("upload-an-existing-inventory")}
+                  </Text>
+                  <Text
+                    fontSize="body.md"
+                    color="content.tertiary"
+                    mt="4px"
+                    lineHeight="20px"
+                    fontFamily="body"
+                  >
+                    <Trans
+                      i18nKey="upload-existing-inventory-option-description"
+                      t={t}
+                      components={[
+                        <span key="0" />,
+                        <strong key="1" />,
+                        <strong key="2" />,
+                        <strong key="3" />,
+                        <strong key="4" />,
+                      ]}
+                    />
+                  </Text>
+                </Box>
+              </Radio>
+            </RadioGroup>
+
+            <Box flexShrink={0} lineHeight={0}>
+              <Image
+                src="/assets/onboarding-building-illustration.png"
+                alt="buildings"
+                height={230}
+                width={390}
+                style={{ display: "block" }}
+              />
+            </Box>
           </Box>
-          <Box>
-            <Image
-              src="/assets/onboarding-buildings-image.png"
-              alt="buildings.png"
-              height={420}
-              width={900}
-            />
-          </Box>
-        </Box>
+        </VStack>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" data-onboarding-bottom-bar>
-        {/* Progress Steps */}
-        <Box p="4px">
-          <ProgressSteps steps={steps} currentStep={-1} />
-        </Box>
+      {/* Bottom bar */}
+      <Box
+        bg="base.light"
+        h="96px"
+        w="full"
+        pos="fixed"
+        bottom="0"
+        left="0"
+        data-onboarding-bottom-bar
+      >
         <Box
           h="full"
           w="full"
           display="flex"
           justifyContent="end"
-          py="32px"
+          alignItems="center"
           px="175px"
           gap="16px"
         >
@@ -90,28 +211,14 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
-            variant="outline"
-            onClick={() => router.push("setup?mode=upload")}
-            data-testid="upload-inventory-button"
-          >
-            <MdUpload height="24px" width="24px" />
-            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("upload-existing-inventory")}
-            </Text>
-          </Button>
-          <Button
-            w="auto"
-            gap="8px"
-            py="16px"
-            px="24px"
-            h="64px"
-            onClick={() => router.push("setup")}
-            data-testid="start-inventory-button"
+            disabled={!selection}
+            onClick={handleContinue}
+            data-testid="continue-button"
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("start-inventory")}
+              {t("continue")}
             </Text>
-            <MdArrowForward height="24px" width="24px" />
+            <MdArrowForward size="24px" />
           </Button>
         </Box>
       </Box>

@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import {
   createCityThroughOnboarding,
+  selectAvailableInventoryYear,
 } from "./helpers";
 
 test("Inventory Onboarding", async ({ page }) => {
@@ -11,25 +12,21 @@ test("Inventory Onboarding", async ({ page }) => {
     //   Verify the title of the page is correct
     await expect(page).toHaveTitle(/CityCatalyst/i);
 
-    const startPageTitle = page.getByTestId(/start-page-title/i);
-    await expect(startPageTitle).toHaveText("Create Inventory");
-
     //   Check that the main heading is present and has the correct text
     const mainHeading = page.getByTestId(/start-page-heading/i);
-    await expect(mainHeading).toHaveText(/Create your GHG Inventory/i);
-
-    //   Check that the description is present and has the correct text
-    const description = page.getByTestId(/start-page-description/i);
-    await expect(description).toHaveText(
-      /In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population./i,
+    await expect(mainHeading).toHaveText(
+      /Select how to create a GHG emission inventory/i,
+      { timeout: 30000 },
     );
 
-    //   Verify the "Start Inventory" button is present and clickable
-    const startButton = page.getByTestId("start-inventory-button");
-    await expect(startButton).toBeVisible();
+    //   Select "Create a new inventory" and continue
+    const createOption = page.getByTestId("create-inventory-option");
+    await expect(createOption).toBeVisible();
+    await createOption.click();
 
-    //   Click the "Start Inventory" button
-    await startButton.click();
+    const continueButton = page.getByTestId("continue-button");
+    await expect(continueButton).toBeEnabled();
+    await continueButton.click();
   }
   /** "Set Inventory Details step displays correctly" */
   {
@@ -58,12 +55,8 @@ test("Inventory Onboarding", async ({ page }) => {
     // Verify that the select element is visible
     await expect(year).toBeVisible();
 
-    // Select a year that will always be available (current year - 1)
-    // The years array contains current year and previous 19 years
-    const currentYear = new Date().getFullYear();
-    const testYear = (currentYear - 1).toString();
-    
-    await year.selectOption(testYear);
+    // Skip a year that already has activity data. Continue stays disabled for it.
+    const testYear = await selectAvailableInventoryYear(page);
 
     // Verify that the selection was successful
     await expect(year).toHaveValue(testYear);
@@ -202,43 +195,16 @@ test("Inventory Onboarding", async ({ page }) => {
 
     await page.getByTestId("third-party-data-choice-no").click();
 
-    const continueButton = page.getByRole("button", { name: /Continue/i });
-    await expect(continueButton).toBeEnabled();
-    await continueButton.click();
-  }
+    const createInventoryButton = page.getByRole("button", {
+      name: /Create Inventory/i,
+    });
+    await expect(createInventoryButton).toBeEnabled();
 
-  /** "Confirm Step displays all information correctly" */
-  {
-    // Verify city heading
-    const heading = page.getByTestId("confirm-city-data-heading");
-    await expect(heading).toBeVisible();
-
-    // Verify that the city name is displayed
-    const cityName = page.getByTestId("confirm-city-data-heading");
-    await expect(cityName).toBeVisible();
-
-    const inventoryYear = page.getByTestId("confirm-city-data-year");
-    await expect(inventoryYear).toBeVisible();
-
-    const inventoryGoal = page.getByTestId(
-      "confirm-city-data-inventory-goal",
-    );
-    await expect(inventoryGoal).toBeVisible();
-
-    const populationData = page.getByTestId("confirm-city-data-population");
-    await expect(populationData).toBeVisible();
-
-    const cityMap = page.locator(".pigeon-overlays");
-    await expect(cityMap).toBeVisible();
-  }
-
-  /** "User can complete the onboarding process from Confirm Step" */
-  {
-    // Click the "Continue" button
-    const continueButton = page.getByRole("button", { name: /Continue/i });
-    await expect(continueButton).toBeEnabled();
-
-    await continueButton.click();
+    // Final step: creating the inventory navigates to GHGI home
+    await Promise.all([
+      page.waitForURL(/\/cities\/[^/]+\/GHGI\/[^/]+/, { timeout: 60000 }),
+      createInventoryButton.click(),
+    ]);
   }
 });
 

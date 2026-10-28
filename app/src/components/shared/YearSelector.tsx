@@ -1,7 +1,7 @@
 "use client";
 import { Card, Box, Text, Heading, SimpleGrid } from "@chakra-ui/react";
 import { de, enUS, es, fr, it, pt } from "date-fns/locale";
-import { format } from "date-fns";
+import { format, Locale } from "date-fns";
 import React, { useState } from "react";
 import { TFunction } from "i18next";
 import {
@@ -11,7 +11,7 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 
-const localesMap: Record<string, any> = {
+const localesMap: Record<string, Locale> = {
   en: enUS,
   es: es,
   pt: pt,
@@ -54,17 +54,19 @@ function YearCard({
       onClick={onClick}
       key={year}
       display="flex"
-      flexDirection="row"
-      h="120px"
+      w="242.5px"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      p="l"
+      gap="m"
+      borderRadius="rounded"
       transitionDuration="300ms"
       cursor="pointer"
-      alignItems="center"
-      px={4}
-      gap={4}
       shadow="none"
       backgroundColor={isActive ? "background.neutral" : ""}
-      borderWidth="2px"
-      border="solid"
+      borderWidth="1px"
+      borderStyle="solid"
       borderColor={isActive ? "interactive.secondary" : "border.overlay"}
       color={isActive ? "content.link" : "content.secondary"}
       _hover={
@@ -77,18 +79,29 @@ function YearCard({
     >
       <Box display="flex" flexDirection="column" gap={2}>
         <Heading
-          fontSize="title.sm"
-          fontWeight="medium"
-          lineHeight="20"
-          letterSpacing="wide"
+          fontFamily="heading"
+          fontSize="button.lg"
+          fontWeight="semibold"
+          lineHeight="24"
+          letterSpacing="wider"
+          textTransform="uppercase"
+          color="content.link"
+          overflow="hidden"
+          whiteSpace="nowrap"
+          textOverflow="ellipsis"
         >
           <span data-testid="inventory-year">{year}</span>
         </Heading>
         <Text
+          fontFamily="body"
+          fontSize="body.md"
           fontWeight="regular"
           color="content.tertiary"
           lineHeight="20"
           letterSpacing="wide"
+          overflow="hidden"
+          whiteSpace="nowrap"
+          textOverflow="ellipsis"
           data-testid="inventory-last-updated"
         >
           {t("last-update")}:{" "}
@@ -129,6 +142,15 @@ export function YearSelector({
       px={6}
       py={8}
     >
+      <Heading
+        fontFamily="heading"
+        fontSize="title.md"
+        fontWeight="semibold"
+        lineHeight="24"
+        color="content.secondary"
+      >
+        {t("inventories-by-year")}
+      </Heading>
       <SimpleGrid columns={4} gap={4} py={4}>
         {inventories.slice(0, 4).map((yearData) => (
           <YearCard

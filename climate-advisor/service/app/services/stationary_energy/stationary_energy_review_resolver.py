@@ -9,16 +9,21 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
+    StationaryEnergyReviewDecision,
     StationaryEnergyStagedReviewSelection,
 )
 from app.models.stationary_energy_drafts import ReviewDecisionInput
 from app.services.stationary_energy.stationary_energy_draft_review import (
+    ALLOWED_NOTATION_KEY_REASONS,
     latest_review_decisions,
+    notation_target_id,
 )
 from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyAgentReviewBlockedChoice,
     StationaryEnergyAgentReviewChoice,
     StationaryEnergyAgentReviewChoiceInput,
+    StationaryEnergyNotationKeyChoiceInput,
+    StationaryEnergyNotationKeyTarget,
 )
 
 SOURCE_BACKED_STATUSES = {
@@ -29,6 +34,14 @@ SOURCE_BACKED_STATUSES = {
     "accepted",
     "overridden",
 }
+
+ALLOWED_NOTATION_OPTIONS = [
+    {
+        "notation_key": notation_key,
+        "unavailable_reason": unavailable_reason,
+    }
+    for notation_key, unavailable_reason in ALLOWED_NOTATION_KEY_REASONS.items()
+]
 
 
 def source_label(candidate: StationaryEnergyDraftSourceCandidate) -> str:
@@ -274,6 +287,217 @@ class StationaryEnergyReviewChoiceResolver:
 
         return selected_choices, blocked_choices
 
+    def notation_targets(
+        self,
+        targets_payload: dict[str, Any],
+        *,
+        staged: list[StationaryEnergyStagedReviewSelection],
+    ) -> list[StationaryEnergyNotationKeyTarget]:
+        """Merge CC notation-key targets with CA staged/saved review state."""
+        raw_targets = targets_payload.get("targets")
+        if not isinstance(raw_targets, list):
+            raw_targets = []
+
+        proposal_by_target_id = self._proposal_by_notation_target_id()
+        staged_by_proposal = {
+            selection.proposal_id: selection
+            for selection in staged
+            if selection.status == "active" and selection.action == "set_notation_key"
+        }
+        latest_decisions = latest_review_decisions(self.draft_run.review_decisions)
+        targets: list[StationaryEnergyNotationKeyTarget] = []
+        for raw_target in raw_targets:
+            if not isinstance(raw_target, dict):
+                continue
+            raw_target_id = raw_target.get("target_id")
+            if not isinstance(raw_target_id, str) or not raw_target_id:
+                continue
+            proposal = proposal_by_target_id.get(raw_target_id)
+            raw_target_ref = raw_target.get("target_ref")
+            target_ref = (
+                raw_target_ref
+                if isinstance(raw_target_ref, dict)
+                else (proposal.target_ref if proposal else {})
+            )
+            raw_target_label = raw_target.get("target_label")
+            label = (
+                raw_target_label
+                if isinstance(raw_target_label, str) and raw_target_label
+                else (target_label(proposal) if proposal else raw_target_id)
+            )
+            current_notation_key = raw_target.get("current_notation_key")
+            staged_choice = (
+                self.choice_from_staged(staged_by_proposal[proposal.proposal_id])
+                if proposal and proposal.proposal_id in staged_by_proposal
+                else None
+            )
+            latest = latest_decisions.get(proposal.proposal_id) if proposal else None
+            saved_choice = (
+                self.choice_from_saved_decision(latest)
+                if latest and latest.action == "set_notation_key"
+                else None
+            )
+            targets.append(
+                StationaryEnergyNotationKeyTarget(
+                    proposal_id=proposal.proposal_id if proposal else None,
+                    target_id=raw_target_id,
+                    target_label=label,
+                    target_ref=target_ref,
+                    current_notation_key=(
+                        current_notation_key
+                        if isinstance(current_notation_key, dict)
+                        else None
+                    ),
+                    staged_choice=staged_choice,
+                    saved_choice=saved_choice,
+                )
+            )
+        return targets
+
+    def resolve_notation_choice_inputs(
+        self,
+        choices: list[StationaryEnergyNotationKeyChoiceInput],
+        targets_payload: dict[str, Any],
+    ) -> tuple[
+        list[StationaryEnergyAgentReviewChoice],
+        list[StationaryEnergyAgentReviewBlockedChoice],
+    ]:
+        """Validate notation-key choices against CC-eligible targets."""
+        selected_choices: list[StationaryEnergyAgentReviewChoice] = []
+        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = []
+        targets = self.notation_targets(targets_payload, staged=[])
+        target_by_id = {target.target_id: target for target in targets}
+        target_by_proposal = {
+            target.proposal_id: target for target in targets if target.proposal_id
+        }
+
+        for choice in choices:
+            target = None
+            if choice.target_id:
+                target = target_by_id.get(choice.target_id)
+            if target is None and choice.proposal_id:
+                target = target_by_proposal.get(choice.proposal_id)
+
+            if target is None:
+                blocked_choices.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        proposal_id=choice.proposal_id,
+                        target_id=choice.target_id,
+                        reason=(
+                            "Target is not eligible for Stationary Energy notation keys"
+                        ),
+                        available_options=ALLOWED_NOTATION_OPTIONS,
+                    )
+                )
+                continue
+            if target.proposal_id is None:
+                blocked_choices.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        target_id=target.target_id,
+                        reason="Notation target does not exist in this draft snapshot",
+                        available_options=ALLOWED_NOTATION_OPTIONS,
+                    )
+                )
+                continue
+
+            notation_key = choice.notation_key.upper()
+            unavailable_reason = ALLOWED_NOTATION_KEY_REASONS.get(notation_key)
+            if unavailable_reason is None:
+                blocked_choices.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        proposal_id=target.proposal_id,
+                        target_id=target.target_id,
+                        reason="notation_key must be one of NO, NE, IE, or C",
+                        available_options=ALLOWED_NOTATION_OPTIONS,
+                    )
+                )
+                continue
+            if not choice.unavailable_explanation.strip():
+                blocked_choices.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        proposal_id=target.proposal_id,
+                        target_id=target.target_id,
+                        reason=(
+                            "unavailable_explanation is required for notation keys"
+                        ),
+                        available_options=ALLOWED_NOTATION_OPTIONS,
+                    )
+                )
+                continue
+
+            selected_choices.append(
+                StationaryEnergyAgentReviewChoice(
+                    proposal_id=target.proposal_id,
+                    target_id=target.target_id,
+                    action="set_notation_key",
+                    selected_source_id=None,
+                    selected_candidate_id=None,
+                    source_label=f"Notation key {notation_key}",
+                    source_short_label=notation_key,
+                    source_meta=unavailable_reason,
+                    value=choice.unavailable_explanation,
+                    target_label=target.target_label,
+                    notation_key=notation_key,
+                    unavailable_reason=unavailable_reason,
+                    unavailable_explanation=choice.unavailable_explanation.strip(),
+                    rationale=choice.rationale,
+                )
+            )
+
+        return selected_choices, blocked_choices
+
+    def target_active_staged_notation_selections(
+        self,
+        *,
+        staged: list[StationaryEnergyStagedReviewSelection],
+        proposal_ids: list[UUID] | None,
+    ) -> tuple[
+        list[StationaryEnergyStagedReviewSelection],
+        list[StationaryEnergyAgentReviewBlockedChoice],
+    ]:
+        """Return requested active staged notation selections plus blockers."""
+        notation_staged = [
+            selection
+            for selection in staged
+            if selection.status == "active" and selection.action == "set_notation_key"
+        ]
+        if proposal_ids is None:
+            return notation_staged, []
+
+        proposal_by_id = self._proposal_by_id()
+        staged_by_proposal = {
+            selection.proposal_id: selection for selection in notation_staged
+        }
+        targeted: list[StationaryEnergyStagedReviewSelection] = []
+        blocked: list[StationaryEnergyAgentReviewBlockedChoice] = []
+        seen: set[UUID] = set()
+        for proposal_id in proposal_ids:
+            if proposal_id in seen:
+                continue
+            seen.add(proposal_id)
+            if proposal_id not in proposal_by_id:
+                blocked.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        proposal_id=proposal_id,
+                        reason="proposal_id does not belong to this draft",
+                    )
+                )
+                continue
+            selection = staged_by_proposal.get(proposal_id)
+            if selection is None:
+                blocked.append(
+                    StationaryEnergyAgentReviewBlockedChoice(
+                        proposal_id=proposal_id,
+                        reason=(
+                            "No active staged notation-key choice exists for "
+                            "this proposal"
+                        ),
+                    )
+                )
+                continue
+            targeted.append(selection)
+        return targeted, blocked
+
     def target_active_staged_selections(
         self,
         *,
@@ -290,7 +514,7 @@ class StationaryEnergyReviewChoiceResolver:
         staged_by_proposal = {
             selection.proposal_id: selection
             for selection in staged
-            if selection.status == "active"
+            if selection.status == "active" and selection.action != "set_notation_key"
         }
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = []
 
@@ -392,10 +616,13 @@ class StationaryEnergyReviewChoiceResolver:
     ) -> StationaryEnergyAgentReviewChoice:
         """Serialize an active staged selection as a rollback choice."""
         staged_choice = self.choice_from_staged(selection)
+        choice_kind = (
+            "notation-key" if selection.action == "set_notation_key" else "source"
+        )
         return staged_choice.model_copy(
             update={
                 "action": "rollback_staged",
-                "rationale": "This staged source choice will be removed.",
+                "rationale": f"This staged {choice_kind} choice will be removed.",
             }
         )
 
@@ -469,6 +696,9 @@ class StationaryEnergyReviewChoiceResolver:
                         ),
                         manual_value=latest.manual_value,
                         manual_unit=latest.manual_unit,
+                        notation_key=latest.notation_key,
+                        unavailable_reason=latest.unavailable_reason,
+                        unavailable_explanation=latest.unavailable_explanation,
                         note=latest.note,
                     )
                 )
@@ -507,6 +737,9 @@ class StationaryEnergyReviewChoiceResolver:
                 and selection.selected_candidate_id
                 else selection.selected_source_id
             ),
+            notation_key=selection.notation_key,
+            unavailable_reason=selection.unavailable_reason,
+            unavailable_explanation=selection.unavailable_explanation,
             note=selection.rationale,
         )
 
@@ -517,6 +750,27 @@ class StationaryEnergyReviewChoiceResolver:
         """Serialize a staged selection into a tool choice summary."""
         # Join the staged row back to its proposal for user-facing row labels.
         proposal = self._proposal_for_selection(selection)
+        if selection.action == "set_notation_key":
+            target_id = notation_target_id(proposal.target_ref or {})
+            notation_key = selection.notation_key
+            return StationaryEnergyAgentReviewChoice(
+                proposal_id=selection.proposal_id,
+                target_id=target_id,
+                action="set_notation_key",
+                selected_source_id=None,
+                selected_candidate_id=None,
+                source_label=(
+                    f"Notation key {notation_key}" if notation_key else None
+                ),
+                source_short_label=notation_key,
+                source_meta=selection.unavailable_reason,
+                value=selection.unavailable_explanation,
+                target_label=target_label(proposal),
+                notation_key=notation_key,
+                unavailable_reason=selection.unavailable_reason,
+                unavailable_explanation=selection.unavailable_explanation,
+                rationale=selection.rationale,
+            )
 
         # Resolve the source label only when the staged row points at a candidate.
         candidate = (
@@ -542,6 +796,27 @@ class StationaryEnergyReviewChoiceResolver:
         proposal = self._proposal_by_id()[decision.proposal_id]
 
         # Resolve the candidate through the same accept/override rules used for saves.
+        if decision.action == "set_notation_key":
+            target_id = notation_target_id(proposal.target_ref or {})
+            notation_key = decision.notation_key
+            return StationaryEnergyAgentReviewChoice(
+                proposal_id=decision.proposal_id,
+                target_id=target_id,
+                action="set_notation_key",
+                selected_source_id=None,
+                selected_candidate_id=None,
+                source_label=(
+                    f"Notation key {notation_key}" if notation_key else None
+                ),
+                source_short_label=notation_key,
+                source_meta=decision.unavailable_reason,
+                value=decision.unavailable_explanation,
+                target_label=target_label(proposal),
+                notation_key=notation_key,
+                unavailable_reason=decision.unavailable_reason,
+                unavailable_explanation=decision.unavailable_explanation,
+                rationale=decision.note,
+            )
         if decision.action == "accept":
             candidate = self._candidate_by_id().get(str(proposal.recommended_candidate_id))
         elif decision.action == "override_source" and decision.selected_source_id:
@@ -563,6 +838,25 @@ class StationaryEnergyReviewChoiceResolver:
             source_label=source_label(candidate) if candidate else None,
             target_label=target_label(proposal),
             rationale=decision.note,
+        )
+
+    def choice_from_saved_decision(
+        self,
+        decision: StationaryEnergyReviewDecision,
+    ) -> StationaryEnergyAgentReviewChoice:
+        """Serialize a saved review decision into a tool choice summary."""
+        return self.choice_from_review_input(
+            ReviewDecisionInput(
+                proposal_id=decision.proposal_id,
+                action=decision.action,  # type: ignore[arg-type]
+                selected_source_id=decision.selected_source_id,
+                manual_value=decision.manual_value,
+                manual_unit=decision.manual_unit,
+                notation_key=decision.notation_key,
+                unavailable_reason=decision.unavailable_reason,
+                unavailable_explanation=decision.unavailable_explanation,
+                note=decision.note,
+            )
         )
 
     def _candidate_by_id(
@@ -589,6 +883,17 @@ class StationaryEnergyReviewChoiceResolver:
         return {
             proposal.proposal_id: proposal for proposal in self.draft_run.proposals
         }
+
+    def _proposal_by_notation_target_id(
+        self,
+    ) -> dict[str, StationaryEnergyDraftProposal]:
+        """Index proposals by the CC notation-key target id in their target_ref."""
+        by_target: dict[str, StationaryEnergyDraftProposal] = {}
+        for proposal in self.draft_run.proposals:
+            target_id = notation_target_id(proposal.target_ref or {})
+            if target_id:
+                by_target[target_id] = proposal
+        return by_target
 
     def _available_candidates(
         self,

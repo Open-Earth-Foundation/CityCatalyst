@@ -78,6 +78,10 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import type { Module } from "@/models/Module";
+import type { ProjectModules } from "@/models/ProjectModules";
+
+type ProjectModulesWithModule = ProjectModules & { module: Module };
 
 const paramsSchema = z.object({
   project: z.string().uuid("Project ID must be a valid UUID"),
@@ -85,10 +89,10 @@ const paramsSchema = z.object({
 
 export const GET = apiHandler(async (_req: Request, context) => {
   const { project: projectId } = paramsSchema.parse(context.params);
-  const projectModules = await db.models.ProjectModules.findAll({
+  const projectModules = (await db.models.ProjectModules.findAll({
     where: { projectId: projectId },
     include: [{ model: db.models.Module, as: "module" }],
-  });
-  const modules = projectModules.map((pm: any) => pm.module);
+  })) as ProjectModulesWithModule[];
+  const modules = projectModules.map((pm) => pm.module);
   return NextResponse.json({ data: modules });
 });

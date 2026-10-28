@@ -26,10 +26,10 @@ Usage:
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Literal, Optional
 
 import yaml
-from dotenv import find_dotenv, load_dotenv, dotenv_values
+from dotenv import dotenv_values, find_dotenv, load_dotenv
 from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
@@ -116,12 +116,33 @@ class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    temperature: float
+    temperature: float | None = None
+    reasoning_effort: (
+        Literal["none", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
+
+
+class ResearchModelConfig(BaseModel):
+    """OpenRouter model settings for bounded CNB workflows."""
+
+    name: str
+    reasoning_effort: Literal["low", "medium", "high"] = "medium"
 
 
 class ModelsConfig(BaseModel):
+    cnb_chat_suggestions: ResearchModelConfig | None = None
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    cnb_chat: Optional[RoleModelConfig] = None
+    funding_research: ResearchModelConfig
+    funder_identity: ResearchModelConfig
+    cnb_source_reader: ResearchModelConfig
+    cnb_source_synthesizer: ResearchModelConfig
+    cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_source_impact_reviewer: ResearchModelConfig | None = None
+    cnb_chat_edit_planner: ResearchModelConfig | None = None
+    cnb_chapter_validator: ResearchModelConfig
+    cnb_funder_extractor: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -136,10 +157,68 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
     )
 
 
+class CnbSourcePromptBudgetConfig(BaseModel):
+    """Limits for source-preserving Concept Note analysis."""
+
+    max_partition_tokens: int = Field(default=50000, ge=1000)
+    max_concurrency: int = Field(default=3, ge=1, le=3)
+    max_key_excerpts: int = Field(default=8, ge=1, le=20)
+    max_topics: int = Field(default=12, ge=1, le=30)
+    max_question_chars: int = Field(default=2000, ge=1, le=10000)
+    # Above this total, agents fall back to compact summaries and source queries.
+    full_text_max_tokens: int = Field(default=80000, ge=0)
+
+
+class CnbSourceImpactPromptBudgetConfig(BaseModel):
+    """Limits for choosing and grounding chapters affected by a new source."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_chapter_slice_tokens: int = Field(default=12000, ge=500)
+    max_gap_queries: int = Field(default=40, ge=0, le=200)
+
+
+class CnbEditPromptBudgetConfig(BaseModel):
+    """Limits for the edit tool loop and concurrent chapter semantic reviews."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=2000)
+    max_concurrency: int = Field(default=5, ge=1, le=5)
+    max_agent_turns: int = Field(default=12, ge=3, le=30)
+    max_review_repairs: int = Field(default=2, ge=0, le=3)
+    max_searches: int = Field(default=100, ge=1, le=1000)
+    timeout_seconds: int = Field(default=300, ge=30, le=600)
+
+
+class CnbValidationPromptBudgetConfig(BaseModel):
+    """Full-prompt limit for non-truncating chapter validation batches."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=1000)
+
+
+class CnbFunderImportPromptBudgetConfig(BaseModel):
+    """Limit for reading one uploaded funder document in a single model call."""
+
+    max_document_tokens: int = Field(default=120000, ge=1000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
         default_factory=StationaryEnergyPromptBudgetConfig,
+    )
+    cnb_sources: CnbSourcePromptBudgetConfig = Field(
+        default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_source_impact: CnbSourceImpactPromptBudgetConfig = Field(
+        default_factory=CnbSourceImpactPromptBudgetConfig,
+    )
+    cnb_edits: CnbEditPromptBudgetConfig = Field(
+        default_factory=CnbEditPromptBudgetConfig
+    )
+    cnb_validation: CnbValidationPromptBudgetConfig = Field(
+        default_factory=CnbValidationPromptBudgetConfig,
+    )
+    cnb_funder_import: CnbFunderImportPromptBudgetConfig = Field(
+        default_factory=CnbFunderImportPromptBudgetConfig,
     )
 
 
@@ -152,9 +231,35 @@ class GenerationConfig(BaseModel):
 class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
+    cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
+
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_chat: str = "prompts/cnb/chat.md"
+    cnb_funding_opportunity_research: str
+    cnb_funder_identity_matching: str
+    cnb_similar_project_matching: str
+    cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
+    cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
+    cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
+    cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
+    cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
+    cnb_draft_overview: str = "prompts/cnb/draft_overview.md"
+    cnb_chapter_validation_completeness: str = (
+        "prompts/cnb/chapter_validation_completeness.md"
+    )
+    cnb_chapter_validation_consistency: str = (
+        "prompts/cnb/chapter_validation_consistency.md"
+    )
+    cnb_funder_document_extraction: str = (
+        "prompts/cnb/funder_document_extraction.md"
+    )
+    cnb_template_document_extraction: str = (
+        "prompts/cnb/template_document_extraction.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -168,9 +273,14 @@ class PromptsConfig(BaseModel):
 
     def compose_prompt(self, workflow_prompt_type: str) -> str:
         """Compose the shared core prompt with one workflow-specific prompt."""
-        if workflow_prompt_type not in {"chat", "stationary_energy_review"}:
+        if workflow_prompt_type not in {
+            "chat",
+            "stationary_energy_review",
+            "cnb_chat",
+        }:
             raise ValueError(
-                "Workflow prompt type must be 'chat' or 'stationary_energy_review'"
+                "Workflow prompt type must be 'chat', 'stationary_energy_review', "
+                "or 'cnb_chat'"
             )
 
         core_prompt = self.get_prompt("core").strip()
@@ -286,11 +396,19 @@ class APIConfig(BaseModel):
     requests: Optional[Dict[str, Any]] = None
 
 
+class FirecrawlToolConfig(BaseModel):
+    """Connection settings for the offline Firecrawl research tool."""
+
+    base_url: str = "https://api.firecrawl.dev/v2"
+    timeout_seconds: int = 120
+
+
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
         description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)",
     )
+    firecrawl: FirecrawlToolConfig = Field(default_factory=FirecrawlToolConfig)
     # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
@@ -349,11 +467,28 @@ class CacheConfig(BaseModel):
     max_size_mb: Optional[int] = None
 
 
+class StreamingConfig(BaseModel):
+    """Bound recovery for transport failures after a model opens its stream."""
+
+    retry_attempts: int = Field(default=2, ge=0, le=3)
+    retry_delay_ms: int = Field(default=500, ge=0, le=5000)
+
+
+class ChatConfig(BaseModel):
+    """Execution bounds for streamed chat runs."""
+
+    # Maximum model turns per streamed run. N_MAX = 4 cities cost up to
+    # 1 + 2 * 4 + 1 = 10 sequential turns, so the SDK default of 10 has no slack.
+    max_agent_turns: int = Field(default=16, ge=1, le=64)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
+    chat: ChatConfig = Field(default_factory=ChatConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -377,7 +512,13 @@ def _load_llm_config() -> LLMConfig:
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = yaml.safe_load(f)
 
-    return LLMConfig(**config_data)
+    config = LLMConfig(**config_data)
+
+    # CHAT_MAX_AGENT_TURNS overrides the YAML value, for example to force the turn limit locally.
+    override = os.getenv("CHAT_MAX_AGENT_TURNS")
+    if override:
+        config.chat = ChatConfig(max_agent_turns=int(override))
+    return config
 
 
 class Settings(BaseModel):
@@ -398,6 +539,9 @@ class Settings(BaseModel):
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
+    # Firecrawl is used only by the offline CNB research CLI.
+    firecrawl_api_key: str | None = os.getenv("FIRECRAWL_API_KEY")
+
     # LangSmith tracing configuration
     # Only API key comes from .env for security
     # All other settings (endpoint, project, tracing_enabled) must be in llm_config.yaml
@@ -408,6 +552,7 @@ class Settings(BaseModel):
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
+    cnb_database_url: str | None = os.getenv("CNB_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(
         os.getenv("CA_DATABASE_POOL_SIZE"), 5
     )
@@ -429,6 +574,12 @@ class Settings(BaseModel):
     cc_oauth_client_id: str | None = os.getenv("CC_OAUTH_CLIENT_ID")
     cc_oauth_client_secret: str | None = os.getenv("CC_OAUTH_CLIENT_SECRET")
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
+    cnb_markdown_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
 
     def model_post_init(self, __context: Any) -> None:
         """Load non-secret OpenRouter and observability settings from llm_config.yaml."""

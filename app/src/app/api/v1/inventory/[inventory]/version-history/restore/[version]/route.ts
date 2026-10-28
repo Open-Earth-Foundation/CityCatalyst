@@ -34,16 +34,16 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
  *       401:
  *         description: Access control failed (not allowed).
  *       404:
- *         description: Version not found.
+ *         description: Version not found in this inventory.
  */
 export const POST = apiHandler(async (_req, { session, params }) => {
-  let inventoryId = params.inventory;
-  let versionId = z.string().uuid().parse(params.version);
+  const inventoryId = params.inventory;
+  const versionId = z.string().uuid().parse(params.version);
 
   // perform access control
   await PermissionService.canEditInventory(session, inventoryId);
 
-  await VersionHistoryService.restoreVersion(versionId);
+  await VersionHistoryService.restoreVersion(versionId, inventoryId);
 
   return NextResponse.json({
     success: true,

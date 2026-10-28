@@ -17,17 +17,27 @@ import { NextRequest } from "next/server";
 
 import { POST as postAllowedCapabilities } from "@/app/api/v1/internal/ca/capabilities/allowed-capabilities/route";
 import { POST as postUserToken } from "@/app/api/v1/internal/ca/user-token/route";
-import {
-  COMMIT_ACCEPTED_CAPABILITY,
-  LOAD_CONTEXT_CAPABILITY,
-} from "@/backend/agentic/ghgi/stationary-energy/registry";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { db } from "@/models";
-import { Roles } from "@/util/types";
+import { Roles, UserRole } from "@/util/types";
+import { WhereOptions } from "sequelize";
+import { randomUUID } from "node:crypto";
+import { setupTests } from "../helpers";
 
 const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
   jest.fn<() => Promise<unknown>>();
+const mockListStationaryEnergyNotationKeyTargets =
+  jest.fn<(inventory: unknown) => Promise<unknown>>();
+const mockCommitStationaryEnergyNotationKeys =
+  jest.fn<
+    (params: {
+      inventory: unknown;
+      rows: unknown[];
+      userId: string;
+    }) => Promise<unknown>
+  >();
 
 jest.unstable_mockModule(
   "@/backend/agentic/ghgi/stationary-energy/context",
@@ -41,17 +51,29 @@ jest.unstable_mockModule(
     commitAcceptedStationaryEnergyRows: mockCommitAcceptedStationaryEnergyRows,
   }),
 );
+jest.unstable_mockModule(
+  "@/backend/agentic/ghgi/stationary-energy/notation-keys",
+  () => ({
+    commitStationaryEnergyNotationKeys: mockCommitStationaryEnergyNotationKeys,
+    listStationaryEnergyNotationKeyTargets:
+      mockListStationaryEnergyNotationKeyTargets,
+  }),
+);
 
 let postLoadContext: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route").POST;
 let postCommitAccepted: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route").POST;
+let postListNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route").POST;
+let postCommitNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route").POST;
 
 beforeAll(async () => {
-  ({ POST: postLoadContext } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"
-  ));
-  ({ POST: postCommitAccepted } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
-  ));
+  ({ POST: postLoadContext } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"));
+  ({ POST: postCommitAccepted } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"));
+  ({ POST: postListNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"));
+  ({ POST: postCommitNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"));
 });
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
@@ -62,6 +84,7 @@ const OTHER_INVENTORY_ID = "55555555-5555-4555-8555-555555555555";
 const DRAFT_RUN_ID = "66666666-6666-4666-8666-666666666666";
 const PROPOSAL_ID = "77777777-7777-4777-8777-777777777777";
 const SELECTED_SOURCE_ID = "88888888-8888-4888-8888-888888888888";
+const NOTATION_TARGET_ID = "99999999-9999-4999-8999-999999999999";
 
 function makeRequest(
   pathName: string,
@@ -106,12 +129,15 @@ function serviceToken(
   return jwt.sign(payload, process.env.VERIFICATION_TOKEN_SECRET!, options);
 }
 
-function serviceHeaders(token: string, extra?: HeadersInit): Headers {
+function serviceHeaders(
+  token: string,
+  extra?: Record<string, string>,
+): Headers {
   return jsonHeaders({
     Authorization: `Bearer ${token}`,
     "X-Service-Name": "climate-advisor",
     "X-Service-Key": "ci-shared-service-key",
-    ...Object.fromEntries(new Headers(extra)),
+    ...extra,
   });
 }
 
@@ -155,6 +181,35 @@ function commitAcceptedBody(userId = USER_ID): Record<string, unknown> {
   };
 }
 
+function listNotationKeysBody(userId = USER_ID): Record<string, string> {
+  return {
+    city_id: CITY_ID,
+    draft_run_id: DRAFT_RUN_ID,
+    inventory_id: INVENTORY_ID,
+    sector_code: "stationary_energy",
+    user_id: userId,
+  };
+}
+
+function commitNotationKeysBody(userId = USER_ID): Record<string, unknown> {
+  return {
+    city_id: CITY_ID,
+    draft_run_id: DRAFT_RUN_ID,
+    inventory_id: INVENTORY_ID,
+    rows: [
+      {
+        decision_version: 1,
+        notation_key: "NE",
+        proposal_id: PROPOSAL_ID,
+        target_id: NOTATION_TARGET_ID,
+        target_ref: { subcategory_id: "I.1.1" },
+        unavailable_explanation: "No local source is available yet.",
+      },
+    ],
+    user_id: userId,
+  };
+}
+
 async function expectJsonStatus(
   response: Response,
   status: number,
@@ -164,43 +219,57 @@ async function expectJsonStatus(
 }
 
 describe("internal CA service auth contract", () => {
-  const originalDbInitialized = db.initialized;
   const originalFeatureFlags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
   const originalVerificationSecret = process.env.VERIFICATION_TOKEN_SECRET;
   const originalHost = process.env.HOST;
 
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+  });
+
   beforeEach(() => {
-    db.initialized = true;
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     process.env.CC_SERVICE_API_KEY = "ci-shared-service-key";
     process.env.HOST = "http://localhost:3000";
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.VERIFICATION_TOKEN_SECRET = "ci-jwt-secret";
 
-    jest.spyOn(db.models.User, "findByPk").mockImplementation(
-      async (userId) =>
-        ({
-          email: `${String(userId)}@example.test`,
-          name: `User ${String(userId)}`,
-          pictureUrl: null,
-          role: Roles.User,
-          userId,
-        }) as any,
+    jest.spyOn(db.models.User, "findByPk").mockImplementation(async (userId) =>
+      db.models.User.build({
+        email: `${String(userId)}@example.test`,
+        name: `User ${String(userId)}`,
+        pictureUrl: undefined,
+        role: Roles.User,
+        userId: userId as string,
+      }),
     );
-    jest.spyOn(db.models.User, "findOne").mockImplementation(
-      async (options: any) =>
-        ({
-          email: `${String(options?.where?.userId)}@example.test`,
-          name: `User ${String(options?.where?.userId)}`,
-          pictureUrl: null,
-          role: Roles.User,
-          userId: options?.where?.userId,
-        }) as any,
-    );
+    jest
+      .spyOn(db.models.User, "findOne")
+      .mockImplementation(
+        async (options?: { where?: WhereOptions & { userId?: string } }) =>
+          db.models.User.build({
+            email: `${String(options?.where?.userId)}@example.test`,
+            name: `User ${String(options?.where?.userId)}`,
+            pictureUrl: undefined,
+            role: Roles.User,
+            userId: options?.where?.userId ?? "",
+          }),
+      );
     jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
-      resource: { cityId: CITY_ID },
-    } as any);
+      hasAccess: true,
+      organizationId: randomUUID(),
+      userRole: UserRole.COLLABORATOR,
+      resource: db.models.Inventory.build({
+        cityId: CITY_ID,
+        inventoryId: randomUUID(),
+      }),
+    });
     mockBuildStationaryEnergyContext.mockResolvedValue({
       city: {},
       current_values: [],
@@ -213,16 +282,29 @@ describe("internal CA service auth contract", () => {
     mockCommitAcceptedStationaryEnergyRows.mockResolvedValue([
       { proposal_id: PROPOSAL_ID, status: "committed" },
     ]);
+    mockListStationaryEnergyNotationKeyTargets.mockResolvedValue({
+      allowed_notation_keys: [{ notation_key: "NE" }],
+      targets: [{ target_id: NOTATION_TARGET_ID }],
+    });
+    mockCommitStationaryEnergyNotationKeys.mockResolvedValue([
+      { proposal_id: PROPOSAL_ID, status: "committed" },
+    ]);
   });
 
   afterEach(() => {
+    Reflect.deleteProperty(
+      globalThis,
+      Symbol.for("citycatalyst.ca-user-token-cache.v1"),
+    );
     jest.restoreAllMocks();
     mockBuildStationaryEnergyContext.mockReset();
     mockCommitAcceptedStationaryEnergyRows.mockReset();
+    mockListStationaryEnergyNotationKeyTargets.mockReset();
+    mockCommitStationaryEnergyNotationKeys.mockReset();
   });
 
-  afterAll(() => {
-    db.initialized = originalDbInitialized;
+  afterAll(async () => {
+    if (db.sequelize) await db.sequelize.close();
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.VERIFICATION_TOKEN_SECRET = originalVerificationSecret;
@@ -251,12 +333,61 @@ describe("internal CA service auth contract", () => {
     expect(wrongResponse.status).toBe(401);
   });
 
+  it("rechecks live role, permissions, and user existence with a cached token", async () => {
+    jest
+      .mocked(db.models.User.findByPk)
+      .mockResolvedValueOnce(
+        db.models.User.build({
+          userId: USER_ID,
+          email: "user@example.test",
+          role: Roles.Admin,
+        }),
+      );
+    const fetchSpy = jest
+      .spyOn(global, "fetch")
+      .mockImplementation(async (_, init) =>
+        postUserToken(
+          makeRequest(
+            "/api/v1/internal/ca/user-token",
+            JSON.parse(String(init?.body)),
+            init?.headers,
+          ),
+        ),
+      );
+    const token = await issueClimateAdvisorUserToken({ userId: USER_ID });
+    const request = () =>
+      postAllowedCapabilities(
+        makeRequest(
+          "/api/v1/internal/ca/capabilities/allowed-capabilities",
+          allowedBody(),
+          serviceHeaders(token.access_token),
+        ),
+        { params: Promise.resolve({}) },
+      );
+    expect((await request()).status).toBe(200);
+    expect(
+      jest.mocked(PermissionService.canEditInventory).mock.calls.at(-1)?.[0]
+        .user.role,
+    ).toBe(Roles.User);
+
+    jest
+      .mocked(PermissionService.canEditInventory)
+      .mockRejectedValueOnce(new createHttpError.Forbidden("Access revoked"));
+    expect((await request()).status).toBe(403);
+    jest.mocked(db.models.User.findOne).mockResolvedValueOnce(null);
+    expect((await request()).status).toBe(401);
+    expect(
+      (await issueClimateAdvisorUserToken({ userId: USER_ID })).access_token,
+    ).toBe(token.access_token);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("rejects token exchange for nonexistent users", async () => {
     (
       db.models.User.findByPk as jest.MockedFunction<
         typeof db.models.User.findByPk
       >
-    ).mockResolvedValueOnce(null as any);
+    ).mockResolvedValueOnce(null);
 
     const response = await postUserToken(
       makeRequest(
@@ -399,9 +530,27 @@ describe("internal CA service auth contract", () => {
       ),
       { params: Promise.resolve({}) },
     );
+    const listNotationMismatch = await postListNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+        listNotationKeysBody(OTHER_USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const commitNotationMismatch = await postCommitNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+        commitNotationKeysBody(OTHER_USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
 
     expect(loadMismatch.status).toBe(403);
     expect(commitMismatch.status).toBe(403);
+    expect(listNotationMismatch.status).toBe(403);
+    expect(commitNotationMismatch.status).toBe(403);
 
     const loadValid = await postLoadContext(
       makeRequest(
@@ -419,12 +568,92 @@ describe("internal CA service auth contract", () => {
       ),
       { params: Promise.resolve({}) },
     );
+    const listNotationValid = await postListNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+        listNotationKeysBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const notationCommitBody = commitNotationKeysBody(USER_ID);
+    const commitNotationValid = await postCommitNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+        notationCommitBody,
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
 
     await expectJsonStatus(loadValid, 200);
     const commitPayload = (await expectJsonStatus(commitValid, 200)) as {
       results: Array<{ status: string }>;
     };
     expect(commitPayload.results[0].status).toBe("committed");
+    const listNotationPayload = (await expectJsonStatus(
+      listNotationValid,
+      200,
+    )) as {
+      targets: Array<{ target_id: string }>;
+    };
+    expect(listNotationPayload.targets[0].target_id).toBe(NOTATION_TARGET_ID);
+    const commitNotationPayload = (await expectJsonStatus(
+      commitNotationValid,
+      200,
+    )) as {
+      results: Array<{ status: string }>;
+    };
+    expect(commitNotationPayload.results[0].status).toBe("committed");
+    expect(mockListStationaryEnergyNotationKeyTargets).toHaveBeenCalledWith(
+      expect.objectContaining({ cityId: CITY_ID }),
+    );
+    expect(mockCommitStationaryEnergyNotationKeys).toHaveBeenCalledWith({
+      inventory: expect.objectContaining({ cityId: CITY_ID }),
+      rows: notationCommitBody.rows as unknown[],
+      userId: USER_ID,
+    });
+  });
+
+  it("rejects inaccessible inventories on Stationary Energy notation routes", async () => {
+    const token = serviceToken(USER_ID);
+    (
+      PermissionService.canEditInventory as jest.MockedFunction<
+        typeof PermissionService.canEditInventory
+      >
+    ).mockRejectedValueOnce(
+      new createHttpError.Forbidden("No inventory access"),
+    );
+
+    const listResponse = await postListNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+        listNotationKeysBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    (
+      PermissionService.canEditInventory as jest.MockedFunction<
+        typeof PermissionService.canEditInventory
+      >
+    ).mockRejectedValueOnce(
+      new createHttpError.Forbidden("No inventory access"),
+    );
+    const commitResponse = await postCommitNotationKeys(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+        commitNotationKeysBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(listResponse.status).toBe(403);
+    expect(commitResponse.status).toBe(403);
+    expect(mockListStationaryEnergyNotationKeyTargets).not.toHaveBeenCalled();
+    expect(mockCommitStationaryEnergyNotationKeys).not.toHaveBeenCalled();
   });
 
   it("keeps every internal CA route that requires request users in the auth matrix", () => {
@@ -435,11 +664,11 @@ describe("internal CA service auth contract", () => {
     const coveredRoutes = new Set([
       "allowed-capabilities",
       "ghgi/stationary-energy/commit-accepted",
-      "ghgi/stationary-energy/load-context",
-    ]);
-    const optionalRoutesFromUncommittedFeatureWork = new Set([
       "ghgi/stationary-energy/commit-notation-keys",
       "ghgi/stationary-energy/list-notation-keys",
+      "ghgi/stationary-energy/load-context",
+      "native-inputs/discover",
+      "native-inputs/read",
     ]);
 
     function collectRouteFiles(directory: string): string[] {
@@ -468,11 +697,7 @@ describe("internal CA service auth contract", () => {
       expect(requestUserRoutes).toContain(route);
     }
     expect(
-      requestUserRoutes.filter(
-        (route) =>
-          !coveredRoutes.has(route) &&
-          !optionalRoutesFromUncommittedFeatureWork.has(route),
-      ),
+      requestUserRoutes.filter((route) => !coveredRoutes.has(route)),
     ).toEqual([]);
   });
 });

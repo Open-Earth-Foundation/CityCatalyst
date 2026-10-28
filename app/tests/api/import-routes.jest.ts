@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -12,7 +13,6 @@ import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inve
 import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
 import { db } from "@/models";
 import assert from "node:assert";
-import { NextRequest } from "next/server";
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
 import { Roles } from "@/util/types";
@@ -29,10 +29,10 @@ import { SubSector } from "@/models/SubSector";
 import { SubCategory } from "@/models/SubCategory";
 import { Op } from "sequelize";
 import Excel from "exceljs";
-import { expectStatusCode, expectStatusCodes } from "../helpers";
+import { expectStatusCode, expectStatusCodes, mockRequest } from "../helpers";
+import { Scope } from "@/models/init-models";
 
 // Test helpers (avoiding helpers.ts due to import.meta.url ESM issue)
-const mockUrl = "http://localhost:3000/api/v1";
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 
 /**
@@ -85,24 +85,6 @@ async function createMockXLSXFile(options?: {
   return Buffer.from(buffer);
 }
 
-export function mockRequest(
-  body?: any,
-  searchParams?: Record<string, string>,
-  headers?: Record<string, string>,
-): NextRequest {
-  const request = new NextRequest(new URL(mockUrl));
-  request.json = jest.fn(() =>
-    Promise.resolve(body),
-  ) as unknown as typeof request.json;
-  for (const param in searchParams) {
-    request.nextUrl.searchParams.append(param, searchParams[param]);
-  }
-  for (const header in headers) {
-    request.headers.append(header, headers[header]);
-  }
-  return request;
-}
-
 export function setupTests() {
   const projectDir = process.cwd();
   // Load env config - this is essential for database connection
@@ -144,8 +126,8 @@ describe("Import Routes API", () => {
   let sector: Sector;
   let subsector: SubSector;
   let subcategory: SubCategory;
-  let subsectorScope: any;
-  let subcategoryScope: any;
+  let subsectorScope: Scope;
+  let subcategoryScope: Scope;
 
   beforeAll(async () => {
     setupTests();
@@ -291,7 +273,7 @@ describe("Import Routes API", () => {
       // No file appended
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       const res = await uploadImportFile(req, {
         params: Promise.resolve({
@@ -316,7 +298,7 @@ describe("Import Routes API", () => {
       formData.append("file", mockFile);
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       try {
         await uploadImportFile(req, {
@@ -326,7 +308,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -344,7 +326,7 @@ describe("Import Routes API", () => {
       formData.append("file", mockFile);
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       try {
         await uploadImportFile(req, {
@@ -354,7 +336,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -530,6 +512,43 @@ describe("Import Routes API", () => {
       assert.ok(json.data.reviewData);
       assert.ok(json.data.reviewData.importSummary);
       assert.ok(json.data.reviewData.fieldMappings);
+    });
+
+    it("should list rows outside GPC BASIC while waiting for approval", async () => {
+      const importedFile = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "test-file.pdf",
+        fileType: "pdf",
+        fileSize: 1,
+        originalFileName: "test-file.pdf",
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: { errors: [], warnings: [] },
+        mappingConfiguration: {
+          rows: [
+            { gpcRefNo: "I.1.1", totalCO2e: 10 },
+            { gpcRefNo: "I.1.3", totalCO2e: 10 },
+            { gpcRefNo: "I.2.3", totalCO2e: 0 },
+            { gpcRefNo: "IV.1", totalCO2e: 10 },
+            { gpcRefNo: null, totalCO2e: 10 },
+          ],
+        },
+        rowCount: 5,
+      });
+
+      const res = await getImportStatus(mockRequest(), {
+        params: Promise.resolve({
+          city: city.cityId,
+          inventory: inventory.inventoryId,
+          importedFileId: importedFile.id,
+        }),
+      });
+
+      await expectStatusCode(res, 200);
+      const json = await res.json();
+      assert.deepEqual(json.data.rowsOutsideInventoryType, ["I.1.3", "IV.1"]);
     });
 
     it("should return 404 for non-existent imported file", async () => {
@@ -728,7 +747,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -785,7 +804,7 @@ describe("Import Routes API", () => {
       // Note: In a real test environment, you would mock these services
       // For now, we'll let the test run and handle failures gracefully
 
-      const res = await approveImport(req, {
+      await approveImport(req, {
         params: Promise.resolve({
           city: city.cityId,
           inventory: inventory.inventoryId,
@@ -794,8 +813,140 @@ describe("Import Routes API", () => {
 
       // Verify mapping overrides were stored
       await importedFile.reload();
-      const config = importedFile.mappingConfiguration as any;
+      const config = importedFile.mappingConfiguration;
       expect(config?.overrides).toBeTruthy();
+    });
+
+    describe("when the inventory already has data", () => {
+      let filledInventory: Inventory;
+
+      beforeEach(async () => {
+        filledInventory = await db.models.Inventory.create({
+          inventoryId: randomUUID(),
+          cityId: city.cityId,
+          inventoryName: testInventoryName,
+          year: 2021,
+          totalEmissions: 0,
+          inventoryType: InventoryTypeEnum.GPC_BASIC,
+          globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+        });
+        await db.models.InventoryValue.create({
+          id: randomUUID(),
+          inventoryId: filledInventory.inventoryId,
+          gpcReferenceNumber: "I.1.1",
+          sectorId: sector.sectorId,
+          subSectorId: subsector.subsectorId,
+          subCategoryId: subcategory.subcategoryId,
+          unavailableReason: "no-occurrance",
+          unavailableExplanation: "Does not occur",
+        });
+      });
+
+      afterEach(async () => {
+        await db.models.ImportedInventoryFile.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+          force: true,
+        });
+        await db.models.InventoryValue.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+        await db.models.Version.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+        await db.models.Inventory.destroy({
+          where: { inventoryId: filledInventory.inventoryId },
+        });
+      });
+
+      async function createFileWaitingForApproval() {
+        const fileContent = await createMockXLSXFile();
+        return db.models.ImportedInventoryFile.create({
+          id: randomUUID(),
+          userId: testUserID,
+          cityId: city.cityId,
+          inventoryId: filledInventory.inventoryId,
+          fileName: "test-file.xlsx",
+          fileType: "xlsx",
+          fileSize: fileContent.length,
+          originalFileName: "test-file.xlsx",
+          importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+          data: fileContent,
+          validationResults: { errors: [], warnings: [] },
+          mappingConfiguration: { rows: [] },
+        });
+      }
+
+      it("should return 409 inventory-has-data without replaceExisting", async () => {
+        const importedFile = await createFileWaitingForApproval();
+
+        const res = await approveImport(
+          mockRequest({ importedFileId: importedFile.id }),
+          {
+            params: Promise.resolve({
+              city: city.cityId,
+              inventory: filledInventory.inventoryId,
+            }),
+          },
+        );
+
+        await expectStatusCode(res, 409);
+        const json = await res.json();
+        expect(json.error.code).toBe("inventory-has-data");
+        expect(json.error.data).toEqual({ existingValueCount: 1 });
+
+        // nothing was started or removed
+        await importedFile.reload();
+        expect(importedFile.importStatus).toBe(
+          ImportStatusEnum.WAITING_FOR_APPROVAL,
+        );
+        expect(
+          await db.models.InventoryValue.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(1);
+      });
+
+      it("should keep the existing data when a confirmed replace imports no rows", async () => {
+        const importedFile = await createFileWaitingForApproval();
+
+        const res = await approveImport(
+          mockRequest({
+            importedFileId: importedFile.id,
+            replaceExisting: true,
+          }),
+          {
+            params: Promise.resolve({
+              city: city.cityId,
+              inventory: filledInventory.inventoryId,
+            }),
+          },
+        );
+
+        await expectStatusCode(res, 202);
+
+        // the file maps no rows, so the background import fails and rolls back the replace
+        for (let attempt = 0; attempt < 50; attempt++) {
+          await importedFile.reload();
+          if (
+            importedFile.importStatus === ImportStatusEnum.COMPLETED ||
+            importedFile.importStatus === ImportStatusEnum.FAILED
+          ) {
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        expect(importedFile.importStatus).toBe(ImportStatusEnum.FAILED);
+        expect(
+          await db.models.InventoryValue.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(1);
+        expect(
+          await db.models.Version.count({
+            where: { inventoryId: filledInventory.inventoryId },
+          }),
+        ).toBe(0);
+      });
     });
   });
 });

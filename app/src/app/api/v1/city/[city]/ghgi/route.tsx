@@ -34,11 +34,8 @@
 import { NextResponse } from "next/server";
 
 import { apiHandler } from "@/util/api";
-import { db } from "@/models";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
-import { upsertInventoryRequest } from "@/util/validation";
-import { QueryTypes } from "sequelize";
 import { validate } from "uuid";
 import { InventoryService } from "@/backend/InventoryService";
 

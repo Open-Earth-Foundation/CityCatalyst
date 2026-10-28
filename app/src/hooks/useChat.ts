@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  useCreateChatThreadMutation,
-  useCreateThreadIdMutation,
-} from "@/services/api";
+import { useCreateChatThreadMutation } from "@/services/api";
 import { UseErrorToast } from "@/hooks/Toasts";
 import { useSSEStream } from "@/hooks/useSSEStream";
 import { ChatService } from "@/services/chatService";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import {
   Message,
   appendMessage,
@@ -15,12 +11,16 @@ import {
   removeLastEmptyAssistantMessage,
 } from "@/utils/chatUtils";
 import { TFunction } from "i18next";
+import { trackEvent } from "@/lib/analytics";
 
 interface UseChatProps {
   inventoryId?: string;
   t: TFunction;
 }
 
+/**
+ * Clima chat hook — Climate Advisor only (no OpenAI Assistants fallback).
+ */
 export function useChat({ inventoryId, t }: UseChatProps) {
   const threadIdRef = useRef("");
   const [userInput, setUserInput] = useState("");
@@ -31,9 +31,8 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     useState(false);
 
   const [createChatThread] = useCreateChatThreadMutation();
-  const [createThreadId] = useCreateThreadIdMutation();
 
-  const handleError = (_error: any, errorMessage: string) => {
+  const handleError = (_error: unknown, errorMessage: string) => {
     const { showErrorToast } = UseErrorToast({
       title: t("an-error-occurred"),
       description: errorMessage,
@@ -46,90 +45,39 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     onError: handleError,
   });
 
-  const { startStream, stopStream } = useSSEStream(
-    hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
-      ? {
-          // New CA service callbacks
-          onMessage: (content: string) => {
-            setAssistantStartedResponding(true);
-            setMessages((prev) => appendToLastMessage(prev, content));
-          },
-          onComplete: () => {
-            setInputDisabled(false);
-            setIsGenerating(false);
-            setAssistantStartedResponding(false);
-          },
-          onError: (error: string) => {
-            // Remove empty assistant message if no response was received
-            if (!assistantStartedResponding) {
-              setMessages((prev) => removeLastEmptyAssistantMessage(prev));
-            }
-            handleError(
-              new Error(error),
-              "Failed to send message. Please try again.",
-            );
-            setInputDisabled(false);
-            setIsGenerating(false);
-            setAssistantStartedResponding(false);
-          },
-          onWarning: (warning: string) => {
-            console.warn("Chat warning:", warning);
-          },
-        }
-      : {
-          // Legacy OpenAI Assistant API callbacks
-          onTextCreated: () => {
-            setMessages((prev) => appendMessage(prev, "assistant", ""));
-            setIsGenerating(true);
-          },
-          onTextDelta: (delta: any) => {
-            if (delta.value != null) {
-              setMessages((prev) => appendToLastMessage(prev, delta.value));
-            }
-          },
-          onRunCompleted: () => {
-            setInputDisabled(false);
-            setIsGenerating(false);
-            setAssistantStartedResponding(false);
-          },
-          onRequiresAction: async (event: any) => {
-            // Handle function calls for legacy implementation
-            // This would need the full function call handling logic
-            console.log("Requires action:", event);
-          },
-          onError: (error: string) => {
-            // Remove empty assistant message if no response was received
-            if (!assistantStartedResponding) {
-              setMessages((prev) => removeLastEmptyAssistantMessage(prev));
-            }
-            handleError(
-              new Error(error),
-              "Failed to send message. Please try again.",
-            );
-            setInputDisabled(false);
-            setIsGenerating(false);
-            setAssistantStartedResponding(false);
-          },
-        },
-  );
+  const { startStream, stopStream } = useSSEStream({
+    onMessage: (content: string) => {
+      setAssistantStartedResponding(true);
+      setMessages((prev) => appendToLastMessage(prev, content));
+    },
+    onComplete: () => {
+      setInputDisabled(false);
+      setIsGenerating(false);
+      setAssistantStartedResponding(false);
+    },
+    onError: (error: string) => {
+      if (!assistantStartedResponding) {
+        setMessages((prev) => removeLastEmptyAssistantMessage(prev));
+      }
+      handleError(
+        new Error(error),
+        "Failed to send message. Please try again.",
+      );
+      setInputDisabled(false);
+      setIsGenerating(false);
+      setAssistantStartedResponding(false);
+    },
+    onWarning: (warning: string) => {
+      console.warn("Chat warning:", warning);
+    },
+  });
 
   const initializeThread = async () => {
     if (!threadIdRef.current) {
-      const threadId = await chatService.initializeThread(
-        async (data) => {
-          const result = await createChatThread(data).unwrap();
-          return { threadId: result.threadId };
-        },
-        async (data) => {
-          const result = await createThreadId({
-            // Legacy assistant threads require an inventory id in the URL.
-            inventoryId: data.inventoryId || inventoryId || "",
-            content: data.content || t("initial-message"),
-          }).unwrap();
-          return result;
-        },
-        t,
-      );
+      const threadId = await chatService.initializeThread(async (data) => {
+        const result = await createChatThread(data).unwrap();
+        return { threadId: result.threadId };
+      }, t);
       threadIdRef.current = threadId;
     }
   };
@@ -140,22 +88,21 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     try {
       await initializeThread();
 
-      // Use conditional URL based on feature flag
-      const messageUrl = hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
-        ? `/api/v1/chat/messages`
-        : `/api/v1/assistants/threads/messages`;
+      trackEvent("chat_message_sent", {
+        inventory_id: inventoryId,
+      });
 
-      await startStream(messageUrl, {
+      await startStream(`/api/v1/chat/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           threadId: threadIdRef.current,
           content: text,
+          inventory_id: inventoryId,
         }),
       });
-    } catch (error: any) {
-      if (error.name !== "AbortError") {
-        // Remove empty assistant message if no response was received
+    } catch (error: unknown) {
+      if (!(error instanceof Error) || error.name !== "AbortError") {
         if (!assistantStartedResponding) {
           setMessages((prev) => removeLastEmptyAssistantMessage(prev));
         }

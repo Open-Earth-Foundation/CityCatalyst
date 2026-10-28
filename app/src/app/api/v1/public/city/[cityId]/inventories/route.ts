@@ -6,7 +6,7 @@
  *       - public
  *     operationId: getPublicCityInventories
  *     summary: List public inventories for a city by ID.
- *     description: Public endpoint that returns the city’s public inventories (newest first). No authentication is required. Response is wrapped in '{' data: Inventory[] '}' and includes basic fields like inventoryId, inventoryName, year, publishedAt, lastUpdated, and totalEmissions.
+ *     description: "Public endpoint that returns the city’s public inventories (newest first). No authentication is required. Response is wrapped in '{' data: Inventory[] '}' and includes basic fields like inventoryId, inventoryName, year, publishedAt, lastUpdated, and totalEmissions."
  *     parameters:
  *       - in: path
  *         name: cityId
@@ -55,6 +55,7 @@ import createHttpError from "http-errors";
 import { validate } from "uuid";
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
+import { sqlOmitFromTotal } from "@/util/GHGI/reported-totals";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { cityId } = params;
@@ -98,6 +99,7 @@ export const GET = apiHandler(async (req, { params }) => {
         SELECT SUM(co2eq) as sum
         FROM "InventoryValue"
         WHERE inventory_id = :inventoryId
+          AND ${sqlOmitFromTotal()}
       `;
 
       const [{ sum }] = (await db.sequelize!.query(rawQuery, {
@@ -110,7 +112,7 @@ export const GET = apiHandler(async (req, { params }) => {
         ...inventory.toJSON(),
         totalEmissions: sum || 0,
       };
-    })
+    }),
   );
 
   return NextResponse.json({ data: inventoriesWithTotals });

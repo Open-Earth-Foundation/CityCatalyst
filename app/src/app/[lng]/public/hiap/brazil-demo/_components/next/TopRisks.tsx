@@ -1,0 +1,81 @@
+"use client";
+import React from "react";
+import { Box, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
+import { TitleMedium } from "@/components/package/Texts/Title";
+import { BodySmall } from "@/components/package/Texts/Body";
+import type { CityFixture } from "../../_lib/types";
+import { RISK_CELLS, SECTOR_LABEL } from "../../_lib/riskCells";
+import { pick } from "../../_lib/localized";
+import { indexTone } from "../RiskCellGrid";
+import { Level } from "./Level";
+import { SectorLabel } from "./SectorIcon";
+import { TextLink } from "./TextLink";
+
+/**
+ * Section 1 of BR-N1: the three highest climate risks of the city, as
+ * levels in words. The ranking is read against these.
+ */
+export function TopRisks({
+  city,
+  lng,
+  t,
+  href,
+  onContext,
+}: {
+  city: CityFixture;
+  lng: string;
+  t: TFunction;
+  href: string;
+  /** Opens the city-context dialog. */
+  onContext?: () => void;
+}) {
+  const top = RISK_CELLS.map((c) => ({ c, r: city.risk[c.key] }))
+    .filter(
+      (
+        x,
+      ): x is { c: (typeof RISK_CELLS)[number]; r: NonNullable<typeof x.r> } =>
+        Boolean(x.r),
+    )
+    .sort((a, b) => b.r.index - a.r.index)
+    .slice(0, 3);
+  if (top.length === 0) return null;
+
+  return (
+    <SimpleGrid columns={{ base: 1, md: 3 }} gap="xl">
+      {top.map(({ c, r }) => {
+        const tone = indexTone(r.index);
+        return (
+          <VStack
+            key={c.key}
+            alignItems="flex-start"
+            gap="s"
+            p="xl"
+            bg="base.light"
+            borderRadius="rounded"
+            boxShadow="1dp"
+          >
+            <SectorLabel sector={c.sector}>
+              {pick(SECTOR_LABEL[c.sector], lng)}
+            </SectorLabel>
+            <TitleMedium as="h3" color="content.primary">
+              {pick(c.label, lng)}
+            </TitleMedium>
+            <Level tone={tone}>{t(`next-risk-level-${tone}`)}</Level>
+            <BodySmall color="content.secondary">
+              {pick(c.hazardLabel, lng)}
+            </BodySmall>
+          </VStack>
+        );
+      })}
+      <Box gridColumn="1 / -1">
+        <HStack gap="xl" flexWrap="wrap">
+          <TextLink href={href}>{t("next-risks-link")}</TextLink>
+          {onContext && (
+            <TextLink onClick={onContext}>{t("next-context-link")}</TextLink>
+          )}
+        </HStack>
+      </Box>
+    </SimpleGrid>
+  );
+}

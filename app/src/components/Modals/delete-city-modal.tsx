@@ -25,7 +25,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 
 interface DeleteCityDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   cityData: CityAttributes;
   t: TFunction;
 }
@@ -39,8 +39,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
-    setValue,
+    formState: { errors },
   } = useForm<{ password: string }>();
 
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
@@ -55,12 +54,12 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
       password: data.password!,
-      token: token?.verificationToken!,
-    }).then(async (res: any) => {
+      token: token?.verificationToken ?? "",
+    }).then(async (res) => {
       if (res.data?.comparePassword) {
         await removeCity({
           cityId: cityData.cityId!,
-        }).then((res: any) => {
+        }).then(() => {
           onClose();
           setIsPasswordCorrect(true);
           showSuccessToast();

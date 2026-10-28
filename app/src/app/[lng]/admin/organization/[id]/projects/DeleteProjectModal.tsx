@@ -73,7 +73,7 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
         if (!e.open) {
           closeFunction();

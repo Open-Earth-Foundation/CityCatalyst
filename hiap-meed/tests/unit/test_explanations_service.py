@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
+
 import pytest
 
 from app.modules.prioritizer.services import explanations as explanations_service
@@ -11,15 +14,149 @@ from app.modules.prioritizer.services.explanations import (
     ExplanationItem,
     _build_prompt,
     _build_curated_action_payload,
+    _display_label_for_co_benefit,
+    _display_label_for_sector,
+    _display_label_for_subsector,
+    _explanation_response_format,
+    _generate_explanations_for_language,
     _rows_to_explanations,
+    _validate_explanation_languages,
+    _validate_explanation_coverage,
     _warn_if_prompt_is_large,
+    generate_explanations,
 )
 
 
-def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
-    """Curated payload should expose qualitative signals and known limitations."""
+def test_explanation_terms_use_shared_spanish_catalogue() -> None:
+    """Explanation labels should reuse deterministic shared translations."""
+    assert _display_label_for_sector("II", "es") == "Transporte"
+    assert _display_label_for_subsector("II.1", "es") == (
+        "transporte por carretera"
+    )
+    assert _display_label_for_co_benefit("air_quality", "es") == (
+        "Calidad del aire"
+    )
+
+
+def test_legal_explanation_context_selects_nested_language_text() -> None:
+    """Explanation facts should read legal prose from language-keyed maps."""
+    evidence = {
+        "legal": {
+            "ownership_description": {
+                "en": "The municipality can act directly.",
+                "es": "El municipio puede actuar directamente.",
+            }
+        }
+    }
+
+    assert explanations_service._localized_legal_description(
+        evidence,
+        "legal",
+        "ownership_description",
+        "es",
+    ) == "El municipio puede actuar directamente."
+    assert explanations_service._localized_legal_description(
+        evidence,
+        "legal",
+        "ownership_description",
+        "en",
+    ) == "The municipality can act directly."
+
+
+def test_generate_explanations_populates_each_requested_language(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The public generator should run one complete batch per requested language."""
+
+    def fake_language_batch(**kwargs: object) -> tuple[dict[str, str], dict[str, object]]:
+        language = str(kwargs["language"])
+        return {"A_1": f"text-{language}"}, {"language": language}
+
+    monkeypatch.setattr(
+        explanations_service,
+        "_generate_explanations_for_language",
+        fake_language_batch,
+    )
+    localized, llm_io = generate_explanations(
+        locode="CL IQQ",
+        languages=["en", "es"],
+        scored_actions=[],
+        city_preference_sectors=[],
+        city_preference_co_benefit_keys=[],
+    )
+
+    assert localized == {
+        "en": {"A_1": "text-en"},
+        "es": {"A_1": "text-es"},
+    }
+    assert set(llm_io["languages"]) == {"en", "es"}
+
+
+def test_explanation_generation_uses_strict_chat_completion_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explanation calls must avoid SDK parsed objects in MLflow traces."""
+    captured: dict[str, object] = {}
+
+    class FakeCompletions:
+        """Return an empty valid explanation batch through the standard API."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Capture the request and return JSON content without `message.parsed`."""
+            captured.update(kwargs)
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        message=SimpleNamespace(
+                            content=json.dumps(
+                                {
+                                    "explanations": [
+                                        {
+                                            "action_id": "A_1",
+                                            "explanation": "English explanation.",
+                                        }
+                                    ]
+                                }
+                            )
+                        )
+                    )
+                ]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(explanations_service, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(explanations_service, "get_explanations_model", lambda: "test")
+    monkeypatch.setattr(explanations_service, "get_explanations_temperature", lambda: 0.0)
+
+    explanations, llm_io = _generate_explanations_for_language(
+        locode="CL ARI",
+        language="en",
+        scored_actions=[
+            ScoredAction(
+                action=Action(action_id="A_1", action_name="Test action"),
+                impact_score=0.5,
+                alignment_score=0.5,
+                feasibility_score=0.5,
+                final_score=0.5,
+                rank=1,
+                evidence={},
+            )
+        ],
+        city_preference_sectors=[],
+        city_preference_co_benefit_keys=[],
+    )
+
+    assert explanations == {"A_1": "English explanation."}
+    assert llm_io["status"] == "completed"
+    assert captured["response_format"] == _explanation_response_format()
+
+
+def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
+    """Curated payload should expose the fixed Notion proposal slots."""
     scored_action = ScoredAction(
-        action=Action(action_id="A_1", action_name="Retrofit buildings"),
+        action=Action(action_id="A_1", action_name="Electrify municipal bus fleet"),
         impact_score=0.82,
         alignment_score=0.61,
         feasibility_score=0.52,
@@ -32,20 +169,50 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "timeline_bucket_known": True,
                 "timeline_component_score": 0.5,
                 "matched_city_subsector_keys_count": 2,
-                "matched_city_subsector_keys": ["I.1", "I.2"],
+                "matched_city_subsector_keys": ["II.1", "II.2"],
                 "emissions_reduction_component_score": 0.9,
+                "subsector_contributors": [
+                    {
+                        "subsector_key": "II.1",
+                        "city_emissions": 31.0,
+                        "scoring_city_emissions_magnitude": 31.0,
+                        "share_of_city": 0.31,
+                        "reduction_amount": 24.8,
+                    },
+                    {
+                        "subsector_key": "II.2",
+                        "city_emissions": 4.0,
+                        "scoring_city_emissions_magnitude": 4.0,
+                        "share_of_city": 0.04,
+                        "reduction_amount": 3.2,
+                    },
+                ],
             },
             "alignment": {
                 "sector_match": True,
-                "city_preference_sectors": ["stationary_energy"],
+                "mapped_sector_tags": ["transportation"],
+                "city_preference_sectors": ["transportation"],
                 "sector_component_score": 1.0,
-                "policy_component_score": 0.5,
+                "policy_component_score": 0.8,
                 "policy_score_present": True,
+                "policy_support_category": "strong",
+                "policy_evidence": [
+                    {
+                        "evidence_rank": 1,
+                        "document_name": "National Fleet Electrification Plan",
+                        "signal_relation": "commits",
+                        "evidence_text": "Sets targets for zero-emission buses.",
+                    }
+                ],
                 "matched_preferred_co_benefits_count": 0,
+                "matched_preferred_co_benefits": [],
+                "city_preference_co_benefit_keys": ["air_quality"],
                 "city_selected_co_benefits_present": True,
                 "co_benefit_component_score": 0.5,
-                "timeframe_match_label": "preferred_match",
+                "timeframe_match_label": "exact_match",
                 "city_preference_timeframes": ["short"],
+                "action_timeframe_label": "short",
+                "action_timeline_bucket": "<5 years",
                 "timeframe_component_score": 1.0,
             },
             "feasibility": {
@@ -54,231 +221,192 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                     "assessment_missing": False,
                     "verdict_category": "conditional",
                     "component_source": "verdict_score",
-                    "component_score": 0.5,
+                    "component_score": 0.85,
                     "verdict_score_missing": False,
                 },
                 "mitigation_feasibility": {
-                    "component_score": 0.5,
-                    "score_present": False,
+                    "component_score": 0.8,
+                    "score_present": True,
                     "score_missing": False,
                 },
                 "financial_feasibility": {
-                    "component_score": 0.5,
-                    "score_present": False,
+                    "component_score": 0.45,
+                    "score_present": True,
                     "score_missing": False,
-                    "route": "self-deliverable",
-                    "reason": "Low-capital action.",
+                    "route": "needs co-financing",
+                    "reason": "Capital-intensive investment likely needs external co-financing.",
                 },
             },
         },
     )
 
     payload = _build_curated_action_payload(
-        scored_action=scored_action,
+        scored_action=scored_action, language="en"
     )
 
     assert payload["action_id"] == "A_1"
-    assert "action_name" not in payload
+    assert payload["action_name"] == "Electrify municipal bus fleet"
     assert payload["rank"] == 1
-    assert payload["score_bands"] == {
-        "final": "moderate",
-        "impact": "high",
-        "alignment": "moderate",
-        "feasibility": "moderate",
+    assert set(payload) == {
+        "action_id",
+        "rank",
+        "action_name",
+        "explanation_slots",
+        "known_limitations",
     }
-    assert payload["impact_signals"]["impact_band"] == "high"
-    assert payload["impact_signals"]["matched_city_subsector_keys_count"] == 2
-    assert payload["impact_signals"]["emissions_reduction_component_bucket"] == "very_strong"
-    assert payload["impact_signals"]["timeline_component_bucket"] == "neutral"
-    assert payload["alignment_signals"]["sector_match"] is True
-    assert payload["alignment_signals"]["sector_component_bucket"] == "very_strong"
-    assert payload["alignment_signals"]["policy_component_bucket"] == "neutral"
-    assert payload["alignment_signals"]["co_benefit_component_bucket"] == "neutral"
-    assert payload["feasibility_signals"]["legal_component_bucket"] == "neutral"
-    assert (
-        payload["feasibility_signals"]["mitigation_feasibility_component_bucket"]
-        == "neutral"
+
+    slots = payload["explanation_slots"]
+    assert slots["impact_driver"] == {
+        "kind": "subsector_share",
+        "subsector_key": "II.1",
+        "subsector_label": "on-road transportation",
+        "sector_key": "II",
+        "sector_label": "Transportation",
+        "share_of_city_percent": 31.0,
+        "share_phrase": "31%",
+        "impact_band": "High",
+    }
+    assert slots["alignment_driver"]["policy"]["document_name"] == (
+        "National Fleet Electrification Plan"
     )
-    assert (
-        payload["feasibility_signals"]["financial_feasibility_component_bucket"]
-        == "neutral"
-    )
-    assert (
-        payload["feasibility_signals"]["financial_feasibility_route"]
-        == "self-deliverable"
-    )
-    assert (
-        payload["feasibility_signals"]["financial_feasibility_reason"]
-        == "Low-capital action."
-    )
-    assert payload["main_strengths"] == [
-        "Expected to make a very strong emissions reduction in the current city inventory.",
-        "Matches the city's preferred sector.",
-        "Fits the city's preferred implementation timeframe.",
+    assert slots["alignment_driver"]["sector_priority"]["matched_sectors"] == [
+        "Transportation"
     ]
-    assert payload["main_constraints"] == []
+    assert slots["alignment_driver"]["co_benefit_priority"][
+        "city_selected_co_benefits"
+    ] == ["Air quality"]
+    assert slots["alignment_driver"]["timeframe"]["status"] == "aligned"
+    assert slots["feasibility_driver"] == {
+        "kind": "weakest_component",
+        "stance": "constraint",
+        "component": "financial_feasibility",
+        "component_label": "financial feasibility",
+        "bucket": "Weak",
+        "route": "Needs co-financing",
+        "reason": "Capital-intensive investment likely needs external co-financing.",
+    }
     assert payload["known_limitations"] == []
 
 
-def test_build_curated_action_payload_uses_policy_buckets_for_strength() -> None:
-    """Policy support wording should distinguish neutral, strong, and very strong scores."""
-    base_evidence = {
-        "impact": {
-            "impact_band": "low",
-            "matched_city_subsector_keys_count": 0,
-            "emissions_reduction_component_score": 0.0,
-            "timeline_bucket_known": False,
-            "timeline_component_score": 0.5,
-        },
-        "alignment": {
-            "matched_preferred_co_benefits_count": 0,
-            "policy_score_present": True,
-        },
-        "feasibility": {
-            "legal": {
-                "assessment_present": False,
-                "assessment_missing": True,
-                "component_score": 0.5,
-                "component_source": "neutral_fallback",
-                "verdict_score_missing": False,
-            },
-            "mitigation_feasibility": {
-                "score_present": False,
-                "score_missing": True,
-            },
-        },
-    }
-
-    neutral_payload = _build_curated_action_payload(
-        scored_action=ScoredAction(
-            action=Action(action_id="A_2", action_name="Support score neutral"),
-            impact_score=0.2,
-            alignment_score=0.5,
-            feasibility_score=0.1,
-            final_score=0.2,
-            rank=2,
-            evidence={
-                **base_evidence,
-                "alignment": {
-                    **base_evidence["alignment"],
-                    "policy_component_score": 0.5,
-                },
-            },
-        )
-    )
-
-    strong_payload = _build_curated_action_payload(
-        scored_action=ScoredAction(
-            action=Action(action_id="A_3", action_name="Support score strong"),
-            impact_score=0.2,
-            alignment_score=0.6,
-            feasibility_score=0.1,
-            final_score=0.2,
-            rank=3,
-            evidence={
-                **base_evidence,
-                "alignment": {
-                    **base_evidence["alignment"],
-                    "policy_component_score": 0.6,
-                },
-            },
-        )
-    )
-
-    very_strong_payload = _build_curated_action_payload(
-        scored_action=ScoredAction(
-            action=Action(action_id="A_4", action_name="Support score very strong"),
-            impact_score=0.2,
-            alignment_score=0.9,
-            feasibility_score=0.1,
-            final_score=0.3,
-            rank=4,
-            evidence={
-                **base_evidence,
-                "alignment": {
-                    **base_evidence["alignment"],
-                    "policy_component_score": 0.9,
-                },
-            },
-        )
-    )
-
-    assert (
-        "Shows strong supportive policy context in the current evidence."
-        not in neutral_payload["main_strengths"]
-    )
-    assert (
-        "Shows strong supportive policy context in the current evidence."
-        in strong_payload["main_strengths"]
-    )
-    assert (
-        "Shows very strong supportive policy context in the current evidence."
-        in very_strong_payload["main_strengths"]
-    )
-
-
-def test_build_curated_action_payload_uses_component_buckets_for_constraints() -> None:
-    """Constraint text should follow weak component buckets across the blocks."""
+def test_build_curated_action_payload_allows_supportive_feasibility_slot() -> None:
+    """Feasibility slot should be supportive when the weakest component is strong."""
     payload = _build_curated_action_payload(
         scored_action=ScoredAction(
-            action=Action(action_id="A_5", action_name="Slow, weak fit"),
-            impact_score=0.1,
-            alignment_score=0.1,
-            feasibility_score=0.1,
-            final_score=0.1,
-            rank=5,
+            action=Action(
+                action_id="A_2",
+                action_name="Promote agroecological certification",
+            ),
+            impact_score=0.42,
+            alignment_score=0.2,
+            feasibility_score=0.9,
+            final_score=0.5,
+            rank=8,
             evidence={
                 "impact": {
-                    "impact_band": "low",
-                    "timeline_bucket": ">10 years",
-                    "timeline_bucket_known": True,
-                    "timeline_component_score": 0.0,
-                    "matched_city_subsector_keys_count": 0,
-                    "emissions_reduction_component_score": 0.0,
+                    "impact_band": "medium",
+                    "matched_city_subsector_keys_count": 1,
+                    "emissions_reduction_component_score": 0.11,
+                    "subsector_contributors": [
+                        {
+                            "subsector_key": "V.1",
+                            "share_of_city": 0.11,
+                            "reduction_amount": 5.5,
+                        }
+                    ],
                 },
                 "alignment": {
-                    "city_preference_sectors": ["waste"],
+                    "sector_match": False,
+                    "mapped_sector_tags": ["afolu"],
+                    "city_preference_sectors": ["transportation"],
                     "sector_component_score": 0.0,
-                    "city_preference_timeframes": ["short"],
-                    "timeframe_component_score": 0.0,
-                    "policy_score_present": True,
-                    "policy_component_score": 0.1,
-                    "city_selected_co_benefits_present": True,
-                    "co_benefit_component_score": 0.2,
+                    "policy_component_score": 0.0,
+                    "policy_score_present": False,
+                    "matched_preferred_co_benefits": [],
+                    "city_preference_co_benefit_keys": [],
+                    "city_selected_co_benefits_present": False,
+                    "timeframe_match_label": "not_scored",
                 },
                 "feasibility": {
                     "legal": {
                         "assessment_present": True,
-                        "assessment_missing": False,
-                        "component_score": 0.0,
-                        "component_source": "verdict_score",
-                        "verdict_score_missing": False,
+                        "component_score": 0.95,
                     },
                     "mitigation_feasibility": {
-                        "component_score": 0.25,
+                        "component_score": 0.9,
                         "score_present": True,
-                        "score_missing": False,
                     },
                     "financial_feasibility": {
-                        "component_score": 0.2,
+                        "component_score": 0.85,
                         "score_present": True,
-                        "score_missing": False,
+                        "route": "self-deliverable",
+                        "reason": "Low-capital action the city can deliver itself.",
                     },
                 },
             },
-        )
+        ),
+        language="en",
     )
 
-    assert payload["main_constraints"] == [
-        "Does not directly match a subsector with recorded city emissions in the current inventory.",
-        "Its expected emissions benefits arrive on a slow timeline.",
-        "Does not match the city's preferred sector.",
-        "Does not fit the city's preferred implementation timeframe.",
-        "Shows very weak supportive policy context in the current evidence.",
-        "Offers very weak support for the city's preferred co-benefits.",
-        "Shows very weak legal feasibility conditions in the current evidence.",
-        "Shows weaker mitigation feasibility for the current city.",
-        "Needs a difficult financing route for the current city.",
+    slots = payload["explanation_slots"]
+    assert slots["impact_driver"]["subsector_label"] == "livestock"
+    assert slots["impact_driver"]["sector_label"] == (
+        "Agriculture, forestry and other land use"
+    )
+    assert slots["impact_driver"]["share_phrase"] == "11%"
+    assert slots["alignment_driver"]["policy"]["status"] == "not_present"
+    assert slots["alignment_driver"]["sector_priority"]["matched_sectors"] == []
+    assert slots["alignment_driver"]["timeframe"] == {"status": "not_notable"}
+    assert slots["feasibility_driver"] == {
+        "kind": "weakest_component",
+        "stance": "support",
+        "component": "financial_feasibility",
+        "component_label": "financial feasibility",
+        "bucket": "Very strong",
+        "route": "Self-deliverable",
+        "reason": "Low-capital action the city can deliver itself.",
+    }
+
+
+def test_build_curated_action_payload_keeps_known_limitations() -> None:
+    """Known limitations should stay as the only non-slot explanation context."""
+    payload = _build_curated_action_payload(
+        scored_action=ScoredAction(
+            action=Action(action_id="A_3", action_name="Missing evidence action"),
+            impact_score=0.1,
+            alignment_score=0.1,
+            feasibility_score=0.1,
+            final_score=0.1,
+            rank=3,
+            evidence={
+                "impact": {},
+                "alignment": {},
+                "feasibility": {
+                    "legal": {
+                        "assessment_present": False,
+                        "assessment_missing": True,
+                        "component_score": 0.5,
+                        "verdict_score_missing": False,
+                    },
+                    "mitigation_feasibility": {
+                        "component_score": 0.5,
+                        "score_missing": True,
+                        "action_score_missing": False,
+                    },
+                    "financial_feasibility": {
+                        "component_score": 0.5,
+                        "score_missing": True,
+                        "action_score_missing": False,
+                    },
+                },
+            },
+        ),
+        language="en",
+    )
+
+    assert payload["known_limitations"] == [
+        "No legal assessment row was available for this action, so the legal component used a neutral fallback.",
+        "No mitigation feasibility score row was available for this action, so the feasibility component used a neutral fallback.",
+        "No financial feasibility score row was available for this action, so the financial feasibility component used a neutral fallback.",
     ]
 
 
@@ -298,6 +426,26 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
     assert result == {"A_1": "First explanation."}
 
 
+def test_explanation_language_validation_rejects_wrong_dominant_language() -> None:
+    """A confidently wrong-language explanation should fail before aggregation."""
+    with pytest.raises(ValueError, match="instead of `es`"):
+        _validate_explanation_languages(
+            {
+                "A_1": (
+                    "This action addresses transport emissions and benefits local "
+                    "air quality, but financing remains a material constraint."
+                )
+            },
+            "es",
+        )
+
+
+def test_explanation_coverage_requires_every_action_in_each_language() -> None:
+    """A localized batch must populate every requested action explanation."""
+    with pytest.raises(ValueError, match=r"missing action IDs: \['A_2'\]"):
+        _validate_explanation_coverage({"A_1": "Texto."}, {"A_1", "A_2"}, "es")
+
+
 def test_warn_if_prompt_is_large_logs_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -314,16 +462,43 @@ def test_warn_if_prompt_is_large_logs_warning(
     assert any("Large explanation prompt detected" in message for message in warning_messages)
 
 
-def test_build_prompt_is_canonical_english_only() -> None:
-    """Prompt should explicitly anchor explanation generation in English."""
+def test_build_prompt_requires_the_requested_language() -> None:
+    """Prompt should explicitly anchor explanation generation in one language."""
     prompt = _build_prompt(
         locode="CL IQQ",
+        language="es",
         city_preference_sectors=["waste"],
         city_preference_co_benefit_keys=["air_quality", "mobility"],
         curated_actions=[],
     )
 
-    assert "Write every explanation in English." in prompt
-    assert "Focus on the biggest ranking drivers" in prompt
+    assert "Write every explanation in the requested `language`." in prompt
+    assert "- `language`: es" in prompt
+    assert "Core grounding rules:" in prompt
+    assert "Sentence plan:" in prompt
+    assert "Sentence 1 rendering rules:" in prompt
+    assert "Sentence 2 rendering rules:" in prompt
+    assert "Sentence 3 rendering rules:" in prompt
+    assert "Style guardrails:" in prompt
+    assert "Sentence 1: impact driver from `explanation_slots.impact_driver`." in prompt
+    assert "Sentence 2: alignment driver from `explanation_slots.alignment_driver`." in prompt
+    assert "Sentence 3: feasibility driver from `explanation_slots.feasibility_driver`." in prompt
+    assert "If `feasibility_driver.stance` is `support`" in prompt
+    assert "If `feasibility_driver.stance` is `mixed`" in prompt
     assert "Do not infer extra benefits" in prompt
+    assert "Do not repeat the score bars in prose" in prompt
+    assert "On-road transportation accounts for 31% of the city's inventory" in prompt
+    assert "Avoid broad repeated sector wording" in prompt
+    assert "Do not write schema-derived phrases" in prompt
+    assert "matches the city's <timeframe> timeframe preference" in prompt
+    assert "fits the city's short-term timeframe preference" in prompt
+    assert "mention co-benefits and timeframe as separate facts" in prompt
+    assert "matches the city's air quality co-benefit with a short-term timeframe" in prompt
+    assert "Livestock accounts for 11% of the city's inventory" in prompt
+    assert "Financial feasibility is the main constraint" in prompt
+    assert "Financial feasibility is supportive" in prompt
+    assert "main_strengths" not in prompt
+    assert "main_constraints" not in prompt
+    assert "score_bands" not in prompt
+    assert "impact_signals" not in prompt
     assert '"air_quality", "mobility"' in prompt

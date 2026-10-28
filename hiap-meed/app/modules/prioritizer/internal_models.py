@@ -159,6 +159,14 @@ class LegalAssessmentRecord(BaseModel):
     ownership_description_i18n: dict[str, str] = Field(default_factory=dict)
     restrictions_description_i18n: dict[str, str] = Field(default_factory=dict)
     legal_justification_i18n: dict[str, str] = Field(default_factory=dict)
+    authority_scope_selected_label: str | None = None
+    authority_scope_report_label: str | None = None
+    authority_scope_status: str | None = None
+    authority_scope_confidence_passed: bool | None = None
+    authority_scope_review_status: str | None = None
+    authority_scope_classification_method: str | None = None
+    authority_scope_canonical_row_sha256: str | None = None
+    authority_scope_provenance: dict[str, Any] = Field(default_factory=dict)
     raw: dict[str, Any] = Field(default_factory=dict)
     source_metadata: dict[str, Any] = Field(default_factory=dict)
 
@@ -241,6 +249,74 @@ class ActionFinancialFeasibilityScoresFetchResult(BaseModel):
     source_metadata: dict[str, Any] = Field(default_factory=dict)
     upstream_meta: dict[str, Any] = Field(default_factory=dict)
     warning: str | None = None
+
+
+class ClimateFinanceOpportunityRecord(BaseModel):
+    """
+    Report-ready climate-finance opportunity from the upstream catalogue.
+
+    Catalogue rows are screened by country, sector, route, and availability.
+    They are not matched to the selected action; report facts must label them
+    as contextual candidates.
+    """
+
+    opportunity_name: str
+    funder_name: str | None = None
+    instrument: str | None = None
+    status: str | None = None
+    status_as_of: str | None = None
+    recurrence: str | None = None
+    report_category: str = "current"
+    source_url: str | None = None
+    amount_note: str | None = None
+    city_application: list[str] = Field(default_factory=list)
+    climate_relevance: str | None = None
+
+
+class ClimateFinanceProjectRecord(BaseModel):
+    """
+    Report-ready comparable climate project from the upstream catalogue.
+
+    Projects are fetched by selected action and country. `action_matches`
+    is the canonical upstream rationale (action ID plus confidence) and must
+    not be replaced with a title-derived connection.
+    """
+
+    project_name: str
+    project_name_i18n: dict[str, str] = Field(default_factory=dict)
+    sector: str | None = None
+    jurisdiction: str | None = None
+    lifecycle_stage: str | None = None
+    funding_channel: str | None = None
+    cost_total: float | None = None
+    amount_unit: str | None = None
+    funding_sources: list[dict[str, Any]] = Field(default_factory=list)
+    action_matches: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ClimateFinanceOpportunitiesFetchResult(BaseModel):
+    """One independently fetched opportunities-catalogue result."""
+
+    opportunities: list[ClimateFinanceOpportunityRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ClimateFinanceProjectsFetchResult(BaseModel):
+    """One independently fetched projects-catalogue result."""
+
+    projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ClimateFinanceReportEvidenceFetchResult(BaseModel):
+    """Selected-action finance opportunities and precedents for report writing."""
+
+    opportunities: list[ClimateFinanceOpportunityRecord] = Field(default_factory=list)
+    projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
 
 
 class ScoredAction(BaseModel):

@@ -23,7 +23,7 @@ async function processCsv(filePath: string) {
       continue
     }
     const subsectorScope = json[row.gpc_reference_number]
-    const methodology = subsectorScope.methodologies.find((meth: any) => meth.id == row.methodology_name)
+    const methodology = subsectorScope.methodologies.find((meth: { id: string }) => meth.id == row.methodology_name)
     if (!methodology) {
       console.log(`${row.id}: ${row.methodology_name} not found for ${row.gpc_reference_number}.`)
       continue

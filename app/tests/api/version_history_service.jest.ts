@@ -4,33 +4,32 @@ import { randomUUID } from "node:crypto";
 // --- Mock setup ---
 
 const mockVersionFindOne =
-  jest.fn<(...args: any[]) => Promise<Record<string, any> | null>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown> | null>>();
 const mockVersionFindAll =
-  jest.fn<(...args: any[]) => Promise<Record<string, any>[]>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown>[]>>();
 const mockVersionCreate =
-  jest.fn<(...args: any[]) => Promise<Record<string, any>>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown>>>();
+const mockVersionDestroy = jest.fn<(...args: unknown[]) => Promise<number>>();
 const mockTransaction = { id: "mock-transaction" };
 
-const mockInventoryValueModel = {
-  update: jest.fn(),
-  create: jest.fn(),
-  destroy: jest.fn(),
-};
-const mockActivityValueModel = {
-  update: jest.fn(),
-  create: jest.fn(),
-  destroy: jest.fn(),
-};
-const mockGasValueModel = {
-  update: jest.fn(),
-  create: jest.fn(),
-  destroy: jest.fn(),
-};
-const mockEmissionsFactorModel = {
-  update: jest.fn(),
-  create: jest.fn(),
-  destroy: jest.fn(),
-};
+function createMockModel() {
+  return {
+    update: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+    create: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+    destroy: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+  };
+}
+
+const mockInventoryValueModel = createMockModel();
+const mockActivityValueModel = createMockModel();
+const mockGasValueModel = createMockModel();
+const mockEmissionsFactorModel = createMockModel();
+const allMockModels = [
+  mockInventoryValueModel,
+  mockActivityValueModel,
+  mockGasValueModel,
+  mockEmissionsFactorModel,
+];
 
 jest.unstable_mockModule("@/models", () => ({
   db: {
@@ -39,6 +38,7 @@ jest.unstable_mockModule("@/models", () => ({
         findOne: mockVersionFindOne,
         findAll: mockVersionFindAll,
         create: mockVersionCreate,
+        destroy: mockVersionDestroy,
       },
       InventoryValue: mockInventoryValueModel,
       ActivityValue: mockActivityValueModel,
@@ -47,18 +47,19 @@ jest.unstable_mockModule("@/models", () => ({
       User: {},
     },
     sequelize: {
-      transaction: jest.fn((cb: (t: any) => any) => cb(mockTransaction)),
+      transaction: jest.fn((cb: (t: unknown) => unknown) =>
+        cb(mockTransaction),
+      ),
     },
   },
 }));
 
-const { default: VersionHistoryService } = await import(
-  "@/backend/VersionHistoryService"
-);
+const { default: VersionHistoryService } =
+  await import("@/backend/VersionHistoryService");
 
 // --- Helpers ---
 
-function createMockVersion(overrides: Record<string, any> = {}) {
+function createMockVersion(overrides: Record<string, unknown> = {}) {
   return {
     versionId: randomUUID(),
     inventoryId: randomUUID(),
@@ -69,7 +70,6 @@ function createMockVersion(overrides: Record<string, any> = {}) {
     isDeleted: false,
     created: new Date(),
     previousVersion: null,
-    destroy: jest.fn(),
     ...overrides,
   };
 }
@@ -83,6 +83,10 @@ describe("VersionHistoryService", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // by default an update finds the row it targets
+    for (const model of allMockModels) {
+      model.update.mockResolvedValue([1]);
+    }
   });
 
   describe("createVersion", () => {
@@ -171,6 +175,72 @@ describe("VersionHistoryService", () => {
         expect.objectContaining({}),
       );
     });
+
+    it("should skip a non-deletion version whose data equals the previous version", async () => {
+      mockVersionFindOne.mockResolvedValueOnce({
+        versionId: randomUUID(),
+        data: { id: entryId, co2eq: 100 },
+        isDeleted: false,
+      });
+
+      await VersionHistoryService.createVersion(
+        inventoryId,
+        "InventoryValue",
+        entryId,
+        authorId,
+        { id: entryId, co2eq: 100 },
+      );
+
+      expect(mockVersionCreate).not.toHaveBeenCalled();
+    });
+
+    it("should record a deletion even when its data equals the previous version", async () => {
+      const previousVersionId = randomUUID();
+      mockVersionFindOne.mockResolvedValueOnce({
+        versionId: previousVersionId,
+        data: { id: entryId, co2eq: 100 },
+        isDeleted: false,
+      });
+
+      await VersionHistoryService.createVersion(
+        inventoryId,
+        "InventoryValue",
+        entryId,
+        authorId,
+        { id: entryId, co2eq: 100 },
+        true,
+      );
+
+      expect(mockVersionCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ previousVersionId, isDeleted: true }),
+        expect.objectContaining({}),
+      );
+    });
+
+    it("should pass the label, created time and transaction through", async () => {
+      mockVersionFindOne.mockResolvedValueOnce(null);
+      const created = new Date("2026-01-01T00:00:00.000Z");
+
+      await VersionHistoryService.createVersion(
+        inventoryId,
+        "InventoryValue",
+        entryId,
+        authorId,
+        { id: entryId },
+        false,
+        mockTransaction as never,
+        "ghgi",
+        { label: "import-replace-before", created },
+      );
+
+      expect(mockVersionFindOne).toHaveBeenCalledWith(
+        expect.objectContaining({ transaction: mockTransaction }),
+      );
+      expect(mockVersionCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ label: "import-replace-before", created }),
+        { transaction: mockTransaction },
+      );
+    });
   });
 
   describe("bulkCreateVersions", () => {
@@ -230,13 +300,17 @@ describe("VersionHistoryService", () => {
   });
 
   describe("restoreVersion", () => {
-    it("should throw NotFound when version does not exist", async () => {
+    it("should throw NotFound when the version does not belong to the inventory", async () => {
+      const versionId = randomUUID();
       mockVersionFindOne.mockResolvedValueOnce(null);
 
       await expect(
-        VersionHistoryService.restoreVersion(randomUUID()),
+        VersionHistoryService.restoreVersion(versionId, inventoryId),
       ).rejects.toThrow("version-not-found");
 
+      expect(mockVersionFindOne).toHaveBeenCalledWith({
+        where: { versionId, inventoryId },
+      });
       expect(mockVersionFindAll).not.toHaveBeenCalled();
     });
 
@@ -246,7 +320,10 @@ describe("VersionHistoryService", () => {
       mockVersionFindAll.mockResolvedValueOnce([]);
 
       await expect(
-        VersionHistoryService.restoreVersion(version.versionId),
+        VersionHistoryService.restoreVersion(
+          version.versionId,
+          version.inventoryId,
+        ),
       ).rejects.toThrow("no-newer-versions-found");
     });
 
@@ -267,18 +344,23 @@ describe("VersionHistoryService", () => {
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
       mockVersionFindAll.mockResolvedValueOnce([newerVersion]);
 
-      await VersionHistoryService.restoreVersion(targetVersion.versionId);
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
 
       expect(mockInventoryValueModel.update).toHaveBeenCalledWith(
         previousData,
         { where: { id: entryId }, transaction: mockTransaction },
       );
-      expect(newerVersion.destroy).toHaveBeenCalledWith({
+      expect(mockInventoryValueModel.create).not.toHaveBeenCalled();
+      expect(mockVersionDestroy).toHaveBeenCalledWith({
+        where: { versionId: [newerVersion.versionId] },
         transaction: mockTransaction,
       });
     });
 
-    it("should call model.create when current version is a deletion and previousVersion has data", async () => {
+    it("should re-create the entry when it was deleted after the restore point", async () => {
       const targetVersion = createMockVersion();
       const previousData = { id: entryId, co2eq: 100 };
       const newerVersion = createMockVersion({
@@ -294,17 +376,18 @@ describe("VersionHistoryService", () => {
 
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
       mockVersionFindAll.mockResolvedValueOnce([newerVersion]);
+      // the row is gone, so the update matches nothing
+      mockInventoryValueModel.update.mockResolvedValueOnce([0]);
 
-      await VersionHistoryService.restoreVersion(targetVersion.versionId);
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
 
       expect(mockInventoryValueModel.create).toHaveBeenCalledWith(
         previousData,
         { transaction: mockTransaction },
       );
-      expect(mockInventoryValueModel.update).not.toHaveBeenCalled();
-      expect(newerVersion.destroy).toHaveBeenCalledWith({
-        transaction: mockTransaction,
-      });
     });
 
     it("should call model.destroy when no previousVersion exists", async () => {
@@ -319,16 +402,16 @@ describe("VersionHistoryService", () => {
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
       mockVersionFindAll.mockResolvedValueOnce([newerVersion]);
 
-      await VersionHistoryService.restoreVersion(targetVersion.versionId);
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
 
       expect(mockInventoryValueModel.destroy).toHaveBeenCalledWith({
         where: { id: entryId },
         transaction: mockTransaction,
       });
       expect(mockInventoryValueModel.update).not.toHaveBeenCalled();
-      expect(newerVersion.destroy).toHaveBeenCalledWith({
-        transaction: mockTransaction,
-      });
     });
 
     it("should call model.destroy when previousVersion was itself a deletion", async () => {
@@ -347,44 +430,120 @@ describe("VersionHistoryService", () => {
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
       mockVersionFindAll.mockResolvedValueOnce([newerVersion]);
 
-      await VersionHistoryService.restoreVersion(targetVersion.versionId);
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
 
       expect(mockInventoryValueModel.destroy).toHaveBeenCalledWith({
         where: { id: entryId },
         transaction: mockTransaction,
       });
       expect(mockInventoryValueModel.update).not.toHaveBeenCalled();
-      expect(newerVersion.destroy).toHaveBeenCalledWith({
-        transaction: mockTransaction,
-      });
     });
 
-    it("should destroy every newer version record after processing", async () => {
+    it("should restore each entry to its state at the restore point, ignoring later changes", async () => {
       const targetVersion = createMockVersion();
-      const previousData = { id: entryId, co2eq: 50 };
+      const restorePointData = { id: entryId, co2eq: 50 };
+      const firstChange = createMockVersion({
+        inventoryId: targetVersion.inventoryId,
+        entryId,
+        previousVersion: { data: restorePointData, isDeleted: false },
+      });
+      const laterChange = createMockVersion({
+        inventoryId: targetVersion.inventoryId,
+        entryId,
+        previousVersion: { data: { id: entryId, co2eq: 75 }, isDeleted: false },
+      });
 
+      mockVersionFindOne.mockResolvedValueOnce(targetVersion);
+      mockVersionFindAll.mockResolvedValueOnce([firstChange, laterChange]);
+
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
+
+      expect(mockInventoryValueModel.update).toHaveBeenCalledTimes(1);
+      expect(mockInventoryValueModel.update).toHaveBeenCalledWith(
+        restorePointData,
+        { where: { id: entryId }, transaction: mockTransaction },
+      );
+    });
+
+    it("should re-create deleted parents before their children", async () => {
+      const targetVersion = createMockVersion();
+      const createdTables: string[] = [];
+      const trackCreate = (table: string) => async () => {
+        createdTables.push(table);
+      };
+      mockGasValueModel.create.mockImplementationOnce(trackCreate("GasValue"));
+      mockActivityValueModel.create.mockImplementationOnce(
+        trackCreate("ActivityValue"),
+      );
+      mockInventoryValueModel.create.mockImplementationOnce(
+        trackCreate("InventoryValue"),
+      );
+
+      // all three were deleted in the same millisecond, children listed first
+      const deletion = (table: string) =>
+        createMockVersion({
+          inventoryId: targetVersion.inventoryId,
+          entryId: randomUUID(),
+          table,
+          isDeleted: true,
+          previousVersion: { data: { id: randomUUID() }, isDeleted: false },
+        });
+      const newerVersions = [
+        deletion("GasValue"),
+        deletion("ActivityValue"),
+        deletion("InventoryValue"),
+      ];
+      for (const model of allMockModels) {
+        model.update.mockResolvedValue([0]);
+      }
+
+      mockVersionFindOne.mockResolvedValueOnce(targetVersion);
+      mockVersionFindAll.mockResolvedValueOnce(newerVersions);
+
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
+
+      expect(createdTables).toEqual([
+        "InventoryValue",
+        "ActivityValue",
+        "GasValue",
+      ]);
+    });
+
+    it("should remove all newer versions in a single statement", async () => {
+      const targetVersion = createMockVersion();
       const newerVersion1 = createMockVersion({
         inventoryId: targetVersion.inventoryId,
         entryId,
-        table: "InventoryValue",
-        previousVersion: { data: previousData, isDeleted: false },
+        previousVersion: { data: { id: entryId }, isDeleted: false },
       });
       const newerVersion2 = createMockVersion({
         inventoryId: targetVersion.inventoryId,
         entryId: randomUUID(),
-        table: "InventoryValue",
         previousVersion: null,
       });
 
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
       mockVersionFindAll.mockResolvedValueOnce([newerVersion1, newerVersion2]);
 
-      await VersionHistoryService.restoreVersion(targetVersion.versionId);
+      await VersionHistoryService.restoreVersion(
+        targetVersion.versionId,
+        targetVersion.inventoryId,
+      );
 
-      expect(newerVersion1.destroy).toHaveBeenCalledWith({
-        transaction: mockTransaction,
-      });
-      expect(newerVersion2.destroy).toHaveBeenCalledWith({
+      expect(mockVersionDestroy).toHaveBeenCalledTimes(1);
+      expect(mockVersionDestroy).toHaveBeenCalledWith({
+        where: {
+          versionId: [newerVersion1.versionId, newerVersion2.versionId],
+        },
         transaction: mockTransaction,
       });
     });

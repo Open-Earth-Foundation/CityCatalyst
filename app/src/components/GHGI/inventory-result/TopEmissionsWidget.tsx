@@ -7,7 +7,7 @@ import type {
 } from "@/util/types";
 import {
   capitalizeFirstLetter,
-  convertKgToTonnes,
+  formatEmissionsOrRemoval,
   formatNumber,
   toKebabCase,
 } from "@/util/helpers";
@@ -64,12 +64,18 @@ const EmissionsTable = ({
             </Table.Cell>
             <Table.Cell>
               <BodyMedium>
-                {convertKgToTonnes(emission.co2eq, numberFormat)}
+                {formatEmissionsOrRemoval(
+                  emission.co2eq,
+                  numberFormat,
+                  t("removed"),
+                )}
               </BodyMedium>
             </Table.Cell>
             <Table.Cell>
               <BodyMedium>
-                {formatNumber(emission.percentage, numberFormat)}%
+                {emission.percentage === null
+                  ? t("removal")
+                  : `${formatNumber(emission.percentage, numberFormat)}%`}
               </BodyMedium>
             </Table.Cell>
           </Table.Row>
@@ -85,7 +91,7 @@ const TopEmissionsWidget = ({
   isPublic,
   numberFormat,
 }: {
-  t: Function & TFunction<"translation", undefined>;
+  t: TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   isPublic: boolean;
   numberFormat?: string;

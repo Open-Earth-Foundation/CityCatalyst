@@ -1,0 +1,137 @@
+"""One run-bound conversational capability: propose, never apply, undo or restore."""
+
+from __future__ import annotations
+
+import json
+import logging
+from typing import Any
+from uuid import UUID
+
+from agents import function_tool
+from app.models.cnb.concept_note_edits import EditProposalRequest
+from app.services.cnb.edits import get_edit_service
+from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.citycatalyst_client import CityCatalystClient
+from app.utils.request_token_refresh import RequestTokenRefreshContext
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+logger = logging.getLogger(__name__)
+CONCEPT_NOTE_EDIT_PROPOSE_CAPABILITY = "concept_note.edit.propose"
+
+
+def build_concept_note_edit_tools(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: str | UUID,
+    user_id: str,
+    token_ref: dict[str, str | None],
+    request: EditProposalRequest,
+    recent_messages: list[dict[str, str]] | None = None,
+    request_token_refresh_context: RequestTokenRefreshContext | None = None,
+) -> list:
+    """Bind edit inputs and optional authenticated-turn renewal outside the model."""
+    run_uuid = UUID(str(run_id))
+
+    @function_tool
+    async def concept_note_edit_propose() -> str:
+        """Propose precise revisions for the CURRENT user's explicit edit request.
+
+        Use only when the user asks to change the existing Concept Note, not for
+        questions, explanations or source queries. The exact current instruction,
+        automatic scope, optional focused-chapter hint, and idempotency key are
+        already bound by the UI.
+        When status is "proposed", tell the user to review the inline document
+        changes, or the structural before/after preview when proposal_kind is structure.
+        Structural proposals cover chapter titles, descriptions, insertion, removal and order.
+        When status is "clarification_required", ask the returned
+        clarification directly in chat. Never refer to a proposal or clarification
+        card.
+        Report any returned exclusions: those protected matches remain unchanged.
+        An unsupported_edit error means independent semantic review still rejected
+        the candidate after the configured repair attempts. Explain that the
+        proposal could not pass review and the draft is unchanged; it does not
+        mean bulk edits are unavailable. Do not invent the reviewer's objections.
+        This tool NEVER applies, undoes or restores text, even if asked to do so.
+        Do not promise that the draft changed. Do not fabricate proposal IDs.
+        """
+        token = token_ref.get("value")
+        if not token:
+            return tool_result(False, code="missing_token")
+        service = get_edit_service()
+        if service is None:
+            return tool_result(False, code="edit_unavailable")
+        try:
+            # Recheck token identity, run ownership and current city access at use time.
+            async with session_factory() as session:
+                client = CityCatalystClient(
+                    request_token_refresh_context=request_token_refresh_context
+                )
+                run_service = ConceptNoteRunService(session, cc_client=client)
+                try:
+                    if request_token_refresh_context is not None:
+                        token = await request_token_refresh_context.token_for_request(
+                            client.refresh_token
+                        )
+                    run = await run_service.get_authorized_run(
+                        run_id=run_uuid,
+                        requested_user_id=user_id,
+                        authorization=f"Bearer {token}",
+                    )
+                    proposal = await service.propose(
+                        run,
+                        request,
+                        recent_messages=recent_messages,
+                    )
+                finally:
+                    await run_service.cc_client.close()
+            success = proposal.status in {
+                "processing",
+                "proposed",
+                "clarification_required",
+            }
+            data: dict[str, Any] = {
+                "proposal_id": str(proposal.proposal_id),
+                "run_id": str(run_uuid),
+                "status": proposal.status,
+                "change_count": len(proposal.changes),
+                "proposal_kind": "structure" if proposal.structure else "text",
+                "notices": [notice.model_dump() for notice in proposal.notices],
+            }
+            if proposal.status == "clarification_required" and proposal.clarification:
+                data["clarification"] = proposal.clarification
+            return tool_result(
+                success,
+                data=data,
+                code=None if success else proposal.error_code or "not_edit_request",
+            )
+        except HTTPException as error:
+            return tool_result(
+                False,
+                code=(
+                    "expired_token"
+                    if error.status_code == 401
+                    else "edit_forbidden"
+                    if error.status_code in {403, 404}
+                    else "edit_unavailable"
+                ),
+            )
+        except Exception:
+            logger.warning("Edit tool failed run_id=%s code=edit_unavailable", run_uuid)
+            return tool_result(False, code="edit_unavailable")
+
+    return [concept_note_edit_propose]
+
+
+def tool_result(
+    success: bool, *, data: dict[str, Any] | None = None, code: str | None = None
+) -> str:
+    """Serialize only typed proposal correlation metadata for chat transport."""
+    return json.dumps(
+        {
+            "action": CONCEPT_NOTE_EDIT_PROPOSE_CAPABILITY,
+            "success": success,
+            "data": data,
+            "error_code": code,
+        }
+    )

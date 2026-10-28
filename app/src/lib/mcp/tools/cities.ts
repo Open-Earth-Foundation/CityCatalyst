@@ -39,6 +39,21 @@ export const getUserCitiesTool: Tool = {
   },
 };
 
+interface CityData {
+  cityId: string;
+  name: string;
+  country: string;
+  locode: string;
+  countryLocode: string;
+  projectId: string;
+  projectName: string;
+  inventories?: {
+    count: number;
+    list: { inventoryId: string; year?: number }[];
+  };
+  inventoryCount?: number;
+}
+
 export async function execute(
   params: {
     country?: string;
@@ -48,7 +63,24 @@ export async function execute(
     includeInventories?: boolean;
   },
   session: AppSession,
-): Promise<any> {
+): Promise<
+  | {
+      success: true;
+      data: CityData[];
+      pagination: {
+        total: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+      };
+      summary: {
+        totalProjects: number;
+        totalCitiesBeforeFilter: number;
+        totalCitiesAfterFilter: number;
+      };
+    }
+  | { success: false; error: string; data: [] }
+> {
   try {
     const userId = session.user.id;
     const limit = Math.min(params.limit || 50, 100);
@@ -62,7 +94,7 @@ export async function execute(
     // Flatten cities from all projects and apply filters
     const allCities = projects.flatMap((project) =>
       project.cities.map((city) => {
-        const cityData: any = {
+        const cityData: CityData = {
           cityId: city.cityId,
           name: city.name,
           country: city.country,
@@ -111,7 +143,7 @@ export async function execute(
     // Remove duplicates (user might have access to same city through multiple roles)
     const uniqueCities = filteredCities.reduce(
       (unique, city) => {
-        if (!unique.find((c: { cityId: any }) => c.cityId === city.cityId)) {
+        if (!unique.find((c) => c.cityId === city.cityId)) {
           unique.push(city);
         }
         return unique;

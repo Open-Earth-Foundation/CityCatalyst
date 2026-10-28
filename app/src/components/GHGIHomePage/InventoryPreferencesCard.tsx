@@ -13,7 +13,6 @@ import NextLink from "next/link";
 
 export function InventoryPreferencesCard({
   t,
-  isPublic,
 }: {
   t: TFunction;
   isPublic: boolean;

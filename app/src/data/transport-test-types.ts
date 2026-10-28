@@ -1,3 +1,5 @@
+import type { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
+
 export interface TransportTestData {
   subsector: string;
   methodology_id: string;
@@ -32,7 +34,7 @@ export interface TestResult {
   difference?: number;
   tolerance: number;
   availableFactors: string[];
-  emissionFactorValues?: Record<string, number>;
+  emissionFactorValues?: Record<string, EmissionsFactorAttributes>;
   calculations?: Record<string, number>;
   error?: string;
 }

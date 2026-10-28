@@ -16,7 +16,6 @@ import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { ClimateActionsSection } from "@/components/HIAP/ClimateActionsSection";
 import { HiapPageLayout } from "../HiapPageLayout";
-import i18next from "i18next";
 import { api } from "@/services/api";
 import {
   YearSelector,
@@ -29,11 +28,13 @@ export default function HIAPInventoryPage(props: {
   const { lng, cityId, inventory: inventoryId } = use(props.params);
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
-  const lang = i18next.language as LANGUAGES;
 
   const [ignoreExisting, setIgnoreExisting] = useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
+  const [activeActionType, setActiveActionType] = useState<ACTION_TYPES>(
+    ACTION_TYPES.Mitigation,
+  );
 
   // Get inventory data
   const {
@@ -72,12 +73,11 @@ export default function HIAPInventoryPage(props: {
   const {
     data: hiapData,
     isLoading,
-    error,
     refetch,
   } = useGetHiapQuery(
     {
       inventoryId: inventory?.inventoryId || "",
-      lng: lang,
+      lng: lng as LANGUAGES,
       actionType: ACTION_TYPES.Mitigation,
       ignoreExisting: ignoreExisting,
     },
@@ -100,7 +100,7 @@ export default function HIAPInventoryPage(props: {
     : { value: t("N/A"), unit: "" };
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
@@ -151,14 +151,17 @@ export default function HIAPInventoryPage(props: {
           setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
           inventory={null}
-          actionType={ACTION_TYPES.Mitigation}
-          lng={lng as any}
+          actionType={activeActionType}
+          lng={lng as LANGUAGES}
           isReprioritizing={isLoading}
         />
         <Tabs.Root
           variant="line"
           lazyMount
-          defaultValue={ACTION_TYPES.Mitigation}
+          value={activeActionType}
+          onValueChange={(details) =>
+            setActiveActionType(details.value as ACTION_TYPES)
+          }
         >
           <Tabs.List>
             {Object.values(ACTION_TYPES).map((actionType) => (
@@ -260,12 +263,16 @@ export default function HIAPInventoryPage(props: {
         }}
         actions={hiapData}
         inventory={inventory}
+        actionType={activeActionType}
       />
 
       <Tabs.Root
         variant="line"
         lazyMount
-        defaultValue={ACTION_TYPES.Mitigation}
+        value={activeActionType}
+        onValueChange={(details) =>
+          setActiveActionType(details.value as ACTION_TYPES)
+        }
       >
         <Tabs.List>
           {Object.values(ACTION_TYPES).map((actionType) => (

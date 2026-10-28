@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     // Set is_bulk = true for rankings where multiple rankings share the same job_id
     await queryInterface.sequelize.query(`
       UPDATE "HighImpactActionRanking" har
@@ -17,7 +17,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Reset all is_bulk flags to false
     await queryInterface.sequelize.query(`
       UPDATE "HighImpactActionRanking"

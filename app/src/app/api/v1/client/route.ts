@@ -7,7 +7,7 @@
  *       - clients
  *     operationId: getClients
  *     summary: List registered OAuth clients with localized names.
- *     description: Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data: Client[] '}'.
+ *     description: "Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data: Client[] '}'."
  *     responses:
  *       200:
  *         description: Clients array wrapped in data.
@@ -61,7 +61,7 @@ import { Client, LangMap } from "@/util/types";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { db } from "@/models";
-import { isNamespaceExport } from "typescript";
+import UserService from "@/backend/UserService";
 
 /** gets all available clients */
 export const GET = apiHandler(async (_req, { session }) => {
@@ -136,7 +136,7 @@ const NewClientRequest = z.object({
  *                 type: object
  *                 additionalProperties:
  *                   type: string
- *                 description: Localized names by language code (e.g., {"en": "My App"})
+ *                 description: 'Localized names by language code (e.g., {"en": "My App"})'
  *               description:
  *                 type: object
  *                 additionalProperties:
@@ -189,9 +189,7 @@ export const POST = apiHandler(async (_req, { session }) => {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
 
-  if (!session) {
-    throw new createHttpError.Unauthorized("Must be logged in!");
-  }
+  UserService.ensureIsAdmin(session);
 
   const body = await _req.json();
   const newClient = NewClientRequest.parse(body);

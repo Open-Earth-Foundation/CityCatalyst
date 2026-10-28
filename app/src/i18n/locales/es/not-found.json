@@ -1,8 +1,10 @@
 {
-  "not-found-description": "Parece que nos hemos adentrado en la niebla de emisiones. Por favor, regresa al panel de control",
-  "goto-dashboard": "Ir al tablero",
+  "back-to-tools": "Volver a herramientas",
   "invite-not-valid": "Esta invitación ya no es válida",
   "invite-not-valid-description": "El enlace que estás usando ha expirado o ya fue reclamado.\n Por favor, pide al invitador que te lo reenvíe.\n Si crees que esto es un error, por favor",
   "contact-us": "contáctanos.",
-  "go-back": "Regresar"
+  "go-back": "Regresar",
+  "page-not-found": "Página no encontrada",
+  "page-not-found-description": "La página que estás buscando no existe o puede que haya sido movida. Verifica la dirección, o vuelve a tu ciudad para continuar con tu trabajo.",
+  "back-to-city": "De vuelta a tu ciudad"
 }

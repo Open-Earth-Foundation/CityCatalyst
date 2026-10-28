@@ -116,11 +116,7 @@ export default function ProjectPage(props: {
   const { lng, project } = use(props.params);
   const { t } = useTranslation(lng, "dashboard");
 
-  const {
-    data: projectSummary,
-    isLoading,
-    error,
-  } = api.useGetProjectSummaryQuery(project!, {
+  const { data: projectSummary } = api.useGetProjectSummaryQuery(project!, {
     skip: !project,
   });
   const [selectedCity, setSelectedCity] = useState<CityMetadata | undefined>();
@@ -128,7 +124,7 @@ export default function ProjectPage(props: {
   const formattedEmissions = projectSummary?.totalEmissions
     ? formatEmissions(projectSummary?.totalEmissions)
     : { value: "N/A", unit: "" };
-  const totalEmissions = `${formattedEmissions.value} ${formattedEmissions.unit}CO2e`;
+  const totalEmissions = `${formattedEmissions.value} ${formattedEmissions.unit}`.trim();
 
   // Metrics section content
   const metricsProps = {

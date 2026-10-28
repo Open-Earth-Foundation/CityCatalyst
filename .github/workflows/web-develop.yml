@@ -15,6 +15,9 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
+      - k8s/cc-process-webhook-deliveries.yml
+      - k8s/cc-process-bulk-inventory-import.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
   pull_request:
@@ -24,6 +27,9 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
+      - k8s/cc-process-webhook-deliveries.yml
+      - k8s/cc-process-bulk-inventory-import.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
@@ -36,7 +42,7 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
-      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC"
     defaults:
       run:
         working-directory: ./app
@@ -81,8 +87,9 @@ jobs:
       - name: Setup Environment Variables
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
+          echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
-          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
 
@@ -90,10 +97,9 @@ jobs:
         run: npm run build
 
       - name: Lint the OpenAPI spec
-        run: npm run openapi:lint
-
-      # - name: Run Cypress tests
-      #   run: npm run cy:test
+        run: |
+          npm run openapi:build
+          npm run openapi:lint
 
       - name: Restore previous coverage
         uses: actions/cache@v4
@@ -450,7 +456,13 @@ jobs:
         if: steps.run_migrations.outputs.status == 'success'
         run: |
           kubectl create -f k8s/cc-seed.yml -n default
+          # Batch every cc-web change below into a single rollout; resume even if a later command fails
+          kubectl rollout pause deployment/cc-web-deploy -n default
+          trap 'kubectl rollout resume deployment/cc-web-deploy -n default 2>/dev/null || true' EXIT
           kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set image deployment/cc-web-deploy \
+            cc-web=ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }} \
+            -n default
           kubectl apply -f k8s/cc-web-pdb.yml -n default || echo "PDB apply skipped (requires policy API permissions)"
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
@@ -459,9 +471,10 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
-            "OPENAI_ASSISTANT_ID=asst_saoKNCVqCX7adTMoLqPxPHvB" \
+            MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
+            LLM_EXTRACTION_MODEL=gpt-5.6-luna \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
@@ -474,10 +487,11 @@ jobs:
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal.openearth.dev" \
             "HIAP_API_URL=http://hiap-service-dev" \
+            "HIAP_MEED_API_URL=http://hiap-meed-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC,HIGHLIGHT_ENABLED,NUMERICAL_FORMATS" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC,HIGHLIGHT_ENABLED,NUMERICAL_FORMATS,HIAP_BR_DEMO" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "ALLOWED_ORIGINS=https://citycatalyst.openearth.dev,https://www.citycatalyst.openearth.dev" \
@@ -490,7 +504,8 @@ jobs:
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}" \
+            "WEBHOOK_SECRET_ENCRYPTION_KEY=${{secrets.WEBHOOK_SECRET_ENCRYPTION_KEY}}"
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment
           # TODO this (running cronjob on deploy) doesn't work since it can't randomize names. Needs own randomness source
@@ -500,18 +515,52 @@ jobs:
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
-          kubectl rollout restart deployment cc-web-deploy -n default
-          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+          kubectl apply -f k8s/cc-process-pdf-ocr-jobs.yml -n default
+          kubectl set env cronjob/citycatalyst-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/cc-process-webhook-deliveries.yml -n default
+          kubectl set env cronjob/citycatalyst-process-webhook-deliveries \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/cc-process-bulk-inventory-import.yml -n default
+          kubectl set env cronjob/citycatalyst-process-bulk-inventory-import \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl rollout resume deployment/cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=600s
+
+      - name: Rollout diagnostics
+        if: failure()
+        run: |
+          # No `describe pods`, logs or `-o yaml`: they print env values set via `kubectl set env` (secrets) in plain text
+          kubectl get rs,pods -l app=cc-web -n default -o wide || true
+          kubectl get events -n default --sort-by=.lastTimestamp | grep 'cc-web-deploy' | tail -60 || true
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-dev \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
-    needs: [runTests, pushToGHCR, deployToEKS]
+    needs: [runTests, pushToGHCR, deployToEKS, ccCaPostDeploySmoke]
     runs-on: ubuntu-latest
     if: |
       always() &&
-      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') &&
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure' || needs.ccCaPostDeploySmoke.result == 'failure') &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop'
 
@@ -527,6 +576,8 @@ jobs:
             echo "stage=Docker Build" >> $GITHUB_OUTPUT
           elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then
             echo "stage=Deployment" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.ccCaPostDeploySmoke.result }}" == "failure" ]; then
+            echo "stage=CA/CC post-deploy smoke" >> $GITHUB_OUTPUT
           fi
 
       - name: Notify Slack - Deployment Failure

@@ -4,6 +4,23 @@ This diagram illustrates the top-level data flow. Exclusion preferences are firs
 
 Current implementation note: exclusion preview and prioritization are separate flows. The preview flow resolves raw exclusion preferences into a reviewable proposal, while the prioritization flow consumes confirmed `excludedActionIds`. Prioritization currently owns its run-level artifacts in the orchestrator layer, while exclusion preview currently writes its artifacts from the API layer.
 
+CityCatalyst-facing reference-data GET routes use the same injected data-client
+methods as exclusion preview, prioritization, and output-plan enrichment. Those
+methods call the existing endpoint-specific Global API services, so URL
+construction, validation, missing-data behavior, and finance selection are not
+reimplemented in route handlers or processing workflows. Public response mapping
+remains at the HTTP boundary and never exposes internal `raw` payloads or upstream
+diagnostic URLs.
+
+Rules that change record membership live in shared service functions. In
+particular, `select_prioritizable_actions()` in
+`app/services/action_pathways_api.py` supplies the identical action set to the
+action GET, exclusion preview, prioritization, and output-plan enrichment.
+Response builders may select fields, localizations, aggregates, and display order,
+but do not remove normalized source records. Financial rows without a source score
+therefore remain visible as `null`; only the prioritization scoring block turns a
+missing value into its neutral algorithm fallback.
+
 ```mermaid
 graph TD
   CityData[(City Data)]

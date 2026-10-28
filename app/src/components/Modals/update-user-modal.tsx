@@ -21,7 +21,7 @@ import {
 
 interface UpdateUserDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   t: TFunction;
   userData: GetUserCityInvitesResponseUserData;
 }
@@ -35,7 +35,7 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
   } = useForm<GetUserCityInvitesResponseUserData>();
 
@@ -125,7 +125,9 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
                   value={inputValue}
                   register={register}
                   error={errors.role}
-                  onInputChange={(e: any) => setInputValue(e.target.value)}
+                  onInputChange={(e: { target: { value: string } }) =>
+                    setInputValue(e.target.value)
+                  }
                   t={t}
                 />
               </Box>

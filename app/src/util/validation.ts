@@ -1,12 +1,27 @@
+import { conceptNoteCustomTemplateRequest } from "./concept-note-funder";
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
+import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
+import { CONCEPT_NOTE_MAX_UPLOADS } from "@/components/ConceptNoteWiringHarness/utils";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const tokenRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9_\-]+$/;
 export const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Returns true when a password meets the minimum strength requirements:
+ *  at least 8 characters, one uppercase letter, one lowercase letter, one digit. */
+export const isPasswordPatternValid = (password: string): boolean =>
+  password.length >= 8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[0-9]/.test(password);
 
 export const geoJSON = z.object({
   title: z.string(),
@@ -86,7 +101,7 @@ export const resetPasswordRequest = z.object({
 export const createInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string().optional(),
   unavailableReason: z.string().optional(),
@@ -96,11 +111,11 @@ export const createInventoryValue = z.object({
       z.object({
         gas: z.string(),
         // if not present, use activityValue with emissionsFactor instead
-        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
+        gasAmount: z.coerce.bigint().nullable().optional(),
         emissionsFactorId: z.string().uuid().optional(),
         emissionsFactor: z
           .object({
-            emissionsPerActivity: z.number().gte(0),
+            emissionsPerActivity: z.number(),
             gas: z.string(),
             units: z.string(),
           })
@@ -113,7 +128,7 @@ export const createInventoryValue = z.object({
 export const patchInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string(),
   unavailableReason: z.string().optional(),
@@ -184,8 +199,14 @@ export const AcceptOrganizationInvite = z.object({
 });
 
 export const CreateUsersInvite = z.object({
-  emails: z.array(z.string().email()),
-  cityIds: z.array(z.string()),
+  projectId: z.string().uuid(),
+  cityIds: z.array(z.string()).min(1),
+  invites: z.array(
+    z.object({
+      email: z.string().email(),
+      role: z.enum(["admin", "collaborator"]),
+    }),
+  ),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
@@ -194,10 +215,10 @@ const gasValueSchema = z.object({
   id: z.string().uuid().optional(),
   emissionsFactorId: z.string().uuid().optional(),
   gas: z.string(),
-  gasAmount: z.coerce.bigint().gte(0n).optional(),
+  gasAmount: z.coerce.bigint().optional(),
   emissionsFactor: z
     .object({
-      emissionsPerActivity: z.number().gte(0).optional(),
+      emissionsPerActivity: z.number().optional(),
       gas: z.string().optional(),
       units: z.string().optional(),
       gpcReferenceNumber: z.string().optional(),
@@ -248,8 +269,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4).max(64),
-  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+  currentPassword: z.string().min(8).max(64),
+  confirmPassword: z.string().min(8).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
@@ -262,6 +283,7 @@ export const createOrganizationRequest = z.object({
       message: "Organization name cannot be 'cc_organization_default'",
     }),
   contactEmail: z.string().email().max(255),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -271,6 +293,8 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
+  trialEndsAt: z.coerce.date().nullable().optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<
@@ -343,3 +367,136 @@ export const createChatThreadRequest = z.object({
 });
 
 export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;
+
+export const conceptNoteStartRequest = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    city_id: z.string().uuid(),
+    project_id: z.string().trim().min(1).max(255).nullable().optional(),
+    funder_id: z.string().uuid().nullable().optional(),
+    selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
+    thread_id: z.string().uuid().nullable().optional(),
+    initial_uploads: z
+      .array(
+        z.object({
+          upload_id: z.string().uuid(),
+          filename: z.string().trim().min(1).max(255),
+          sha256: z.string().regex(/^[a-f0-9]{64}$/),
+        }),
+      )
+      // Each expected source must be accepted by the run's upload limit.
+      .max(CONCEPT_NOTE_MAX_UPLOADS)
+      .optional(),
+    idempotency_key: z.string().uuid(),
+  })
+  .superRefine((request, context) => {
+    if (request.selected_funding_opportunity_id && !request.funder_id) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "funder_id is required when selected_funding_opportunity_id is provided",
+        path: ["funder_id"],
+      });
+    }
+  });
+
+export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
+
+export const nativeInputCatalogRegisterRequest = z.object({
+  kind: z.string().trim().min(1).max(64),
+  owningModule: z.string().trim().min(1).max(64),
+  sourceType: z.string().trim().min(1).max(64),
+  sourceId: z.string().trim().min(1).max(255),
+  userId: z.string().uuid().nullable().optional(),
+  inventoryId: z.string().uuid().nullable().optional(),
+  cityId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  organizationId: z.string().uuid().nullable().optional(),
+  contentDigest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdownReady: z.boolean().nullable().optional(),
+  labels: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+
+export type NativeInputCatalogRegisterRequest = z.infer<
+  typeof nativeInputCatalogRegisterRequest
+>;
+
+const webhookHttpsUrl = z
+  .string()
+  .url()
+  .refine((value) => value.toLowerCase().startsWith("https://"), {
+    message: "webhook-url-must-be-https",
+  });
+
+const webhookEmittedEvents = z
+  .array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES))
+  .min(1);
+
+export const createWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255),
+  url: webhookHttpsUrl,
+  events: webhookEmittedEvents,
+});
+
+export type CreateWebhookSubscriptionRequest = z.infer<
+  typeof createWebhookSubscriptionRequest
+>;
+
+export const updateWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  url: webhookHttpsUrl.optional(),
+  events: webhookEmittedEvents.optional(),
+  enabled: z.boolean().optional(),
+});
+
+export type UpdateWebhookSubscriptionRequest = z.infer<
+  typeof updateWebhookSubscriptionRequest
+>;
+
+export const nativeInputCatalogReconciliationRequest = z.object({
+  mode: z.enum(["dry-run", "apply"]),
+  limit: z.number().int().min(1).max(1000).optional(),
+  maxPages: z.number().int().min(1).max(1000).optional(),
+});
+
+export type NativeInputCatalogReconciliationRequest = z.infer<
+  typeof nativeInputCatalogReconciliationRequest
+>;
+export const conceptNoteFundingSelectionRequest = z
+  .object({
+    funder_id: z.string().uuid().nullable(),
+    selected_funding_opportunity_id: z.string().uuid().nullable(),
+    expected_funder_id: z.string().uuid().nullable(),
+    expected_funding_opportunity_id: z.string().uuid().nullable(),
+    // An own template replaces the funder and programme.
+    custom_template: conceptNoteCustomTemplateRequest.nullable().default(null),
+    expected_custom_template_id: z.string().uuid().nullable().default(null),
+    acknowledge_draft_review: z.boolean().default(false),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      value.funder_id !== null ||
+      value.selected_funding_opportunity_id === null,
+    { message: "A funding opportunity requires a funder" },
+  )
+  .refine(
+    (value) => value.custom_template === null || value.funder_id === null,
+    { message: "An own template replaces the funder selection" },
+  );
+
+export const conceptNoteFunderImportStartRequest = z
+  .object({
+    uploadId: z.string().uuid(),
+    /** Read a catalogue funder (default) or only a note's own template. */
+    kind: z.enum(["funder", "template"]).default("funder"),
+  })
+  .strict();
+export const recordConsentRequest = z.object({
+  consentType: z.enum(["analytics", "marketing"]),
+  granted: z.boolean(),
+  subjectKey: z.string().uuid().optional(),
+  source: z.enum(["cookie_banner", "account_settings", "api"]).optional(),
+});
+
+export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;

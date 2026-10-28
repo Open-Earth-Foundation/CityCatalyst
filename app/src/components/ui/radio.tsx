@@ -4,7 +4,10 @@ import * as React from "react";
 export interface RadioProps extends ChakraRadioGroup.ItemProps {
   rootRef?: React.Ref<HTMLDivElement>;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
-  /** Filled circle: unselected `background.radioUnselected`, selected `content.secondary`. */
+  /**
+   * `filled` — onboarding-style control: unselected `gray.muted`,
+   * selected `content.alternative` with `base.light` glyph.
+   */
   variant?: "default" | "filled";
 }
 
@@ -13,22 +16,16 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
     const { children, inputProps, rootRef, variant = "default", ...rest } =
       props;
 
-    const filledIndicatorStyles =
+    const indicatorStyles =
       variant === "filled"
         ? {
-            boxSize: "20px",
+            mt: "3px",
             flexShrink: 0,
-            borderRadius: "full",
-            borderWidth: "5px",
-            borderStyle: "solid",
-            borderColor: "background.radioUnselected",
-            bg: "background.radioUnselected",
-            boxSizing: "border-box",
-            color: "transparent",
+            bg: "gray.muted",
+            color: "content.link",
             _checked: {
-              bg: "content.secondary",
-              borderColor: "background.radioUnselected",
-              color: "transparent",
+              color: "base.light",
+              backgroundColor: "content.alternative",
             },
           }
         : {
@@ -43,7 +40,7 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
         {...rest}
       >
         <ChakraRadioGroup.ItemHiddenInput ref={ref} {...inputProps} />
-        <ChakraRadioGroup.ItemIndicator {...filledIndicatorStyles} />
+        <ChakraRadioGroup.ItemIndicator {...indicatorStyles} />
         {children && (
           <ChakraRadioGroup.ItemText>{children}</ChakraRadioGroup.ItemText>
         )}

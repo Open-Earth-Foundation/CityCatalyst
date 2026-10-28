@@ -1,4 +1,4 @@
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -6,10 +6,12 @@ import {
   type PopulationAttributes,
   type UserAttributes,
   type ModuleAttributes,
-  ProjectModulesAttributes,
-  ActionPlan,
+  type ProjectModulesAttributes,
+  type ActivityValueAttributes,
+  type ActionPlanAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
+import { OrganizationPlanType } from "@/util/enums";
 import {
   AcceptInviteRequest,
   AcceptInviteResponse,
@@ -60,31 +62,110 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
   Client,
-  LangMap,
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteApplicationContext,
+  ConceptNoteFunder,
+  ConceptNoteFunderCreateRequest,
+  ConceptNoteFunderCreateResponse,
+  ConceptNoteFunderImportResponse,
+  ConceptNoteFundingSelection,
+  ConfirmConceptNoteChapterRequest,
+  ConceptNoteChapterValidationResponse,
+  ConceptNoteDraftState,
+  ConceptNoteChatThreadListResponse,
+  ConceptNoteRun,
+  ConceptNoteRunListResponse,
+  ConceptNoteUploadRequest,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRefreshResponse,
+  ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  StartConceptNoteRunRequest,
+  ValidateConceptNoteChapterRequest,
+  WebhookSubscriptionResponse,
+  WebhookSubscriptionSecretResponse,
+  CreateWebhookSubscriptionRequest,
+  UpdateWebhookSubscriptionRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
-  DashboardResponseType,
   HIAPResponse,
-  ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
   HIAction,
-  HighImpactActionRankingStatus,
-  BulkHiapPrioritizationResult,
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
+  ImportRowPreview,
   VersionHistoryResponse,
+  UserOrganizationsResponse,
+  OCCityAttributes,
+  OCCityDataResponse,
+  ProjectBoundary,
 } from "@/util/types";
+import type {
+  MeedGeneratePlanRequest,
+  MeedPlanRouteReport,
+  MeedRankRouteResponse,
+  MeedReferenceActionsResponse,
+  MeedReferenceCityAttributesResponse,
+  MeedReferenceFinanceFeasibilityResponse,
+  MeedReferenceFinanceOpportunitiesResponse,
+  MeedReferenceFinanceProjectsResponse,
+  MeedReferencePolicyScoresResponse,
+  MeedRunRankingRequest,
+} from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export interface BulkInventoryImportItemCountsDto {
+  total: number;
+  pending: number;
+  matched: number;
+  unmatched: number;
+  importing: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+}
+
+export interface BulkInventoryImportJobDto {
+  id: string;
+  projectId: string;
+  year: number;
+  status: string;
+  dryRun: boolean;
+  createMissingCities: boolean;
+  inventoryType: string;
+  globalWarmingPotentialType: string;
+  replaceExisting: boolean;
+  progressStage: string | null;
+  progressDetail: string | null;
+  counts: BulkInventoryImportItemCountsDto;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface BulkInventoryImportItemDto {
+  id: string;
+  originalFileName: string;
+  locode: string | null;
+  status: string;
+  stage: string | null;
+  errorCode: string | null;
+  errorLog: string | null;
+  warnings: string[];
+  resolvedYear: number | null;
+}
+
+export interface BulkInventoryImportJobDetailDto extends BulkInventoryImportJobDto {
+  items: BulkInventoryImportItemDto[];
+}
 
 export const api = createApi({
   reducerPath: "api",
@@ -129,7 +210,20 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "Webhook",
     "AdminModules",
+    "Meed",
+    "MeedRanking",
+    "MeedPlan",
+    "ConceptNoteRuns",
+    "ConceptNoteChatThreads",
+    "ConceptNoteUpload",
+    "ConceptNoteDraft",
+    "ConceptNoteEdits",
+    "BulkInventoryImport",
+    "ConceptNoteApplicationContext",
+    "ConceptNoteFundingCatalogue",
+    "ConceptNoteFunderImport",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -206,6 +300,161 @@ export const api = createApi({
         transformResponse: (response: { data: ResultsResponse }) =>
           response.data,
         providesTags: ["ReportResults"],
+      }),
+      // ─── MEED+ module (Global API proxies — see backend/meed/MeedGlobalApiService) ───
+      getMeedActions: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/actions`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedCityAttributes: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/city-attributes`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedPolicyScores: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/policy-scores`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      /**
+       * The stored ranking for one inventory. Separate cache tag from "Meed"
+       * so running a ranking does not invalidate the catalog and reference
+       * data, which do not change when it runs.
+       */
+      getMeedRanking: builder.query<
+        MeedRankRouteResponse,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/meed/rank?inventoryId=${encodeURIComponent(inventoryId)}`,
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        providesTags: ["MeedRanking"],
+      }),
+      // ─── MEED reference data (city-scoped routes) ───
+      //
+      // These six replace the `modules/meed/*` proxies above. They are pure
+      // pass-throughs to hiap-meed, so unlike the ranking route their payloads
+      // are snake_case with a `meta`/`warnings` envelope — see the contract
+      // types. The older proxies stay until their consumers are migrated;
+      // finance already reads through these.
+      getMeedReferenceActions: builder.query<
+        MeedReferenceActionsResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/actions`,
+        transformResponse: (r: { data: MeedReferenceActionsResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceCityAttributes: builder.query<
+        MeedReferenceCityAttributesResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/city-attributes`,
+        transformResponse: (r: { data: MeedReferenceCityAttributesResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferencePolicyScores: builder.query<
+        MeedReferencePolicyScoresResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/policy-scores`,
+        transformResponse: (r: { data: MeedReferencePolicyScoresResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceFinanceFeasibility: builder.query<
+        MeedReferenceFinanceFeasibilityResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/finance/feasibility`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceFeasibilityResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      /** `financeRoute`, not `route` — the payload's `route` is a value. */
+      getMeedReferenceFinanceOpportunities: builder.query<
+        MeedReferenceFinanceOpportunitiesResponse,
+        { cityId: string; sector: string; financeRoute: string }
+      >({
+        query: ({ cityId, sector, financeRoute }) =>
+          `city/${cityId}/meed/finance/opportunities?sector=${encodeURIComponent(
+            sector,
+          )}&financeRoute=${encodeURIComponent(financeRoute)}`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceOpportunitiesResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceFinanceProjects: builder.query<
+        MeedReferenceFinanceProjectsResponse,
+        { cityId: string; actionId: string }
+      >({
+        query: ({ cityId, actionId }) =>
+          `city/${cityId}/meed/finance/projects?actionId=${encodeURIComponent(
+            actionId,
+          )}`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceProjectsResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      /**
+       * One action's report. Reports are stored server-side, so this reads back
+       * an existing one without paying for another generation.
+       */
+      getMeedPlan: builder.query<
+        MeedPlanRouteReport,
+        {
+          cityId: string;
+          inventoryId: string;
+          actionId: string;
+          language?: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, actionId, language }) =>
+          `city/${cityId}/meed/generate-plan?inventoryId=${encodeURIComponent(
+            inventoryId,
+          )}&actionId=${encodeURIComponent(actionId)}${
+            language ? `&language=${encodeURIComponent(language)}` : ""
+          }`,
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        providesTags: ["MeedPlan"],
+      }),
+      /**
+       * Generates one action's report. A 10–30 s LLM call upstream, so callers
+       * must show progress rather than a spinner — and it is per action, so a
+       * multi-action report is several of these.
+       */
+      runMeedGeneratePlan: builder.mutation<
+        MeedPlanRouteReport,
+        { cityId: string; body: MeedGeneratePlanRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/generate-plan`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (r: { data: MeedPlanRouteReport }) => r.data,
+        invalidatesTags: ["MeedPlan"],
+      }),
+      /** Runs the ranking, stores it, and returns the same envelope as the GET. */
+      runMeedRanking: builder.mutation<
+        MeedRankRouteResponse,
+        { cityId: string; body: MeedRunRankingRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/rank`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        invalidatesTags: ["MeedRanking"],
       }),
       getEmissionsForecast: builder.query<EmissionsForecastData, string>({
         query: (inventoryId: string) =>
@@ -579,7 +828,8 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/${data.userId}`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
 
@@ -603,7 +853,8 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         invalidatesTags: ["UserData"],
       }),
       getCityUsers: builder.query<
@@ -613,12 +864,14 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
       getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
         query: () => `/user/invites`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: GetUserCityInvitesResponse[] }) =>
+          response.data,
         providesTags: ["Invites"],
       }),
       setUserData: builder.mutation<
@@ -632,20 +885,28 @@ export const api = createApi({
         }),
         invalidatesTags: ["UserData"],
       }),
-      cancelInvite: builder.mutation<void, { cityInviteId: string }>({
+      cancelInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
-      resetInvite: builder.mutation<void, { cityInviteId: string }>({
+      resetInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "PATCH",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
       getVerificationToken: builder.query({
@@ -656,7 +917,7 @@ export const api = createApi({
       }),
 
       requestVerification: builder.mutation<
-        string,
+        { comparePassword: boolean },
         { password: string; token: string }
       >({
         query: ({ password, token }) => ({
@@ -665,20 +926,73 @@ export const api = createApi({
           body: { password, token },
         }),
       }),
+      setupSecondFactorAuth: builder.mutation<
+        { success: boolean; qrCodeDataUrl: string },
+        void
+      >({
+        query: () => ({
+          url: "auth/2fa/setup",
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; qrCodeDataUrl: string };
+        }) => response.data,
+      }),
+      verifySecondFactorAuth: builder.mutation<
+        { success: boolean; recoveryCodes: string[] },
+        { token: string }
+      >({
+        query: ({ token }) => ({
+          url: "auth/2fa/verify",
+          method: "POST",
+          body: { token },
+        }),
+        transformResponse: (response: {
+          data: { success: boolean; recoveryCodes: string[] };
+        }) => response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      disableSecondFactorAuth: builder.mutation<
+        { success: boolean },
+        { password: string }
+      >({
+        query: ({ password }) => ({
+          url: "auth/2fa/disable",
+          method: "POST",
+          body: { password },
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["UserInfo"],
+      }),
+      checkSecondFactorAuth: builder.query<
+        { enabled: boolean },
+        { email: string }
+      >({
+        query: ({ email }) => ({
+          url: `auth/2fa/check?email=${encodeURIComponent(email)}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: { enabled: boolean } }) =>
+          response.data,
+        providesTags: ["UserInfo"],
+      }),
       getCities: builder.query({
         query: () => ({
           url: "/city",
           method: "GET",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes[] }) =>
+          response.data,
         providesTags: ["CityData"],
       }),
-      removeCity: builder.mutation<string, { cityId: string }>({
+      removeCity: builder.mutation<CityAttributes, { cityId: string }>({
         query: ({ cityId }) => ({
           url: `/city/${cityId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes }) =>
+          response.data,
         invalidatesTags: ["CityData", "Projects"],
       }),
       getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
@@ -687,9 +1001,13 @@ export const api = createApi({
           method: "GET",
         }),
         providesTags: ["Inventories"],
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: InventoryAttributes[] }) =>
+          response.data,
       }),
-      addUserFile: builder.mutation<UserFileResponse, any>({
+      addUserFile: builder.mutation<
+        UserFileResponse,
+        { formData: object; cityId: string }
+      >({
         query: ({ formData, cityId }) => {
           return {
             method: "POST",
@@ -701,14 +1019,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["FileData"],
       }),
-      getUserFiles: builder.query({
+      getUserFiles: builder.query<UserFileResponse[], string>({
         query: (cityId: string) => ({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
-          return response.data;
-        },
+        transformResponse: (response: { data: UserFileResponse[] }) =>
+          response.data,
 
         providesTags: ["FileData"],
       }),
@@ -727,7 +1044,7 @@ export const api = createApi({
           methodologyId: string;
           inventoryId: string;
           referenceNumber: string;
-          metadata?: Record<string, any>;
+          metadata?: Record<string, unknown>;
         }
       >({
         query: (params) => {
@@ -747,6 +1064,7 @@ export const api = createApi({
           url: `datasource/${inventoryId}/datasource/${datasourceId}`,
         }),
         invalidatesTags: [
+          "ActivityValue",
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",
@@ -805,8 +1123,7 @@ export const api = createApi({
               body: data,
             };
           },
-          transformResponse: (response: { data: AcceptInviteResponse }) =>
-            response.data,
+          transformResponse: (response: AcceptInviteResponse) => response,
           invalidatesTags: [
             "Invites",
             "UserData",
@@ -834,7 +1151,6 @@ export const api = createApi({
             body: data,
           };
         },
-        transformResponse: (response: any) => response,
         invalidatesTags: [
           "UserAccessStatus",
           "Projects",
@@ -888,7 +1204,8 @@ export const api = createApi({
           },
           method: "GET",
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes[] }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       createActivityValue: builder.mutation({
@@ -897,7 +1214,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value`,
           body: data.requestData,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -913,7 +1231,8 @@ export const api = createApi({
           method: "GET",
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       updateActivityValue: builder.mutation({
@@ -922,7 +1241,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
           body: data.data,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -962,7 +1282,8 @@ export const api = createApi({
             gpcReferenceNumber: data.gpcReferenceNumber,
           },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: { deletedCount: number } }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -972,20 +1293,6 @@ export const api = createApi({
           "YearlyReportResults",
           "SectorBreakdown",
         ],
-      }),
-      createThreadId: builder.mutation({
-        query: (data: { inventoryId: string; content: string }) => ({
-          url: `/assistants/threads/${data.inventoryId}`,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: data.content,
-          }),
-        }),
-        transformResponse: (response: { threadId: string }) =>
-          response.threadId,
       }),
       updateInventory: builder.mutation<
         InventoryAttributes,
@@ -998,7 +1305,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: InventoryAttributes }) =>
           response.data,
-        invalidatesTags: ["Inventory", "Inventories"],
+        invalidatesTags: ["Inventory", "Inventories", "InventoryProgress"],
       }),
       updatePassword: builder.mutation({
         query: (data) => ({
@@ -1013,7 +1320,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { result: Record<string, unknown[]> }) =>
+          response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({
@@ -1029,10 +1337,14 @@ export const api = createApi({
           method: "POST",
           body: { notationKeys: data.notationKeys },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
       }),
       createOrganization: builder.mutation({
-        query: (data: { name: string; contactEmail: string }) => ({
+        query: (data: {
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+        }) => ({
           url: `/organizations`,
           method: "POST",
           body: { ...data },
@@ -1043,12 +1355,22 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: { id: string; name: string; contactEmail: string }) => ({
+        query: (data: {
+          id: string;
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+          trialEndsAt?: string | null;
+        }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
+            ...(data.planType !== undefined ? { planType: data.planType } : {}),
+            ...(data.trialEndsAt !== undefined
+              ? { trialEndsAt: data.trialEndsAt }
+              : {}),
           },
         }),
         transformResponse: (response: OrganizationResponse) => {
@@ -1181,7 +1503,52 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
+      }),
+      enqueueBulkInventoryImport: builder.mutation<
+        {
+          jobId: string;
+          itemCount: number;
+          unmatchedCount: number;
+        },
+        FormData
+      >({
+        query: (formData) => ({
+          url: `/admin/bulk-inventory-import`,
+          method: "POST",
+          body: formData,
+        }),
+        transformResponse: (response: {
+          data: {
+            jobId: string;
+            itemCount: number;
+            unmatchedCount: number;
+          };
+        }) => response.data,
+        invalidatesTags: ["BulkInventoryImport"],
+      }),
+      getLatestBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDto | null,
+        string
+      >({
+        query: (projectId) =>
+          `/admin/bulk-inventory-import?projectId=${projectId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDto | null;
+        }) => response.data,
+        providesTags: ["BulkInventoryImport"],
+      }),
+      getBulkInventoryImportJob: builder.query<
+        BulkInventoryImportJobDetailDto,
+        string
+      >({
+        query: (jobId) => `/admin/bulk-inventory-import/${jobId}`,
+        transformResponse: (response: {
+          data: BulkInventoryImportJobDetailDto;
+        }) => response.data,
+        providesTags: (_r, _e, jobId) => [
+          { type: "BulkInventoryImport", id: jobId },
+        ],
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -1193,7 +1560,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { errors: unknown[] }) => response,
       }),
       markCitiesPublic: builder.mutation({
         query: (data: { projectId: string }) => ({
@@ -1320,7 +1687,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/projects/${data.projectId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteCityUser: builder.mutation({
@@ -1328,7 +1695,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${data.cityId}/user?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteOrganizationAdminUser: builder.mutation({
@@ -1336,7 +1703,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/organizations/${data.organizationId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       getUserAccessStatus: builder.query({
@@ -1372,15 +1739,16 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["Cities", "Organizations"],
       }),
-      getProjectBoundaries: builder.query({
+      getProjectBoundaries: builder.query<Array<ProjectBoundary>, string>({
         query: (projectId: string) => ({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
-        transformResponse: (response: any) => response.result,
+        transformResponse: (response: { result: Array<ProjectBoundary> }) =>
+          response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({
@@ -1427,10 +1795,14 @@ export const api = createApi({
       }),
       updateHiapSelection: builder.mutation<
         { success: boolean; updated: number },
-        { inventoryId: string; selectedActionIds: string[] }
+        {
+          inventoryId: string;
+          selectedActionIds: string[];
+          actionType: ACTION_TYPES;
+        }
       >({
-        query: ({ inventoryId, selectedActionIds }) => ({
-          url: `inventory/${inventoryId}/hiap`,
+        query: ({ inventoryId, selectedActionIds, actionType }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}`,
           method: "PATCH",
           body: { selectedActionIds },
         }),
@@ -1443,14 +1815,13 @@ export const api = createApi({
         invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
-        { plan: string; timestamp: string; actionName: string },
+        { accepted: boolean; message: string },
         {
           action: HIAction;
           inventoryId: string;
           cityLocode: string;
           lng?: string;
           cityId: string;
-          rankingId: string;
         }
       >({
         query: ({
@@ -1459,28 +1830,26 @@ export const api = createApi({
           cityId,
           lng,
           cityLocode,
-          rankingId,
         }: {
           action: HIAction;
           inventoryId: string;
           cityId: string;
           cityLocode?: string;
           lng?: string;
-          rankingId: string;
         }) => ({
-          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
+          url: `city/${cityId}/hiap/action-plan/generate`,
           method: "POST",
           body: { action, inventoryId, cityLocode, lng },
         }),
         transformResponse: (response: {
-          data: { plan: string; timestamp: string; actionName: string };
+          data: { accepted: boolean; message: string };
         }) => {
           return response.data;
         },
-        invalidatesTags: ["ActionPlan"],
+        // Plan is not ready yet (202); cache refresh happens when the user returns after email.
       }),
       getActionPlans: builder.query<
-        { actionPlans: ActionPlan[] },
+        { actionPlans: ActionPlanAttributes[] },
         { cityId: string; language?: string; actionId?: string }
       >({
         query: ({ cityId, language, actionId }) => {
@@ -1489,17 +1858,18 @@ export const api = createApi({
           if (actionId) params.append("actionId", actionId);
           return `city/${cityId}/hiap/action-plan?${params.toString()}`;
         },
-        transformResponse: (response: { data: ActionPlan[] }) => ({
+        transformResponse: (response: { data: ActionPlanAttributes[] }) => ({
           actionPlans: response.data,
         }),
         providesTags: ["ActionPlan"],
       }),
       getActionPlanById: builder.query<
-        ActionPlan,
+        ActionPlanAttributes,
         { cityId: string; id: string }
       >({
         query: ({ cityId, id }) => `city/${cityId}/hiap/action-plan/${id}`,
-        transformResponse: (response: { data: ActionPlan }) => response.data,
+        transformResponse: (response: { data: ActionPlanAttributes }) =>
+          response.data,
         providesTags: ["ActionPlan"],
       }),
       setOrgWhiteLabel: builder.mutation({
@@ -1507,6 +1877,7 @@ export const api = createApi({
           organizationId: string;
           whiteLabelData: {
             themeId: string;
+            themeKey?: string;
             logo?: File;
             clearLogoUrl?: boolean;
           };
@@ -1528,8 +1899,41 @@ export const api = createApi({
             body: formData,
           };
         },
-        transformResponse: (response: { data: OrganizationResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data: { logoUrl?: string | null; themeId?: string };
+        }) => response.data,
+        // Patch org cache immediately so the Brand tab's theme effect applies
+        // the saved theme without waiting for a full Organization refetch.
+        async onQueryStarted(
+          { organizationId, whiteLabelData },
+          { dispatch, queryFulfilled },
+        ) {
+          try {
+            const { data } = await queryFulfilled;
+            const themeKey = whiteLabelData.themeKey;
+
+            dispatch(
+              api.util.updateQueryData(
+                "getOrganization",
+                organizationId,
+                (draft) => {
+                  draft.themeId = whiteLabelData.themeId;
+                  if (data?.logoUrl !== undefined) {
+                    draft.logoUrl = data.logoUrl ?? undefined;
+                  }
+                  if (themeKey) {
+                    draft.theme = {
+                      themeId: whiteLabelData.themeId,
+                      themeKey,
+                    };
+                  }
+                },
+              ),
+            );
+          } catch {
+            // Leave cache alone; invalidation refetch will reconcile.
+          }
+        },
         invalidatesTags: ["Organizations", "Organization"],
       }),
       getThemes: builder.query({
@@ -1581,7 +1985,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${cityId}`,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: [
           "CityData",
           "Projects",
@@ -1604,7 +2008,7 @@ export const api = createApi({
             active: activeStatus,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: ["Organizations", "Organization"],
       }),
       updateUserRoleInOrganization: builder.mutation({
@@ -1722,7 +2126,8 @@ export const api = createApi({
             csrfToken,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data.code,
+        transformResponse: (response: { data: { code: string } }) =>
+          response.data.code,
       }),
       getBulkCityLocations: builder.query<
         CityLocationResponse[],
@@ -1823,7 +2228,10 @@ export const api = createApi({
       }),
 
       // Climate Advisor Chat Endpoints (CA Integration)
-      createChatThread: builder.mutation({
+      createChatThread: builder.mutation<
+        { threadId: string },
+        { inventory_id?: string; title?: string }
+      >({
         query: (data: { inventory_id?: string; title?: string }) => ({
           url: `/chat/threads`,
           method: "POST",
@@ -1861,12 +2269,39 @@ export const api = createApi({
       }),
       getImportStatus: builder.query<
         ImportStatusResponse,
-        { cityId: string; inventoryId: string; importedFileId: string }
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, unknown>;
+        }
       >({
-        query: ({ cityId, inventoryId, importedFileId }) =>
-          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+          params: mappingOverrides
+            ? { mappingOverrides: JSON.stringify(mappingOverrides) }
+            : undefined,
+        }),
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
+      }),
+      getImportRowPreview: builder.query<
+        ImportRowPreview,
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides: Record<string, string>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/row-preview`,
+          method: "POST",
+          body: { mappingOverrides },
+        }),
+        transformResponse: (response: { data: ImportRowPreview }) =>
+          response.data,
+        providesTags: ["Inventory"],
       }),
       extractImport: builder.mutation<
         | { id: string; importStatus: string; rowCount: number }
@@ -1914,15 +2349,24 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          mappingOverrides?: Record<string, any>;
+          mappingOverrides?: Record<string, unknown>;
+          /** Confirmed by the user: the file replaces the inventory's existing data. */
+          replaceExisting?: boolean;
         }
       >({
-        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+        query: ({
+          cityId,
+          inventoryId,
+          importedFileId,
+          mappingOverrides,
+          replaceExisting,
+        }) => ({
           url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
           method: "POST",
           body: {
             importedFileId,
             mappingOverrides,
+            replaceExisting,
           },
         }),
         transformResponse: (response: {
@@ -2001,6 +2445,88 @@ export const api = createApi({
         },
       ),
 
+      getOrganizationWebhooks: builder.query<
+        WebhookSubscriptionResponse[],
+        string
+      >({
+        query: (organizationId) => `/organizations/${organizationId}/webhooks`,
+        transformResponse: (response: {
+          data: WebhookSubscriptionResponse[];
+        }) => response.data,
+        providesTags: (result, _err, organizationId) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "Webhook" as const, id })),
+                { type: "Webhook", id: `ORG-${organizationId}` },
+              ]
+            : [{ type: "Webhook", id: `ORG-${organizationId}` }],
+      }),
+      createOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; body: CreateWebhookSubscriptionRequest }
+      >({
+        query: ({ organizationId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId }) => [
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      updateOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionResponse,
+        {
+          organizationId: string;
+          webhookId: string;
+          body: UpdateWebhookSubscriptionRequest;
+        }
+      >({
+        query: ({ organizationId, webhookId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: { data: WebhookSubscriptionResponse }) =>
+          response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      deleteOrganizationWebhook: builder.mutation<
+        { success: boolean },
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      rotateOrganizationWebhookSecret: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}/rotate-secret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
         query: () => "admin/modules",
@@ -2060,6 +2586,403 @@ export const api = createApi({
         }),
         invalidatesTags: ["AdminModules", "Modules"],
       }),
+
+      getUserOrganizations: builder.query<UserOrganizationsResponse, void>({
+        query: () => "user/organizations",
+        transformResponse: (response: { data: UserOrganizationsResponse }) =>
+          response.data,
+        providesTags: ["Organizations"],
+      }),
+      getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
+        query: (cityId) => ({
+          url: "concept-notes/",
+          params: { city_id: cityId },
+        }),
+        providesTags: (result, _error, cityId) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          ...(result?.runs ?? []).map((run) => ({
+            type: "ConceptNoteRuns" as const,
+            id: run.run_id,
+          })),
+        ],
+      }),
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
+      getConceptNoteApplicationContext: builder.query<
+        ConceptNoteApplicationContext,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/application-context/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+        ],
+      }),
+      getConceptNoteFundingCatalogue: builder.query<
+        { funders: ConceptNoteFunder[] },
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funding-catalogue/`,
+        providesTags: ["ConceptNoteFundingCatalogue"],
+      }),
+      updateConceptNoteFundingSelection: builder.mutation<
+        ConceptNoteApplicationContext,
+        { runId: string; selection: ConceptNoteFundingSelection }
+      >({
+        query: ({ runId, selection }) => ({
+          url: `concept-notes/${runId}/application-context/`,
+          method: "PATCH",
+          body: selection,
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteApplicationContext", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+          // Using a reviewed template import clears it.
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      getConceptNoteFunderImport: builder.query<
+        ConceptNoteFunderImportResponse,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/funder-imports/current/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      startConceptNoteFunderImport: builder.mutation<
+        ConceptNoteFunderImportResponse,
+        { runId: string; uploadId: string; kind: "funder" | "template" }
+      >({
+        query: ({ runId, uploadId, kind }) => ({
+          url: `concept-notes/${runId}/funder-imports/`,
+          method: "POST",
+          body: { uploadId, kind },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      discardConceptNoteFunderImport: builder.mutation<
+        void,
+        { runId: string; importId: string }
+      >({
+        query: ({ runId, importId }) => ({
+          url: `concept-notes/${runId}/funder-imports/current/`,
+          method: "DELETE",
+          params: { importId },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      createConceptNoteFunder: builder.mutation<
+        ConceptNoteFunderCreateResponse,
+        { runId: string; funder: ConceptNoteFunderCreateRequest }
+      >({
+        query: ({ runId, funder }) => ({
+          url: `concept-notes/${runId}/funders/`,
+          method: "POST",
+          body: funder,
+        }),
+        // The server clears a reviewed import once its funder is added.
+        invalidatesTags: (_result, _error, { runId }) => [
+          "ConceptNoteFundingCatalogue",
+          { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
+        query: (runId) => `concept-notes/${runId}/draft/`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
+      startConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        StartConceptNoteRunRequest
+      >({
+        query: ({
+          cityId,
+          idempotencyKey,
+          name,
+          projectId,
+          funderId,
+          selectedFundingOpportunityId,
+          threadId,
+          initialUploads,
+        }) => ({
+          url: "concept-notes/start/",
+          method: "POST",
+          body: {
+            initial_uploads: initialUploads,
+            city_id: cityId,
+            idempotency_key: idempotencyKey,
+            name,
+            project_id: projectId ?? null,
+            funder_id: funderId ?? null,
+            selected_funding_opportunity_id:
+              selectedFundingOpportunityId ?? null,
+            thread_id: threadId ?? null,
+          },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      updateConceptNotePopulation: builder.mutation<
+        ConceptNoteRun,
+        {
+          cityId: string;
+          runId: string;
+          manualPopulation: { population: number; year: number } | null;
+        }
+      >({
+        query: ({ cityId, runId, manualPopulation }) => ({
+          url: `concept-notes/${runId}/population/`,
+          method: "PATCH",
+          params: { city_id: cityId },
+          body: { manual_population: manualPopulation },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ cityId, name, runId }) => ({
+          url: `concept-notes/${runId}/`,
+          method: "PATCH",
+          body: { name },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ cityId, idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate/`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/`,
+          method: "DELETE",
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteChatThreads: builder.query<
+        ConceptNoteChatThreadListResponse,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      startConceptNoteChat: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/chat/threads`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Swap the cached run to the new chat before the refetch lands.
+        async onQueryStarted({ cityId, runId }, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              api.util.updateQueryData(
+                "getConceptNoteRun",
+                { cityId, runId },
+                (draft) => {
+                  draft.thread_id = data.thread_id;
+                },
+              ),
+            );
+          } catch {
+            // The mutation hook reports the failure; the cache stays as is.
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      activateConceptNoteChatThread: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; runId: string; threadId: string }
+      >({
+        query: ({ cityId, runId, threadId }) => ({
+          url: `concept-notes/${runId}/chat/threads/${threadId}/activate`,
+          method: "POST",
+          params: { city_id: cityId },
+        }),
+        // Switch the cached run immediately so the panel loads that history.
+        async onQueryStarted(
+          { cityId, runId, threadId },
+          { dispatch, queryFulfilled },
+        ) {
+          const patch = dispatch(
+            api.util.updateQueryData(
+              "getConceptNoteRun",
+              { cityId, runId },
+              (draft) => {
+                draft.thread_id = threadId;
+              },
+            ),
+          );
+          try {
+            await queryFulfilled;
+          } catch {
+            patch.undo();
+          }
+        },
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+          { type: "ConceptNoteChatThreads", id: runId },
+        ],
+      }),
+      uploadConceptNoteSource: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadRequest
+      >({
+        query: ({ formData, runId }) => ({
+          url: `concept-notes/${runId}/uploads/`,
+          method: "POST",
+          body: formData,
+        }),
+        invalidatesTags: (_result, _error, { cityId, runId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
+      getConceptNoteUploadStatus: builder.query<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) =>
+          `concept-notes/${runId}/uploads/${uploadId}/`,
+        providesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteUpload: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry/`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/retry/`,
+          method: "POST",
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      refreshConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRefreshResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/refresh/`,
+          method: "POST",
+        }),
+        // Only a queued rebuild changes the run; skip needless refetches.
+        invalidatesTags: (result) =>
+          result?.status === "queued" ? ["ConceptNoteRuns"] : [],
+      }),
+      selectConceptNoteInventory: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        { runId: string; inventoryId: string | null }
+      >({
+        query: ({ runId, inventoryId }) => ({
+          url: `concept-notes/${runId}/inventory-selection/`,
+          method: "PUT",
+          body: { inventory_id: inventoryId },
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/draft/`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteRuns", id: runId },
+        ],
+      }),
+      confirmConceptNoteChapter: builder.mutation<
+        ConceptNoteDraftState,
+        ConfirmConceptNoteChapterRequest
+      >({
+        query: ({ runId, chapterId, expectedRevision, idempotencyKey }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/confirm`,
+          method: "POST",
+          body: {
+            expected_revision: expectedRevision,
+            idempotency_key: idempotencyKey,
+          },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
+        ],
+      }),
+      validateConceptNoteChapter: builder.mutation<
+        ConceptNoteChapterValidationResponse,
+        ValidateConceptNoteChapterRequest
+      >({
+        query: ({ chapterId, runId }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/validation/`,
+          method: "POST",
+        }),
+      }),
     };
   },
 });
@@ -2072,15 +2995,17 @@ export const openclimateAPI = createApi({
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
-    getOCCity: builder.query<any, string>({
+    getOCCity: builder.query<OCCityAttributes[], string>({
       query: (q) => `/api/v1/search/city?q=${q}`,
-      transformResponse: (response: any) => {
-        return response.data.filter((item: any) => item.type === "city");
+      transformResponse: (response: {
+        data: Array<OCCityAttributes & { type: string }>;
+      }) => {
+        return response.data.filter((item) => item.type === "city");
       },
     }),
-    getOCCityData: builder.query<any, string>({
+    getOCCityData: builder.query<OCCityDataResponse, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
-      transformResponse: (response: any) => {
+      transformResponse: (response: { data: OCCityDataResponse }) => {
         return response.data;
       },
     }),
@@ -2127,7 +3052,6 @@ export const {
   useCheckUserMutation,
   useMockDataQuery,
   useConnectToCDPMutation,
-  useCreateThreadIdMutation,
   useCreateChatThreadMutation,
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
@@ -2135,6 +3059,20 @@ export const {
   useGetInventoryValuesBySubsectorQuery,
   useDeleteInventoryValueMutation,
   useGetResultsQuery,
+  useGetMeedActionsQuery,
+  useGetMeedCityAttributesQuery,
+  useGetMeedPolicyScoresQuery,
+  useGetMeedRankingQuery,
+  useRunMeedRankingMutation,
+  useGetMeedPlanQuery,
+  useLazyGetMeedPlanQuery,
+  useRunMeedGeneratePlanMutation,
+  useGetMeedReferenceActionsQuery,
+  useGetMeedReferenceCityAttributesQuery,
+  useGetMeedReferencePolicyScoresQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceOpportunitiesQuery,
+  useGetMeedReferenceFinanceProjectsQuery,
   useGetEmissionsForecastQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,
@@ -2154,6 +3092,9 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useEnqueueBulkInventoryImportMutation,
+  useGetLatestBulkInventoryImportJobQuery,
+  useGetBulkInventoryImportJobQuery,
   useConnectDataSourcesMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,
@@ -2202,9 +3143,37 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetOrganizationWebhooksQuery,
+  useCreateOrganizationWebhookMutation,
+  useUpdateOrganizationWebhookMutation,
+  useDeleteOrganizationWebhookMutation,
+  useRotateOrganizationWebhookSecretMutation,
   useGetAdminModulesQuery,
   useCreateModuleMutation,
   useUpdateModuleMutation,
   useDeleteModuleMutation,
+  useGetConceptNoteRunsQuery,
+  useGetConceptNoteRunQuery,
+  useGetConceptNoteApplicationContextQuery,
+  useGetConceptNoteDraftQuery,
+  useStartConceptNoteRunMutation,
+  useUpdateConceptNotePopulationMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
+  useGetConceptNoteChatThreadsQuery,
+  useStartConceptNoteChatMutation,
+  useActivateConceptNoteChatThreadMutation,
+  useStartConceptNoteDraftMutation,
+  useConfirmConceptNoteChapterMutation,
+  useValidateConceptNoteChapterMutation,
+  useUploadConceptNoteSourceMutation,
+  useGetConceptNoteUploadStatusQuery,
+  useRetryConceptNoteUploadMutation,
+  useRetryConceptNoteContextBundleMutation,
+  useGetConceptNoteFunderImportQuery,
+  useStartConceptNoteFunderImportMutation,
+  useDiscardConceptNoteFunderImportMutation,
+  useCreateConceptNoteFunderMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

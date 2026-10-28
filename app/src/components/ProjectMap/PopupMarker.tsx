@@ -12,7 +12,7 @@ type PopupMarkerProps = {
   }: {
     event: React.MouseEvent<HTMLDivElement>;
     anchor: Point;
-    payload: any;
+    payload: unknown;
   }) => void;
 };
 

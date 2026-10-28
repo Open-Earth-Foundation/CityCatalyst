@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { OpenChangeDetails } from "@zag-js/popover";
 import { api } from "@/services/api";
 import { useAIButtonPosition } from "@/hooks/useAIButtonPosition";
-import { usePathname } from "next/navigation";
 
 export default function ChatPopover({
   lng,
@@ -111,20 +110,6 @@ export default function ChatPopover({
   // Use the new hook to position the AI button
   const dynamicBottomPosition = useAIButtonPosition();
 
-  const pathname = usePathname();
-  const isStationaryEnergyAgenticRoute = pathname.includes(
-    "/draft/stationary-energy",
-  );
-
-  // Hide the global launcher on the initial city onboarding page (not the GHGI onboarding).
-  // The pathname for the first onboarding is "/<lng>/cities/onboarding" (no cityId).
-  const isCityOnboardingRoute = /^\/[^/]+\/cities\/onboarding(\/|$)/.test(pathname);
-
-  // Hide the global launcher where Clima is embedded as the primary workflow.
-  if (pathname.startsWith(`/${lng}/auth`) || isStationaryEnergyAgenticRoute || isCityOnboardingRoute) {
-    return null;
-  }
-
   return (
     <>
       <ClimaAIAssistantDisclaimerDialog
@@ -170,8 +155,7 @@ export default function ChatPopover({
         </PopoverTrigger>
         <PopoverContent
           p={0}
-          w={{ base: "calc(100vw - 32px)", md: "533px" }}
-          maxWidth="533px"
+          w="min(533px, calc(100vw - 2rem))"
           maxHeight={"76vh"}
           display="flex"
           flexDirection="column"

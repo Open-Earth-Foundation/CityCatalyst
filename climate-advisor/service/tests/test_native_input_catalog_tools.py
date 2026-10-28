@@ -1,0 +1,1026 @@
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Optional
+from unittest.mock import AsyncMock
+
+import pytest
+from agents.tool import ToolContext
+
+from app.services.citycatalyst_client import CityCatalystClientError
+from app.services.native_input_catalog_service import (
+    ActiveRequestContext,
+    NativeInputCatalogService,
+    NativeInputDiscovery,
+)
+from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
+
+
+@dataclass
+class _StubClient:
+    response: dict[str, Any] = field(
+        default_factory=lambda: {
+            "action": "ghgi.inventory.status_overview",
+            "success": True,
+            "data": {"completion": {"filled": 31}},
+        }
+    )
+    last_refreshed_token: Optional[str] = None
+    error: Exception | None = None
+    requests: list[dict[str, Any]] = field(default_factory=list)
+    closed: bool = False
+
+    async def read_native_input(
+        self,
+        *,
+        request_payload: dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> dict[str, Any]:
+        """Record one selected-read request or raise the configured failure."""
+        if self.error:
+            raise self.error
+        self.requests.append(
+            {
+                "request_payload": request_payload,
+                "token": token,
+                "user_id": user_id,
+                "thread_id": thread_id,
+            }
+        )
+        return self.response
+
+    async def close(self) -> None:
+        """Record client cleanup."""
+        self.closed = True
+
+
+@dataclass
+class _StubCoreClient:
+    last_refreshed_token: Optional[str] = None
+
+
+@dataclass
+class _StubService:
+    discovery: NativeInputDiscovery
+    core_client: _StubCoreClient = field(default_factory=_StubCoreClient)
+    discover: AsyncMock = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Expose an awaitable discovery double with configurable responses."""
+        self.discover = AsyncMock(return_value=self.discovery)
+
+
+def _context(**overrides: Any) -> ActiveRequestContext:
+    """Build a complete captured request context for tool tests."""
+    values = {
+        "user_id": "user-1",
+        "thread_id": "thread-1",
+        "organization_id": "organization-1",
+        "project_id": "project-1",
+        "city_id": "city-1",
+        "inventory_id": "inventory-1",
+    }
+    values.update(overrides)
+    return ActiveRequestContext(**values)
+
+
+def _discovery(
+    *,
+    catalog_id: str = "catalog-1",
+    capability_ids: tuple[str, ...] = ("ghgi.inventory.status_overview",),
+) -> NativeInputDiscovery:
+    """Build one safe Core discovery result."""
+    return NativeInputDiscovery(
+        entries=(
+            {
+                "catalog_id": catalog_id,
+                "kind": "inventory_import",
+                "owning_module": "ghgi",
+                "source_type": "inventory",
+                "capability_ids": capability_ids,
+            },
+        )
+    )
+
+
+def _tool_context(name: str) -> ToolContext:
+    """Build the minimum Agents SDK invocation context."""
+    return ToolContext(
+        context=None,
+        tool_call_id="test-call",
+        tool_name=name,
+        tool_arguments={},
+    )
+
+
+def _build(
+    client: _StubClient,
+    *,
+    service: _StubService | None = None,
+    token_ref: Optional[dict[str, Optional[str]]] = None,
+) -> tuple[dict[str, object], _StubService, dict[str, Optional[str]]]:
+    """Build stable tools and index them by fixed name."""
+    actual_service = service or _StubService(_discovery())
+    ref = token_ref or {"value": "jwt-token"}
+    tools = build_native_input_catalog_tools(
+        service=actual_service,
+        context=_context(),
+        token_ref=ref,
+        client_factory=lambda: client,
+    )
+    return ({getattr(tool, "name"): tool for tool in tools}, actual_service, ref)
+
+
+def _tool(tools: dict[str, object], name: str) -> object:
+    """Return one named tool while keeping test failures descriptive."""
+    try:
+        return tools[name]
+    except KeyError as error:
+        raise AssertionError(f"missing tool {name}") from error
+
+
+def test_builder_registers_two_stable_tools_without_discovery_snapshot() -> None:
+    """Stable tools register without discovering or selecting a catalog pair."""
+    client = _StubClient()
+    service = _StubService(_discovery())
+
+    tools, _, _ = _build(client, service=service)
+
+    assert list(tools) == ["native_input_discover", "native_input_read"]
+    service.discover.assert_not_awaited()
+    assert client.requests == []
+    assert not client.closed
+
+
+def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
+    """Tool schemas leave no source, scope, storage, or arbitrary-input escape hatch."""
+    tools, _, _ = _build(_StubClient())
+
+    discover_tool = _tool(tools, "native_input_discover")
+    read_tool = _tool(tools, "native_input_read")
+    discover_schema = getattr(discover_tool, "params_json_schema")
+    read_schema = getattr(read_tool, "params_json_schema")
+
+    assert discover_schema == {
+        "type": "object",
+        "properties": {
+            "cursor": {"type": "string", "minLength": 1, "maxLength": 4096},
+            "inventoryId": {"type": "string", "format": "uuid"},
+        },
+        "additionalProperties": False,
+    }
+    assert read_schema == {
+        "type": "object",
+        "properties": {
+            "catalogId": {"type": "string", "minLength": 1},
+            "capabilityId": {"type": "string", "minLength": 1},
+            "language": {"type": "string", "maxLength": 16},
+            "inventoryId": {"type": "string", "format": "uuid"},
+            "scope": {"type": "string", "enum": ["selected", "ranked"]},
+            "type": {"type": "string", "enum": ["mitigation", "adaptation"]},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 50},
+            "offset": {"type": "integer", "minimum": 0, "maximum": 1000},
+            "chapters": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "snapshot",
+                        "the_action",
+                        "action_impact",
+                        "city_fit",
+                        "policy_backing",
+                        "legal_mandate_delivery",
+                        "financing_precedents_pathway",
+                        "sources_assumptions",
+                    ],
+                },
+                "maxItems": 8,
+            },
+        },
+        "required": ["catalogId", "capabilityId"],
+        "additionalProperties": False,
+    }
+    assert getattr(discover_tool, "strict_json_schema") is False
+    assert getattr(read_tool, "strict_json_schema") is False
+
+
+def test_tool_descriptions_route_ranked_action_questions_to_hiap_capability() -> None:
+    """Descriptions tell the model which questions and capabilities these tools serve."""
+    tools, _, _ = _build(_StubClient())
+
+    discover_description = getattr(_tool(tools, "native_input_discover"), "description")
+    read_description = getattr(_tool(tools, "native_input_read"), "description")
+
+    assert "ranked" in discover_description
+    assert "HIAP" in discover_description
+    assert "hiap.inventory.context" in read_description
+    assert "ghgi.inventory.status_overview" in read_description
+    assert "ghgi.inventory.emissions_context" in read_description
+    assert "hiap_meed.ranking.context" in read_description
+    assert "hiap_meed.output_plan.context" in read_description
+    assert "hiap.action_plan.context" in read_description
+    assert "offset" in read_description
+    assert (
+        "language is accepted only by hiap.inventory.context, "
+        "hiap_meed.ranking.context and hiap_meed.output_plan.context"
+    ) in read_description
+
+
+def test_description_language_claim_matches_the_capabilities_that_accept_it() -> None:
+    """The description names exactly the capabilities in _LANGUAGE_CAPABILITIES."""
+    from app.tools import native_input_catalog_tools as module
+
+    tools, _, _ = _build(_StubClient())
+    description = getattr(_tool(tools, "native_input_read"), "description")
+
+    assert module._LANGUAGE_CAPABILITIES == {
+        "hiap.inventory.context",
+        "hiap_meed.ranking.context",
+        "hiap_meed.output_plan.context",
+    }
+    for capability in module._LANGUAGE_CAPABILITIES:
+        assert capability in description.split("language is accepted only by")[1].split("Also")[0]
+
+
+def test_meed_data_has_only_read_capabilities_and_no_export_or_download() -> None:
+    """CC-1060 PR 2: HIAP-MEED data is interpreted in chat, never exported."""
+    import re
+
+    from app.tools import native_input_catalog_tools as module
+
+    meed = {c for c in module._CAPABILITY_DEFINITIONS if c.startswith("hiap_meed.")}
+    assert meed == {"hiap_meed.ranking.context", "hiap_meed.output_plan.context"}
+    forbidden = re.compile(r"export|download|file|csv|xlsx|pdf|docx", re.IGNORECASE)
+    assert not [c for c in module._CAPABILITY_DEFINITIONS if forbidden.search(c)]
+
+    tools, _, _ = _build(_StubClient())
+    assert set(tools) == {"native_input_discover", "native_input_read"}
+    assert not [name for name in tools if forbidden.search(name)]
+
+
+@pytest.mark.asyncio
+async def test_read_tool_refuses_an_invented_meed_export_capability() -> None:
+    """An export capability is rejected before Core is ever called."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.ranking.export"},
+    )
+    assert result["success"] is False
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_discovery_is_fresh_filters_unsupported_capabilities_and_exposes_safe_camelcase() -> None:
+    """Each discover call returns only current, locally supported safe entries."""
+    first = _discovery(catalog_id="catalog-1")
+    second = NativeInputDiscovery(
+        entries=(
+            {
+                "catalog_id": "catalog-unsupported",
+                "kind": "private_kind",
+                "owning_module": "private_module",
+                "source_type": "private_source",
+                "capability_ids": ("unsupported.capability",),
+            },
+            {
+                "catalog_id": "catalog-2",
+                "kind": "inventory_import",
+                "owning_module": "ghgi",
+                "source_type": "inventory",
+                "capability_ids": (
+                    "unsupported.capability",
+                    "ghgi.inventory.status_overview",
+                ),
+                "source_id": "private-source-id",
+                "storage_path": "private/path",
+            },
+        )
+    )
+    service = _StubService(first)
+    service.discover.side_effect = [first, second]
+    tools, _, _ = _build(_StubClient(), service=service)
+    discover = _tool(tools, "native_input_discover")
+
+    await getattr(discover, "on_invoke_tool")(
+        _tool_context("native_input_discover"), "{}"
+    )
+    payload = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"), "{}"
+        )
+    )
+
+    assert payload == {
+        "action": "native_input_discover",
+        "success": True,
+        "data": {
+            "entries": [
+                {
+                    "catalogId": "catalog-2",
+                    "kind": "inventory_import",
+                    "owningModule": "ghgi",
+                    "sourceType": "inventory",
+                    "capabilityIds": ["ghgi.inventory.status_overview"],
+                }
+            ]
+        },
+    }
+    assert service.discover.await_count == 2
+    service.discover.assert_awaited_with(context=_context(), token="jwt-token")
+    assert "private" not in json.dumps(payload)
+
+
+@pytest.mark.asyncio
+async def test_discovery_relays_a_continuation_cursor_then_reads_the_later_entry() -> None:
+    """A later-page catalog id remains a Core-revalidated selected read."""
+    first = NativeInputDiscovery(
+        entries=_discovery().entries,
+        continuation_cursor="opaque-core-cursor",
+    )
+    later = _discovery(catalog_id="catalog-101")
+    service = _StubService(first)
+    service.discover.side_effect = [first, later]
+    client = _StubClient()
+    tools, _, _ = _build(client, service=service)
+    discover = _tool(tools, "native_input_discover")
+    read = _tool(tools, "native_input_read")
+
+    first_payload = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"), "{}"
+        )
+    )
+    second_payload = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": first_payload["data"]["continuationCursor"]}),
+        )
+    )
+    read_payload = json.loads(
+        await getattr(read, "on_invoke_tool")(
+            _tool_context("native_input_read"),
+            json.dumps(
+                {
+                    "catalogId": "catalog-101",
+                    "capabilityId": "ghgi.inventory.status_overview",
+                }
+            ),
+        )
+    )
+
+    assert first_payload["data"]["continuationCursor"] == "opaque-core-cursor"
+    assert second_payload["data"]["entries"][0]["catalogId"] == "catalog-101"
+    assert "continuationCursor" not in second_payload["data"]
+    assert read_payload["success"] is True
+    assert client.requests[0]["request_payload"]["catalogId"] == "catalog-101"
+    service.discover.assert_awaited_with(
+        context=_context(),
+        token="jwt-token",
+        cursor="opaque-core-cursor",
+    )
+
+
+@pytest.mark.asyncio
+async def test_discovery_rejects_unknown_or_invalid_cursor_arguments() -> None:
+    """Discovery stays a finite schema and does not invent catalog state."""
+    service = _StubService(_discovery())
+    tools, _, _ = _build(_StubClient(), service=service)
+    discover = _tool(tools, "native_input_discover")
+
+    unknown = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": "opaque-core-cursor", "cityId": "attacker-city"}),
+        )
+    )
+    empty = json.loads(
+        await getattr(discover, "on_invoke_tool")(
+            _tool_context("native_input_discover"),
+            json.dumps({"cursor": ""}),
+        )
+    )
+
+    assert unknown["error_code"] == "invalid_arguments"
+    assert empty["error_code"] == "invalid_arguments"
+    assert "attacker" not in unknown["error"]
+    service.discover.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_discovery_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """Discovery does not adopt a token the client claims to have refreshed."""
+    service = _StubService(_discovery())
+    service.core_client.last_refreshed_token = "fresh-token"
+    tools, _, token_ref = _build(_StubClient(), service=service)
+    discover = _tool(tools, "native_input_discover")
+
+    output = await getattr(discover, "on_invoke_tool")(
+        _tool_context("native_input_discover"), "{}"
+    )
+
+    assert json.loads(output)["success"] is True
+    assert token_ref["value"] == "jwt-token"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {},
+        {"catalogId": "catalog-1"},
+        {"catalogId": "", "capabilityId": "ghgi.inventory.status_overview"},
+        {"catalogId": "catalog-1", "capabilityId": ""},
+        {"catalogId": 1, "capabilityId": "ghgi.inventory.status_overview"},
+        {"catalogId": "catalog-1", "capabilityId": 1},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "input": {"unbounded": True}},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "cityId": "attacker-city"},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "storagePath": "private/path"},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "token": "private-token"},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "sourceId": "private-source"},
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "language": "en"},
+        {"catalogId": "catalog-1", "capabilityId": "unsupported.capability"},
+    ],
+)
+async def test_read_rejects_invalid_or_unbounded_arguments_before_core(arguments: dict[str, Any]) -> None:
+    """Only the approved finite v1 schema may reach Core."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"), json.dumps(arguments)
+    )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "invalid_arguments"
+    assert client.requests == []
+    assert "attacker" not in output
+    assert "private" not in output
+
+
+@pytest.mark.asyncio
+async def test_read_rejects_oversized_or_malformed_json_before_core() -> None:
+    """Raw tool arguments remain bounded and must be an object."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    malformed = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"), "[not-an-object]"
+    )
+    oversized = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"), "x" * (16 * 1024 + 1)
+    )
+
+    assert json.loads(malformed)["error_code"] == "invalid_arguments"
+    assert json.loads(oversized)["error_code"] == "invalid_arguments"
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("capability_id", "arguments", "expected_input"),
+    [
+        ("ghgi.inventory.status_overview", {}, {"city_id": "city-1", "inventory_id": "inventory-1"}),
+        ("ghgi.inventory.emissions_context", {}, {"city_id": "city-1", "inventory_id": "inventory-1"}),
+        ("hiap.inventory.context", {"language": "pt-BR"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt-BR"}),
+        ("hiap_meed.ranking.context", {"language": "pt"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt"}),
+        ("hiap_meed.output_plan.context", {}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "en"}),
+    ],
+)
+async def test_read_builds_capability_bounded_core_request(
+    capability_id: str, arguments: dict[str, Any], expected_input: dict[str, str]
+) -> None:
+    """Known capabilities receive only captured scope and their reviewed input."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": capability_id, **arguments}),
+    )
+
+    assert json.loads(output)["success"] is True
+    assert client.requests == [{
+        "request_payload": {
+            "userId": "user-1", "organizationId": "organization-1", "projectId": "project-1",
+            "cityId": "city-1", "inventoryId": "inventory-1", "catalogId": "catalog-1",
+            "capabilityId": capability_id, "input": expected_input,
+        },
+        "token": "jwt-token", "user_id": "user-1", "thread_id": "thread-1",
+    }]
+    assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_read_with_inventory_only_scope_omits_city_for_core_to_fill() -> None:
+    """General chat carries an inventory but no city; Core derives the city."""
+    client = _StubClient()
+    tools = build_native_input_catalog_tools(
+        service=_StubService(_discovery()),
+        context=_context(city_id=None),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: client,
+    )
+    read = {getattr(tool, "name"): tool for tool in tools}["native_input_read"]
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}),
+    )
+
+    assert json.loads(output)["success"] is True
+    sent = client.requests[0]["request_payload"]
+    assert "cityId" not in sent
+    assert sent["input"] == {"inventory_id": "inventory-1", "language": "en"}
+
+
+@pytest.mark.asyncio
+async def test_read_without_inventory_scope_is_rejected_before_core() -> None:
+    """A chat with no inventory cannot read inventory-bound capabilities."""
+    client = _StubClient()
+    tools = build_native_input_catalog_tools(
+        service=_StubService(_discovery()),
+        context=_context(city_id=None, inventory_id=None),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: client,
+    )
+    read = {getattr(tool, "name"): tool for tool in tools}["native_input_read"]
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}),
+    )
+
+    assert json.loads(output)["error_code"] == "invalid_arguments"
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_read_hiap_rejects_invalid_language_before_core() -> None:
+    """HIAP permits only a non-empty language of at most sixteen characters."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context", "language": "x" * 17}),
+    )
+
+    assert json.loads(output)["error_code"] == "invalid_arguments"
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_read_keeps_core_as_revalidation_authority_for_stale_pairs() -> None:
+    """The client forwards an undiscovered pair and maps Core's 404 without disclosure."""
+    client = _StubClient(error=CityCatalystClientError("Requested capability is unavailable. private-source-secret", status_code=404))
+    tools, service, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+    raw = json.dumps({"catalogId": "fabricated-catalog", "capabilityId": "ghgi.inventory.status_overview"})
+
+    output = await getattr(read, "on_invoke_tool")(_tool_context("native_input_read"), raw)
+
+    assert json.loads(output) == {
+        "action": "native_input_read", "success": False, "error_code": "capability_unavailable",
+        "error": "Requested capability is unavailable.",
+    }
+    assert client.requests == []
+    assert client.closed
+    service.discover.assert_not_awaited()
+    assert "fabricated-catalog" not in output
+    assert "ghgi.inventory.status_overview" not in output
+    assert "private-source-secret" not in output
+
+
+@pytest.mark.asyncio
+async def test_read_redacts_forbidden_fields_and_rejects_oversized_results() -> None:
+    """Read output remains safe and bounded independently of Core's response."""
+    safe_client = _StubClient(response={
+        "action": "ghgi.inventory.status_overview", "success": True,
+        "data": {"completion": {"filled": 31}, "inventory_id": "private-inventory-id", "object_key": "private/raw/source.json", "safe_label": "Downtown inventory"},
+    })
+    tools, _, _ = _build(safe_client)
+    read = _tool(tools, "native_input_read")
+    arguments = json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"})
+
+    output = await getattr(read, "on_invoke_tool")(_tool_context("native_input_read"), arguments)
+
+    assert json.loads(output)["data"] == {"completion": {"filled": 31}, "safe_label": "Downtown inventory"}
+    assert "private" not in output
+
+    oversized_client = _StubClient(response={"action": "ghgi.inventory.status_overview", "success": True, "data": {"payload": "x" * 100_000}})
+    oversized_tools, _, _ = _build(oversized_client)
+    oversized = await getattr(_tool(oversized_tools, "native_input_read"), "on_invoke_tool")(_tool_context("native_input_read"), arguments)
+
+    assert json.loads(oversized)["error_code"] == "invalid_response"
+    assert len(oversized) < 2_000
+    assert oversized_client.closed
+
+
+@pytest.mark.asyncio
+async def test_read_isolates_failures_without_rotating_tokens_and_closes_client(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Read errors neither expose upstream text nor leak a short-lived client."""
+    client = _StubClient(error=RuntimeError("private upstream failure"), last_refreshed_token="fresh-token")
+    tools, _, token_ref = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    with caplog.at_level(logging.WARNING, logger="app.tools.native_input_catalog_tools"):
+        output = await getattr(read, "on_invoke_tool")(
+            _tool_context("native_input_read"),
+            json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
+        )
+
+    assert json.loads(output)["error_code"] == "tool_error"
+    assert "private upstream failure" not in output
+    assert "private upstream failure" not in caplog.text
+    assert client.closed
+    assert token_ref["value"] == "jwt-token"
+
+
+@pytest.mark.asyncio
+async def test_read_keeps_presented_token_when_client_advertises_refresh() -> None:
+    """A completed read does not replace the presented bearer with a stub refresh."""
+    client = _StubClient(last_refreshed_token="fresh-token")
+    tools, _, token_ref = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
+    )
+
+    assert token_ref["value"] == "jwt-token"
+    assert client.requests[0]["token"] == "jwt-token"
+    assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_read_propagates_cancellation_after_closing_client() -> None:
+    """Cancellation remains visible to the caller while cleanup is guaranteed."""
+    client = _StubClient(error=asyncio.CancelledError())
+    tools, _, _ = _build(client)
+    read = _tool(tools, "native_input_read")
+
+    with pytest.raises(asyncio.CancelledError):
+        await getattr(read, "on_invoke_tool")(
+            _tool_context("native_input_read"),
+            json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
+        )
+
+    assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_missing_token_fails_closed_without_creating_read_client() -> None:
+    """Runtime reads do not open Core clients without a current access token."""
+    client = _StubClient()
+    tools, _, _ = _build(client, token_ref={"value": None})
+    read = _tool(tools, "native_input_read")
+
+    output = await getattr(read, "on_invoke_tool")(
+        _tool_context("native_input_read"),
+        json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
+    )
+
+    assert json.loads(output)["error_code"] == "missing_token"
+    assert client.requests == []
+    assert not client.closed
+
+
+def test_catalog_consumer_has_no_direct_storage_or_source_access() -> None:
+    """Climate Advisor remains isolated from raw storage and source pointers."""
+    source = (Path(__file__).parents[1] / "app" / "tools" / "native_input_catalog_tools.py").read_text(encoding="utf-8")
+    forbidden_patterns = (
+        "import boto3", "from boto3", "import aioboto3", "from aioboto3", "s3://",
+        "get_object(", "storage_client", "os.environ", "os.getenv(", "open(",
+    )
+    assert not [pattern for pattern in forbidden_patterns if pattern in source]
+
+
+INVENTORY_A = "11111111-1111-4111-8111-111111111111"
+INVENTORY_B = "22222222-2222-4222-8222-222222222222"
+
+
+async def _call(tools: dict[str, object], name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    """Invoke one named tool and decode its JSON envelope."""
+    output = await getattr(_tool(tools, name), "on_invoke_tool")(
+        _tool_context(name), json.dumps(arguments)
+    )
+    return json.loads(output)
+
+
+def _read_args(inventory_id: str | None = None) -> dict[str, Any]:
+    """Build HIAP read arguments, optionally overriding the inventory."""
+    arguments: dict[str, Any] = {"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}
+    if inventory_id:
+        arguments["inventoryId"] = inventory_id
+    return arguments
+
+
+@pytest.mark.asyncio
+async def test_read_inventory_override_replaces_chat_scope_for_that_call_only() -> None:
+    """A model-chosen inventory drops the chat city and does not stick."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+    await _call(tools, "native_input_read", _read_args())
+
+    override, chat_default = (r["request_payload"] for r in client.requests)
+    assert override["inventoryId"] == INVENTORY_A
+    assert "cityId" not in override
+    assert override["input"] == {"inventory_id": INVENTORY_A, "language": "en"}
+    assert chat_default["inventoryId"] == "inventory-1"
+    assert chat_default["cityId"] == "city-1"
+
+
+@pytest.mark.asyncio
+async def test_override_also_drops_chat_organization_and_project() -> None:
+    """Another project's row must not be rejected by the chat's project scope."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    payload = client.requests[0]["request_payload"]
+    assert "organizationId" not in payload
+    assert "projectId" not in payload
+    assert payload["userId"] == "user-1"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("capability_id", "arguments", "expected_extra"),
+    [
+        (
+            "hiap.inventory.context",
+            {"scope": "ranked", "type": "mitigation", "limit": 5, "offset": 10},
+            {"scope": "ranked", "type": "mitigation", "limit": 5, "offset": 10},
+        ),
+        ("hiap.inventory.context", {"scope": "selected"}, {"scope": "selected"}),
+        ("hiap_meed.ranking.context", {"limit": 50, "offset": 50}, {"limit": 50, "offset": 50}),
+        (
+            "hiap_meed.output_plan.context",
+            {"chapters": ["legal_mandate_delivery", "legal_mandate_delivery", "city_fit"], "language": "pt"},
+            {"chapters": ["legal_mandate_delivery", "city_fit"], "language": "pt"},
+        ),
+    ],
+)
+async def test_read_passes_validated_view_and_paging_arguments(
+    capability_id: str, arguments: dict[str, Any], expected_extra: dict[str, Any]
+) -> None:
+    """Scope, type, paging and chapter selection reach Core as validated input."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": capability_id, **arguments},
+    )
+
+    assert result["success"] is True
+    sent = client.requests[0]["request_payload"]["input"]
+    assert sent == {
+        "city_id": "city-1",
+        "inventory_id": "inventory-1",
+        "language": "en",
+        **expected_extra,
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("capability_id", "arguments"),
+    [
+        ("hiap.inventory.context", {"scope": "all"}),
+        ("hiap.inventory.context", {"type": "mitigation_x"}),
+        ("hiap.inventory.context", {"limit": 0}),
+        ("hiap.inventory.context", {"limit": 51}),
+        ("hiap.inventory.context", {"limit": True}),
+        ("hiap.inventory.context", {"offset": -1}),
+        ("hiap.inventory.context", {"offset": "5"}),
+        ("hiap.inventory.context", {"chapters": ["city_fit"]}),
+        ("hiap_meed.ranking.context", {"scope": "ranked"}),
+        ("hiap_meed.ranking.context", {"chapters": ["city_fit"]}),
+        ("hiap_meed.output_plan.context", {"limit": 5}),
+        ("hiap_meed.output_plan.context", {"chapters": ["not_a_chapter"]}),
+        ("hiap_meed.output_plan.context", {"chapters": "city_fit"}),
+        ("hiap.action_plan.context", {"language": "pt"}),
+        ("hiap.action_plan.context", {"limit": 5}),
+        ("ghgi.inventory.status_overview", {"offset": 0}),
+    ],
+)
+async def test_read_rejects_arguments_a_capability_does_not_accept(
+    capability_id: str, arguments: dict[str, Any]
+) -> None:
+    """Out-of-range or capability-foreign arguments never reach Core."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": capability_id, **arguments},
+    )
+
+    assert result["error_code"] == "invalid_arguments"
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_read_builds_the_plan_capability_request_without_language() -> None:
+    """The implementation plan read carries only captured scope."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap.action_plan.context"},
+    )
+
+    assert result["success"] is True
+    assert client.requests[0]["request_payload"]["input"] == {
+        "city_id": "city-1",
+        "inventory_id": "inventory-1",
+    }
+
+
+@pytest.mark.asyncio
+async def test_discovery_exposes_a_safe_display_name_for_plan_entries() -> None:
+    """A stored display name reaches the model; entries without one stay unchanged."""
+    discovery = NativeInputDiscovery(
+        entries=(
+            {
+                "catalog_id": "plan-1",
+                "kind": "hiap_action_plan",
+                "owning_module": "hiap",
+                "source_type": "action_plan",
+                "capability_ids": ("hiap.action_plan.context",),
+                "display_name": "Solar rooftops",
+            },
+            {
+                "catalog_id": "ranking-1",
+                "kind": "hiap_ranking",
+                "owning_module": "hiap",
+                "source_type": "hiap_ranking",
+                "capability_ids": ("hiap.inventory.context",),
+            },
+        )
+    )
+    tools, _, _ = _build(_StubClient(), service=_StubService(discovery))
+
+    result = await _call(tools, "native_input_discover", {})
+
+    entries = result["data"]["entries"]
+    assert entries[0]["displayName"] == "Solar rooftops"
+    assert "displayName" not in entries[1]
+
+
+@pytest.mark.asyncio
+async def test_sequential_reads_for_two_inventories_do_not_mix_scope() -> None:
+    """Consecutive overrides A then B each carry only their own inventory."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+    await _call(tools, "native_input_read", _read_args(INVENTORY_B))
+
+    assert [r["request_payload"]["inventoryId"] for r in client.requests] == [INVENTORY_A, INVENTORY_B]
+    assert all("cityId" not in r["request_payload"] for r in client.requests)
+
+
+@pytest.mark.asyncio
+async def test_parallel_reads_for_two_inventories_do_not_mix_scope() -> None:
+    """Concurrent reads share the tool set and token_ref but keep separate scope."""
+    client = _StubClient()
+    tools, _, token_ref = _build(client)
+
+    await asyncio.gather(
+        _call(tools, "native_input_read", _read_args(INVENTORY_A)),
+        _call(tools, "native_input_read", _read_args(INVENTORY_B)),
+    )
+
+    sent = {r["request_payload"]["inventoryId"] for r in client.requests}
+    assert sent == {INVENTORY_A, INVENTORY_B}
+    assert all("cityId" not in r["request_payload"] for r in client.requests)
+    assert all(r["token"] == "jwt-token" for r in client.requests)
+    assert token_ref == {"value": "jwt-token"}
+
+
+@pytest.mark.asyncio
+async def test_parallel_discovery_for_two_inventories_does_not_mix_scope() -> None:
+    """Concurrent discovery sends each override and leaves the chat context unchanged."""
+    client = _StubClient()
+    service = _StubService(_discovery())
+    tools, _, _ = _build(client, service=service)
+
+    await asyncio.gather(
+        _call(tools, "native_input_discover", {"inventoryId": INVENTORY_A}),
+        _call(tools, "native_input_discover", {"inventoryId": INVENTORY_B}),
+        _call(tools, "native_input_discover", {}),
+    )
+
+    contexts = [call.kwargs["context"] for call in service.discover.await_args_list]
+    assert {c.inventory_id for c in contexts} == {INVENTORY_A, INVENTORY_B, "inventory-1"}
+    chat_context = next(c for c in contexts if c.inventory_id == "inventory-1")
+    assert chat_context.city_id == "city-1"
+    assert all(c.city_id is None for c in contexts if c.inventory_id != "inventory-1")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("bad", ["not-a-uuid", "", 7, None])
+async def test_inventory_override_must_be_a_uuid_before_core(bad: Any) -> None:
+    """Malformed overrides never reach Core on either tool."""
+    client = _StubClient()
+    service = _StubService(_discovery())
+    tools, _, _ = _build(client, service=service)
+
+    read = await _call(tools, "native_input_read", {**_read_args(), "inventoryId": bad})
+    discover = await _call(tools, "native_input_discover", {"inventoryId": bad})
+
+    assert read["error_code"] == "invalid_arguments"
+    assert discover["error_code"] == "invalid_arguments"
+    assert client.requests == []
+    service.discover.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_failure_for_one_inventory_does_not_affect_the_next_call() -> None:
+    """A Core 404 for inventory B returns the stable error; a later A read succeeds."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    client.error = CityCatalystClientError("missing", status_code=404)
+    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_B))
+    client.error = None
+    succeeded = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    assert failed["error_code"] == "capability_unavailable"
+    assert succeeded["success"] is True
+    assert client.requests[-1]["request_payload"]["inventoryId"] == INVENTORY_A
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "failure",
+    [TimeoutError("Core timed out"), CityCatalystClientError("down", status_code=503)],
+)
+async def test_discovery_outage_is_an_error_not_an_empty_catalog(
+    failure: Exception,
+) -> None:
+    """A Core timeout for an inventory that has a ranking must not look like no ranking."""
+    core = AsyncMock()
+    core.discover_native_inputs.side_effect = failure
+    service = NativeInputCatalogService(core_client=core)
+    tools = build_native_input_catalog_tools(
+        service=service,
+        context=_context(),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: _StubClient(),
+    )
+    by_name = {getattr(tool, "name"): tool for tool in tools}
+
+    outage = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert outage["success"] is False
+    assert outage["error_code"] == "temporarily_unavailable"
+    assert "entries" not in json.dumps(outage)
+
+    core.discover_native_inputs.side_effect = CityCatalystClientError(
+        "missing", status_code=404
+    )
+    absent = await _call(by_name, "native_input_discover", {"inventoryId": INVENTORY_A})
+
+    assert absent["success"] is True
+    assert absent["data"]["entries"] == []
+
+
+@pytest.mark.asyncio
+async def test_read_outage_is_reported_as_temporarily_unavailable() -> None:
+    """A Core server error on read is not a stored-input absence."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    client.error = CityCatalystClientError("down", status_code=503)
+    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
+
+    assert failed["success"] is False
+    assert failed["error_code"] == "temporarily_unavailable"

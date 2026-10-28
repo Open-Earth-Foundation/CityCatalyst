@@ -1,17 +1,6 @@
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize",
-      "locodes": [
-        "CL IQQ",
-        "CL ARI"
-      ]
-    },
-    "totalRecords": 2
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": [

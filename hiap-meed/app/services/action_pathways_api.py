@@ -16,6 +16,7 @@ from app.services.http_client import UpstreamApiError, get_json_with_retries
 
 DEFAULT_ACTION_PATHWAYS_BASE_URL = "https://ccglobal.openearth.dev"
 ACTION_PATHWAYS_ENDPOINT = "GET /api/v1/action-pathways"
+PRIORITIZABLE_ACTION_TYPE = "mitigation"
 
 
 def get_action_pathways_base_url() -> str:
@@ -55,6 +56,38 @@ def map_action_pathway_api_item_to_action(action: ActionPathwayApiItem) -> Actio
     )
 
 
+def select_prioritizable_actions(
+    actions: list[Action],
+) -> tuple[list[Action], list[Action], list[Action]]:
+    """
+    Select the action catalogue used by MEED prioritization and related APIs.
+
+    Only actions whose normalized action type is ``mitigation`` are included.
+    Actions with another type are excluded, and actions with a missing or empty
+    type are returned separately for data-quality diagnostics. The returned
+    groups are selected actions, excluded typed actions, and untyped actions.
+
+    This is the single action-membership rule used by the public action GET,
+    exclusion preview, prioritization, and output-plan enrichment.
+    """
+    selected_actions: list[Action] = []
+    excluded_actions: list[Action] = []
+    missing_action_type_actions: list[Action] = []
+
+    # Keep malformed rows visible in diagnostics without treating them as eligible.
+    for action in actions:
+        normalized_action_type = (action.action_type or "").strip().lower()
+        if not normalized_action_type:
+            missing_action_type_actions.append(action)
+            continue
+        if normalized_action_type == PRIORITIZABLE_ACTION_TYPE:
+            selected_actions.append(action)
+            continue
+        excluded_actions.append(action)
+
+    return selected_actions, excluded_actions, missing_action_type_actions
+
+
 @dataclass
 class ActionPathwaysApiService:
     """Fetch and map the upstream action pathways catalog."""
@@ -65,9 +98,10 @@ class ActionPathwaysApiService:
         """Resolve the upstream action pathways host from config when omitted."""
         if self.base_url is None:
             self.base_url = get_action_pathways_base_url()
+
     def _build_action_pathways_url(self) -> str:
-        """Return the full upstream action pathways URL without query parameters."""
-        return f"{self.base_url.rstrip('/')}/api/v1/action-pathways"
+        """Return the upstream URL requesting all available localized fields."""
+        return f"{self.base_url.rstrip('/')}/api/v1/action-pathways?lang=all"
 
     def _base_source_metadata(
         self,
@@ -86,7 +120,16 @@ class ActionPathwaysApiService:
         }
 
     def list_actions(self) -> ActionPathwaysFetchResult:
-        """Fetch and map the full upstream action pathways catalog."""
+        """
+        Fetch and validate the complete action catalogue with all languages.
+
+        HIAP-MEED always sends ``lang=all`` so prioritization, reports, and the
+        public read endpoint start from the same actions and translations.
+        Language projection remains caller-specific. After this fetch, every
+        HIAP-MEED consumer calls ``select_prioritizable_actions`` so action
+        membership is decided once. Network or schema failures raise
+        ``UpstreamApiError``.
+        """
         action_url = self._build_action_pathways_url()
         payload, http_status_code = get_json_with_retries(
             url=action_url,

@@ -40,6 +40,13 @@ describe("Stationary Energy context filtering", () => {
         emissions_value: null,
         value: null,
       },
+      {
+        gpc_reference_number: "I.6.1",
+        datasource_id: null,
+        emissions_value: null,
+        value: null,
+        unavailable_reason: "not-estimated",
+      },
     ]);
 
     expect([...filled].sort()).toEqual(["I.1.1", "I.2.2", "I.3.1"]);

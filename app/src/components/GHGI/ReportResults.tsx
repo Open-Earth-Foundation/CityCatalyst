@@ -1,16 +1,7 @@
 "use client";
 import { useTranslation } from "@/i18n/client";
 import { CityYearData, InventoryResponse, SectorEmission } from "@/util/types";
-import {
-  Box,
-  Card,
-  Center,
-  Heading,
-  HStack,
-  Icon,
-  Tabs,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, Heading, HStack, Icon, Tabs, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";
@@ -21,13 +12,7 @@ import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
 import { isEmptyObject, toKebabCase } from "@/util/helpers";
-import React, {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   api,
   useGetCityYearsQuery,
@@ -70,9 +55,7 @@ function SectorTabs({
 }) {
   const { t: tData } = useTranslation(lng, "data");
   const [selectedTab, setSelectedTab] = useState(SECTORS[0].name);
-  const [selectedTableView, setSelectedTableView] = useState<TableView>(
-    TableView.BY_ACTIVITY,
-  );
+  const [selectedTableView] = useState<TableView>(TableView.BY_ACTIVITY);
   const [isLoadingNewData, setIsLoadingNewData] = useState(false);
   const getDataForSector = (sectorName: string) =>
     results?.totalEmissions.bySector.find(
@@ -111,10 +94,6 @@ function SectorTabs({
     refetch().finally(() => setIsLoadingNewData(false));
   }, [selectedTab, refetch]);
 
-  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTableView(event.target.value as TableView);
-  };
-
   const isEmptyInventory =
     Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
     Object.entries(sectorBreakdown?.byScope || {}).length === 0;
@@ -133,6 +112,7 @@ function SectorTabs({
               value={name}
               minWidth="200px"
               height="64px"
+              fontFamily="heading"
             >
               <Icon
                 as={icon}
@@ -143,6 +123,7 @@ function SectorTabs({
                 }
               />
               <Text
+                fontFamily="heading"
                 fontSize="16"
                 lineClamp={2}
                 wordBreak="keep-all"
@@ -235,6 +216,9 @@ function SectorTabs({
                       inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
+                      grossTotalEmissions={
+                        new Decimal(sectorBreakdown!.grossTotalEmissions)
+                      }
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
@@ -275,6 +259,7 @@ function EmissionsBreakdown({
         />
       </Heading>
       <Text
+        fontFamily="heading"
         fontWeight="regular"
         fontSize="body.lg"
         color="interactive.control"
@@ -309,12 +294,13 @@ export function EmissionPerSectors({
   const [selectedView, setSelectedView] = useState("table");
 
   const { data: yearlyGhgResult, isLoading: isLoadingYearlgyGhg } =
-    useGetYearOverYearResultsQuery(inventory?.cityId!, {
-      skip: !inventory?.cityId,
+    useGetYearOverYearResultsQuery(inventory.cityId ?? "", {
+      skip: !inventory.cityId,
     });
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
-    inventory?.cityId,
+    inventory.cityId ?? "",
+    { skip: !inventory.cityId },
   );
 
   const loadingState = isLoading || isLoadingYearlgyGhg;
@@ -328,7 +314,7 @@ export function EmissionPerSectors({
           acc[curr.inventoryId] = curr;
           return acc;
         },
-        {} as Record<string, any>,
+        {} as Record<string, CityYearData>,
       ) ?? {}
     );
   }, [cityYears]);
@@ -336,7 +322,6 @@ export function EmissionPerSectors({
   const transformedYearOverYearData = useMemo(() => {
     if (yearlyGhgResult && targetYears && !isEmptyObject(targetYears)) {
       const yearlyMap: Record<string, SectorEmission[]> = {};
-      const totalInventoryEmissions: Record<string, bigint> = {};
       const response = Object.keys(yearlyGhgResult)
         .map((inventoryId) => {
           const year = targetYears[inventoryId]?.year;
@@ -346,7 +331,6 @@ export function EmissionPerSectors({
           }
           const totalEmissions = yearlyGhgResult[inventoryId].totalEmissions;
           yearlyMap[year] = totalEmissions.totalEmissionsBySector;
-          totalInventoryEmissions[year] = BigInt(totalEmissions.sumOfEmissions);
 
           return {
             bySector: [...totalEmissions.totalEmissionsBySector],
@@ -360,21 +344,9 @@ export function EmissionPerSectors({
       return response
         .map((data) => {
           const yearWithPercentageIncrease = data.bySector.map((sectorData) => {
-            const inventoryEmissions = totalInventoryEmissions[data.year];
-            if (!inventoryEmissions) {
-              logger.error(
-                "Total inventory emissions missing for year " + data.year,
-              );
-            }
-
-            const totalInventoryPercentage = inventoryEmissions
-              ? Number(
-                  new Decimal(sectorData.co2eq?.toString())
-                    .mul(100)
-                    .div(inventoryEmissions?.toString())
-                    .toFixed(3),
-                )
-              : null;
+            // % of gross emissions for this sector, already computed backend-side
+            // (ResultsService.ts's calculatePercentage) - see CC-749.
+            const totalInventoryPercentage = sectorData.percentage;
 
             let percentageChange: number | null = null;
             if (data.year - 1 in yearlyMap) {
@@ -429,7 +401,14 @@ export function EmissionPerSectors({
     },
   ];
 
-  let containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+  // Placeholder only - `ref={containerRef}` below overwrites `.current` with
+  // the real DOM node on mount. `document` isn't defined during SSR, so this
+  // can't call `document.createElement` unconditionally (CC-835).
+  const containerRef = useRef<HTMLDivElement>(
+    typeof document === "undefined"
+      ? (null as unknown as HTMLDivElement)
+      : document.createElement("div"),
+  );
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">

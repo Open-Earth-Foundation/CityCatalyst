@@ -70,7 +70,7 @@ import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 /** Return an authorization code */
 
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }

@@ -1,28 +1,26 @@
-import { Box, HStack, Icon, Text } from "@chakra-ui/react";
+import { Box, HStack, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import React from "react";
 import {
   Control,
   Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
-import { resolve } from "@/util/helpers";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
-import { Field } from "@/components/ui/field";
-import { MdWarning } from "react-icons/md";
-import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
-import { BodyMedium } from "@/components/package/Texts/Body";
+import { Inputs } from "../activity-modal-body";
+import { ModalField, ModalFieldError, ModalSelect } from "./ModalField";
 
 interface ActivityDataSectionProps {
   t: TFunction;
-  register: UseFormRegister<any>;
-  control: Control<any, any>;
-  errors: Record<string, any>;
-  setValue: UseFormSetValue<any>;
+  register: UseFormRegister<Inputs>;
+  control: Control<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  setValue: UseFormSetValue<Inputs>;
   title: string;
   units?: string[];
   hideEmissionFactors?: boolean;
@@ -42,27 +40,38 @@ export const ActivityDataSection = ({
   emissionsFactorTypes,
   isDirectMeasure,
 }: ActivityDataSectionProps) => {
-  const prefix = "";
+  const activityErrors = errors?.activity as
+    Record<string, { message?: string } | undefined> | undefined;
 
   if (isDirectMeasure || !title) {
     return null;
   }
 
   return (
-    <Box display="flex" justifyContent="space-between" gap="16px" w="full">
-      <Field
-        invalid={!!resolve(prefix + "activityDataAmount", errors)}
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="flex-start"
+      gap="16px"
+      w="full"
+      mb={5}
+    >
+      <ModalField
+        invalid={!!activityErrors?.[title]}
         label={<Text truncate>{t(title)}</Text>}
+        required
         flex="2"
       >
-        <HStack>
+        <HStack w="full">
           <FormattedNumberInput
+            inputHeight="48px"
             control={control}
             name={`activity.${title}`}
+            invalid={!!activityErrors?.[title]}
             defaultValue="0"
             t={t}
             miniAddon
-            minWidth="300px"
+            w="full"
             flex={2}
           />
           {(units?.length as number) > 0 && (
@@ -70,75 +79,49 @@ export const ActivityDataSection = ({
               rules={{ required: t("option-required") }}
               defaultValue=""
               control={control}
-              name={`activity.${title}-unit` as any}
+              name={`activity.${title}-unit`}
               render={({ field }) => (
-                <NativeSelectRoot
-                  {...field}
-                  borderRadius="4px"
-                  borderWidth={errors?.activity?.[`${title}-unit`] ? "1px" : 0}
-                  border="inputBox"
-                  h="42px"
-                  shadow="1dp"
-                  borderColor={
-                    errors?.activity?.[`${title}-unit`]
-                      ? "sentiment.negativeDefault"
-                      : ""
-                  }
-                  background={
-                    errors?.activity?.[`${title}-unit`]
-                      ? "sentiment.negativeOverlay"
-                      : ""
-                  }
-                  _focus={{
-                    borderWidth: "1px",
-                    shadow: "none",
-                    borderColor: "content.link",
-                  }}
-                  bgColor="base.light"
-                  onChange={(e: any) => {
+                <ModalSelect
+                  aria-label={t("select-unit")}
+                  placeholder={t("select-unit")}
+                  invalid={!!activityErrors?.[`${title}-unit`]}
+                  name={field.name}
+                  value={field.value ?? ""}
+                  onBlur={field.onBlur}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     field.onChange(e.target.value);
-                    setValue(`activity.${title}-unit` as any, e.target.value);
+                    setValue(
+                      `activity.${title}-unit` as Path<Inputs>,
+                      e.target.value,
+                    );
                   }}
                 >
-                  <NativeSelectField
-                    aria-label={t("select-unit")}
-                    placeholder={t("select-unit")}
-                    defaultValue={field.value}
-                  >
-                    {units?.map((item: string) => (
-                      <option key={item} value={item}>
-                        {t(item)}
-                      </option>
-                    ))}
-                  </NativeSelectField>
-                </NativeSelectRoot>
+                  {units?.map((item: string) => (
+                    <option key={item} value={item}>
+                      {t(item)}
+                    </option>
+                  ))}
+                </ModalSelect>
               )}
             />
           )}
         </HStack>
 
-        {errors?.activity?.[title] && (
-          <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <Icon as={MdWarning} color="sentiment.negativeDefault" />
-            <BodyMedium>
-              {t(errors?.activity?.[title]?.message as string)}
-            </BodyMedium>
-          </Box>
+        {activityErrors?.[title] && (
+          <ModalFieldError
+            message={t(activityErrors[title]?.message as string)}
+          />
         )}
-        {errors?.activity?.[`${title}-unit`] && !errors?.activity?.[title] && (
-          <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <Icon as={MdWarning} color="sentiment.negativeDefault" />
-            <BodyMedium>
-              {errors?.activity?.[`${title}-unit`]?.message}
-            </BodyMedium>
-          </Box>
+        {activityErrors?.[`${title}-unit`] && !activityErrors?.[title] && (
+          <ModalFieldError message={activityErrors[`${title}-unit`]?.message} />
         )}
-      </Field>
+      </ModalField>
 
       {!hideEmissionFactors && (
-        <Field
+        <ModalField
           label={t("emission-factor-type")}
-          invalid={!!resolve(prefix + "emissionFactorType", errors)}
+          required
+          invalid={!!activityErrors?.emissionFactorType}
           maxWidth="250px"
           flex="1"
           truncateLabel
@@ -147,63 +130,34 @@ export const ActivityDataSection = ({
             name="activity.emissionFactorType"
             control={control}
             render={({ field }) => (
-              <NativeSelectRoot
-                borderRadius="4px"
-                borderWidth={errors?.activity?.emissionFactorType ? "1px" : 0}
-                border="inputBox"
-                h="42px"
-                shadow="1dp"
-                borderColor={
-                  errors?.activity?.emissionFactorType
-                    ? "sentiment.negativeDefault"
-                    : ""
-                }
-                background={
-                  errors?.activity?.emissionFactorType
-                    ? "sentiment.negativeOverlay"
-                    : ""
-                }
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-                bgColor="base.light"
+              <ModalSelect
+                aria-label={t("select-emission-factor-type")}
+                placeholder={t("emissions-factor-type-placeholder")}
+                invalid={!!activityErrors?.emissionFactorType}
                 {...register("activity.emissionFactorType", {
                   required: t("option-required"),
                 })}
+                value={field.value ?? ""}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  field.onChange(e.target.value);
+                  setValue("activity.emissionFactorType", e.target.value);
+                }}
               >
-                <NativeSelectField
-                  aria-label={t("select-emission-factor-type")}
-                  value={field.value}
-                  placeholder={t("emissions-factor-type-placeholder")}
-                  onChange={(e: any) => {
-                    field.onChange(e.target.value);
-                    setValue("activity.emissionFactorType", e.target.value);
-                  }}
-                >
-                  {emissionsFactorTypes.map(({ id, name }) => (
-                    <option key={id} value={id}>
-                      {t(name)}
-                    </option>
-                  ))}
-                  <option key="custom" value="custom">
-                    {t("add-custom")}
+                {emissionsFactorTypes.map(({ id, name }) => (
+                  <option key={id} value={id}>
+                    {t(name)}
                   </option>
-                </NativeSelectField>
-              </NativeSelectRoot>
+                ))}
+                <option key="custom" value="custom">
+                  {t("add-custom")}
+                </option>
+              </ModalSelect>
             )}
           />
-
-          {errors.activity?.emissionFactorType ? (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium>{t("emission-factor-form-label")}</BodyMedium>
-            </Box>
-          ) : (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px" />
+          {activityErrors?.emissionFactorType && (
+            <ModalFieldError message={t("emission-factor-form-label")} />
           )}
-        </Field>
+        </ModalField>
       )}
     </Box>
   );

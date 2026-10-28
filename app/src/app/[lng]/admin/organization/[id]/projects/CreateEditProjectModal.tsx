@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { TFunction } from "i18next";
 import { Box, Flex, HStack, Icon, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -36,7 +36,7 @@ interface CreateEditProjectModalProps {
 const schema = z.object({
   projectName: z.string().min(3, "required"),
   description: z.string().min(3, "required"),
-  cityCountLimit: z.number().min(1, "required"),
+  cityCountLimit: z.coerce.number().min(1, "required"),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -49,21 +49,12 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
   projectData,
   organizationId,
 }) => {
-  const [step, setStep] = useState(1);
-
   const {
     register,
     handleSubmit,
     reset,
-    watch,
-    setError,
-    clearErrors,
-    setFocus,
-    setValue,
     control,
-    getValues,
-    trigger,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isDirty },
   } = useForm<Schema>({
     mode: "all",
     resolver: zodResolver(schema),
@@ -138,7 +129,7 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
         if (!e.open) {
           closeFunction();
@@ -210,15 +201,13 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
               <FormattedNumberInput
                 placeholder="00"
                 max={99999}
-                setError={setError}
-                clearErrors={clearErrors}
                 min={1}
                 control={control}
                 name={`cityCountLimit`}
                 t={t}
                 w="full"
               />
-              {errors.description && (
+              {errors.cityCountLimit && (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text color="error" fontSize="body.sm">

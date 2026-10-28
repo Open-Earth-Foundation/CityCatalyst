@@ -18,9 +18,9 @@ pytest.importorskip("pgvector.sqlalchemy")
 
 from agents import Runner
 
-from app.db import Base
 import app.models.db.message  # noqa: F401
 import app.models.db.thread  # noqa: F401
+from app.db import Base
 from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
@@ -39,8 +39,9 @@ from app.services.stationary_energy.stationary_energy_draft_repository import (
 from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyAgentReviewChoiceInput,
 )
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
-
+from app.utils.streaming_runner import build_stream_run_config
 
 FIXTURE_PATH = (
     Path(__file__).parent
@@ -454,13 +455,15 @@ async def _run_live_turn(
             stationary_energy_draft_run_id=str(harness.draft_run_id)
         )
         handler.agent_model = selected_model
-        handler.stationary_energy_draft_run_id = str(harness.draft_run_id)
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(harness.draft_run_id)
+        )
         agent = await agent_service.create_agent(model=selected_model)
         result = await Runner.run(
             agent,
             history,
             max_turns=5,
-            run_config=handler._run_config(payload),
+            run_config=build_stream_run_config(handler, payload),
         )
     finally:
         await agent_service.close()

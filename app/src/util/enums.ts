@@ -21,10 +21,54 @@ export enum ImportStatusEnum {
   FAILED = "failed",
 }
 
+export enum OrganizationPlanType {
+  TRIAL = "trial",
+  DEMO = "demo",
+  FULL = "full",
+}
+
 export enum NumberFormatEnum {
   DEFAULT = "default",
   COMMA_AND_DOT = "comma_and_dot",
   DOT_AND_COMMA = "dot_and_comma",
   SPACE_AND_COMMA = "space_and_comma",
   APOSTROPHE_AND_DOT = "apostrophe_and_dot",
+}
+
+export enum BulkInventoryImportJobStatus {
+  PENDING = "pending",
+  MATCHING = "matching",
+  IMPORTING = "importing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
+}
+
+export enum BulkInventoryImportItemStatus {
+  PENDING = "pending",
+  MATCHED = "matched",
+  UNMATCHED = "unmatched",
+  IMPORTING = "importing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  SKIPPED = "skipped",
+}
+
+/** Fine-grained phase for UI while an item/job is in flight. */
+export enum BulkInventoryImportStage {
+  MATCHING_FILES = "matching_files",
+  CREATING_CITY = "creating_city",
+  ENRICHING_POPULATION = "enriching_population",
+  VALIDATING_FILE = "validating_file",
+  REPLACING_EXISTING = "replacing_existing",
+  IMPORTING_EMISSIONS = "importing_emissions",
+  IMPORTING_FILES = "importing_files",
+}
+
+export enum BulkInventoryImportMatchError {
+  UNMATCHED_CITY = "unmatched_city",
+  AMBIGUOUS_CITY = "ambiguous_city",
+  MISSING_YEAR = "missing_year",
+  UNSUPPORTED_EXTENSION = "unsupported_extension",
+  FILE_TOO_LARGE = "file_too_large",
 }

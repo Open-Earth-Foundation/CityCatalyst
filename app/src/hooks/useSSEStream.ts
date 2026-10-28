@@ -1,8 +1,6 @@
-import { AssistantStream } from "openai/lib/AssistantStream";
 import { useCallback, useRef } from "react";
 
 import { logger } from "@/services/logger";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 type SSEDataRecord = Record<string, unknown>;
 export type ToolResultPayload = SSEDataRecord;
@@ -13,18 +11,31 @@ export interface SSEEvent {
   id?: string;
 }
 
+/** Error code reported when an idle timeout cancels a silent stream. */
+export const STREAM_STALLED_CODE = "stream_stalled";
+
+export interface SSEErrorDetails {
+  /** HTTP status when the request failed before streaming. */
+  status?: number;
+  /** Whether the server accepted the request and began streaming. */
+  streamStarted: boolean;
+}
+
 export interface SSEStreamOptions {
   onMessage?: (content: string, index: number) => void;
   onToolResult?: (tool: ToolResultPayload) => void;
+  onProgress?: (progress: unknown) => void;
+  onReasoning?: (reasoning: unknown) => void;
   onComplete?: () => void;
-  onError?: (error: string) => void;
+  onError?: (error: string, code?: string, details?: SSEErrorDetails) => void;
   onWarning?: (warning: string) => void;
+  /**
+   * Cancel the request when no bytes arrive for this long. Heartbeat comments
+   * count as activity, so only a dead connection or a frozen service trips it.
+   */
+  idleTimeoutMs?: number;
+  /** @deprecated No longer needed — streams always use CA SSE format. */
   forceEventStream?: boolean;
-  // Legacy OpenAI Assistant API callbacks
-  onTextCreated?: () => void;
-  onTextDelta?: (delta: unknown) => void;
-  onRequiresAction?: (event: unknown) => void;
-  onRunCompleted?: () => void;
 }
 
 export type SSEStreamController = {
@@ -150,6 +161,14 @@ export function useSSEStream(
             }
             break;
 
+          case "progress":
+            options.onProgress?.(event.data);
+            break;
+
+          case "reasoning":
+            options.onReasoning?.(event.data);
+            break;
+
           case "done":
             if (
               isRecord(event.data) &&
@@ -176,6 +195,10 @@ export function useSSEStream(
                   ? (valueAsString(event.data.error) ??
                       "Stream completed with error")
                   : "Stream completed with error",
+                isRecord(event.data)
+                  ? valueAsString(event.data.code)
+                  : undefined,
+                { streamStarted: true },
               );
             }
             streamErroredRef.current = false;
@@ -188,6 +211,10 @@ export function useSSEStream(
                 isRecord(event.data)
                   ? (valueAsString(event.data.message) ?? "Stream error")
                   : "Stream error",
+                isRecord(event.data)
+                  ? valueAsString(event.data.code)
+                  : undefined,
+                { streamStarted: true },
               );
             }
             break;
@@ -208,7 +235,11 @@ export function useSSEStream(
       } catch (error: unknown) {
         logger.error({ error, event }, "Error handling SSE event");
         if (options.onError) {
-          options.onError(getErrorMessage(error, "Stream processing error"));
+          options.onError(
+            getErrorMessage(error, "Stream processing error"),
+            undefined,
+            { streamStarted: true },
+          );
         }
       }
     },
@@ -216,7 +247,7 @@ export function useSSEStream(
   );
 
   const handleStream = useCallback(
-    async (response: Response) => {
+    async (response: Response, onBytes: () => void) => {
       const reader = response.body?.getReader();
       if (!reader) {
         throw new Error("No response body reader available");
@@ -224,11 +255,13 @@ export function useSSEStream(
 
       const decoder = new TextDecoder();
       let buffer = "";
+      let terminalSeen = false;
 
       try {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+          onBytes();
 
           buffer += decoder.decode(value, { stream: true });
 
@@ -240,66 +273,23 @@ export function useSSEStream(
 
             try {
               const event = parseSSEEvent(eventText);
+              // SSE comments keep the transport alive without an application event.
+              if (!event.type && event.data === undefined) continue;
+              if (event.type === "done" || event.type === "error")
+                terminalSeen = true;
               await handleSSEEvent(event);
             } catch (error) {
               logger.error({ error, eventText }, "Failed to parse SSE event");
             }
           }
         }
+        if (!terminalSeen)
+          throw new Error("The response stream ended before completion");
       } finally {
         reader.releaseLock();
       }
     },
     [parseSSEEvent, handleSSEEvent],
-  );
-
-  // Handler for legacy OpenAI Assistant API streams
-  const handleAssistantStream = useCallback(
-    (stream: AssistantStream) => {
-      try {
-        // Text creation and delta events
-        if (options.onTextCreated) {
-          stream.on("textCreated", options.onTextCreated);
-        }
-        if (options.onTextDelta) {
-          stream.on("textDelta", options.onTextDelta);
-        }
-
-        // Events without helpers yet (e.g. requires_action and run.done)
-        stream.on("event", (event) => {
-          if (
-            event.event === "thread.run.requires_action" &&
-            options.onRequiresAction
-          ) {
-            options.onRequiresAction(event);
-          }
-          if (
-            event.event === "thread.run.completed" &&
-            options.onRunCompleted
-          ) {
-            options.onRunCompleted();
-          }
-        });
-      } catch (error: unknown) {
-        if (
-          isNamedError(error, "APIUserAbortError") ||
-          getErrorMessage(error, "") === "Request was aborted."
-        ) {
-          logger.info("Assistant stream processing was aborted.");
-        } else {
-          logger.error(
-            { err: error },
-            "An error occurred while processing the assistant stream:",
-          );
-          if (options.onError) {
-            options.onError(
-              getErrorMessage(error, "Assistant stream processing error"),
-            );
-          }
-        }
-      }
-    },
-    [options],
   );
 
   const startStream = useCallback(
@@ -310,20 +300,37 @@ export function useSSEStream(
 
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
+      let status: number | undefined;
+      let streamStarted = false;
+      let stalled = false;
+      let idleTimer: ReturnType<typeof setTimeout> | undefined;
+      // Restart the idle clock whenever the server shows it is still there.
+      const markActivity = () => {
+        if (!options.idleTimeoutMs) return;
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          stalled = true;
+          abortController.abort();
+        }, options.idleTimeoutMs);
+      };
 
       try {
         streamErroredRef.current = false;
+        markActivity();
         const response = await fetch(url, {
           ...fetchOptions,
           signal: abortController.signal,
         });
+        status = response.status;
 
         if (!response.ok) {
           // Try to extract error message from response
           let errorMessage = `HTTP error! status: ${response.status}`;
+          let errorCode: string | undefined;
           try {
             const errorData: unknown = await response.json();
             if (isRecord(errorData)) {
+              errorCode = valueAsString(errorData.code);
               errorMessage =
                 valueAsString(errorData.detail) ??
                 valueAsString(errorData.message) ??
@@ -333,37 +340,49 @@ export function useSSEStream(
             // Fallback to status text if JSON parsing fails
             errorMessage = `HTTP ${response.status}: ${response.statusText}`;
           }
-          throw new Error(errorMessage);
+          throw Object.assign(new Error(errorMessage), { code: errorCode });
         }
 
         if (!response.body) {
           throw new Error("HTTP response is null");
         }
 
-        // Use different stream handling based on feature flag
-        if (
-          options.forceEventStream ||
-          hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
-        ) {
-          // New CA service SSE format
-          await handleStream(response);
-        } else {
-          // Legacy OpenAI Assistant API format using AssistantStream
-          const stream = AssistantStream.fromReadableStream(response.body);
-          handleAssistantStream(stream);
-        }
+        streamStarted = true;
+        markActivity();
+        await handleStream(response, markActivity);
       } catch (error: unknown) {
+        if (stalled) {
+          streamErroredRef.current = true;
+          options.onError?.(
+            "The response stream stalled",
+            STREAM_STALLED_CODE,
+            { status, streamStarted },
+          );
+          // Not an AbortError: callers must not treat a stall as a user cancel.
+          throw Object.assign(new Error("The response stream stalled"), {
+            name: "StreamStalledError",
+          });
+        }
         if (!isNamedError(error, "AbortError")) {
           streamErroredRef.current = true;
-          // Call onError callback for non-abort errors
           if (options.onError) {
-            options.onError(getErrorMessage(error, "Failed to start stream"));
+            options.onError(
+              getErrorMessage(error, "Failed to start stream"),
+              error instanceof Error &&
+                "code" in error &&
+                typeof error.code === "string"
+                ? error.code
+                : undefined,
+              { status: streamStarted ? undefined : status, streamStarted },
+            );
           }
         }
-        throw error; // Re-throw so calling code can handle it too
+        throw error;
+      } finally {
+        clearTimeout(idleTimer);
       }
     },
-    [handleStream, handleAssistantStream, options],
+    [handleStream, options],
   );
 
   const stopStream = useCallback(() => {

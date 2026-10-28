@@ -101,10 +101,80 @@ import type {
 } from "./ImportedInventoryFile";
 import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
 import type {
+  BulkInventoryImportJobAttributes,
+  BulkInventoryImportJobCreationAttributes,
+} from "./BulkInventoryImportJob";
+import { BulkInventoryImportJob as _BulkInventoryImportJob } from "./BulkInventoryImportJob";
+import type {
+  BulkInventoryImportItemAttributes,
+  BulkInventoryImportItemCreationAttributes,
+} from "./BulkInventoryImportItem";
+import { BulkInventoryImportItem as _BulkInventoryImportItem } from "./BulkInventoryImportItem";
+import type {
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+} from "./IngestJob";
+import { IngestJob as _IngestJob } from "./IngestJob";
+import type {
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
+} from "./IngestItem";
+import { IngestItem as _IngestItem } from "./IngestItem";
+import type {
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
+} from "./PdfOcrJob";
+import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
+import type {
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+} from "./WebhookSubscription";
+import { WebhookSubscription as _WebhookSubscription } from "./WebhookSubscription";
+import type {
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
+} from "./WebhookDelivery";
+import { WebhookDelivery as _WebhookDelivery } from "./WebhookDelivery";
+import type {
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
+} from "./NativeInputCatalog";
+import { NativeInputCatalog as _NativeInputCatalog } from "./NativeInputCatalog";
+import type {
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
 } from "./ImportMappingFeedback";
 import { ImportMappingFeedback as _ImportMappingFeedback } from "./ImportMappingFeedback";
+import { MeedActionRanked as _MeedActionRanked } from "./MeedActionRanked";
+import type {
+  MeedActionRankedAttributes,
+  MeedActionRankedCreationAttributes,
+} from "./MeedActionRanked";
+import { MeedActionRemoved as _MeedActionRemoved } from "./MeedActionRemoved";
+import type {
+  MeedActionRemovedAttributes,
+  MeedActionRemovedCreationAttributes,
+} from "./MeedActionRemoved";
+import { MeedRanking as _MeedRanking } from "./MeedRanking";
+import type {
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+} from "./MeedRanking";
+import type {
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+} from "./MeedActionReport";
+import { MeedActionReport as _MeedActionReport } from "./MeedActionReport";
+import type {
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
+} from "./MeedRankSnapshot";
+import { MeedRankSnapshot as _MeedRankSnapshot } from "./MeedRankSnapshot";
+import type {
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
+} from "./MeedState";
+import { MeedState as _MeedState } from "./MeedState";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
@@ -161,16 +231,6 @@ import {
   OrganizationInviteCreationAttributes,
 } from "./OrganizationInvite";
 import type {
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-} from "./AssistantMessage";
-import { AssistantMessage as _AssistantMessage } from "./AssistantMessage";
-import type {
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
-} from "./AssistantThread";
-import { AssistantThread as _AssistantThread } from "./AssistantThread";
-import type {
   OrganizationAttributes,
   OrganizationCreationAttributes,
 } from "./Organization";
@@ -220,20 +280,18 @@ import {
   UnrankedActionSelectionCreationAttributes,
 } from "./UnrankedActionSelection";
 
-import { OAuthClient as _OAuthClient } from "./OAuthClient";
 import {
+  OAuthClient as _OAuthClient,
   OAuthClientAttributes,
   OAuthClientCreationAttributes,
   OAuthClientOptionalAttributes,
 } from "./OAuthClient";
-import { OAuthClientI18N as _OAuthClientI18N } from "./OAuthClientI18N";
 import {
+  OAuthClientI18N as _OAuthClientI18N,
   OAuthClientI18NAttributes,
   OAuthClientI18NCreationAttributes,
   OAuthClientI18NOptionalAttributes,
-  OAuthClientI18N,
 } from "./OAuthClientI18N";
-import { se } from "date-fns/locale";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
 import {
@@ -247,6 +305,16 @@ import {
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
 } from "./PersonalAccessToken";
+import {
+  ConsentRecord as _ConsentRecord,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+} from "./ConsentRecord";
+import {
+  RetentionActionLog as _RetentionActionLog,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
+} from "./RetentionActionLog";
 
 export {
   _ActionPlan as ActionPlan,
@@ -271,7 +339,21 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
+  _BulkInventoryImportJob as BulkInventoryImportJob,
+  _BulkInventoryImportItem as BulkInventoryImportItem,
+  _IngestJob as IngestJob,
+  _IngestItem as IngestItem,
+  _PdfOcrJob as PdfOcrJob,
+  _WebhookSubscription as WebhookSubscription,
+  _WebhookDelivery as WebhookDelivery,
+  _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
+  _MeedActionRanked as MeedActionRanked,
+  _MeedActionRemoved as MeedActionRemoved,
+  _MeedRanking as MeedRanking,
+  _MeedActionReport as MeedActionReport,
+  _MeedRankSnapshot as MeedRankSnapshot,
+  _MeedState as MeedState,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -288,8 +370,6 @@ export {
   _Version as Version,
   _UserFile as UserFile,
   _CityInvite as CityInvite,
-  _AssistantMessage as AssistantMessage,
-  _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
   _OrganizationAdmin as OrganizationAdmin,
   _ProjectAdmin as ProjectAdmin,
@@ -304,6 +384,8 @@ export {
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
   _PersonalAccessToken as PersonalAccessToken,
+  _ConsentRecord as ConsentRecord,
+  _RetentionActionLog as RetentionActionLog,
 };
 
 export type {
@@ -349,8 +431,36 @@ export type {
   InventoryCreationAttributes,
   ImportedInventoryFileAttributes,
   ImportedInventoryFileCreationAttributes,
+  BulkInventoryImportJobAttributes,
+  BulkInventoryImportJobCreationAttributes,
+  BulkInventoryImportItemAttributes,
+  BulkInventoryImportItemCreationAttributes,
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
+  MeedActionRankedAttributes,
+  MeedActionRankedCreationAttributes,
+  MeedActionRemovedAttributes,
+  MeedActionRemovedCreationAttributes,
+  MeedRankingAttributes,
+  MeedRankingCreationAttributes,
+  MeedActionReportAttributes,
+  MeedActionReportCreationAttributes,
+  MeedRankSnapshotAttributes,
+  MeedRankSnapshotCreationAttributes,
+  MeedStateAttributes,
+  MeedStateCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -381,10 +491,6 @@ export type {
   UserCreationAttributes,
   VersionAttributes,
   VersionCreationAttributes,
-  AssistantMessageAttributes,
-  AssistantMessageCreationAttributes,
-  AssistantThreadAttributes,
-  AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
   OrganizationAdminAttributes,
@@ -417,6 +523,10 @@ export type {
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
+  ConsentRecordAttributes,
+  ConsentRecordCreationAttributes,
+  RetentionActionLogAttributes,
+  RetentionActionLogCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -444,7 +554,21 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
+  const BulkInventoryImportJob = _BulkInventoryImportJob.initModel(sequelize);
+  const BulkInventoryImportItem = _BulkInventoryImportItem.initModel(sequelize);
+  const IngestJob = _IngestJob.initModel(sequelize);
+  const IngestItem = _IngestItem.initModel(sequelize);
+  const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
+  const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
+  const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
+  const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
+  const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
+  const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
+  const MeedRanking = _MeedRanking.initModel(sequelize);
+  const MeedActionReport = _MeedActionReport.initModel(sequelize);
+  const MeedRankSnapshot = _MeedRankSnapshot.initModel(sequelize);
+  const MeedState = _MeedState.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -461,8 +585,6 @@ export function initModels(sequelize: Sequelize) {
   const Version = _Version.initModel(sequelize);
   const UserFile = _UserFile.initModel(sequelize);
   const CityInvite = _CityInvite.initModel(sequelize);
-  const AssistantMessage = _AssistantMessage.initModel(sequelize);
-  const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
   const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
   const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
@@ -480,6 +602,8 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
+  const ConsentRecord = _ConsentRecord.initModel(sequelize);
+  const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
 
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
@@ -825,7 +949,7 @@ export function initModels(sequelize: Sequelize) {
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
   Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
   User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
-  Version.hasOne(Version, {
+  Version.belongsTo(Version, {
     as: "previousVersion",
     foreignKey: "previousVersionId",
   });
@@ -972,6 +1096,42 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  WebhookSubscription.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Organization.hasMany(WebhookSubscription, {
+    as: "webhookSubscriptions",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.belongsTo(User, {
+    as: "creator",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(WebhookSubscription, {
+    as: "createdWebhookSubscriptions",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  WebhookDelivery.belongsTo(WebhookSubscription, {
+    as: "subscription",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.hasMany(WebhookDelivery, {
+    as: "deliveries",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
@@ -995,14 +1155,6 @@ export function initModels(sequelize: Sequelize) {
   EmissionsFactor.belongsTo(Inventory, {
     as: "inventory",
     foreignKey: "inventoryId",
-  });
-  AssistantMessage.belongsTo(AssistantThread, {
-    as: "assistantThread",
-    foreignKey: "threadId",
-  });
-  AssistantThread.hasMany(AssistantMessage, {
-    as: "assistantMessages",
-    foreignKey: "threadId",
   });
   Organization.hasMany(Project, {
     as: "projects",
@@ -1092,6 +1244,76 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "hiaRankingId",
   });
 
+  // Associations for MeedActionRanked and MeedActionRemoved
+  MeedRanking.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRanking, {
+    as: "meedRankings",
+    foreignKey: "inventoryId",
+  });
+
+  MeedRanking.hasMany(MeedActionRanked, {
+    as: "meedActionRanked",
+    foreignKey: "rankingId",
+  });
+  MeedRanking.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoved",
+    foreignKey: "rankingId",
+  });
+  MeedActionRanked.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+  MeedActionRemoved.belongsTo(MeedRanking, {
+    as: "meedRanking",
+    foreignKey: "rankingId",
+  });
+
+  MeedActionRanked.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionRanked, {
+    as: "meedActionRankeds",
+    foreignKey: "inventoryId",
+  });
+  MeedActionRemoved.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoveds",
+    foreignKey: "inventoryId",
+  });
+
+  // Associations for MeedActionReport, MeedRankSnapshot and MeedState
+  MeedActionReport.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionReport, {
+    as: "meedActionReports",
+    foreignKey: "inventoryId",
+  });
+  MeedRankSnapshot.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedRankSnapshot, {
+    as: "meedRankSnapshots",
+    foreignKey: "inventoryId",
+  });
+  MeedState.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedState, {
+    as: "meedStates",
+    foreignKey: "inventoryId",
+  });
+
   // Associations for UnrankedActionSelection
   UnrankedActionSelectionModel.belongsTo(Inventory, {
     as: "inventory",
@@ -1173,6 +1395,126 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  BulkInventoryImportJob.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Project.hasMany(BulkInventoryImportJob, {
+    as: "bulkInventoryImportJobs",
+    foreignKey: "projectId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportJob.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(BulkInventoryImportJob, {
+    as: "bulkInventoryImportJobs",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(BulkInventoryImportJob, {
+    as: "job",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportJob.hasMany(BulkInventoryImportItem, {
+    as: "items",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(User, {
+    as: "uploadedBy",
+    foreignKey: "uploadedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(IngestJob, {
+    as: "job",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.hasMany(IngestItem, {
+    as: "items",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(City, {
+    as: "targetCity",
+    foreignKey: "targetCityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(Inventory, {
+    as: "targetInventory",
+    foreignKey: "targetInventoryId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(User, {
+    as: "reviewLockedBy",
+    foreignKey: "reviewLockedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  BulkInventoryImportItem.belongsTo(ImportedInventoryFile, {
+    as: "importedFile",
+    foreignKey: "importedFileId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+
+  ConsentRecord.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(ConsentRecord, {
+    as: "consentRecords",
+    foreignKey: "userId",
+  });
+
   ImportMappingFeedback.belongsTo(City, {
     as: "city",
     foreignKey: "cityId",
@@ -1208,7 +1550,21 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
+    BulkInventoryImportJob: BulkInventoryImportJob,
+    BulkInventoryImportItem: BulkInventoryImportItem,
+    IngestJob: IngestJob,
+    IngestItem: IngestItem,
+    PdfOcrJob: PdfOcrJob,
+    WebhookSubscription: WebhookSubscription,
+    WebhookDelivery: WebhookDelivery,
+    NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
+    MeedActionRanked: MeedActionRanked,
+    MeedActionRemoved: MeedActionRemoved,
+    MeedRanking: MeedRanking,
+    MeedActionReport: MeedActionReport,
+    MeedRankSnapshot: MeedRankSnapshot,
+    MeedState: MeedState,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,
@@ -1226,8 +1582,6 @@ export function initModels(sequelize: Sequelize) {
     UserFile: UserFile,
     CityInvite: CityInvite,
     OrganizationInvite: OrganizationInvite,
-    AssistantMessage: AssistantMessage,
-    AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
     OrganizationAdmin: OrganizationAdmin,
     ProjectAdmin: ProjectAdmin,
@@ -1242,5 +1596,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
     PersonalAccessToken: PersonalAccessToken,
+    ConsentRecord: ConsentRecord,
+    RetentionActionLog: RetentionActionLog,
   };
 }

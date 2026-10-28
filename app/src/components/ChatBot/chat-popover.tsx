@@ -170,7 +170,8 @@ export default function ChatPopover({
         </PopoverTrigger>
         <PopoverContent
           p={0}
-          w="533px"
+          w={{ base: "calc(100vw - 32px)", md: "533px" }}
+          maxWidth="533px"
           maxHeight={"76vh"}
           display="flex"
           flexDirection="column"

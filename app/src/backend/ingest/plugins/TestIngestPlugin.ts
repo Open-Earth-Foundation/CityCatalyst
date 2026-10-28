@@ -1,20 +1,20 @@
+import type { CoarseFileKind } from "../coarse-kind";
 import type { IngestPlugin, IngestPluginContext } from "../plugin";
 import { IngestItemError } from "../types";
 
 /**
- * Fixture plugin for CC-989. Accepts .txt/.csv, never writes a module SoT.
+ * Fixture plugin. Accepts csv; never writes a module SoT.
+ * MIME allowlisting is Core's job (CC-959).
  */
 export class TestIngestPlugin implements IngestPlugin {
   readonly moduleId = "test" as const;
-  readonly allowedExtensions = ["txt", "csv"] as const;
+  readonly allowedExtensions = ["csv"] as const;
 
-  detect(ctx: IngestPluginContext): void {
-    const name = ctx.item.originalFileName.toLowerCase();
-    const ok = this.allowedExtensions.some((ext) => name.endsWith(`.${ext}`));
-    if (!ok) {
+  detect(_ctx: IngestPluginContext, coarse: CoarseFileKind): void {
+    if (coarse !== "csv") {
       throw new IngestItemError(
         "unknown_format",
-        `Test plugin does not accept ${ctx.item.originalFileName}`,
+        `Test plugin has no format for ${coarse}`,
       );
     }
   }

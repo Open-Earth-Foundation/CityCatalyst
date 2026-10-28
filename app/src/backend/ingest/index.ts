@@ -1,4 +1,10 @@
 export { unpackArchive, UnpackArchiveError, isUnsafeZipPath } from "./unpack-archive";
+export {
+  COARSE_FILE_KINDS,
+  coarseKindsFromExtensions,
+  detectCoarseFileKind,
+} from "./coarse-kind";
+export type { CoarseFileKind } from "./coarse-kind";
 export { IngestRunner } from "./IngestRunner";
 export { MemoryIngestStore } from "./MemoryIngestStore";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";

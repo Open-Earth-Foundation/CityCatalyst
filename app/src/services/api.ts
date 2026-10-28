@@ -868,8 +868,12 @@ export const api = createApi({
           response.data,
         providesTags: ["UserData"],
       }),
-      getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
-        query: () => `/user/invites`,
+      getCityInvites: builder.query<
+        GetUserCityInvitesResponse[],
+        { inviteId?: string }
+      >({
+        query: ({ inviteId }) =>
+          inviteId ? `/user/invites?inviteId=${inviteId}` : `/user/invites`,
         transformResponse: (response: { data: GetUserCityInvitesResponse[] }) =>
           response.data,
         providesTags: ["Invites"],

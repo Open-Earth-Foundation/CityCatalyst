@@ -46,7 +46,7 @@ export const GET = apiHandler(async (req, { session, searchParams }) => {
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
-      inviteId: searchParams.inviteId ?? undefined,
+      inviteId: !!searchParams.inviteId ? searchParams.inviteId : undefined, // only filter if not empty
       status: { [Op.ne]: InviteStatus.CANCELED },
     },
     include: [

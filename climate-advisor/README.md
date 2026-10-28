@@ -2079,8 +2079,9 @@ checks, manual verification steps, and remaining limitations.
 
 CNB can optionally use `concept_note_ask_question` when a short set of concrete
 choices makes a clarification or next-step decision easier for the user.
-It ends the turn with a Markdown `message` and 2–6 distinct `options` (each up
-to 160 characters). The UI renders lettered answers and a custom-answer input
+It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
+cap, so an option can be a complete rewrite when the user asks for alternatives
+to choose from). The UI renders lettered answers and a custom-answer input
 inside that assistant bubble. Informational answers, acknowledgements, and
 open-ended questions can remain ordinary text; a previous choice does not force
 another question or set of choices.

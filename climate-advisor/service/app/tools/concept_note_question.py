@@ -13,9 +13,8 @@ from pydantic import (
 )
 
 logger = logging.getLogger(__name__)
-Answer = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=160)
-]
+# No length cap: an option may be a complete alternative, such as a rewrite.
+Answer = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 class ConceptNoteQuestion(BaseModel):
@@ -58,10 +57,12 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     """End this turn with an interactive question inside the assistant message.
 
     message contains your concise user-facing explanation and ONE question as
-    Markdown. options contains 2-6 short, contextual answer texts, without letter
-    prefixes. The UI adds A/B/C labels and a free-text answer automatically.
-    Use only when concrete choices make a clarification or next-step decision
-    easier for the user. Do not use for direct answers, acknowledgements, or
+    Markdown. options contains 2-6 contextual answer texts as plain text, without
+    letter prefixes or Markdown. The UI adds A/B/C labels and a free-text answer automatically.
+    Use when concrete choices make a clarification or next-step decision
+    easier for the user, and always when the user asks for options or
+    alternatives to choose from, such as rewrites; then each option holds one
+    complete alternative. Do not use for direct answers, acknowledgements, or
     open-ended questions. It is optional, including after a previous choice.
     It only presents choices;
     it never edits the document, submits anything, or authorizes another tool.

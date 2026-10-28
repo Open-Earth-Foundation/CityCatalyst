@@ -15,9 +15,7 @@ export function readConceptNoteChoices(value: unknown): string[] | undefined {
     options.length > 6 ||
     !options.every(
       (option): option is string =>
-        typeof option === "string" &&
-        option.trim().length > 0 &&
-        option.length <= 160,
+        typeof option === "string" && option.trim().length > 0,
     ) ||
     new Set(options.map((option) => option.trim().toLowerCase())).size !==
       options.length

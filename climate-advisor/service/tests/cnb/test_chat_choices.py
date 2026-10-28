@@ -15,12 +15,16 @@ from app.utils.streaming_events import handle_tool_output
 from pydantic import ValidationError
 
 
-@pytest.mark.parametrize(
-    "options", [["Only"], ["A"] * 7, ["Yes", " yes "], ["", "No"], ["x" * 161, "No"]]
-)
+@pytest.mark.parametrize("options", [["Only"], ["A"] * 7, ["Yes", " yes "], ["", "No"]])
 def test_invalid_options_are_rejected(options):
     with pytest.raises(ValidationError):
         ConceptNoteQuestion(message="Which next step?", options=options)
+
+
+def test_complete_rewrites_fit_in_options():
+    rewrites = ["Rewrite one. " * 40, "Rewrite two. " * 40]
+    question = ConceptNoteQuestion(message="Which rewrite?", options=rewrites)
+    assert question.options == [rewrite.strip() for rewrite in rewrites]
 
 
 @pytest.mark.asyncio

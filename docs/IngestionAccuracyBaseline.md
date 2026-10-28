@@ -1,6 +1,6 @@
 # Ingestion accuracy baseline
 
-**Status:** measured 2026-10-19 (first pass, `develop` `876eb4bba`) and 2026-10-26 (answer-key benchmark, `develop` `c409059ea`; rerun after the merge of PR #3289, `develop` `c141f52fa`).
+**Status:** latest run 2026-10-27 (22 PDF cases, `6206ca8b7`; see [Latest run](#latest-run-2026-10-27-22-cases)). Earlier: measured 2026-10-19 (first pass, `develop` `876eb4bba`) and 2026-10-26 (answer-key benchmark, `develop` `c409059ea`; rerun after the merge of PR #3289, `develop` `c141f52fa`).
 
 **Ticket:** CC-1132. Related: CC-950 (automated GHGI backtest), CC-951 (golden set), CC-960 (GHGI import rules), CC-1123 (PDF benchmark contract), CC-1008 (Auckland PDF fixes, PR #3289), CC-1080 (CAP test set), CC-1131 (CRVA adapter requirements), CC-953 and CC-989 (ingestion spine).
 
@@ -10,6 +10,7 @@
 
 ## Summary
 
+- **Latest run (2026-10-27, 22 PDFs, 3 runs each):** no case fails at OCR any more. Mean row recall 53%, precision 56%, value accuracy 67%, classification accuracy 81%. 10 of 22 cases reach about 90% to 100% of rows; 7 stay under 15% and 2 return no rows. C-015 to C-025 use draft answer keys, so those results are provisional. Details and links below. The bullets that follow describe the earlier 11-case runs.
 - GHGI is the only module with a file extractor. For PDFs on `develop` it is not reliable.
 - **6 of 11 PDF cases fail at the OCR step** before extraction starts (`malformed_response`: the structured-document step rejects images in the OCR output). A user sees a failed import.
 - For the 5 cases that reach extraction, only 2% to 11% of the expected rows are stored correctly. The main reason is that the scope split is lost: scopes 1, 2 and 3 are summed into one scope-1 value. Ignoring scope, São Paulo matches 88% of rows and its total is within 1%.
@@ -28,7 +29,7 @@
 - **If OCR fails:** a user would see a failed import. To keep measuring the extraction, the script fetches the raw OCR text and continues; those rows are marked `productFlowFailsAtOcr` and are a diagnostic only.
 - **Scoring:** `app/tests/ingestion-accuracy/score.ts` implements the workbook rules. A key row matches when the value is within the file tolerance and the GPC ref and scope are equal. Rows the source does not split are compared as sums. Several key rows with the same ref and scope are compared as one sum. "Value (not in total)" rows must be stored but stay out of the total. Notation keys count only when marked as scored. Because the app stores one value per GPC ref and scope, a "stored row" is one stored (ref, scope) group, not one extracted line item.
 - **Metrics:** row recall, row precision, value accuracy (right number when the row is found), classification accuracy (right ref and scope when the number is found), total against the expected total, notation keys recovered, distractors stored. A diagnostic _subsector recall_ sums all scopes per subsector, to show how much is lost to the scope split alone.
-- **Not the same as production:** a local database, the OCR job worker not started (the stages are called directly), a local setup of the app, and the OpenRouter model id. LLM and OCR cost per run was not recorded.
+- **Not the same as production:** a local database, the OCR job worker not started (the stages are called directly), a local setup of the app, and the OpenRouter model id. LLM and OCR cost per run was not recorded in the earlier runs; since 2026-10-27 every run records it.
 
 ## Support map
 
@@ -125,6 +126,25 @@ Same 11 cases, same scorer, same 3 runs, on `develop` `c141f52fa` (PR #3289 merg
 - **Time:** 27 to 165 s per run.
 - **Not done:** a run with `LLM_EXTRACTION_MODEL` unset, so code and model effects are still mixed against the first benchmark.
 - Raw results are not in the repository.
+
+## Latest run (2026-10-27, 22 cases)
+
+22 PDFs, 3 runs each, on `6206ca8b7` (`develop` with PR #3289 and the OCR fix of PR #3348). C-004 to C-014 use the Product answer keys. C-015 to C-025 (11 PDFs from C40/GCoM) use **draft keys, not yet validated**, so their results are provisional. Extraction model `openai/gpt-5.6-luna`, OCR `mistral-ocr-latest`. The run took about 98 minutes and cost an estimated US$5.68 (1,364 LLM calls, 9.4M input and 1.9M output tokens, 779 OCR pages; the OCR price per page is an estimate).
+
+Evidence is in the run folder `docs/ingestion-accuracy-runs/2026-10-27-2058-6206ca8b7/` on the PR branch: `report.md` (per-case table), `results.json`, and per case the answer key and the stored values. The PDFs are not published. The module x input view is in [IngestionCoverageTable.md](./IngestionCoverageTable.md).
+
+| Group | Cases | Mean row recall |
+| --- | --- | --- |
+| About 90% to 100% | Auckland, Toronto 2020, Miami (3 cases), Mersin, Sao Paulo, Rosario, Santiago, Buenos Aires | 89% to 100% |
+| 15% to 40% | Philadelphia, Madrid, Phoenix | 21% to 38% |
+| Under 15% | Coimbatore, Toronto 2019, Seattle, New York, Peñalolén, Curitiba, Kyoto | 0% to 10% |
+| No rows | Guadalajara, Münster | n/a |
+
+- **OCR step:** passes on all 22 files.
+- **Wrong reference or scope:** New York, Peñalolén and Curitiba store plausible values under other GPC refs or scopes, so no row matches the key.
+- **Unit scaling:** Philadelphia totals are off by +33333% because the model scales "MT CO2e" by 1000 in some runs (diagnosis in the CC-1132 Vault task).
+- **Empty extraction:** Guadalajara and Münster return no rows.
+- **Not done:** rerun of C-015 to C-025 after the keys are validated.
 
 ## Results: structured Excel (eCRF), measured by Product
 

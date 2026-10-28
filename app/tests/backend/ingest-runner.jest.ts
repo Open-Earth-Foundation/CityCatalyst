@@ -20,7 +20,7 @@ async function zipOf(files: Record<string, string>): Promise<Buffer> {
   return Buffer.from(await zip.generateAsync({ type: "uint8array" }));
 }
 
-describe("IngestRunner (CC-989 / CC-959)", () => {
+describe("IngestRunner", () => {
   it("runs one file through the test plugin without a module SoT write", async () => {
     const { store, runner: ingest, plugin } = runner();
     const job = await ingest.enqueue({

@@ -48,6 +48,8 @@ export type KeyFile = {
   keyValueRows: number | null;
   rows: KeyRow[];
   distractors: KeyDistractor[];
+  /** Not a GPC inventory: score the total only, not the rows. */
+  nonGpc?: boolean;
 };
 
 export type StoredValue = {
@@ -102,7 +104,13 @@ export function parseRefs(gpc: string): ParsedRefs {
     : { refs: insideRefs, alternates: [] };
 }
 
+/** A subsector-level ref such as "I.1": its stored refs are "I.1.1", "I.1.2", ... */
+const SUBSECTOR_REF = /^(?:I|II|III)\.\d+$/;
+
 function refMatches(pattern: string, ref: string): boolean {
+  if (SUBSECTOR_REF.test(pattern)) {
+    return pattern === ref || ref.startsWith(`${pattern}.`);
+  }
   if (!pattern.includes(".x")) return pattern === ref;
   const prefix = pattern.slice(0, pattern.indexOf(".x") + 1);
   const tail = pattern.slice(pattern.indexOf(".x") + 2);
@@ -162,19 +170,16 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
   const aggregate: KeyRow[] = [];
   for (const row of valueRows) {
     const parsed = parseRefs(row.gpc);
-    const single =
+    const exactRef =
       parsed.refs.length === 1 &&
       !parsed.refs[0].includes(".x") &&
-      normalizeScope(row.scope) !== "" &&
-      !row.ambiguous;
+      !SUBSECTOR_REF.test(parsed.refs[0]);
+    const single =
+      exactRef && normalizeScope(row.scope) !== "" && !row.ambiguous;
     if (single) {
       const key = `${parsed.refs[0]}|${normalizeScope(row.scope)}`;
       strict.set(key, [...(strict.get(key) ?? []), row]);
-    } else if (
-      parsed.refs.length === 1 &&
-      !parsed.refs[0].includes(".x") &&
-      normalizeScope(row.scope) !== ""
-    ) {
+    } else if (exactRef && normalizeScope(row.scope) !== "") {
       // Ambiguous flag on a single ref: still compared per ref and scope.
       const key = `${parsed.refs[0]}|${normalizeScope(row.scope)}`;
       strict.set(key, [...(strict.get(key) ?? []), row]);
@@ -324,15 +329,17 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     .filter(([key]) => !explained.has(key))
     .map(([, g]) => ({ gpc: g.gpc, scope: g.scope || null, valueT: g.valueT }));
 
+  // Non-GPC documents are scored on the total only: no row-level metrics.
+  const rows = !file.nonGpc;
   return {
     keyValueRows: valueRows.length,
     storedGroups: groups.size,
-    matchedRows,
-    rowRecall: ratio(matchedRows, valueRows.length),
-    rowPrecision: ratio(explained.size, groups.size),
-    subsectorRecall: ratio(subsectorMatched, subsectorRows),
-    valueAccuracy: ratio(valueRight, foundByRef),
-    classificationAccuracy: ratio(classRight, classDen),
+    matchedRows: rows ? matchedRows : 0,
+    rowRecall: rows ? ratio(matchedRows, valueRows.length) : null,
+    rowPrecision: rows ? ratio(explained.size, groups.size) : null,
+    subsectorRecall: rows ? ratio(subsectorMatched, subsectorRows) : null,
+    valueAccuracy: rows ? ratio(valueRight, foundByRef) : null,
+    classificationAccuracy: rows ? ratio(classRight, classDen) : null,
     expectedTotal: file.expectedTotal,
     storedTotal,
     totalDiffPct:
@@ -346,7 +353,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     notationScored: notationRows.length,
     notationRecovered,
     distractorsStored,
-    unexpectedStored,
-    missingRows,
+    unexpectedStored: rows ? unexpectedStored : [],
+    missingRows: rows ? missingRows : [],
   };
 }

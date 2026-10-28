@@ -237,4 +237,41 @@ describe("scoreFile", () => {
     expect(score.rowRecall).toBe(0);
     expect(score.subsectorRecall).toBe(1);
   });
+  it("accepts a subsector ref such as I.1 for a row the source does not split", () => {
+    const score = scoreFile(
+      keyFile(
+        [row({ value: 300, gpc: "I.1 (all scopes)", ambiguous: true })],
+        { expectedTotal: 300 },
+      ),
+      [stored("I.1.1", "1", 200), stored("I.1.2", "2", 100)],
+    );
+    expect(score.rowRecall).toBe(1);
+    expect(score.rowPrecision).toBe(1);
+    expect(score.unexpectedStored).toEqual([]);
+  });
+
+  it("does not let I.1 match another subsector", () => {
+    const score = scoreFile(
+      keyFile([row({ value: 300, gpc: "I.1", ambiguous: true })], {
+        expectedTotal: 300,
+      }),
+      [stored("I.2.1", "1", 300)],
+    );
+    expect(score.rowRecall).toBe(0);
+  });
+
+  it("scores a non-GPC file on the total only", () => {
+    const score = scoreFile(
+      keyFile([row({ value: 300, gpc: "I.1.x", ambiguous: true })], {
+        expectedTotal: 300,
+        nonGpc: true,
+      }),
+      [stored("I.1.1", "1", 300)],
+    );
+    expect(score.rowRecall).toBeNull();
+    expect(score.rowPrecision).toBeNull();
+    expect(score.valueAccuracy).toBeNull();
+    expect(score.totalWithinTolerance).toBe(true);
+    expect(score.storedTotal).toBe(300);
+  });
 });

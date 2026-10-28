@@ -56,6 +56,37 @@ function readTable(
   });
 }
 
+/**
+ * Numbers in free text, with either separator convention: "1,234.5", "1.234,5",
+ * "3.505.046" and "1.100" (a dot followed by exactly three digits groups thousands).
+ */
+export function parseNumbers(text: string): number[] {
+  const out: number[] = [];
+  for (const token of text.match(/\d[\d.,]*\d|\d/g) ?? []) {
+    const lastDot = token.lastIndexOf(".");
+    const lastComma = token.lastIndexOf(",");
+    let normalized: string;
+    if (lastDot >= 0 && lastComma >= 0) {
+      const decimal = lastDot > lastComma ? "." : ",";
+      const group = decimal === "." ? "," : ".";
+      normalized = token.split(group).join("").replace(decimal, ".");
+    } else if (lastDot >= 0 || lastComma >= 0) {
+      const sep = lastDot >= 0 ? "." : ",";
+      const parts = token.split(sep);
+      const grouped =
+        parts.length > 2 ||
+        (parts.length === 2 && parts[1].length === 3 && sep === ".") ||
+        (sep === "," && /^\d{1,3}(,\d{3})+$/.test(token));
+      normalized = grouped ? parts.join("") : parts.join(".");
+    } else {
+      normalized = token;
+    }
+    const number = Number(normalized);
+    if (Number.isFinite(number)) out.push(number);
+  }
+  return out;
+}
+
 const toNumber = (value: string): number | null => {
   const number = Number(value);
   return value.trim() !== "" && Number.isFinite(number) ? number : null;
@@ -129,9 +160,7 @@ export async function exportAnswerKeys(workbookPath: string) {
       where: item["Where"],
       what: item["What it is"],
       examples,
-      numbers: (examples.match(/\d[\d,]*\.?\d*/g) ?? [])
-        .map((text) => Number(text.replace(/,/g, "")))
-        .filter((number) => Number.isFinite(number)),
+      numbers: parseNumbers(examples),
       failureMode: item["Failure mode if stored"],
     };
     target.distractors.push(distractor);

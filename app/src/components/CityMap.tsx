@@ -2,7 +2,7 @@
 
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
-import { Box, Center, Spinner } from "@chakra-ui/react";
+import { Box, Center, ProgressCircle } from "@chakra-ui/react";
 import { FC, useEffect, useRef, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
 
@@ -87,7 +87,16 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
           }}
         >
           <Center h="full">
-            <Spinner size="lg" />
+            <ProgressCircle.Root
+              value={null}
+              size="lg"
+              color="interactive.secondary"
+            >
+              <ProgressCircle.Circle>
+                <ProgressCircle.Track />
+                <ProgressCircle.Range stroke="interactive.secondary" />
+              </ProgressCircle.Circle>
+            </ProgressCircle.Root>
           </Center>
         </Box>
       ) : (

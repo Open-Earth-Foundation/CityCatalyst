@@ -223,7 +223,7 @@ export function Hero({
 
           {/* Right Panel - Map */}
           {!hideMap && (
-            <Box h="317px">
+            <Box w="422px" h="317px" flexShrink={0}>
               {city ? (
                 <CityMap
                   locode={city?.locode ?? null}

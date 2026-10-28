@@ -20,14 +20,14 @@ async function zipOf(files: Record<string, string>): Promise<Buffer> {
   return Buffer.from(await zip.generateAsync({ type: "uint8array" }));
 }
 
-describe("IngestRunner (CC-989)", () => {
+describe("IngestRunner", () => {
   it("runs one file through the test plugin without a module SoT write", async () => {
     const { store, runner: ingest, plugin } = runner();
     const job = await ingest.enqueue({
       moduleId: "test",
       scope: { cityId: CITY_ID },
       uploadedByUserId: "user-1",
-      files: [{ name: "notes.txt", buffer: Buffer.from("hello city\n") }],
+      files: [{ name: "notes.csv", buffer: Buffer.from("hello city\n") }],
     });
 
     const finished = await ingest.run(job.id, plugin);
@@ -39,6 +39,7 @@ describe("IngestRunner (CC-989)", () => {
     expect(items[0]?.status).toBe("completed");
     expect(items[0]?.stage).toBe("publish");
     expect(items[0]?.contentHash).toHaveLength(64);
+    expect(items[0]?.coarseKind).toBe("csv");
     expect(items[0]?.result).toMatchObject({
       committed: true,
       preview: "hello city",
@@ -49,7 +50,7 @@ describe("IngestRunner (CC-989)", () => {
   it("expands a zip into one item per inner file", async () => {
     const { store, runner: ingest, plugin } = runner();
     const buffer = await zipOf({
-      "a.txt": "alpha",
+      "a.csv": "alpha",
       "nested/b.csv": "sector,value\nstationary,1\n",
     });
     const job = await ingest.enqueue({
@@ -63,7 +64,7 @@ describe("IngestRunner (CC-989)", () => {
     expect(job.totalCount).toBe(2);
     expect(finished.completedCount).toBe(2);
     expect(items.map((item) => item.originalFileName).sort()).toEqual([
-      "a.txt",
+      "a.csv",
       "b.csv",
     ]);
     expect(items.every((item) => item.status === "completed")).toBe(true);
@@ -75,7 +76,7 @@ describe("IngestRunner (CC-989)", () => {
       moduleId: "test",
       dryRun: true,
       scope: { cityId: CITY_ID },
-      files: [{ name: "notes.txt", buffer: Buffer.from("keep") }],
+      files: [{ name: "notes.csv", buffer: Buffer.from("keep") }],
     });
     const finished = await ingest.run(job.id, plugin);
     const [item] = await store.listItems(job.id);
@@ -87,21 +88,25 @@ describe("IngestRunner (CC-989)", () => {
     expect(item?.result).toBeUndefined();
   });
 
-  it("fails unknown formats before commit", async () => {
-    const { store, runner: ingest, plugin } = runner();
-    const job = await ingest.enqueue({
-      moduleId: "test",
-      scope: { cityId: CITY_ID },
-      files: [{ name: "scan.pdf", buffer: Buffer.from("%PDF") }],
-    });
-    const finished = await ingest.run(job.id, plugin);
-    const [item] = await store.listItems(job.id);
+  it.each(["scan.pdf", "sheet.xlsx", "notes.md", "notes.txt", "scan.exe"])(
+    "rejects %s at Core coarse detect before plugin format detect",
+    async (name) => {
+      const { store, runner: ingest, plugin } = runner();
+      const job = await ingest.enqueue({
+        moduleId: "test",
+        scope: { cityId: CITY_ID },
+        files: [{ name, buffer: Buffer.from("payload") }],
+      });
+      const finished = await ingest.run(job.id, plugin);
+      const [item] = await store.listItems(job.id);
 
-    expect(finished.status).toBe("failed");
-    expect(item?.status).toBe("failed");
-    expect(item?.errorCode).toBe("unsupported_extension");
-    expect(item?.result).toBeUndefined();
-  });
+      expect(finished.status).toBe("failed");
+      expect(item?.status).toBe("failed");
+      expect(item?.errorCode).toBe("unsupported_extension");
+      expect(item?.coarseKind).toBeDefined();
+      expect(item?.result).toBeUndefined();
+    },
+  );
 
   it("rejects enqueue without a city/org/project scope", async () => {
     const { runner: ingest } = runner();
@@ -109,7 +114,7 @@ describe("IngestRunner (CC-989)", () => {
       ingest.enqueue({
         moduleId: "test",
         scope: {},
-        files: [{ name: "a.txt", buffer: Buffer.from("x") }],
+        files: [{ name: "a.csv", buffer: Buffer.from("x") }],
       }),
     ).rejects.toBeInstanceOf(IngestItemError);
   });

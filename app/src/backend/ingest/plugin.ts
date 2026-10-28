@@ -1,3 +1,4 @@
+import type { CoarseFileKind } from "./coarse-kind";
 import type {
   IngestApprovalPolicy,
   IngestItemRecord,
@@ -20,7 +21,11 @@ export interface IngestPlugin {
   readonly moduleId: IngestModuleId;
   readonly allowedExtensions: readonly string[];
 
-  detect(ctx: IngestPluginContext): Promise<void> | void;
+  /** Format-specific detect (eCRF, near-eCRF, …). Core already set coarse. */
+  detect(
+    ctx: IngestPluginContext,
+    coarse: CoarseFileKind,
+  ): Promise<void> | void;
   parse(ctx: IngestPluginContext): Promise<unknown>;
   adapt(ctx: IngestPluginContext, parsed: unknown): Promise<unknown>;
   validate(

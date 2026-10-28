@@ -56,6 +56,8 @@ export default class FileValidatorService {
    * @returns true if file type is accepted, throws error otherwise
    */
   public static validateFileType(file: File): AcceptedFileFormat {
+    // GHGI wizard still allowlists xlsx/csv/pdf. Core ingest uses
+    // detectCoarseFileKind (CC-959) for pdf|xlsx|csv|md|zip|unknown.
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
     if (!fileExtension) {

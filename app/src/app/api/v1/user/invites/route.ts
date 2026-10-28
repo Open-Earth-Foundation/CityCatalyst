@@ -8,6 +8,13 @@
  *     operationId: getUserInvites
  *     summary: List city invites sent by current user
  *     description: Retrieves all city invitations sent by the current user. Automatically updates invites that have been pending for more than 30 days to EXPIRED status. Returns invite details including associated cities and user information. Requires authentication.
+ *     parameters:
+ *       - in: query
+ *         name: inviteId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     responses:
  *       200:
  *         description: Invites returned with status updates.
@@ -31,7 +38,7 @@ import { InviteStatus, Roles } from "@/util/types";
 import { subDays } from "date-fns";
 import EmailService from "@/backend/EmailService";
 
-export const GET = apiHandler(async (req, { session }) => {
+export const GET = apiHandler(async (req, { session, searchParams }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
@@ -39,6 +46,7 @@ export const GET = apiHandler(async (req, { session }) => {
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
+      inviteId: searchParams.inviteId ?? undefined,
       status: { [Op.ne]: InviteStatus.CANCELED },
     },
     include: [

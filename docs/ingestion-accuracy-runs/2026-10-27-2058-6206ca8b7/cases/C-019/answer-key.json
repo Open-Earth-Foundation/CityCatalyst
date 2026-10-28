@@ -1,0 +1,210 @@
+{
+  "id": "C-019",
+  "city": "Peñalolén",
+  "country": "Chile",
+  "year": 2022,
+  "expectedTotal": 1273000,
+  "toleranceText": "±2,000 t total; ±500 t per row (kt rounding)",
+  "tolerance": 2000,
+  "totalTolerance": 2000,
+  "keyValueRows": 12,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Residencial, comercial: Alcance 1 (73 kt)",
+      "year": 2022,
+      "value": 73000,
+      "gpc": "I.1.1 + I.2.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Q-PEN-2: residential and commercial combined. Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 2,
+      "description": "Residencial, comercial: Alcance 2 (80 kt)",
+      "year": 2022,
+      "value": 80000,
+      "gpc": "I.1.2 + I.2.2",
+      "scope": "2",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Q-PEN-2. Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 3,
+      "description": "Residencial, comercial: Alcance 3 (4 kt)",
+      "year": 2022,
+      "value": 4000,
+      "gpc": "I.1.3 + I.2.3",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Q-PEN-2. Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 4,
+      "description": "Industrial: Alcance 1 (4 kt)",
+      "year": 2022,
+      "value": 4000,
+      "gpc": "I.3.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 5,
+      "description": "Industrial: Alcance 2 (82 kt)",
+      "year": 2022,
+      "value": 82000,
+      "gpc": "I.3.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 6,
+      "description": "Industrial: Alcance 3 (4 kt)",
+      "year": 2022,
+      "value": 4000,
+      "gpc": "I.3.3",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 7,
+      "description": "Transporte por carretera: Alcance 1 (780 kt)",
+      "year": 2022,
+      "value": 780000,
+      "gpc": "II.1.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 8,
+      "description": "Transporte por carretera: Alcance 2 (1 kt)",
+      "year": 2022,
+      "value": 1000,
+      "gpc": "II.1.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 9,
+      "description": "Ferroviario: Alcance 2 (13 kt)",
+      "year": 2022,
+      "value": 13000,
+      "gpc": "II.2.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 10,
+      "description": "Residuos sólidos generados en la ciudad: Alcance 3 (181 kt)",
+      "year": 2022,
+      "value": 181000,
+      "gpc": "III.1.2",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 11,
+      "description": "Aguas residuales generadas en la ciudad: Alcance 3 (49 kt)",
+      "year": 2022,
+      "value": 49000,
+      "gpc": "III.4.2",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with no decimals (x1,000). Tolerance ±500 t."
+    },
+    {
+      "row": 12,
+      "description": "Informativa: emisiones directas CO2 biogénico (10 kt)",
+      "year": 2022,
+      "value": 10000,
+      "gpc": "Biogenic CO2 (outside scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value (not in total)",
+      "notation": "",
+      "scored": false,
+      "note": "Reported separately from the scopes (GPC). Must not enter the total."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 52-58, Tabla 10",
+      "what": "The other 51 comunas in the same table",
+      "examples": "Pirque 133; Providencia 1.100; Ñuñoa 732 (kt)",
+      "numbers": [
+        133,
+        1.1,
+        732
+      ],
+      "failureMode": "Wrong city imported."
+    },
+    {
+      "where": "PDF p. 2",
+      "what": "Regional totals",
+      "examples": "33.904,2 kt; 18.883,8 / 7.130,7 / 7.889,7 kt",
+      "numbers": [
+        33.904,
+        2,
+        18.883,
+        8,
+        7.13,
+        7,
+        7.889,
+        7
+      ],
+      "failureMode": "Region stored as the comuna."
+    },
+    {
+      "where": "PDF p. 56, Informativas and Indicadores rows",
+      "what": "Biogenic CO2, third-party waste, population, intensities",
+      "examples": "Biogenic 10 kt; Habitantes 270.707; 23.575 t/km2",
+      "numbers": [
+        10,
+        270.707,
+        23.575,
+        2
+      ],
+      "failureMode": "Information items counted in the total."
+    }
+  ]
+}

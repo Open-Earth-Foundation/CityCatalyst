@@ -1,0 +1,7 @@
+# Ingestion accuracy runs
+
+One line per benchmark run, oldest first. Open the report for per-case numbers and the change vs the previous run.
+
+| Run (UTC) | Commit | Cases | OCR failures | Mean recall | Mean value acc. | Est. cost | Report |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-10-27 20:58 | `6206ca8b7` | 22 | 0 | 53% | 67% | $5.68 | [2026-10-27-2058-6206ca8b7](./2026-10-27-2058-6206ca8b7/report.md) |

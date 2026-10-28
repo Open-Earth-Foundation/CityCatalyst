@@ -10,7 +10,7 @@
 
 ## Summary
 
-- **Latest run (2026-10-27, 22 PDFs, 3 runs each):** no case fails at OCR any more. Mean row recall 53%, precision 56%, value accuracy 67%, classification accuracy 81%. 10 of 22 cases reach about 90% to 100% of rows; 7 stay under 15% and 2 return no rows. C-015 to C-025 use draft answer keys, so those results are provisional. Details and links below. The bullets that follow describe the earlier 11-case runs.
+- **Latest runs (2026-10-27 and 2026-10-28, 22 PDFs, 3 runs each):** no case fails at OCR any more. Keys for all 22 are validated. Over the 17 cases scored row by row: mean row recall 64%, precision 68%, value accuracy 68%, classification accuracy 90%. 11 of 22 cases reach about 90% to 100% of rows; 5 stay under 15%, 3 are non-GPC layouts scored on the total only, 2 return no rows. Details and links below. The bullets that follow describe the earlier 11-case runs.
 - GHGI is the only module with a file extractor. For PDFs on `develop` it is not reliable.
 - **6 of 11 PDF cases fail at the OCR step** before extraction starts (`malformed_response`: the structured-document step rejects images in the OCR output). A user sees a failed import.
 - For the 5 cases that reach extraction, only 2% to 11% of the expected rows are stored correctly. The main reason is that the scope split is lost: scopes 1, 2 and 3 are summed into one scope-1 value. Ignoring scope, São Paulo matches 88% of rows and its total is within 1%.
@@ -127,24 +127,29 @@ Same 11 cases, same scorer, same 3 runs, on `develop` `c141f52fa` (PR #3289 merg
 - **Not done:** a run with `LLM_EXTRACTION_MODEL` unset, so code and model effects are still mixed against the first benchmark.
 - Raw results are not in the repository.
 
-## Latest run (2026-10-27, 22 cases)
+## Latest runs (22 cases)
 
-22 PDFs, 3 runs each, on `6206ca8b7` (`develop` with PR #3289 and the OCR fix of PR #3348). C-004 to C-014 use the Product answer keys. C-015 to C-025 (11 PDFs from C40/GCoM) use **draft keys, not yet validated**, so their results are provisional. Extraction model `openai/gpt-5.6-luna`, OCR `mistral-ocr-latest`. The run took about 98 minutes and cost an estimated US$5.68 (1,364 LLM calls, 9.4M input and 1.9M output tokens, 779 OCR pages; the OCR price per page is an estimate).
+22 PDFs, 3 runs each. C-004 to C-014 ran on 2026-10-27 on `6206ca8b7` (`develop` with PR #3289 and the OCR fix of PR #3348): about 98 minutes, US$5.68 (1,364 LLM calls, 9.4M input and 1.9M output tokens, 779 OCR pages). C-015 to C-025 (11 PDFs from C40/GCoM) first ran with draft keys; after Product validated the keys they were rerun on 2026-10-28 on `8cc1457ef`: about 70 minutes, US$3.45 (776 LLM calls, 5.4M input and 1.3M output tokens, 427 OCR pages). The table below uses the first run for C-004 to C-014 and the rerun for C-015 to C-025. Extraction model `openai/gpt-5.6-luna`, OCR `mistral-ocr-latest`. The OCR price per page is an estimate.
 
-Evidence is in the run folder `docs/ingestion-accuracy-runs/2026-10-27-2058-6206ca8b7/` on the PR branch: `report.md` (per-case table), `results.json`, and per case the answer key and the stored values. The PDFs are not published. The module x input view is in [IngestionCoverageTable.md](./IngestionCoverageTable.md).
+Scorer changes before the rerun (commit `8cc1457ef`): keys may use subsector refs such as `I.1`, which match any `I.1.x` ref; C-022 to C-025 (not GPC layouts) are scored on the total only; numbers like `3.505.046` are parsed as thousands in the distractor lists. The run report now marks a total within tolerance only when every run is within it.
+
+Evidence is in the run folders `docs/ingestion-accuracy-runs/2026-10-27-2058-6206ca8b7/` and `docs/ingestion-accuracy-runs/2026-10-28-1445-8cc1457ef/` on the PR branch: `report.md` (per-case table), `results.json`, and per case the answer key and the stored values. The PDFs are not published. The module x input view is in [IngestionCoverageTable.md](./IngestionCoverageTable.md).
 
 | Group | Cases | Mean row recall |
 | --- | --- | --- |
-| About 90% to 100% | Auckland, Toronto 2020, Miami (3 cases), Mersin, Sao Paulo, Rosario, Santiago, Buenos Aires | 89% to 100% |
-| 15% to 40% | Philadelphia, Madrid, Phoenix | 21% to 38% |
-| Under 15% | Coimbatore, Toronto 2019, Seattle, New York, Peñalolén, Curitiba, Kyoto | 0% to 10% |
+| About 90% to 100% | Auckland, Toronto 2020, Miami (3 cases), Sao Paulo, Rosario, Curitiba, Santiago, Buenos Aires, Mersin | 88% to 100% |
+| 15% to 40% | Philadelphia | 38% |
+| Under 15% | Phoenix, Toronto 2019, Seattle, New York, Peñalolén | 0% to 9% |
+| Total only (not GPC) | Madrid (-0.1%), Kyoto (-3.3%), Coimbatore (+0.1%) | n/a |
 | No rows | Guadalajara, Münster | n/a |
 
 - **OCR step:** passes on all 22 files.
-- **Wrong reference or scope:** New York, Peñalolén and Curitiba store plausible values under other GPC refs or scopes, so no row matches the key.
-- **Unit scaling:** Philadelphia totals are off by +33333% because the model scales "MT CO2e" by 1000 in some runs (diagnosis in the CC-1132 Vault task).
-- **Empty extraction:** Guadalajara and Münster return no rows.
-- **Not done:** rerun of C-015 to C-025 after the keys are validated.
+- **Wrong reference or scope:** New York stores plausible values under other GPC refs or scopes, so no row matches the key.
+- **Wrong column:** Peñalolén stores the regional totals (Tabla 7) instead of the comuna column (Tabla 10). The key is correct.
+- **Unit scaling:** Philadelphia (+33333%) and Phoenix (+67740%, 2 of 3 runs) have totals about 1000 times too large because the model scales "MT CO2e" by 1000 in some runs (diagnosis in the CC-1132 Vault task).
+- **Run-to-run variance:** Mersin reached 100% of rows in 2 runs and 63% in the third (total -27.6%); Rosario, Phoenix and Toronto 2019 also vary.
+- **Empty extraction:** Guadalajara and Münster return no rows; the runs end `failed`.
+- **Not measured:** whether the flow warns the user. The harness stores the final status and rows, not the warnings.
 
 ## Results: structured Excel (eCRF), measured by Product
 

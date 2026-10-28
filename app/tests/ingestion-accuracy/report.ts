@@ -104,6 +104,15 @@ const mean = (values: (number | null | undefined)[]): number | null => {
     : null;
 };
 
+function allWithinTolerance(
+  scores: Array<{ totalWithinTolerance: boolean | null } | null>,
+): boolean | null {
+  const flags = scores
+    .map((score) => score?.totalWithinTolerance)
+    .filter((flag): flag is boolean => typeof flag === "boolean");
+  return flags.length ? flags.every(Boolean) : null;
+}
+
 export function caseMetrics(result: CaseResult): CaseMetrics {
   const okRuns = result.runs.filter((entry) => entry.ok);
   const scores = okRuns.map((entry) => entry.score ?? null);
@@ -121,7 +130,7 @@ export function caseMetrics(result: CaseResult): CaseMetrics {
     notationRecovered: first?.notationRecovered ?? 0,
     notationScored: first?.notationScored ?? 0,
     totalDiffPct: mean(scores.map((score) => score?.totalDiffPct)),
-    totalWithinTolerance: first?.totalWithinTolerance ?? null,
+    totalWithinTolerance: allWithinTolerance(scores),
     stableTotal: result.stableTotal,
     seconds: mean(result.runs.map((entry) => entry.ms / 1000)),
   };

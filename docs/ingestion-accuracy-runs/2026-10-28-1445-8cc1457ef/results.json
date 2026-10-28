@@ -1,0 +1,6155 @@
+{
+  "measuredAt": "2026-10-28T14:45:53.967Z",
+  "commit": "8cc1457ef",
+  "branch": "david/cc-1132-core-ingestion-measure-current-accuracy-per-module-and-input",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-5.6-luna",
+  "prices": {
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2,
+    "ocrPerPage": 0.002
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 3,
+  "results": [
+    {
+      "id": "C-015",
+      "file": "Rosario, Argentina 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-015",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 58,
+        "chars": 115548,
+        "ms": 9221
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 58
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 108781,
+          "extractedRows": 26,
+          "usage": {
+            "calls": 36,
+            "promptTokens": 238883,
+            "completionTokens": 23172
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 366748.06,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 310091.48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 68594.07,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 42588.68,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 210868.38,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 46645.34,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 260613.21,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 122696.33,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 27141.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 26759.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 5919.44,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 177437.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 460.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 101.87,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 17.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 14489.29,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1015426.86,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 489.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 108.37,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 26020.9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 7604.77,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 21435.53,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 195677.24,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 344885.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 68773.1,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": -13720.18,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 26,
+          "omittedRows": 0,
+          "total": 3347875.4000000004,
+          "byScope": {
+            "1": 2161677.67,
+            "2": 671366.44,
+            "3": 514831.29000000004
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.2",
+            "I.4.3",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.8.1",
+            "II.1.1",
+            "II.1.2",
+            "II.1.3",
+            "II.2.1",
+            "II.3.1",
+            "II.4.3",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 29,
+            "storedGroups": 26,
+            "matchedRows": 25,
+            "rowRecall": 0.8620689655172413,
+            "rowPrecision": 0.9615384615384616,
+            "subsectorRecall": 0.7931034482758621,
+            "valueAccuracy": 0.9615384615384616,
+            "classificationAccuracy": 1,
+            "expectedTotal": 3347875.4,
+            "storedTotal": 3347875.4000000004,
+            "totalDiffPct": 1.3909158247279433e-14,
+            "totalWithinTolerance": true,
+            "notationScored": 1,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "V.3",
+                "scope": "1",
+                "valueT": -13720.18
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrias de energía: generación entregada a la red (Territorial minus Alcance 1)",
+                "gpc": "I.4.4",
+                "value": 14873.61
+              },
+              {
+                "description": "Emisiones de ganadería (Alcance 1)",
+                "gpc": "V.1",
+                "value": 49.71
+              },
+              {
+                "description": "Emisiones del uso del suelo (Alcance 1)",
+                "gpc": "V.2",
+                "value": -14041.4
+              },
+              {
+                "description": "Fuentes agregadas y no CO2 en la tierra (Alcance 1)",
+                "gpc": "V.3",
+                "value": 271.51
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 110818,
+          "extractedRows": 29,
+          "usage": {
+            "calls": 36,
+            "promptTokens": 238883,
+            "completionTokens": 25476
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 366748.06,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 310091.48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 68594.07,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 42588.68,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 210868.38,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 46645.34,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 260613.21,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 122696.33,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 27141.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 26759.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 5919.44,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 177437.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 460.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 101.87,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 17.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 14489.29,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1015426.86,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 489.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 108.37,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 26020.9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 7604.77,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 21435.53,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 195677.24,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 344885.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 68773.1,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 49.71,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -14041.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": -13448.67,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 28,
+          "omittedRows": 0,
+          "total": 3334155.2200000007,
+          "byScope": {
+            "1": 2147957.49,
+            "2": 671366.44,
+            "3": 514831.29000000004
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.2",
+            "I.4.3",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.8.1",
+            "II.1.1",
+            "II.1.2",
+            "II.1.3",
+            "II.2.1",
+            "II.3.1",
+            "II.4.3",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 29,
+            "storedGroups": 28,
+            "matchedRows": 27,
+            "rowRecall": 0.9310344827586207,
+            "rowPrecision": 0.9642857142857143,
+            "subsectorRecall": 0.8620689655172413,
+            "valueAccuracy": 0.9642857142857143,
+            "classificationAccuracy": 1,
+            "expectedTotal": 3347875.4,
+            "storedTotal": 3334155.2200000007,
+            "totalDiffPct": -0.4098175218826614,
+            "totalWithinTolerance": false,
+            "notationScored": 1,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "V.3",
+                "scope": "1",
+                "valueT": -13448.67
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrias de energía: generación entregada a la red (Territorial minus Alcance 1)",
+                "gpc": "I.4.4",
+                "value": 14873.61
+              },
+              {
+                "description": "Fuentes agregadas y no CO2 en la tierra (Alcance 1)",
+                "gpc": "V.3",
+                "value": 271.51
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 102264,
+          "extractedRows": 29,
+          "usage": {
+            "calls": 36,
+            "promptTokens": 238883,
+            "completionTokens": 21539
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 366748.06,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 310091.48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 68594.07,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 42588.68,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 210868.38,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 46645.34,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 260613.21,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 122696.33,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 27141.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 26759.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 5919.44,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 177437.85,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 460.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 101.87,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 17.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 14489.29,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1015426.86,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 489.89,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 108.37,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 26020.9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 7604.77,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 21435.53,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 195677.24,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 344885.51,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 68773.1,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 49.71,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -14041.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": -13448.67,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 28,
+          "omittedRows": 0,
+          "total": 3334155.2200000007,
+          "byScope": {
+            "1": 2147957.49,
+            "2": 671366.44,
+            "3": 514831.29000000004
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.2",
+            "I.4.3",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.8.1",
+            "II.1.1",
+            "II.1.2",
+            "II.1.3",
+            "II.2.1",
+            "II.3.1",
+            "II.4.3",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 29,
+            "storedGroups": 28,
+            "matchedRows": 27,
+            "rowRecall": 0.9310344827586207,
+            "rowPrecision": 0.9642857142857143,
+            "subsectorRecall": 0.8620689655172413,
+            "valueAccuracy": 0.9642857142857143,
+            "classificationAccuracy": 1,
+            "expectedTotal": 3347875.4,
+            "storedTotal": 3334155.2200000007,
+            "totalDiffPct": -0.4098175218826614,
+            "totalWithinTolerance": false,
+            "notationScored": 1,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "V.3",
+                "scope": "1",
+                "valueT": -13448.67
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrias de energía: generación entregada a la red (Territorial minus Alcance 1)",
+                "gpc": "I.4.4",
+                "value": 14873.61
+              },
+              {
+                "description": "Fuentes agregadas y no CO2 en la tierra (Alcance 1)",
+                "gpc": "V.3",
+                "value": 271.51
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-016",
+      "file": "Mersin, Türkiye 2023.pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-016",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 43,
+        "chars": 90954,
+        "ms": 10864
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 43
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 77689,
+          "extractedRows": 26,
+          "usage": {
+            "calls": 21,
+            "promptTokens": 147048,
+            "completionTokens": 16092
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 402835,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 849213,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 136268,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 134797,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 701480,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 112562,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 3731656,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 823724,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 75030,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 59300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 793449,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 107384,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 17231,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 6322,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 43318,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 2966885,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 5887,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 21,
+          "omittedRows": 1,
+          "total": 10173892,
+          "byScope": {
+            "1": 7351000,
+            "2": 2481801,
+            "3": 341091
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.1",
+            "I.4.4",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "I.7.1",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1"
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 17,
+            "matchedRows": 17,
+            "rowRecall": 0.6296296296296297,
+            "rowPrecision": 1,
+            "subsectorRecall": 0.6666666666666666,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 14056006,
+            "storedTotal": 10173892,
+            "totalDiffPct": -27.618898284477112,
+            "totalWithinTolerance": false,
+            "notationScored": 9,
+            "notationRecovered": 2,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Waterborne navigation (Scope 1)",
+                "gpc": "II.3.1",
+                "value": 58550
+              },
+              {
+                "description": "Aviation (Scope 1)",
+                "gpc": "II.4.1",
+                "value": 129
+              },
+              {
+                "description": "Solid waste generated in the city, row III.1.1/2 (Scope 1)",
+                "gpc": "III.1.1",
+                "value": 355600
+              },
+              {
+                "description": "Incinerated and burned waste, row III.3.1/2 (Scope 3)",
+                "gpc": "III.3.2",
+                "value": 9
+              },
+              {
+                "description": "Wastewater generated in the city, row III.4.1/2 (Scope 1)",
+                "gpc": "III.4.1",
+                "value": 187400
+              },
+              {
+                "description": "Industrial processes in the city boundary",
+                "gpc": "IV.1",
+                "value": 3840793
+              },
+              {
+                "description": "Product use in the city boundary",
+                "gpc": "IV.2",
+                "value": 152018
+              },
+              {
+                "description": "Emissions from livestock",
+                "gpc": "V.1",
+                "value": 679307
+              },
+              {
+                "description": "Emissions from land",
+                "gpc": "V.2",
+                "value": -1604225
+              },
+              {
+                "description": "Aggregate sources and non-CO2 sources on land",
+                "gpc": "V.3",
+                "value": 212488
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 94553,
+          "extractedRows": 46,
+          "usage": {
+            "calls": 21,
+            "promptTokens": 147048,
+            "completionTokens": 15708
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 402835,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 849213,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 136268,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 134797,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 701480,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 112562,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 3731656,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 823724,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 75030,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 59300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 793449,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 107384,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 17231,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 6322,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 43318,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 2966885,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 5887,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 58550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 129,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 355600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 187400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 3840793,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 152018,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 679307,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -1604225,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 212488,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 40,
+          "omittedRows": 1,
+          "total": 14055961,
+          "byScope": {
+            "1": 11233060,
+            "2": 2481801,
+            "3": 341100
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.1",
+            "I.4.4",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "I.7.1",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1",
+            "II.3.1",
+            "II.3.2",
+            "II.3.3",
+            "II.4.1",
+            "II.5.1",
+            "II.5.2",
+            "III.1.1",
+            "III.1.2",
+            "III.2.1",
+            "III.2.2",
+            "III.3.1",
+            "III.3.2",
+            "III.4.1",
+            "III.4.2",
+            "IV.1",
+            "IV.2",
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 14056006,
+            "storedTotal": 14055961,
+            "totalDiffPct": -0.00032014784285094925,
+            "totalWithinTolerance": true,
+            "notationScored": 9,
+            "notationRecovered": 4,
+            "distractorsStored": [
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "GPC tables for 2019, 2020, 2021 and 2022 (same layout)",
+                "failureMode": "Wrong year imported."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Population and area",
+                "failureMode": "Non-emission numbers stored."
+              }
+            ],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 88137,
+          "extractedRows": 52,
+          "usage": {
+            "calls": 21,
+            "promptTokens": 147048,
+            "completionTokens": 11602
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 402835,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 849213,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 136268,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 134797,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 701480,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 112562,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 3731656,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 823724,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 75030,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 59300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 793449,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 107384,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 17231,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 6322,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 43318,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 2966885,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 5887,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 58550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 129,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 355600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 187400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 3840793,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 152018,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 679307,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -1604225,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 212488,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            }
+          ],
+          "storedRows": 40,
+          "omittedRows": 1,
+          "total": 14055961,
+          "byScope": {
+            "1": 11233060,
+            "2": 2481801,
+            "3": 341100
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.1",
+            "I.4.4",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "I.7.1",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1",
+            "II.3.1",
+            "II.3.2",
+            "II.3.3",
+            "II.4.1",
+            "II.5.1",
+            "II.5.2",
+            "III.1.1",
+            "III.1.2",
+            "III.2.1",
+            "III.2.2",
+            "III.3.1",
+            "III.3.2",
+            "III.4.1",
+            "III.4.2",
+            "IV.1",
+            "IV.2",
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 14056006,
+            "storedTotal": 14055961,
+            "totalDiffPct": -0.00032014784285094925,
+            "totalWithinTolerance": true,
+            "notationScored": 9,
+            "notationRecovered": 4,
+            "distractorsStored": [
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "GPC tables for 2019, 2020, 2021 and 2022 (same layout)",
+                "failureMode": "Wrong year imported."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Population and area",
+                "failureMode": "Non-emission numbers stored."
+              }
+            ],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-017",
+      "file": "Phoenix, USA 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-017",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 46,
+        "chars": 112166,
+        "ms": 7860
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 46
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 103994,
+          "extractedRows": 13,
+          "usage": {
+            "calls": 35,
+            "promptTokens": 232938,
+            "completionTokens": 29638
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 3190000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 3716000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 80300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 50500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 140,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 6504000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 11800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1369400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 585000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 284400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 6300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 6900,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 12,
+          "omittedRows": 0,
+          "total": 15804740,
+          "byScope": {
+            "1": 15804740
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.5.1",
+            "I.6.1",
+            "II.1.1",
+            "II.2.1",
+            "II.4.1",
+            "II.5.1",
+            "III.1.1",
+            "III.2.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 26,
+            "storedGroups": 12,
+            "matchedRows": 7,
+            "rowRecall": 0.2692307692307692,
+            "rowPrecision": 0.5833333333333334,
+            "subsectorRecall": 0.6,
+            "valueAccuracy": 0.5833333333333334,
+            "classificationAccuracy": 0.6363636363636364,
+            "expectedTotal": 15804670,
+            "storedTotal": 15804740,
+            "totalDiffPct": 0.0004429070648105908,
+            "totalWithinTolerance": true,
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "distractorsStored": [
+              {
+                "valueT": 140,
+                "gpc": "I.6.1",
+                "what": "Columns 2012, 2016, 2018, 2020",
+                "failureMode": "Wrong year."
+              },
+              {
+                "valueT": 140,
+                "gpc": "I.6.1",
+                "what": "Sector totals by scope; ES tables in thousand MT",
+                "failureMode": "Double count, or kt read as t."
+              },
+              {
+                "valueT": 140,
+                "gpc": "I.6.1",
+                "what": "Waste subtables, including wastewater generated outside the city",
+                "failureMode": "Territorial-only emissions counted in scope 1."
+              }
+            ],
+            "unexpectedStored": [
+              {
+                "gpc": "I.1.1",
+                "scope": "1",
+                "valueT": 3190000
+              },
+              {
+                "gpc": "I.2.1",
+                "scope": "1",
+                "valueT": 3716000
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 6504000
+              },
+              {
+                "gpc": "II.2.1",
+                "scope": "1",
+                "valueT": 11800
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 284400
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Residential buildings: fuel combustion",
+                "gpc": "I.1.1",
+                "value": 332016
+              },
+              {
+                "description": "Residential buildings: grid-supplied energy",
+                "gpc": "I.1.2",
+                "value": 2858239
+              },
+              {
+                "description": "Residential buildings: T&D losses",
+                "gpc": "I.1.3",
+                "value": 124597
+              },
+              {
+                "description": "Commercial and institutional: fuel combustion",
+                "gpc": "I.2.1",
+                "value": 386989
+              },
+              {
+                "description": "Commercial and institutional: grid-supplied energy",
+                "gpc": "I.2.2",
+                "value": 3328587
+              },
+              {
+                "description": "Commercial and institutional: T&D losses",
+                "gpc": "I.2.3",
+                "value": 145100
+              },
+              {
+                "description": "Energy industries: power plant auxiliary operations",
+                "gpc": "I.4.1",
+                "value": 0
+              },
+              {
+                "description": "Energy generation supplied to the grid (scope \"T\")",
+                "gpc": "I.4.4",
+                "value": 774664
+              },
+              {
+                "description": "On-road: fuel combustion",
+                "gpc": "II.1.1",
+                "value": 6492232
+              },
+              {
+                "description": "On-road: grid-supplied energy",
+                "gpc": "II.1.2",
+                "value": 12039
+              },
+              {
+                "description": "On-road: scope 3",
+                "gpc": "II.1.3",
+                "value": 525
+              },
+              {
+                "description": "Railways: fuel combustion",
+                "gpc": "II.2.1",
+                "value": 7427
+              },
+              {
+                "description": "Railways: grid-supplied energy",
+                "gpc": "II.2.2",
+                "value": 4351
+              },
+              {
+                "description": "Railways: scope 3",
+                "gpc": "II.2.3",
+                "value": 190
+              },
+              {
+                "description": "Solid waste disposed within the city",
+                "gpc": "III.1.1",
+                "value": 134245
+              },
+              {
+                "description": "Solid waste disposed outside the city",
+                "gpc": "III.1.2",
+                "value": 150137
+              },
+              {
+                "description": "Emissions from livestock",
+                "gpc": "V.1",
+                "value": 98951
+              },
+              {
+                "description": "Other Scope 3",
+                "gpc": "VI.1",
+                "value": 1188
+              },
+              {
+                "description": "Wastewater generated outside, treated within the city (scope \"T\")",
+                "gpc": "III.4.3",
+                "value": 3682
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 97771,
+          "extractedRows": 9,
+          "usage": {
+            "calls": 35,
+            "promptTokens": 232938,
+            "completionTokens": 27432
+          },
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 849903000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 6186826000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 269697000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 8453966000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 16391000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 715000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 147448000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 150137000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 8,
+          "omittedRows": 0,
+          "total": 16075083000,
+          "byScope": {
+            "1": 9451317000,
+            "2": 6203217000,
+            "3": 420549000
+          },
+          "gpcRefs": [
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "II.1.1",
+            "II.1.2",
+            "II.1.3",
+            "III.1.1",
+            "III.1.2"
+          ],
+          "score": {
+            "keyValueRows": 26,
+            "storedGroups": 8,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": null,
+            "expectedTotal": 15804670,
+            "storedTotal": 16075083000,
+            "totalDiffPct": 101610.96897309466,
+            "totalWithinTolerance": false,
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.6.1",
+                "scope": "1",
+                "valueT": 849903000
+              },
+              {
+                "gpc": "I.6.2",
+                "scope": "2",
+                "valueT": 6186826000
+              },
+              {
+                "gpc": "I.6.3",
+                "scope": "3",
+                "valueT": 269697000
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 8453966000
+              },
+              {
+                "gpc": "II.1.2",
+                "scope": "2",
+                "valueT": 16391000
+              },
+              {
+                "gpc": "II.1.3",
+                "scope": "3",
+                "valueT": 715000
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 147448000
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 150137000
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Residential buildings: fuel combustion",
+                "gpc": "I.1.1",
+                "value": 332016
+              },
+              {
+                "description": "Residential buildings: grid-supplied energy",
+                "gpc": "I.1.2",
+                "value": 2858239
+              },
+              {
+                "description": "Residential buildings: T&D losses",
+                "gpc": "I.1.3",
+                "value": 124597
+              },
+              {
+                "description": "Commercial and institutional: fuel combustion",
+                "gpc": "I.2.1",
+                "value": 386989
+              },
+              {
+                "description": "Commercial and institutional: grid-supplied energy",
+                "gpc": "I.2.2",
+                "value": 3328587
+              },
+              {
+                "description": "Commercial and institutional: T&D losses",
+                "gpc": "I.2.3",
+                "value": 145100
+              },
+              {
+                "description": "Manufacturing and construction: fuel combustion (printed ref \"I.1.1\")",
+                "gpc": "I.3.1",
+                "value": 80308
+              },
+              {
+                "description": "Energy industries: power plant auxiliary operations",
+                "gpc": "I.4.1",
+                "value": 0
+              },
+              {
+                "description": "Energy generation supplied to the grid (scope \"T\")",
+                "gpc": "I.4.4",
+                "value": 774664
+              },
+              {
+                "description": "Agriculture, forestry and fishing: fuel combustion",
+                "gpc": "I.5.1",
+                "value": 50454
+              },
+              {
+                "description": "Non-specified sources: fuel combustion",
+                "gpc": "I.6.1",
+                "value": 136
+              },
+              {
+                "description": "On-road: fuel combustion",
+                "gpc": "II.1.1",
+                "value": 6492232
+              },
+              {
+                "description": "On-road: grid-supplied energy",
+                "gpc": "II.1.2",
+                "value": 12039
+              },
+              {
+                "description": "On-road: scope 3",
+                "gpc": "II.1.3",
+                "value": 525
+              },
+              {
+                "description": "Railways: fuel combustion",
+                "gpc": "II.2.1",
+                "value": 7427
+              },
+              {
+                "description": "Railways: grid-supplied energy",
+                "gpc": "II.2.2",
+                "value": 4351
+              },
+              {
+                "description": "Railways: scope 3",
+                "gpc": "II.2.3",
+                "value": 190
+              },
+              {
+                "description": "Aviation: fuel combustion",
+                "gpc": "II.4.1",
+                "value": 1369173
+              },
+              {
+                "description": "Off-road: fuel combustion",
+                "gpc": "II.5.1",
+                "value": 585134
+              },
+              {
+                "description": "Solid waste disposed within the city",
+                "gpc": "III.1.1",
+                "value": 134245
+              },
+              {
+                "description": "Solid waste disposed outside the city",
+                "gpc": "III.1.2",
+                "value": 150137
+              },
+              {
+                "description": "Biological treatment within the city",
+                "gpc": "III.2.1",
+                "value": 6881
+              },
+              {
+                "description": "Wastewater generated and treated within the city",
+                "gpc": "III.4.1",
+                "value": 6676
+              },
+              {
+                "description": "Emissions from livestock",
+                "gpc": "V.1",
+                "value": 98951
+              },
+              {
+                "description": "Other Scope 3",
+                "gpc": "VI.1",
+                "value": 1188
+              },
+              {
+                "description": "Wastewater generated outside, treated within the city (scope \"T\")",
+                "gpc": "III.4.3",
+                "value": 3682
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 96038,
+          "extractedRows": 9,
+          "usage": {
+            "calls": 35,
+            "promptTokens": 232938,
+            "completionTokens": 26146
+          },
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 849903000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 6186826000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 269697000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 8453966000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 16391000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 715000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 147448000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 150137000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 8,
+          "omittedRows": 0,
+          "total": 16075083000,
+          "byScope": {
+            "1": 9451317000,
+            "2": 6203217000,
+            "3": 420549000
+          },
+          "gpcRefs": [
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "II.1.1",
+            "II.1.2",
+            "II.1.3",
+            "III.1.1",
+            "III.1.2"
+          ],
+          "score": {
+            "keyValueRows": 26,
+            "storedGroups": 8,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": null,
+            "expectedTotal": 15804670,
+            "storedTotal": 16075083000,
+            "totalDiffPct": 101610.96897309466,
+            "totalWithinTolerance": false,
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.6.1",
+                "scope": "1",
+                "valueT": 849903000
+              },
+              {
+                "gpc": "I.6.2",
+                "scope": "2",
+                "valueT": 6186826000
+              },
+              {
+                "gpc": "I.6.3",
+                "scope": "3",
+                "valueT": 269697000
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 8453966000
+              },
+              {
+                "gpc": "II.1.2",
+                "scope": "2",
+                "valueT": 16391000
+              },
+              {
+                "gpc": "II.1.3",
+                "scope": "3",
+                "valueT": 715000
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 147448000
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 150137000
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Residential buildings: fuel combustion",
+                "gpc": "I.1.1",
+                "value": 332016
+              },
+              {
+                "description": "Residential buildings: grid-supplied energy",
+                "gpc": "I.1.2",
+                "value": 2858239
+              },
+              {
+                "description": "Residential buildings: T&D losses",
+                "gpc": "I.1.3",
+                "value": 124597
+              },
+              {
+                "description": "Commercial and institutional: fuel combustion",
+                "gpc": "I.2.1",
+                "value": 386989
+              },
+              {
+                "description": "Commercial and institutional: grid-supplied energy",
+                "gpc": "I.2.2",
+                "value": 3328587
+              },
+              {
+                "description": "Commercial and institutional: T&D losses",
+                "gpc": "I.2.3",
+                "value": 145100
+              },
+              {
+                "description": "Manufacturing and construction: fuel combustion (printed ref \"I.1.1\")",
+                "gpc": "I.3.1",
+                "value": 80308
+              },
+              {
+                "description": "Energy industries: power plant auxiliary operations",
+                "gpc": "I.4.1",
+                "value": 0
+              },
+              {
+                "description": "Energy generation supplied to the grid (scope \"T\")",
+                "gpc": "I.4.4",
+                "value": 774664
+              },
+              {
+                "description": "Agriculture, forestry and fishing: fuel combustion",
+                "gpc": "I.5.1",
+                "value": 50454
+              },
+              {
+                "description": "Non-specified sources: fuel combustion",
+                "gpc": "I.6.1",
+                "value": 136
+              },
+              {
+                "description": "On-road: fuel combustion",
+                "gpc": "II.1.1",
+                "value": 6492232
+              },
+              {
+                "description": "On-road: grid-supplied energy",
+                "gpc": "II.1.2",
+                "value": 12039
+              },
+              {
+                "description": "On-road: scope 3",
+                "gpc": "II.1.3",
+                "value": 525
+              },
+              {
+                "description": "Railways: fuel combustion",
+                "gpc": "II.2.1",
+                "value": 7427
+              },
+              {
+                "description": "Railways: grid-supplied energy",
+                "gpc": "II.2.2",
+                "value": 4351
+              },
+              {
+                "description": "Railways: scope 3",
+                "gpc": "II.2.3",
+                "value": 190
+              },
+              {
+                "description": "Aviation: fuel combustion",
+                "gpc": "II.4.1",
+                "value": 1369173
+              },
+              {
+                "description": "Off-road: fuel combustion",
+                "gpc": "II.5.1",
+                "value": 585134
+              },
+              {
+                "description": "Solid waste disposed within the city",
+                "gpc": "III.1.1",
+                "value": 134245
+              },
+              {
+                "description": "Solid waste disposed outside the city",
+                "gpc": "III.1.2",
+                "value": 150137
+              },
+              {
+                "description": "Biological treatment within the city",
+                "gpc": "III.2.1",
+                "value": 6881
+              },
+              {
+                "description": "Wastewater generated and treated within the city",
+                "gpc": "III.4.1",
+                "value": 6676
+              },
+              {
+                "description": "Emissions from livestock",
+                "gpc": "V.1",
+                "value": 98951
+              },
+              {
+                "description": "Other Scope 3",
+                "gpc": "VI.1",
+                "value": 1188
+              },
+              {
+                "description": "Wastewater generated outside, treated within the city (scope \"T\")",
+                "gpc": "III.4.3",
+                "value": 3682
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-018",
+      "file": "Santiago, Chile 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-018",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 26,
+        "chars": 64075,
+        "ms": 5288
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 26
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 113406,
+          "extractedRows": 37,
+          "usage": {
+            "calls": 15,
+            "promptTokens": 100087,
+            "completionTokens": 23087
+          },
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 164429,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 8221,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 565340,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 377653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18883,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 5653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 592388,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 249503,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 77495,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 2760,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 6.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 85668,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 12,
+          "omittedRows": 0,
+          "total": 2147999.4,
+          "byScope": {
+            "1": 1251809,
+            "2": 542082,
+            "3": 354108.4
+          },
+          "gpcRefs": [
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.8.1",
+            "II.1.1",
+            "II.1.3",
+            "III.1.2",
+            "III.2.1",
+            "III.4.2",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 12,
+            "matchedRows": 11,
+            "rowRecall": 0.9166666666666666,
+            "rowPrecision": 0.9166666666666666,
+            "subsectorRecall": 0.9166666666666666,
+            "valueAccuracy": 0.9166666666666666,
+            "classificationAccuracy": 1,
+            "expectedTotal": 2145244,
+            "storedTotal": 2147999.4,
+            "totalDiffPct": 0.12844226577489118,
+            "totalWithinTolerance": false,
+            "notationScored": 3,
+            "notationRecovered": 0,
+            "distractorsStored": [
+              {
+                "valueT": 6.4,
+                "gpc": "III.4.2",
+                "what": "Executive summary scope totals and intensity indicators",
+                "failureMode": "Totals stored as rows; intensities stored as emissions."
+              }
+            ],
+            "unexpectedStored": [
+              {
+                "gpc": "III.2.1",
+                "scope": "1",
+                "valueT": 2760
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Tratamiento biológico de residuos (Alcance 1), printed \"2.760\" (total column \"2,8\")",
+                "gpc": "III.2.1",
+                "value": 2.76
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 99130,
+          "extractedRows": 43,
+          "usage": {
+            "calls": 14,
+            "promptTokens": 93430,
+            "completionTokens": 31937
+          },
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 164429,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 8221,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 565340,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 377653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18883,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 5653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 592388,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 249503,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 77495,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 2760,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 6.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 85668,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 12,
+          "omittedRows": 0,
+          "total": 2147999.4,
+          "byScope": {
+            "1": 1251809,
+            "2": 542082,
+            "3": 354108.4
+          },
+          "gpcRefs": [
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.8.1",
+            "II.1.1",
+            "II.1.3",
+            "III.1.2",
+            "III.2.1",
+            "III.4.2",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 12,
+            "matchedRows": 11,
+            "rowRecall": 0.9166666666666666,
+            "rowPrecision": 0.9166666666666666,
+            "subsectorRecall": 0.9166666666666666,
+            "valueAccuracy": 0.9166666666666666,
+            "classificationAccuracy": 1,
+            "expectedTotal": 2145244,
+            "storedTotal": 2147999.4,
+            "totalDiffPct": 0.12844226577489118,
+            "totalWithinTolerance": false,
+            "notationScored": 3,
+            "notationRecovered": 0,
+            "distractorsStored": [
+              {
+                "valueT": 6.4,
+                "gpc": "III.4.2",
+                "what": "Executive summary scope totals and intensity indicators",
+                "failureMode": "Totals stored as rows; intensities stored as emissions."
+              }
+            ],
+            "unexpectedStored": [
+              {
+                "gpc": "III.2.1",
+                "scope": "1",
+                "valueT": 2760
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Tratamiento biológico de residuos (Alcance 1), printed \"2.760\" (total column \"2,8\")",
+                "gpc": "III.2.1",
+                "value": 2.76
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 100251,
+          "extractedRows": 48,
+          "usage": {
+            "calls": 14,
+            "promptTokens": 93430,
+            "completionTokens": 29879
+          },
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 164429,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 8221,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 565340,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 377653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18883,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 5653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 592388,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 249503,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 77495,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 2760,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 6400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 85668,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 12,
+          "omittedRows": 0,
+          "total": 2154393,
+          "byScope": {
+            "1": 1251809,
+            "2": 542082,
+            "3": 360502
+          },
+          "gpcRefs": [
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.8.1",
+            "II.1.1",
+            "II.1.3",
+            "III.1.2",
+            "III.2.1",
+            "III.4.2",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 12,
+            "matchedRows": 10,
+            "rowRecall": 0.8333333333333334,
+            "rowPrecision": 0.8333333333333334,
+            "subsectorRecall": 0.8333333333333334,
+            "valueAccuracy": 0.8333333333333334,
+            "classificationAccuracy": 1,
+            "expectedTotal": 2145244,
+            "storedTotal": 2154393,
+            "totalDiffPct": 0.42647829337828236,
+            "totalWithinTolerance": false,
+            "notationScored": 3,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "III.2.1",
+                "scope": "1",
+                "valueT": 2760
+              },
+              {
+                "gpc": "III.4.2",
+                "scope": "3",
+                "valueT": 6400
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Tratamiento biológico de residuos (Alcance 1), printed \"2.760\" (total column \"2,8\")",
+                "gpc": "III.2.1",
+                "value": 2.76
+              },
+              {
+                "description": "Tratamiento de aguas residuales (Alcance 3), printed \"6,4\" / \"6.4\"",
+                "gpc": "III.4.2",
+                "value": 6.4
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-019",
+      "file": "Peñalolén, Chile 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-019",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 100,
+        "chars": 201545,
+        "ms": 14689
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 100
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 821973,
+          "extractedRows": 30,
+          "usage": {
+            "calls": 67,
+            "promptTokens": 483625,
+            "completionTokens": 309269
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 2815300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 3347600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 167400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 2560000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 3624100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 181200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 9487000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 20900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 14200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 138100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 3090600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 512600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6449100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 404000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 1092000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 15,
+          "omittedRows": 0,
+          "total": 33904100,
+          "byScope": {
+            "1": 18883700,
+            "2": 7130700,
+            "3": 7889700
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "II.1.1",
+            "II.1.2",
+            "II.2.1",
+            "II.2.2",
+            "II.4.1",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "III.4.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 15,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": 0,
+            "expectedTotal": 1273000,
+            "storedTotal": 33904100,
+            "totalDiffPct": 2563.322859387274,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.1.1",
+                "scope": "1",
+                "valueT": 2815300
+              },
+              {
+                "gpc": "I.1.2",
+                "scope": "2",
+                "valueT": 3347600
+              },
+              {
+                "gpc": "I.1.3",
+                "scope": "3",
+                "valueT": 167400
+              },
+              {
+                "gpc": "I.3.1",
+                "scope": "1",
+                "valueT": 2560000
+              },
+              {
+                "gpc": "I.3.2",
+                "scope": "2",
+                "valueT": 3624100
+              },
+              {
+                "gpc": "I.3.3",
+                "scope": "3",
+                "valueT": 181200
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 9487000
+              },
+              {
+                "gpc": "II.1.2",
+                "scope": "2",
+                "valueT": 20900
+              },
+              {
+                "gpc": "II.2.1",
+                "scope": "1",
+                "valueT": 14200
+              },
+              {
+                "gpc": "II.2.2",
+                "scope": "2",
+                "valueT": 138100
+              },
+              {
+                "gpc": "II.4.1",
+                "scope": "1",
+                "valueT": 3090600
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 512600
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 6449100
+              },
+              {
+                "gpc": "III.4.1",
+                "scope": "1",
+                "valueT": 404000
+              },
+              {
+                "gpc": "III.4.2",
+                "scope": "3",
+                "valueT": 1092000
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrial: Alcance 1 (4 kt)",
+                "gpc": "I.3.1",
+                "value": 4000
+              },
+              {
+                "description": "Industrial: Alcance 2 (82 kt)",
+                "gpc": "I.3.2",
+                "value": 82000
+              },
+              {
+                "description": "Industrial: Alcance 3 (4 kt)",
+                "gpc": "I.3.3",
+                "value": 4000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 1 (780 kt)",
+                "gpc": "II.1.1",
+                "value": 780000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 2 (1 kt)",
+                "gpc": "II.1.2",
+                "value": 1000
+              },
+              {
+                "description": "Ferroviario: Alcance 2 (13 kt)",
+                "gpc": "II.2.2",
+                "value": 13000
+              },
+              {
+                "description": "Residuos sólidos generados en la ciudad: Alcance 3 (181 kt)",
+                "gpc": "III.1.2",
+                "value": 181000
+              },
+              {
+                "description": "Aguas residuales generadas en la ciudad: Alcance 3 (49 kt)",
+                "gpc": "III.4.2",
+                "value": 49000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 1 (73 kt)",
+                "gpc": "I.1.1 + I.2.1",
+                "value": 73000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 2 (80 kt)",
+                "gpc": "I.1.2 + I.2.2",
+                "value": 80000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 3 (4 kt)",
+                "gpc": "I.1.3 + I.2.3",
+                "value": 4000
+              },
+              {
+                "description": "Informativa: emisiones directas CO2 biogénico (10 kt)",
+                "gpc": "Biogenic CO2 (outside scopes)",
+                "value": 10000
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 703511,
+          "extractedRows": 25,
+          "usage": {
+            "calls": 66,
+            "promptTokens": 476820,
+            "completionTokens": 287486
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 2815300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 3347600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 167400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 2560000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 3624100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 181200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 9487000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 20900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 14200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 138100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 3090600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 512600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6449100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 404000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 1092000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 15,
+          "omittedRows": 0,
+          "total": 33904100,
+          "byScope": {
+            "1": 18883700,
+            "2": 7130700,
+            "3": 7889700
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "II.1.1",
+            "II.1.2",
+            "II.2.1",
+            "II.2.2",
+            "II.4.1",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "III.4.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 15,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": 0,
+            "expectedTotal": 1273000,
+            "storedTotal": 33904100,
+            "totalDiffPct": 2563.322859387274,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.1.1",
+                "scope": "1",
+                "valueT": 2815300
+              },
+              {
+                "gpc": "I.1.2",
+                "scope": "2",
+                "valueT": 3347600
+              },
+              {
+                "gpc": "I.1.3",
+                "scope": "3",
+                "valueT": 167400
+              },
+              {
+                "gpc": "I.3.1",
+                "scope": "1",
+                "valueT": 2560000
+              },
+              {
+                "gpc": "I.3.2",
+                "scope": "2",
+                "valueT": 3624100
+              },
+              {
+                "gpc": "I.3.3",
+                "scope": "3",
+                "valueT": 181200
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 9487000
+              },
+              {
+                "gpc": "II.1.2",
+                "scope": "2",
+                "valueT": 20900
+              },
+              {
+                "gpc": "II.2.1",
+                "scope": "1",
+                "valueT": 14200
+              },
+              {
+                "gpc": "II.2.2",
+                "scope": "2",
+                "valueT": 138100
+              },
+              {
+                "gpc": "II.4.1",
+                "scope": "1",
+                "valueT": 3090600
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 512600
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 6449100
+              },
+              {
+                "gpc": "III.4.1",
+                "scope": "1",
+                "valueT": 404000
+              },
+              {
+                "gpc": "III.4.2",
+                "scope": "3",
+                "valueT": 1092000
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrial: Alcance 1 (4 kt)",
+                "gpc": "I.3.1",
+                "value": 4000
+              },
+              {
+                "description": "Industrial: Alcance 2 (82 kt)",
+                "gpc": "I.3.2",
+                "value": 82000
+              },
+              {
+                "description": "Industrial: Alcance 3 (4 kt)",
+                "gpc": "I.3.3",
+                "value": 4000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 1 (780 kt)",
+                "gpc": "II.1.1",
+                "value": 780000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 2 (1 kt)",
+                "gpc": "II.1.2",
+                "value": 1000
+              },
+              {
+                "description": "Ferroviario: Alcance 2 (13 kt)",
+                "gpc": "II.2.2",
+                "value": 13000
+              },
+              {
+                "description": "Residuos sólidos generados en la ciudad: Alcance 3 (181 kt)",
+                "gpc": "III.1.2",
+                "value": 181000
+              },
+              {
+                "description": "Aguas residuales generadas en la ciudad: Alcance 3 (49 kt)",
+                "gpc": "III.4.2",
+                "value": 49000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 1 (73 kt)",
+                "gpc": "I.1.1 + I.2.1",
+                "value": 73000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 2 (80 kt)",
+                "gpc": "I.1.2 + I.2.2",
+                "value": 80000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 3 (4 kt)",
+                "gpc": "I.1.3 + I.2.3",
+                "value": 4000
+              },
+              {
+                "description": "Informativa: emisiones directas CO2 biogénico (10 kt)",
+                "gpc": "Biogenic CO2 (outside scopes)",
+                "value": 10000
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 674576,
+          "extractedRows": 25,
+          "usage": {
+            "calls": 66,
+            "promptTokens": 476086,
+            "completionTokens": 281402
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 2815300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 3347600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 167400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 2560000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 3624100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 181200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 9487000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 20900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 14200,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 138100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 3090600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 512600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6449100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 404000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 1092000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 15,
+          "omittedRows": 0,
+          "total": 33904100,
+          "byScope": {
+            "1": 18883700,
+            "2": 7130700,
+            "3": 7889700
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "II.1.1",
+            "II.1.2",
+            "II.2.1",
+            "II.2.2",
+            "II.4.1",
+            "III.1.1",
+            "III.1.2",
+            "III.4.1",
+            "III.4.2"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 15,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": 0,
+            "expectedTotal": 1273000,
+            "storedTotal": 33904100,
+            "totalDiffPct": 2563.322859387274,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.2.1",
+                "scope": "1",
+                "valueT": 2815300
+              },
+              {
+                "gpc": "I.2.2",
+                "scope": "2",
+                "valueT": 3347600
+              },
+              {
+                "gpc": "I.2.3",
+                "scope": "3",
+                "valueT": 167400
+              },
+              {
+                "gpc": "I.3.1",
+                "scope": "1",
+                "valueT": 2560000
+              },
+              {
+                "gpc": "I.3.2",
+                "scope": "2",
+                "valueT": 3624100
+              },
+              {
+                "gpc": "I.3.3",
+                "scope": "3",
+                "valueT": 181200
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 9487000
+              },
+              {
+                "gpc": "II.1.2",
+                "scope": "2",
+                "valueT": 20900
+              },
+              {
+                "gpc": "II.2.1",
+                "scope": "1",
+                "valueT": 14200
+              },
+              {
+                "gpc": "II.2.2",
+                "scope": "2",
+                "valueT": 138100
+              },
+              {
+                "gpc": "II.4.1",
+                "scope": "1",
+                "valueT": 3090600
+              },
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 512600
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 6449100
+              },
+              {
+                "gpc": "III.4.1",
+                "scope": "1",
+                "valueT": 404000
+              },
+              {
+                "gpc": "III.4.2",
+                "scope": "3",
+                "valueT": 1092000
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Industrial: Alcance 1 (4 kt)",
+                "gpc": "I.3.1",
+                "value": 4000
+              },
+              {
+                "description": "Industrial: Alcance 2 (82 kt)",
+                "gpc": "I.3.2",
+                "value": 82000
+              },
+              {
+                "description": "Industrial: Alcance 3 (4 kt)",
+                "gpc": "I.3.3",
+                "value": 4000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 1 (780 kt)",
+                "gpc": "II.1.1",
+                "value": 780000
+              },
+              {
+                "description": "Transporte por carretera: Alcance 2 (1 kt)",
+                "gpc": "II.1.2",
+                "value": 1000
+              },
+              {
+                "description": "Ferroviario: Alcance 2 (13 kt)",
+                "gpc": "II.2.2",
+                "value": 13000
+              },
+              {
+                "description": "Residuos sólidos generados en la ciudad: Alcance 3 (181 kt)",
+                "gpc": "III.1.2",
+                "value": 181000
+              },
+              {
+                "description": "Aguas residuales generadas en la ciudad: Alcance 3 (49 kt)",
+                "gpc": "III.4.2",
+                "value": 49000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 1 (73 kt)",
+                "gpc": "I.1.1 + I.2.1",
+                "value": 73000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 2 (80 kt)",
+                "gpc": "I.1.2 + I.2.2",
+                "value": 80000
+              },
+              {
+                "description": "Residencial, comercial: Alcance 3 (4 kt)",
+                "gpc": "I.1.3 + I.2.3",
+                "value": 4000
+              },
+              {
+                "description": "Informativa: emisiones directas CO2 biogénico (10 kt)",
+                "gpc": "Biogenic CO2 (outside scopes)",
+                "value": 10000
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": true
+    },
+    {
+      "id": "C-020",
+      "file": "Guadalajara, México 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-020",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 28,
+        "chars": 54661,
+        "ms": 6121
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 28
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 19146,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110748,
+            "completionTokens": 1107
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 23787092,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 16364,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110748,
+            "completionTokens": 873
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 23787092,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 30786,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110748,
+            "completionTokens": 767
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 23787092,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-021",
+      "file": "Curitiba, Brazil 2020.pdf",
+      "kind": "pdf",
+      "targetYear": 2020,
+      "keyId": "C-021",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 68,
+        "chars": 92833,
+        "ms": 8070
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 68
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 39735,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 27,
+            "promptTokens": 173515,
+            "completionTokens": 5002
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 285188,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 252190,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 206245,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 72,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 155783,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 274,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1899338,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 5550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 212839,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 529,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 146583,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 11,
+          "omittedRows": 0,
+          "total": 3164591,
+          "byScope": {
+            "1": 3164591
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.5.1",
+            "I.6.1",
+            "I.7.1",
+            "II.1.1",
+            "II.4.1",
+            "III.1.1",
+            "III.3.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 11,
+            "matchedRows": 10,
+            "rowRecall": 0.9090909090909091,
+            "rowPrecision": 0.9090909090909091,
+            "subsectorRecall": 0,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 0.9090909090909091,
+            "expectedTotal": 3164591,
+            "storedTotal": 3164591,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.7.1",
+                "scope": "1",
+                "valueT": 274
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Emissões fugitivas",
+                "gpc": "I.8.1",
+                "value": 274
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 35407,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 27,
+            "promptTokens": 173515,
+            "completionTokens": 4968
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 285188,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 252190,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 206245,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 72,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 155783,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 274,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1899338,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 5550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 212839,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 529,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 146583,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 11,
+          "omittedRows": 0,
+          "total": 3164591,
+          "byScope": {
+            "1": 3164591
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.5.1",
+            "I.6.1",
+            "I.7.1",
+            "II.1.1",
+            "II.4.1",
+            "III.1.1",
+            "III.3.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 11,
+            "matchedRows": 10,
+            "rowRecall": 0.9090909090909091,
+            "rowPrecision": 0.9090909090909091,
+            "subsectorRecall": 0,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 0.9090909090909091,
+            "expectedTotal": 3164591,
+            "storedTotal": 3164591,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.7.1",
+                "scope": "1",
+                "valueT": 274
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Emissões fugitivas",
+                "gpc": "I.8.1",
+                "value": 274
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 36650,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 27,
+            "promptTokens": 173515,
+            "completionTokens": 5731
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 285188,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 252190,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 206245,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 72,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 155783,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 274,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1899338,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 5550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 212839,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 529,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 146583,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 11,
+          "omittedRows": 0,
+          "total": 3164591,
+          "byScope": {
+            "1": 3164591
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.5.1",
+            "I.6.1",
+            "I.7.1",
+            "II.1.1",
+            "II.4.1",
+            "III.1.1",
+            "III.3.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 11,
+            "matchedRows": 10,
+            "rowRecall": 0.9090909090909091,
+            "rowPrecision": 0.9090909090909091,
+            "subsectorRecall": 0,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 0.9090909090909091,
+            "expectedTotal": 3164591,
+            "storedTotal": 3164591,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "I.7.1",
+                "scope": "1",
+                "valueT": 274
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Emissões fugitivas",
+                "gpc": "I.8.1",
+                "value": 274
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": true
+    },
+    {
+      "id": "C-022",
+      "file": "Madrid, Spain 2023 (IPCC con CIRIS).pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-022",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 32,
+        "chars": 79387,
+        "ms": 8712
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 32
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 84886,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 25,
+            "promptTokens": 179676,
+            "completionTokens": 19681
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 10,
+          "omittedRows": 0,
+          "total": 7327000,
+          "byScope": {
+            "1": 5619200,
+            "2": 1707800
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.2.2",
+            "I.3.1",
+            "I.3.2",
+            "I.6.1",
+            "II.1.1",
+            "II.1.2",
+            "II.2.1",
+            "II.2.2",
+            "III.1.1"
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 7333400,
+            "storedTotal": 7327000,
+            "totalDiffPct": -0.08727193389151007,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 84220,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 25,
+            "promptTokens": 179676,
+            "completionTokens": 19093
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 10,
+          "omittedRows": 0,
+          "total": 7327000,
+          "byScope": {
+            "1": 5619200,
+            "2": 1707800
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.3.1",
+            "I.3.2",
+            "I.6.1",
+            "II.1.1",
+            "II.1.2",
+            "II.2.1",
+            "II.2.2",
+            "III.1.1"
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 7333400,
+            "storedTotal": 7327000,
+            "totalDiffPct": -0.08727193389151007,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 84649,
+          "extractedRows": 12,
+          "usage": {
+            "calls": 25,
+            "promptTokens": 179676,
+            "completionTokens": 20391
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 10,
+          "omittedRows": 0,
+          "total": 7327000,
+          "byScope": {
+            "1": 5619200,
+            "2": 1707800
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.2.2",
+            "I.3.1",
+            "I.3.2",
+            "I.6.1",
+            "II.1.1",
+            "II.1.2",
+            "II.5.1",
+            "II.5.2",
+            "III.1.1"
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 7333400,
+            "storedTotal": 7327000,
+            "totalDiffPct": -0.08727193389151007,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": true
+    },
+    {
+      "id": "C-023",
+      "file": "Kyoto, Japan (IPCC) 2023.pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-023",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 4,
+        "chars": 4448,
+        "ms": 5948
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 4
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 21538,
+          "extractedRows": 8,
+          "usage": {
+            "calls": 4,
+            "promptTokens": 26803,
+            "completionTokens": 2912
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1613000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 668000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 98000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1384000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 257000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 393000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 7,
+          "omittedRows": 0,
+          "total": 5923000,
+          "byScope": {
+            "1": 5923000
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.6.1",
+            "II.1.1",
+            "III.1.1",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 9,
+            "storedGroups": 7,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 5923000,
+            "storedTotal": 5923000,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 19583,
+          "extractedRows": 6,
+          "usage": {
+            "calls": 4,
+            "promptTokens": 26803,
+            "completionTokens": 2598
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1613000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 668000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1384000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 257000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 393000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 6,
+          "omittedRows": 0,
+          "total": 5825000,
+          "byScope": {
+            "1": 5825000
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "II.1.1",
+            "III.1.1",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 9,
+            "storedGroups": 6,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 5923000,
+            "storedTotal": 5825000,
+            "totalDiffPct": -1.6545669424278238,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 17204,
+          "extractedRows": 5,
+          "usage": {
+            "calls": 4,
+            "promptTokens": 26803,
+            "completionTokens": 2261
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1613000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 668000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1384000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 257000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 5,
+          "omittedRows": 0,
+          "total": 5432000,
+          "byScope": {
+            "1": 5432000
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "II.1.1",
+            "III.1.1"
+          ],
+          "score": {
+            "keyValueRows": 9,
+            "storedGroups": 5,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 5923000,
+            "storedTotal": 5432000,
+            "totalDiffPct": -8.28971804828634,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-024",
+      "file": "Coimbatore, India 2019-20.pdf",
+      "kind": "pdf",
+      "targetYear": 2019,
+      "keyId": "C-024",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 8,
+        "chars": 10425,
+        "ms": 3780
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 8
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 31857,
+          "extractedRows": 15,
+          "usage": {
+            "calls": 7,
+            "promptTokens": 44194,
+            "completionTokens": 6649
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 23361.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 3566080.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1012521.81,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 42339.37,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 4,
+          "omittedRows": 0,
+          "total": 4644302.74,
+          "byScope": {
+            "1": 4644302.74
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.6.1",
+            "II.1.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 10,
+            "storedGroups": 4,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 4638345,
+            "storedTotal": 4644302.74,
+            "totalDiffPct": 0.12844538299760416,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 24614,
+          "extractedRows": 15,
+          "usage": {
+            "calls": 7,
+            "promptTokens": 44194,
+            "completionTokens": 6696
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 58962.77,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 1576678.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 1989402,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1012521.81,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 6737.76,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 5,
+          "omittedRows": 0,
+          "total": 4644302.74,
+          "byScope": {
+            "1": 2654900.7399999998,
+            "2": 1989402
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.6.1",
+            "I.6.2",
+            "II.1.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 10,
+            "storedGroups": 5,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 4638345,
+            "storedTotal": 4644302.74,
+            "totalDiffPct": 0.12844538299760416,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [
+              {
+                "valueT": 1989402,
+                "gpc": "I.6.2",
+                "what": "Emissions by fuel (same emissions, other split)",
+                "failureMode": "Double count."
+              }
+            ],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 24630,
+          "extractedRows": 15,
+          "usage": {
+            "calls": 7,
+            "promptTokens": 44194,
+            "completionTokens": 6551
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 23361.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 1576678.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 1989402,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1012521.81,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 42339.37,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 5,
+          "omittedRows": 0,
+          "total": 4644302.739999999,
+          "byScope": {
+            "1": 2654900.74,
+            "2": 1989402
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.6.1",
+            "I.6.2",
+            "II.1.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 10,
+            "storedGroups": 5,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 4638345,
+            "storedTotal": 4644302.739999999,
+            "totalDiffPct": 0.1284453829975841,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [
+              {
+                "valueT": 1989402,
+                "gpc": "I.6.2",
+                "what": "Emissions by fuel (same emissions, other split)",
+                "failureMode": "Double count."
+              }
+            ],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": true
+    },
+    {
+      "id": "C-025",
+      "file": "Münster, Germany 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-025",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 14,
+        "chars": 25219,
+        "ms": 5220
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "pages": 14
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 19675,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57284,
+            "completionTokens": 1032
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 18728,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57284,
+            "completionTokens": 1347
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 15785,
+          "extractedRows": 0,
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57284,
+            "completionTokens": 1101
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

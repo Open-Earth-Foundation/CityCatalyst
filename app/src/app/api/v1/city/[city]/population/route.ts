@@ -88,11 +88,39 @@
  */
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
+import type {
+  Population,
+  PopulationCreationAttributes,
+} from "@/models/Population";
 import { apiHandler } from "@/util/api";
 import { createPopulationRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import PopulationService from "@/backend/PopulationService";
+import type { Transaction } from "sequelize";
+
+/**
+ * Sets one population column for a city and year in a single statement,
+ * leaving the row's other columns as they are. A separate findOne + create
+ * raced when two requests saved the same city and year at once (for example
+ * parallel onboardings of one city): the second insert broke the
+ * (city_id, year) primary key and the request failed.
+ */
+async function upsertPopulation(
+  cityId: string,
+  year: number,
+  values: Pick<
+    PopulationCreationAttributes,
+    "population" | "regionPopulation" | "countryPopulation"
+  >,
+  transaction: Transaction,
+): Promise<Population> {
+  const [population] = await db.models.Population.upsert(
+    { cityId, year, ...values },
+    { returning: true, transaction },
+  );
+  return population;
+}
 
 export const POST = apiHandler(async (req, { session, params }) => {
   const body = createPopulationRequest.parse(await req.json());
@@ -104,60 +132,32 @@ export const POST = apiHandler(async (req, { session, params }) => {
 
   const { cityId } = city;
 
-  let cityPopulation = await db.models.Population.findOne({
-    where: {
-      cityId,
-      year: body.cityPopulationYear,
-    },
-  });
-  if (cityPopulation) {
-    cityPopulation.population = body.cityPopulation;
-    await cityPopulation.save();
-  } else {
-    cityPopulation = await db.models.Population.create({
-      cityId,
-      population: body.cityPopulation,
-      year: body.cityPopulationYear,
-    });
-  }
+  if (!db.sequelize) throw new Error("Database not initialized");
 
-  let regionPopulation = await db.models.Population.findOne({
-    where: {
+  const data = await db.sequelize.transaction(async (transaction) => {
+    const cityPopulation = await upsertPopulation(
       cityId,
-      year: body.regionPopulationYear,
-    },
-  });
-  if (regionPopulation) {
-    regionPopulation.regionPopulation = body.regionPopulation;
-    await regionPopulation.save();
-  } else {
-    regionPopulation = await db.models.Population.create({
+      body.cityPopulationYear,
+      { population: body.cityPopulation },
+      transaction,
+    );
+    const regionPopulation = await upsertPopulation(
       cityId,
-      regionPopulation: body.regionPopulation,
-      year: body.regionPopulationYear,
-    });
-  }
+      body.regionPopulationYear,
+      { regionPopulation: body.regionPopulation },
+      transaction,
+    );
+    const countryPopulation = await upsertPopulation(
+      cityId,
+      body.countryPopulationYear,
+      { countryPopulation: body.countryPopulation },
+      transaction,
+    );
 
-  let countryPopulation = await db.models.Population.findOne({
-    where: {
-      cityId,
-      year: body.countryPopulationYear,
-    },
+    return { cityPopulation, regionPopulation, countryPopulation };
   });
-  if (countryPopulation) {
-    countryPopulation.countryPopulation = body.countryPopulation;
-    await countryPopulation.save();
-  } else {
-    countryPopulation = await db.models.Population.create({
-      cityId,
-      countryPopulation: body.countryPopulation,
-      year: body.countryPopulationYear,
-    });
-  }
 
-  return NextResponse.json({
-    data: { cityPopulation, regionPopulation, countryPopulation },
-  });
+  return NextResponse.json({ data });
 });
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {

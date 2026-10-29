@@ -51,6 +51,11 @@ class ConceptNoteRun(Base):
         nullable=True,
         comment="External funding-opportunity identifier validated against managed CNB reference data",
     )
+    custom_template: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONBCompat(),
+        nullable=True,
+        comment="User-defined application template used instead of a funder programme",
+    )
     status: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
@@ -175,6 +180,9 @@ class ConceptNoteUpload(Base):
         nullable=False,
     )
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_role: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="reference", server_default="reference"
+    )
     source_label: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
@@ -237,6 +245,10 @@ class ConceptNoteUpload(Base):
         CheckConstraint(
             "page_count > 0",
             name="ck_concept_note_uploads_positive_page_count",
+        ),
+        CheckConstraint(
+            "source_role IN ('reference', 'climate_action_plan')",
+            name="ck_concept_note_uploads_source_role",
         ),
         CheckConstraint(
             """

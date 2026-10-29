@@ -21,8 +21,14 @@ const Footer = ({ lng }: { lng: string }) => {
   const feedbackFormUrl = FEEDBACK_FORM_URLS[lng] ?? FEEDBACK_FORM_URLS.en;
   return (
     <Box as="footer" w="full" bg="#00001f" pt={12} pb={20}>
-      <Box w="full" px={16}>
-        <Box display="flex" w="full" pb={12} gap="xxl-7">
+      <Box w="full" px={{ base: 4, md: 16 }}>
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", lg: "row" }}
+          w="full"
+          pb={12}
+          gap="xxl-7"
+        >
           <Box>
             {logoUrl ? (
               <Image src={logoUrl} width={200} height={40} alt="Org logo" />
@@ -39,11 +45,11 @@ const Footer = ({ lng }: { lng: string }) => {
           <Box
             color="white"
             fontSize="14px"
-            w="60%"
+            w={{ base: "full", lg: "60%" }}
             display="grid"
-            gridTemplateColumns="repeat(3, 1fr)"
+            gridTemplateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }}
             gap="xxl-2"
-            fontFamily="poppins"
+            fontFamily="heading"
           >
             <VStack align="flex-start" gap="l">
               <TitleSmall color="background.overlay" textTransform="uppercase">
@@ -110,7 +116,7 @@ const Footer = ({ lng }: { lng: string }) => {
           </Box>
         </Box>
         <Box bg="body" h={1} />
-        <Box display="flex" gap={4} alignItems="center" mt={12}>
+        <Box display="flex" flexWrap="wrap" gap={4} alignItems="center" mt={12}>
           <Box mt={-1.5}>
             <Image
               src="/assets/powered_by_logo.svg"

@@ -8,6 +8,13 @@
  *     operationId: getUserInvites
  *     summary: List city invites sent by current user
  *     description: Retrieves all city invitations sent by the current user. Automatically updates invites that have been pending for more than 30 days to EXPIRED status. Returns invite details including associated cities and user information. Requires authentication.
+ *     parameters:
+ *       - in: query
+ *         name: inviteId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     responses:
  *       200:
  *         description: Invites returned with status updates.
@@ -31,7 +38,7 @@ import { InviteStatus, Roles } from "@/util/types";
 import { subDays } from "date-fns";
 import EmailService from "@/backend/EmailService";
 
-export const GET = apiHandler(async (req, { session }) => {
+export const GET = apiHandler(async (req, { session, searchParams }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
@@ -39,6 +46,7 @@ export const GET = apiHandler(async (req, { session }) => {
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
+      inviteId: !!searchParams.inviteId ? searchParams.inviteId : undefined, // only filter if not empty
       status: { [Op.ne]: InviteStatus.CANCELED },
     },
     include: [
@@ -114,57 +122,6 @@ export const POST = apiHandler(async (req, { session }) => {
   const inviteRequest = CreateUsersInvite.parse(await req.json());
   const { invites, cityIds, projectId } = inviteRequest;
 
-  // if the user is not an OEF admin, we want to make sure they have access to the city they are people inviting to
-  if (!(session.user.role === Roles.Admin)) {
-    // check for org admins
-    const orgAdmin = await db.models.OrganizationAdmin.findOne({
-      where: {
-        userId: session.user.id,
-      },
-      include: [
-        {
-          model: db.models.Organization,
-          as: "organization",
-          include: [
-            {
-              model: db.models.Project,
-              as: "projects",
-              include: [
-                {
-                  model: db.models.City,
-                  as: "cities",
-                  where: { cityId: { [Op.in]: cityIds } },
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
-
-    if (orgAdmin) {
-      const orgCities = orgAdmin.organization.projects.flatMap((project) =>
-        project.cities.map((city) => city.cityId),
-      );
-      const hasAccess = cityIds.every((cityId) => orgCities.includes(cityId));
-      if (!hasAccess) {
-        throw createHttpError.NotFound("City not found");
-      }
-    } else {
-      let userCities = [];
-      userCities = await db.models.CityUser.findAll({
-        where: {
-          userId: session.user.id,
-          cityId: { [Op.in]: cityIds },
-        },
-      });
-
-      if (userCities.length !== cityIds.length) {
-        throw new createHttpError.NotFound("City not found");
-      }
-    }
-  }
-
   const cities = await db.models.City.findAll({
     where: { cityId: { [Op.in]: cityIds } },
     include: [
@@ -187,6 +144,41 @@ export const POST = apiHandler(async (req, { session }) => {
       },
     ],
   });
+
+  const uniqueCityIds = [...new Set(cityIds)];
+  if (cities.length !== uniqueCityIds.length) {
+    throw new createHttpError.NotFound("City not found");
+  }
+
+  // every city must belong to the project the invite is issued for
+  if (cities.some((city) => city.projectId !== projectId)) {
+    throw new createHttpError.BadRequest("city-project-mismatch");
+  }
+
+  // Non-OEF admins need org admin rights over each city's organization, or a
+  // direct membership in the city. A user can administer several organizations.
+  if (session.user.role !== Roles.Admin) {
+    const [orgAdminships, cityMemberships] = await Promise.all([
+      db.models.OrganizationAdmin.findAll({
+        where: { userId: session.user.id },
+        attributes: ["organizationId"],
+      }),
+      db.models.CityUser.findAll({
+        where: { userId: session.user.id, cityId: { [Op.in]: uniqueCityIds } },
+        attributes: ["cityId"],
+      }),
+    ]);
+    const adminOrgIds = new Set(orgAdminships.map((a) => a.organizationId));
+    const memberCityIds = new Set(cityMemberships.map((m) => m.cityId));
+    const hasAccess = cities.every(
+      (city) =>
+        adminOrgIds.has(city.project?.organizationId) ||
+        memberCityIds.has(city.cityId),
+    );
+    if (!hasAccess) {
+      throw new createHttpError.NotFound("City not found");
+    }
+  }
 
   let emailBranding: { logoUrl: string; color: string } | null = null;
   const organizationIds = new Set(
@@ -217,19 +209,21 @@ export const POST = apiHandler(async (req, { session }) => {
 
   const failedInvites: { email: string; cityIds: string[] }[] = [];
   const inviteUrls: Record<string, string> = {};
+  const emailFailures: string[] = [];
+  const inviteId = randomUUID();
 
   await Promise.all(
     invites.map(async ({ email, role }) => {
       const inviteData = { email, cityIds };
       try {
         const invitationCode = jwt.sign(
-          { email, reason: "invite", cities: cityIds, role, projectId },
+          { email, reason: "invite", role, projectId, inviteId },
           process.env.VERIFICATION_TOKEN_SECRET!,
           {
             expiresIn: "30d",
           },
         );
-        const cityInvites = await Promise.all(
+        await Promise.all(
           cityIds.map(async (cityId) => {
             const existingInvite = await db.models.CityInvite.findOne({
               where: { email, cityId },
@@ -247,6 +241,7 @@ export const POST = apiHandler(async (req, { session }) => {
                 id: randomUUID(),
                 cityId,
                 email,
+                inviteId,
                 invitingUserId: session.user.id,
               });
 
@@ -267,7 +262,8 @@ export const POST = apiHandler(async (req, { session }) => {
         const params = new URLSearchParams();
 
         // Add query parameters
-        params.set("cityIds", cityInvites.map((i) => i.cityId).join(","));
+        params.set("inviteType", "city");
+        params.set("inviteId", inviteId);
         params.set("token", invitationCode);
         params.set("email", email);
         params.set(
@@ -307,6 +303,7 @@ export const POST = apiHandler(async (req, { session }) => {
             html,
           });
         } catch (error) {
+          emailFailures.push(email);
           logger.warn(
             { email, cityIds, error },
             "Invitation email could not be sent; invite was created and URL is available",
@@ -324,5 +321,6 @@ export const POST = apiHandler(async (req, { session }) => {
   return NextResponse.json({
     success: failedInvites.length === 0,
     inviteUrls,
+    emailFailures,
   });
 });

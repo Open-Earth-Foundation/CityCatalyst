@@ -200,7 +200,7 @@ async def analyze_document(
 ) -> SelectedSource:
     """Map every source segment and synthesize one compact selected source."""
     settings = settings or get_settings()
-    client, owns_client = _resolve_analysis_client(settings, client)
+    client, owns_client = resolve_analysis_client(settings, client)
     budget = settings.llm.generation.prompt_budget.cnb_sources
     tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
     reader_model = settings.llm.models.cnb_source_reader
@@ -246,7 +246,7 @@ async def analyze_document(
             )
             for reading in readings
         ]
-        synthesis = await _run_agent(
+        synthesis = await run_agent(
             name="Concept Note source summary synthesizer",
             prompt=settings.llm.prompts.get_prompt("cnb_source_summary_synthesis"),
             model_config=synthesizer_model,
@@ -313,7 +313,7 @@ async def query_document(
             "Question exceeds the configured source-query limit",
         )
 
-    client, owns_client = _resolve_analysis_client(settings, client)
+    client, owns_client = resolve_analysis_client(settings, client)
     tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
     reader_model = settings.llm.models.cnb_source_reader
     reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
@@ -387,7 +387,7 @@ async def query_document(
             await client.close()
 
 
-def _resolve_analysis_client(
+def resolve_analysis_client(
     settings: Settings,
     client: AsyncOpenAI | None,
 ) -> tuple[AsyncOpenAI, bool]:
@@ -421,7 +421,7 @@ async def _read_partition(
 ) -> list[PartitionOutput]:
     """Read all sections, bisecting incomplete groups at most twice before failing."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
-        result = await _run_agent(
+        result = await run_agent(
             name=name,
             prompt=prompt,
             model_config=settings.llm.models.cnb_source_reader,
@@ -527,7 +527,7 @@ def _restore_summary_excerpts(
     )
 
 
-async def _run_agent(
+async def run_agent(
     *,
     name: str,
     prompt: str,

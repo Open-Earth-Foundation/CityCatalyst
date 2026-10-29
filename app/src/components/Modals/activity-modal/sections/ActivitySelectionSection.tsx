@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 import { Control, FieldValues, useController } from "react-hook-form";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import { Methodology, SuggestedActivity } from "@/util/form-schema";
-import { Field } from "@/components/ui/field";
+import { ModalField as Field } from "./ModalField";
 interface ActivitySelectionSectionProps {
   t: TFunction;
   control: Control<FieldValues>;
@@ -36,7 +36,7 @@ export const ActivitySelectionSection = ({
       alignItems="flex-start"
       w="full"
     >
-      <Field w="full" label={t(methodology.activitySelectionField.id)}>
+      <Field w="full" label={t(methodology.activitySelectionField.id)} required>
         <RadioGroup {...field}>
           <HStack
             display="flex"
@@ -55,4 +55,3 @@ export const ActivitySelectionSection = ({
     </HStack>
   );
 };
-

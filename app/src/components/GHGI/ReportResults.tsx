@@ -112,6 +112,7 @@ function SectorTabs({
               value={name}
               minWidth="200px"
               height="64px"
+              fontFamily="heading"
             >
               <Icon
                 as={icon}
@@ -122,6 +123,7 @@ function SectorTabs({
                 }
               />
               <Text
+                fontFamily="heading"
                 fontSize="16"
                 lineClamp={2}
                 wordBreak="keep-all"
@@ -257,6 +259,7 @@ function EmissionsBreakdown({
         />
       </Heading>
       <Text
+        fontFamily="heading"
         fontWeight="regular"
         fontSize="body.lg"
         color="interactive.control"
@@ -398,7 +401,14 @@ export function EmissionPerSectors({
     },
   ];
 
-  const containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+  // Placeholder only - `ref={containerRef}` below overwrites `.current` with
+  // the real DOM node on mount. `document` isn't defined during SSR, so this
+  // can't call `document.createElement` unconditionally (CC-835).
+  const containerRef = useRef<HTMLDivElement>(
+    typeof document === "undefined"
+      ? (null as unknown as HTMLDivElement)
+      : document.createElement("div"),
+  );
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">

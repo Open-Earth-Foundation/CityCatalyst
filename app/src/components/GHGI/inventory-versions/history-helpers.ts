@@ -2,7 +2,8 @@ import { VersionHistoryEntry } from "@/util/types";
 
 const maxVersionGroupSecondsElapsed = 60 * 60; // 1 hour
 
-// groups version history by same author and max time elapsed since the start of the session
+// groups version history by same author and max time elapsed since the start of the session;
+// a label change (e.g. the snapshot taken before a file replace) always starts a new group
 export function groupInventoryHistory(
   versionEntries: VersionHistoryEntry[] | undefined,
 ): VersionHistoryEntry[][] {
@@ -27,6 +28,7 @@ export function groupInventoryHistory(
 
     if (
       previousVersion.author.userId !== version.author.userId ||
+      (previousVersion.label ?? null) !== (version.label ?? null) ||
       timeSinceFirstGroupVersion > maxVersionGroupSecondsElapsed
     ) {
       currentGroup++;

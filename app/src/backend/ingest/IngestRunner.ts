@@ -3,6 +3,7 @@ import {
   coarseKindsFromExtensions,
   detectCoarseFileKind,
 } from "./coarse-kind";
+import type { IngestDocumentPool } from "./document-pool";
 import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
@@ -35,7 +36,10 @@ function contentHash(buffer: Buffer): string {
 }
 
 export class IngestRunner {
-  constructor(private readonly store: IngestStore) {}
+  constructor(
+    private readonly store: IngestStore,
+    private readonly documentPool?: IngestDocumentPool,
+  ) {}
 
   async enqueue(input: EnqueueIngestJobInput): Promise<IngestJobRecord> {
     if (!hasScope(input.scope)) {
@@ -102,7 +106,24 @@ export class IngestRunner {
       await this.setStage(item.id, "receive");
 
       await this.setStage(item.id, "store");
-      // Bytes and hash are already on the item (S3 comes in CC-955).
+      if (!job.dryRun && this.documentPool) {
+        const current = await this.requireItem(item.id);
+        if (!current.contentHash || !current.buffer) {
+          throw new IngestItemError("commit_failed", "Missing bytes to store");
+        }
+        const stored = await this.documentPool.store({
+          contentHash: current.contentHash,
+          originalFileName: current.originalFileName,
+          buffer: current.buffer,
+          scope,
+          uploadedByUserId: job.uploadedByUserId ?? null,
+          visibility: job.visibility,
+        });
+        await this.documentPool.publishPathB(stored.document);
+        await this.store.updateItem(item.id, {
+          documentId: stored.document.id,
+        });
+      }
 
       await this.setStage(item.id, "match");
       await plugin.match?.({ job, item: await this.requireItem(item.id), scope });

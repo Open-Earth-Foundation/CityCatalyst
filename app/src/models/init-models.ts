@@ -121,6 +121,11 @@ import type {
 } from "./IngestItem";
 import { IngestItem as _IngestItem } from "./IngestItem";
 import type {
+  IngestDocumentAttributes,
+  IngestDocumentCreationAttributes,
+} from "./IngestDocument";
+import { IngestDocument as _IngestDocument } from "./IngestDocument";
+import type {
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
 } from "./PdfOcrJob";
@@ -343,6 +348,7 @@ export {
   _BulkInventoryImportItem as BulkInventoryImportItem,
   _IngestJob as IngestJob,
   _IngestItem as IngestItem,
+  _IngestDocument as IngestDocument,
   _PdfOcrJob as PdfOcrJob,
   _WebhookSubscription as WebhookSubscription,
   _WebhookDelivery as WebhookDelivery,
@@ -439,6 +445,8 @@ export type {
   IngestJobCreationAttributes,
   IngestItemAttributes,
   IngestItemCreationAttributes,
+  IngestDocumentAttributes,
+  IngestDocumentCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
   WebhookSubscriptionAttributes,
@@ -558,6 +566,7 @@ export function initModels(sequelize: Sequelize) {
   const BulkInventoryImportItem = _BulkInventoryImportItem.initModel(sequelize);
   const IngestJob = _IngestJob.initModel(sequelize);
   const IngestItem = _IngestItem.initModel(sequelize);
+  const IngestDocument = _IngestDocument.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
   const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
@@ -1485,6 +1494,48 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
+  IngestDocument.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(User, {
+    as: "uploadedBy",
+    foreignKey: "uploadedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(NativeInputCatalog, {
+    as: "catalog",
+    foreignKey: "catalogId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(IngestDocument, {
+    as: "document",
+    foreignKey: "documentId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.hasMany(IngestItem, {
+    as: "items",
+    foreignKey: "documentId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   BulkInventoryImportItem.belongsTo(City, {
     as: "city",
     foreignKey: "cityId",
@@ -1554,6 +1605,7 @@ export function initModels(sequelize: Sequelize) {
     BulkInventoryImportItem: BulkInventoryImportItem,
     IngestJob: IngestJob,
     IngestItem: IngestItem,
+    IngestDocument: IngestDocument,
     PdfOcrJob: PdfOcrJob,
     WebhookSubscription: WebhookSubscription,
     WebhookDelivery: WebhookDelivery,

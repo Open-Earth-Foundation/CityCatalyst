@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { BsPlus } from "react-icons/bs";
@@ -219,6 +219,10 @@ export default function HomePage({
 
   const { isFrozenCheck, organization } = useOrganizationContext();
 
+  const [selectedTab, setSelectedTab] = useState<string>(
+    "tab-emission-inventory-calculation-title",
+  );
+
   if (isUserInfoLoading) {
     return <ProgressLoader />;
   }
@@ -334,7 +338,8 @@ export default function HomePage({
                     mt={12}
                     variant="line"
                     lazyMount
-                    defaultValue="tab-emission-inventory-calculation-title"
+                    value={selectedTab}
+                    onValueChange={(details) => setSelectedTab(details.value)}
                   >
                     <Tabs.List>
                       {[

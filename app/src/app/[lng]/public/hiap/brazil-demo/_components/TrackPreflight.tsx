@@ -24,7 +24,8 @@ import type { DemoTrack, DemoWeights } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
 import { useLabels } from "../_lib/useLabels";
-import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
+import { SCREEN_IDS } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { DEFAULT_WEIGHTS } from "../_lib/state";
 import { RISK_CELLS } from "../_lib/riskCells";
 import { DemoShell } from "./DemoShell";
@@ -180,6 +181,7 @@ export function TrackPreflight({
   citySlug: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const { city, state, setPreferences, markVisited, isReady } = useTrack(
     lng,
     citySlug,
@@ -203,7 +205,7 @@ export function TrackPreflight({
   const total = weights.impact + weights.alignment + weights.feasibility;
   const isCustom = WEIGHT_KEYS.some((k) => weights[k] !== DEFAULT_WEIGHTS[k]);
   const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
-  const prefsHref = trackHref(lng, city.slug, track, "preferences");
+  const prefsHref = trackHrefIn(lng, city.slug, track, "preferences");
 
   const prefParts = [
     prefs.sectors.length
@@ -274,7 +276,7 @@ export function TrackPreflight({
                               year: city.inventory.year,
                             })
                       }
-                      href={trackHref(
+                      href={trackHrefIn(
                         lng,
                         city.slug,
                         track,
@@ -406,7 +408,7 @@ export function TrackPreflight({
                       aria-describedby="demo-preflight-gate"
                       onClick={() =>
                         router.push(
-                          trackHref(lng, city.slug, track, "processing"),
+                          trackHrefIn(lng, city.slug, track, "processing"),
                         )
                       }
                       _focusVisible={FOCUS_RING}

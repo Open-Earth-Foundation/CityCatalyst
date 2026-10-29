@@ -10,6 +10,7 @@ from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
     NativeInputCatalogService,
+    NativeInputDiscoveryUnavailableError,
 )
 
 
@@ -91,6 +92,33 @@ async def test_discovery_calls_core_for_each_invocation_and_returns_current_entr
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("labels", "expected"),
+    [
+        ({"display_name": "Solar rooftops", "actionPlanId": "private"}, "Solar rooftops"),
+        ({"display_name": ""}, None),
+        ({"display_name": "x" * 201}, None),
+        ({"display_name": 5}, None),
+        ({"other": "label"}, None),
+        (None, None),
+    ],
+)
+async def test_discovery_keeps_only_a_bounded_string_display_name(
+    labels: Any, expected: Any
+) -> None:
+    response = _discovery_response()
+    response["data"]["entries"][0]["labels"] = labels
+    service = NativeInputCatalogService(core_client=_client(response))
+
+    discovery = await service.discover(context=_context(), token="jwt-token")
+
+    entry = discovery.entries[0]
+    assert entry.get("display_name") == expected
+    assert "labels" not in entry
+    assert "actionPlanId" not in str(entry)
+
+
+@pytest.mark.asyncio
 async def test_discovery_requires_resolved_context_and_does_not_call_core_without_it() -> None:
     client = _client(_discovery_response())
     service = NativeInputCatalogService(core_client=client)
@@ -129,10 +157,12 @@ async def test_empty_or_malformed_discovery_registers_no_catalog_state(
     "failure",
     [
         CityCatalystClientError("Core unavailable", status_code=503),
+        CityCatalystClientError("Core request failed"),
+        CityCatalystClientError("Core rate limited", status_code=429),
         TimeoutError("Core discovery timed out"),
     ],
 )
-async def test_unavailable_or_timed_out_discovery_fails_closed_without_catalog_state(
+async def test_unavailable_or_timed_out_discovery_is_not_reported_as_an_empty_catalog(
     failure: Exception,
 ) -> None:
     client = _client(_discovery_response())
@@ -140,10 +170,26 @@ async def test_unavailable_or_timed_out_discovery_fails_closed_without_catalog_s
     service = NativeInputCatalogService(core_client=client)
 
     await service.discover(context=_context(), token="jwt-token")
+    with pytest.raises(NativeInputDiscoveryUnavailableError):
+        await service.discover(context=_context(), token="jwt-token")
+
+    client.read_native_input.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status_code", [401, 403, 404])
+async def test_unauthorized_or_missing_discovery_stays_indistinguishable_from_empty(
+    status_code: int,
+) -> None:
+    client = _client(_discovery_response())
+    client.discover_native_inputs.side_effect = CityCatalystClientError(
+        "Core refused", status_code=status_code
+    )
+    service = NativeInputCatalogService(core_client=client)
+
     result = await service.discover(context=_context(), token="jwt-token")
 
     assert result.entries == ()
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio

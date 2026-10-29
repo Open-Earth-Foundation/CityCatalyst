@@ -272,6 +272,10 @@
   "review-card-ask": "Ask about this row",
   "review-card-see-details": "See source details",
   "review-card-why-recommended": "Why this source",
+  "review-rationale-single-source": "This is the only connected source for this row. The value is taken directly from the dataset, with no model inference.",
+  "review-rationale-sources-agree": "Several connected sources report the same value. The recommended one is the closest geographic and time match; choose which source to attach.",
+  "review-rationale-sources-conflict": "Several connected sources report different values. The recommended one is the closest geographic and time match; review the alternatives before saving.",
+  "review-rationale-notation": "The connected source reports {{- notation}} for this row.",
   "review-summary-leave-empty": "Leave empty",
   "review-summary-choice-staged": "Choice staged",
   "review-summary-set-notation": "Set a notation key later",
@@ -319,5 +323,8 @@
   "error-chat-history-unavailable": "Clima chat history is unavailable, but the draft can still run.",
   "error-draft-start-response-missing-run-id": "Draft start response did not include draft_run_id.",
   "error-failed-to-send-message": "Failed to send message",
-  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target"
+  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target",
+  "source-geography-city": "city",
+  "source-geography-country": "country",
+  "source-geography-region": "region"
 }

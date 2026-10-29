@@ -3,7 +3,12 @@ import { maybeRedirectLegacyInventoryUrl } from "@/util/legacy-inventory-middlew
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { trackServerPageView } from "@/lib/analytics-server";
+import {
+  CONSENT_COOKIE_NAME,
+  CONSENT_SUBJECT_COOKIE,
+} from "@/lib/analytics-constants";
 
 acceptLanguage.languages(languages);
 
@@ -172,32 +177,47 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
   const basePath = new URL(req.url).pathname;
   const searchParams = new URL(req.url).searchParams;
 
+  let response: NextMiddlewareResult;
+
   // Allow public routes to pass through without authentication
   if (publicMatcher.test(basePath)) {
-    return NextResponse.next();
-  }
-
-  // Handle auth routes
-  if (authMatcher.test(basePath)) {
-    return NextResponse.next();
-  }
-
-  // handle invite routes (org invite via onboarding page uses token + organizationId params)
-  const isOnboardingOrgInvite =
-    /^\/[a-z]{2}\/cities\/onboarding\/?$/.test(basePath) &&
-    searchParams.has("token") &&
-    searchParams.has("organizationId");
-
-  if (
-    (inviteMatcher.test(basePath) || isOnboardingOrgInvite) &&
+    response = NextResponse.next();
+  } else if (authMatcher.test(basePath)) {
+    // Handle auth routes
+    response = NextResponse.next();
+  } else if (
+    // handle invite routes (org invite via onboarding page uses token + organizationId params)
+    (inviteMatcher.test(basePath) ||
+      (/^\/[a-z]{2}\/cities\/onboarding\/?$/.test(basePath) &&
+        searchParams.has("token") &&
+        searchParams.has("organizationId"))) &&
     !searchParams.has("from")
   ) {
-    return await withAuth(req, {
+    response = await withAuth(req, {
       ...config,
       pages: { signIn: "/auth/signup" },
     });
+  } else {
+    // Apply authentication to all other routes
+    response = await withAuth(req, config);
   }
 
-  // Apply authentication to all other routes
-  return await withAuth(req, config);
+  // Real navigations only: skip prefetches (Link hover/viewport warms the RSC
+  // cache without the user actually viewing the page), non-GET hits, and
+  // redirects (e.g. withAuth sending an unauthenticated request to the login
+  // page) — otherwise this would record the page the user never saw.
+  const isPrefetch = req.headers.get("next-router-prefetch") === "1";
+  const isRedirect =
+    response instanceof NextResponse &&
+    response.status >= 300 &&
+    response.status < 400;
+  if (req.method === "GET" && !isPrefetch && !isRedirect) {
+    const consentCookie = req.cookies.get(CONSENT_COOKIE_NAME)?.value;
+    const subjectKey = req.cookies.get(CONSENT_SUBJECT_COOKIE)?.value;
+    after(() => {
+      trackServerPageView({ pathname: basePath, consentCookie, subjectKey });
+    });
+  }
+
+  return response;
 }

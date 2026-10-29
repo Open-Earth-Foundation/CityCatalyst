@@ -102,6 +102,7 @@ class StreamingHandler:
 
         # Response state
         self.assistant_tokens: List[str] = []
+        self.partial_answer_text: Optional[str] = None
         self.tool_invocations: List[dict] = []
         self._pending_tool_observations: dict[str, Any] = {}
         self._tool_observation_records: List[dict] = []

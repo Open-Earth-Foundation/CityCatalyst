@@ -144,6 +144,7 @@ class ModelsConfig(BaseModel):
     cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
+    cnb_funder_extractor: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -196,6 +197,12 @@ class CnbValidationPromptBudgetConfig(BaseModel):
     max_prompt_tokens: int = Field(default=50000, ge=1000)
 
 
+class CnbFunderImportPromptBudgetConfig(BaseModel):
+    """Limit for reading one uploaded funder document in a single model call."""
+
+    max_document_tokens: int = Field(default=120000, ge=1000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
@@ -212,6 +219,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_validation: CnbValidationPromptBudgetConfig = Field(
         default_factory=CnbValidationPromptBudgetConfig,
+    )
+    cnb_funder_import: CnbFunderImportPromptBudgetConfig = Field(
+        default_factory=CnbFunderImportPromptBudgetConfig,
     )
 
 
@@ -258,6 +268,12 @@ class PromptsConfig(BaseModel):
     )
     cnb_chapter_validation_answered_gaps: str = (
         "prompts/cnb/chapter_validation_answered_gaps.md"
+    )
+    cnb_funder_document_extraction: str = (
+        "prompts/cnb/funder_document_extraction.md"
+    )
+    cnb_template_document_extraction: str = (
+        "prompts/cnb/template_document_extraction.md"
     )
 
     def get_prompt(self, prompt_type: str) -> str:
@@ -473,12 +489,21 @@ class StreamingConfig(BaseModel):
     retry_delay_ms: int = Field(default=500, ge=0, le=5000)
 
 
+class ChatConfig(BaseModel):
+    """Execution bounds for streamed chat runs."""
+
+    # Maximum model turns per streamed run. N_MAX = 4 cities cost up to
+    # 1 + 2 * 4 + 1 = 10 sequential turns, so the SDK default of 10 has no slack.
+    max_agent_turns: int = Field(default=16, ge=1, le=64)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
     streaming: StreamingConfig = Field(default_factory=StreamingConfig)
+    chat: ChatConfig = Field(default_factory=ChatConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -502,7 +527,13 @@ def _load_llm_config() -> LLMConfig:
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = yaml.safe_load(f)
 
-    return LLMConfig(**config_data)
+    config = LLMConfig(**config_data)
+
+    # CHAT_MAX_AGENT_TURNS overrides the YAML value, for example to force the turn limit locally.
+    override = os.getenv("CHAT_MAX_AGENT_TURNS")
+    if override:
+        config.chat = ChatConfig(max_agent_turns=int(override))
+    return config
 
 
 class Settings(BaseModel):

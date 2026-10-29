@@ -14,6 +14,7 @@ from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
+from app.models.cnb.funder_creation import StoredCustomTemplate
 from app.models.db.cnb_reference import (
     CnbFunder,
     CnbFunderTemplate,
@@ -57,6 +58,11 @@ class ConceptNoteApplicationContextService:
                 else await self._load_included_sources(run.run_id)
             ),
         )
+        custom = custom_template(run)
+        if custom is not None:
+            response.template = custom_template_response(custom)
+            response.template_source = custom.added_from
+            return response
         if run.funder_id is None:
             return response
 
@@ -99,7 +105,7 @@ class ConceptNoteApplicationContextService:
         self,
         run: ConceptNoteRun,
     ) -> str | None:
-        """Load the current template fingerprint with one reference query."""
+        """Fingerprint the custom template or the selected reference template."""
         template = await self.load_template_for_run(run)
         if template is None:
             return None
@@ -109,7 +115,10 @@ class ConceptNoteApplicationContextService:
         self,
         run: ConceptNoteRun,
     ) -> ApplicationContextTemplate | None:
-        """Load the run's selected application template with one reference query."""
+        """Return the custom template, or load the selected reference template."""
+        custom = custom_template(run)
+        if custom is not None:
+            return custom_template_response(custom)
         if run.funder_id is None or run.selected_funding_opportunity_id is None:
             return None
 
@@ -202,6 +211,26 @@ def included_sources_from_bundle(
         ghgi=context.ghgi is not None,
         ccra=context.ccra is not None,
         hiap=context.hiap is not None,
+    )
+
+
+def custom_template(run: ConceptNoteRun) -> StoredCustomTemplate | None:
+    """The note's own template, which replaces any funder template."""
+    if not run.custom_template:
+        return None
+    return StoredCustomTemplate.model_validate(run.custom_template)
+
+
+def custom_template_response(
+    template: StoredCustomTemplate,
+) -> ApplicationContextTemplate:
+    """Expose a note's own template in the same shape as a catalogue template."""
+    return ApplicationContextTemplate(
+        id=template.id,
+        name=template.template_name,
+        output_format=template.output_format,
+        chapter_schema=template.chapter_schema,
+        required_fields=template.required_fields,
     )
 
 

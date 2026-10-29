@@ -380,8 +380,8 @@ The message stream sends an initial SSE comment and comment heartbeats every
 15 seconds while the agent is silent, including during chapter planning and
 semantic review. These bytes pass through the CityCatalyst chat proxy on the
 existing response; they add no HTTP requests or model calls. Generation remains
-request-bound: a browser disconnect still cancels it. Heartbeats prevent idle
-timeouts but do not provide reconnect or worker-restart recovery.
+request-bound: a disconnect observed by the service cancels it. Heartbeats
+prevent idle timeouts but do not provide reconnect or worker-restart recovery.
 
 ```text
 event: message
@@ -682,6 +682,7 @@ Current CA model defaults:
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
 - New-source chapter impact review: `openai/gpt-6.1-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
+- Uploaded funder and standalone-template extraction: `openai/gpt-6.1-sol`, reasoning `medium`.
 
 General and Stationary Energy chat use the OpenRouter Chat Completions tool loop
 with medium reasoning. CNB chat and source workers use OpenRouter's Responses API
@@ -844,7 +845,25 @@ language, or client-side fallback behavior. The boundary is:
   CNB Alembic chain, never the CA chain. The reviewed-reference importer,
   similar-project reader, runtime funding-reference validation, and the workspace's
   searchable funder/programme/template catalogue also use it. Funding selection
-  does not run research or call an LLM. See the
+  does not run research or call an LLM. Adding a funder from an uploaded
+  document calls `cnb_funder_extractor` once and writes catalogue rows only after
+  the user reviews them. `services/cnb/funder_creation.py` owns import lifecycle
+  and catalogue saves; `funder_document.py` handles extraction and verified quotes;
+  `funder_fields.py` normalizes fields and indexes their provenance values.
+  Concurrent import starts are serialized; ready drafts must be reviewed or
+  explicitly discarded before another import starts. Discard requires the
+  observed import ID as the `import_id` query parameter (CityCatalyst's public
+  endpoint uses `importId`), without a DELETE body, so it cannot remove a newer
+  import. A worker refreshes its
+  lease every 30 seconds; after two minutes without a heartbeat, the import is
+  reported as interrupted and can be retried. Expired workers cannot publish
+  late results. Duplicated
+  notes keep the source files but omit pending funder imports; see
+  [adding a funder](../docs/ConceptNoteBuilderArchitecture.md#adding-a-funder-that-is-not-in-the-catalogue).
+  A note can instead use its own template (`concept_note_runs.custom_template`),
+  typed by hand or read from an upload with the same extractor and
+  `prompts/cnb/template_document_extraction.md`; see
+  [own templates](../docs/ConceptNoteBuilderArchitecture.md#using-a-notes-own-template). See the
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
   for compatible-template checks, draft review invalidation, serialized edit
   registration/application, and focused tests
@@ -909,6 +928,17 @@ identity changes return `409`, and unavailable storage returns
 `503 cnb_storage_unavailable`. CA owns no OCR queue, bucket credential, or
 presigned URL. See the authoritative handoff contract in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#pdf-conversion-and-native-markdown-handoff).
+
+Upload registration accepts `source_role: "reference" | "climate_action_plan"`
+(default `reference`). The role is immutable and survives CC OCR delivery,
+retry and reload. Apply CA migration `20261008_120000` before deploying this
+contract (after the `20261005_120000` merge revision). Existing uploads default
+to `reference`; note duplication preserves roles and remaps bundle membership.
+The role does not change document processing: plan PDFs follow the
+same CC OCR and source-analysis pipeline as initial note PDFs. Run list/detail
+responses expose upload roles, and completed bundle progress publishes exact
+`included_upload_ids` for consistent plan readiness in both views. HIAP loading
+and refresh behavior are unchanged.
 
 CC uses the intentionally separate service-to-service route
 `GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
@@ -986,8 +1016,10 @@ Operationally:
   unaffected prose are kept; a contradicted existing fact is flagged with a new
   marker instead of being overwritten. Each redraft appends a revision, resolves
   only gaps with a cited answer as `evidence_update` by `system`, keeps deferred
-  caveats, and reopens resolved gaps it contradicts. A redraft that drops an
-  unanswered gap or mismatches its markers is rejected and logged. The last
+  caveats, and reopens resolved gaps it contradicts. A gap the redraft drops
+  without an answer is added back as a marker at the end of the chapter and
+  stays open; a redraft that mismatches its markers is rejected and logged.
+  The last
   confirmed revision is preserved, so an affected Ready chapter returns to
   review. The drafter also receives the chapter's `resolved_information` and
   `existing_open_gaps` so earlier answers stay applied and gap keys stay
@@ -1086,23 +1118,54 @@ creates a new run and empty chat. It copies current chapter content, context, an
 ready upload metadata with new mutable IDs while reusing immutable Markdown
 artifacts. Messages, revision history, and exports are not copied. `DELETE` on
 the run route removes its workspace (including edit proposals and applications),
-run data, and dedicated chat. It also deletes unreferenced uploaded source files,
+run data, and every attached chat. It also deletes unreferenced uploaded source files,
 OCR results, and OCR jobs through the service-authenticated CityCatalyst endpoint
 `DELETE /api/v1/internal/ca/concept-note-sources`. Source artifacts still referenced
 by another note are retained until the last note is deleted. City/project files
 remain outside this boundary. Cleanup failures leave the run available for retry;
 active OCR jobs must finish before cleanup can proceed. A legacy thread referenced
-by multiple notes cannot be deleted. `POST /v1/concept-notes/{run_id}/chat/reset` replaces the dedicated
-thread and permanently removes its messages while preserving the run, workspace,
-sources, context, and revision history. Duplicate, reset, and delete return HTTP
-`409` while context or drafting work is active.
+by multiple notes cannot be deleted.
+
+Each run can own several chats. `threads.concept_note_run_id` (Alembic
+revision `20260925_130000`, cascading on run deletion) attaches a thread to its
+run, and `concept_note_runs.thread_id` names the one active chat that message
+turns are scoped to. `GET /v1/concept-notes/{run_id}/chat/threads` lists the
+attached chats newest first with their message count, latest timestamp, and a
+preview of the first typed user message. `POST` on the same path opens a fresh
+chat and makes it active without deleting earlier ones, and
+`POST /v1/concept-notes/{run_id}/chat/threads/{thread_id}/activate` switches
+back to an earlier chat (404 unless the thread is attached to that run). The
+draft, workspace, sources, and context are shared by every chat of a run.
+Duplicate, delete, opening a chat, and switching chats return HTTP `409` while
+context or drafting work is active.
+
+Migration `20260925_130000` handles legacy chats referenced by multiple runs:
+the oldest run (then run ID as a tie-breaker) retains the original chat, and
+each other run receives a copy with new thread/message IDs. Message content,
+roles, tool metadata, timestamps, and thread metadata are preserved. Each
+chat's stored workflow context is rebound to its own run. Run/thread owner
+mismatches abort the transaction and require ownership repair before retrying.
+The migration locks runs, threads, and messages until commit; schedule it with
+chat traffic stopped. Downgrade removes the ownership column but keeps the
+separate chats and active pointers so history and subsequent replies survive.
+PostgreSQL regression coverage runs with `CNB_TEST_DATABASE_URL` configured:
+`python -m pytest tests/test_thread_concept_note_run_migration.py` from `service/`.
+
+Merge revision `20261005_120000` joins chat ownership (`20260925_130000`)
+and structured uploads (`20261001_120000`) without changing either migration.
+Merge revision `20261011_120000` joins that history with the custom application
+template revision (`20261007_120000`), preserving both branches' schema and data
+operations and keeping a single deployable head.
+Run `uv run --directory service alembic upgrade head` from `climate-advisor/`
+to apply both branches, including when either parent is already installed.
 
 The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
-identifier rather than a run-table foreign key. The authorized `run_id` is also
-persisted as `concept_note_run_id` in thread context so later chat turns can
+identifier rather than a run-table foreign key, while the thread row itself is
+attached to the run through `threads.concept_note_run_id`. The authorized
+`run_id` is also persisted as `concept_note_run_id` in thread context so later chat turns can
 scope their prompt and source capability without trusting an LLM-provided run.
 Binding either Concept Note or Stationary Energy context clears the competing
 workflow identifier while preserving tokens and unrelated thread context.
@@ -1111,8 +1174,9 @@ CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
 `GET|PATCH|DELETE /api/v1/concept-notes/{runId}?city_id=...`, plus
-`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...` and
-`POST /api/v1/concept-notes/{runId}/chat/reset?city_id=...`. The proxy derives
+`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...`,
+`GET|POST /api/v1/concept-notes/{runId}/chat/threads?city_id=...`, and
+`POST /api/v1/concept-notes/{runId}/chat/threads/{threadId}/activate?city_id=...`. The proxy derives
 `user_id` from the session, checks access to the requested city before issuing the
 scoped CA token, forwards the duplicate idempotency key, and preserves Climate
 Advisor response statuses. Climate Advisor remains authoritative for run ownership
@@ -1380,6 +1444,22 @@ without retrying. Exhausted or unsafe-to-replay failures still send an error and
 `done` with `ok: false`, `history_saved: false`; a partial reply is not saved as a
 completed answer. HTTP 200 alone does not indicate successful completion.
 
+`history_saved` covers the reply only: the user's question is stored before
+streaming starts. When the Concept Note chat retries a failed turn it sends
+`options.concept_note_turn: "retry"`, and `POST /v1/messages` skips storing the
+question again if it is still the thread's latest message. A retry after a
+request that never reached the service stores the question normally.
+
+This is best-effort deduplication, not per-turn idempotency. The browser's
+45-second stall timeout aborts only the client request; cancellation may not
+reach the service before it finishes and saves an answer. If that answer is
+already stored when Retry arrives, the question is saved again and another
+answer is generated. If the original stream is still running, Retry can start
+a second stream even though it skips saving the question. A follow-up should
+use a stable per-turn idempotency key to claim one generation and return its
+existing result on retry, similar to the `concept_note_edit` idempotency key.
+The existing retry option does not guarantee one question and one answer.
+
 Offline regression checks (from `climate-advisor/`):
 
 ```bash
@@ -1419,6 +1499,80 @@ These tools:
 
 ### NativeInputCatalog Runtime Tools
 
+Routing to these tools is prompt-driven: `prompts/tools/default_tool_policy.md`
+and the `<routing>` section of `prompts/chat.md` tell the model to call
+`native_input_discover` then `native_input_read` for ranked, prioritized, or
+selected climate actions (HIAP and HIAP-MEED). Update both files and the tool
+descriptions in `service/app/tools/native_input_catalog_tools.py` together when
+a capability is added. The chat scope is the inventory the web client sends with
+each message; Core fills the city from the authorized catalog row, so a chat
+without an inventory cannot read inventory-bound capabilities.
+
+#### Another city's inventory and multi-city questions
+
+By default both catalog tools use the chat's inventory. They also accept an
+optional `inventoryId` (UUID). The model takes it from
+`inventory_list_accessible` for a named city or year, and it applies to that one
+call only; Core re-authorizes it on every call, and a made-up UUID gives the
+same "nothing found" result as an inventory the user cannot access. The prompt
+limits a question to **at most 4 cities or city-years (`N_MAX = 4`)**, answered
+in the order the user named them; the rest is requested in a new message. Four
+sequential cities cost up to `1 + 2 x 4 + 1 = 10` model turns, so streamed chat
+runs with `chat.max_agent_turns: 16` (`llm_config.yaml`, override with the
+`CHAT_MAX_AGENT_TURNS` environment variable; integer from 1 to 64, anything else stops the service at startup). This limit applies to all streamed
+chat, not only rankings. If a run still reaches it, the user gets a partial
+answer instead of a generic error (`app/utils/max_turns_handler.py`). It keeps a
+bounded summary (up to 5 actions per city, rank and name) of every successful
+read, including reads of the chat's own inventory, and lists a city as "Not
+finished" when its read has no summary the user can see.
+
+Discovery failures are not "no ranking": a Core timeout, a server error or a
+rate limit makes `native_input_discover` (and a failed `native_input_read`)
+return `success: false` with `error_code: temporarily_unavailable`, and the
+prompts tell the model to ask the user to try again. Authorization and
+not-found answers still look like an empty catalog.
+
+Access (CC-1060 PR 2): Core authorizes catalog rows at city and project, not by
+creator. Organization admins, project admins of the row's project and
+collaborators of its city read every ranking, selection and plan of that city
+and project, for every year, including ones a colleague created. Users outside
+the city and project still get "no ranking found", the same answer as for a
+missing row. HIAP-MEED data is never readable through public inventories and
+Clima never exports or offers it for download. See `docs/NativeInputCatalog.md`.
+
+#### Real-LLM multi-city tests (local, opt-in)
+
+`service/tests/real/` drives the real Climate Advisor app in-process against a
+real local Core as a seeded user. It spends OpenRouter credit, so it is skipped
+unless `RUN_REAL_LLM=1`. From the repository root:
+
+The seed also holds the CC-1060 fixtures: city A8 (a 30-action HIAP ranking with
+five selections, two implementation plans and a different 2022 ranking) and
+city A9 (a 60-action HIAP-MEED ranking with output plans). Scenarios `P1`-`P16`
+cover them for HIAP and HIAP-MEED.
+
+1. `docker run --name cc1021-core-db -e POSTGRES_USER=citycatalyst -e POSTGRES_PASSWORD=development -e POSTGRES_DB=citycatalyst -p 5432:5432 -d postgres postgres -N 1000`
+   (or `app/scripts/start-db.sh`), `docker compose up -d postgres` in
+   `climate-advisor/`, then `npm run db:migrate` in `app/` and
+   `uv run --directory service alembic upgrade head` here.
+2. `npm run seed-cc1021-multicity` in `app/` (refuses non-local databases;
+   `CC1021_DATASET=realistic` for the large-ranking set). It writes
+   `service/tests/real/out/seed-fixture.json` (git-ignored; override with
+   `CC1021_FIXTURE_PATH`).
+3. `npm run dev` in `app/` with the `CA_SERVICE_INTEGRATION` feature flag on
+   (see `app/env.example`). Core must be reachable at `CC_BASE_URL`.
+4. `RUN_REAL_LLM=1 uv run --directory service pytest tests/real -k "R2 or R8" -s`
+   with `OPENROUTER_API_KEY` and `CC_SERVICE_API_KEY` (or `CC_API_KEY`) set in
+   the environment. `REAL_LLM_RUNS` (default 3) repeats each scenario and a
+   scenario passes only if every run passes; `REAL_LLM_COST_CAP_USD` aborts the
+   round when OpenRouter usage passes the cap.
+
+The runner authenticates through Core's `user-token` endpoint with the service
+key (no browser, no test shortcut in production code), records the payloads that
+actually reach Core, and writes JSON/Markdown to `service/tests/real/out/`.
+Hosted tracing (MLflow, LangSmith) is disabled for these runs. The runner never
+writes to the vault.
+
 When an authenticated CityCatalyst catalog context is available, Climate
 Advisor registers two fixed tool definitions for the agent:
 `native_input_discover` and `native_input_read`. Discovery calls Core on every
@@ -1445,8 +1599,31 @@ mid-turn renewal uses only that turn's server-owned canonical subject, never a
 stored or claimed `user_id`.
 
 The v1 model-facing read arguments are limited to camelCase `catalogId`,
-`capabilityId`, and optional `language`; `language` is accepted only for the
-bounded HIAP inventory-context capability. Climate Advisor does not accept an
+`capabilityId`, optional `language` and `inventoryId`, and a finite set of
+capability-specific view arguments. Each capability accepts only its own
+arguments; anything else is rejected before Core is called:
+
+| Capability | Optional arguments |
+| --- | --- |
+| `hiap.inventory.context` (ranking and selections) | `language`, `scope` (`selected` or `ranked`), `type` (`mitigation` or `adaptation`), `limit` (1-50), `offset` |
+| `hiap.action_plan.context` (one HIAP implementation plan) | none (the plan has its own language) |
+| `hiap_meed.ranking.context` (mitigation only) | `language`, `limit` (1-50), `offset` |
+| `hiap_meed.output_plan.context` | `language`, `chapters` (keys such as `legal_mandate_delivery`, `financing_precedents_pathway`, `city_fit`) |
+
+Without `scope` the HIAP read keeps its original view (the city selection when
+one exists, else the ranking). `scope: selected` returns every selected action
+(there is no selection limit) and never falls back to the ranking;
+`scope: ranked` lists the ranking in rank order with each action flagged
+`selected`. Long lists are paged: results carry `counts.total`, `counts.offset`,
+`counts.returned` and `truncated`, and the prompt tells the model to read again
+with `offset` = `counts.offset` + `counts.returned` until `truncated` is false.
+Discovery also passes a safe `displayName` (the action name of a HIAP plan, a
+short label for a HIAP-MEED plan) so plans can be told apart. HIAP-MEED has no
+adaptation ranking and no selections, and its legal, finance and city-fit
+context exists only inside a generated output plan; the prompt states these gaps
+and the pillar glossary (Impact, Alignment, Feasibility and their default
+weights, from `hiap-meed/docs/pipeline-description.md`). Climate Advisor
+does not accept an
 arbitrary input object, storage path, credential, signed URL, or raw source
 pointer. CNB producer registration and a bounded CNB capability remain outside
 this integration.
@@ -1490,6 +1667,10 @@ for draft-save flows, but the ownership split is:
 cd climate-advisor
 uv run --directory service pytest tests/ -v
 ```
+
+Pull requests run the CA test suite without requiring a live OpenRouter key.
+Deployment builds additionally validate `OPENROUTER_API_KEY` before deploying.
+The development workflow fails if any test in the full coverage run fails.
 
 ### Run Specific Test
 

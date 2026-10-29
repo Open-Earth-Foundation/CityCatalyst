@@ -246,7 +246,11 @@ const DownloadButtons = ({
                     lineHeight="20"
                     letterSpacing="wide"
                   >
-                    {t(`download-${format}-format-description`)}
+                    {t(
+                      format === "ecrf"
+                        ? "download-ecrf-inventory-format-description"
+                        : `download-${format}-format-description`,
+                    )}
                   </Text>
                 </VStack>
               </Checkbox.Label>

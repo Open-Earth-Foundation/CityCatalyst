@@ -911,7 +911,7 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(content, yearInstruction, false);
+    allRows = await extractSegmentWithRetry(content, yearInstruction, false);
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -926,7 +926,7 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegment(chunk, segmentPrefix, true),
+      async (chunk) => extractSegmentWithRetry(chunk, segmentPrefix, true),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -944,6 +944,25 @@ async function extractByChunks(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
   return allRows;
+}
+
+/**
+ * Whole-document call or chunk, retried once like a page (a cut-off answer
+ * throws). A second failure rejects the import: rows of a whole-document call
+ * cannot be dropped in part.
+ */
+async function extractSegmentWithRetry(
+  content: string,
+  promptPrefix: string,
+  isSegment: boolean,
+): Promise<ExtractedRow[]> {
+  return extractSegment(content, promptPrefix, isSegment).catch((error) => {
+    logger.info(
+      { isSegment, err: error },
+      "Extraction call failed; retrying once",
+    );
+    return extractSegment(content, promptPrefix, isSegment);
+  });
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */

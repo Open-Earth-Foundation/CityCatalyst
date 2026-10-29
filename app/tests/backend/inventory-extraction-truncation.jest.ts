@@ -1,6 +1,7 @@
 /**
  * CC-1191: a response cut off at the token limit must never become a shorter
- * row list. The page is retried once, then reported as failed. Also covers the
+ * row list. A page is retried once, then reported as failed; a whole-document
+ * call or chunk is retried once, then fails the import. Also covers the
  * reasoning effort setting and the per-call log line. The LLM is mocked.
  */
 import {
@@ -149,6 +150,33 @@ describe("cut-off response", () => {
     expect(rows.some((r) => r.gpcRefNo?.startsWith("II."))).toBe(false);
   });
 
+  it("finish_reason length, then a complete retry: rows kept, no failed page", async () => {
+    let chapterCalls = 0;
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      if (user.includes("Chapter 4")) {
+        chapterCalls++;
+        return chapterCalls === 1
+          ? { content: cutOff(exactTable()), finishReason: "length" }
+          : {
+              content: JSON.stringify({ rows: exactTable() }),
+              finishReason: "stop",
+            };
+      }
+      const rows = user.includes("Table 3-1") ? [grandTotal()] : [];
+      return { content: JSON.stringify({ rows }), finishReason: "stop" };
+    });
+    const { rows, summary } = await extractInventoryFromDocument(document, {
+      targetYear: 2021,
+    });
+    expect(chapterCalls).toBe(2);
+    expect(summary.failedPages).toBeUndefined();
+    expect(summary.selectedPages).toEqual([17]);
+    expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
+  });
+
   it("a complete response still parses", async () => {
     mockPages({
       content: JSON.stringify({ rows: [] }),
@@ -161,6 +189,45 @@ describe("cut-off response", () => {
     expect(summary.selectedPages).toEqual([46]);
     expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
   });
+});
+
+describe("cut-off response on the chunk path", () => {
+  // No page has enough numbers to be a candidate, so extraction skips the page
+  // path: one whole-document call, or chunks above 50k characters.
+  const cases = [
+    ["single call", "Inventory report without tables.\n", 1],
+    ["multi-chunk", "word ".repeat(12_000), 2],
+  ] as const;
+  const answer = (cut: boolean): Answer =>
+    cut
+      ? { content: cutOff(exactTable()), finishReason: "length" }
+      : {
+          content: JSON.stringify({ rows: exactTable() }),
+          finishReason: "stop",
+        };
+
+  it.each(cases)(
+    "%s: a cut call is retried once and its rows are imported",
+    async (_name, text, chunkCount) => {
+      let calls = 0;
+      complete.mockImplementation(async () => answer(++calls === 1));
+      const { rows } = await extractInventoryFromDocument(text, {
+        targetYear: 2021,
+      });
+      expect(calls).toBe(chunkCount + 1);
+      expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
+    },
+  );
+
+  it.each(cases)(
+    "%s: a call cut twice rejects the import",
+    async (_name, text) => {
+      complete.mockImplementation(async () => answer(true));
+      await expect(
+        extractInventoryFromDocument(text, { targetYear: 2021 }),
+      ).rejects.toThrow("cut off at the token limit");
+    },
+  );
 });
 
 describe("reasoning effort", () => {

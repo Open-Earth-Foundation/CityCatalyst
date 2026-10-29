@@ -23,6 +23,12 @@ export type Tokens = {
   calls: number;
   promptTokens: number;
   completionTokens: number;
+  /** Part of completionTokens spent on hidden reasoning; absent in runs before CC-1191. */
+  reasoningTokens?: number;
+  /** Calls cut off at the token limit (finish_reason "length"). */
+  lengthStops?: number;
+  /** Largest completion of a single call. */
+  maxCompletionTokens?: number;
 };
 
 /** Unit prices in USD. Any missing price makes the cost "n/a" instead of a guess. */
@@ -43,6 +49,8 @@ export type RunEntry = {
   total?: number;
   /** LLM usage of this run (extraction). */
   usage?: Tokens;
+  /** Pages whose extraction failed twice and were skipped. */
+  failedPages?: number[];
 };
 
 export type CaseResult = {
@@ -65,6 +73,8 @@ export type RunSummary = {
   branch: string;
   llmModel?: string;
   extractionModel?: string;
+  /** LLM_EXTRACTION_REASONING_EFFORT; null means the provider default. */
+  reasoningEffort?: string | null;
   ocrModel?: string;
   prices?: Prices;
   runsPerFile: number;
@@ -154,12 +164,21 @@ export const ZERO_TOKENS: Tokens = {
   calls: 0,
   promptTokens: 0,
   completionTokens: 0,
+  reasoningTokens: 0,
+  lengthStops: 0,
+  maxCompletionTokens: 0,
 };
 
-const addTokens = (a: Tokens, b?: Tokens): Tokens => ({
+export const addTokens = (a: Tokens, b?: Tokens): Tokens => ({
   calls: a.calls + (b?.calls ?? 0),
   promptTokens: a.promptTokens + (b?.promptTokens ?? 0),
   completionTokens: a.completionTokens + (b?.completionTokens ?? 0),
+  reasoningTokens: (a.reasoningTokens ?? 0) + (b?.reasoningTokens ?? 0),
+  lengthStops: (a.lengthStops ?? 0) + (b?.lengthStops ?? 0),
+  maxCompletionTokens: Math.max(
+    a.maxCompletionTokens ?? 0,
+    b?.maxCompletionTokens ?? 0,
+  ),
 });
 
 export type CaseUsage = Tokens & { ocrPages: number; ocrPagesKnown: boolean };
@@ -244,7 +263,7 @@ export function renderReport(
     `# Ingestion accuracy run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC`,
     "",
     `- Commit: \`${summary.commit}\` on \`${summary.branch}\``,
-    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}${summary.reasoningEffort ? ` (reasoning effort ${summary.reasoningEffort})` : ""}; OCR model: ${summary.ocrModel ?? "default"}`,
     `- Runs per file: ${summary.runsPerFile}`,
     `- Compared with: ${previous ? `previous run \`${previous.commit}\` (${previous.measuredAt.slice(0, 10)})` : "no previous run"}`,
     "",
@@ -259,7 +278,7 @@ export function renderReport(
     "",
     "## Cost of this run",
     "",
-    `- LLM: ${usage.calls} calls, ${usage.promptTokens.toLocaleString("en-US")} input and ${usage.completionTokens.toLocaleString("en-US")} output tokens`,
+    `- LLM: ${usage.calls} calls, ${usage.promptTokens.toLocaleString("en-US")} input and ${usage.completionTokens.toLocaleString("en-US")} output tokens (${(usage.reasoningTokens ?? 0).toLocaleString("en-US")} of them reasoning); largest output of one call ${(usage.maxCompletionTokens ?? 0).toLocaleString("en-US")}; calls cut off at the token limit: ${usage.lengthStops ?? 0}`,
     `- OCR: ${usage.ocrPagesKnown ? `${usage.ocrPages} pages` : `${usage.ocrPages}+ pages (some OCR calls failed before reporting pages)`}`,
     `- Estimated cost: ${money(cost)}${beforeCost !== null && cost !== null ? ` (previous run: ${money(beforeCost)})` : ""}${cost === null ? " (set llmInputPerMTok, llmOutputPerMTok and ocrPerPage under `prices` in the config to get a dollar figure)" : ""}`,
     "",

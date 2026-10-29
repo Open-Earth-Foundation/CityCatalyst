@@ -1,2 +1,2 @@
-# The publisher copies the original PDFs here; they already live in fixtures/.
-results/pdf/
+# PDFs copied for reviewer bundles already live in the fixtures.
+cnb/results/pdf/

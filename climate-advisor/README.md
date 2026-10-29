@@ -1505,7 +1505,7 @@ uv run --directory service python -m scripts.run_ca_e2e
 
 ### CNB Golden Set
 
-Fixtures under `benchmark/fixtures/` evaluate the Concept Note
+Fixtures under `benchmark/cnb/fixtures/` evaluate the Concept Note
 Builder pipeline stage by stage on three documents (two English, one Polish):
 
 1. **extraction**: production source analysis plus per-chapter quotations for
@@ -1522,19 +1522,21 @@ Builder pipeline stage by stage on three documents (two English, one Polish):
 
 Each stage runs once. Python checks the production output's exact quotations,
 locators, marker/gap parity, seeded edits, and changed chapters. A configured
-LLM judge, calibrated with few-shot examples quoted verbatim from the fixture
-documents, evaluates meaning; its verdicts stand as given. Its quotations only
-point reviewers to evidence and are never matched by code, so only a missing or
-repeated verdict makes a stage an evaluation error. Generated source summaries are excluded from all judge inputs.
+LLM judge evaluates meaning. Extraction is scored independently for every
+chapter–fact pair: all mandatory pairs must pass, while desirable coverage is
+reported separately. Code verifies extraction citations against retained text
+owned by the receiving chapter. Human approval binds the answer key to its
+source/template/requirement fingerprints; shipped fixtures remain pending.
+Generated source summaries are excluded from all judge inputs.
 Production generation is unchanged.
 
 ```bash
-uv run pytest benchmark/tests -q
-uv run python -m benchmark.scripts.evaluate --label baseline
-uv run python -m benchmark.scripts.evaluate \
+uv run pytest benchmark/cnb/tests -q
+uv run python -m benchmark.cnb.scripts.evaluate --label baseline
+uv run python -m benchmark.cnb.scripts.evaluate \
   --fixture krakow-flood-drainage-plan --stage verification --stage editing
 # Rebuild the viewer from saved runs (no model calls).
-uv run python -m benchmark.scripts.publish
+uv run python -m benchmark.cnb.scripts.publish
 ```
 
 Reports record per-stage wall time, requests, tokens, and the cost OpenRouter
@@ -1543,19 +1545,28 @@ Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
 the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
 browser). The viewer shows each run by stage and document, and **Compare runs**
 diffs any two runs: configuration, stage results, and changed verdicts.
-Everything for the benchmark (code, scripts, viewer, judge prompts, fixtures,
-tests, and committed runs) lives in [`benchmark/`](benchmark/benchmark.md); pass
-`--results-dir benchmark/results` to save a run with the committed ones.
+CNB-specific code, scripts, viewer, judge prompts, fixtures, tests, and committed
+runs live in [`benchmark/cnb/`](benchmark/cnb/benchmark.md); reusable provider
+usage accounting lives in `benchmark/utils/`. Pass
+`--results-dir benchmark/cnb/results` to save a run with the committed ones.
 
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
-[`benchmark/prompts/`](benchmark/prompts/). Reports record the configured
-models and hashes of the loaded judge prompts. The live evaluation only runs when
-started by hand (CI runs just the offline `benchmark/tests`); quality failures and
-unavailable/invalid evaluations both return a nonzero exit status. Mocked unit tests verify the
-evaluator plumbing and do not claim to validate the judge's semantic accuracy.
+[`benchmark/cnb/prompts/`](benchmark/cnb/prompts/). Reports record the configured
+models and hashes of the loaded judge prompts. The separate non-required live CI
+workflow supports relevant-change and manual runs, frozen Markdown and fresh
+production PDF conversion, partial reports, approved-baseline comparison and
+downloadable viewer bundles. See [delivery setup and approvals](benchmark/cnb/DELIVERY.md)
+for credentials, trusted baseline selection, retention and exit codes.
 
-See the [fixture README](benchmark/fixtures/README.md) for
+`python -m benchmark.cnb.scripts.calibrate` evaluates the judge against separately
+human-approved candidates, with labels hidden from requests. The 24 proposed
+cases cover English/Polish, tables, units, dates and responsibilities; none are
+yet human-approved. Reports separate agreement, serious false passes, pending
+approval and unavailable judgments. See [calibration approval](benchmark/cnb/calibration/README.md).
+Offline tests verify these contracts, not live judge accuracy.
+
+See the [fixture README](benchmark/cnb/fixtures/README.md) for
 stage details, gates, reports, and how to add or review fixtures.
 
 ## Docker Deployment (Local Testing)

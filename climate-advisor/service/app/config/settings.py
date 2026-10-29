@@ -240,10 +240,10 @@ class PromptsConfig(BaseModel):
     cnb_source_chapter_evidence_selection: str = (
         "prompts/cnb/source_chapter_evidence_selection.md"
     )
-    cnb_golden_set_extraction_judge: str = "benchmark/prompts/extraction.md"
-    cnb_golden_set_chapter_writing_judge: str = "benchmark/prompts/chapter_writing.md"
-    cnb_golden_set_verification_judge: str = "benchmark/prompts/verification.md"
-    cnb_golden_set_editing_judge: str = "benchmark/prompts/editing.md"
+    cnb_golden_set_extraction_judge: str = "benchmark/cnb/prompts/extraction.md"
+    cnb_golden_set_chapter_writing_judge: str = "benchmark/cnb/prompts/chapter_writing.md"
+    cnb_golden_set_verification_judge: str = "benchmark/cnb/prompts/verification.md"
+    cnb_golden_set_editing_judge: str = "benchmark/cnb/prompts/editing.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
     cnb_chapter_support_check: str = "prompts/cnb/chapter_support_check.md"
     cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"

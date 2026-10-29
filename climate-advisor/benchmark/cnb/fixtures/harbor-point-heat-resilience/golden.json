@@ -1,0 +1,645 @@
+{
+  "fixture_id": "harbor-point-heat-resilience",
+  "description": "Native Markdown resilience plan for the fictional city of Harbor Point, exercising heading/block anchors, repeated subsection names, and a Markdown table; drafted into a six-section Green Climate Fund concept note, then verified and edited.",
+  "source": {
+    "path": "source.md",
+    "filename": "harbor-point-resilience-plan.md",
+    "source_label": "Harbor Point Heat and Stormwater Resilience Plan",
+    "source_format": "markdown",
+    "page_count": null,
+    "sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
+    "provenance": "Synthetic document written for this golden set. Every place, organisation, and figure is fictional.",
+    "language": "en"
+  },
+  "extraction": {
+    "facts": [
+      {
+        "id": "plan-adoption",
+        "statement": "The Harbor Point City Council adopted the plan on 14 March 2026.",
+        "evidence": [
+          {
+            "text": "The plan was adopted by the Harbor Point City Council on 14 March 2026.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_summary",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "population",
+        "statement": "Harbor Point has 182,400 residents.",
+        "evidence": [
+          {
+            "text": "Harbor Point has 182,400 residents.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "climate_context",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "expected_results",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_summary",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "extreme-heat-days",
+        "statement": "Harbor Point recorded 23 days above 35 °C in 2025, against a 1991-2020 average of 9 days per year.",
+        "evidence": [
+          {
+            "text": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "climate_context",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "flooded-intersections",
+        "statement": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+        "evidence": [
+          {
+            "text": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "climate_context",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "cool-corridors",
+        "statement": "The plan will plant 4,800 street trees along 12 cool corridors in Eastside and Millbrook.",
+        "evidence": [
+          {
+            "text": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_components",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "green-stormwater-infrastructure",
+        "statement": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards.",
+        "evidence": [
+          {
+            "text": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_components",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "programme-financing",
+        "statement": "The programme costs USD 26.5 million, of which USD 18.6 million is sought from external grants.",
+        "evidence": [
+          {
+            "text": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/financing"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "financing",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_summary",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "cool-corridor-cost",
+        "statement": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million.",
+        "evidence": [
+          {
+            "text": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "financing",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "cooling-centres",
+        "statement": "The city will designate 18 community cooling centres.",
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_components",
+            "priority": "desirable"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "extreme-heat",
+        "statement": "Extreme heat risk and its effects on the city."
+      },
+      {
+        "id": "stormwater-flooding",
+        "statement": "Stormwater flooding and drainage risks."
+      },
+      {
+        "id": "tree-canopy",
+        "statement": "Expanding tree canopy and cool corridors to reduce heat."
+      },
+      {
+        "id": "green-infrastructure",
+        "statement": "Green stormwater infrastructure, including bioretention and permeable surfaces."
+      },
+      {
+        "id": "financing",
+        "statement": "Programme costs and sources of financing."
+      }
+    ]
+  },
+  "chapter_writing": {
+    "input": "drafting_input.json",
+    "facts": [
+      {
+        "id": "funding-programme",
+        "statement": "The concept note is addressed to the Green Climate Fund Simplified Approval Process.",
+        "origin": "application_context"
+      },
+      {
+        "id": "lead-agency",
+        "statement": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+        "origin": "document",
+        "chapters": [
+          "project_summary",
+          "implementation"
+        ]
+      },
+      {
+        "id": "delivery-period",
+        "statement": "The measures are delivered between 2027 and 2032.",
+        "origin": "document",
+        "chapters": [
+          "project_summary",
+          "project_components",
+          "expected_results"
+        ]
+      },
+      {
+        "id": "population",
+        "statement": "Harbor Point has 182,400 residents.",
+        "origin": "document",
+        "required": false,
+        "chapters": [
+          "climate_context",
+          "expected_results",
+          "project_summary"
+        ],
+        "extraction_fact": "population"
+      },
+      {
+        "id": "extreme-heat-days",
+        "statement": "Harbor Point recorded 23 days above 35 °C in 2025, against a 1991-2020 average of 9 days per year.",
+        "origin": "document",
+        "chapters": [
+          "climate_context"
+        ],
+        "extraction_fact": "extreme-heat-days"
+      },
+      {
+        "id": "flooded-intersections",
+        "statement": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+        "origin": "document",
+        "chapters": [
+          "climate_context"
+        ],
+        "extraction_fact": "flooded-intersections"
+      },
+      {
+        "id": "cool-corridors",
+        "statement": "The project plants 4,800 street trees along 12 cool corridors in Eastside and Millbrook.",
+        "origin": "document",
+        "chapters": [
+          "project_components"
+        ],
+        "extraction_fact": "cool-corridors"
+      },
+      {
+        "id": "green-stormwater-infrastructure",
+        "statement": "The project builds 85 bioretention cells and converts 3.2 hectares of asphalt schoolyards into permeable green play areas.",
+        "origin": "document",
+        "chapters": [
+          "project_components"
+        ],
+        "extraction_fact": "green-stormwater-infrastructure"
+      },
+      {
+        "id": "canopy-target",
+        "statement": "The tree canopy target for Eastside and Millbrook is 25 percent by 2032.",
+        "origin": "document",
+        "chapters": [
+          "expected_results",
+          "project_components"
+        ]
+      },
+      {
+        "id": "programme-financing",
+        "statement": "The programme costs USD 26.5 million; the city contributes USD 7.9 million from its capital budget and USD 18.6 million in external grant funding is sought, not secured.",
+        "origin": "document",
+        "chapters": [
+          "financing",
+          "project_summary"
+        ],
+        "extraction_fact": "programme-financing"
+      },
+      {
+        "id": "component-costs",
+        "statement": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million and green stormwater infrastructure at USD 14.2 million; the USD 2.7 million cooling network is funded from the city operating budget.",
+        "origin": "document",
+        "required": false,
+        "chapters": [
+          "financing"
+        ],
+        "extraction_fact": "cool-corridor-cost"
+      },
+      {
+        "id": "partners",
+        "statement": "Public Works delivers green stormwater infrastructure, the Unified School District hosts schoolyard conversions, and Millbrook Neighbours Alliance co-designs cool corridor routes.",
+        "origin": "document",
+        "chapters": [
+          "implementation"
+        ]
+      },
+      {
+        "id": "monitoring",
+        "statement": "The Office of Climate Resilience publishes an annual progress report tracking canopy cover, flooded intersections and heat-related emergency visits.",
+        "origin": "document",
+        "chapters": [
+          "implementation",
+          "expected_results"
+        ]
+      }
+    ],
+    "gaps": [
+      {
+        "id": "accredited-entity",
+        "statement": "The GCF accredited entity that would submit and oversee the proposal is not supplied by any input.",
+        "chapters": [
+          "project_summary",
+          "implementation"
+        ]
+      },
+      {
+        "id": "country",
+        "statement": "The country of Harbor Point and its national designated authority are not supplied by any input.",
+        "chapters": [
+          "project_summary"
+        ]
+      },
+      {
+        "id": "gcf-request",
+        "statement": "The amount requested specifically from GCF and the financial instrument are not supplied; the plan only says USD 18.6 million in external grant funding is sought.",
+        "chapters": [
+          "financing",
+          "project_summary"
+        ]
+      },
+      {
+        "id": "beneficiaries",
+        "statement": "The number of direct and indirect beneficiaries of the measures is not supplied by any input.",
+        "required": false,
+        "chapters": [
+          "expected_results"
+        ]
+      },
+      {
+        "id": "indicator-targets",
+        "statement": "Baselines and targets for flooded intersections and heat-related emergency visits are not supplied; only the 25 percent canopy target is given.",
+        "required": false,
+        "chapters": [
+          "expected_results"
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "reference_draft": "reference_draft.json",
+    "defects": [
+      {
+        "id": "gsi-cost-conflict",
+        "kind": "cross_chapter_conflict",
+        "description": "The components chapter now prices green stormwater infrastructure at USD 12.4 million while the financing chapter keeps USD 14.2 million.",
+        "edits": [
+          {
+            "chapter_ref": "project_components",
+            "find": "are estimated to cost USD 14.2 million.",
+            "replace": "are estimated to cost USD 12.4 million."
+          }
+        ],
+        "expected_chapters": [
+          "project_components",
+          "financing"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict"
+        ]
+      },
+      {
+        "id": "grant-secured",
+        "kind": "cross_chapter_conflict",
+        "description": "The project summary now says the USD 18.6 million in external grants has been secured, while the financing chapter says it is sought and the GCF amount is still to be confirmed.",
+        "edits": [
+          {
+            "chapter_ref": "project_summary",
+            "find": "while USD 18.6 million is sought in external grant funding.",
+            "replace": "while USD 18.6 million in external grant funding has already been secured."
+          }
+        ],
+        "expected_chapters": [
+          "project_summary",
+          "financing"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict",
+          "internal_conflict"
+        ]
+      },
+      {
+        "id": "component-total-mismatch",
+        "kind": "logic_error",
+        "description": "The financing table now lists cool corridors at USD 11.6 million, so the components (11.6 + 14.2 + 2.7 = 28.5) no longer add up to the stated USD 26.5 million total.",
+        "edits": [
+          {
+            "chapter_ref": "financing",
+            "find": "| Cool corridors | 9.6 |",
+            "replace": "| Cool corridors | 11.6 |"
+          }
+        ],
+        "expected_chapters": [
+          "financing"
+        ],
+        "expected_categories": [
+          "logic_error",
+          "internal_conflict",
+          "cross_chapter_conflict"
+        ]
+      },
+      {
+        "id": "accredited-entity-gap-inconsistency",
+        "kind": "gap_inconsistency",
+        "description": "The implementation chapter now names an accredited entity (Harbor Point Climate Trust) instead of flagging it, while the project summary still asks for the accredited entity as missing information.",
+        "edits": [
+          {
+            "chapter_ref": "implementation",
+            "find": "[Information needed: Confirm the GCF-accredited entity that will submit, oversee and provide fiduciary management for the Harbor Point Heat and Stormwater Resilience Plan SAP proposal.]",
+            "replace": "The Harbor Point Climate Trust is the GCF-accredited entity that will submit, oversee and provide fiduciary management for the proposal."
+          }
+        ],
+        "remove_gaps": [
+          {
+            "chapter_ref": "implementation",
+            "field_key": "gcf_accredited_entity"
+          }
+        ],
+        "expected_chapters": [
+          "implementation",
+          "project_summary"
+        ],
+        "expected_categories": [
+          "cross_chapter_conflict"
+        ]
+      },
+      {
+        "id": "country-unflagged",
+        "kind": "unflagged_missing_information",
+        "description": "The country marker and gap were deleted from the project summary, so the required city-and-country field is neither answered nor flagged.",
+        "edits": [
+          {
+            "chapter_ref": "project_summary",
+            "find": "[Information needed: Confirm the country in which Harbor Point is located for the GCF SAP proposal.]",
+            "replace": ""
+          }
+        ],
+        "remove_gaps": [
+          {
+            "chapter_ref": "project_summary",
+            "field_key": "project_country"
+          }
+        ],
+        "expected_chapters": [
+          "project_summary"
+        ],
+        "expected_categories": [
+          "missing_information",
+          "template_constraint"
+        ]
+      },
+      {
+        "id": "canopy-target-before-start",
+        "kind": "logic_error",
+        "description": "The cool-corridor canopy target is now dated 2025, before the 2027-2032 delivery period starts, and conflicts with the 2032 target in the results table.",
+        "edits": [
+          {
+            "chapter_ref": "project_components",
+            "find": "to 25 percent by 2032.",
+            "replace": "to 25 percent by 2025."
+          }
+        ],
+        "expected_chapters": [
+          "project_components"
+        ],
+        "expected_categories": [
+          "logic_error",
+          "internal_conflict",
+          "cross_chapter_conflict"
+        ]
+      }
+    ]
+  },
+  "editing": {
+    "reference_draft": "reference_draft.json",
+    "cases": [
+      {
+        "id": "fill-accredited-entity",
+        "instruction": "The GCF accredited entity is the Coastal Resilience Finance Corporation. Please fill this in wherever the draft asks for it.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "project_summary",
+          "implementation"
+        ],
+        "expected_changes": [
+          {
+            "id": "summary-entity",
+            "statement": "The project summary names the Coastal Resilience Finance Corporation as the GCF accredited entity instead of asking for it."
+          },
+          {
+            "id": "implementation-entity",
+            "statement": "The implementation chapter names the Coastal Resilience Finance Corporation as the GCF accredited entity instead of asking for it."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "lead-agency",
+            "statement": "The Office of Climate Resilience leads delivery together with the Department of Public Works."
+          },
+          {
+            "id": "grant-sought",
+            "statement": "The USD 18.6 million in external grant funding is described as sought, not secured."
+          }
+        ]
+      },
+      {
+        "id": "rename-programme",
+        "instruction": "Rename the project from \"Harbor Point Heat and Stormwater Resilience Plan\" to \"Harbor Point Cool and Dry Streets Programme\" throughout the concept note.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "project_summary",
+          "climate_context",
+          "project_components",
+          "expected_results",
+          "implementation",
+          "financing"
+        ],
+        "expected_changes": [
+          {
+            "id": "renamed",
+            "statement": "Body text outside [Information needed: ...] markers calls the project the Harbor Point Cool and Dry Streets Programme wherever it previously used the old name."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "markers-kept",
+            "statement": "Every [Information needed: ...] marker question is unchanged, as the product protects marker questions during a cosmetic rename."
+          },
+          {
+            "id": "total-cost",
+            "statement": "The total programme cost remains USD 26.5 million."
+          }
+        ]
+      },
+      {
+        "id": "shorten-climate-rationale",
+        "instruction": "Shorten the Climate rationale and baseline chapter by about a third. Keep every figure.",
+        "focused_chapter": "climate_context",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "climate_context"
+        ],
+        "expected_changes": [
+          {
+            "id": "shorter",
+            "statement": "The climate rationale chapter is noticeably shorter than in the reference draft."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "heat-days",
+            "statement": "Harbor Point recorded 23 days above 35 °C in 2025, against a 1991-2020 average of 9 days per year."
+          },
+          {
+            "id": "ed-visits",
+            "statement": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025."
+          },
+          {
+            "id": "intersections",
+            "statement": "Street flooding affects 37 intersections during a 10-year rainfall event."
+          },
+          {
+            "id": "exposure-marker",
+            "statement": "The chapter still asks for the number and characteristics of people exposed in Eastside and Millbrook."
+          }
+        ]
+      },
+      {
+        "id": "contact-without-value",
+        "instruction": "Add the name and email address of the project contact person.",
+        "expected_outcome": "clarification",
+        "must_preserve": [
+          {
+            "id": "unchanged",
+            "statement": "The concept note is unchanged; no contact person is invented."
+          }
+        ]
+      }
+    ]
+  },
+  "approval": {
+    "status": "pending",
+    "reviewer": null,
+    "reviewed_at": null,
+    "source_sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
+    "template_sha256": "096b99db207606ba322afefa2ad3ad97bb117b8c2d3e4b7bf16217cc9cb2bc02",
+    "requirements_sha256": "6db17145ed0a6bd6c94f3854c69dee8eba619fbd052c7e749684bbeca1efe019"
+  }
+}

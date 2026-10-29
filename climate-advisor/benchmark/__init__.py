@@ -1,4 +1,4 @@
-"""CNB golden-set benchmark: fixtures, judge prompts, evaluator, viewer, and saved runs.
+"""Benchmark suites and shared usage utilities.
 
 The benchmark drives the production service code in ``../service/app``; importing
 this package makes ``app`` importable when running from ``climate-advisor/``.

@@ -82,6 +82,19 @@ def test_four_class_mapping(fixtures, judge_verdict, human):
     assert calibration.verdict_from_judgment(judgment(payload, judge_verdict)) == human
 
 
+def test_context_incomplete_claim_cannot_calibrate_as_correct(fixtures):
+    payload = calibration.calibration_input(case(), fixtures["harbor-point-heat-resilience"])
+    value = judgment(payload).model_dump()
+    value["claims"] = [{
+        "output": {"unit_id": "retained/candidate", "quote": "It costs USD 18.6 million."},
+        "verdict": "supported", "self_contained": False,
+        "evidence": [], "supplied_verdict": None, "supplied_evidence": [],
+        "reason": "Missing subject context",
+    }]
+    result = JudgeEvaluation.model_validate(value)
+    assert calibration.verdict_from_judgment(result) == "partly_correct"
+
+
 def test_empty_calibration_corpus_cannot_pass(fixtures, tmp_path):
     path = tmp_path / "empty.json"
     path.write_text("[]", encoding="utf-8")

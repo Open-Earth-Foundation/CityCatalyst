@@ -175,7 +175,8 @@ def verdict_from_judgment(judgment: JudgeEvaluation) -> str:
     ):
         return "incorrect"
     if verdict == "correct" and any(
-        item.verdict in {"partially_supported", "uncertain"} for item in judgment.claims
+        item.verdict in {"partially_supported", "uncertain"} or not item.self_contained
+        for item in judgment.claims
     ):
         return "partly_correct"
     return verdict

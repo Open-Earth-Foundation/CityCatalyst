@@ -16,6 +16,21 @@ from benchmark.cnb.golden_set.baseline import (
 from benchmark.cnb.tests.test_viewer import STAGE_OK, make_run
 
 
+def test_policy_fingerprint_ignores_checkout_line_endings(tmp_path, monkeypatch):
+    from benchmark.cnb.golden_set import baseline
+
+    monkeypatch.setattr(baseline, "__file__", str(tmp_path / "baseline.py"))
+    scorers = ["core.py", "chapters.py", "verification.py", "editing.py", "models.py"]
+    for name in scorers:
+        (tmp_path / name).write_bytes(b"# scorer\npass\n")
+    linux = baseline.evaluation_fingerprints([], {}, ["extraction"])
+    for name in scorers:
+        (tmp_path / name).write_bytes(b"# scorer\r\npass\r\n")
+    assert baseline.evaluation_fingerprints([], {}, ["extraction"]) == linux
+    (tmp_path / "core.py").write_bytes(b"# changed scorer\npass\n")
+    assert baseline.evaluation_fingerprints([], {}, ["extraction"]) != linux
+
+
 @pytest.fixture
 def approved_run(tmp_path):
     run = make_run(tmp_path, "approved", "2026-10-01", extraction=STAGE_OK)

@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from benchmark.cnb.golden_set import viewer as publish
+from benchmark.cnb.golden_set.judge import judge_prompt_versions
 from benchmark.cnb.scripts import evaluate as evaluator
 
 STAGE_OK = {
@@ -33,7 +34,7 @@ def make_run(results: Path, run_id: str, generated_at: str, **stages) -> Path:
         "code_version": "abc1234",
         "generated_at": generated_at,
         "analysis_contract_version": "contract",
-        "judge_prompt_versions": {"extraction": "f" * 64},
+        "judge_prompt_versions": judge_prompt_versions(publish.get_settings(), ["extraction"]),
         "models": {"judge": {"name": "judge-model", "reasoning_effort": "high"}},
         "corpus_fingerprint": "a" * 64,
         "evaluator_fingerprint": "b" * 64,
@@ -60,6 +61,22 @@ def make_run(results: Path, run_id: str, generated_at: str, **stages) -> Path:
 def read_viewer(path: Path) -> dict:
     """Parse the JSON payload out of a run's viewer.js."""
     return json.loads(path.read_text(encoding="utf-8").split("] = ", 1)[1].rstrip(";\n"))
+
+
+def test_snapshot_uses_configured_prompt_and_rejects_changed_prompt(tmp_path, monkeypatch):
+    prompt_type = type(publish.get_settings().llm.prompts)
+    original = prompt_type.get_prompt
+    configured = "Configured alternate extraction judge"
+    monkeypatch.setattr(
+        prompt_type, "get_prompt",
+        lambda self, key: configured if key == "cnb_golden_set_extraction_judge" else original(self, key),
+    )
+    run = make_run(tmp_path, "alternate-prompt", "2026-10-01", extraction=STAGE_OK)
+    assert publish.build_run_payload(run)["prompts"]["extraction"] == configured
+    configured = "Changed after evaluation"
+    with pytest.raises(ValueError, match="prompt digest mismatch"):
+        publish.build_run_payload(run)
+    assert publish.build_run_payload(run, rebuilt=True)["prompts"]["extraction"] == configured
 
 
 def test_viewer_retains_conversion_time_and_unknown_cost(tmp_path):

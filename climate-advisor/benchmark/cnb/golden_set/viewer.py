@@ -24,13 +24,13 @@ from typing import Any
 from app.config import get_settings
 
 from benchmark.cnb.golden_set.core import load_golden_fixtures
+from benchmark.cnb.golden_set.judge import PROMPT_KEYS
 from benchmark.cnb.golden_set.models import STAGES
 
 logger = logging.getLogger(__name__)
 BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
 VIEWER_DIR = BENCHMARK_ROOT / "viewer"
 FIXTURES_DIR = BENCHMARK_ROOT / "fixtures"
-PROMPTS_DIR = BENCHMARK_ROOT / "prompts"
 # Scratch runs (git-ignored); pass benchmark/cnb/results to save a run for committing.
 DEFAULT_RESULTS_DIR = BENCHMARK_ROOT.parents[1] / "output" / "cnb_golden_set"
 # Raw artefacts each stage writes, keyed by the name the viewer uses.
@@ -86,7 +86,7 @@ def stage_status(report: dict[str, Any] | None) -> str:
     return "pass"
 
 
-def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR) -> dict[str, Any]:
+def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR, *, rebuilt: bool = False) -> dict[str, Any]:
     """Snapshot one run with the fixtures and prompts it is published with."""
     report = _read_json(run_dir / "report.json") or {}
     reports = {f["fixture_id"]: f for f in report.get("fixtures", [])}
@@ -132,8 +132,17 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR) -> dict[
                 "inapplicable_reason": reports[fid].get("inapplicable_reason"),
             }
         )
-    prompts = {path.stem: path.read_text(encoding="utf-8") for path in sorted(PROMPTS_DIR.glob("*.md"))}
-    budget = get_settings().llm.generation.prompt_budget.cnb_sources
+    settings = get_settings()
+    prompts = {
+        stage: settings.llm.prompts.get_prompt(key)
+        for stage, key in PROMPT_KEYS.items()
+    }
+    # A normal snapshot must show exactly the configured prompts used by the judge.
+    if not rebuilt:
+        for stage, version in report.get("judge_prompt_versions", {}).items():
+            if hashlib.sha256(prompts[stage].encode()).hexdigest() != version:
+                raise ValueError(f"Snapshot judge prompt digest mismatch: {stage}")
+    budget = settings.llm.generation.prompt_budget.cnb_sources
     return {
         "run": {k: v for k, v in report.items() if k != "fixtures"} | {"id": run_dir.name},
         "delivery": _read_json(run_dir / "delivery.json"),
@@ -245,7 +254,7 @@ def publish_viewer(results_dir: Path, *, rebuild: bool = False, fixtures_dir: Pa
         if not (run_dir / "report.json").exists():
             continue
         if rebuild or not (run_dir / "viewer.js").exists():
-            write_run_viewer(run_dir, build_run_payload(run_dir, fixtures_dir), rebuilt=True)
+            write_run_viewer(run_dir, build_run_payload(run_dir, fixtures_dir, rebuilt=True), rebuilt=True)
         _preserve_snapshot_pdfs(run_dir, results_dir, fixtures_dir)
         summary = run_summary(run_dir)
         if summary is not None:

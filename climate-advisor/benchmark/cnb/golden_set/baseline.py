@@ -64,7 +64,7 @@ def evaluation_fingerprints(
                 "comparison_policy": 1,
                 "scorers": {
                     name: hashlib.sha256(
-                        Path(__file__).with_name(name).read_bytes()
+                        Path(__file__).with_name(name).read_text(encoding="utf-8").encode("utf-8")
                     ).hexdigest()
                     for name in (
                         "core.py",

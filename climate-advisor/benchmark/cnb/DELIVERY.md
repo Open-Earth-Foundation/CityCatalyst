@@ -21,6 +21,12 @@ Fork and Dependabot events do not receive provider credentials. Their summary
 explicitly says evaluation is unavailable. Manually run only a reviewed trusted
 revision. Missing PDF credentials still allow the Markdown path to run.
 
+For the local PDF command, export `MISTRAL_API_KEY`, `AWS_ACCESS_KEY_ID`,
+`AWS_SECRET_ACCESS_KEY`, `AWS_FILE_UPLOAD_S3_BUCKET_ID` and optionally
+`AWS_FILE_UPLOAD_REGION` into the process environment. The workflow maps the
+`CNB_BENCHMARK_*` GitHub secrets to these AWS names; the local converter does not
+load `app/.env` automatically. Use the same dedicated benchmark storage scope.
+
 Every evaluator run claims its own directory before setup and refuses any existing
 directory. Reports checkpoint after each completed stage. Handled setup errors,
 timeouts and unexpected stage failures preserve partial reports; a forcibly killed
@@ -37,6 +43,9 @@ pending. A historical run is not an approved baseline. Product must approve the
 chapter requirements, and a reviewer must choose the baseline and comparison
 policy. Keep approved run directories durably in `results/runs/<run-id>/`; the
 30-day CI artifact retention applies to candidates, not the baseline store.
+The scoped `.gitattributes` rule preserves exact saved-run bytes on Windows and
+Linux. Keep it when publishing approved runs; scorer fingerprints normalize text
+line endings so checkout conventions alone cannot invalidate a comparison.
 
 An approval PR replaces the corresponding manifest with this shape:
 

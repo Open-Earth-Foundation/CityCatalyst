@@ -5,6 +5,7 @@
  * (empty activity gasValues, missing emissions factors).
  */
 import { describe, expect, it } from "@jest/globals";
+import Excel from "exceljs";
 import ECRFDownloadService from "@/backend/ECRFDownloadService";
 import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 
@@ -82,5 +83,83 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
 
     expect(Buffer.isBuffer(buffer)).toBe(true);
     expect(buffer.length).toBeGreaterThan(1000);
+  });
+
+  it("writes the inventory year on eCRF_3 and English template text (CC-1153)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      {
+        ...baseInventory([]),
+        inventoryValues: [
+          {
+            id: "iv-ne",
+            gpcReferenceNumber: "I.1.1",
+            co2eq: 0n,
+            inputMethodology: "direct-measure",
+            dataSource: null,
+            unavailableReason: "no-occurrance",
+            unavailableExplanation: "not occurring",
+            activityValues: [],
+          },
+        ],
+      } as unknown as InventoryWithInventoryValuesAndActivityValues,
+      "es",
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const sheet2 = workbook.getWorksheet(2);
+    const sheet3 = workbook.getWorksheet(3);
+    expect(sheet2).toBeDefined();
+    expect(sheet3).toBeDefined();
+
+    const sheet2Text: string[] = [];
+    sheet2?.eachRow((row) => {
+      row.eachCell((cell) => {
+        if (typeof cell.value === "string") sheet2Text.push(cell.value);
+      });
+    });
+    expect(sheet2Text.join(" ")).toContain(
+      "Institutional emissions are included in commercial emissions record",
+    );
+    expect(sheet2Text.join(" ")).not.toContain(
+      "Las emisiones institucionales están incluidas",
+    );
+
+    const i11 = sheet3?.getRow(2);
+    expect(i11?.getCell(2).value).toBe("I.1.1");
+    expect(i11?.getCell(1).value).toBe(2016);
+    expect(i11?.getCell(1).value).not.toBe("Please select");
+  });
+
+  it("does not write a numeric value on a notation-key eCRF_3 row (CC-1153)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      {
+        ...baseInventory([]),
+        inventoryValues: [
+          {
+            id: "iv-ne",
+            gpcReferenceNumber: "I.1.1",
+            co2eq: 0n,
+            inputMethodology: "direct-measure",
+            dataSource: null,
+            unavailableReason: "not-estimated",
+            activityValues: [],
+          },
+        ],
+      } as unknown as InventoryWithInventoryValuesAndActivityValues,
+      "en",
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const sheet3 = workbook.getWorksheet(3);
+    const i11 = sheet3?.getRow(2);
+    expect(i11?.getCell(2).value).toBe("I.1.1");
+    expect(i11?.getCell(7).value).toBe("NE");
+    expect(i11?.getCell(28).value).toBe("");
   });
 });

@@ -22,7 +22,7 @@ import path from "path";
 interface Template2Entry {
   "notation-key"?: string;
   explanation?: string;
-  total: bigint;
+  total?: bigint;
   [key: string]: bigint | string | undefined;
 }
 
@@ -44,7 +44,10 @@ export default class ECRFDownloadService {
     output: InventoryWithInventoryValuesAndActivityValues,
     lng: string,
   ) {
-    const t = i18next.getFixedT(lng, "data");
+    // eCRF is an English GPC template. Always write English labels into cells
+    // even when the user is viewing the app in another language (CC-1153).
+    void lng;
+    const t = i18next.getFixedT("en", "data");
     const workbook = new Excel.Workbook();
     try {
       // Load the workbook
@@ -226,6 +229,22 @@ export default class ECRFDownloadService {
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }
+          const entry = updatedDataDictionary[referenceNoIdentifier];
+          const hasNotationKey = Boolean(entry?.["notation-key"]);
+          // A GPC row is either a notation key or a value, never both.
+          if (targetIdentifier === "total" && hasNotationKey) {
+            cell.value = "";
+            return;
+          }
+          if (
+            targetIdentifier === "notation-key" &&
+            entry &&
+            !hasNotationKey &&
+            entry.total != null
+          ) {
+            cell.value = "";
+            return;
+          }
           // Inventory co2eq is stored in kg; eCRF_2 expects tCO2e.
           if (
             (targetIdentifier === "total" ||
@@ -286,16 +305,22 @@ export default class ECRFDownloadService {
               worksheet,
             );
           } else {
-            this.markRowAsNotEstimated(row);
+            this.markRowAsNotEstimated(row, {
+              inventoryYear: output.year as number,
+            });
           }
         } else {
-          this.markRowAsNotEstimated(row);
+          this.markRowAsNotEstimated(row, {
+            inventoryYear: output.year as number,
+          });
         }
       }
 
-      // Clear any {{…}} still left on non-data rows.
+      // Clear leftover {{…}} without turning value rows into NE.
       for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
-        this.markRowAsNotEstimated(worksheet.getRow(rowNumber));
+        this.clearLeftoverPlaceholders(worksheet.getRow(rowNumber), {
+          inventoryYear: output.year as number,
+        });
       }
     }
   }
@@ -346,15 +371,14 @@ export default class ECRFDownloadService {
     const dataDictionary: Record<string, Template2Entry> = {};
 
     output.inventoryValues.map((inventoryValue) => {
-      const total =
-        inventoryValue.unavailableReason
-          ? 0n
-          : (this.toNullableBigInt(inventoryValue.co2eq) ?? 0n);
+      const notationKey =
+        toShort(inventoryValue.unavailableReason) ?? undefined;
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
-        "notation-key":
-          toShort(inventoryValue.unavailableReason) ?? undefined,
+        "notation-key": notationKey,
         explanation: inventoryValue.unavailableExplanation ?? undefined,
-        total,
+        total: notationKey
+          ? undefined
+          : (this.toNullableBigInt(inventoryValue.co2eq) ?? 0n),
       };
     });
 
@@ -535,15 +559,24 @@ export default class ECRFDownloadService {
     const referenceCell = row.getCell(2);
     const referenceValue = referenceCell.value;
 
+    const inventoryYear =
+      typeof dataSection.inventory_year === "number"
+        ? dataSection.inventory_year
+        : undefined;
+    this.writeInventoryYear(row, inventoryYear);
+
     if (typeof referenceValue == "string" && referenceValue in visitedScopes) {
       // Extra template rows for the same GPC ref (e.g. I.4.4 CHP/heat) after
       // multi-activity insert — clear placeholders rather than leave {{…}}.
-      this.markRowAsNotEstimated(row);
+      this.markRowAsNotEstimated(row, { inventoryYear });
       return;
     }
 
     if (dataSection.notation_key) {
-      this.markRowAsNotEstimated(row, dataSection.notation_key);
+      this.markRowAsNotEstimated(row, {
+        notation: dataSection.notation_key,
+        inventoryYear,
+      });
       return;
     }
 
@@ -594,7 +627,20 @@ export default class ECRFDownloadService {
     visitedScopes[referenceValue as string] = true;
   }
 
-  private static markRowAsNotEstimated(row: Excel.Row, notation?: string) {
+  private static writeInventoryYear(
+    row: Excel.Row,
+    inventoryYear?: number,
+  ) {
+    if (inventoryYear == null) return;
+    // eCRF_3 column A is a year dropdown seeded with "Please select", not {{inventory_year}}.
+    row.getCell(1).value = inventoryYear;
+  }
+
+  private static markRowAsNotEstimated(
+    row: Excel.Row,
+    options?: { notation?: string; inventoryYear?: number },
+  ) {
+    this.writeInventoryYear(row, options?.inventoryYear);
     row.eachCell((cell) => {
       if (cell.value && typeof cell.value === "string") {
         const cellValue = cell.value as string;
@@ -602,9 +648,39 @@ export default class ECRFDownloadService {
         if (placeholderMatch) {
           const fieldName = placeholderMatch[1];
           if (fieldName === "no_key") {
-            cell.value = notation || "NE"; // Not Estimated
+            cell.value = options?.notation || "NE";
+          } else if (
+            fieldName === "inventory_year" &&
+            options?.inventoryYear != null
+          ) {
+            cell.value = options.inventoryYear;
           } else {
-            cell.value = ""; // remove the placeholder when
+            cell.value = "";
+          }
+        }
+      }
+    });
+  }
+
+  /** Strip leftover placeholders after fill. Never default leftover no_key to NE. */
+  private static clearLeftoverPlaceholders(
+    row: Excel.Row,
+    options?: { inventoryYear?: number },
+  ) {
+    this.writeInventoryYear(row, options?.inventoryYear);
+    row.eachCell((cell) => {
+      if (cell.value && typeof cell.value === "string") {
+        const cellValue = cell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          const fieldName = placeholderMatch[1];
+          if (
+            fieldName === "inventory_year" &&
+            options?.inventoryYear != null
+          ) {
+            cell.value = options.inventoryYear;
+          } else {
+            cell.value = "";
           }
         }
       }

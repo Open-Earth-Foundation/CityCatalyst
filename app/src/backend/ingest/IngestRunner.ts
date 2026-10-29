@@ -95,7 +95,7 @@ export class IngestRunner {
     item: IngestItemRecord,
     plugin: IngestPlugin,
   ): Promise<void> {
-    const scope: IngestScope = {
+    let scope: IngestScope = {
       organizationId: job.organizationId,
       projectId: job.projectId,
       cityId: job.cityId,
@@ -126,7 +126,33 @@ export class IngestRunner {
       }
 
       await this.setStage(item.id, "match");
-      await plugin.match?.({ job, item: await this.requireItem(item.id), scope });
+      const matched = await plugin.match?.({
+        job,
+        item: await this.requireItem(item.id),
+        scope,
+      });
+      if (matched) {
+        await this.store.updateItem(item.id, {
+          ...(matched.targetCityId !== undefined
+            ? { targetCityId: matched.targetCityId }
+            : {}),
+          ...(matched.targetInventoryId !== undefined
+            ? { targetInventoryId: matched.targetInventoryId }
+            : {}),
+          ...(matched.coverageYears
+            ? { coverageYears: matched.coverageYears }
+            : {}),
+          ...(matched.warnings?.length
+            ? { warnings: matched.warnings }
+            : {}),
+        });
+        const afterMatch = await this.requireItem(item.id);
+        scope = {
+          ...scope,
+          cityId: afterMatch.targetCityId ?? scope.cityId,
+          inventoryId: afterMatch.targetInventoryId ?? scope.inventoryId,
+        };
+      }
 
       await this.setStage(item.id, "detect");
       const current = await this.requireItem(item.id);

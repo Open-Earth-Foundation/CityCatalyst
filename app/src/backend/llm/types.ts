@@ -21,7 +21,7 @@ export interface LLMCompleteOptions {
   maxTokens?: number;
   /** Ask for JSON output; adapter may set response_format / schema hint where supported. Caller still parses. */
   jsonMode?: boolean;
-  /** Reasoning effort (e.g. "low", "medium", "high") for reasoning models; ignored by other models. Provider default if not set. */
+  /** Reasoning effort ("low", "medium" or "high") for reasoning models; ignored by other models. Provider default if not set; any other value is dropped with a warning. */
   reasoningEffort?: string;
 }
 

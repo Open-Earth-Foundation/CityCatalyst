@@ -10,6 +10,12 @@ async function openPopover(page: Page) {
   });
   await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
   await dismissCookieConsent(page);
+  await expect(page.getByTestId("hero-city-name")).toBeVisible({
+    timeout: 30000,
+  });
+  await expect(page.getByTestId("stationary-energy")).toBeVisible({
+    timeout: 30000,
+  });
   const trigger = page.locator("[data-ai-button]");
   await expect(trigger).toBeVisible();
   await trigger.focus();
@@ -97,5 +103,94 @@ test.describe("Clima Chat Popover Responsive Design", () => {
     await expect(close).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(popover).toBeHidden();
+  });
+
+  test("long project names wrap without overflowing the loaded GHGI page", async ({
+    page,
+  }) => {
+    const { cityId, inventoryId } = await createCityAndInventoryViaApi(
+      page.request,
+    );
+    const projectName = "A long city climate project name ".repeat(6).trim();
+    await page.route(
+      new RegExp(`/api/v1/inventory/${inventoryId}/?(?:\\?.*)?$`),
+      async (route) => {
+        const response = await route.fetch();
+        const body = await response.json();
+        body.data.city.project.name = projectName;
+        await route.fulfill({ response, json: body });
+      },
+    );
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await dismissCookieConsent(page);
+    const title = page.getByTestId("hero-project-name");
+    await expect(title).toHaveText(projectName, { timeout: 30000 });
+    await expect(page.getByTestId("stationary-energy")).toBeVisible({
+      timeout: 30000,
+    });
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await expect
+        .poll(async () =>
+          page.evaluate(() => ({
+            document: document.documentElement.scrollWidth,
+            viewport: document.documentElement.clientWidth,
+          })),
+        )
+        .toEqual({ document: width, viewport: width });
+      const box = await title.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+      expect(box!.height).toBeGreaterThan(32);
+    }
+  });
+
+  test("checks document width after delayed sector data renders", async ({
+    page,
+  }) => {
+    const { cityId, inventoryId } = await createCityAndInventoryViaApi(
+      page.request,
+    );
+    let releaseProgress!: () => void;
+    let markProgressStarted!: () => void;
+    const progressGate = new Promise<void>((resolve) => {
+      releaseProgress = resolve;
+    });
+    const progressStarted = new Promise<void>((resolve) => {
+      markProgressStarted = resolve;
+    });
+    await page.route(
+      new RegExp(`/api/v1/inventory/${inventoryId}/progress/?(?:\\?.*)?$`),
+      async (route) => {
+        markProgressStarted();
+        await progressGate;
+        await route.continue();
+      },
+    );
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    try {
+      await dismissCookieConsent(page);
+      await expect(page.getByTestId("hero-city-name")).toBeVisible({
+        timeout: 30000,
+      });
+      await progressStarted;
+      await expect(page.getByTestId("stationary-energy")).not.toBeVisible();
+    } finally {
+      releaseProgress();
+    }
+    await expect(page.getByTestId("stationary-energy")).toBeVisible({
+      timeout: 30000,
+    });
+    await expect
+      .poll(async () =>
+        page.evaluate(() => ({
+          document: document.documentElement.scrollWidth,
+          viewport: document.documentElement.clientWidth,
+        })),
+      )
+      .toEqual({ document: 320, viewport: 320 });
   });
 });

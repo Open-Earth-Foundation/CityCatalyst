@@ -2,42 +2,12 @@ name: CNB live benchmark (advisory)
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [develop]
-    paths:
-      - climate-advisor/benchmark/**
-      - climate-advisor/prompts/**
-      - climate-advisor/llm_config.yaml
-      - climate-advisor/service/app/config/**
-      - climate-advisor/service/app/services/cnb/**
-      - climate-advisor/service/app/services/citycatalyst_client.py
-      - climate-advisor/service/app/services/openrouter_client.py
-      - climate-advisor/service/app/models/cnb/**
-      - climate-advisor/service/app/utils/**
-      - climate-advisor/pyproject.toml
-      - climate-advisor/uv.lock
-      - app/src/backend/MistralOcrService.ts
-      - app/src/backend/MistralVisualAnnotation.ts
-      - app/src/backend/StructuredDocumentArtifact.ts
-      - app/src/backend/PdfOcrService.ts
-      - app/src/backend/pdf-ocr-config.ts
-      - app/src/backend/InventoryFileStorageService.ts
-      - app/src/backend/inventory-import-file-limits.ts
-      - app/src/backend/ConceptNoteUploadService.ts
-      - app/src/backend/**/conceptNote*
-      - app/scripts/cnb-*
-      - app/scripts/benchmark-cnb-pdf.ts
-      - app/src/backend/storage/**
-      - app/src/lib/ocr/**
-      - app/package.json
-      - app/package-lock.json
-      - .github/workflows/cnb-benchmark-live.yml
 
 permissions:
   contents: read
 
 concurrency:
-  group: cnb-live-${{ github.event.pull_request.number || github.ref }}
+  group: cnb-live-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -63,7 +33,7 @@ jobs:
       - name: Checkout trusted baseline
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.sha || 'develop' }}
+          ref: develop
           path: .cnb-base
           persist-credentials: false
 
@@ -105,11 +75,11 @@ jobs:
         working-directory: climate-advisor
         shell: bash
         env:
-          OPENROUTER_API_KEY: ${{ (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && secrets.OPENROUTER_API_KEY || '' }}
-          MISTRAL_API_KEY: ${{ (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && secrets.MISTRAL_API_KEY || '' }}
-          AWS_ACCESS_KEY_ID: ${{ (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && secrets.CNB_BENCHMARK_AWS_ACCESS_KEY_ID || '' }}
-          AWS_SECRET_ACCESS_KEY: ${{ (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && secrets.CNB_BENCHMARK_AWS_SECRET_ACCESS_KEY || '' }}
-          AWS_FILE_UPLOAD_S3_BUCKET_ID: ${{ (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && secrets.CNB_BENCHMARK_S3_BUCKET || '' }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CNB_BENCHMARK_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CNB_BENCHMARK_AWS_SECRET_ACCESS_KEY }}
+          AWS_FILE_UPLOAD_S3_BUCKET_ID: ${{ secrets.CNB_BENCHMARK_S3_BUCKET }}
           AWS_FILE_UPLOAD_REGION: ${{ vars.CNB_BENCHMARK_AWS_REGION || 'us-east-1' }}
           CA_DATABASE_URL: 'sqlite+aiosqlite:///:memory:'
           MLFLOW_ENABLED: 'false'
@@ -117,7 +87,7 @@ jobs:
           RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           if [[ -z "$OPENROUTER_API_KEY" ]]; then
-            printf '%s\n' '# CNB live benchmark' '' 'Evaluation unavailable: provider credentials withheld or missing. Fork and Dependabot changes require a manually reviewed trusted revision.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
+            printf '%s\n' '# CNB live benchmark' '' 'Evaluation unavailable: OPENROUTER_API_KEY is missing.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
             echo 'status=3' >> "$GITHUB_OUTPUT"
             exit 0
           fi

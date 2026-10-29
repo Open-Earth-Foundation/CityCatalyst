@@ -1,14 +1,19 @@
 # Live evaluation and review bundles
 
-The `CNB live benchmark (advisory)` workflow runs on relevant pull requests to
-`develop` and manual dispatch. Its unique check, `CNB quality report (non-required)`,
+The `CNB live benchmark (advisory)` workflow runs only on manual dispatch
+(`workflow_dispatch`), with no automatic PR, push, merge or scheduled trigger.
+Repeated full producer and judge evaluations on PR updates would consume provider
+usage too quickly. Offline tests remain automatic. After changing prompts, models
+or the extraction/PDF pipeline, agents should suggest a manual benchmark run before
+opening or updating a PR and wait for the user's authorization to spend that usage.
+Its unique check, `CNB quality report (non-required)`,
 must remain outside the repository's required checks. This file does not configure
 branch protection. Failures remain visible and are not hidden with
 `continue-on-error`.
 
 Runs are serial: frozen Markdown first, fresh PDF conversion second, with one
 fixture at a time. Each path has a 1,500-second evaluation deadline. The job has a
-75-minute limit, allowing setup and artifact publication. Per-PR concurrency does
+75-minute limit, allowing setup and artifact publication. Per-branch concurrency does
 not cancel an active run. There are no whole-run retries. Set provider spending
 limits on the dedicated keys; a timeout alone is not a monetary limit.
 
@@ -17,9 +22,8 @@ requires `CNB_BENCHMARK_AWS_ACCESS_KEY_ID`, `CNB_BENCHMARK_AWS_SECRET_ACCESS_KEY
 `CNB_BENCHMARK_S3_BUCKET`, with optional variable `CNB_BENCHMARK_AWS_REGION`
 (default `us-east-1`). These AWS credentials must permit only temporary benchmark
 upload/read/delete in that bucket; do not reuse production-wide credentials.
-Fork and Dependabot events do not receive provider credentials. Their summary
-explicitly says evaluation is unavailable. Manually run only a reviewed trusted
-revision. Missing PDF credentials still allow the Markdown path to run.
+Manually run only a reviewed trusted revision. Missing provider credentials are
+reported as unavailable. Missing PDF credentials still allow the Markdown path to run.
 
 For the local PDF command, export `MISTRAL_API_KEY`, `AWS_ACCESS_KEY_ID`,
 `AWS_SECRET_ACCESS_KEY`, `AWS_FILE_UPLOAD_S3_BUCKET_ID` and optionally
@@ -72,7 +76,7 @@ Use `hashlib.sha256(report_path.read_bytes()).hexdigest()` for the report and
 The fingerprints cover fixture content, authoritative source and context, judge
 model/prompts, stages and input mode. Changed corpus or judge contracts are marked
 incompatible; an evaluation never promotes itself. CI reads manifests and approved
-artifacts from the trusted base checkout, so a candidate cannot approve its own
+artifacts from the trusted `develop` checkout, so a candidate cannot approve its own
 baseline through its PR diff. Genuine human approval is a review process; a JSON
 field does not establish that review occurred.
 

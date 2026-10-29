@@ -244,6 +244,7 @@ Use `script-quality-gate` when you add or change one.
 - New features should include tests where practical.
 - Bug fixes should include a regression test whenever feasible.
 - If you change prompts, tool outputs, or workflow contracts, update or add tests that exercise those paths.
+- Whenever changing a prompt, model configuration, or extraction pipeline (including PDF conversion), suggest that the user manually rerun the relevant benchmark before opening or updating a PR; explain that live runs consume provider usage and do not start one without the user's authorization.
 
 ---
 

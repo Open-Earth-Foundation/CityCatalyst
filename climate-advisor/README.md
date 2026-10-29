@@ -1554,7 +1554,7 @@ The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
 [`benchmark/cnb/prompts/`](benchmark/cnb/prompts/). Reports record the configured
 models and hashes of the loaded judge prompts. The separate non-required live CI
-workflow supports relevant-change and manual runs, frozen Markdown and fresh
+workflow runs only on manual dispatch to control provider usage. It supports frozen Markdown and fresh
 production PDF conversion, partial reports, approved-baseline comparison and
 downloadable viewer bundles. See [delivery setup and approvals](benchmark/cnb/DELIVERY.md)
 for credentials, trusted baseline selection, retention and exit codes.

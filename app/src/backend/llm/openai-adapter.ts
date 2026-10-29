@@ -13,14 +13,14 @@ import type {
 import { LLMError, LLMErrorCode } from "./types";
 
 /**
- * Reasoning models (gpt-5 family, o-series) accept only the default temperature and
+ * Reasoning models (gpt-5 and later, o-series) accept only the default temperature and
  * answer 400 "temperature does not support 0 with this model" to any other value.
  * OpenRouter drops the parameter silently, the OpenAI API does not. The provider
  * prefix (`openai/gpt-5.6-luna`) is ignored.
  */
 export function supportsCustomTemperature(model: string): boolean {
   const name = model.split("/").pop() ?? model;
-  return !/^(gpt-5|o\d)/i.test(name);
+  return !/^(gpt-[5-9]|o\d)/i.test(name);
 }
 
 function toOpenAIRole(
@@ -72,10 +72,13 @@ export async function openaiComplete(
 
   const model = options.model ?? config.model;
   // Some models (e.g. gpt-4o-mini) only support default temperature (1); omit when 0.1 to avoid 400
+  const customTemperature = supportsCustomTemperature(model);
   const sendTemperature =
     options.temperature !== undefined &&
     options.temperature !== 0.1 &&
-    supportsCustomTemperature(model);
+    customTemperature;
+  // Only reasoning models (the ones without custom temperature) take reasoning_effort.
+  const sendReasoningEffort = !!options.reasoningEffort && !customTemperature;
 
   const body: OpenAI.Chat.ChatCompletionCreateParams = {
     model,
@@ -89,6 +92,10 @@ export async function openaiComplete(
       max_completion_tokens: options.maxTokens,
     }),
     ...(options.jsonMode && { response_format: { type: "json_object" } }),
+    ...(sendReasoningEffort && {
+      reasoning_effort:
+        options.reasoningEffort as OpenAI.Chat.ChatCompletionCreateParams["reasoning_effort"],
+    }),
   };
 
   const controller = new AbortController();
@@ -108,10 +115,18 @@ export async function openaiComplete(
           promptTokens: response.usage.prompt_tokens,
           completionTokens: response.usage.completion_tokens,
           totalTokens: response.usage.total_tokens,
+          reasoningTokens:
+            response.usage.completion_tokens_details?.reasoning_tokens,
         }
       : undefined;
 
-    return { content, usage, raw: response };
+    return {
+      content,
+      model: response.model ?? model,
+      usage,
+      finishReason: choice?.finish_reason ?? undefined,
+      raw: response,
+    };
   } catch (err) {
     clearTimeout(timeoutId);
     const msg = err instanceof Error ? err.message : String(err);

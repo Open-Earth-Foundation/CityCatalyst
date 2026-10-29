@@ -93,6 +93,8 @@ export function createLLMClient(
               model,
               promptTokens: result.usage.promptTokens,
               completionTokens: result.usage.completionTokens,
+              reasoningTokens: result.usage.reasoningTokens,
+              finishReason: result.finishReason,
             },
             "LLM complete response",
           );

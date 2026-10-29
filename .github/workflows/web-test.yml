@@ -253,6 +253,8 @@ jobs:
             MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_TEST}} \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
+            LLM_EXTRACTION_MODEL=gpt-5.6-luna \
+            LLM_TIMEOUT_MS=180000 \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \

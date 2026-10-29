@@ -1068,7 +1068,13 @@ async function extractSegment(
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const { content: responseContent } = await client.complete({
+  const started = Date.now();
+  const {
+    content: responseContent,
+    model,
+    usage,
+    finishReason,
+  } = await client.complete({
     // Table extraction needs a stronger model than column mapping (CC-1008:
     // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
     model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
@@ -1078,8 +1084,32 @@ async function extractSegment(
     ],
     jsonMode: true,
     temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+    // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
+    // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
     maxTokens: 16000,
+    reasoningEffort:
+      process.env.LLM_EXTRACTION_REASONING_EFFORT?.trim() || undefined,
   });
+  logger.info(
+    {
+      isSegment,
+      model,
+      finishReason,
+      promptTokens: usage?.promptTokens,
+      completionTokens: usage?.completionTokens,
+      reasoningTokens: usage?.reasoningTokens,
+      durationMs: Date.now() - started,
+    },
+    "Extraction LLM call finished",
+  );
+  // A response cut off at the token limit is incomplete JSON. Fail the call so
+  // the page is retried and then reported as failed, never imported in part.
+  if (finishReason === "length") {
+    throw new LLMError(
+      "Extraction response was cut off at the token limit",
+      LLMErrorCode.BAD_REQUEST,
+    );
+  }
 
   const truncated =
     responseContent.length > EXTRACTION_LOG_LIMIT
@@ -1188,27 +1218,16 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    // Truncated response: try closing {"rows": [ ... with ]}
-    const trimmedEnd = jsonStr.trimEnd();
-    if (trimmedEnd.endsWith("}") && jsonStr.includes('"rows"')) {
-      try {
-        parsed = JSON.parse(trimmedEnd + "]}");
-        logger.debug("Repaired truncated extraction JSON by appending ]}");
-      } catch {
-        /* ignore */
-      }
-    }
-    if (parsed === undefined) {
-      // Last resort: find a top-level JSON array
-      const arrayStart = jsonStr.indexOf("[");
-      if (arrayStart >= 0) {
-        const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
-        if (end > 0) {
-          try {
-            parsed = JSON.parse(jsonStr.slice(arrayStart, end));
-          } catch {
-            /* ignore */
-          }
+    // A cut-off response is not repaired (closing it would drop rows silently).
+    // Last resort: find a complete top-level JSON array
+    const arrayStart = jsonStr.indexOf("[");
+    if (arrayStart >= 0) {
+      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+      if (end > 0) {
+        try {
+          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+        } catch {
+          /* ignore */
         }
       }
     }

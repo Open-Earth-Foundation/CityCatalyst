@@ -1,0 +1,891 @@
+[
+  {
+    "unit_id": "finding/0",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Confirm the submittal date for the City of Richfield's Flood Hazard Mitigation Grant Assistance Program application.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the submittal date for the City of Richfield's Flood Hazard Mitigation Grant Assistance Program application.",
+    "chapters": [
+      "applicant_project_information"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/1",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the official project name for the City of Richfield flood-risk mitigation project proposed for Flood Hazard Mitigation Grant Assistance Program funding.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the official project name for the City of Richfield flood-risk mitigation project proposed for Flood Hazard Mitigation Grant Assistance Program funding.",
+    "chapters": [
+      "applicant_project_information"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/2",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Provide the name and title of the City of Richfield official authorized to execute this Flood Hazard Mitigation Grant Assistance Program application and grant agreement.",
+    "suggested_action": "Resolve or confirm this gap: Provide the name and title of the City of Richfield official authorized to execute this Flood Hazard Mitigation Grant Assistance Program application and grant agreement.",
+    "chapters": [
+      "applicant_project_information"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/3",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "chapters": [
+      "applicant_project_information"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/4",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "completeness",
+    "category": "missing_information",
+    "severity": "blocking",
+    "message": "The local government contact's name, address, phone number, and email address are missing.",
+    "suggested_action": "Add the designated local government contact and complete address, phone, and email details.",
+    "chapters": [
+      "applicant_project_information"
+    ],
+    "excerpts": [
+      "**Local government contact:**"
+    ]
+  },
+  {
+    "unit_id": "finding/5",
+    "target_chapter": "applicant_project_information",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected.",
+    "suggested_action": "Confirm the selected concept, then replace the question with the stated value or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "applicant_project_information",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  },
+  {
+    "unit_id": "finding/6",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "chapters": [
+      "funding_breakout"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/7",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the total cost of the current phase for the selected City of Richfield flood-risk mitigation project, including the phase scope and all eligible and ineligible costs to be shown in the Flood Hazard Mitigation Grant Assistance Program application.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the total cost of the current phase for the selected City of Richfield flood-risk mitigation project, including the phase scope and all eligible and ineligible costs to be shown in the Flood Hazard Mitigation Grant Assistance Program application.",
+    "chapters": [
+      "funding_breakout"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/8",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program amount requested for the selected City of Richfield flood-risk mitigation project and current phase.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program amount requested for the selected City of Richfield flood-risk mitigation project and current phase.",
+    "chapters": [
+      "funding_breakout"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/9",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Identify all other committed, pending, and anticipated state, federal, local, and non-governmental funding for the selected City of Richfield flood-risk mitigation project and current phase, including each source, amount, funding status, and local match.",
+    "suggested_action": "Resolve or confirm this gap: Identify all other committed, pending, and anticipated state, federal, local, and non-governmental funding for the selected City of Richfield flood-risk mitigation project and current phase, including each source, amount, funding status, and local match.",
+    "chapters": [
+      "funding_breakout"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/10",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Confirm whether the City of Richfield has previously received Minnesota DNR Flood Hazard Mitigation funding for the selected flood-risk mitigation project or related project area; if so, provide the grant year, award amount, project scope, and current status.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether the City of Richfield has previously received Minnesota DNR Flood Hazard Mitigation funding for the selected flood-risk mitigation project or related project area; if so, provide the grant year, award amount, project scope, and current status.",
+    "chapters": [
+      "funding_breakout"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/11",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output gives a planning-level estimate accuracy range of -10% to +15%, while the project analysis states the same concept estimates have an accuracy range of -30% to +50%.",
+    "suggested_action": "Verify the estimate accuracy range and use the confirmed range consistently.",
+    "chapters": [
+      "funding_breakout",
+      "project_analysis"
+    ],
+    "excerpts": [
+      "These estimates have an accuracy range of -10% to +15%.",
+      "The construction-cost estimates are expressed in 2025 dollars and have a planning-level accuracy range of -30% to +50%."
+    ]
+  },
+  {
+    "unit_id": "finding/12",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output lists Wilson Pond Concept C at $13,733,000, while the project analysis lists the same concept at $17,333,000.",
+    "suggested_action": "Confirm the Wilson Pond Concept C construction-cost estimate and correct the inconsistent amount.",
+    "chapters": [
+      "funding_breakout",
+      "project_analysis"
+    ],
+    "excerpts": [
+      "| Wilson Pond Concept C — increase storm-sewer capacity and number of pipes | $13,733,000 |",
+      "| Wilson Pond Concept C | Install two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494 | Reduced peak water levels by 0.6 feet at Wilson Pond, 0.5 feet upstream, and 2.3 feet downstream | $17,333,000 |"
+    ]
+  },
+  {
+    "unit_id": "finding/13",
+    "target_chapter": "funding_breakout",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected.",
+    "suggested_action": "Confirm the selection, then replace the question with the stated value or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "funding_breakout",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  },
+  {
+    "unit_id": "finding/14",
+    "target_chapter": "project_activities",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "chapters": [
+      "project_activities"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/15",
+    "target_chapter": "project_activities",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the grant-funded activity types, quantities, and measurable current-phase outputs for the selected City of Richfield flood-risk mitigation project, including any design, permitting, construction, storage, storm-sewer, outlet-control, or property-agreement activities.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the grant-funded activity types, quantities, and measurable current-phase outputs for the selected City of Richfield flood-risk mitigation project, including any design, permitting, construction, storage, storm-sewer, outlet-control, or property-agreement activities.",
+    "chapters": [
+      "project_activities"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/16",
+    "target_chapter": "project_activities",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "logic_error",
+    "severity": "blocking",
+    "message": "The stated Woodlawn Terrace Concept A storage quantity does not match the dimensions and storage factor provided: 8,000 square feet × 3 feet × 75% equals 18,000 cubic feet, not approximately 24,000 cubic feet.",
+    "suggested_action": "Correct the storage quantity or revise the stated area, depth, or assumed available-storage percentage so the calculation is consistent.",
+    "chapters": [
+      "project_activities"
+    ],
+    "excerpts": [
+      "Install approximately **24,000 cubic feet** of underground storage beneath the parking lot next to Lynwood Commons Apartments.",
+      "The concept is based on approximately 8,000 square feet of surface area, a 3-foot depth, and an assumed 75% of underground volume available for stormwater storage."
+    ]
+  },
+  {
+    "unit_id": "finding/17",
+    "target_chapter": "project_activities",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected for this application.",
+    "suggested_action": "Confirm the selected concept, then replace the question with the stated value or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "project_activities",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  },
+  {
+    "unit_id": "finding/18",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.",
+    "chapters": [
+      "flood_damages"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/19",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Provide documented flood-damage and inundation evidence for the selected City of Richfield flood-risk mitigation project area, including affected properties or facilities, flood event dates, observed flood depths or extents where available, damage descriptions and costs, and any emergency-service, transportation, utility, school, or housing impacts.",
+    "suggested_action": "Resolve or confirm this gap: Provide documented flood-damage and inundation evidence for the selected City of Richfield flood-risk mitigation project area, including affected properties or facilities, flood event dates, observed flood depths or extents where available, damage descriptions and costs, and any emergency-service, transportation, utility, school, or housing impacts.",
+    "chapters": [
+      "flood_damages"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/20",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Provide the maps, photographs, and other supporting exhibits that will accompany the City of Richfield Flood Hazard Mitigation Grant Assistance Program application for the selected project area, and confirm the source and date of each exhibit.",
+    "suggested_action": "Resolve or confirm this gap: Provide the maps, photographs, and other supporting exhibits that will accompany the City of Richfield Flood Hazard Mitigation Grant Assistance Program application for the selected project area, and confirm the source and date of each exhibit.",
+    "chapters": [
+      "flood_damages"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/21",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Confirm whether the county containing the selected City of Richfield flood-risk mitigation project area has received any presidential disaster declarations for flooding relevant to the proposed project; if so, provide the disaster declaration number, incident period, county, and relationship to the project area.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether the county containing the selected City of Richfield flood-risk mitigation project area has received any presidential disaster declarations for flooding relevant to the proposed project; if so, provide the disaster declaration number, incident period, county, and relationship to the project area.",
+    "chapters": [
+      "flood_damages"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/22",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that 801 flood-risk areas are within or primarily within Richfield, while the project analysis states that 601 areas meet that description.",
+    "suggested_action": "Confirm the correct number of flood-risk areas within or primarily within the Richfield municipal boundary and use it consistently.",
+    "chapters": [
+      "flood_damages",
+      "project_analysis"
+    ],
+    "excerpts": [
+      "including 801 areas located within or primarily within the Richfield municipal boundary.",
+      "including 601 located within or primarily within the Richfield municipal boundary."
+    ]
+  },
+  {
+    "unit_id": "finding/23",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output says the study evaluated four priority locations for concept-level projects, while the project analysis states that City staff selected three priority flood-risk areas.",
+    "suggested_action": "Confirm the number of priority locations evaluated and revise the output or project analysis to use the same number and location list.",
+    "chapters": [
+      "flood_damages",
+      "project_analysis"
+    ],
+    "excerpts": [
+      "The August 2025 study evaluated four priority locations for concept-level flood-risk reduction projects:",
+      "City staff selected three priority flood-risk areas for concept-level alternatives evaluation: Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace."
+    ]
+  },
+  {
+    "unit_id": "finding/24",
+    "target_chapter": "flood_damages",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question about which location and concept will be submitted is answered in the Project description chapter: Wilson Pond Concept B was selected.",
+    "suggested_action": "Confirm the selection, then replace the question with the stated value or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "flood_damages",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond, northwest of Roosevelt Park, near Woodlawn Terrace, or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  },
+  {
+    "unit_id": "finding/25",
+    "target_chapter": "existing_mitigation_regulation",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Describe prior flood-mitigation, stormwater, drainage, acquisition, or floodproofing measures completed or underway in the selected City of Richfield flood-risk mitigation project area, including each measure's location, completion date, cost or funding source where available, and observed effectiveness.",
+    "suggested_action": "Resolve or confirm this gap: Describe prior flood-mitigation, stormwater, drainage, acquisition, or floodproofing measures completed or underway in the selected City of Richfield flood-risk mitigation project area, including each measure's location, completion date, cost or funding source where available, and observed effectiveness.",
+    "chapters": [
+      "existing_mitigation_regulation"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/26",
+    "target_chapter": "existing_mitigation_regulation",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the applicable City of Richfield floodplain ordinance standards and enforcement procedures for the selected flood-risk mitigation project area; state whether the proposed project complies with those standards, identify required permits or approvals, and disclose any relevant unresolved floodplain ordinance violations.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the applicable City of Richfield floodplain ordinance standards and enforcement procedures for the selected flood-risk mitigation project area; state whether the proposed project complies with those standards, identify required permits or approvals, and disclose any relevant unresolved floodplain ordinance violations.",
+    "chapters": [
+      "existing_mitigation_regulation"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/27",
+    "target_chapter": "existing_mitigation_regulation",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that 601 flood-risk areas were within or primarily within Richfield, while the flood-damages chapter states that 801 such areas were within or primarily within the municipal boundary.",
+    "suggested_action": "Confirm the correct count of flood-risk areas within or primarily within Richfield and use that figure consistently.",
+    "chapters": [
+      "existing_mitigation_regulation",
+      "flood_damages"
+    ],
+    "excerpts": [
+      "The August 2025 flood-risk prioritization study evaluated 746 flood-risk areas across the study area, including 601 areas within or primarily within the Richfield municipal boundary.",
+      "The city’s prioritization process evaluated 746 flood-risk areas across the study area, including 801 areas located within or primarily within the Richfield municipal boundary."
+    ]
+  },
+  {
+    "unit_id": "finding/28",
+    "target_chapter": "project_description",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the immediate-phase objective, grant-funded scope, and measurable outcomes for the selected City of Richfield flood-risk mitigation project, including whether the current phase is planning, design, permitting, property coordination, construction, or a combination of these activities.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the immediate-phase objective, grant-funded scope, and measurable outcomes for the selected City of Richfield flood-risk mitigation project, including whether the current phase is planning, design, permitting, property coordination, construction, or a combination of these activities.",
+    "chapters": [
+      "project_description"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/29",
+    "target_chapter": "project_description",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Identify the delivery partners for the selected City of Richfield flood-risk mitigation project and confirm each partner's role, responsibilities, commitments, and required agreements, including any role for Barr Engineering Co., the Minnesota Department of Natural Resources, private property owners, the City of Bloomington, MnDOT, utilities, or other entities.",
+    "suggested_action": "Resolve or confirm this gap: Identify the delivery partners for the selected City of Richfield flood-risk mitigation project and confirm each partner's role, responsibilities, commitments, and required agreements, including any role for Barr Engineering Co., the Minnesota Department of Natural Resources, private property owners, the City of Bloomington, MnDOT, utilities, or other entities.",
+    "chapters": [
+      "project_description"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/30",
+    "target_chapter": "project_description",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output states that Wilson Pond Concept B has been selected, while the other chapters still mark the project location and concept as requiring confirmation.",
+    "suggested_action": "Confirm Wilson Pond Concept B as the application project, then replace the unresolved selection markers in the listed chapters with the confirmed scope.",
+    "chapters": [
+      "project_description",
+      "applicant_project_information",
+      "funding_breakout",
+      "project_activities",
+      "flood_damages",
+      "project_analysis",
+      "project_financing"
+    ],
+    "excerpts": [
+      "The City of Richfield has selected Wilson Pond Concept B for this application.",
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for funding...]",
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding...]"
+    ]
+  },
+  {
+    "unit_id": "finding/31",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/32",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Provide the City of Richfield's project-selection rationale for the proposed Flood Hazard Mitigation Grant Assistance Program alternative, including the alternatives compared, the criteria used to select the preferred alternative, and why the preferred alternative is the most feasible and effective current-phase investment.",
+    "suggested_action": "Resolve or confirm this gap: Provide the City of Richfield's project-selection rationale for the proposed Flood Hazard Mitigation Grant Assistance Program alternative, including the alternatives compared, the criteria used to select the preferred alternative, and why the preferred alternative is the most feasible and effective current-phase investment.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/33",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Describe the anticipated environmental effects of the selected City of Richfield flood-risk mitigation project, including effects on wetlands, waters, groundwater, habitat, trees, soil, construction disturbance, downstream flooding, and any cultural-resource or contamination concerns; identify avoidance, minimization, and mitigation measures.",
+    "suggested_action": "Resolve or confirm this gap: Describe the anticipated environmental effects of the selected City of Richfield flood-risk mitigation project, including effects on wetlands, waters, groundwater, habitat, trees, soil, construction disturbance, downstream flooding, and any cultural-resource or contamination concerns; identify avoidance, minimization, and mitigation measures.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/34",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Describe the social and economic effects of the selected City of Richfield flood-risk mitigation project, including the affected residents, businesses, housing, transportation, schools, utilities, and any underserved communities; quantify anticipated flood-risk-reduction benefits and identify any temporary construction, access, displacement, affordability, or equity impacts and mitigation measures.",
+    "suggested_action": "Resolve or confirm this gap: Describe the social and economic effects of the selected City of Richfield flood-risk mitigation project, including the affected residents, businesses, housing, transportation, schools, utilities, and any underserved communities; quantify anticipated flood-risk-reduction benefits and identify any temporary construction, access, displacement, affordability, or equity impacts and mitigation measures.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/35",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Provide the public-input and stakeholder-engagement record for the selected City of Richfield flood-risk mitigation project, including outreach methods, meeting dates, participants, comments received, concerns raised, and how the project scope or mitigation measures respond to that input.",
+    "suggested_action": "Resolve or confirm this gap: Provide the public-input and stakeholder-engagement record for the selected City of Richfield flood-risk mitigation project, including outreach methods, meeting dates, participants, comments received, concerns raised, and how the project scope or mitigation measures respond to that input.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/36",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the environmental-review status for the selected City of Richfield flood-risk mitigation project, including the applicable review process, responsible governmental unit, required review document or determination, completion status, and anticipated schedule for any outstanding review.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the environmental-review status for the selected City of Richfield flood-risk mitigation project, including the applicable review process, responsible governmental unit, required review document or determination, completion status, and anticipated schedule for any outstanding review.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/37",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Identify the applicable City of Richfield, watershed-management, or other local water-plan provisions that support the selected flood-risk mitigation project, and provide the plan title, section or policy reference, and explanation of alignment.",
+    "suggested_action": "Resolve or confirm this gap: Identify the applicable City of Richfield, watershed-management, or other local water-plan provisions that support the selected flood-risk mitigation project, and provide the plan title, section or policy reference, and explanation of alignment.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/38",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm whether the selected City of Richfield flood-risk mitigation project will affect wetlands or require wetland replacement credits; if so, state the anticipated credit need, replacement approach, permitting pathway, and responsible party, and if not, provide the basis for that determination.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether the selected City of Richfield flood-risk mitigation project will affect wetlands or require wetland replacement credits; if so, state the anticipated credit need, replacement approach, permitting pathway, and responsible party, and if not, provide the basis for that determination.",
+    "chapters": [
+      "project_analysis"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/39",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output states that 601 flood-risk areas were within or primarily within Richfield, while the flood-damages chapter states that 801 such areas were within or primarily within the municipal boundary.",
+    "suggested_action": "Verify the municipal-boundary count and use the confirmed number consistently.",
+    "chapters": [
+      "project_analysis",
+      "flood_damages"
+    ],
+    "excerpts": [
+      "It evaluated 746 flood-risk areas across the study area, including 601 located within or primarily within the Richfield municipal boundary.",
+      "The city’s prioritization process evaluated 746 flood-risk areas across the study area, including 801 areas located within or primarily within the Richfield municipal boundary."
+    ]
+  },
+  {
+    "unit_id": "finding/40",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output lists Wilson Pond Concept C’s planning-level construction cost as $17,333,000, while the funding-breakdown chapter lists $13,733,000.",
+    "suggested_action": "Confirm the Concept C construction-cost estimate and reconcile the amount in both chapters.",
+    "chapters": [
+      "project_analysis",
+      "funding_breakout"
+    ],
+    "excerpts": [
+      "Wilson Pond Concept C | Install two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494 | Reduced peak water levels by 0.6 feet at Wilson Pond, 0.5 feet upstream, and 2.3 feet downstream | $17,333,000",
+      "Wilson Pond Concept C — increase storm-sewer capacity and number of pipes | $13,733,000"
+    ]
+  },
+  {
+    "unit_id": "finding/41",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output characterizes the construction-cost estimates as having a -30% to +50% accuracy range, while the funding-breakdown chapter gives a -10% to +15% range for the same planning-level estimates.",
+    "suggested_action": "Confirm the applicable estimate class and accuracy range, then use that range consistently.",
+    "chapters": [
+      "project_analysis",
+      "funding_breakout"
+    ],
+    "excerpts": [
+      "The construction-cost estimates are expressed in 2025 dollars and have a planning-level accuracy range of -30% to +50%.",
+      "These estimates have an accuracy range of -10% to +15%"
+    ]
+  },
+  {
+    "unit_id": "finding/42",
+    "target_chapter": "project_analysis",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: the City selected Wilson Pond Concept B.",
+    "suggested_action": "Confirm the selected concept, then replace the question with Wilson Pond Concept B or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "project_analysis",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  },
+  {
+    "unit_id": "finding/43",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.",
+    "suggested_action": "Resolve or confirm this gap: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/44",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the total cost of the current phase for the selected City of Richfield flood-risk mitigation project, including the phase scope and all eligible and ineligible costs to be shown in the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program application.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the total cost of the current phase for the selected City of Richfield flood-risk mitigation project, including the phase scope and all eligible and ineligible costs to be shown in the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program application.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/45",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program amount requested for the selected City of Richfield flood-risk mitigation project and current phase.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program amount requested for the selected City of Richfield flood-risk mitigation project and current phase.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/46",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Identify all committed, pending, and anticipated state, federal, local, and non-governmental funding for the selected City of Richfield flood-risk mitigation project and current phase, including each source, amount, funding status, and local match.",
+    "suggested_action": "Resolve or confirm this gap: Identify all committed, pending, and anticipated state, federal, local, and non-governmental funding for the selected City of Richfield flood-risk mitigation project and current phase, including each source, amount, funding status, and local match.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/47",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the City of Richfield's proposed financing method and local financial contribution for the selected flood-risk mitigation project and current phase, including the funding source, appropriation or authorization status, timing of available funds, and any borrowing, utility, levy, reserve, or assessment mechanism.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the City of Richfield's proposed financing method and local financial contribution for the selected flood-risk mitigation project and current phase, including the funding source, appropriation or authorization status, timing of available funds, and any borrowing, utility, levy, reserve, or assessment mechanism.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/48",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm whether the City of Richfield has previously received Minnesota DNR Flood Hazard Mitigation funding for the selected flood-risk mitigation project or related project area; if so, provide the grant year, award amount, project scope, and current status.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether the City of Richfield has previously received Minnesota DNR Flood Hazard Mitigation funding for the selected flood-risk mitigation project or related project area; if so, provide the grant year, award amount, project scope, and current status.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/49",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Provide evidence of the City of Richfield's financial capability to complete the selected flood-risk mitigation project and current phase, including the adopted or proposed budget source, available local match, relevant debt or bonding authority if applicable, and the official authorized to commit funds.",
+    "suggested_action": "Resolve or confirm this gap: Provide evidence of the City of Richfield's financial capability to complete the selected flood-risk mitigation project and current phase, including the adopted or proposed budget source, available local match, relevant debt or bonding authority if applicable, and the official authorized to commit funds.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/50",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Confirm whether any Red River funding is applicable to the selected City of Richfield flood-risk mitigation project; if applicable, identify the funding source, amount, status, and role in the financing plan, and if not applicable, provide that determination.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether any Red River funding is applicable to the selected City of Richfield flood-risk mitigation project; if applicable, identify the funding source, amount, status, and role in the financing plan, and if not applicable, provide that determination.",
+    "chapters": [
+      "project_financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/51",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "Wilson Pond Concept C has incompatible planning-level construction cost estimates.",
+    "suggested_action": "Confirm the correct Wilson Pond Concept C construction-cost estimate and use it consistently in the financing and funding-breakdown chapters.",
+    "chapters": [
+      "project_financing",
+      "funding_breakout"
+    ],
+    "excerpts": [
+      "| Wilson Pond Concept C — increase storm-sewer capacity and number of pipes | $17,333,000 |",
+      "| Wilson Pond Concept C — increase storm-sewer capacity and number of pipes | $13,733,000 |"
+    ]
+  },
+  {
+    "unit_id": "finding/52",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output and funding-breakdown chapter assign incompatible accuracy ranges to the same planning-level cost estimates.",
+    "suggested_action": "Confirm the applicable estimate accuracy range and apply it consistently across all cost-context tables and narrative.",
+    "chapters": [
+      "project_financing",
+      "funding_breakout"
+    ],
+    "excerpts": [
+      "These estimates are Class 4 planning-level estimates with an accuracy range of -30% to +50%.",
+      "These estimates have an accuracy range of -10% to +15%"
+    ]
+  },
+  {
+    "unit_id": "finding/53",
+    "target_chapter": "project_financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected.",
+    "suggested_action": "Confirm the selection, then replace the question with the stated value or correct the Project description chapter if its statement is wrong.",
+    "chapters": [
+      "project_financing",
+      "project_description"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm which City of Richfield flood-risk mitigation location and concept will be submitted for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding, including whether the proposal is Wilson Pond Concept A, B, or C; northwest of Roosevelt Park Concept A; near Woodlawn Terrace Concept A or B; or another defined project scope.]",
+      "The City of Richfield has selected Wilson Pond Concept B for this application."
+    ]
+  }
+]

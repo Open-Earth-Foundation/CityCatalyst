@@ -22,6 +22,9 @@ from agents import (
 from app.config.settings import ResearchModelConfig
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
+    ChapterExcerpts,
+    ChapterPartitionEvidence,
+    ChapterTaggedSourceExcerpt,
     SelectedSource,
     SourceExcerpt,
     SourcePartitionMap,
@@ -29,9 +32,12 @@ from app.models.cnb.context_bundle import (
     SourceQuestionReading,
 )
 from app.models.cnb.source_prompt import (
+    ChapterEvidenceReading,
+    ChapterEvidenceSelection,
     DocumentMappingReading,
     DocumentSummary,
     QuestionReading,
+    ReadableExcerpt,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
@@ -59,7 +65,15 @@ MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
 MAX_COVERAGE_SPLIT_DEPTH = 2
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
-PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionReading)
+PartitionOutput = TypeVar(
+    "PartitionOutput", SourcePartitionMap, SourceQuestionReading, ChapterPartitionEvidence
+)
+# The model-facing reading each partition output type is built from.
+_READINGS: dict[type[BaseModel], type[BaseModel]] = {
+    SourcePartitionMap: DocumentMappingReading,
+    SourceQuestionReading: QuestionReading,
+    ChapterPartitionEvidence: ChapterEvidenceReading,
+}
 
 
 class SourceAnalysisError(Exception):
@@ -282,11 +296,202 @@ async def analyze_document(
             block_count=len(pages) if source_format == "markdown" else None,
             summary=synthesis.summary,
             topics=deduplicate_strings(synthesis.topics)[: budget.max_topics],
-            key_excerpts=_restore_summary_excerpts(synthesis, pages)[: budget.max_key_excerpts],
+            key_excerpts=_restore_readable_excerpts(synthesis.key_excerpts, pages)[
+                : budget.max_key_excerpts
+            ],
         )
     finally:
         if owns_client:
             await client.close()
+
+
+def chapter_evidence_fingerprint(
+    settings: Settings, chapters: Sequence[dict[str, Any]]
+) -> str:
+    """Hash the template requirements and every setting that shapes chapter evidence."""
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    reader = settings.llm.models.cnb_source_reader
+    selector = settings.llm.models.cnb_source_synthesizer
+    prompts = settings.llm.prompts
+    contract = {
+        "chapters": list(chapters),
+        "reader": {
+            "model": reader.name,
+            "reasoning_effort": reader.reasoning_effort,
+            "prompt": prompts.get_prompt("cnb_source_chapter_evidence"),
+        },
+        "selector": {
+            "model": selector.name,
+            "reasoning_effort": selector.reasoning_effort,
+            "prompt": prompts.get_prompt("cnb_source_chapter_evidence_selection"),
+        },
+        "limits": {
+            "max_partition_tokens": budget.max_partition_tokens,
+            "max_chapter_excerpts": budget.max_chapter_excerpts,
+            "tokenizer_encoding": settings.llm.generation.prompt_budget.tokenizer_encoding,
+        },
+    }
+    encoded = json.dumps(contract, sort_keys=True, ensure_ascii=False).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+async def extract_chapter_evidence(
+    *,
+    source_label: str,
+    source_format: ConceptNoteSourceFormat,
+    pages: Sequence[SourceUnit],
+    chapters: Sequence[dict[str, Any]],
+    settings: Settings | None = None,
+    client: AsyncOpenAI | None = None,
+    runner: Any = Runner,
+    reader_limit: asyncio.Semaphore | None = None,
+) -> list[ChapterExcerpts]:
+    """Read the whole source for each template chapter and keep a quota per chapter.
+
+    ``chapters`` holds each chapter's ``chapter_ref``, ``title``,
+    ``description``, and ``required_fields``. One reader call per partition
+    tags exact passages with the chapters they serve; one selection call runs
+    only for chapters with more verified candidates than ``max_chapter_excerpts``.
+    """
+    if not chapters:
+        return []
+    settings = settings or get_settings()
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
+    reader_model = settings.llm.models.cnb_source_reader
+    client, owns_client = _resolve_analysis_client(settings, client)
+    reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
+    context = {"source_label": source_label, "chapters": list(chapters)}
+    try:
+        # The chapter list travels with every partition, so it shares the budget.
+        prompt = settings.llm.prompts.get_prompt("cnb_source_chapter_evidence")
+        context_tokens = count_prompt_tokens(
+            [context], model=reader_model.name, fallback_encoding=tokenizer_encoding
+        ).tokens
+        partitions = partition_source_pages(
+            pages,
+            prompt=prompt,
+            model=reader_model.name,
+            max_tokens=budget.max_partition_tokens - context_tokens,
+            fallback_encoding=tokenizer_encoding,
+            source_label=source_label,
+        )
+        partition_readings = await gather_all_or_raise(
+            *(
+                _read_partition(
+                    name="Concept Note chapter evidence reader",
+                    partition=partition,
+                    prompt=prompt,
+                    output_type=ChapterPartitionEvidence,
+                    input_text=_render_with_context(partition, context),
+                    settings=settings,
+                    client=client,
+                    runner=runner,
+                    reader_limit=reader_limit,
+                )
+                for partition in partitions
+            )
+        )
+
+        # Group verified passages by chapter; unknown chapter references are dropped.
+        unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
+        candidates: dict[str, list[SourceExcerpt]] = {
+            chapter["chapter_ref"]: [] for chapter in chapters
+        }
+        for group in partition_readings:
+            for reading in group:
+                for excerpt in reading.excerpts:
+                    located = SourceExcerpt(
+                        text=excerpt.text, page=excerpt.page, anchor=excerpt.anchor
+                    )
+                    for ref in dict.fromkeys(excerpt.chapter_refs):
+                        if ref in candidates:
+                            candidates[ref].append(located)
+        candidates = {
+            ref: verified_excerpts(items, unit_text) for ref, items in candidates.items()
+        }
+
+        quota = budget.max_chapter_excerpts
+        overfull = {ref: items for ref, items in candidates.items() if len(items) > quota}
+        if overfull:
+            candidates.update(
+                await _select_chapter_excerpts(
+                    source_label=source_label,
+                    source_format=source_format,
+                    chapters=[c for c in chapters if c["chapter_ref"] in overfull],
+                    overfull=overfull,
+                    pages=pages,
+                    settings=settings,
+                    client=client,
+                    runner=runner,
+                )
+            )
+        return [
+            ChapterExcerpts(chapter_ref=ref, excerpts=items[:quota])
+            for ref, items in candidates.items()
+            if items
+        ]
+    finally:
+        if owns_client:
+            await client.close()
+
+
+async def _select_chapter_excerpts(
+    *,
+    source_label: str,
+    source_format: ConceptNoteSourceFormat,
+    chapters: list[dict[str, Any]],
+    overfull: dict[str, list[SourceExcerpt]],
+    pages: Sequence[SourceUnit],
+    settings: Settings,
+    client: AsyncOpenAI,
+    runner: Any,
+) -> dict[str, list[SourceExcerpt]]:
+    """Let the synthesizer choose each overfull chapter's quota from its candidates.
+
+    A chapter whose choice cannot be matched to its own candidates keeps its
+    candidates in document order.
+    """
+    quota = settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpts
+    selection = await _run_agent(
+        name="Concept Note chapter evidence selector",
+        prompt=settings.llm.prompts.get_prompt("cnb_source_chapter_evidence_selection"),
+        model_config=settings.llm.models.cnb_source_synthesizer,
+        output_type=ChapterEvidenceSelection,
+        input_text=json.dumps(
+            {
+                "source_label": source_label,
+                "source_format": source_format,
+                "chapters": chapters,
+                "candidates": [
+                    {
+                        "chapter_ref": ref,
+                        "excerpts": [
+                            omit_context_identifiers(e.model_dump(mode="json")) for e in items
+                        ],
+                    }
+                    for ref, items in overfull.items()
+                ],
+                "limits": {"max_excerpts_per_chapter": quota},
+            },
+            ensure_ascii=False,
+        ),
+        client=client,
+        runner=runner,
+    )
+    chosen: dict[str, list[SourceExcerpt]] = {}
+    for choice in selection.chapters:
+        allowed = {
+            (excerpt_source_anchor(e), e.text) for e in overfull.get(choice.chapter_ref, [])
+        }
+        restored = [
+            e
+            for e in _restore_readable_excerpts(choice.excerpts, pages)
+            if (excerpt_source_anchor(e), e.text) in allowed
+        ]
+        if restored:
+            chosen[choice.chapter_ref] = restored[:quota]
+    return chosen
 
 
 async def query_document(
@@ -425,9 +630,7 @@ async def _read_partition(
             name=name,
             prompt=prompt,
             model_config=settings.llm.models.cnb_source_reader,
-            output_type=DocumentMappingReading
-            if output_type is SourcePartitionMap
-            else QuestionReading,
+            output_type=_READINGS[output_type],
             input_text=input_text,
             client=client,
             runner=runner,
@@ -452,11 +655,7 @@ async def _read_partition(
                         partition=group,
                         prompt=prompt,
                         output_type=output_type,
-                        input_text=render_partition(
-                            group,
-                            source_label=payload.get("source_label"),
-                            question=payload.get("question"),
-                        ),
+                        input_text=_render_with_context(group, payload),
                         settings=settings,
                         client=client,
                         runner=runner,
@@ -477,6 +676,20 @@ async def _read_partition(
             },
         )
     # Match evidence to the exact section; the model never chooses an internal locator.
+    covered = [s.segment_id for s in partition]
+    if output_type is ChapterPartitionEvidence:
+        tagged = [
+            ChapterTaggedSourceExcerpt(
+                text=excerpt.text,
+                chapter_refs=excerpt.chapter_refs,
+                page=segment.page,
+                anchor=segment.anchor,
+            )
+            for segment, reading in zip(partition, result.sections, strict=True)
+            for excerpt in reading.excerpts
+            if excerpt.text in segment.text
+        ]
+        return [ChapterPartitionEvidence(excerpts=tagged, covered_segment_ids=covered)]
     excerpts = []
     caveats = []
     for segment, reading in zip(partition, result.sections, strict=True):
@@ -486,10 +699,7 @@ async def _read_partition(
             if text and text in segment.text
         )
         caveats.extend(reading.caveats)
-    values = {
-        "excerpts": excerpts[:20],
-        "covered_segment_ids": [s.segment_id for s in partition],
-    }
+    values = {"excerpts": excerpts[:20], "covered_segment_ids": covered}
     if output_type is SourcePartitionMap:
         values.update(summary=result.summary, topics=result.topics)
     else:
@@ -497,12 +707,12 @@ async def _read_partition(
     return [output_type.model_validate(values)]
 
 
-def _restore_summary_excerpts(
-    summary: DocumentSummary, pages: Sequence[SourceUnit]
+def _restore_readable_excerpts(
+    excerpts: Sequence[ReadableExcerpt], pages: Sequence[SourceUnit]
 ) -> list[SourceExcerpt]:
     """Resolve readable citations to verified backend locations without guessing."""
     restored = []
-    for excerpt in summary.key_excerpts:
+    for excerpt in excerpts:
         for unit in pages:
             matches_location = (
                 isinstance(unit, SourcePage)
@@ -960,6 +1170,15 @@ def render_partition(
         for segment in segments
     ]
     return json.dumps(payload, ensure_ascii=False)
+
+
+def _render_with_context(
+    segments: Sequence[SourceSegment], context: dict[str, Any]
+) -> str:
+    """Render sections after the same non-section inputs as their parent partition."""
+    sections = json.loads(render_partition(segments))["sections"]
+    inputs = {key: value for key, value in context.items() if key != "sections"}
+    return json.dumps({**inputs, "sections": sections}, ensure_ascii=False)
 
 
 def verified_excerpts(

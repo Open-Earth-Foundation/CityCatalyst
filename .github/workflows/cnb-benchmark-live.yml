@@ -1,0 +1,144 @@
+name: CNB live benchmark (advisory)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cnb-live-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  live:
+    # Keep this unique check non-required in branch protection. Quality failures
+    # remain visible; continue-on-error would hide a broken evaluation pipeline.
+    name: CNB quality report (non-required)
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Initialize failure evidence
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/cnb-evidence"
+          printf '%s\n' '{"execution":"unavailable","reason":"Setup or credentials unavailable"}' > "$RUNNER_TEMP/cnb-evidence/status.json"
+          printf '%s\n' '# CNB live benchmark' '' 'Evaluation unavailable: setup did not complete.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
+
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout trusted baseline
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: .cnb-base
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.11.7'
+          enable-cache: true
+          cache-dependency-glob: climate-advisor/uv.lock
+
+      - name: Install benchmark dependencies
+        working-directory: climate-advisor
+        run: uv sync --locked --group dev
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install production OCR dependencies
+        working-directory: app
+        run: npm ci --ignore-scripts
+
+      - name: Check benchmark contracts and viewer offline
+        working-directory: climate-advisor
+        run: |
+          uv run pytest benchmark/cnb/tests -q
+          node --test benchmark/cnb/tests/viewer.test.cjs
+
+      - name: Run serial benchmark paths
+        id: benchmark
+        working-directory: climate-advisor
+        shell: bash
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CNB_BENCHMARK_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CNB_BENCHMARK_AWS_SECRET_ACCESS_KEY }}
+          AWS_FILE_UPLOAD_S3_BUCKET_ID: ${{ secrets.CNB_BENCHMARK_S3_BUCKET }}
+          AWS_FILE_UPLOAD_REGION: ${{ vars.CNB_BENCHMARK_AWS_REGION || 'us-east-1' }}
+          CA_DATABASE_URL: 'sqlite+aiosqlite:///:memory:'
+          MLFLOW_ENABLED: 'false'
+          CC_BASE_URL: http://localhost:3000
+          RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          if [[ -z "$OPENROUTER_API_KEY" ]]; then
+            printf '%s\n' '# CNB live benchmark' '' 'Evaluation unavailable: OPENROUTER_API_KEY is missing.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
+            echo 'status=3' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          status=0
+          : > "$RUNNER_TEMP/cnb-evidence/summary.md"
+          for input in markdown pdf; do
+            if [[ "$input" == pdf && ( -z "$MISTRAL_API_KEY" || -z "$AWS_FILE_UPLOAD_S3_BUCKET_ID" || -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ) ]]; then
+              printf '%s\n' '' 'PDF evaluation unavailable: OCR or dedicated temporary-upload credentials are missing.' >> "$RUNNER_TEMP/cnb-evidence/summary.md"
+              status=3
+              continue
+            fi
+            manifest=baseline.json
+            if [[ "$input" == pdf ]]; then manifest=baseline-pdf.json; fi
+            result=0
+            uv run python -m benchmark.cnb.scripts.evaluate \
+              --run-id "$RUN_ID-$input" --label "$RUN_ID-$input" \
+              --input-path "$input" --timeout-seconds 1500 \
+              --results-dir "output/cnb-ci/$input" \
+              --baseline-manifest "../.cnb-base/climate-advisor/benchmark/cnb/$manifest" \
+              --baseline-results-dir ../.cnb-base/climate-advisor/benchmark/cnb/results || result=$?
+            if [[ "$result" -ne 0 ]]; then status=$result; fi
+            summary="output/cnb-ci/$input/runs/$RUN_ID-$input/comparison.md"
+            if [[ -f "$summary" ]]; then cat "$summary" >> "$RUNNER_TEMP/cnb-evidence/summary.md"; fi
+          done
+          printf '{"execution":"finished","exit_code":%s}\n' "$status" > "$RUNNER_TEMP/cnb-evidence/status.json"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Upload review bundles and partial evidence
+        id: review_artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnb-review-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            climate-advisor/output/cnb-ci/
+            ${{ runner.temp }}/cnb-evidence/
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish review summary
+        if: always()
+        shell: bash
+        env:
+          ARTIFACT_URL: ${{ steps.review_artifacts.outputs.artifact-url }}
+        run: |
+          printf 'Download [review bundles and partial evidence](%s). Extract review-bundle.zip and open index.html; evidence links below work inside that bundle.\n\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/cnb-evidence/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve advisory failure status
+        if: always()
+        shell: bash
+        env:
+          RESULT: ${{ steps.benchmark.outputs.status || '3' }}
+        run: exit "$RESULT"

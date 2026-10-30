@@ -1,0 +1,905 @@
+{
+  "facts": [
+    {
+      "id": "plan-horizon",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/informacje_o_projekcie/0/page-1",
+          "quote": "a) Horyzont czasowy: lata „2023-2035”"
+        }
+      ],
+      "reason": "The plan horizon is retained."
+    },
+    {
+      "id": "coordinator",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/informacje_o_projekcie/0/page-1",
+          "quote": "b) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "reason": "Both the coordinating department and KEGW's implementation role, including cooperation with other city units, are retained."
+    },
+    {
+      "id": "update-of-2018-plan",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/informacje_o_projekcie/2/page-2",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji."
+        }
+      ],
+      "reason": "The earlier plan, resolution, date and need for an update are retained."
+    },
+    {
+      "id": "protection-standard",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/4/page-2",
+          "quote": "poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia)."
+        }
+      ],
+      "reason": "The passage preserves the proposed protection standard, probability and thousand-year description."
+    },
+    {
+      "id": "three-threat-levels",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/uzasadnienie/3/page-2",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta. Aktualna efektywność zbiorników retencyjnych i przyszłych działań w zlewni powyżej Krakowa jest więc istotna dla ochrony przed powodzią miasta. Drugi, nieco niższy poziom zagrożenia stanowią dopływy Wisły z ujściem na terenie miasta, zasilane ze zlewni położonej poza miastem; zagrożenie powodziowe pojawia się na tych ciekach w zasięgu spiętrzenia cofki od wezbrania Wisły. Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle. Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala."
+        }
+      ],
+      "reason": "The retained passage distinguishes the Vistula, its tributaries and internal streams, and explains flooding behind the levees when gates close without pumps."
+    },
+    {
+      "id": "specific-objectives",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/informacje_o_projekcie/4/page-5",
+          "quote": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;\n\nCel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n\nCel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "reason": "All four objectives and the rainfall and river-flood qualifications of objective III are retained."
+    },
+    {
+      "id": "high-water-pumping",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "retained/6/page-5",
+          "quote": "Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r."
+        }
+      ],
+      "reason": "The project, amount, implementer and deadline survive, but no retained quotation identifies the amount's currency as PLN."
+    },
+    {
+      "id": "small-retention-programme",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "The programme's budget, 2023–2030 period and JP implementer are not retained."
+    },
+    {
+      "id": "blue-green-infrastructure",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "General retention objectives survive, but not the specified infrastructure project, amount, KEGW role and 2035 horizon."
+    },
+    {
+      "id": "monitoring-indicator",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "No retained quotation gives the output indicator, baseline or four target counts."
+    },
+    {
+      "id": "financing-risk",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "The need to provide adequate funds is retained, but the identification of insufficient drainage-system financing as a serious risk is not."
+    },
+    {
+      "id": "total-cost-city",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "The Table 1 total of PLN 1,275,867,730 is not retained."
+    },
+    {
+      "id": "total-cost-with-pzrp",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "The combined total including PZRP measures not implemented by the city is not retained."
+    },
+    {
+      "id": "cost-is-estimate",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "Some individual projects defer cost estimation, but the general qualification that plan costs are estimates requiring verification during investment preparation is not retained."
+    },
+    {
+      "id": "financing-sources",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "A need for financing is retained, but neither city-budget financing nor conditional external funding is stated in a retained quotation."
+    }
+  ],
+  "topics": [
+    {
+      "id": "flood-risk",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/3",
+          "quote": "zagrożenie powodziowe od Wisły"
+        },
+        {
+          "unit_id": "topic/0",
+          "quote": "ochrona przeciwpowodziowa"
+        }
+      ],
+      "reason": "The labels cover Vistula flood risk and flood protection generally, but do not distinguish tributaries and internal urban streams."
+    },
+    {
+      "id": "urban-drainage",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/1",
+          "quote": "odwodnienie miasta"
+        },
+        {
+          "unit_id": "topic/4",
+          "quote": "kanalizacja opadowa i modelowanie hydrauliczne"
+        }
+      ],
+      "reason": "Together the labels identify city drainage, stormwater sewers and a modernisation-related modelling issue."
+    },
+    {
+      "id": "rainwater-retention",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "topic/2",
+          "quote": "retencja wód opadowych"
+        }
+      ],
+      "reason": "Rainwater retention is labelled, but blue-green infrastructure is not identified."
+    },
+    {
+      "id": "crisis-management",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "No topic label identifies flood crisis management, evacuation planning or public education; the general flood-protection label does not convey them."
+    },
+    {
+      "id": "costs-financing",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "A label for hydrotechnical investments does not convey implementation costs or financing sources."
+    },
+    {
+      "id": "monitoring-evaluation",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "No topic label identifies indicators, reporting or evaluation."
+    }
+  ],
+  "claims": [
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/0/page-1",
+        "quote": "a) Horyzont czasowy: lata „2023-2035”\nb) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "a) Horyzont czasowy: lata „2023-2035”\nb) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The retained plan particulars match the source. Shorter retained quotations repeat the horizon."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/1/page-1",
+        "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The stated links to the city strategy are preserved; the passage is also repeated elsewhere in the retained quotations."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/1/page-1",
+        "quote": "Podjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "Podjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The adaptation aim and listed weather and climate hazards match the source, without asserting that adaptation has been completed."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/2/page-2",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przyjęty uchwałą Nr CXV/3043/18 Rady Miasta Krakowa z dnia 7 listopada 2018 r. w sprawie realizacji Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wymagał aktualizacji."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The 2018 resolution and update relationship match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/2/page-2",
+        "quote": "Celem niniejszej aktualizacji Planu jest zapewnienie warunków do efektywnej współpracy organów i instytucji oraz ewaluacja podejmowanych działań polegająca na weryfikacji pierwotnych założeń, analizie przyczyn odchyleń oraz określenia działań korygujących."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Celem niniejszej aktualizacji Planu jest zapewnienie warunków do efektywnej współpracy organów i instytucji oraz ewaluacja podejmowanych działań polegająca na weryfikacji pierwotnych założeń, analizie przyczyn odchyleń oraz określenia działań korygujących."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The update's cooperation and evaluation purposes, including what evaluation entails, are retained. A shorter quotation repeats their opening."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/2/page-2",
+        "quote": "Celem aktualizacji jest ponadto adaptacja miasta do zachodzących zjawisk klimatycznych, określonych m.in. w Planie Adaptacji Miasta Krakowa do zmian klimatu do roku 2030."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Celem aktualizacji jest ponadto adaptacja miasta do zachodzących zjawisk klimatycznych, określonych m.in. w Planie Adaptacji Miasta Krakowa do zmian klimatu do roku 2030."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The additional adaptation purpose and its reference plan are preserved."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/2/page-2",
+        "quote": "poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia)."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "poziom bezpieczeństwa budowli ochronnych Krakowa powinien osiągnąć zabezpieczenie przed wezbraniem o prawdopodobieństwie wystąpienia Q=0,1% (woda tysiącletnia)."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The standard remains an intended level of protection, not an assertion that it has been achieved. It is also repeated in a shorter retained quotation."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/2/page-2",
+        "quote": "Wezbrania z 2010 roku wykazały, że lokalne problemy z utrzymaniem systemu ochrony przeciwpowodziowej pojawiły się już w warunkach przepływu o prawdopodobieństwie wystąpienia bliskim Q=1% (woda stuletnia)."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Wezbrania z 2010 roku wykazały, że lokalne problemy z utrzymaniem systemu ochrony przeciwpowodziowej pojawiły się już w warunkach przepływu o prawdopodobieństwie wystąpienia bliskim Q=1% (woda stuletnia)."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The historical observation is retained with its local scope and approximately 1% flow probability."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/3/page-2",
+        "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta. Aktualna efektywność zbiorników retencyjnych i przyszłych działań w zlewni powyżej Krakowa jest więc istotna dla ochrony przed powodzią miasta."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta. Aktualna efektywność zbiorników retencyjnych i przyszłych działań w zlewni powyżej Krakowa jest więc istotna dla ochrony przed powodzią miasta."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The Vistula's primary role, upstream catchment and relevance of upstream retention are preserved; a shorter retained quotation repeats the first sentence."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/3/page-2",
+        "quote": "Drugi, nieco niższy poziom zagrożenia stanowią dopływy Wisły z ujściem na terenie miasta, zasilane ze zlewni położonej poza miastem; zagrożenie powodziowe pojawia się na tych ciekach w zasięgu spiętrzenia cofki od wezbrania Wisły."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Drugi, nieco niższy poziom zagrożenia stanowią dopływy Wisły z ujściem na terenie miasta, zasilane ze zlewni położonej poza miastem; zagrożenie powodziowe pojawia się na tych ciekach w zasięgu spiętrzenia cofki od wezbrania Wisły."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The tributaries' relative threat level, catchment scope and Vistula-backwater mechanism match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/3/page-2",
+        "quote": "Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle. Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle. Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The internal-stream flooding mechanism and absence of pumps for those waters are fully retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/4/page-3",
+        "quote": "Z roku na rok zagrożenie powodziowe Krakowa rośnie, ponieważ w zlewni Wisły i jej dopływów następują niekorzystne zmiany w zagospodarowaniu terenu, ograniczanie naturalnej zdolności retencyjnej terenu i przyspieszanie spływu powierzchniowego. Nakładają się na to zmiany klimatu, skutkujące występowaniem ekstremalnych zjawisk pogodowych, w tym ekstremalnych opadów (deszczy nawalnych)."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Z roku na rok zagrożenie powodziowe Krakowa rośnie, ponieważ w zlewni Wisły i jej dopływów następują niekorzystne zmiany w zagospodarowaniu terenu, ograniczanie naturalnej zdolności retencyjnej terenu i przyspieszanie spływu powierzchniowego. Nakładają się na to zmiany klimatu, skutkujące występowaniem ekstremalnych zjawisk pogodowych, w tym ekstremalnych opadów (deszczy nawalnych)."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The source's assessment of increasing risk and its stated land-use and climate contributors are retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/4/page-3",
+        "quote": "Przeprowadzona corocznie ocena stanu zabezpieczenia przeciwpowodziowego miasta Krakowa wskazuje, że pomimo trwających od wielu lat działań mających na celu zmniejszenie ryzyka powodzi, których intensywność stopniowo wzrasta, zagrożenie powodziowe występuje nadal, rodząc wiele potencjalnych negatywnych skutków dla życia i zdrowia ludzi na obszarach narażonych na niebezpieczeństwo powodzi i podtopień."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Przeprowadzona corocznie ocena stanu zabezpieczenia przeciwpowodziowego miasta Krakowa wskazuje, że pomimo trwających od wielu lat działań mających na celu zmniejszenie ryzyka powodzi, których intensywność stopniowo wzrasta, zagrożenie powodziowe występuje nadal, rodząc wiele potencjalnych negatywnych skutków dla życia i zdrowia ludzi na obszarach narażonych na niebezpieczeństwo powodzi i podtopień."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The continuing risk is properly qualified by the existing risk-reduction efforts and potential human impacts."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/4/page-3",
+        "quote": "Istnieje wysokie prawdopodobieństwo wystąpienia na Wiśle wezbrań większych niż w lipcu 1997 r. i maju 2010 r."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Istnieje wysokie prawdopodobieństwo wystąpienia na Wiśle wezbrań większych niż w lipcu 1997 r. i maju 2010 r."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The statement preserves the source's probability assessment and historical comparisons."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/4/page-3",
+        "quote": "Mimo podejmowanych działań, m.in. zmodernizowania dużego fragmentu obwałowań rzeki Wisły, wybudowania dodatkowych trzech zbiorników na Serafie, podniesienia brzegów (wykonanie opaski z grodzic winylowych) na Serafie, wyczyszczenia kanalizacji opadowej, wykonania rowu retencyjnego w rejonie ul. Udzieli, wybudowania kilku pompowni (w tym pompowni Lesisko, Agatowa, Borowego), aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Mimo podejmowanych działań, m.in. zmodernizowania dużego fragmentu obwałowań rzeki Wisły, wybudowania dodatkowych trzech zbiorników na Serafie, podniesienia brzegów (wykonanie opaski z grodzic winylowych) na Serafie, wyczyszczenia kanalizacji opadowej, wykonania rowu retencyjnego w rejonie ul. Udzieli, wybudowania kilku pompowni (w tym pompowni Lesisko, Agatowa, Borowego), aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The listed past works and the qualification that protection remains insufficient are retained together."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/5/page-3",
+        "quote": "1) konieczność adaptacji do zmian klimatu (większej częstotliwości i intensywności występowania ekstremalnych zjawisk pogodowych);\n2) występowanie lokalnych podtopień spowodowanych zbyt małą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów;\n3) brak możliwości odpływu wód opadowych podczas wezbrań na Wiśle, powodujących zamknięcie śluz wałowych;\n4) niedostatecznie rozwinięta retencja i/lub sieć kanalizacji opadowej w obszarach peryferyjnych;"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "1) konieczność adaptacji do zmian klimatu (większej częstotliwości i intensywności występowania ekstremalnych zjawisk pogodowych);\n2) występowanie lokalnych podtopień spowodowanych zbyt małą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów;\n3) brak możliwości odpływu wód opadowych podczas wezbrań na Wiśle, powodujących zamknięcie śluz wałowych;\n4) niedostatecznie rozwinięta retencja i/lub sieć kanalizacji opadowej w obszarach peryferyjnych;"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "These four distinct drainage-system problems are retained with their causes and geographic qualification."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/5/page-3",
+        "quote": "5) konieczność zabezpieczenia obszaru ochrony Osiedla Uzdrowisko Swoszowice przed infiltracją zanieczyszczonych wód opadowych, przy jednoczesnym zapewnieniu uzupełniania złóż wód podziemnych wodą czystą;\n6) konieczność przeciwdziałania aktywizacji osuwisk;\n7) zmiany w zagospodarowaniu terenu i szybko powiększająca się powierzchnia terenów uszczelnionych;\n8) konieczność przeciwdziałania skutkom suszy."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "5) konieczność zabezpieczenia obszaru ochrony Osiedla Uzdrowisko Swoszowice przed infiltracją zanieczyszczonych wód opadowych, przy jednoczesnym zapewnieniu uzupełniania złóż wód podziemnych wodą czystą;\n6) konieczność przeciwdziałania aktywizacji osuwisk;\n7) zmiany w zagospodarowaniu terenu i szybko powiększająca się powierzchnia terenów uszczelnionych;\n8) konieczność przeciwdziałania skutkom suszy."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The Swoszowice water-quality balance, landslide, sealed-surface and drought concerns match the source."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/6/page-4",
+        "quote": "1) kontynuacja inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) o stopniu szczegółowości niezbędnym dla wykorzystania nowych narzędzi modelowania;\n2) wdrożenie systemu zarządzania kanalizacją opadową (model hydrauliczny, model pokrycia terenu, model opad-odpływ, koncepcja rozwiązań technicznych uwzględniająca nowe uwarunkowania dla funkcjonowania Systemu);"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "1) kontynuacja inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) o stopniu szczegółowości niezbędnym dla wykorzystania nowych narzędzi modelowania;\n2) wdrożenie systemu zarządzania kanalizacją opadową (model hydrauliczny, model pokrycia terenu, model opad-odpływ, koncepcja rozwiązań technicznych uwzględniające nowe uwarunkowania dla funkcjonowania Systemu);"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The inventory and modelling-management requirements are retained. The source wording for the second item is present in the same page, although the cited source span should be read as its corresponding list items."
+    },
+    {
+      "output": {
+        "unit_id": "retained/uzasadnienie/6/page-4",
+        "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The coordination and adequate-funding requirements match the source. They do not themselves specify funding sources."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/3/page-4",
+        "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych, poprzez:\n\n1) współpracę z Państwowym Gospodarstwem Wodnym Wody Polskie oraz organami administracji rządowej i samorządowej;\n2) zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych, poprzez:\n\n1) współpracę z Państwowym Gospodarstwem Wodnym Wody Polskie oraz organami administracji rządowej i samorządowej;\n2) zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The general goal and these proposed means are preserved. Shorter and duplicate retained passages make the same claims."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/4/page-5",
+        "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;\n5) prowadzenie polityki informacyjnej w zakresie ochrony przed powodzią i podtopieniami oraz ograniczenia ich skutków;"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;\n5) prowadzenie polityki informacyjnej w zakresie ochrony przed powodzią i podtopieniami oraz ograniczenia ich skutków;"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "Both additional proposed means match the source and remain identifiable as part of the plan's goals across the retained passages."
+    },
+    {
+      "output": {
+        "unit_id": "retained/informacje_o_projekcie/4/page-5",
+        "quote": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;\n\nCel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n\nCel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;\n\nCel szczegółowy II – zapewnić sprawne zarządzanie kryzysowe w sytuacji zagrożenia powodziowego;\n\nCel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "All four specific objectives match the source; they are repeated in another retained passage."
+    },
+    {
+      "output": {
+        "unit_id": "retained/6/page-5",
+        "quote": "Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.4 | Budowa pompowni na wysokie stany wód (NWS) (Nr działania w PZRP: W_GZW_2582)* | 82 400 000 | KEGW | Do 2035 r."
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The project, figure, implementer and deadline match, but the retained row omits the table header establishing that the figure is a financial amount in PLN. Duplicate retained rows do not restore that unit."
+    },
+    {
+      "output": {
+        "unit_id": "retained/7/page-6",
+        "quote": "Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r."
+        },
+        {
+          "unit_id": "source/page-6",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The project, joint implementers and deadline match. The retained quotations omit the PLN table heading needed to identify the amount's unit; the same row is repeated elsewhere."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r."
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The proposed action and row values match, but the retained table lacks its financial-unit and column headings."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.2 | System prognozowania podtopień i powodzi w aglomeracji krakowskiej (Nr działania w PZRP: W_GZW_1811) | 6 000 000 | Wojewoda Małopolski; PGW WP; KEGW; WMK S.A. | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.2 | System prognozowania podtopień i powodzi w aglomeracji krakowskiej (Nr działania w PZRP: W_GZW_1811) | 6 000 000 | Wojewoda Małopolski; PGW WP; KEGW; WMK S.A. | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The proposed forecasting system, listed actors, figure and deadline match, but the retained row does not identify the monetary unit."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.3 | Wdrożenie monitoringu stacji pomp, w OP Wisły w Krakowie (Nr działania w PZRP: W_GZW_4009) | 2 000 000 | KEGW | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.3 | Wdrożenie monitoringu stacji pomp, w OP Wisły w Krakowie (Nr działania w PZRP: W_GZW_4009) | 2 000 000 | KEGW | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The monitoring action and row values are authentic; the monetary unit is not retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.5 | Budowa lewobrzeżnego muru oporowego na cieku Dłubnia w km 5+000 - 6+750 (Nr działania w PZRP: W_GZW_520)** | 12 500 000 | KEGW | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.5 | Budowa lewobrzeżnego muru oporowego na cieku Dłubnia w km 5+000 - 6+750 (Nr działania w PZRP: W_GZW_520)** | 12 500 000 | KEGW | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-9",
+          "quote": "** KEGW wnioskuje o zmianę realizatora zadania, błędnie przypisano GMK (jako Urząd Miasta Krakowa)"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The row matches, but its double asterisk refers to a material qualification: KEGW is requesting a change of implementer because the PZRP assigned the city incorrectly. That explanation and the PLN heading are not retained."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.6 | Budowa lewobrzeżnych murów oporowych na cieku Dłubnia w km 4+800 - 4+900 oraz w km 4+400 - 4+480 (Nr działania w PZRP: W_GZW_530)** | 1 700 000 | KEGW | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.6 | Budowa lewobrzeżnych murów oporowych na cieku Dłubnia w km 4+800 - 4+900 oraz w km 4+400 - 4+480 (Nr działania w PZRP: W_GZW_530)** | 1 700 000 | KEGW | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-9",
+          "quote": "** KEGW wnioskuje o zmianę realizatora zadania, błędnie przypisano GMK (jako Urząd Miasta Krakowa)"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The row is authentic, but the retained quotations omit the double-asterisk implementer qualification and the PLN heading."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.7 | Budowa bulwaru na prawym brzegu rzeki Dłubnia w km 2+250 - 2+900 (Nr działania w PZRP: W_GZW_867)** | 1 900 000 | KEGW | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.7 | Budowa bulwaru na prawym brzegu rzeki Dłubnia w km 2+250 - 2+900 (Nr działania w PZRP: W_GZW_867)** | 1 900 000 | KEGW | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-9",
+          "quote": "** KEGW wnioskuje o zmianę realizatora zadania, błędnie przypisano GMK (jako Urząd Miasta Krakowa)"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The row is authentic, but omits the source's double-asterisk qualification about changing the PZRP implementer and the monetary unit."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/1/page-5",
+        "quote": "|  I/2.8 | Budowa prawostronnego muru oporowego wzdłuż koryta rzeki Baranówka w km 0+490 - 0+900 (Nr działania w PZRP: W_GZW_874)** | 1 800 000 | KEGW | Do 2027 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "I/2.8 | Budowa prawostronnego muru oporowego wzdłuż koryta rzeki Baranówka w km 0+490 - 0+900 (Nr działania w PZRP: W_GZW_874)** | 1 800 000 | KEGW | Do 2027 r."
+        },
+        {
+          "unit_id": "source/page-9",
+          "quote": "** KEGW wnioskuje o zmianę realizatora zadania, błędnie przypisano GMK (jako Urząd Miasta Krakowa)"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The row is authentic, but the implementer-change qualification marked by the double asterisk and the PLN heading are missing."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/2/page-6",
+        "quote": "|  I/5 | Współfinansowanie wspólnych zadań inwestycyjnych dla cieków naturalnych (m.in. Drwina Długa, Drwinka, ale również Bibiczanka, Pompownia Lesisko, Struga Rusiecka, Baranówka, Sudół od Modlnicy, Wilga, inne) | 2 000 000 | PGW WP/GK/KEGW/ZDMK | Do 2035 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "I/5 | Współfinansowanie wspólnych zadań inwestycyjnych dla cieków naturalnych (m.in. Drwina Długa, Drwinka, ale również Bibiczanka, Pompownia Lesisko, Struga Rusiecka, Baranówka, Sudół od Modlnicy, Wilga, inne) | 2 000 000 | PGW WP/GK/KEGW/ZDMK | Do 2035 r."
+        },
+        {
+          "unit_id": "source/page-6",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The joint-investment action, examples, parties and deadline match, but the amount's PLN unit is absent from the retained table."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/2/page-6",
+        "quote": "|  I/6 | Budowa stanowisk pompowni mobilnych (częściowo ujęte w PZRP) (Nr działania w PZRP: W_GZW_2654)* | - | - | -  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "I/6 | Budowa stanowisk pompowni mobilnych (częściowo ujęte w PZRP) (Nr działania w PZRP: W_GZW_2654)* | - | - | -"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The proposed mobile-pump-stand action and its partial PZRP inclusion are retained; the dash fields do not assert an amount or implementer."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/2/page-6",
+        "quote": "|  I/6.1 | Wolica (przebudowa) | 500 000 | KEGW | Do 2030 r.  |\n|  I/6.2 | Kostrze | 1 000 000 |   | Do 2030 r.  |\n|  I/6.3 | Łęg | 500 000 |   | Do 2030 r.  |\n|  I/6.4 | Kolna | 500 000 |   | Do 2030 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "I/6.1 | Wolica (przebudowa) | 500 000 | KEGW | Do 2030 r.  |\n|  I/6.2 | Kostrze | 1 000 000 |   | Do 2030 r.  |\n|  I/6.3 | Łęg | 500 000 |   | Do 2030 r.  |\n|  I/6.4 | Kolna | 500 000 |   | Do 2030 r."
+        },
+        {
+          "unit_id": "source/page-6",
+          "quote": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "All four locations, figures, deadlines and the sole specified implementer match. The retained rows do not establish that the figures are PLN amounts; blank implementer cells must not be read as KEGW commitments."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/3/page-6",
+        "quote": "|  I/8.5 | Przebudowa koryta Drwiny Długiej i Drwinki | oszacowanie kosztów po wykonaniu 3 etapu Porozumienia | PGW WP/KEGW | Do 2035 r.  |"
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "I/8.5 | Przebudowa koryta Drwiny Długiej i Drwinki | oszacowanie kosztów po wykonaniu 3 etapu Porozumienia | PGW WP/KEGW | Do 2035 r."
+        },
+        {
+          "unit_id": "source/page-7",
+          "quote": "z PGW WP (do końca 2023 r.)"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The row matches its page-six portion, but the original table continues onto page seven: the agreement is with PGW WP and has an end-2023 qualification. The retained row drops that context. Duplicate rows make the same omission."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/4/page-7",
+        "quote": "|  I/8.6 | Przebudowa koryta Bibiczanki, Sudołu od Modlnicy, Baranówki, Sidzinki, Kostrzeckiego, Strugi Rusieckiej, Wilga | oszacowanie kosztów po wykonaniu koncepcji | PGW WP/ KEGW | Do 2035 r.  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "I/8.6 | Przebudowa koryta Bibiczanki, Sudołu od Modlnicy, Baranówki, Sidzinki, Kostrzeckiego, Strugi Rusieckiej, Wilga | oszacowanie kosztów po wykonaniu koncepcji | PGW WP/ KEGW | Do 2035 r."
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "The proposed stream works, deferred cost estimate, listed implementers and deadline match; the row is repeated elsewhere."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/5/page-7",
+        "quote": "|  II/1 | Ciągła aktualizacja planu operacyjnego ochrony przed powodzią Miasta Krakowa | w ramach środków bieżących | OC | -  |\n|  II/2 | Ciągła aktualizacja i doskonalenie planów ewakuacji ludności z terenów zalewowych | w ramach środków bieżących | OC | -  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "II/1 | Ciągła aktualizacja planu operacyjnego ochrony przed powodzią Miasta Krakowa | w ramach środków bieżących | OC | -  |\n|  II/2 | Ciągła aktualizacja i doskonalenie planów ewakuacji ludności z terenów zalewowych | w ramach środków bieżących | OC | -"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "Both continuing plan-update tasks and their funding category match. The retained quotations do not expand the implementing-unit abbreviation OC."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/5/page-7",
+        "quote": "|  II/3 | Szkolenia służb, inspekcji, straży i miejskich jednostek organizacyjnych w ramach posiedzeń Zespołu Zarządzania Kryzysowego Miasta Krakowa z zakresu utrzymania gotowości i doskonalenia umiejętności współdziałania do podejmowania działań interwencyjnych podczas powodzi | w ramach środków bieżących | OC | -  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "II/3 | Szkolenia służb, inspekcji, straży i miejskich jednostek organizacyjnych w ramach posiedzeń Zespołu Zarządzania Kryzysowego Miasta Krakowa z zakresu utrzymania gotowości i doskonalenia umiejętności współdziałania do podejmowania działań interwencyjnych podczas powodzi | w ramach środków bieżących | OC | -"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The proposed training and its current-funds treatment match; OC is not explained in retained quotations."
+    },
+    {
+      "output": {
+        "unit_id": "retained/wnioskodawca/5/page-7",
+        "quote": "|  II/4 | Ograniczanie rozmiaru strat i szkód powodziowych poprzez przygotowanie mieszkańców na wypadek powodzi – edukacja powodziowa | w ramach środków bieżących | OC | -  |\n|  II/5 | Ciągła aktualizacja procedury i dokumentowania i szacowania strat po powodzi i podtopieniach | w ramach środków bieżących | OC | -  |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "II/4 | Ograniczanie rozmiaru strat i szkód powodziowych poprzez przygotowanie mieszkańców na wypadek powodzi – edukacja powodziowa | w ramach środków bieżących | OC | -  |\n|  II/5 | Ciągła aktualizacja procedury i dokumentowania i szacowania strat po powodzi i podtopieniach | w ramach środków bieżących | OC | -"
+        }
+      ],
+      "supplied_verdict": null,
+      "supplied_evidence": [],
+      "self_contained": false,
+      "reason": "The education and loss-assessment procedure tasks match the source; the retained passages leave OC unexplained."
+    }
+  ],
+  "chapters": [],
+  "contradictions": []
+}

@@ -1,0 +1,386 @@
+[
+  {
+    "id": "harbor-point-heat-resilience-programme-financing-correct",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "programme-financing",
+    "chapter_ref": "financing",
+    "candidate": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "currency",
+      "funding-status"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-programme-financing-partly_correct",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "programme-financing",
+    "chapter_ref": "financing",
+    "candidate": "The programme seeks external grants.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "currency",
+      "funding-status"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-programme-financing-incorrect",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "programme-financing",
+    "chapter_ref": "financing",
+    "candidate": "The total programme cost is USD 26.5 million and USD 18.6 million in external grant funding has been secured.",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "currency",
+      "funding-status"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-programme-financing-missing",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "programme-financing",
+    "chapter_ref": "financing",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "currency",
+      "funding-status"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-plan-adoption-correct",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "plan-adoption",
+    "chapter_ref": "project_summary",
+    "candidate": "The plan was adopted by the Harbor Point City Council on 14 March 2026.",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-plan-adoption-partly_correct",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "plan-adoption",
+    "chapter_ref": "project_summary",
+    "candidate": "The City Council adopted the plan in March 2026.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-plan-adoption-incorrect",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "plan-adoption",
+    "chapter_ref": "project_summary",
+    "candidate": "The Harbor Point City Council adopted the plan on 14 March 2025.",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "harbor-point-heat-resilience-plan-adoption-missing",
+    "fixture_id": "harbor-point-heat-resilience",
+    "fact_id": "plan-adoption",
+    "chapter_ref": "project_summary",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-small-retention-programme-correct",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "small-retention-programme",
+    "chapter_ref": "budzet",
+    "candidate": "Krakowski Program Małej Retencji Wód Opadowych | 30 000 000 | JP | 2023-2030",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "tables",
+      "currency",
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-small-retention-programme-partly_correct",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "small-retention-programme",
+    "chapter_ref": "budzet",
+    "candidate": "Program małej retencji jest finansowany przez miasto.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "tables",
+      "currency",
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-small-retention-programme-incorrect",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "small-retention-programme",
+    "chapter_ref": "budzet",
+    "candidate": "Program małej retencji wód opadowych obejmuje lata 2023–2030, kosztuje 300 000 000 zł i jest realizowany przez Wydział Jakości Powietrza (JP).",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "tables",
+      "currency",
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-small-retention-programme-missing",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "small-retention-programme",
+    "chapter_ref": "budzet",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "tables",
+      "currency",
+      "dates",
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-coordinator-correct",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "coordinator",
+    "chapter_ref": "wnioskodawca",
+    "candidate": "b) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-coordinator-partly_correct",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "coordinator",
+    "chapter_ref": "wnioskodawca",
+    "candidate": "Plan jest koordynowany przez miasto.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-coordinator-incorrect",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "coordinator",
+    "chapter_ref": "wnioskodawca",
+    "candidate": "Koordynatorem planu jest urząd wojewódzki, a głównym realizatorem zadań miejskich jest Ministerstwo Klimatu.",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "krakow-flood-drainage-plan-coordinator-missing",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "coordinator",
+    "chapter_ref": "wnioskodawca",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "responsibilities"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-cost-basis-correct",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "cost-basis",
+    "chapter_ref": "project_financing",
+    "candidate": "All costs are presented in 2025 US dollars.\nNote: Total project cost accuracy range is -30% to +50%.",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units",
+      "currency"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-cost-basis-partly_correct",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "cost-basis",
+    "chapter_ref": "project_financing",
+    "candidate": "The cost estimates are approximate.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units",
+      "currency"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-cost-basis-incorrect",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "cost-basis",
+    "chapter_ref": "project_financing",
+    "candidate": "All costs are presented in 2025 US dollars with a guaranteed accuracy of plus or minus 5%.",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "units",
+      "currency"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-cost-basis-missing",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "cost-basis",
+    "chapter_ref": "project_financing",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units",
+      "currency"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-study-area-size-correct",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "study-area-size",
+    "chapter_ref": "flood_damages",
+    "candidate": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles",
+    "human_verdict": "correct",
+    "rationale": "Preserves the required meaning and material qualifiers.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-study-area-size-partly_correct",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "study-area-size",
+    "chapter_ref": "flood_damages",
+    "candidate": "The study covers Richfield.",
+    "human_verdict": "partly_correct",
+    "rationale": "Omits required detail without replacing it with a conflicting claim.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-study-area-size-incorrect",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "study-area-size",
+    "chapter_ref": "flood_damages",
+    "candidate": "The model study area is approximately 8.8 square kilometres.",
+    "human_verdict": "incorrect",
+    "rationale": "Materially changes a required amount, date, status, unit, or responsible institution.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "units"
+    ],
+    "approval": null
+  },
+  {
+    "id": "richfield-flood-risk-study-area-size-missing",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "study-area-size",
+    "chapter_ref": "flood_damages",
+    "candidate": "",
+    "human_verdict": "missing",
+    "rationale": "No candidate passage supplies the requirement.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "units"
+    ],
+    "approval": null
+  }
+]

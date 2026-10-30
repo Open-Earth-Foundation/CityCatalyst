@@ -1,0 +1,404 @@
+[
+  {
+    "chapter_ref": "applicant_project_information",
+    "title": "Applicant and project information",
+    "body_markdown": "## Applicant and project information\n\n### Application identification\n\n- **Local unit of government applicant:** [Information needed: Confirm the local unit of government submitting the Flood Hazard Mitigation Grant Assistance Program application for Richfield.]\n- **Project name:** [Information needed: Provide the project name for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n- **Application submittal date:** [Information needed: Confirm the submittal date for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n\n### Local government contact\n\n- **Contact name:** [Information needed: Provide the name of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n- **Mailing address:** [Information needed: Provide the mailing address of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n- **Telephone number:** [Information needed: Provide the telephone number of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n- **Email address:** [Information needed: Provide the email address of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n\n### Authorized agent\n\n[Information needed: Provide the name of the authorized agent for the Richfield Flood Hazard Mitigation Grant Assistance Program application.]\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report was prepared for the City of Richfield. It identifies concept-level flood-risk reduction options for areas near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace; the specific option proposed for this application has not been identified in the available information.",
+    "gaps": [
+      {
+        "field_key": "local_unit_of_government_applicant",
+        "question": "Confirm the local unit of government submitting the Flood Hazard Mitigation Grant Assistance Program application for Richfield.",
+        "why_asking": "The application must identify the eligible local unit of government responsible for the grant request.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_name",
+        "question": "Provide the project name for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The project name is required to identify the proposed grant-funded activity consistently throughout the application.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "application_submittal_date",
+        "question": "Confirm the submittal date for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The application requires a dated submission record.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_government_contact_name",
+        "question": "Provide the name of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "DNR needs a named representative for application correspondence and follow-up.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_government_contact_address",
+        "question": "Provide the mailing address of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The required contact record must include a mailing address for official grant communications.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_government_contact_phone",
+        "question": "Provide the telephone number of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The required contact record must include a telephone number for timely application coordination.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_government_contact_email",
+        "question": "Provide the email address of the local government contact for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The required contact record must include an email address for grant correspondence.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "authorized_agent_name",
+        "question": "Provide the name of the authorized agent for the Richfield Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The application needs to identify the person authorized to represent the applicant for the grant request.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "funding_breakout",
+    "title": "Funding breakdown",
+    "body_markdown": "## Funding breakdown\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report provides concept-level opinions of probable construction cost for six potential flood-risk mitigation concepts. The report states that these are planning-level estimates in 2025 US dollars, with an estimated accuracy range of -30% to +50%. The estimates exclude base planning, engineering and design; construction management; permitting; property or easement acquisition; operations and maintenance; monitoring; and time escalation.\n\n### Potential concept-level construction costs\n\n| Flood-risk area | Concept | Planning-level construction cost estimate |\n| --- | --- | ---: |\n| Near Wilson Pond | Concept A: reduce the water level ahead of a storm event and modify the outlet by lowering the invert and increasing storm sewer capacity | $8,853,000 ($6,198,000–$15,493,000) |\n| Near Wilson Pond | Concept B: increase storm sewer capacity | $11,536,000 ($8,076,000–$20,188,000) |\n| Near Wilson Pond | Concept C: increase storm sewer capacity and number of pipes | $17,333,000 ($12,134,000–$30,333,000) |\n| Northwest of Roosevelt Park | Concept A: add an underground storage chamber | $15,491,000 ($10,844,000–$27,110,000) |\n| Near Woodlawn Terrace | Concept A: add an underground storage chamber | $1,540,000 ($1,078,000–$2,695,000) |\n| Near Woodlawn Terrace | Concept B: increase storm sewer capacity | $7,440,000 ($5,208,000–$13,020,000) |\n\n[Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for this Flood Hazard Mitigation Grant Assistance Program application.]\n\n### Current-phase funding\n\n- **Total current-phase cost:** [Information needed: Confirm the total cost of the current phase for the selected Richfield flood-risk mitigation project.]\n- **DNR funding request:** [Information needed: Confirm the amount requested from the Minnesota Department of Natural Resources for the selected Richfield flood-risk mitigation project.]\n- **Other state funding:** [Information needed: Confirm the amount of other state funding committed to the selected Richfield flood-risk mitigation project.]\n- **Federal funding:** [Information needed: Confirm the amount of federal funding committed to the selected Richfield flood-risk mitigation project.]\n- **Local funding:** [Information needed: Confirm the amount of local funding committed to the selected Richfield flood-risk mitigation project.]\n\n### Prior Flood Hazard Mitigation funding\n\n[Information needed: Confirm whether the selected Richfield flood-risk mitigation project has received prior Flood Hazard Mitigation funding.]",
+    "gaps": [
+      {
+        "field_key": "selected_flood_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for this Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The applicable current-phase cost and funding request cannot be identified until the project concept is selected.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "current_phase_total_cost",
+        "question": "Confirm the total cost of the current phase for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires the total current-phase cost, and the available estimates are concept-level construction costs that exclude several potential project costs.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "dnr_funding_request",
+        "question": "Confirm the amount requested from the Minnesota Department of Natural Resources for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The grant application must state the requested DNR funding amount.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "other_state_funding_amount",
+        "question": "Confirm the amount of other state funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The funding breakdown must distinguish non-DNR state contributions from the DNR grant request.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "federal_funding_amount",
+        "question": "Confirm the amount of federal funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The funding breakdown must identify federal contributions available for the current project phase.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_funding_amount",
+        "question": "Confirm the amount of local funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The financing plan must show the local contribution supporting the current project phase.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "prior_fhm_funding",
+        "question": "Confirm whether the selected Richfield flood-risk mitigation project has received prior Flood Hazard Mitigation funding.",
+        "why_asking": "The application requires disclosure of prior Flood Hazard Mitigation funding for the proposed project.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "project_activities",
+    "title": "Project activities",
+    "body_markdown": "## Project activities\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report identifies six concept-level flood-risk mitigation alternatives across three City-selected flood-risk areas. These alternatives were modeled and costed for planning purposes; the report states that additional design and evaluation will be required before a project is pursued.\n\n[Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.]\n\n### Candidate concept-level activities and quantities\n\n| Flood-risk area | Concept-level activity | Documented quantifiable output or configuration | Planning-level construction cost |\n| --- | --- | --- | ---: |\n| Near Wilson Pond | **Concept A:** Lower the water level in Wilson Pond ahead of a storm event; modify the outlet by lowering the invert; and increase downstream storm sewer capacity. | A remotely accessible gate controlled using weather forecasts would provide approximately 5 acre-feet of additional storage ahead of a storm event, assuming a 24-hour drawdown period. | $8,853,000 |\n| Near Wilson Pond | **Concept B:** Increase storm sewer capacity from Wilson Pond to Highway 494. | A single 5-foot by 5-foot box culvert is represented from Wilson Pond to Highway 494. | $11,536,000 |\n| Near Wilson Pond | **Concept C:** Increase the number and capacity of storm sewer pipes from Wilson Pond to Highway 494. | Two parallel 5-foot by 5-foot box culverts are represented from Wilson Pond to Highway 494. | $17,333,000 |\n| Northwest of Roosevelt Park | **Concept A:** Construct an underground storage chamber beneath the Roosevelt Park baseball fields and modify storm sewer connections to direct drainage to the chamber. | Approximately 354,000 cubic feet of underground storage, based on a 300-foot by 300-foot surface area, 5.25-foot depth, and 75% available stormwater-storage volume. | $15,491,000 |\n| Near Woodlawn Terrace | **Concept A:** Construct an underground storage chamber beneath the parking lot next to Lynwood Commons Apartments and modify storm sewer connections. | Approximately 24,000 cubic feet of underground storage, based on approximately 8,000 square feet of surface area, a 3-foot depth, and 75% available stormwater-storage volume. | $1,540,000 |\n| Near Woodlawn Terrace | **Concept B:** Increase storm sewer capacity from the parking lot next to Lynwood Commons Apartments to Wood Lake. | The concept increases pipe diameters from a current range of 3 to 4 feet to a range of 3 to 6 feet. | $7,440,000 |\n\n### Activity considerations\n\nThe Wilson Pond concepts would require storm sewer changes from Wilson Pond to Highway 494 and would increase the volume and peak rate of discharge leaving the municipal boundary. The report states that further coordination with the City of Bloomington or MnDOT would be required because downstream routing to the Minnesota River has not been determined.\n\nThe Northwest of Roosevelt Park concept includes an outlet-control structure so that the underground storage can retain runoff and drain after a storm event. The Woodlawn Terrace underground-storage concept would require regrading of the parking lot and agreements with the owner of the parking lot next to Lynwood Commons Apartments.\n\nThe report characterizes all six alternatives as concept-level designs. It identifies further work that may include design optimization, utility-conflict evaluation, permitting review, and, in some cases, agreements with private landowners or other public entities.",
+    "gaps": [
+      {
+        "field_key": "selected_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The selected concept determines the specific activity type, location, quantities, cost basis, and implementation considerations that must be presented as the proposed grant-funded scope.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "flood_damages",
+    "title": "Summary of flood damages",
+    "body_markdown": "## Summary of flood damages\n\n### Flood-risk assessment basis\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report evaluates potential inundation using an updated citywide PCSWMM model. The model simulates Atlas 14 2-, 10-, and 100-year 24-hour rainfall events, together with a Mid-21st-century 100-year moderate rainfall estimate (MCE100-year) 24-hour event. The respective precipitation depths are 2.83, 4.24, 7.50, and 10.20 inches.\n\nModel peak water levels were used to delineate inundation areas in ponds, wetlands, and topographic depressions through level-pool mapping in ArcGIS. The report states that inundation mapping of sloped water surfaces along roadways and through the floodplain was not completed. Figures 3-1 through 3-4 of the report provide inundation maps for the four modeled events.\n\nA total of 746 flood-risk areas were evaluated within the study area, of which 601 are within or primarily within the Richfield municipal boundary. The prioritization considered storm-system conditions, critical infrastructure, frequency of flooding, social vulnerability, and potentially flood-prone structures.\n\n### Documented inundation risk at City-selected locations\n\nThe available information does not identify the selected mitigation concept for this application. [Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.]\n\nThe planning report identifies the following flood-risk conditions at the three locations selected by the City for concept-level evaluation:\n\n- **Near Wilson Pond:** The report identifies this as one of the locations with the largest flood risk in the city. It affects the most residential structures in a single location; the lowest structures are affected during the 2-year, 24-hour rainfall event; the area has a high social vulnerability index; and surface inundation affects a critical transportation route and a school.\n- **Northwest of Roosevelt Park:** The report states that this flood-risk area affects multiple structures in one location. The lowest structures are affected during the 10-year, 24-hour rainfall event; the area has a high social vulnerability index; and surface inundation affects a critical transportation route.\n- **Near Woodlawn Terrace:** The report states that this flood-risk area affects multiple structures in one location. The lowest structures are affected during the 2-year, 24-hour rainfall event; storm sewer pipes are classified as moderate to high risk; the area has a high social vulnerability index; and surface inundation affects three high-density housing structures.\n\n### Evidence limitations and supporting documentation\n\nThe reported conditions are model-based estimates of potential inundation and potentially flood-prone structures. The report states that no survey data was collected to verify flood-prone structures; subsequent feasibility-stage surveys may show that existing structures are or are not flood-prone. The available information does not document observed flood damage, damage values, repair costs, or displacement for the three locations evaluated in the planning report.\n\n[Information needed: Provide documented flood damages for the selected Richfield flood-risk mitigation project area, such as affected properties, damage descriptions, repair costs, or loss records.]\n\n[Information needed: Provide dated photographs showing flooding at the selected Richfield flood-risk mitigation project area.]\n\n[Information needed: Provide the applicable county presidential disaster declaration records, if any, for the selected Richfield flood-risk mitigation project area.]",
+    "gaps": [
+      {
+        "field_key": "selected_flood_risk_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The flood-damage evidence, inundation maps, and affected-location narrative must correspond to the specific project proposed for DNR funding.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_documented_flood_damages",
+        "question": "Provide documented flood damages for the selected Richfield flood-risk mitigation project area, such as affected properties, damage descriptions, repair costs, or loss records.",
+        "why_asking": "The application requires evidence of the nature, extent, and severity of flood damages; the available planning report provides modeled inundation risk but not observed damage documentation.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_flood_photographs",
+        "question": "Provide dated photographs showing flooding at the selected Richfield flood-risk mitigation project area.",
+        "why_asking": "Photographs are requested to substantiate the flooding conditions described in the flood-damages summary.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "applicable_presidential_disaster_declarations",
+        "question": "Provide the applicable county presidential disaster declaration records, if any, for the selected Richfield flood-risk mitigation project area.",
+        "why_asking": "The application requests county presidential disaster declarations as part of the flooding and inundation evidence.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "The selected mitigation concept for this application has not yet been identified.",
+        "after": "The available information does not identify the selected mitigation concept for this application.",
+        "reason": "The inputs state that the specific option proposed for the application is not identified in the available information, but do not establish that no concept has yet been identified.",
+        "applied": true,
+        "skipped": null
+      },
+      {
+        "before": "The available information does not document observed flood damage, damage values, repair costs, or displacement associated with the location ultimately selected for this application.",
+        "after": "The available information does not document observed flood damage, damage values, repair costs, or displacement for the three locations evaluated in the planning report.",
+        "reason": "The inputs do not identify a location ultimately selected for the application, while the available planning report evaluates three locations.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  },
+  {
+    "chapter_ref": "existing_mitigation_regulation",
+    "title": "Existing mitigation and regulatory measures",
+    "body_markdown": "## Existing mitigation and regulatory measures\n\n### Existing planning and mitigation context\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report provides a citywide planning framework for identifying and evaluating flood-risk mitigation opportunities. The updated PCSWMM model incorporates 2022 USGS LiDAR data, information on construction projects with stormwater impacts since 2018, updated City GIS storm-sewer data and as-built drawings where available, updated storm lift-station data, and the Taft Park storm pump station.\n\nThe report evaluates six concept-level flood-risk reduction alternatives at three City-selected locations: near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace. It states that further evaluation will be needed before a concept is pursued, including design optimization, utility-conflict evaluation, permitting review, and, where applicable, agreements with private landowners or other public entities.\n\n[Information needed: Confirm whether any prior flood-mitigation project has been completed in the selected Richfield flood-risk mitigation project area.]\n\n### Floodplain ordinance compliance and enforcement\n\nThe available planning report does not identify the City of Richfield floodplain ordinance provisions applicable to the selected flood-risk mitigation project area, the City's compliance status, or its enforcement procedures.\n\n- **Applicable ordinance standard:** [Information needed: Provide the citation for the City of Richfield floodplain ordinance provision applicable to the selected flood-risk mitigation project area.]\n- **Ordinance compliance:** [Information needed: Confirm whether the City of Richfield is in compliance with its applicable floodplain ordinance for the selected flood-risk mitigation project area.]\n- **Enforcement procedure:** [Information needed: Describe the City of Richfield procedure for enforcing the applicable floodplain ordinance in the selected flood-risk mitigation project area.]\n- **Known violations:** [Information needed: Confirm whether there are any unresolved floodplain ordinance violations in the selected Richfield flood-risk mitigation project area.]\n\n### Regulatory considerations for concept-level alternatives\n\nThe planning report identifies regulatory and coordination issues that must be evaluated as alternatives advance. For the Wilson Pond concepts, the report states that increased flow to Highway 494 would need to be conveyed to the Minnesota River through the City of Bloomington or along the Highway 494 corridor; routing beyond the Richfield municipal boundary has not been determined, and additional coordination with the City of Bloomington or MnDOT and permitting discussions would be required. The report also identifies permitting review as a further evaluation need for all concepts.\n\n[Information needed: Confirm the permitting pathway for the selected Richfield flood-risk mitigation project.]",
+    "gaps": [
+      {
+        "field_key": "prior_mitigation_in_project_area",
+        "question": "Confirm whether any prior flood-mitigation project has been completed in the selected Richfield flood-risk mitigation project area.",
+        "why_asking": "The application requires a record of prior mitigation, and the planning report identifies alternatives but does not document completed mitigation in the selected project area.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "applicable_floodplain_ordinance_citation",
+        "question": "Provide the citation for the City of Richfield floodplain ordinance provision applicable to the selected flood-risk mitigation project area.",
+        "why_asking": "The application must identify the floodplain ordinance standards governing the proposed work.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "floodplain_ordinance_compliance_status",
+        "question": "Confirm whether the City of Richfield is in compliance with its applicable floodplain ordinance for the selected flood-risk mitigation project area.",
+        "why_asking": "The application requires confirmation of floodplain ordinance compliance for the project area.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "floodplain_ordinance_enforcement_procedure",
+        "question": "Describe the City of Richfield procedure for enforcing the applicable floodplain ordinance in the selected flood-risk mitigation project area.",
+        "why_asking": "The application requires evidence of how applicable floodplain standards are enforced, not only the ordinance citation.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "unresolved_floodplain_violations",
+        "question": "Confirm whether there are any unresolved floodplain ordinance violations in the selected Richfield flood-risk mitigation project area.",
+        "why_asking": "Known unresolved violations could affect the regulatory status and eligibility of the proposed project area.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_permitting_pathway",
+        "question": "Confirm the permitting pathway for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The selected concept's required approvals cannot be represented responsibly until the project and its permitting pathway are identified.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "project_description",
+    "title": "Project description",
+    "body_markdown": "## Project description\n\n### Immediate-phase objective\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report identifies six concept-level flood-risk mitigation alternatives at three City-selected locations: near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace. The available information does not identify which alternative is proposed for this Flood Hazard Mitigation Grant Assistance Program application.\n\n[Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.]\n\n[Information needed: Confirm the current-phase objective for the selected Richfield flood-risk mitigation project.]\n\n### Basis for the proposed project\n\nThe City of Richfield reviewed the flood-risk prioritization and selected three locations for planning-level evaluation. For each location, concept-level projects were modeled to evaluate flood-risk reduction, and planning-level cost estimates were developed for City staff to consider in further evaluation.\n\nThe report describes the alternatives as concept-level designs. It states that each alternative provides some level of flood-risk mitigation, with varied costs and additional project considerations.\n\n### Later-phase considerations\n\nThe planning report states that additional evaluations will be needed as a mitigation concept is pursued. These include design optimization, utility-conflict evaluation, permitting review, and, in some cases, agreements with private landowners or other public entities.\n\nFor any selected Wilson Pond alternative, the report states that increased flow to Highway 494 would need to be conveyed to the Minnesota River through the City of Bloomington or along the Highway 494 corridor. Routing beyond the Richfield municipal boundary has not been determined; further coordination with the City of Bloomington or MnDOT and additional permitting discussions would be required if the City advances a Wilson Pond concept.\n\nThe report identifies project-specific considerations for other alternatives. The Northwest of Roosevelt Park alternative would require storm-sewer modifications to direct drainage to an underground storage chamber. The Woodlawn Terrace underground-storage alternative would require parking-lot regrading and an agreement with the owner of the parking lot next to Lynwood Commons Apartments.\n\n### Partners and roles\n\nThe City of Richfield selected the three locations for planning-level evaluation and provided the prioritization scoring and weighting criteria used in the report. Barr Engineering Co. prepared the August 2025 planning report for the City.\n\n[Information needed: Confirm the entity responsible for delivering the selected Richfield flood-risk mitigation project's current phase.]",
+    "gaps": [
+      {
+        "field_key": "selected_flood_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The project description, activities, costs, effectiveness, permitting considerations, and partner needs differ across the six concept-level alternatives.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "current_phase_objective",
+        "question": "Confirm the current-phase objective for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application must distinguish the work requested in this grant phase from later design, permitting, construction, or other potential phases.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "current_phase_delivery_entity",
+        "question": "Confirm the entity responsible for delivering the selected Richfield flood-risk mitigation project's current phase.",
+        "why_asking": "The application requires a clear partner-and-role assignment for the work proposed in the current phase.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "project_analysis",
+    "title": "Project analysis",
+    "body_markdown": "## Project analysis\n\n### Alternatives and feasibility\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report presents concept-level alternatives at three City-selected flood-risk areas. The alternatives were modeled to assess flood-risk reduction, and planning-level cost estimates were developed for further City consideration. The report states that additional design and evaluation will be required before an alternative is pursued.\n\n[Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.]\n\nAt Wilson Pond, the report evaluated three alternatives: Concept A would lower the pond water level ahead of a storm event, lower the outlet invert, and increase downstream storm-sewer capacity; Concept B would increase storm-sewer capacity using a single 5-foot by 5-foot box culvert from Wilson Pond to Highway 494; and Concept C would use two parallel 5-foot by 5-foot box culverts along that route. The report considered but did not pursue surface storage because of limited undeveloped space and the City's direction not to consider property acquisition for flood-risk reduction. It did not pursue underground storage because shallow groundwater is expected in the area, and it did not pursue a pump because the assumed 24-hour drawdown period would require a high pumped flow rate for a stormwater system.\n\nFor Wilson Pond Concept A, modeled peak water levels were lower than existing conditions by 1.9, 0.1, and 4.2 feet at Wilson Pond, upstream at East 73rd Street and South 17th Avenue, and downstream at East 75th Street and South 15th Avenue, respectively, for the 2-year, 24-hour storm. For the 10-year, 24-hour storm, the corresponding modeled reductions were 1.4, 0.8, and 3.9 feet; for the 100-year, 24-hour storm, they were 0.3 feet at each of the three locations.\n\nFor Wilson Pond Concepts B and C, the model shows increased backflow in the pipe out of Wilson Pond during the 2-year, 24-hour event, resulting in higher modeled peak water levels in Wilson Pond. Both concepts reduce modeled peak water levels at the downstream location for the evaluated 2-, 10-, and 100-year, 24-hour events. All Wilson Pond concepts assume sufficient capacity to route additional flow away from Richfield. The report states that the routing to the Minnesota River through Bloomington or along the Highway 494 corridor has not been determined and would require coordination with the City of Bloomington or MnDOT and additional permitting discussions.\n\nNorthwest of Roosevelt Park, the report identifies one alternative: an underground storage chamber beneath the Roosevelt Park baseball fields. The concept would provide approximately 354,000 cubic feet of storage, based on a 300-foot by 300-foot area, a 5.25-foot depth, and an assumed 75% available storage volume. An outlet-control structure would retain runoff during a storm and allow the chamber to drain after the event. For the 2-, 10-, and 100-year, 24-hour storms, the modeled water-level reductions range from 0.4 to 4.6 feet across the three reported model locations. Surface storage and increased downstream capacity were considered but not pursued because the undeveloped portion of Roosevelt Park is at a higher elevation than the flood-risk area, gravity drainage to a potential pond was not feasible, and the area drains to Norby's Pond, which is also identified as a flood-risk area.\n\nNear Woodlawn Terrace, the report evaluates an underground storage chamber beneath the parking lot next to Lynwood Commons Apartments and an alternative to increase storm-sewer capacity from the parking lot to Wood Lake. The storage alternative would provide approximately 24,000 cubic feet of storage, based on approximately 8,000 square feet of surface area, a 3-foot depth, and an assumed 75% available storage volume. It would require parking-lot regrading, storm-sewer modifications, and an agreement with the parking-lot owner. The storage concept reduces modeled peak water levels by 0.0 to 0.6 feet across the reported locations and storm events. The storm-sewer alternative would increase pipe diameters from a current range of 3 to 4 feet to a range of 3 to 6 feet; modeled reductions range from 0.0 to 1.1 feet across the reported locations and storm events. Surface storage was considered but not pursued because the open space is developed with baseball fields and parking lots.\n\nThe report characterizes each alternative as a concept-level design. As an alternative advances, it identifies needs for design optimization, utility-conflict evaluation, permitting review and, in some cases, agreements with private landowners or other public entities.\n\n### Environmental effects\n\nThe available planning report does not provide an environmental-effects assessment for the specific alternative proposed in this application. It notes that permitting requirements require further review as a concept advances. For Wilson Pond alternatives, downstream routing beyond the Richfield municipal boundary has not been determined. The report also identifies expected shallow groundwater as a reason underground storage was not considered near Wilson Pond.\n\n[Information needed: Provide the environmental effects assessment for the selected Richfield flood-risk mitigation project.]\n\n### Social and economic effects\n\nThe planning report's prioritization framework includes the CDC/ATSDR Social Vulnerability Index (SVI). It describes social vulnerability as a measure of a community's ability to respond to a natural disaster and uses SVI data to identify areas that may need support before, during, and after hazardous events.\n\nThe three areas evaluated for concept-level alternatives are located in areas with a high SVI. The Wilson Pond area affects the most residential structures in a single location and surface inundation affects a critical transportation route and a school. The Northwest of Roosevelt Park area affects multiple structures and a critical transportation route. Near Woodlawn Terrace, surface inundation affects three high-density housing structures.\n\nThese findings are model-based prioritization information and do not quantify the selected project's beneficiaries, economic damages avoided, or effects on underserved communities.\n\n[Information needed: Provide the social and economic effects assessment for the selected Richfield flood-risk mitigation project.]\n\n### Public input\n\nThe available planning report states that City staff reviewed the prioritization results and identified three locations for planning-level evaluation. It does not document public engagement, public comments, or responses to public input for the selected project.\n\n[Information needed: Provide the public-input record for the selected Richfield flood-risk mitigation project.]\n\n### Environmental review\n\nThe planning report identifies permitting review as work to be completed as an alternative is pursued, but it does not state the environmental-review status for the selected project.\n\n[Information needed: Confirm the environmental-review status for the selected Richfield flood-risk mitigation project.]\n\n### Water-plan alignment\n\nThe prioritization framework is intended to help the City compare potential benefits of flood-risk mitigation projects and inform future flood-risk mitigation studies. It considers storm-system conditions, critical infrastructure, flooding frequency, social vulnerability, and potentially flood-prone structures. The report does not identify a local water-management plan or cite a plan provision applicable to the selected project.\n\n[Information needed: Provide the local water-management plan reference that supports the selected Richfield flood-risk mitigation project.]\n\n### Wetland-replacement-credit intent\n\nThe available planning report does not state whether the selected project would require wetland replacement credits or whether the City intends to purchase, use, or generate such credits.\n\n[Information needed: Confirm the wetland-replacement-credit intent for the selected Richfield flood-risk mitigation project.]",
+    "gaps": [
+      {
+        "field_key": "selected_flood_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The alternatives, effectiveness findings, environmental review, and project-specific effects cannot be tied to the proposed grant project until the selected concept is identified.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_environmental_effects",
+        "question": "Provide the environmental effects assessment for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires environmental effects to be identified, and the planning report does not assess effects for a selected alternative.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_social_economic_effects",
+        "question": "Provide the social and economic effects assessment for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires project-specific social and economic effects, including effects on underserved communities; the available report provides prioritization context but not this assessment.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_public_input_record",
+        "question": "Provide the public-input record for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires evidence of public input, which is not documented in the available planning report.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_environmental_review_status",
+        "question": "Confirm the environmental-review status for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application must state whether environmental review has been completed, is underway, or is still required for the selected project.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_water_plan_reference",
+        "question": "Provide the local water-management plan reference that supports the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires the project to be linked to an applicable local water-management plan.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "selected_project_wetland_credit_intent",
+        "question": "Confirm the wetland-replacement-credit intent for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires the applicant to state its intent concerning wetland replacement credits.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "The report also identifies expected shallow groundwater as a constraint that led the City not to pursue underground storage near Wilson Pond.",
+        "after": "The report also identifies expected shallow groundwater as a reason underground storage was not considered near Wilson Pond.",
+        "reason": "The report states that underground storage was not considered because shallow groundwater is expected, but it does not attribute that decision specifically to the City.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  },
+  {
+    "chapter_ref": "project_financing",
+    "title": "Project financing",
+    "body_markdown": "## Project financing\n\n### Planning-level cost context\n\nThe August 2025 *Stormwater Model Update and Flood-Risk Area Identification and Prioritization* report provides planning-level opinions of probable construction cost for six potential flood-risk mitigation concepts. The available information does not identify which concept is proposed for this Flood Hazard Mitigation Grant Assistance Program application.\n\n[Information needed: Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.]\n\n| Flood-risk area | Concept | Planning-level construction cost estimate |\n| --- | --- | ---: |\n| Near Wilson Pond | Concept A: reduce the water level ahead of a storm event and modify the outlet by lowering the invert and increasing storm sewer capacity | $8,853,000 ($6,198,000–$15,493,000) |\n| Near Wilson Pond | Concept B: increase storm sewer capacity | $11,536,000 ($8,076,000–$20,188,000) |\n| Near Wilson Pond | Concept C: increase storm sewer capacity and number of pipes | $17,333,000 ($12,134,000–$30,333,000) |\n| Northwest of Roosevelt Park | Concept A: add an underground storage chamber | $15,491,000 ($10,844,000–$27,110,000) |\n| Near Woodlawn Terrace | Concept A: add an underground storage chamber | $1,540,000 ($1,078,000–$2,695,000) |\n| Near Woodlawn Terrace | Concept B: increase storm sewer capacity | $7,440,000 ($5,208,000–$13,020,000) |\n\nThe report states that these are planning-level estimates in 2025 US dollars, with an estimated accuracy range of -30% to +50%. The estimates exclude base planning, engineering and design; construction management; permitting; property or easement acquisition; operations and maintenance; monitoring; and time escalation. They are therefore not a complete current-phase financing plan.\n\n### Current-phase financing plan\n\n- **Total current-phase cost:** [Information needed: Confirm the total cost of the current phase for the selected Richfield flood-risk mitigation project.]\n- **Minnesota DNR funding request:** [Information needed: Confirm the amount requested from the Minnesota Department of Natural Resources for the selected Richfield flood-risk mitigation project.]\n- **Other state funding:** [Information needed: Confirm the amount of other state funding committed to the selected Richfield flood-risk mitigation project.]\n- **Federal funding:** [Information needed: Confirm the amount of federal funding committed to the selected Richfield flood-risk mitigation project.]\n- **Local funding:** [Information needed: Confirm the amount of local funding committed to the selected Richfield flood-risk mitigation project.]\n\n[Information needed: Confirm the financing method for the selected Richfield flood-risk mitigation project's local share.]\n\n### Financial capability and other assistance\n\nThe available planning report does not document the City of Richfield's financial capacity to fund the local share or costs outside the concept-level construction estimate.\n\n[Information needed: Provide documentation of the City of Richfield's financial capability to fund the local share of the selected flood-risk mitigation project.]\n\n[Information needed: Confirm whether Red River funding is applicable to the selected Richfield flood-risk mitigation project.]",
+    "gaps": [
+      {
+        "field_key": "selected_mitigation_concept",
+        "question": "Confirm the flood-risk mitigation concept that the City of Richfield is submitting for the Flood Hazard Mitigation Grant Assistance Program application.",
+        "why_asking": "The applicable cost estimate, financing plan, and funding request cannot be matched to a project until the submitted concept is identified.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "current_phase_cost",
+        "question": "Confirm the total cost of the current phase for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires the current-phase total and the concept-level construction estimates exclude several potential project costs.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "dnr_funding_request",
+        "question": "Confirm the amount requested from the Minnesota Department of Natural Resources for the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The requested grant amount is required to establish the funding breakdown and demonstrate how the current phase will be financed.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "other_state_funding",
+        "question": "Confirm the amount of other state funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires disclosure of other state funding so the full financing package can be assessed.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "federal_funding",
+        "question": "Confirm the amount of federal funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The application requires disclosure of federal funding to account for all sources supporting the current phase.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_funding",
+        "question": "Confirm the amount of local funding committed to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The local contribution is needed to show how the current-phase cost will be covered beyond the DNR request.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_share_financing_method",
+        "question": "Confirm the financing method for the selected Richfield flood-risk mitigation project's local share.",
+        "why_asking": "The financial plan must explain how the City will provide its stated local contribution.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "local_financial_capability",
+        "question": "Provide documentation of the City of Richfield's financial capability to fund the local share of the selected flood-risk mitigation project.",
+        "why_asking": "The application requires evidence that the applicant can finance its share and costs not covered by grant funds.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "red_river_funding_applicability",
+        "question": "Confirm whether Red River funding is applicable to the selected Richfield flood-risk mitigation project.",
+        "why_asking": "The financing section must address Red River funding where applicable without assuming that it applies to this project.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  }
+]

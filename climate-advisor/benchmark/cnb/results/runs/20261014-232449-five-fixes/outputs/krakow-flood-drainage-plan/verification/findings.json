@@ -1,0 +1,429 @@
+[
+  {
+    "unit_id": "finding/0",
+    "target_chapter": "informacje_o_projekcie",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the planned start and end dates for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the planned start and end dates for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "chapters": [
+      "informacje_o_projekcie"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/1",
+    "target_chapter": "informacje_o_projekcie",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the exact investment components, locations and scale to be included in the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including whether it will cover preparation, construction, modernisation, retention infrastructure or a combination of these elements.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the exact investment components, locations and scale to be included in the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including whether it will cover preparation, construction, modernisation, retention infrastructure or a combination of these elements.",
+    "chapters": [
+      "informacje_o_projekcie"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/2",
+    "target_chapter": "informacje_o_projekcie",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question asks for the planned start and end dates of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, and chapter „Zadania i harmonogram” states that the project will be implemented in 2026–2028. The implementation years are answered; exact start and end dates remain open.",
+    "suggested_action": "Confirm the project period, then replace the question with the stated years or exact dates once confirmed, or correct the other chapter if its statement is wrong.",
+    "chapters": [
+      "informacje_o_projekcie",
+      "zadania"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm the planned start and end dates for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]",
+      "Projekt będzie realizowany w latach 2026–2028."
+    ]
+  },
+  {
+    "unit_id": "finding/3",
+    "target_chapter": "wnioskodawca",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the units that will be formally responsible for preparation, implementation, supervision and operation of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, and confirm whether any partners will be included.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the units that will be formally responsible for preparation, implementation, supervision and operation of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, and confirm whether any partners will be included.",
+    "chapters": [
+      "wnioskodawca"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/4",
+    "target_chapter": "wnioskodawca",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "completeness",
+    "category": "missing_information",
+    "severity": "blocking",
+    "message": "The required contact person information is missing.",
+    "suggested_action": "Add the contact person's name and relevant contact details.",
+    "chapters": [
+      "wnioskodawca"
+    ],
+    "excerpts": [
+      "### Osoba do kontaktu"
+    ]
+  },
+  {
+    "unit_id": "finding/5",
+    "target_chapter": "uzasadnienie",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the exact investment components, locations and scale to be included in the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the local flood and pluvial-flood risks addressed by the project can be substantiated and linked to the relevant planned actions.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the exact investment components, locations and scale to be included in the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the local flood and pluvial-flood risks addressed by the project can be substantiated and linked to the relevant planned actions.",
+    "chapters": [
+      "uzasadnienie"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/6",
+    "target_chapter": "uzasadnienie",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output describes the Plan as covering 2023–2030, while other chapters state that the Plan covers actions and costs through 2035.",
+    "suggested_action": "Confirm the Plan's applicable time horizon and use the same period consistently across the justification, schedule and budget chapters.",
+    "chapters": [
+      "uzasadnienie",
+      "zadania",
+      "budzet"
+    ],
+    "excerpts": [
+      "Planie Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa na lata 2023–2030.",
+      "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa obejmuje działania do 2035 r.",
+      "Łączny szacunkowy koszt wdrożenia Planu w latach 2023–2035 wynosi 1 275 867 730 zł."
+    ]
+  },
+  {
+    "unit_id": "finding/7",
+    "target_chapter": "zadania",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the final investment package for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each component, its location, technical scale and whether the project includes preparation works, construction, modernisation of drainage infrastructure, retention infrastructure or a combination of these elements.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the final investment package for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each component, its location, technical scale and whether the project includes preparation works, construction, modernisation of drainage infrastructure, retention infrastructure or a combination of these elements.",
+    "chapters": [
+      "zadania"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/8",
+    "target_chapter": "zadania",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the formal division of responsibilities for preparation, procurement, implementation, supervision, acceptance and future operation of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including the roles of KEGW and any partner units.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the formal division of responsibilities for preparation, procurement, implementation, supervision, acceptance and future operation of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including the roles of KEGW and any partner units.",
+    "chapters": [
+      "zadania"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/9",
+    "target_chapter": "zadania",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the completion dates of the preparation, implementation and completion stages in the schedule table of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the completion dates of the preparation, implementation and completion stages in the schedule table of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "chapters": [
+      "zadania"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/10",
+    "target_chapter": "zadania",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output states that the project will be implemented in 2026–2028, while the project-information chapter still requests confirmation of its planned start and end dates.",
+    "suggested_action": "Confirm the project start and end dates, then replace the open question in the project-information chapter or qualify the 2026–2028 period as provisional.",
+    "chapters": [
+      "zadania",
+      "informacje_o_projekcie"
+    ],
+    "excerpts": [
+      "Projekt będzie realizowany w latach 2026–2028.",
+      "[Information needed: Confirm the planned start and end dates for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.]"
+    ]
+  },
+  {
+    "unit_id": "finding/11",
+    "target_chapter": "wskazniki",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the product indicators for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each indicator definition, unit of measure, baseline value, target value, data source and measurement method.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the product indicators for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each indicator definition, unit of measure, baseline value, target value, data source and measurement method.",
+    "chapters": [
+      "wskazniki"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/12",
+    "target_chapter": "wskazniki",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the result indicators for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each indicator definition, unit of measure, baseline value, target value, data source, measurement method and the period for achieving the target.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the result indicators for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including each indicator definition, unit of measure, baseline value, target value, data source, measurement method and the period for achieving the target.",
+    "chapters": [
+      "wskazniki"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/13",
+    "target_chapter": "wskazniki",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "logic_error",
+    "severity": "warning",
+    "message": "The stated Plan-level product indicator has a baseline of 0 but a direction of change of “decrease”; a count of completed tasks cannot decrease from zero without becoming negative.",
+    "suggested_action": "Verify whether the intended direction of change is an increase, or correct the baseline or indicator definition.",
+    "chapters": [
+      "wskazniki"
+    ],
+    "excerpts": [
+      "„ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków”, z wartością bazową 0 i kierunkiem zmian: spadek."
+    ]
+  },
+  {
+    "unit_id": "finding/14",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the total project cost and eligible cost for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including the cost breakdown by preparation, documentation, works, equipment, supervision, information and promotion, and other applicable cost categories.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the total project cost and eligible cost for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including the cost breakdown by preparation, documentation, works, equipment, supervision, information and promotion, and other applicable cost categories.",
+    "chapters": [
+      "budzet"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/15",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the requested NFOŚiGW co-financing amount and percentage of eligible costs for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the requested NFOŚiGW co-financing amount and percentage of eligible costs for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "chapters": [
+      "budzet"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/16",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the amount, source and form of the applicant's own contribution to the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including whether it is secured in the Budget of the City of Kraków and the Multiannual Financial Forecast of the City of Kraków.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the amount, source and form of the applicant's own contribution to the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, including whether it is secured in the Budget of the City of Kraków and the Multiannual Financial Forecast of the City of Kraków.",
+    "chapters": [
+      "budzet"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/17",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm whether the Kraków – adaptacja systemu odwodnienia do zmian klimatu project will use any financing other than the requested NFOŚiGW co-financing and the applicant's own contribution, including the amount, source, status and conditions of each additional source.",
+    "suggested_action": "Resolve or confirm this gap: Confirm whether the Kraków – adaptacja systemu odwodnienia do zmian klimatu project will use any financing other than the requested NFOŚiGW co-financing and the applicant's own contribution, including the amount, source, status and conditions of each additional source.",
+    "chapters": [
+      "budzet"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/18",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "internal_conflict",
+    "severity": "blocking",
+    "message": "The output states that the Plan is financed exclusively from external funds without city-budget participation, but also states that implemented actions must be entered in the City of Kraków Budget and Multiannual Financial Forecast.",
+    "suggested_action": "Reconcile the Plan's financing statement with the stated requirement to include actions in the city budget and Multiannual Financial Forecast.",
+    "chapters": [
+      "budzet"
+    ],
+    "excerpts": [
+      "„Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje finansowanie jego realizacji wyłącznie z funduszy zewnętrznych, bez udziału budżetu miasta.”",
+      "„Dyrektorzy właściwych wydziałów i miejskich jednostek organizacyjnych są odpowiedzialni za ujmowanie realizowanych działań w Budżecie Miasta Krakowa i Wieloletniej Prognozie Finansowej Miasta Krakowa.”"
+    ]
+  },
+  {
+    "unit_id": "finding/19",
+    "target_chapter": "budzet",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output says the Plan is financed exclusively from external funds without city-budget participation, while the risk-and-durability chapter says it is to be financed from the city budget and, where possible, external funds.",
+    "suggested_action": "Confirm the financing model for the Plan and align the budget chapter with the risk-and-durability chapter.",
+    "chapters": [
+      "budzet",
+      "ryzyka"
+    ],
+    "excerpts": [
+      "„Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje finansowanie jego realizacji wyłącznie z funduszy zewnętrznych, bez udziału budżetu miasta.”",
+      "„Realizacja Planu ma być finansowana z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych.”"
+    ]
+  },
+  {
+    "unit_id": "finding/20",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the final investment components, locations, technical scale and implementation schedule for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the project-specific risk register and mitigation measures can be confirmed.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the final investment components, locations, technical scale and implementation schedule for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the project-specific risk register and mitigation measures can be confirmed.",
+    "chapters": [
+      "ryzyka"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/21",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "warning",
+    "message": "Open gap: Confirm the risk owners, monitoring frequency, escalation procedure and contingency arrangements for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the risk owners, monitoring frequency, escalation procedure and contingency arrangements for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project.",
+    "chapters": [
+      "ryzyka"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/22",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the entity responsible for operating and maintaining each infrastructure component of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, the planned maintenance activities, the annual operating and maintenance costs, the funding source and the required durability period.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the entity responsible for operating and maintaining each infrastructure component of the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, the planned maintenance activities, the annual operating and maintenance costs, the funding source and the required durability period.",
+    "chapters": [
+      "ryzyka"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/23",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that implementation of the Plan will be financed from the city budget and external funds, while the budget chapter states that the Plan is financed exclusively from external funds without city-budget participation.",
+    "suggested_action": "Verify the Plan’s financing approach and use one consistent statement on whether the City of Kraków budget finances implementation.",
+    "chapters": [
+      "ryzyka",
+      "budzet"
+    ],
+    "excerpts": [
+      "Realizacja Planu ma być finansowana z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych.",
+      "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje finansowanie jego realizacji wyłącznie z funduszy zewnętrznych, bez udziału budżetu miasta."
+    ]
+  },
+  {
+    "unit_id": "finding/24",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question on final investment components, locations, technical scale and implementation schedule is partially answered in the Zadania i harmonogram chapter: it states the overall project period as 2026–2028, while the components, locations, technical scale and detailed schedule remain open.",
+    "suggested_action": "Confirm the overall project period, then replace that part of the question with the stated dates and retain the remaining open details, or correct the Zadania i harmonogram chapter if its statement is wrong.",
+    "chapters": [
+      "ryzyka",
+      "zadania"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm the final investment components, locations, technical scale and implementation schedule for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the project-specific risk register and mitigation measures can be confirmed.]",
+      "Projekt będzie realizowany w latach 2026–2028."
+    ]
+  },
+  {
+    "unit_id": "finding/25",
+    "target_chapter": "ryzyka",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open gap on final investment components, locations, technical scale and implementation schedule is partially answered in the Zadania i harmonogram chapter: it states the overall project period as 2026–2028, while the components, locations, technical scale and detailed schedule remain open.",
+    "suggested_action": "Confirm the overall project period, then replace that part of the question with the stated dates and retain the remaining open details, or correct the Zadania i harmonogram chapter if its statement is wrong.",
+    "chapters": [
+      "ryzyka",
+      "zadania"
+    ],
+    "excerpts": [
+      "Confirm the final investment components, locations, technical scale and implementation schedule for the Kraków – adaptacja systemu odwodnienia do zmian klimatu project, so that the project-specific risk register and mitigation measures can be confirmed.",
+      "Projekt będzie realizowany w latach 2026–2028."
+    ]
+  }
+]

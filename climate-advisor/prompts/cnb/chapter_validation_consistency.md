@@ -26,6 +26,14 @@ Rules:
   hide a contradiction that is already stated
 - do not treat omitted information as a contradiction; leave omissions to the
   completeness pass
+- an open question is not an omission once the information is stated: when the
+  output states a value, date, name, amount, or decision as fact while a
+  document chapter still asks for it in an `[Information needed: ...]` marker
+  or with placeholder text such as "To be confirmed", report a
+  `cross_chapter_conflict` naming both chapters and quoting the statement and
+  the question; when the output both states a value and asks for it, report an
+  `internal_conflict`. A separate pass reports the output's own open questions
+  that another chapter answers, so do not report those here
 - do not transfer a claim from a document chapter to the output; if mutually
   incompatible claims appear only in two document chapters, do not report them
   while validating this output
@@ -83,6 +91,10 @@ Do not emit workflow status, labels, timestamps, or model reasoning.
 
 <example_output>
 {"findings":[{"category":"cross_chapter_conflict","severity":"blocking","message":"The output states a EUR 4 million total while the document budget states EUR 5 million.","suggested_action":"Confirm the approved total and use the same amount in both chapters.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The total project cost is EUR 4 million.","Total eligible expenditure: EUR 5 million."],"evidence_positions":[1]}]}
+</example_output>
+
+<example_output>
+{"findings":[{"category":"cross_chapter_conflict","severity":"warning","message":"The output names Riverside Climate Trust as the accredited entity, while the project summary still asks which accredited entity will submit the proposal.","suggested_action":"Confirm the accredited entity, then replace the project summary's question with it or remove the name from the output.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["Riverside Climate Trust is the accredited entity for the proposal.","[Information needed: Confirm the accredited entity that will submit the Riverside proposal.]"],"evidence_positions":[]}]}
 </example_output>
 
 <example_output>

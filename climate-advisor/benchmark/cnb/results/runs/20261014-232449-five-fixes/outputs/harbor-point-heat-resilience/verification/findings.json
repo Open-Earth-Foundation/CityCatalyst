@@ -1,0 +1,480 @@
+[
+  {
+    "unit_id": "finding/0",
+    "target_chapter": "project_summary",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal.",
+    "chapters": [
+      "project_summary"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/1",
+    "target_chapter": "project_summary",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the amount of GCF grant funding requested for the Harbor Point Heat and Stormwater Resilience Plan and whether it comprises the full USD 18.6 million external grant requirement.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the amount of GCF grant funding requested for the Harbor Point Heat and Stormwater Resilience Plan and whether it comprises the full USD 18.6 million external grant requirement.",
+    "chapters": [
+      "project_summary"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/2",
+    "target_chapter": "project_summary",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that USD 18.6 million in external grant funding has already been secured, while the financing chapter states that the plan seeks USD 18.6 million in external grant funding.",
+    "suggested_action": "Confirm whether the USD 18.6 million is secured or still being sought, and use the confirmed funding status consistently.",
+    "chapters": [
+      "project_summary",
+      "financing"
+    ],
+    "excerpts": [
+      "Harbor Point will contribute USD 7.9 million from its capital budget, while USD 18.6 million in external grant funding has already been secured.",
+      "The plan seeks USD 18.6 million in external grant funding."
+    ]
+  },
+  {
+    "unit_id": "finding/3",
+    "target_chapter": "project_summary",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output asks to confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, but the Implementation arrangements chapter identifies the Harbor Point Climate Trust.",
+    "suggested_action": "Confirm the accredited entity, then replace the question with the stated entity or correct the Implementation arrangements chapter if its statement is wrong.",
+    "chapters": [
+      "project_summary",
+      "implementation"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal.]",
+      "The Harbor Point Climate Trust is the GCF-accredited entity that will submit, oversee and provide fiduciary management for the proposal."
+    ]
+  },
+  {
+    "unit_id": "finding/4",
+    "target_chapter": "climate_context",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the number and characteristics of people exposed to extreme heat and stormwater flooding in Eastside and Millbrook, including any priority groups to be targeted by the Harbor Point Heat and Stormwater Resilience Plan.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the number and characteristics of people exposed to extreme heat and stormwater flooding in Eastside and Millbrook, including any priority groups to be targeted by the Harbor Point Heat and Stormwater Resilience Plan.",
+    "chapters": [
+      "climate_context"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/5",
+    "target_chapter": "project_components",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the locations of the 85 bioretention cells and the schoolyards to be converted into 3.2 hectares of permeable green play areas under the Harbor Point Heat and Stormwater Resilience Plan.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the locations of the 85 bioretention cells and the schoolyards to be converted into 3.2 hectares of permeable green play areas under the Harbor Point Heat and Stormwater Resilience Plan.",
+    "chapters": [
+      "project_components"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/6",
+    "target_chapter": "project_components",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the locations of the 18 libraries and recreation centres to be designated as community cooling centres under the Harbor Point Heat and Stormwater Resilience Plan.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the locations of the 18 libraries and recreation centres to be designated as community cooling centres under the Harbor Point Heat and Stormwater Resilience Plan.",
+    "chapters": [
+      "project_components"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/7",
+    "target_chapter": "project_components",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "internal_conflict",
+    "severity": "blocking",
+    "message": "The cool-corridor outcome is scheduled for 2025, two years before the project implementation period begins in 2027.",
+    "suggested_action": "Correct the canopy target year or the stated implementation period so that delivery precedes the intended outcome.",
+    "chapters": [
+      "project_components"
+    ],
+    "excerpts": [
+      "The Harbor Point Heat and Stormwater Resilience Plan will implement an integrated package of urban greening, green stormwater infrastructure and community cooling measures between 2027 and 2032.",
+      "The intended outcome is to increase tree canopy cover in both neighbourhoods to 25 percent by 2025."
+    ]
+  },
+  {
+    "unit_id": "finding/8",
+    "target_chapter": "project_components",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output's component cost estimates conflict with the indicative financing table: cool corridors are USD 9.6 million rather than USD 11.6 million, and green stormwater infrastructure is USD 12.4 million rather than USD 14.2 million.",
+    "suggested_action": "Reconcile the component estimates and update the component chapter and financing table to use one consistent cost for each component.",
+    "chapters": [
+      "project_components",
+      "financing"
+    ],
+    "excerpts": [
+      "Cool-corridor planting and establishment watering are estimated to cost USD 9.6 million.",
+      "Green stormwater infrastructure activities will include design and construction supervision and are estimated to cost USD 12.4 million.",
+      "| Cool corridors | 11.6 | Planting 4,800 street trees along 12 cool corridors and three years of establishment watering |"
+    ]
+  },
+  {
+    "unit_id": "finding/9",
+    "target_chapter": "project_components",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output sets the tree-canopy outcome for 2025, while the expected-results chapter specifies a target of 25 percent by 2032.",
+    "suggested_action": "Confirm the target year for achieving 25 percent canopy cover and use it consistently in both chapters.",
+    "chapters": [
+      "project_components",
+      "expected_results"
+    ],
+    "excerpts": [
+      "The intended outcome is to increase tree canopy cover in both neighbourhoods to 25 percent by 2025.",
+      "| Urban heat resilience | Tree-canopy cover in Eastside | 11 percent | 25 percent |",
+      "### Indicators, baselines and targets"
+    ]
+  },
+  {
+    "unit_id": "finding/10",
+    "target_chapter": "expected_results",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the number of direct and indirect beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan in Eastside and Millbrook, disaggregated by relevant priority groups where available.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the number of direct and indirect beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan in Eastside and Millbrook, disaggregated by relevant priority groups where available.",
+    "chapters": [
+      "expected_results"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/11",
+    "target_chapter": "expected_results",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the target reduction in flooded intersections during monitored storms that the Harbor Point Heat and Stormwater Resilience Plan will achieve by 2032.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the target reduction in flooded intersections during monitored storms that the Harbor Point Heat and Stormwater Resilience Plan will achieve by 2032.",
+    "chapters": [
+      "expected_results"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/12",
+    "target_chapter": "expected_results",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the 2032 target for heat-related emergency department visits to be used for monitoring the Harbor Point Heat and Stormwater Resilience Plan.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the 2032 target for heat-related emergency department visits to be used for monitoring the Harbor Point Heat and Stormwater Resilience Plan.",
+    "chapters": [
+      "expected_results"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/13",
+    "target_chapter": "expected_results",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output sets the tree-canopy targets for Eastside and Millbrook for 2032, while the project-components chapter states that both neighbourhoods will reach 25 percent canopy by 2025, before the 2027–2032 implementation period.",
+    "suggested_action": "Confirm the intended target year for achieving 25 percent tree-canopy cover and use it consistently in both chapters.",
+    "chapters": [
+      "expected_results",
+      "project_components"
+    ],
+    "excerpts": [
+      "| Urban heat resilience | Tree-canopy cover in Eastside | 11 percent | 25 percent |",
+      "| Urban heat resilience | Tree-canopy cover in Millbrook | 13 percent | 25 percent |",
+      "The intended outcome is to increase tree canopy cover in both neighbourhoods to 25 percent by 2025."
+    ]
+  },
+  {
+    "unit_id": "finding/14",
+    "target_chapter": "implementation",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the governance structure for the Harbor Point Heat and Stormwater Resilience Plan, including the body that will make implementation decisions, its membership, meeting frequency, and escalation arrangements between the Office of Climate Resilience, Department of Public Works, Harbor Point Unified School District and Millbrook Neighbours Alliance.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the governance structure for the Harbor Point Heat and Stormwater Resilience Plan, including the body that will make implementation decisions, its membership, meeting frequency, and escalation arrangements between the Office of Climate Resilience, Department of Public Works, Harbor Point Unified School District and Millbrook Neighbours Alliance.",
+    "chapters": [
+      "implementation"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/15",
+    "target_chapter": "implementation",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the monitoring and reporting protocol for the Harbor Point Heat and Stormwater Resilience Plan, including data owners, collection methods and frequency, quality assurance, reporting recipients, and the process for acting on monitoring findings.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the monitoring and reporting protocol for the Harbor Point Heat and Stormwater Resilience Plan, including data owners, collection methods and frequency, quality assurance, reporting recipients, and the process for acting on monitoring findings.",
+    "chapters": [
+      "implementation"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/16",
+    "target_chapter": "implementation",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The output identifies Harbor Point Climate Trust as the GCF-accredited entity, while the project summary still asks for that entity to be confirmed.",
+    "suggested_action": "Confirm Harbor Point Climate Trust as the accredited entity and replace the project summary's information-needed marker with the confirmed arrangement, or remove the asserted entity from the output.",
+    "chapters": [
+      "implementation",
+      "project_summary"
+    ],
+    "excerpts": [
+      "The Harbor Point Climate Trust is the GCF-accredited entity that will submit, oversee and provide fiduciary management for the proposal.",
+      "[Information needed: Confirm the GCF-accredited entity that will submit and oversee the Harbor Point Heat and Stormwater Resilience Plan SAP proposal.]"
+    ]
+  },
+  {
+    "unit_id": "finding/17",
+    "target_chapter": "implementation",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The monitoring and reporting protocol question is partially answered in the Expected results and indicators chapter: it identifies annual reporting by the Office of Climate Resilience and the monitored indicators, but data owners, collection methods, quality assurance, recipients, and response processes remain open.",
+    "suggested_action": "Confirm the remaining protocol details, then replace the question with the stated annual reporting arrangements and the confirmed details, or correct the Expected results and indicators chapter if its statement is wrong.",
+    "chapters": [
+      "implementation",
+      "expected_results"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm the monitoring and reporting protocol for the Harbor Point Heat and Stormwater Resilience Plan, including data owners, collection methods and frequency, quality assurance, reporting recipients, and the process for acting on monitoring findings.]",
+      "The Office of Climate Resilience will publish an annual progress report.",
+      "Monitoring will include tree-canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits."
+    ]
+  },
+  {
+    "unit_id": "finding/18",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm how the USD 7.9 million Harbor Point capital-budget contribution and the USD 2.7 million city operating-budget funding for the community cooling network are allocated across the Harbor Point Heat and Stormwater Resilience Plan components, and confirm whether the operating-budget funding is included within the USD 7.9 million contribution.",
+    "suggested_action": "Resolve or confirm this gap: Confirm how the USD 7.9 million Harbor Point capital-budget contribution and the USD 2.7 million city operating-budget funding for the community cooling network are allocated across the Harbor Point Heat and Stormwater Resilience Plan components, and confirm whether the operating-budget funding is included within the USD 7.9 million contribution.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/19",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, whether it will cover the full USD 18.6 million external grant requirement, and the amount allocated to each project component.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, whether it will cover the full USD 18.6 million external grant requirement, and the amount allocated to each project component.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/20",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Confirm the proposed GCF financial instrument for the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, including whether the request is entirely a grant and any terms or conditions that apply.",
+    "suggested_action": "Resolve or confirm this gap: Confirm the proposed GCF financial instrument for the Harbor Point Heat and Stormwater Resilience Plan SAP proposal, including whether the request is entirely a grant and any terms or conditions that apply.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/21",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "open_gap",
+    "phase": "completeness",
+    "category": "unresolved_gap",
+    "severity": "blocking",
+    "message": "Open gap: Reconcile the USD 18.6 million external grant requirement with the financing status of the USD 9.6 million cool-corridor and USD 14.2 million green stormwater infrastructure components, and confirm the final financing plan for each component of the Harbor Point Heat and Stormwater Resilience Plan.",
+    "suggested_action": "Resolve or confirm this gap: Reconcile the USD 18.6 million external grant requirement with the financing status of the USD 9.6 million cool-corridor and USD 14.2 million green stormwater infrastructure components, and confirm the final financing plan for each component of the Harbor Point Heat and Stormwater Resilience Plan.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": []
+  },
+  {
+    "unit_id": "finding/22",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "logic_error",
+    "severity": "blocking",
+    "message": "The component costs shown in the table total USD 28.5 million, not the stated USD 26.5 million programme total.",
+    "suggested_action": "Correct the component amounts or the stated total so the financing table reconciles arithmetically.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": [
+      "| Cool corridors | 11.6 |",
+      "| Green stormwater infrastructure | 14.2 |",
+      "| Community cooling network | 2.7 |"
+    ]
+  },
+  {
+    "unit_id": "finding/23",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "internal_conflict",
+    "severity": "blocking",
+    "message": "The output gives two incompatible costs for the cool-corridor component: USD 11.6 million in the cost table and USD 9.6 million in the financing-consistency statement.",
+    "suggested_action": "Confirm the cool-corridor cost and use that amount consistently throughout the chapter.",
+    "chapters": [
+      "financing"
+    ],
+    "excerpts": [
+      "| Cool corridors | 11.6 |",
+      "The component financing status identifies both cool corridors (USD 9.6 million)"
+    ]
+  },
+  {
+    "unit_id": "finding/24",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that green stormwater infrastructure costs USD 14.2 million, while the project-components chapter states that the same activities cost USD 12.4 million.",
+    "suggested_action": "Confirm the green stormwater infrastructure cost and align the financing and project-components chapters.",
+    "chapters": [
+      "financing",
+      "project_components"
+    ],
+    "excerpts": [
+      "| Green stormwater infrastructure | 14.2 |",
+      "Green stormwater infrastructure activities will include design and construction supervision and are estimated to cost USD 12.4 million."
+    ]
+  },
+  {
+    "unit_id": "finding/25",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "blocking",
+    "message": "The output states that cool corridors cost USD 11.6 million, while the project-components chapter estimates cool-corridor planting and establishment watering at USD 9.6 million.",
+    "suggested_action": "Confirm the cool-corridor cost basis and use one consistent component cost across both chapters.",
+    "chapters": [
+      "financing",
+      "project_components"
+    ],
+    "excerpts": [
+      "| Cool corridors | 11.6 |",
+      "Cool-corridor planting and establishment watering are estimated to cost USD 9.6 million."
+    ]
+  },
+  {
+    "unit_id": "finding/26",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question on allocation of Harbor Point's USD 7.9 million capital contribution and USD 2.7 million operating-budget funding is partially answered in Project components and activities: the USD 2.7 million operating funding is assigned to the community cooling network. Allocation of the USD 7.9 million and whether the operating funding is included in it remain open.",
+    "suggested_action": "Confirm the remaining allocations and whether the operating-budget funding is included in the capital contribution, then replace the answered portion with the stated value or correct the other chapter if its statement is wrong.",
+    "chapters": [
+      "financing",
+      "project_components"
+    ],
+    "excerpts": [
+      "[Information needed: Confirm how the USD 7.9 million Harbor Point capital-budget contribution and the USD 2.7 million city operating-budget funding for the community cooling network are allocated across the Harbor Point Heat and Stormwater Resilience Plan components, and confirm whether the operating-budget funding is included within the USD 7.9 million contribution.]",
+      "The community cooling network is estimated to cost USD 2.7 million and is funded from the city operating budget."
+    ]
+  },
+  {
+    "unit_id": "finding/27",
+    "target_chapter": "financing",
+    "status": "incomplete",
+    "origin": "model",
+    "phase": "consistency",
+    "category": "cross_chapter_conflict",
+    "severity": "warning",
+    "message": "The open question on reconciling the external grant requirement and confirming the final component financing plan is partially answered in Project components and activities: community cooling is funded from the city operating budget. Financing for cool corridors and green stormwater infrastructure, and reconciliation with USD 18.6 million, remain open.",
+    "suggested_action": "Confirm the financing of the remaining components and reconcile the external grant requirement, then replace the answered portion with the stated value or correct the other chapter if its statement is wrong.",
+    "chapters": [
+      "financing",
+      "project_components"
+    ],
+    "excerpts": [
+      "[Information needed: Reconcile the USD 18.6 million external grant requirement with the financing status of the USD 9.6 million cool-corridor and USD 14.2 million green stormwater infrastructure components, and confirm the final financing plan for each component of the Harbor Point Heat and Stormwater Resilience Plan.]",
+      "The community cooling network is estimated to cost USD 2.7 million and is funded from the city operating budget."
+    ]
+  }
+]

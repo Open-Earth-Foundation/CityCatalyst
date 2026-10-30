@@ -1,0 +1,305 @@
+[
+  {
+    "chapter_ref": "informacje_o_projekcie",
+    "title": "Informacje o projekcie",
+    "body_markdown": "## Informacje o projekcie\n\n### Tytuł projektu\n\n[Information needed: Confirm the official title of the Kraków urban drainage climate-adaptation project to be submitted under FENX.01.02.]\n\n### Okres realizacji projektu\n\n[Information needed: Confirm the planned start and end dates of the Kraków urban drainage climate-adaptation project.]\n\n### Cel projektu\n\nCelem projektu jest adaptacja Krakowa do zmian klimatu poprzez ograniczanie ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz wspieranie zrównoważonego gospodarowania wodami opadowymi.\n\nProjekt wpisuje się w cele Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa: ochronę przed powodzią, retencjonowanie wód opadowych i efektywne odwodnienie Gminy Miejskiej Kraków, przy zapewnieniu bezpieczeństwa i komfortu mieszkańcom oraz ograniczeniu strat materialnych.\n\n### Zwięzły opis zakresu\n\nProjekt będzie stanowił element działań na rzecz rozbudowy, utrzymania i modernizacji Miejskiego Systemu Odwodnienia Miasta Krakowa oraz rozwoju retencji dla zagospodarowania wód opadowych.\n\n[Information needed: Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.]\n\n[Information needed: Confirm the locations in Kraków where the project investment components will be delivered.]",
+    "gaps": [
+      {
+        "field_key": "project_title",
+        "question": "Confirm the official title of the Kraków urban drainage climate-adaptation project to be submitted under FENX.01.02.",
+        "why_asking": "The application requires an unambiguous project title for identification in the funding submission.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_period",
+        "question": "Confirm the planned start and end dates of the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The funding application requires a defined implementation period and the schedule cannot be confirmed without it.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_investment_components",
+        "question": "Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The project scope and subsequent task, budget, and product-indicator sections depend on the components selected for funding.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_locations",
+        "question": "Confirm the locations in Kraków where the project investment components will be delivered.",
+        "why_asking": "The application must identify the delivery area for the proposed investments and link it to the local drainage needs.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "wnioskodawca",
+    "title": "Wnioskodawca i realizatorzy",
+    "body_markdown": "## Wnioskodawca i realizatorzy\n\n### Wnioskodawca\n\n[Information needed: Confirm the legal entity that will submit the Kraków urban drainage climate-adaptation project under FENX.01.02.]\n\n### Jednostki realizujące i partnerzy\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu jako koordynatora Planu, a Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi.\n\n[Information needed: Confirm the lead implementing entity for the Kraków urban drainage climate-adaptation project.]\n\n[Information needed: Confirm whether the Kraków urban drainage climate-adaptation project will have a formal project partner.]\n\n### Osoba do kontaktu\n\n[Information needed: Confirm the name of the contact person for the Kraków urban drainage climate-adaptation project application.]\n\n[Information needed: Confirm the business email address of the contact person for the Kraków urban drainage climate-adaptation project application.]\n\n[Information needed: Confirm the telephone number of the contact person for the Kraków urban drainage climate-adaptation project application.]",
+    "gaps": [
+      {
+        "field_key": "project_applicant",
+        "question": "Confirm the legal entity that will submit the Kraków urban drainage climate-adaptation project under FENX.01.02.",
+        "why_asking": "The application must identify the applicant that will hold legal and financial responsibility for the proposed project.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "lead_implementing_entity",
+        "question": "Confirm the lead implementing entity for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The implementation arrangement cannot be assigned from the citywide Plan alone and is needed to establish delivery responsibility for this specific project.",
+        "severity": "critical",
+        "suggestions": [
+          {
+            "value": "Klimat-Energia-Gospodarka Wodna (KEGW) is identified as the main implementer of municipal tasks in the Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa.",
+            "source_refs": [
+              "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa"
+            ]
+          }
+        ]
+      },
+      {
+        "field_key": "project_partner",
+        "question": "Confirm whether the Kraków urban drainage climate-adaptation project will have a formal project partner.",
+        "why_asking": "The application must distinguish any formal partner from entities that cooperate under the broader municipal drainage plan.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "contact_person_name",
+        "question": "Confirm the name of the contact person for the Kraków urban drainage climate-adaptation project application.",
+        "why_asking": "The application requires a designated individual for communication on the submitted project.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "contact_person_email",
+        "question": "Confirm the business email address of the contact person for the Kraków urban drainage climate-adaptation project application.",
+        "why_asking": "The funder needs an email channel to communicate with the designated project contact.",
+        "severity": "noncritical",
+        "suggestions": []
+      },
+      {
+        "field_key": "contact_person_phone",
+        "question": "Confirm the telephone number of the contact person for the Kraków urban drainage climate-adaptation project application.",
+        "why_asking": "The funder needs a telephone channel to contact the designated project representative during the application process.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "uzasadnienie",
+    "title": "Uzasadnienie i diagnoza potrzeb",
+    "body_markdown": "## Uzasadnienie i diagnoza potrzeb\n\n### Diagnoza problemu\n\nKraków jest narażony na zagrożenie powodziowe i podtopieniowe, których skala jest związana zarówno z oddziaływaniem Wisły i jej dopływów, jak i z funkcjonowaniem Miejskiego Systemu Odwodnienia Krakowa. Główne zagrożenie powodziowe generuje Wisła, zasilana dużą zlewnią górską i podgórską powyżej miasta. Zagrożenie stwarzają także dopływy Wisły uchodzące na terenie miasta oraz cieki miejskie, których odpływ może być ograniczony podczas wezbrań Wisły.\n\nZamknięcie śluz wałowych podczas wezbrań Wisły, przy braku przepompowni dla części wód, może skutkować podtopieniami terenów zawala. Najtrudniejszy dla odwodnienia miasta jest scenariusz wysokich wezbrań na rzekach na terenie Krakowa, powodujący zamknięcie śluz wałowych i pogorszenie warunków odpływu w systemie kanalizacji ogólnospławnej i opadowej.\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje, że zagrożenie powodziowe rośnie wskutek niekorzystnych zmian zagospodarowania terenu w zlewni Wisły i jej dopływów, ograniczania naturalnej retencji oraz przyspieszania spływu powierzchniowego. Na te procesy nakładają się zmiany klimatu, w tym występowanie ekstremalnych opadów. Coroczna ocena zabezpieczenia przeciwpowodziowego miasta wskazuje, że mimo prowadzonych działań zagrożenie powodziowe nadal występuje, a aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony.\n\nDo głównych problemów Miejskiego Systemu Odwodnienia Krakowa należą: potrzeba adaptacji do większej częstotliwości i intensywności ekstremalnych zjawisk pogodowych; lokalne podtopienia powodowane niewystarczającą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów; ograniczony odpływ wód opadowych podczas wezbrań Wisły; niedostatecznie rozwinięta retencja lub sieć kanalizacji opadowej w obszarach peryferyjnych; wzrost powierzchni terenów uszczelnionych oraz potrzeba przeciwdziałania skutkom suszy.\n\nEfektywność odwodnienia zależy od stopnia rozbudowy Miejskiego Systemu Odwodnienia Krakowa, jego stanu technicznego oraz dostosowania do zmian zagospodarowania poszczególnych terenów. Plan wskazuje jako warunki jego prawidłowej eksploatacji, modernizacji i rozbudowy kontynuację inwentaryzacji kanalizacji opadowej, wdrożenie systemu zarządzania kanalizacją opadową, koordynację działań wpływających na odwodnienie miasta oraz zapewnienie środków na utrzymanie i inwestycje.\n\n[Information needed: Confirm the Kraków locations where the urban drainage climate-adaptation project will address the documented flood or local waterlogging problems.]\n\n### Potrzeba realizacji projektu\n\nProjekt odpowiada na potrzebę ograniczenia ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz na potrzebę zrównoważonego gospodarowania wodami opadowymi. Jest zgodny z kierunkami wskazanymi w Planie Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa, obejmującymi rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa oraz utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych.\n\n### Zgodność z dokumentami strategicznymi\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa ma horyzont czasowy 2023–2035. Jego celem ogólnym jest ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, przy zapewnieniu bezpieczeństwa i komfortu mieszkańcom oraz ograniczeniu strat materialnych.\n\nW dokumencie wskazano, że Plan Odwodnienia Gminy Miejskiej Kraków realizuje Strategię Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”, w szczególności cel strategiczny IV „Kraków – miasto przyjazne do życia”, cel operacyjny IV.3 „Zrównoważone środowisko”, w ramach którego wskazano modernizowanie i rozbudowę infrastruktury komunalnej, oraz cel operacyjny IV.5 „Wysoki poziom bezpieczeństwa w Krakowie”, obejmujący uprawnienia zarządzania kryzysowego. Plan wskazuje również potrzebę działań adaptacyjnych wobec zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna oraz miejskie wyspy ciepła.\n\nProjekt pozostaje spójny z celami szczegółowymi Planu dotyczącymi ograniczenia zagrożeń powodziowych, ograniczenia ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz zapewnienia zrównoważonego gospodarowania wodami opadowymi.",
+    "gaps": [
+      {
+        "field_key": "project_investment_locations",
+        "question": "Confirm the Kraków locations where the urban drainage climate-adaptation project will address the documented flood or local waterlogging problems.",
+        "why_asking": "The application must link the project’s proposed interventions to the diagnosed flooding or waterlogging needs in the specific areas covered by the project.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "Plan realizuje Strategię Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”, w szczególności cel strategiczny IV „Kraków – miasto przyjazne do życia”, cel operacyjny IV.3 „Zrównoważone środowisko”, w ramach którego wskazano modernizowanie i rozbudowę infrastruktury komunalnej, oraz cel operacyjny IV.5 „Wysoki poziom bezpieczeństwa w Krakowie”, obejmujący uprawnienia zarządzania kryzysowego.",
+        "after": "W dokumencie wskazano, że Plan Odwodnienia Gminy Miejskiej Kraków realizuje Strategię Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”, w szczególności cel strategiczny IV „Kraków – miasto przyjazne do życia”, cel operacyjny IV.3 „Zrównoważone środowisko”, w ramach którego wskazano modernizowanie i rozbudowę infrastruktury komunalnej, oraz cel operacyjny IV.5 „Wysoki poziom bezpieczeństwa w Krakowie”, obejmujący uprawnienia zarządzania kryzysowego.",
+        "reason": "Źródło przypisuje realizację celów Strategii Rozwoju Krakowa Planowi Odwodnienia Gminy Miejskiej Kraków, a nie wprost Planowi Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  },
+  {
+    "chapter_ref": "zadania",
+    "title": "Zadania i harmonogram",
+    "body_markdown": "## Zadania i harmonogram\n\n### Ujęcie projektu w Planie Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa obejmuje lata 2023–2035 i wskazuje działania służące ograniczeniu ryzyka podtopień lokalnych oraz zrównoważonemu gospodarowaniu wodami opadowymi. Wśród działań dotyczących Miejskiego Systemu Odwodnienia Krakowa wymieniono m.in. inwentaryzację kanalizacji opadowej, wdrożenie narzędzi modelowych, przygotowanie koncepcji rozwiązań technicznych w zlewniach problemowych, modernizację kanalizacji opadowej i rowów oraz realizację inwestycji objętych koncepcjami odwodnienia.\n\nPlan wskazuje również konkretne działania inwestycyjne, w tym przebudowę systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel, inwestycje objęte koncepcją odwodnienia osiedli Grębałów, Lubocza, Łuczanowice i Kantorowice oraz przedsięwzięcia dotyczące innych obszarów miasta. Wskazanie tych działań w Planie nie przesądza jednak, które z nich zostaną objęte niniejszym wnioskiem.\n\n### Zadania projektu\n\n[Information needed: Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.]\n\nPo potwierdzeniu zakresu inwestycyjnego zadania zostaną przedstawione jako odrębne pozycje wraz z zakresem rzeczowym, lokalizacją, jednostką realizującą i terminem wykonania.\n\n### Jednostki realizujące\n\nPlan wskazuje Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi. Dla poszczególnych działań Plan przypisuje jednak różne jednostki realizujące, w tym KEGW, Zarząd Dróg Miasta Krakowa, Zarząd Zieleni Miejskiej w Krakowie, Wodociągi Miasta Krakowa S.A. oraz Państwowe Gospodarstwo Wodne Wody Polskie.\n\n[Information needed: Confirm the lead entity responsible for delivering the Kraków urban drainage climate-adaptation project.]\n\n### Harmonogram realizacji\n\nPlan określa horyzont realizacji działań do 2035 r., przy czym wybrane działania mają wcześniejsze terminy, w tym do 2028 r. dla budowy kanału ulgi na Sudole Dominikańskim oraz przebudowy systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel. Terminy te są terminami działań ujętych w Planie i nie stanowią harmonogramu projektu, dopóki nie zostanie potwierdzony jego zakres.\n\n[Information needed: Confirm the planned start and end dates of the Kraków urban drainage climate-adaptation project.]\n\nPo potwierdzeniu zakresu rzeczowego i okresu realizacji harmonogram zostanie uzupełniony o terminy poszczególnych zadań oraz kamienie milowe właściwe dla projektu.",
+    "gaps": [
+      {
+        "field_key": "project_investment_components",
+        "question": "Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The task list, physical scope, locations, responsible units and implementation schedule cannot be defined without identifying the components submitted for funding.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_lead_implementing_entity",
+        "question": "Confirm the lead entity responsible for delivering the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The application must assign responsibility for coordinating and delivering the project tasks; the Plan's action-specific assignments do not establish responsibility for this funding application.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_implementation_period",
+        "question": "Confirm the planned start and end dates of the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The project schedule must state the implementation period and cannot rely on the wider 2023–2035 horizon of the municipal Plan.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "wskazniki",
+    "title": "Wskaźniki",
+    "body_markdown": "## Wskaźniki\n\n### Podejście do monitorowania\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje monitorowanie wskaźnika produktowego: liczby zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków. Dla Planu wartość bazową określono na 0, a kierunek zmian jako wzrost. Wartości oczekiwane dotyczą całego Planu i wynoszą odpowiednio: 8 dla celu szczegółowego I, 5 dla celu szczegółowego II, 22 dla celu szczegółowego III oraz 9 dla celu szczegółowego IV. Wartości te nie stanowią jeszcze wskaźników ani wartości docelowych niniejszego projektu.\n\n### Wskaźniki produktu\n\n| Wskaźnik | Wartość bazowa | Wartość docelowa |\n| --- | --- | --- |\n| [Information needed: Confirm the product indicator for the Kraków urban drainage climate-adaptation project.] | [Information needed: Confirm the baseline value for the Kraków urban drainage climate-adaptation project's product indicator.] | [Information needed: Confirm the target value for the Kraków urban drainage climate-adaptation project's product indicator.] |\n\n### Wskaźniki rezultatu\n\nPlan wskazuje, że jego coroczna ewaluacja będzie prowadzona na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM, lecz nie podaje nazwy ani wartości wskaźnika rezultatu dla niniejszego projektu.\n\n| Wskaźnik | Wartość bazowa | Wartość docelowa |\n| --- | --- | --- |\n| [Information needed: Confirm the result indicator for the Kraków urban drainage climate-adaptation project.] | [Information needed: Confirm the baseline value for the Kraków urban drainage climate-adaptation project's result indicator.] | [Information needed: Confirm the target value for the Kraków urban drainage climate-adaptation project's result indicator.] |\n\n### Monitorowanie\n\nDla Planu dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących działania przygotowują coroczne sprawozdania, a koordynator Planu sporządza sprawozdanie o działaniach planowanych, realizowanych i zakończonych w okresie sprawozdawczym. [Information needed: Confirm the reporting frequency for the Kraków urban drainage climate-adaptation project's indicators.]",
+    "gaps": [
+      {
+        "field_key": "project_product_indicator",
+        "question": "Confirm the product indicator for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The application requires a defined product indicator to evidence the project's tangible delivery.",
+        "severity": "critical",
+        "suggestions": [
+          {
+            "value": "Ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków.",
+            "source_refs": [
+              "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa"
+            ]
+          }
+        ]
+      },
+      {
+        "field_key": "project_product_indicator_baseline",
+        "question": "Confirm the baseline value for the Kraków urban drainage climate-adaptation project's product indicator.",
+        "why_asking": "A baseline is required to show the starting point against which project delivery will be measured.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_product_indicator_target",
+        "question": "Confirm the target value for the Kraków urban drainage climate-adaptation project's product indicator.",
+        "why_asking": "The application requires a quantified product target to define the scale of planned delivery.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_result_indicator",
+        "question": "Confirm the result indicator for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The application requires a defined result indicator to assess the project's effect beyond completed outputs.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_result_indicator_baseline",
+        "question": "Confirm the baseline value for the Kraków urban drainage climate-adaptation project's result indicator.",
+        "why_asking": "A result baseline is needed to measure the change attributable to the project against its starting condition.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_result_indicator_target",
+        "question": "Confirm the target value for the Kraków urban drainage climate-adaptation project's result indicator.",
+        "why_asking": "The result claim cannot be assessed without a quantified target value for the project period.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_indicator_reporting_frequency",
+        "question": "Confirm the reporting frequency for the Kraków urban drainage climate-adaptation project's indicators.",
+        "why_asking": "The monitoring arrangements must state when indicator values will be reported and reviewed during implementation.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "budzet",
+    "title": "Budżet i źródła finansowania",
+    "body_markdown": "## Budżet i źródła finansowania\n\n### Kontekst finansowy\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje szacunkowy koszt jego wdrożenia w latach 2023–2035 na poziomie 1 275 867 730 zł. Kwota ta dotyczy całego Planu, nie obejmuje działań realizowanych w ramach środków bieżących ani działań, dla których nakłady nie zostały jeszcze określone, i nie stanowi budżetu niniejszego projektu.\n\nPlan przewiduje finansowanie jego realizacji z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych. Wysokość nakładów dla poszczególnych działań ma charakter szacunkowy i wymaga weryfikacji na etapie przygotowania inwestycji.\n\n### Koszt całkowity i kwalifikowalny projektu\n\n[Information needed: Confirm the total cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.]\n\n[Information needed: Confirm the total eligible cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.]\n\n### Wnioskowane dofinansowanie\n\n[Information needed: Confirm the amount of FEnIKS.01.02 funding requested for the Kraków urban drainage climate-adaptation project.]\n\n### Wkład własny\n\n[Information needed: Confirm the amount of the applicant's own contribution to the Kraków urban drainage climate-adaptation project.]\n\n### Inne źródła finansowania\n\n[Information needed: Confirm whether the Kraków urban drainage climate-adaptation project will use a funding source other than FEnIKS.01.02 funding and the applicant's own contribution.]",
+    "gaps": [
+      {
+        "field_key": "project_total_cost",
+        "question": "Confirm the total cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.",
+        "why_asking": "The application budget requires the full financial value of the project and provides the basis for reconciling all financing sources.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_eligible_cost",
+        "question": "Confirm the total eligible cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.",
+        "why_asking": "The eligible cost is needed to establish the expenditure base on which FEnIKS.01.02 support can be requested.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "requested_feniks_funding",
+        "question": "Confirm the amount of FEnIKS.01.02 funding requested for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The funding application must state the requested co-financing amount and reconcile it with the project budget.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "applicant_own_contribution",
+        "question": "Confirm the amount of the applicant's own contribution to the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "The financing plan cannot demonstrate how the portion not covered by requested FEnIKS.01.02 funding will be financed without the own-contribution amount.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "other_project_funding_sources",
+        "question": "Confirm whether the Kraków urban drainage climate-adaptation project will use a funding source other than FENIKS.01.02 funding and the applicant's own contribution.",
+        "why_asking": "The financing structure must disclose any additional source needed to cover the total project cost.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "ryzyka",
+    "title": "Analiza ryzyka i trwałość",
+    "body_markdown": "## Analiza ryzyka i trwałość\n\n### Ryzyka realizacji\n\nPlan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa identyfikuje ryzyka dla realizacji działań planowych. Poniższa tabela przedstawia ryzyka określone w Planie; ich zastosowanie do niniejszego projektu wymaga potwierdzenia po ustaleniu zakresu rzeczowego i lokalizacji inwestycji.\n\n| Ryzyko zidentyfikowane w Planie | Ocena w Planie | Reakcja wskazana w Planie |\n| --- | --- | --- |\n| Brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |\n| Opóźnienia w realizacji zadań wynikających z Planu zarządzania ryzykiem powodziowym, m.in. z powodu braku finansowania, dokumentacji projektowej, niezbędnych opinii lub pozwoleń | Poważne | Przeciwdziałanie lub ograniczanie |\n| Brak ustalonego charakteru wód cieku lub urządzeń wodnych dla części systemu oraz nieprawidłowe wskazanie realizatora działań w Planie zarządzania ryzykiem powodziowym | Poważne | Przeciwdziałanie lub ograniczanie |\n| Nieuwzględnienie w Planie zarządzania ryzykiem powodziowym inwestycji istotnych dla ochrony przeciwpowodziowej Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |\n| Brak tytułu prawnego do działek lub niewyjaśniony stan prawny działek, na których zlokalizowana jest kanalizacja opadowa | Poważne | Przeciwdziałanie lub ograniczanie |\n| Niespełnienie kryteriów formalnych i merytorycznych przy ubieganiu się o finansowanie zewnętrzne | Poważne | Przeciwdziałanie lub ograniczanie |\n| Potrzeba dokończenia inwentaryzacji kanalizacji opadowej oraz modelowania hydrodynamicznego sieci kanalizacji opadowej | Umiarkowane | Monitorowanie |\n| Przedłużający się proces przejmowania majątku i obowiązków przez Państwowe Gospodarstwo Wodne Wody Polskie | Niskie | Monitorowanie |\n\n[Information needed: Confirm the entity responsible for managing delivery risks for the Kraków urban drainage climate-adaptation project.]\n\nPo potwierdzeniu zakresu projektu [Information needed: Confirm the planned approach to assessing and mitigating delivery risks for the Kraków urban drainage climate-adaptation project.]\n\n### Trwałość rezultatów\n\nPlan wskazuje, że dla prawidłowej eksploatacji, modernizacji i rozbudowy Miejskiego Systemu Odwodnienia Krakowa niezbędne są: kontynuacja inwentaryzacji kanalizacji opadowej, wdrożenie systemu zarządzania kanalizacją opadową, koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu oraz zapewnienie środków finansowych na bieżące utrzymanie i inwestycje adekwatnych do potrzeb.\n\nRealizacja Planu ma być finansowana z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych. Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania są odpowiedzialni za ich ujęcie w Budżecie Miasta Krakowa oraz w Wieloletniej Prognozie Finansowej Miasta Krakowa. Są to ustalenia dotyczące Planu, a nie potwierdzone zobowiązania dla niniejszego projektu.\n\nPlan podlega monitorowaniu przez koordynatora, a dyrektorzy realizujących działania wydziałów i jednostek organizacyjnych przygotowują coroczne sprawozdania z realizacji działań. Ewaluacja Planu jest prowadzona corocznie na podstawie wyników monitorowania i wskaźników rezultatu dostępnych w systemie STRADOM; aktualizacja Planu następuje w miarę potrzeb, nie rzadziej niż co pięć lat.\n\n[Information needed: Confirm the entity that will operate and maintain the outputs of the Kraków urban drainage climate-adaptation project after project completion.]\n\n[Information needed: Confirm the source of financing for post-completion operation and maintenance of the Kraków urban drainage climate-adaptation project outputs.]",
+    "gaps": [
+      {
+        "field_key": "project_risk_management_entity",
+        "question": "Confirm the entity responsible for managing delivery risks for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "A project-specific risk register requires a named entity accountable for monitoring risks and implementing mitigation measures.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "post_completion_operation_maintenance_entity",
+        "question": "Confirm the entity that will operate and maintain the outputs of the Kraków urban drainage climate-adaptation project after project completion.",
+        "why_asking": "The durability assessment must identify the accountable operator of the completed infrastructure.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "post_completion_operation_maintenance_financing_source",
+        "question": "Confirm the source of financing for post-completion operation and maintenance of the Kraków urban drainage climate-adaptation project outputs.",
+        "why_asking": "The durability assessment must demonstrate how ongoing operation and maintenance will be funded after the project ends.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "project_risk_assessment_and_mitigation_approach",
+        "question": "Confirm the planned approach to assessing and mitigating delivery risks for the Kraków urban drainage climate-adaptation project.",
+        "why_asking": "Projektowa analiza ryzyka wymaga potwierdzenia sposobu oceny ryzyk oraz planowanych działań ograniczających ich skutki.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa identyfikuje ryzyka dla realizacji działań planowych, które należy uwzględnić przy przygotowaniu projektu. Poniższa tabela przedstawia ryzyka określone w Planie; ich zastosowanie do niniejszego projektu wymaga potwierdzenia po ustaleniu zakresu rzeczowego i lokalizacji inwestycji.",
+        "after": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa identyfikuje ryzyka dla realizacji działań planowych. Poniższa tabela przedstawia ryzyka określone w Planie; ich zastosowanie do niniejszego projektu wymaga potwierdzenia po ustaleniu zakresu rzeczowego i lokalizacji inwestycji.",
+        "reason": "Plan identyfikuje ryzyka dla swoich działań, ale nie stanowi, że wszystkie muszą zostać uwzględnione przy przygotowaniu niniejszego, nieokreślonego jeszcze projektu.",
+        "applied": true,
+        "skipped": null
+      },
+      {
+        "before": "Po potwierdzeniu zakresu projektu rejestr ryzyk zostanie uzupełniony o ocenę prawdopodobieństwa i wpływu każdego ryzyka, działania zapobiegawcze, działania korygujące oraz terminy ich wdrożenia.",
+        "after": "Po potwierdzeniu zakresu projektu [Information needed: Confirm the planned approach to assessing and mitigating delivery risks for the Kraków urban drainage climate-adaptation project.]",
+        "reason": "Inputs określają ocenę i reakcje na ryzyka Planu, lecz nie potwierdzają planowanego zakresu ani metod prowadzenia rejestru ryzyk dla niniejszego projektu.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  }
+]

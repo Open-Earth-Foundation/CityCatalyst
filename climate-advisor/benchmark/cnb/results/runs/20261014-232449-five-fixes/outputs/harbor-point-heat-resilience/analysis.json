@@ -1,0 +1,246 @@
+{
+  "upload_id": "a4bf8831-52e8-5bd9-8819-4f439489a871",
+  "source_label": "Harbor Point Heat and Stormwater Resilience Plan",
+  "filename": "harbor-point-resilience-plan.md",
+  "sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
+  "source_format": "markdown",
+  "page_count": null,
+  "block_count": 31,
+  "analysis_contract_version": null,
+  "visual_context_contract_version": null,
+  "summary": "The fictional Harbor Point Heat and Stormwater Resilience Plan, adopted by the Harbor Point City Council on 14 March 2026, sets out to reduce extreme-heat exposure and street flooding between 2027 and 2032. The plan will plant 4,800 street trees along 12 cool corridors in Eastside and Millbrook and targets 25 percent tree canopy in both neighbourhoods by 2032. The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. The Office of Climate Resilience will designate 18 community cooling centres with extended hours on days above 32 °C. The total programme cost is USD 26.5 million, comprising USD 7.9 million from Harbor Point’s capital budget and USD 18.6 million sought in external grants. The Office of Climate Resilience will publish annual progress reports, while the Department of Public Works, Harbor Point Unified School District, and Millbrook Neighbours Alliance have specified delivery or co-design roles.",
+  "topics": [
+    "extreme heat",
+    "street flooding",
+    "urban tree canopy",
+    "cool corridors",
+    "green stormwater infrastructure",
+    "community cooling centres",
+    "programme financing",
+    "monitoring",
+    "implementation partnerships"
+  ],
+  "key_excerpts": [
+    {
+      "text": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032. The plan was adopted by the Harbor Point City Council on 14 March 2026.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133"
+    },
+    {
+      "text": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook. The tree canopy target for both neighbourhoods is 25 percent by 2032.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4"
+    },
+    {
+      "text": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9"
+    },
+    {
+      "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480"
+    },
+    {
+      "text": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492"
+    },
+    {
+      "text": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b"
+    },
+    {
+      "text": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents.",
+      "page": null,
+      "anchor": "harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09"
+    }
+  ],
+  "chapter_excerpts": [
+    {
+      "chapter_ref": "project_summary",
+      "excerpts": [
+        {
+          "text": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133"
+        },
+        {
+          "text": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b"
+        },
+        {
+          "text": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492"
+        }
+      ]
+    },
+    {
+      "chapter_ref": "climate_context",
+      "excerpts": [
+        {
+          "text": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133"
+        },
+        {
+          "text": "Harbor Point has 182,400 residents.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b"
+        },
+        {
+          "text": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020. The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0"
+        },
+        {
+          "text": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331"
+        },
+        {
+          "text": "Street flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd"
+        },
+        {
+          "text": "The existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-10e3c2ae4b58"
+        }
+      ]
+    },
+    {
+      "chapter_ref": "project_components",
+      "excerpts": [
+        {
+          "text": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook. The tree canopy target for both neighbourhoods is 25 percent by 2032.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4"
+        },
+        {
+          "text": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9"
+        },
+        {
+          "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480"
+        },
+        {
+          "text": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09"
+        }
+      ]
+    },
+    {
+      "chapter_ref": "expected_results",
+      "excerpts": [
+        {
+          "text": "Harbor Point has 182,400 residents.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b"
+        },
+        {
+          "text": "Harbor Point recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020. The Eastside and Millbrook neighbourhoods have the lowest tree canopy in the city, at 11 percent and 13 percent respectively.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0"
+        },
+        {
+          "text": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331"
+        },
+        {
+          "text": "Street flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd"
+        },
+        {
+          "text": "The plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook. The tree canopy target for both neighbourhoods is 25 percent by 2032.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4"
+        },
+        {
+          "text": "The plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. Together these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9"
+        },
+        {
+          "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480"
+        },
+        {
+          "text": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b"
+        }
+      ]
+    },
+    {
+      "chapter_ref": "implementation",
+      "excerpts": [
+        {
+          "text": "The plan was adopted by the Harbor Point City Council on 14 March 2026.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133"
+        },
+        {
+          "text": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b"
+        },
+        {
+          "text": "The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480"
+        },
+        {
+          "text": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b"
+        },
+        {
+          "text": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09"
+        }
+      ]
+    },
+    {
+      "chapter_ref": "financing",
+      "excerpts": [
+        {
+          "text": "Cool corridor planting and three years of establishment watering are estimated at USD 9.6 million.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs/block-a6228e491584"
+        },
+        {
+          "text": "Green stormwater infrastructure is estimated at USD 14.2 million, including design and construction supervision.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/costs/block-948ede3c0dbf"
+        },
+        {
+          "text": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492"
+        },
+        {
+          "text": "| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |",
+          "page": null,
+          "anchor": "harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c"
+        }
+      ]
+    }
+  ],
+  "chapter_evidence_fingerprint": "c227c6b125af9b9bb3667e94aded6f09e861e060b479565cefab7b730de1cd4a",
+  "structured_sha256": null,
+  "structured_schema_version": null,
+  "visual_context": []
+}

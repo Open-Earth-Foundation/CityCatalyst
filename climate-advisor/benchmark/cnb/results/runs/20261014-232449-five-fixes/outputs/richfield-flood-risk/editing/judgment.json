@@ -1,0 +1,524 @@
+{
+  "cases": [
+    {
+      "case_id": "fill-submittal-and-contact",
+      "expected_changes": [
+        {
+          "id": "submittal-date",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-submittal-and-contact/applicant_project_information",
+              "quote": "**Application submittal date:** The application will be submitted on 15 March 2026."
+            }
+          ],
+          "reason": "The applicant chapter gives the supplied date instead of asking for it."
+        },
+        {
+          "id": "contact",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-submittal-and-contact/applicant_project_information",
+              "quote": "**Local government contact:** The local government contact is Jordan Ellis, Public Works Director, 100 Example Street, Richfield, MN 55423; telephone: 612-555-0142; email: jellis@example.org."
+            }
+          ],
+          "reason": "The applicant chapter includes the supplied name, title, address, telephone number, and email address."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "locations",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-submittal-and-contact/applicant_project_information",
+              "quote": "evaluated concept-level flood-risk reduction alternatives at three locations: Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace."
+            }
+          ],
+          "reason": "The three studied locations remain stated."
+        },
+        {
+          "id": "agent-still-asked",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/fill-submittal-and-contact/applicant_project_information",
+              "quote": "**Authorized agent:** [Information needed: Provide the name and title of the City of Richfield official authorized to execute this Flood Hazard Mitigation Grant Assistance Program application and grant agreement.]"
+            }
+          ],
+          "reason": "The authorized-agent question remains open."
+        }
+      ],
+      "changes": [
+        {
+          "unit_id": "change/fill-submittal-and-contact/0",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/fill-submittal-and-contact",
+              "quote": "The application will be submitted on 15 March 2026."
+            }
+          ],
+          "reason": "The user supplied the submittal date."
+        },
+        {
+          "unit_id": "change/fill-submittal-and-contact/1",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/fill-submittal-and-contact",
+              "quote": "The local government contact is Jordan Ellis, Public Works Director, 100 Example Street, Richfield, MN 55423, 612-555-0142, jellis@example.org."
+            }
+          ],
+          "reason": "The replacement uses the contact details supplied by the user."
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "case_id": "select-concept",
+      "expected_changes": [
+        {
+          "id": "selection-stated",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/select-concept/applicant_project_information",
+              "quote": "**Proposed project location and scope:** The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Flood Hazard Mitigation Grant Assistance Program funding."
+            },
+            {
+              "unit_id": "edited/select-concept/funding_breakout",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Flood Hazard Mitigation Grant Assistance Program funding."
+            },
+            {
+              "unit_id": "edited/select-concept/project_activities",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for funding."
+            },
+            {
+              "unit_id": "edited/select-concept/flood_damages",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Flood Hazard Mitigation Grant Assistance Program funding."
+            },
+            {
+              "unit_id": "edited/select-concept/project_description",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Flood Hazard Mitigation Grant Assistance Program funding."
+            },
+            {
+              "unit_id": "edited/select-concept/project_analysis",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding."
+            },
+            {
+              "unit_id": "edited/select-concept/project_financing",
+              "quote": "The City of Richfield will submit Wilson Pond Concept B, which increases storm-sewer capacity, for Minnesota DNR Flood Hazard Mitigation Grant Assistance Program funding."
+            }
+          ],
+          "reason": "Every chapter with an open question about the submitted location and concept now states Wilson Pond Concept B."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "alternatives",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/select-concept/funding_breakout",
+              "quote": "Richfield's August 2025 flood-risk prioritization study provides 2025-dollar, concept-level opinions of probable **construction** cost for six alternatives."
+            },
+            {
+              "unit_id": "edited/select-concept/funding_breakout",
+              "quote": "| Wilson Pond Concept A — lower pond water level ahead of a storm, modify outlet, and increase downstream storm-sewer capacity | $8,853,000 |\n| Wilson Pond Concept B — increase storm-sewer capacity | $11,536,000 |\n| Wilson Pond Concept C — increase storm-sewer capacity and number of pipes | $17,333,000 |"
+            },
+            {
+              "unit_id": "edited/select-concept/funding_breakout",
+              "quote": "| Northwest of Roosevelt Park Concept A — underground storage chamber | $15,491,000 |\n| Near Woodlawn Terrace Concept A — underground storage chamber | $1,540,000 |\n| Near Woodlawn Terrace Concept B — increase storm-sewer capacity | $7,440,000 |"
+            }
+          ],
+          "reason": "The cost table still presents all six studied concepts, including the alternatives to Concept B."
+        },
+        {
+          "id": "accuracy",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/select-concept/project_financing",
+              "quote": "The August 2025 study presents 2025-dollar opinions of probable **construction** cost for six concept-level alternatives. These estimates are Class 4 planning-level estimates with an accuracy range of -30% to +50%."
+            }
+          ],
+          "reason": "The 2025-dollar basis and accuracy range remain explicit."
+        },
+        {
+          "id": "dnr-request",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/select-concept/project_financing",
+              "quote": "[Information needed: Confirm the Minnesota DNR Flood Hazard Mitigation Grant Assistance Program amount requested for the selected City of Richfield flood-risk mitigation project and current phase.]"
+            }
+          ],
+          "reason": "The DNR request amount is still an open question."
+        }
+      ],
+      "changes": [
+        {
+          "unit_id": "change/select-concept/0",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate). Update every chapter that asks which location and concept will be submitted."
+            }
+          ],
+          "reason": "The user supplied the selection and requested its use in chapters asking for it."
+        },
+        {
+          "unit_id": "change/select-concept/1",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate). Update every chapter that asks which location and concept will be submitted."
+            }
+          ],
+          "reason": "The funding breakdown's selection question is filled with the user's answer."
+        },
+        {
+          "unit_id": "change/select-concept/2",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate). Update every chapter that asks which location and concept will be submitted."
+            }
+          ],
+          "reason": "The project activities chapter's selection question is filled with the user's answer."
+        },
+        {
+          "unit_id": "change/select-concept/3",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate). Update every chapter that asks which location and concept will be submitted."
+            }
+          ],
+          "reason": "The flood damages chapter's selection question is filled with the user's answer."
+        },
+        {
+          "unit_id": "change/select-concept/4",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate). Update every chapter that asks which location and concept will be submitted."
+            }
+          ],
+          "reason": "The project description's selection question is filled with the user's answer."
+        },
+        {
+          "unit_id": "change/select-concept/5",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate)."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "| Wilson Pond Concept B | Increase storm-sewer capacity from Wilson Pond to Highway 494 using a 5-foot-by-5-foot box culvert | Reduced peak water levels by 0.6 feet at Wilson Pond, 0.4 feet upstream, and 1.9 feet downstream | $11,536,000 |"
+            }
+          ],
+          "reason": "The user supplied the selected concept and its concept-level construction estimate; the edit does not present that estimate as the total current-phase cost."
+        },
+        {
+          "unit_id": "change/select-concept/6",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B"
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "These items must be confirmed after the City selects the project location and current-phase scope."
+            }
+          ],
+          "reason": "The wording accounts for the newly selected concept while keeping current-phase scope and regulatory details unconfirmed."
+        },
+        {
+          "unit_id": "change/select-concept/7",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/select-concept",
+              "quote": "We are applying for Wilson Pond Concept B (increase storm-sewer capacity; $11,536,000 concept-level construction estimate)."
+            },
+            {
+              "unit_id": "draft/project_financing",
+              "quote": "| Wilson Pond Concept B — increase storm-sewer capacity | $11,536,000 |"
+            }
+          ],
+          "reason": "The financing chapter uses the user's selection and cost figure while retaining the concept-level cost qualification."
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "case_id": "shorten-analysis",
+      "expected_changes": [
+        {
+          "id": "shorter",
+          "verdict": "applied",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "Prioritization considered storm-system conditions, critical infrastructure, flooding frequency, social vulnerability, and potentially flood-prone structures across 746 flood-risk areas, including 601 within or primarily within Richfield."
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "City staff chose three areas for concept-level evaluation: Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace. Alternatives were modeled for 2-, 10-, and 100-year, 24-hour storms; results are planning-level, not final design commitments."
+            }
+          ],
+          "reason": "The chapter is noticeably condensed through shorter prose and table entries, while its numerical figures remain present."
+        }
+      ],
+      "preserved": [
+        {
+          "id": "concept-costs",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Wilson Pond Concept A | Lower pond pre-storm with a remote gate; lower outlet invert; enlarge downstream storm sewer | 1.4 feet at Wilson Pond; 0.8 feet upstream (East 73rd Street/South 17th Avenue); 3.9 feet downstream (East 75th Street/South 15th Avenue) | $8,853,000 |"
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Wilson Pond Concept B | Enlarge storm sewer from Wilson Pond to Highway 494 with a 5-foot-by-5-foot box culvert | 0.6 feet at pond; 0.4 feet upstream; 1.9 feet downstream | $11,536,000 |"
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Wilson Pond Concept C | Install two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494 | 0.6 feet at pond; 0.5 feet upstream; 2.3 feet downstream | $17,333,000 |"
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Northwest of Roosevelt Park Concept A | Underground storage beneath Roosevelt Park baseball fields; outlet control and storm-sewer modifications | 3.7 feet at fields; 1.0 foot upstream (76th Street/South Clinton Avenue); 0.5 foot downstream (76th Street/South 3rd Avenue) | $15,491,000 |"
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Near Woodlawn Terrace Concept A | Underground storage below parking lot next to Lynwood Commons Apartments; regrade lot and modify storm sewer | 0.1 foot at lot; 0.1 foot upstream (Lincoln Baseball Fields) | $1,540,000 |"
+            },
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "| Near Woodlawn Terrace Concept B | Enlarge storm sewer from parking-lot area next to Lynwood Commons Apartments to Wood Lake | 0.8 foot at lot; 0.5 foot upstream (Lincoln Baseball Fields) | $7,440,000 |"
+            }
+          ],
+          "reason": "All six construction cost estimates remain, including $17,333,000 for Wilson Pond Concept C."
+        },
+        {
+          "id": "accuracy",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "Estimates are in 2025 dollars, with planning-level accuracy of -30% to +50%"
+            }
+          ],
+          "reason": "The dollar basis and accuracy range are unchanged."
+        },
+        {
+          "id": "not-pursued",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "At Wilson Pond, surface storage lacked undeveloped space and the City did not consider property acquisition for flood-risk reduction"
+            }
+          ],
+          "reason": "The shortened screening account retains the lack of undeveloped space as the reason surface storage was not pursued."
+        },
+        {
+          "id": "svi",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "edited/shorten-analysis/project_analysis",
+              "quote": "Prioritization used the CDC/ATSDR Social Vulnerability Index and potentially flood-prone structure counts"
+            }
+          ],
+          "reason": "The social vulnerability index remains a prioritization criterion."
+        }
+      ],
+      "changes": [
+        {
+          "unit_id": "change/shorten-analysis/0",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "It evaluated 746 flood-risk areas across the study area, including 601 located within or primarily within the Richfield municipal boundary."
+            }
+          ],
+          "reason": "The edit condenses the introduction without losing the criteria or the 746 and 601 figures."
+        },
+        {
+          "unit_id": "change/shorten-analysis/1",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The study modeled the alternatives against 2-, 10-, and 100-year, 24-hour design storms. These results are planning-level modeled outcomes and should not be presented as final design commitments."
+            }
+          ],
+          "reason": "The shorter wording retains the locations, storm figures, and planning-level qualification."
+        },
+        {
+          "unit_id": "change/shorten-analysis/2",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "| Wilson Pond Concept C | Install two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494 | Reduced peak water levels by 0.6 feet at Wilson Pond, 0.5 feet upstream, and 2.3 feet downstream | $17,333,000 |"
+            }
+          ],
+          "reason": "The table is compacted while retaining its concepts, modeled reduction figures, and cost estimates."
+        },
+        {
+          "unit_id": "change/shorten-analysis/3",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The construction-cost estimates are expressed in 2025 dollars and have a planning-level accuracy range of -30% to +50%."
+            }
+          ],
+          "reason": "The shortened cost caveat preserves its figures, exclusions, and need for further review."
+        },
+        {
+          "unit_id": "change/shorten-analysis/4",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "At Wilson Pond, surface storage was not pursued because of limited undeveloped space and the City’s direction not to consider property acquisition for flood-risk reduction"
+            }
+          ],
+          "reason": "The edit condenses the screening and coordination discussion while retaining its reasons, qualifications, and 24-hour figure."
+        },
+        {
+          "unit_id": "change/shorten-analysis/5",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The available planning-level study identifies constraints that require project-specific environmental and engineering review as design advances."
+            }
+          ],
+          "reason": "The shorter sentence retains the need for project-specific review and the listed constraints."
+        },
+        {
+          "unit_id": "change/shorten-analysis/6",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The City’s prioritization framework incorporated the CDC/ATSDR Social Vulnerability Index and the number of potentially flood-prone structures."
+            }
+          ],
+          "reason": "The rewrite retains the index, the three high-density housing structures, and the limits on verified benefits and flood-prone structures."
+        },
+        {
+          "unit_id": "change/shorten-analysis/7",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The available study states that Barr consulted with the City to develop the prioritization criteria and that City staff identified the three locations for planning-level evaluation."
+            }
+          ],
+          "reason": "The condensed account preserves who participated in prioritization and the absence of documented public input."
+        },
+        {
+          "unit_id": "change/shorten-analysis/8",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The available source does not identify the environmental-review process, review status, required permits, local water-plan provisions, or wetland-replacement-credit needs for the selected project."
+            }
+          ],
+          "reason": "The shorter wording preserves the missing regulatory information and the need to confirm it."
+        },
+        {
+          "unit_id": "change/shorten-analysis/9",
+          "verdict": "supported",
+          "evidence": [
+            {
+              "unit_id": "instruction/shorten-analysis",
+              "quote": "Shorten the Project analysis chapter by about a third without dropping any figures."
+            },
+            {
+              "unit_id": "draft/project_analysis",
+              "quote": "The study notes that additional investigation, detailed design, and site-specific information may change project configuration, costs, functioning, and the determination of whether structures are flood-prone."
+            }
+          ],
+          "reason": "The condensed limitations retain the concept-level uncertainty and the distinction between modeled and verified conditions."
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "case_id": "agent-without-value",
+      "expected_changes": [],
+      "preserved": [
+        {
+          "id": "unchanged",
+          "verdict": "preserved",
+          "output_refs": [
+            {
+              "unit_id": "draft/applicant_project_information",
+              "quote": "**Authorized agent:** [Information needed: Provide the name and title of the City of Richfield official authorized to execute this Flood Hazard Mitigation Grant Assistance Program application and grant agreement.]"
+            }
+          ],
+          "reason": "No draft edit was made, and the authorized-agent gap remains open rather than being filled with an invented person."
+        }
+      ],
+      "changes": [],
+      "contradictions": []
+    }
+  ]
+}

@@ -126,6 +126,7 @@ jobs:
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
+          uv run pytest benchmark/cnb/tests -v --color=yes
 
       - name: Generate test coverage report
         working-directory: climate-advisor

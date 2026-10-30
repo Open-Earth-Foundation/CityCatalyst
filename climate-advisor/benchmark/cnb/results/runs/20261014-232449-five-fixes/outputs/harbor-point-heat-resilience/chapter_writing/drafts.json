@@ -1,0 +1,222 @@
+[
+  {
+    "chapter_ref": "project_summary",
+    "title": "Project summary",
+    "body_markdown": "## Project summary\n\n### Project title and location\n\nThe proposed **Harbor Point Heat and Stormwater Resilience Plan** will reduce extreme-heat exposure and street flooding in Harbor Point between 2027 and 2032.\n\n[Information needed: Confirm the country in which Harbor Point is located.]\n\n### Delivery arrangements\n\nThe Office of Climate Resilience will lead delivery together with the Department of Public Works. The Department of Public Works will deliver green stormwater infrastructure; Harbor Point Unified School District will host schoolyard conversions; and Millbrook Neighbours Alliance will co-design cool-corridor routes with residents.\n\n[Information needed: Confirm the accredited entity for the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal.]\n\n### Duration and financing\n\nThe programme period is 2027–2032. Its total cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.\n\n[Information needed: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.]",
+    "gaps": [
+      {
+        "field_key": "harbor_point_country",
+        "question": "Confirm the country in which Harbor Point is located.",
+        "why_asking": "The SAP project summary must identify the project city and country.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "accredited_entity",
+        "question": "Confirm the accredited entity for the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal.",
+        "why_asking": "A GCF SAP proposal requires an accredited entity to submit and oversee the funding request.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "gcf_funding_requested",
+        "question": "Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The USD 18.6 million figure is identified only as external grant funding; the GCF SAP request cannot be stated without confirming the portion requested from GCF.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "climate_context",
+    "title": "Climate rationale and baseline",
+    "body_markdown": "## Climate rationale and baseline\n\n### Climate hazards and observed trends\n\nHarbor Point faces extreme heat and stormwater flooding. The city recorded 23 days above 35 °C in 2025, compared with an average of 9 such days per year between 1991 and 2020. Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025.\n\nStreet flooding affects 37 intersections during a 10-year rainfall event. The Canal Street underpass closed 6 times in 2025 because of standing water.\n\n### Exposed people and assets\n\nHarbor Point has 182,400 residents. The proposed plan focuses on Eastside and Millbrook, where tree canopy is 11 percent and 13 percent respectively—the lowest levels in the city. The plan identifies street flooding at 37 intersections during a 10-year rainfall event and records six 2025 closures of the Canal Street underpass because of standing water.\n\n[Information needed: Provide the number of people in Eastside and Millbrook currently exposed to extreme heat and stormwater flooding.]\n\n### Baseline conditions\n\nThe existing drainage network in Eastside was designed for a 5-year storm and is undersized for current rainfall intensities. Without the proposed plan, no source-supported projection of future extreme-heat conditions is available.\n\n[Information needed: Provide the expected extreme-heat conditions in Harbor Point without the proposed plan, with the study or forecast they come from.]\n\nWithout the proposed plan, no source-supported projection of future stormwater-flooding conditions is available.\n\n[Information needed: Provide the expected stormwater-flooding conditions in Harbor Point without the proposed plan, with the study or forecast they come from.]",
+    "gaps": [
+      {
+        "field_key": "eastside_millbrook_exposed_population",
+        "question": "Provide the number of people in Eastside and Millbrook currently exposed to extreme heat and stormwater flooding.",
+        "why_asking": "The climate rationale must quantify the population exposed in the neighbourhoods targeted by the proposed measures.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "without_project_extreme_heat_conditions",
+        "question": "Provide the expected extreme-heat conditions in Harbor Point without the proposed plan, with the study or forecast they come from.",
+        "why_asking": "A without-project baseline is needed to distinguish observed heat conditions from expected conditions in the absence of the proposed intervention.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "without_project_stormwater_flooding_conditions",
+        "question": "Provide the expected stormwater-flooding conditions in Harbor Point without the proposed plan, with the study or forecast they come from.",
+        "why_asking": "A without-project baseline is needed to assess the proposed intervention against expected flooding conditions without it.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "The 37 intersections affected by street flooding during a 10-year rainfall event, including the Canal Street underpass, are identified exposed transport assets.",
+        "after": "The plan identifies street flooding at 37 intersections during a 10-year rainfall event and records six 2025 closures of the Canal Street underpass because of standing water.",
+        "reason": "The source reports flooding at 37 intersections and separate Canal Street underpass closures, but does not state that the underpass is among those intersections or classify them as exposed transport assets.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  },
+  {
+    "chapter_ref": "project_components",
+    "title": "Project components and activities",
+    "body_markdown": "## Project components and activities\n\nThe Harbor Point Heat and Stormwater Resilience Plan comprises three complementary components to reduce extreme-heat exposure and street flooding in Harbor Point between 2027 and 2032.\n\n### Component 1: Cool corridors\n\nThe plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook. The target is to achieve 25 percent tree canopy in both neighbourhoods by 2032. Cool-corridor planting and three years of establishment watering are estimated to cost USD 9.6 million.\n\nMillbrook Neighbours Alliance will co-design cool-corridor routes with residents.\n\n### Component 2: Green stormwater infrastructure\n\nThe plan will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas. These measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface. Green stormwater infrastructure, including design and construction supervision, is estimated to cost USD 14.2 million.\n\nThe Department of Public Works will deliver green stormwater infrastructure, and Harbor Point Unified School District will host schoolyard conversions.\n\n[Information needed: Confirm the locations of the 85 bioretention cells under the Harbor Point Heat and Stormwater Resilience Plan.]\n\n[Information needed: Confirm the schoolyard locations for the 3.2 hectares of permeable green play areas under the Harbor Point Heat and Stormwater Resilience Plan.]\n\n### Component 3: Community cooling network\n\nThe Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres. The centres will have extended opening hours on days above 32 °C. The community cooling network is budgeted at USD 2.7 million from the city operating budget.\n\n[Information needed: Confirm the locations of the 18 community cooling centres under the Harbor Point Heat and Stormwater Resilience Plan.]",
+    "gaps": [
+      {
+        "field_key": "bioretention_cell_locations",
+        "question": "Confirm the locations of the 85 bioretention cells under the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The proposal must identify the locations of its quantified green stormwater infrastructure output.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "schoolyard_conversion_locations",
+        "question": "Confirm the schoolyard locations for the 3.2 hectares of permeable green play areas under the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The proposal must specify where the quantified schoolyard-conversion output will be delivered.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "cooling_centre_locations",
+        "question": "Confirm the locations of the 18 community cooling centres under the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The proposal must identify the locations of the quantified community cooling-centre output.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "The Harbor Point Heat and Stormwater Resilience Plan comprises three complementary components to reduce extreme-heat exposure and street flooding in Eastside and Millbrook between 2027 and 2032.",
+        "after": "The Harbor Point Heat and Stormwater Resilience Plan comprises three complementary components to reduce extreme-heat exposure and street flooding in Harbor Point between 2027 and 2032.",
+        "reason": "The plan identifies Eastside and Millbrook as the locations for cool corridors, but it does not state that all three components will be delivered in those neighbourhoods.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  },
+  {
+    "chapter_ref": "expected_results",
+    "title": "Expected results and indicators",
+    "body_markdown": "## Expected results and indicators\n\n### Expected adaptation results\n\nThe Harbor Point Heat and Stormwater Resilience Plan is intended to reduce extreme-heat exposure and street flooding between 2027 and 2032. In Eastside and Millbrook, the plan targets 25 percent tree canopy by 2032, compared with current canopy cover of 11 percent and 13 percent respectively.\n\nThe plan will plant 4,800 street trees along 12 cool corridors connecting schools, clinics, and transit stops in Eastside and Millbrook. It will build 85 bioretention cells and convert 3.2 hectares of asphalt schoolyards into permeable green play areas; together, these measures are designed to capture the first 25 millimetres of rainfall from 41 hectares of impervious surface. The Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.\n\n[Information needed: Confirm the number of direct beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan.]\n\n### Indicators, baselines, and targets\n\nThe Office of Climate Resilience will publish an annual progress report. The plan identifies tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits as indicators.\n\n| Indicator | Baseline | Target |\n| --- | --- | --- |\n| Tree canopy cover in Eastside | 11 percent | 25 percent by 2032 |\n| Tree canopy cover in Millbrook | 13 percent | 25 percent by 2032 |\n| Street trees planted along cool corridors | Not stated | 4,800 trees along 12 corridors |\n| Bioretention cells built | Not stated | 85 cells |\n| Asphalt schoolyards converted to permeable green play areas | Not stated | 3.2 hectares |\n| Rainfall capture design scope | Not stated | First 25 millimetres of rainfall from 41 hectares of impervious surface |\n| Community cooling centres designated | Not stated | 18 centres |\n| Flooded intersections during monitored storms | 37 intersections during a 10-year rainfall event | [Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] |\n| Heat-related emergency department visits | 310 visits in 2025 | [Information needed: Confirm the target number of heat-related emergency department visits for the Harbor Point Heat and Stormwater Resilience Plan.] |\n\n### Beneficiary context\n\nHarbor Point has 182,400 residents. The plan focuses on Eastside and Millbrook, where tree canopy is lowest in the city and where the cool-corridor measures will be implemented.",
+    "gaps": [
+      {
+        "field_key": "direct_beneficiary_population",
+        "question": "Confirm the number of direct beneficiaries of the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "A quantified beneficiary population is needed to substantiate the scale of people expected to benefit from the proposed adaptation measures.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "flooded_intersections_target",
+        "question": "Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The plan identifies flooded intersections as an annual reporting indicator, but no target is available to assess the expected stormwater-resilience result.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "heat_related_ed_visits_target",
+        "question": "Confirm the target number of heat-related emergency department visits for the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The plan identifies heat-related emergency department visits as an annual reporting indicator, but no target is available to assess the expected heat-resilience result.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "| Flooded intersections during monitored storms | 37 intersections during a 10-year rainfall event | [Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] |",
+        "after": "| Flooded intersections during monitored storms | [Information needed: Confirm the baseline number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] The source reports 37 intersections affected during a 10-year rainfall event. | [Information needed: Confirm the target number of flooded intersections during monitored storms for the Harbor Point Heat and Stormwater Resilience Plan.] |",
+        "reason": "The source reports 37 affected intersections during a 10-year rainfall event, but does not state this as the baseline for flooded intersections during monitored storms.",
+        "applied": false,
+        "skipped": "touches an existing marker"
+      }
+    ]
+  },
+  {
+    "chapter_ref": "implementation",
+    "title": "Implementation arrangements",
+    "body_markdown": "## Implementation arrangements\n\n### Implementing entities and partner roles\n\nThe Office of Climate Resilience will lead delivery together with the Department of Public Works. The Department of Public Works will deliver green stormwater infrastructure. The Harbor Point Unified School District will host schoolyard conversions, and the community organisation Millbrook Neighbours Alliance will co-design cool-corridor routes with residents.\n\nThe Office of Climate Resilience will designate 18 community cooling centres in libraries and recreation centres, with extended opening hours on days above 32 °C.\n\n[Information needed: Confirm the accredited entity for the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal.]\n\n### Governance arrangements\n\nThe Harbor Point Heat and Stormwater Resilience Plan was adopted by the Harbor Point City Council on 14 March 2026. The Office of Climate Resilience and the Department of Public Works lead delivery together.\n\n[Information needed: Confirm the governance body responsible for oversight of the Harbor Point Heat and Stormwater Resilience Plan.]\n\n### Monitoring and reporting\n\nThe Office of Climate Resilience will publish an annual progress report. The plan identifies tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits as indicators.\n\n[Information needed: Confirm the entity responsible for collecting monitoring data for the Harbor Point Heat and Stormwater Resilience Plan's indicators.]",
+    "gaps": [
+      {
+        "field_key": "accredited_entity",
+        "question": "Confirm the accredited entity for the Harbor Point Heat and Stormwater Resilience Plan's GCF SAP proposal.",
+        "why_asking": "A GCF SAP proposal must identify the accredited entity that will submit the funding proposal and undertake the associated GCF responsibilities.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "governance_oversight_body",
+        "question": "Confirm the governance body responsible for oversight of the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The governance arrangements must identify the body that will oversee delivery across the Office of Climate Resilience, Department of Public Works, and delivery partners.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "indicator_data_collection_entity",
+        "question": "Confirm the entity responsible for collecting monitoring data for the Harbor Point Heat and Stormwater Resilience Plan's indicators.",
+        "why_asking": "Annual reporting on tree canopy cover, flooded intersections, and heat-related emergency department visits requires a named entity to collect the underlying indicator data.",
+        "severity": "noncritical",
+        "suggestions": []
+      }
+    ],
+    "support_check": []
+  },
+  {
+    "chapter_ref": "financing",
+    "title": "Indicative financing",
+    "body_markdown": "## Indicative financing\n\n### Cost basis and total programme cost\n\nThe Harbor Point Heat and Stormwater Resilience Plan has an indicative total programme cost of USD 26.5 million for implementation between 2027 and 2032. The cost estimates cover cool-corridor planting and three years of establishment watering; green stormwater infrastructure, including design and construction supervision; and the community cooling network.\n\n### Cost by component\n\n| Component | Indicative cost (USD million) | Funding status |\n| --- | ---: | --- |\n| Cool corridors | 9.6 | Seeking grant funding |\n| Green stormwater infrastructure | 14.2 | Seeking grant funding |\n| Community cooling network | 2.7 | Funded from the city operating budget |\n| **Total** | **26.5** |  |\n\n### Co-financing\n\nHarbor Point will contribute USD 7.9 million from its capital budget. The community cooling network is budgeted at USD 2.7 million from the city operating budget.\n\n[Information needed: Confirm whether the USD 2.7 million city operating-budget allocation for the Harbor Point community cooling network is included within the USD 7.9 million capital-budget contribution.]\n\n### GCF funding request and financial instrument\n\nThe plan seeks USD 18.6 million in external grant funding. [Information needed: Confirm how the USD 18.6 million in external grant funding is allocated between the cool-corridor and green stormwater infrastructure components.]\n\n[Information needed: Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.]\n\n[Information needed: Confirm the financial instrument requested from GCF for the Harbor Point Heat and Stormwater Resilience Plan.]",
+    "gaps": [
+      {
+        "field_key": "operating_budget_within_city_contribution",
+        "question": "Confirm whether the USD 2.7 million city operating-budget allocation for the Harbor Point community cooling network is included within the USD 7.9 million capital-budget contribution.",
+        "why_asking": "The stated component costs total USD 26.5 million, while the stated capital-budget contribution and external grant funding total USD 26.5 million; the treatment of the separate operating-budget allocation must be clear to avoid double counting co-financing.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "gcf_funding_request",
+        "question": "Confirm the amount of GCF funding requested for the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The plan identifies USD 18.6 million in external grant funding but does not establish how much of that amount is requested specifically from GCF.",
+        "severity": "critical",
+        "suggestions": [
+          {
+            "value": "USD 18.6 million in external grant funding",
+            "source_refs": [
+              "Harbor Point Heat and Stormwater Resilience Plan"
+            ]
+          }
+        ]
+      },
+      {
+        "field_key": "gcf_financial_instrument",
+        "question": "Confirm the financial instrument requested from GCF for the Harbor Point Heat and Stormwater Resilience Plan.",
+        "why_asking": "The SAP financing section must specify whether the requested GCF funding is a grant or another financial instrument.",
+        "severity": "critical",
+        "suggestions": []
+      },
+      {
+        "field_key": "external_grant_component_allocation",
+        "question": "Confirm how the USD 18.6 million in external grant funding is allocated between the cool-corridor and green stormwater infrastructure components.",
+        "why_asking": "The financing section needs to explain how the stated external grant funding relates to the two components seeking grant funding.",
+        "severity": "critical",
+        "suggestions": []
+      }
+    ],
+    "support_check": [
+      {
+        "before": "The plan seeks USD 18.6 million in external grant funding, corresponding to the combined indicative costs of the cool-corridor and green stormwater infrastructure components.",
+        "after": "The plan seeks USD 18.6 million in external grant funding. [Information needed: Confirm how the USD 18.6 million in external grant funding is allocated between the cool-corridor and green stormwater infrastructure components.]",
+        "reason": "The inputs state that USD 18.6 million is sought in external grant funding and that both components seek grant funding, but their combined indicative costs are USD 23.8 million and no allocation is stated.",
+        "applied": true,
+        "skipped": null
+      }
+    ]
+  }
+]

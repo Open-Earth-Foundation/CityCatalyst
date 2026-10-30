@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import json
 from collections.abc import AsyncIterator
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import uuid4
@@ -512,11 +513,70 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
         assert sections["minItems"] == sections["maxItems"] == 1
 
 
-@pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
-def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
+def _set_reader_model(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_reader.name = "previous-model"
+
+
+def _set_reader_effort(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_reader.reasoning_effort = "minimal"
+
+
+def _set_synthesizer_model(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_synthesizer.name = "previous-model"
+
+
+def _set_synthesizer_effort(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_synthesizer.reasoning_effort = "minimal"
+
+
+def _set_mapping_prompt(settings: Settings, tmp_path: Path) -> None:
+    prompt = tmp_path / "mapping.md"
+    prompt.write_text("Changed mapping prompt", encoding="utf-8")
+    settings.llm.prompts.cnb_source_document_mapping = str(prompt)
+
+
+def _set_synthesis_prompt(settings: Settings, tmp_path: Path) -> None:
+    prompt = tmp_path / "synthesis.md"
+    prompt.write_text("Changed synthesis prompt", encoding="utf-8")
+    settings.llm.prompts.cnb_source_summary_synthesis = str(prompt)
+
+
+def _set_tokenizer(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.tokenizer_encoding = "cl100k_base"
+
+
+def _set_partition_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens -= 1
+
+
+def _set_excerpt_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_key_excerpts -= 1
+
+
+def _set_topic_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_topics -= 1
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        _set_reader_model,
+        _set_reader_effort,
+        _set_synthesizer_model,
+        _set_synthesizer_effort,
+        _set_mapping_prompt,
+        _set_synthesis_prompt,
+        _set_tokenizer,
+        _set_partition_limit,
+        _set_excerpt_limit,
+        _set_topic_limit,
+    ],
+)
+def test_every_analysis_input_invalidates_the_reuse_contract(change, tmp_path) -> None:
+    """Any configured input that can change analysis output forces re-analysis."""
     settings = get_settings().model_copy(deep=True)
     current_contract = source_analysis_contract_version(settings)
-    getattr(settings.llm.models, role).name = "previous-model"
+    change(settings, tmp_path)
     assert source_analysis_contract_version(settings) != current_contract
 
 

@@ -58,11 +58,12 @@ async function bodyToBuffer(body: unknown): Promise<Buffer> {
  *   AWS_FILE_UPLOAD_REGION        — AWS region (default: us-east-1)
  */
 export default class InventoryFileStorageService {
-  /** Store a file at an already-authorized deterministic object key. */
+  /** Store a file at an authorized key; an optional signal bounds the upload. */
   static async putFile(
     s3Key: string,
     buffer: Buffer,
     contentType: string,
+    abortSignal?: AbortSignal,
   ): Promise<void> {
     assertConfigured();
     await getS3Client().send(
@@ -73,6 +74,7 @@ export default class InventoryFileStorageService {
         ContentType: contentType,
         ServerSideEncryption: "AES256",
       }),
+      { abortSignal },
     );
   }
 
@@ -224,12 +226,16 @@ export default class InventoryFileStorageService {
   }
 
   /**
-   * Delete a file from S3. Safe to call even if s3Key is empty.
+   * Delete a file from S3, optionally bounded by a signal. Empty keys are safe.
    */
-  static async deleteFile(s3Key: string): Promise<void> {
+  static async deleteFile(
+    s3Key: string,
+    abortSignal?: AbortSignal,
+  ): Promise<void> {
     if (!BUCKET || !s3Key) return;
     await getS3Client().send(
       new DeleteObjectCommand({ Bucket: BUCKET, Key: s3Key }),
+      { abortSignal },
     );
     logger.debug({ key: s3Key }, "Inventory file deleted from S3");
   }

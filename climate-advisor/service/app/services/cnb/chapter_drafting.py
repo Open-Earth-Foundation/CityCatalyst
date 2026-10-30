@@ -29,6 +29,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteGapResolutionResponse,
     ConceptNoteGapResponse,
 )
+from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
@@ -54,6 +55,7 @@ from app.services.cnb.application_context import (
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
+from app.services.cnb.chapter_support_check import check_chapter_support
 from app.services.cnb.draft_overview import overview_pending
 from app.services.cnb.source_analysis import SourceAnalysisError, query_document
 from app.services.cnb.source_impact_review import (
@@ -62,6 +64,7 @@ from app.services.cnb.source_impact_review import (
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
+    chapter_excerpts_for,
     manual_population_context,
     omit_context_identifiers,
     render_source_documents_message,
@@ -70,6 +73,7 @@ from app.utils.conversation_observability import (
     async_workflow_trace,
     finish_workflow_trace,
 )
+from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -251,7 +255,7 @@ class ConceptNoteChapterDraftService:
                         return
 
                     generated = await self._generate_chapter(
-                        _build_chapter_input(
+                        build_chapter_input(
                             application_context=application_context,
                             run_context=run_context,
                             current=current,
@@ -372,7 +376,7 @@ class ConceptNoteChapterDraftService:
             for current in impacted:
                 answered = [gap for gap in current.gaps if gap.gap_id in evidence]
                 generated = await self._generate_chapter(
-                    _build_chapter_input(
+                    build_chapter_input(
                         application_context=application_context,
                         run_context=run_context,
                         current=current,
@@ -471,48 +475,12 @@ class ConceptNoteChapterDraftService:
     ) -> ConceptNoteChapterDraftOutput:
         if self._generate_chapter_override is not None:
             return await self._generate_chapter_override(payload)
-
-        settings = self._settings
-        model_config = (
-            settings.llm.models.cnb_chapter_drafter
-            or settings.llm.models.cnb_source_synthesizer
+        draft, _ = await draft_chapter(
+            payload,
+            settings=self._settings,
+            runner=self._runner,
         )
-        try:
-            options = build_openrouter_client_options(
-                settings,
-                missing_api_key_message=(
-                    "OpenRouter API key is required for Concept Note chapter drafting"
-                ),
-                error_cls=ChapterDraftingError,
-            )
-            client = AsyncOpenAI(**options.kwargs)
-            agent = Agent(
-                name="Concept Note chapter drafter",
-                instructions=settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
-                model=OpenAIChatCompletionsModel(
-                    model=model_config.name,
-                    openai_client=client,
-                ),
-                model_settings=ModelSettings(
-                    temperature=0.0,
-                    include_usage=True,
-                    reasoning={"effort": model_config.reasoning_effort},
-                ),
-                output_type=ConceptNoteChapterDraftOutput,
-                tools=[],
-            )
-            try:
-                result = await self._runner.run(
-                    agent,
-                    _chapter_input_messages(payload),
-                )
-                return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
-            finally:
-                await client.close()
-        except ChapterDraftingError:
-            raise
-        except Exception as exc:
-            raise ChapterDraftingError("Chapter generation failed") from exc
+        return draft
 
     def _begin_draft(
         self,
@@ -573,27 +541,7 @@ class ConceptNoteChapterDraftService:
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            run_context = {
-                "run": {
-                    "run_id": str(run.run_id),
-                    "name": run.name,
-                    "city_id": run.city_id,
-                    "project_id": run.project_id,
-                },
-                "context_bundle_status": (
-                    run.context_summary.get("context_bundle", {})
-                    if isinstance(run.context_summary, dict)
-                    else {}
-                ),
-                # Complete source text travels as its own message, not in the JSON.
-                "context_bundle": bundle.model_dump(
-                    mode="json", exclude={"source_text"}
-                ),
-                "source_text": source_text_status(bundle.source_text),
-                "source_documents": source_documents_for_model(bundle.source_text),
-                "manual_population": manual_population_context(run.context_summary),
-            }
-            return run_context, included_sources_from_bundle(bundle)
+            return build_run_context(run, bundle), included_sources_from_bundle(bundle)
 
     async def _lease_is_active(
         self,
@@ -851,6 +799,138 @@ def _require_template(
     return template, chapters
 
 
+def build_run_context(
+    run: ConceptNoteRun,
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, Any]:
+    """Project one run and its normalized bundle into the drafter's run context."""
+    return {
+        "run": {
+            "run_id": str(run.run_id),
+            "name": run.name,
+            "city_id": run.city_id,
+            "project_id": run.project_id,
+        },
+        "context_bundle_status": (
+            run.context_summary.get("context_bundle", {})
+            if isinstance(run.context_summary, dict)
+            else {}
+        ),
+        # Complete source text travels as its own message, not in the JSON.
+        "context_bundle": bundle.model_dump(mode="json", exclude={"source_text"}),
+        "source_text": source_text_status(bundle.source_text),
+        "source_documents": source_documents_for_model(bundle.source_text),
+        "manual_population": manual_population_context(run.context_summary),
+    }
+
+
+async def generate_chapter_draft(
+    payload: dict[str, Any],
+    *,
+    settings: Settings,
+    runner: Any = Runner,
+) -> ConceptNoteChapterDraftOutput:
+    """Draft one chapter from a prepared payload with the configured drafter model.
+
+    Raises ``ChapterDraftingError`` when the provider is not configured or the
+    model call or output validation fails.
+    """
+    model_config = (
+        settings.llm.models.cnb_chapter_drafter
+        or settings.llm.models.cnb_source_synthesizer
+    )
+    try:
+        options = build_openrouter_client_options(
+            settings,
+            missing_api_key_message=(
+                "OpenRouter API key is required for Concept Note chapter drafting"
+            ),
+            error_cls=ChapterDraftingError,
+        )
+        client = AsyncOpenAI(**options.kwargs)
+        agent = Agent(
+            name="Concept Note chapter drafter",
+            instructions=settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
+            model=OpenAIChatCompletionsModel(
+                model=model_config.name,
+                openai_client=client,
+            ),
+            model_settings=ModelSettings(
+                temperature=0.0,
+                include_usage=True,
+                reasoning={"effort": model_config.reasoning_effort},
+            ),
+            output_type=ConceptNoteChapterDraftOutput,
+            tools=[],
+        )
+        try:
+            result = await runner.run(agent, _chapter_input_messages(payload))
+            return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
+        finally:
+            await client.close()
+    except ChapterDraftingError:
+        raise
+    except Exception as exc:
+        raise ChapterDraftingError("Chapter generation failed") from exc
+
+
+async def draft_chapter(
+    payload: dict[str, Any],
+    *,
+    settings: Settings,
+    runner: Any = Runner,
+) -> tuple[ConceptNoteChapterDraftOutput, list[dict[str, Any]]]:
+    """Draft one chapter, then correct claims its inputs do not support.
+
+    Returns the checked draft and a record of every support-check revision.
+    Raises ``ChapterDraftingError`` when drafting itself fails; a failed
+    support check keeps the draft as written.
+    """
+    payload = fit_context_window(payload, settings)
+    draft = await generate_chapter_draft(payload, settings=settings, runner=runner)
+    return await check_chapter_support(
+        _chapter_input_messages(payload), draft, settings=settings, runner=runner
+    )
+
+
+def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
+    """Drop complete source text from a chapter request too large for the window.
+
+    The count covers the drafter's instructions and every input message. A
+    chapter over the window is drafted from summaries and quotations, and its
+    ``source_text.mode`` says so.
+    """
+    if not payload.get("source_documents"):
+        return payload
+    budget = settings.llm.generation.prompt_budget
+    model = settings.llm.models.cnb_chapter_drafter or settings.llm.models.cnb_source_synthesizer
+    tokens = count_prompt_tokens(
+        [
+            settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
+            *(message["content"] for message in _chapter_input_messages(payload)),
+        ],
+        model=model.name,
+        fallback_encoding=budget.tokenizer_encoding,
+    ).tokens
+    window = budget.cnb_sources.context_window_tokens
+    if tokens <= window:
+        return payload
+    logger.info(
+        "Concept Note chapter request exceeds the context window tokens=%s window=%s",
+        tokens,
+        window,
+    )
+    run_context = payload["run_context"]
+    return {
+        **payload,
+        "run_context": {
+            **run_context,
+            "source_text": {**run_context.get("source_text", {}), "mode": "summary"},
+        },
+        "source_documents": [],
+    }
+
+
 def _optional_template_chapters(
     application_context: ConceptNoteApplicationContextResponse,
 ) -> list[WorkspaceTemplateChapter]:
@@ -861,7 +941,7 @@ def _optional_template_chapters(
         return []
 
 
-def _build_chapter_input(
+def build_chapter_input(
     *,
     application_context: ConceptNoteApplicationContextResponse,
     run_context: dict[str, Any],
@@ -883,6 +963,19 @@ def _build_chapter_input(
         for key, value in run_context.items()
         if key not in {"context_bundle_status", "source_documents"}
     }
+    bundle = semantic_run_context.get("context_bundle")
+    if isinstance(bundle, dict):
+        # Each source keeps only the quotations chosen for this chapter.
+        semantic_run_context["context_bundle"] = {
+            **bundle,
+            "selected_sources": [
+                {
+                    **source,
+                    "chapter_excerpts": chapter_excerpts_for(source, current.chapter_ref),
+                }
+                for source in bundle.get("selected_sources", [])
+            ],
+        }
     payload = omit_context_identifiers(
         {
             "application_context": application_payload,

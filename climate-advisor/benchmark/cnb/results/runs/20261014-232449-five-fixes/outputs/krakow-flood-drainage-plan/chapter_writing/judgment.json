@@ -1,0 +1,1888 @@
+{
+  "facts": [
+    {
+      "id": "funding-programme",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "FENX.01.02 appears in information-needed markers, but the draft does not state the FEnIKS 2021–2027 action and its climate-adaptation purpose."
+    },
+    {
+      "id": "applicant-city",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "The applicant chapter asks who the applicant is rather than identifying the City of Kraków (Gmina Miejska Kraków)."
+    },
+    {
+      "id": "coordinator",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu jako koordynatora Planu, a Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi."
+        }
+      ],
+      "reason": "Both plan-level roles and their distinction are preserved."
+    },
+    {
+      "id": "plan-horizon",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/zadania",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa obejmuje lata 2023–2035"
+        }
+      ],
+      "reason": "The dates are correctly identified as the plan horizon, not the project's dates."
+    },
+    {
+      "id": "three-threat-levels",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "Główne zagrożenie powodziowe generuje Wisła, zasilana dużą zlewnią górską i podgórską powyżej miasta. Zagrożenie stwarzają także dopływy Wisły uchodzące na terenie miasta oraz cieki miejskie, których odpływ może być ograniczony podczas wezbrań Wisły."
+        },
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "Zamknięcie śluz wałowych podczas wezbrań Wisły, przy braku przepompowni dla części wód, może skutkować podtopieniami terenów zawala."
+        }
+      ],
+      "reason": "The Vistula, tributaries, and internal streams are distinguished, with the gate-closure and pumping-station mechanism retained."
+    },
+    {
+      "id": "specific-objectives",
+      "verdict": "partially_covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "Projekt pozostaje spójny z celami szczegółowymi Planu dotyczącymi ograniczenia zagrożeń powodziowych, ograniczenia ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz zapewnienia zrównoważonego gospodarowania wodami opadowymi."
+        }
+      ],
+      "reason": "Three objectives are identified, but the separate objective of effective crisis management during flood threats is omitted."
+    },
+    {
+      "id": "small-retention-programme",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "Neither allowed chapter names the Kraków Small Rainwater Retention Programme or preserves its PLN 30,000,000 and 2023–2030 figures."
+    },
+    {
+      "id": "blue-green-infrastructure",
+      "verdict": "missing",
+      "output_refs": [],
+      "reason": "Neither allowed chapter gives the blue and blue-green infrastructure action, its small and micro-retention scope, PLN 6,000,000 estimate, 2035 date, or KEGW assignment."
+    },
+    {
+      "id": "total-cost-city",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje szacunkowy koszt jego wdrożenia w latach 2023–2035 na poziomie 1 275 867 730 zł."
+        }
+      ],
+      "reason": "The exact amount is retained as an estimate for the whole plan, not a project budget."
+    },
+    {
+      "id": "cost-is-estimate",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "Wysokość nakładów dla poszczególnych działań ma charakter szacunkowy i wymaga weryfikacji na etapie przygotowania inwestycji."
+        }
+      ],
+      "reason": "The estimate and its required later verification are explicit."
+    },
+    {
+      "id": "financing-sources",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "Plan przewiduje finansowanie jego realizacji z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych."
+        }
+      ],
+      "reason": "The city budget and conditional availability of external funds are preserved."
+    },
+    {
+      "id": "financing-risk",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/ryzyka",
+          "quote": "| Brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |"
+        }
+      ],
+      "reason": "The risk and its serious rating are retained."
+    },
+    {
+      "id": "monitoring-indicator",
+      "verdict": "covered",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje monitorowanie wskaźnika produktowego: liczby zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków. Dla Planu wartość bazową określono na 0, a kierunek zmian jako wzrost. Wartości oczekiwane dotyczą całego Planu i wynoszą odpowiednio: 8 dla celu szczegółowego I, 5 dla celu szczegółowego II, 22 dla celu szczegółowego III oraz 9 dla celu szczegółowego IV."
+        }
+      ],
+      "reason": "The measure, plan-level baseline, and four correctly assigned targets are retained."
+    }
+  ],
+  "topics": [],
+  "claims": [
+    {
+      "output": {
+        "unit_id": "chapter/informacje_o_projekcie",
+        "quote": "Celem projektu jest adaptacja Krakowa do zmian klimatu poprzez ograniczanie ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz wspieranie zrównoważonego gospodarowania wodami opadowymi."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/informacje_o_projekcie/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "self_contained": true,
+      "reason": "These are plan objectives, but the inputs do not confirm the selected project's objective or scope."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/informacje_o_projekcie",
+        "quote": "Projekt wpisuje się w cele Planu Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa: ochronę przed powodzią, retencjonowanie wód opadowych i efektywne odwodnienie Gminy Miejskiej Kraków, przy zapewnieniu bezpieczeństwa i komfortu mieszkańcom oraz ograniczeniu strat materialnych."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych"
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/informacje_o_projekcie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The plan's general goal is accurately quoted; the project's alignment remains conditional on its unselected scope."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/informacje_o_projekcie",
+        "quote": "Projekt będzie stanowił element działań na rzecz rozbudowy, utrzymania i modernizacji Miejskiego Systemu Odwodnienia Miasta Krakowa oraz rozwoju retencji dla zagospodarowania wód opadowych."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;"
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/informacje_o_projekcie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+        },
+        {
+          "unit_id": "supplied/informacje_o_projekcie/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;"
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both directions are in the plan, but asserting that this unspecified project will include both goes beyond the confirmed inputs."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wnioskodawca",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu jako koordynatora Planu, a Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "b) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/wnioskodawca/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "b) Koordynator: Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu\nc) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The claim explicitly concerns roles under the plan, not confirmed roles in the funding project."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Kraków jest narażony na zagrożenie powodziowe i podtopieniowe, których skala jest związana zarówno z oddziaływaniem Wisły i jej dopływów, jak i z funkcjonowaniem Miejskiego Systemu Odwodnienia Krakowa."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła"
+        },
+        {
+          "unit_id": "source/page-3",
+          "quote": "Główne problemy Miejskiego Systemu Odwodnienia Krakowa (dalej System):"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła"
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "Główne problemy Miejskiego Systemu Odwodnienia Krakowa (dalej System):"
+        }
+      ],
+      "self_contained": true,
+      "reason": "This accurately summarizes the documented sources of flood and drainage problems."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Główne zagrożenie powodziowe generuje Wisła, zasilana dużą zlewnią górską i podgórską powyżej miasta. Zagrożenie stwarzają także dopływy Wisły uchodzące na terenie miasta oraz cieki miejskie, których odpływ może być ograniczony podczas wezbrań Wisły."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta. Aktualna efektywność zbiorników retencyjnych i przyszłych działań w zlewni powyżej Krakowa jest więc istotna dla ochrony przed powodzią miasta. Drugi, nieco niższy poziom zagrożenia stanowią dopływy Wisły"
+        },
+        {
+          "unit_id": "source/page-2",
+          "quote": "Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Główne zagrożenie powodziowe Krakowa generuje rzeka Wisła zasilana bardzo dużą zlewnią górską i podgórską powyżej miasta."
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Trzeci poziom zagrożenia powodziowego stanowią cieki miejskie (wewnętrzne), uchodzące do Wisły lub jej dopływów poprzez śluzy wałowe zamykane w trakcie wezbrań na Wiśle."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The three sources of threat and the relative importance of the Vistula are preserved."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Zamknięcie śluz wałowych podczas wezbrań Wisły, przy braku przepompowni dla części wód, może skutkować podtopieniami terenów zawala."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-2",
+          "quote": "Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/3/text",
+          "quote": "Zamknięcie śluz, wobec braku przepompowni dla tych wód, skutkuje wystąpieniem podtopień na terenach zawala."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The mechanism and affected area match the source."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Najtrudniejszy dla odwodnienia miasta jest scenariusz wysokich wezbrań na rzekach na terenie Krakowa, powodujący zamknięcie śluz wałowych i pogorszenie warunków odpływu w systemie kanalizacji ogólnospławnej i opadowej."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Najtrudniejszym scenariuszem dla odwodnienia miasta jest sytuacja, gdy przez rzeki na terenie Krakowa przepływają wysokie wezbrania, co wiąże się z zamknięciem śluz wałowych i pogorszeniem warunków odpływu w systemie kanalizacji ogólnospławnej i opadowej."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Najtrudniejszym scenariuszem dla odwodnienia miasta jest sytuacja, gdy przez rzeki na terenie Krakowa przepływają wysokie wezbrania, co wiąże się z zamknięciem śluz wałowych i pogorszeniem warunków odpływu w systemie kanalizacji ogólnospławnej i opadowej."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The scenario and its drainage consequences are explicitly supplied in the full source."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje, że zagrożenie powodziowe rośnie wskutek niekorzystnych zmian zagospodarowania terenu w zlewni Wisły i jej dopływów, ograniczania naturalnej retencji oraz przyspieszania spływu powierzchniowego. Na te procesy nakładają się zmiany klimatu, w tym występowanie ekstremalnych opadów."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Z roku na rok zagrożenie powodziowe Krakowa rośnie, ponieważ w zlewni Wisły i jej dopływów następują niekorzystne zmiany w zagospodarowaniu terenu, ograniczanie naturalnej zdolności retencyjnej terenu i przyspieszanie spływu powierzchniowego. Nakładają się na to zmiany klimatu, skutkujące występowaniem ekstremalnych zjawisk pogodowych, w tym ekstremalnych opadów (deszczy nawalnych)."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Z roku na rok zagrożenie powodziowe Krakowa rośnie, ponieważ w zlewni Wisły i jej dopływów następują niekorzystne zmiany w zagospodarowaniu terenu, ograniczanie naturalnej zdolności retencyjnej terenu i przyspieszanie spływu powierzchniowego. Nakładają się na to zmiany klimatu, skutkujące występowaniem ekstremalnych zjawisk pogodowych, w tym ekstremalnych opadów (deszczy nawalnych)."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The stated drivers follow the source."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Coroczna ocena zabezpieczenia przeciwpowodziowego miasta wskazuje, że mimo prowadzonych działań zagrożenie powodziowe nadal występuje, a aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Przeprowadzona corocznie ocena stanu zabezpieczenia przeciwpowodziowego miasta Krakowa wskazuje, że pomimo trwających od wielu lat działań mających na celu zmniejszenie ryzyka powodzi"
+        },
+        {
+          "unit_id": "source/page-3",
+          "quote": "aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "Przeprowadzona corocznie ocena stanu zabezpieczenia przeciwpowodziowego miasta Krakowa wskazuje, że pomimo trwających od wielu lat działań mających na celu zmniejszenie ryzyka powodzi"
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/4/text",
+          "quote": "aktualny stan zabezpieczenia miasta nie gwarantuje wystarczającego poziomu ochrony."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The annual assessment and its qualified conclusion are retained."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Do głównych problemów Miejskiego Systemu Odwodnienia Krakowa należą: potrzeba adaptacji do większej częstotliwości i intensywności ekstremalnych zjawisk pogodowych; lokalne podtopienia powodowane niewystarczającą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów; ograniczony odpływ wód opadowych podczas wezbrań Wisły; niedostatecznie rozwinięta retencja lub sieć kanalizacji opadowej w obszarach peryferyjnych; wzrost powierzchni terenów uszczelnionych oraz potrzeba przeciwdziałania skutkom suszy."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Główne problemy Miejskiego Systemu Odwodnienia Krakowa (dalej System):\n\n1) konieczność adaptacji do zmian klimatu (większej częstotliwości i intensywności występowania ekstremalnych zjawisk pogodowych);\n2) występowanie lokalnych podtopień spowodowanych zbyt małą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów;"
+        },
+        {
+          "unit_id": "source/page-3",
+          "quote": "7) zmiany w zagospodarowaniu terenu i szybko powiększająca się powierzchnia terenów uszczelnionych;\n8) konieczność przeciwdziałania skutkom suszy."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "Główne problemy Miejskiego Systemu Odwodnienia Krakowa (dalej System):"
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "2) występowanie lokalnych podtopień spowodowanych zbyt małą przepustowością, zamuleniem lub złym stanem technicznym rowów i kanałów;\n3) brak możliwości odpływu wód opadowych podczas wezbrań na Wiśle, powodujących zamknięcie śluz wałowych;\n4) niedostatecznie rozwinięta retencja i/lub sieć kanalizacji opadowej w obszarach peryferyjnych;"
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "7) zmiany w zagospodarowaniu terenu i szybko powiększająca się powierzchnia terenów uszczelnionych;\n8) konieczność przeciwdziałania skutkom suszy."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The listed problems are a faithful selection from the plan; the list does not claim to be exhaustive."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Efektywność odwodnienia zależy od stopnia rozbudowy Miejskiego Systemu Odwodnienia Krakowa, jego stanu technicznego oraz dostosowania do zmian zagospodarowania poszczególnych terenów."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-3",
+          "quote": "Efektywność odwodnienia miasta zależy od stopnia rozbudowy Miejskiego Systemu Odwodnienia Krakowa, jego stanu technicznego i dostosowania do zmian w zagospodarowaniu poszczególnych terenów."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Efektywność odwodnienia miasta zależy od stopnia rozbudowy Miejskiego Systemu Odwodnienia Krakowa, jego stanu technicznego i dostosowania do zmian w zagospodarowaniu poszczególnych terenów."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The factors affecting drainage effectiveness are unchanged."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Plan wskazuje jako warunki jego prawidłowej eksploatacji, modernizacji i rozbudowy kontynuację inwentaryzacji kanalizacji opadowej, wdrożenie systemu zarządzania kanalizacją opadową, koordynację działań wpływających na odwodnienie miasta oraz zapewnienie środków na utrzymanie i inwestycje."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:"
+        },
+        {
+          "unit_id": "source/page-4",
+          "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/6/text",
+          "quote": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:"
+        },
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/6/text",
+          "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+        }
+      ],
+      "self_contained": true,
+      "reason": "All four conditions are summarized; in context, the pronoun refers to the drainage system."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Projekt odpowiada na potrzebę ograniczenia ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz na potrzebę zrównoważonego gospodarowania wodami opadowymi."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "self_contained": true,
+      "reason": "These needs are documented, but the selected project interventions are unknown."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Jest zgodny z kierunkami wskazanymi w Planie Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa, obejmującymi rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa oraz utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;"
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "3) rozbudowę, utrzymanie i modernizację Miejskiego Systemu Odwodnienia Miasta Krakowa;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "4) utrzymanie retencji naturalnej i rozwój retencji technicznej dla zagospodarowania wód opadowych;"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The directions are genuine plan provisions; alignment of an unselected project is not fully established."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa ma horyzont czasowy 2023–2035. Jego celem ogólnym jest ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, przy zapewnieniu bezpieczeństwa i komfortu mieszkańcom oraz ograniczeniu strat materialnych."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "a) Horyzont czasowy: lata „2023-2035”"
+        },
+        {
+          "unit_id": "source/page-4",
+          "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/0/text",
+          "quote": "Horyzont czasowy: lata „2023-2035”"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Ochrona przed powodzią, retencjonowanie wód opadowych oraz efektywne odwodnienie Gminy Miejskiej Kraków, zapewnienie bezpieczeństwa i komfortu mieszkańcom oraz ograniczenie strat materialnych"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The plan horizon and general goal are correctly distinguished from project-specific details."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "W dokumencie wskazano, że Plan Odwodnienia Gminy Miejskiej Kraków realizuje Strategię Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”, w szczególności cel strategiczny IV „Kraków – miasto przyjazne do życia”, cel operacyjny IV.3 „Zrównoważone środowisko”, w ramach którego wskazano modernizowanie i rozbudowę infrastruktury komunalnej, oraz cel operacyjny IV.5 „Wysoki poziom bezpieczeństwa w Krakowie”, obejmujący uprawnienia zarządzania kryzysowego."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "Plan Odwodnienia Gminy Miejskiej Kraków realizuje następujące cele Strategii Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”:\nCEL STRATEGICZNY IV: Kraków – miasto przyjazne do życia\nCEL OPERACYJNY IV.3: Zrównoważone środowisko\nDziałania kluczowe: Modernizowanie i rozbudowa infrastruktury komunalnej\nCEL OPERACYJNY IV.5: Wysoki poziom bezpieczeństwa w Krakowie\nDziałania kluczowe: Uprawnienia zarządzania kryzysowego."
+        }
+      ],
+      "self_contained": true,
+      "reason": "This reports the plan's stated connection to the named strategy, without claiming separate project approval."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Plan wskazuje również potrzebę działań adaptacyjnych wobec zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna oraz miejskie wyspy ciepła."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "Podjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/uzasadnienie/run_context/context_bundle/selected_sources/0/chapter_excerpts/0/text",
+          "quote": "Podjęcie działań adaptacyjnych do zachodzących zmian klimatycznych, zagrożeń wynikających z ekstremalnych zjawisk pogodowych, takich jak gwałtowne deszcze, burze, susze, fale upałów i zimna, miejskie wyspy ciepła."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The hazards and adaptation need follow the source."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/uzasadnienie",
+        "quote": "Projekt pozostaje spójny z celami szczegółowymi Planu dotyczącymi ograniczenia zagrożeń powodziowych, ograniczenia ryzyka podtopień lokalnych w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek oraz zapewnienia zrównoważonego gospodarowania wodami opadowymi."
+      },
+      "verdict": "partially_supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;"
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "supplied_verdict": "partially_supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Cel szczegółowy I – ograniczyć zagrożenia powodziowe;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The three named plan objectives are real, but project-specific consistency is unconfirmed; the plan's fourth, crisis-management objective is omitted from this account."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa obejmuje lata 2023–2035 i wskazuje działania służące ograniczeniu ryzyka podtopień lokalnych oraz zrównoważonemu gospodarowaniu wodami opadowymi."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "a) Horyzont czasowy: lata „2023-2035”"
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/0/text",
+          "quote": "Horyzont czasowy: lata „2023-2035”"
+        },
+        {
+          "unit_id": "supplied/zadania/run_context/context_bundle/selected_sources/0/chapter_excerpts/2/text",
+          "quote": "Cel szczegółowy III – ograniczyć ryzyko podtopień lokalnych, w warunkach intensywnych opadów i zagrożenia powodziowego od strony rzek;\n\nCel szczegółowy IV – zapewnić zrównoważone gospodarowanie wodami opadowymi."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The horizon and objectives belong to the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Wśród działań dotyczących Miejskiego Systemu Odwodnienia Krakowa wymieniono m.in. inwentaryzację kanalizacji opadowej, wdrożenie narzędzi modelowych, przygotowanie koncepcji rozwiązań technicznych w zlewniach problemowych, modernizację kanalizacji opadowej i rowów oraz realizację inwestycji objętych koncepcjami odwodnienia."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "|  III/1 | Inwentaryzacja systemu kanalizacji opadowej (odcinki zarurowane) o stopniu szczegółowości niezbędnym dla wykorzystania nowych narzędzi modelowania | 6 500 000 | KEGW | do 2035 r."
+        },
+        {
+          "unit_id": "source/page-7",
+          "quote": "|  III/3.1 | Wdrożenie narzędzi modelowych (model hydrauliczny, model pokrycia terenu, model opad-odpływ) | 2 000 000 | KEGW | do 2035 r."
+        },
+        {
+          "unit_id": "source/page-7",
+          "quote": "|  III/8 | Modernizacja kanalizacji opadowej (odcinki zarurowane) zgodnie z tabelą 4 | oszacowanie kosztów na etapie planowania inwestycji | KEGW | Do 2035 r."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/3.1 | Wdrożenie narzędzi modelowych (model hydrauliczny, model pokrycia terenu, model opad-odpływ) | 2 000 000 | KEGW | do 2035 r."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/9 | Modernizacja kanalizacji opadowej (rowy) zgodnie z tabelą 5 |   | KEGW | Do 2035 r."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/12 | Realizacja inwestycji objętych koncepcją odwodnienia terenu osiedli Grębałów, Lubocza, Łuczanowice i Kantorowice | 48 400 000 | KEGW | Do 2030 r."
+        }
+      ],
+      "self_contained": true,
+      "reason": "These are examples of plan actions, not asserted project components."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Plan wskazuje również konkretne działania inwestycyjne, w tym przebudowę systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel, inwestycje objęte koncepcją odwodnienia osiedli Grębałów, Lubocza, Łuczanowice i Kantorowice oraz przedsięwzięcia dotyczące innych obszarów miasta."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-7",
+          "quote": "|  III/11 | Przebudowa systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel | 18 100 000 | KEGW | Do 2028 r."
+        },
+        {
+          "unit_id": "source/page-8",
+          "quote": "|  III/12 | Realizacja inwestycji objętych koncepcją odwodnienia terenu osiedli Grębałów, Lubocza, Łuczanowice i Kantorowice | 48 400 000 | KEGW | Do 2030 r."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/11 | Przebudowa systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel | 18 100 000 | KEGW | Do 2028 r."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/12 | Realizacja inwestycji objętych koncepcją odwodnienia terenu osiedli Grębałów, Lubocza, Łuczanowice i Kantorowice | 48 400 000 | KEGW | Do 2030 r."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The named sites and actions match the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Wskazanie tych działań w Planie nie przesądza jednak, które z nich zostaną objęte niniejszym wnioskiem."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Tab. 1 Działania służące realizacji celu ogólnego oraz celów szczegółowych"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Tab. 1 Działania służące realizacji celu ogólnego oraz celów szczegółowych"
+        },
+        {
+          "unit_id": "supplied/shared/application_context/included_sources/project",
+          "quote": "false"
+        }
+      ],
+      "self_contained": true,
+      "reason": "A citywide plan action list does not itself select components for this funding application."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Po potwierdzeniu zakresu inwestycyjnego zadania zostaną przedstawione jako odrębne pozycje wraz z zakresem rzeczowym, lokalizacją, jednostką realizującą i terminem wykonania."
+      },
+      "verdict": "uncertain",
+      "evidence": [],
+      "supplied_verdict": "uncertain",
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This is a conditional commitment about later preparation of the application, not a documented implementation decision; no input confirms that future step."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Plan wskazuje Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-1",
+          "quote": "c) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "c) Główny realizujący zadania gminne: Klimat-Energia-Gospodarka Wodna we współpracy z innymi jednostkami miejskimi"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The role is expressly limited to municipal tasks under the plan."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Dla poszczególnych działań Plan przypisuje jednak różne jednostki realizujące, w tym KEGW, Zarząd Dróg Miasta Krakowa, Zarząd Zieleni Miejskiej w Krakowie, Wodociągi Miasta Krakowa S.A. oraz Państwowe Gospodarstwo Wodne Wody Polskie."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "- KEGW – Klimat-Energia-Gospodarka Wodna\n- ZDMK – Zarząd Dróg Miasta Krakowa\n- ZZM – Zarząd Zieleni Miejskiej w Krakowie\n- WMK – Wodociągi Miasta Krakowa S.A\n- PGW WP – Państwowe Gospodarstwo Wodne Wody Polskie"
+        },
+        {
+          "unit_id": "source/page-5",
+          "quote": "|  I/2.1 | System prognozowania podtopień i zarządzania retencją kanałową w kanalizacji ogólnospławnej i kanalizacji opadowej w Krakowie – modele predykcyjne sieci (Nr działania w PZRP: W_GZW_1809)* | 9 000 000 | WMK S.A./ KEGW | Do 2035 r."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- KEGW – Klimat-Energia-Gospodarka Wodna\n- ZDMK – Zarząd Dróg Miasta Krakowa\n- ZZM – Zarząd Zieleni Miejskiej w Krakowie\n- WMK – Wodociągi Miasta Krakowa S.A\n- PGW WP – Państwowe Gospodarstwo Wodne Wody Polskie"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The named entities appear in the plan and its action assignments; none is asserted to be a confirmed project partner."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Plan określa horyzont realizacji działań do 2035 r., przy czym wybrane działania mają wcześniejsze terminy, w tym do 2028 r. dla budowy kanału ulgi na Sudole Dominikańskim oraz przebudowy systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-6",
+          "quote": "|  I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r."
+        },
+        {
+          "unit_id": "source/page-7",
+          "quote": "|  III/11 | Przebudowa systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel | 18 100 000 | KEGW | Do 2028 r."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/zadania/run_context/context_bundle/selected_sources/0/chapter_excerpts/5/text",
+          "quote": "|  I/8.4 | Budowa kanału ulgi na Sudole Dominikańskim | 60 000 000 | PGW WP/KEGW | Do 2028 r."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "|  III/11 | Przebudowa systemu kanalizacji opadowej na terenie osiedla Spółdzielni Mieszkaniowej Kabel | 18 100 000 | KEGW | Do 2028 r."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The two 2028 deadlines belong to named plan actions, as stated."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Terminy te są terminami działań ujętych w Planie i nie stanowią harmonogramu projektu, dopóki nie zostanie potwierdzony jego zakres."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-5",
+          "quote": "Tab. 1 Działania służące realizacji celu ogólnego oraz celów szczegółowych"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Tab. 1 Działania służące realizacji celu ogólnego oraz celów szczegółowych"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The distinction between plan deadlines and an unconfirmed project schedule is warranted."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/zadania",
+        "quote": "Po potwierdzeniu zakresu rzeczowego i okresu realizacji harmonogram zostanie uzupełniony o terminy poszczególnych zadań oraz kamienie milowe właściwe dla projektu."
+      },
+      "verdict": "uncertain",
+      "evidence": [],
+      "supplied_verdict": "uncertain",
+      "supplied_evidence": [],
+      "self_contained": true,
+      "reason": "This is a conditional commitment to future drafting, rather than a schedule established by the inputs."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wskazniki",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa przewiduje monitorowanie wskaźnika produktowego: liczby zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "Wskaźnik monitorowania produktowy: ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Wskaźnik monitorowania produktowy: ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The plan-level output measure is correctly named."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wskazniki",
+        "quote": "Dla Planu wartość bazową określono na 0, a kierunek zmian jako wzrost. Wartości oczekiwane dotyczą całego Planu i wynoszą odpowiednio: 8 dla celu szczegółowego I, 5 dla celu szczegółowego II, 22 dla celu szczegółowego III oraz 9 dla celu szczegółowego IV."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "Wartość bazowa = 0, kierunek zmian = wzrost, wartość oczekiwana: Cel szczegółowy I = 8, Cel szczegółowy II = 5, Cel szczegółowy III = 22, Cel szczegółowy IV = 9."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Wartość bazowa = 0, kierunek zmian = wzrost, wartość oczekiwana: Cel szczegółowy I = 8, Cel szczegółowy II = 5, Cel szczegółowy III = 22, Cel szczegółowy IV = 9."
+        }
+      ],
+      "self_contained": true,
+      "reason": "All four plan targets and the baseline retain their assignments."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wskazniki",
+        "quote": "Wartości te nie stanowią jeszcze wskaźników ani wartości docelowych niniejszego projektu."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "## 5. Wskaźniki monitorowania\n\nWskaźnik monitorowania produktowy: ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "## 5. Wskaźniki monitorowania\n\nWskaźnik monitorowania produktowy: ilość zrealizowanych zadań leżących w kompetencjach Gminy Miejskiej Kraków."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The figures are introduced as plan measures, not confirmed project targets."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wskazniki",
+        "quote": "Plan wskazuje, że jego coroczna ewaluacja będzie prowadzona na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM, lecz nie podaje nazwy ani wartości wskaźnika rezultatu dla niniejszego projektu."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-12",
+          "quote": "Ewaluacja dokonywana będzie corocznie w trakcie obowiązywania Planu, na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Ewaluacja dokonywana będzie corocznie w trakcie obowiązywania Planu, na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Annual plan evaluation and STRADOM are explicit; no project-specific result measure or values are identified."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/wskazniki",
+        "quote": "Dla Planu dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących działania przygotowują coroczne sprawozdania, a koordynator Planu sporządza sprawozdanie o działaniach planowanych, realizowanych i zakończonych w okresie sprawozdawczym."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania przygotowują"
+        },
+        {
+          "unit_id": "source/page-12",
+          "quote": "coroczne sprawozdania z realizacji działań. Koordynator Planu sporządza sprawozdanie zawierające informacje o planowanych, realizowanych i zakończonych działaniach prowadzonych w okresie sprawozdawczym."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "coroczne sprawozdania z realizacji działań. Koordynator Planu sporządza sprawozdanie zawierające informacje o planowanych, realizowanych i zakończonych działaniach prowadzonych w okresie sprawozdawczym."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The reporting responsibilities and annual frequency are plan-level, as stated."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/budzet",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje szacunkowy koszt jego wdrożenia w latach 2023–2035 na poziomie 1 275 867 730 zł."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Szacunkowy koszt wdrożenia Planu w latach 2023-2035 (zgodnie z tabelą 1) wynosi: **1 275 867 730 zł**."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Szacunkowy koszt wdrożenia Planu w latach 2023-2035 (zgodnie z tabelą 1) wynosi: **1 275 867 730 zł**."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The exact plan estimate, currency, and period are preserved."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/budzet",
+        "quote": "Kwota ta dotyczy całego Planu, nie obejmuje działań realizowanych w ramach środków bieżących ani działań, dla których nakłady nie zostały jeszcze określone, i nie stanowi budżetu niniejszego projektu."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "*** nie uwzględniają kosztów działań w ramach środków bieżących oraz działań, dla których jeszcze nie określono nakładów finansowych"
+        },
+        {
+          "unit_id": "source/page-11",
+          "quote": "Szacunkowy koszt wdrożenia Planu w latach 2023-2035 (zgodnie z tabelą 1) wynosi: **1 275 867 730 zł**."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "*** nie uwzględniają kosztów działań w ramach środków bieżących oraz działań, dla których jeszcze nie określono nakładów finansowych"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Szacunkowy koszt wdrożenia Planu w latach 2023-2035 (zgodnie z tabelą 1) wynosi: **1 275 867 730 zł**."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The exclusions and distinction from an unprovided project budget are correct."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/budzet",
+        "quote": "Plan przewiduje finansowanie jego realizacji z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych."
+        }
+      ],
+      "self_contained": true,
+      "reason": "External funding remains conditional and is not presented as secured project finance."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/budzet",
+        "quote": "Wysokość nakładów dla poszczególnych działań ma charakter szacunkowy i wymaga weryfikacji na etapie przygotowania inwestycji."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Wysokość nakładów ma charakter szacunkowy i wymaga zweryfikowania na etapie przygotowania inwestycji."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Wysokość nakładów ma charakter szacunkowy i wymaga zweryfikowania na etapie przygotowania inwestycji."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The cost qualification matches the source."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa identyfikuje ryzyka dla realizacji działań planowych. Poniższa tabela przedstawia ryzyka określone w Planie; ich zastosowanie do niniejszego projektu wymaga potwierdzenia po ustaleniu zakresu rzeczowego i lokalizacji inwestycji."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "## 6. Ryzyka\n\nZidentyfikowano następujące ryzyka:"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "## 6. Ryzyka\n\nZidentyfikowano następujące ryzyka:"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The introduction correctly limits the listed risks to the plan and avoids treating their project applicability as confirmed."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-9",
+          "quote": "1) brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa - ryzyko poważne;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "1) brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa - ryzyko poważne;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "Risk 1, its rating, and the plan's response category match."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Opóźnienia w realizacji zadań wynikających z Planu zarządzania ryzykiem powodziowym, m.in. z powodu braku finansowania, dokumentacji projektowej, niezbędnych opinii lub pozwoleń | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "2) opóźnienia w realizacji zadań wynikających z Planu zarządzania ryzykiem powodziowym z powodu np. braku finansowania, braku dokumentacji projektowej, braku niezbędnych opinii i pozwoleń - ryzyko poważne;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "2) opóźnienia w realizacji zadań wynikających z Planu zarządzania ryzykiem powodziowym z powodu np. braku finansowania, braku dokumentacji projektowej, braku niezbędnych opinii i pozwoleń - ryzyko poważne;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The causes, serious rating, and response correspond to plan risk 2."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Brak ustalonego charakteru wód cieku lub urządzeń wodnych dla części systemu oraz nieprawidłowe wskazanie realizatora działań w Planie zarządzania ryzykiem powodziowym | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "3) brak ustalonego charakteru wód cieku lub urządzeń wodnych dla części system oraz nieprawidłowe wskazanie realizatora działań w PZRP - ryzyko poważne;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "3) brak ustalonego charakteru wód cieku lub urządzeń wodnych dla części system oraz nieprawidłowe wskazanie realizatora działań w PZRP - ryzyko poważne;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both elements of plan risk 3 and its response are retained."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Nieuwzględnienie w Planie zarządzania ryzykiem powodziowym inwestycji istotnych dla ochrony przeciwpowodziowej Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "4) nie ujęcie w Planie zarządzania ryzykiem powodziowym (PZRP) inwestycji ważnych z punktu widzenia ochrony przeciwpowodziowej Krakowa (tab. 3) - ryzyko poważne;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "4) nie ujęcie w Planie zarządzania ryzykiem powodziowym (PZRP) inwestycji ważnych z punktu widzenia ochrony przeciwpowodziowej Krakowa (tab. 3) - ryzyko poważne;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "The claim matches plan risk 4."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Brak tytułu prawnego do działek lub niewyjaśniony stan prawny działek, na których zlokalizowana jest kanalizacja opadowa | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "5) brak tytułu prawnego do działek oraz niewyjaśnione stany prawne działek, na których jest zlokalizowana kanalizacja opadowa (odcinki zarurowane i rowy) - ryzyko poważne;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "5) brak tytułu prawnego do działek oraz niewyjaśnione stany prawne działek, na których jest zlokalizowana kanalizacja opadowa (odcinki zarurowane i rowy) - ryzyko poważne;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "Land-title uncertainty and its plan rating and response are documented."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Niespełnienie kryteriów formalnych i merytorycznych przy ubieganiu się o finansowanie zewnętrzne | Poważne | Przeciwdziałanie lub ograniczanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "6) niespełnienie kryteriów formalnych i merytorycznych przy ubieganiu się o finansowanie zewnętrzne"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "6) niespełnienie kryteriów formalnych i merytorycznych przy ubieganiu się o finansowanie zewnętrzne"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko poważne: 1), 2), 3), 4), 5), 6) - status postępowania: przeciwdziałanie lub ograniczanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "This is the plan's risk 6 and its assigned response."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Potrzeba dokończenia inwentaryzacji kanalizacji opadowej oraz modelowania hydrodynamicznego sieci kanalizacji opadowej | Umiarkowane | Monitorowanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "7) potrzeba dokończenia inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) oraz potrzeba dokończenia modelowania hydrodynamicznego sieci kanalizacji opadowej - ryzyko umiarkowane;"
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko umiarkowane: 7) - status postępowania: monitorowanie,"
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "7) potrzeba dokończenia inwentaryzacji systemu kanalizacji opadowej (odcinki zarurowane i rowy) oraz potrzeba dokończenia modelowania hydrodynamicznego sieci kanalizacji opadowej - ryzyko umiarkowane;"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko umiarkowane: 7) - status postępowania: monitorowanie,"
+        }
+      ],
+      "self_contained": true,
+      "reason": "Both unfinished activities, the moderate rating, and monitoring response match risk 7."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "| Przedłużający się proces przejmowania majątku i obowiązków przez Państwowe Gospodarstwo Wodne Wody Polskie | Niskie | Monitorowanie |"
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-10",
+          "quote": "8) przedłużający się proces przejmowania majątku i obowiązków przez Państwowe Gospodarstwo Wodne Wody Polskie – ryzyko niskie."
+        },
+        {
+          "unit_id": "source/page-10",
+          "quote": "- ryzyko niskie: 8) - status postępowania: monitorowanie."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "8) przedłużający się proces przejmowania majątku i obowiązków przez Państwowe Gospodarstwo Wodne Wody Polskie – ryzyko niskie."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "- ryzyko niskie: 8) - status postępowania: monitorowanie."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The low-rated plan risk and monitoring response are correctly represented."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Plan wskazuje, że dla prawidłowej eksploatacji, modernizacji i rozbudowy Miejskiego Systemu Odwodnienia Krakowa niezbędne są: kontynuacja inwentaryzacji kanalizacji opadowej, wdrożenie systemu zarządzania kanalizacją opadową, koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu oraz zapewnienie środków finansowych na bieżące utrzymanie i inwestycje adekwatnych do potrzeb."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-4",
+          "quote": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:"
+        },
+        {
+          "unit_id": "source/page-4",
+          "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Warunkami niezbędnymi dla prawidłowej eksploatacji, modernizacji i rozbudowy Systemu są:"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "3) koordynacja działań wpływających na odwodnienie miasta i planowanie rozwoju systemu kanalizacji opadowej;\n4) zapewnienie środków finansowych na bieżące utrzymanie i inwestycje w System na poziomie adekwatnym do potrzeb."
+        }
+      ],
+      "self_contained": true,
+      "reason": "These are documented requirements for the wider municipal system, not asserted project durability commitments."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Realizacja Planu ma być finansowana z budżetu miasta oraz, w miarę możliwości, z funduszy zewnętrznych."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The statement concerns plan finance and keeps external funding conditional."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania są odpowiedzialni za ich ujęcie w Budżecie Miasta Krakowa oraz w Wieloletniej Prognozie Finansowej Miasta Krakowa. Są to ustalenia dotyczące Planu, a nie potwierdzone zobowiązania dla niniejszego projektu."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania są odpowiedzialni za ich umieszczenie w Budżecie Miasta Krakowa oraz w Wieloletniej Prognozie Finansowej Miasta Krakowa."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania są odpowiedzialni za ich umieszczenie w Budżecie Miasta Krakowa oraz w Wieloletniej Prognozie Finansowej Miasta Krakowa."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The directors' plan-level responsibility is correctly separated from unconfirmed project commitments."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Plan podlega monitorowaniu przez koordynatora, a dyrektorzy realizujących działania wydziałów i jednostek organizacyjnych przygotowują coroczne sprawozdania z realizacji działań."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-11",
+          "quote": "Monitorowanie prowadzi koordynator Planu. Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania przygotowują"
+        },
+        {
+          "unit_id": "source/page-12",
+          "quote": "coroczne sprawozdania z realizacji działań."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Monitorowanie prowadzi koordynator Planu. Dyrektorzy wydziałów i miejskich jednostek organizacyjnych realizujących poszczególne działania przygotowują"
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "coroczne sprawozdania z realizacji działań."
+        }
+      ],
+      "self_contained": true,
+      "reason": "The plan's monitoring responsibility and annual reports are accurately described."
+    },
+    {
+      "output": {
+        "unit_id": "chapter/ryzyka",
+        "quote": "Ewaluacja Planu jest prowadzona corocznie na podstawie wyników monitorowania i wskaźników rezultatu dostępnych w systemie STRADOM; aktualizacja Planu następuje w miarę potrzeb, nie rzadziej niż co pięć lat."
+      },
+      "verdict": "supported",
+      "evidence": [
+        {
+          "unit_id": "source/page-12",
+          "quote": "Ewaluacja dokonywana będzie corocznie w trakcie obowiązywania Planu, na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM."
+        },
+        {
+          "unit_id": "source/page-12",
+          "quote": "Plan jest aktualizowany w miarę potrzeb, lecz nie rzadziej niż co 5 lat."
+        }
+      ],
+      "supplied_verdict": "supported",
+      "supplied_evidence": [
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Ewaluacja dokonywana będzie corocznie w trakcie obowiązywania Planu, na podstawie wyników monitorowania oraz wskaźników rezultatu dostępnych w systemie STRADOM."
+        },
+        {
+          "unit_id": "supplied/shared/source_documents/0/text",
+          "quote": "Plan jest aktualizowany w miarę potrzeb, lecz nie rzadziej niż co 5 lat."
+        }
+      ],
+      "self_contained": true,
+      "reason": "Annual evaluation is correctly distinguished from updating the plan as needed, at least every five years."
+    }
+  ],
+  "chapters": [
+    {
+      "chapter_ref": "informacje_o_projekcie",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/informacje_o_projekcie",
+          "quote": "Celem projektu jest adaptacja Krakowa do zmian klimatu poprzez ograniczanie ryzyka podtopień lokalnych"
+        },
+        {
+          "unit_id": "chapter/informacje_o_projekcie",
+          "quote": "[Information needed: Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "The unavailable official title, project dates, and selected scope are flagged. The chapter supplies relevant plan goals, but describes an unselected project's goal and activities as established and does not give the available 2023–2035 plan horizon for context."
+    },
+    {
+      "chapter_ref": "wnioskodawca",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "[Information needed: Confirm the legal entity that will submit the Kraków urban drainage climate-adaptation project under FENX.01.02.]"
+        },
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje Wydział Urzędu Miasta Krakowa właściwy do spraw gospodarki komunalnej i klimatu jako koordynatora Planu, a Klimat-Energia-Gospodarka Wodna (KEGW) jako głównego realizującego zadania gminne we współpracy z innymi jednostkami miejskimi."
+        }
+      ],
+      "reason": "Plan implementers are identified and unknown project partners and contact details are flagged. The chapter nevertheless fails to identify the City of Kraków as applicant, asking for that available identity instead."
+    },
+    {
+      "chapter_ref": "uzasadnienie",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "Główne zagrożenie powodziowe generuje Wisła, zasilana dużą zlewnią górską i podgórską powyżej miasta."
+        },
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "W dokumencie wskazano, że Plan Odwodnienia Gminy Miejskiej Kraków realizuje Strategię Rozwoju Krakowa „Tu chcę żyć. Kraków 2030”"
+        },
+        {
+          "unit_id": "chapter/uzasadnienie",
+          "quote": "[Information needed: Confirm the Kraków locations where the urban drainage climate-adaptation project will address the documented flood or local waterlogging problems.]"
+        }
+      ],
+      "reason": "It gives a substantive diagnosis of river flooding and local drainage problems, explains the plan's strategic links, and flags the unavailable project-specific locations. Its assertions of alignment with an unselected project are qualified only imperfectly, but the required diagnosis is answered."
+    },
+    {
+      "chapter_ref": "zadania",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/zadania",
+          "quote": "Wskazanie tych działań w Planie nie przesądza jednak, które z nich zostaną objęte niniejszym wnioskiem."
+        },
+        {
+          "unit_id": "chapter/zadania",
+          "quote": "[Information needed: Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "It correctly separates plan actions and dates from the unknown project schedule and flags the missing selection, implementer, and dates. It omits two relevant, specifically costed retention actions available in the plan: the small-retention programme and blue-green infrastructure."
+    },
+    {
+      "chapter_ref": "wskazniki",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "Wartości oczekiwane dotyczą całego Planu i wynoszą odpowiednio: 8 dla celu szczegółowego I, 5 dla celu szczegółowego II, 22 dla celu szczegółowego III oraz 9 dla celu szczegółowego IV."
+        },
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "[Information needed: Confirm the result indicator for the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "The available plan output indicator and its baseline and targets are accurately distinguished from unknown project indicators. Missing project product and result measures and their values are explicitly flagged."
+    },
+    {
+      "chapter_ref": "budzet",
+      "verdict": "partially_satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "Plan Ograniczenia Skutków Powodzi oraz Odwodnienia Miasta Krakowa wskazuje szacunkowy koszt jego wdrożenia w latach 2023–2035 na poziomie 1 275 867 730 zł."
+        },
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "[Information needed: Confirm the total eligible cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.]"
+        }
+      ],
+      "reason": "It accurately distinguishes the plan estimate from an unknown project budget and flags the missing project costs and funding. It leaves out available, pertinent PLN 30,000,000 and PLN 6,000,000 estimates for the two retention actions, which are also absent from the tasks chapter."
+    },
+    {
+      "chapter_ref": "ryzyka",
+      "verdict": "satisfied",
+      "output_refs": [
+        {
+          "unit_id": "chapter/ryzyka",
+          "quote": "| Brak wystarczającego finansowania Miejskiego Systemu Odwodnienia Krakowa | Poważne | Przeciwdziałanie lub ograniczanie |"
+        },
+        {
+          "unit_id": "chapter/ryzyka",
+          "quote": "[Information needed: Confirm the source of financing for post-completion operation and maintenance of the Kraków urban drainage climate-adaptation project outputs.]"
+        }
+      ],
+      "reason": "The plan's rated risks and response categories are presented without assuming they automatically apply to the project. Project-specific risk management, operator, and maintenance financing are appropriately flagged."
+    }
+  ],
+  "contradictions": [],
+  "gaps": [
+    {
+      "id": "project-scope",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/zadania",
+          "quote": "[Information needed: Confirm the specific investment components included in the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "An allowed chapter asks which investment components are selected for the application."
+    },
+    {
+      "id": "contact-person",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "[Information needed: Confirm the name of the contact person for the Kraków urban drainage climate-adaptation project application.]"
+        },
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "[Information needed: Confirm the business email address of the contact person for the Kraków urban drainage climate-adaptation project application.]"
+        },
+        {
+          "unit_id": "chapter/wnioskodawca",
+          "quote": "[Information needed: Confirm the telephone number of the contact person for the Kraków urban drainage climate-adaptation project application.]"
+        }
+      ],
+      "reason": "The name and both contact channels are requested in the allowed chapter."
+    },
+    {
+      "id": "requested-grant",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "[Information needed: Confirm the total eligible cost of the Kraków urban drainage climate-adaptation project submitted under FENX.01.02.]"
+        },
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "[Information needed: Confirm the amount of FEnIKS.01.02 funding requested for the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "Both the eligible cost and requested programme amount are sought without substituting plan estimates."
+    },
+    {
+      "id": "own-contribution",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/budzet",
+          "quote": "[Information needed: Confirm the amount of the applicant's own contribution to the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "The own-contribution amount is explicitly requested in the budget chapter."
+    },
+    {
+      "id": "result-indicators",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "[Information needed: Confirm the result indicator for the Kraków urban drainage climate-adaptation project.]"
+        },
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "[Information needed: Confirm the baseline value for the Kraków urban drainage climate-adaptation project's result indicator.]"
+        },
+        {
+          "unit_id": "chapter/wskazniki",
+          "quote": "[Information needed: Confirm the target value for the Kraków urban drainage climate-adaptation project's result indicator.]"
+        }
+      ],
+      "reason": "The project result measure and both values are individually flagged."
+    },
+    {
+      "id": "project-dates",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/informacje_o_projekcie",
+          "quote": "[Information needed: Confirm the planned start and end dates of the Kraków urban drainage climate-adaptation project.]"
+        }
+      ],
+      "reason": "The project dates are requested separately from the known plan horizon."
+    },
+    {
+      "id": "durability",
+      "verdict": "flagged",
+      "output_refs": [
+        {
+          "unit_id": "chapter/ryzyka",
+          "quote": "[Information needed: Confirm the entity that will operate and maintain the outputs of the Kraków urban drainage climate-adaptation project after project completion.]"
+        },
+        {
+          "unit_id": "chapter/ryzyka",
+          "quote": "[Information needed: Confirm the source of financing for post-completion operation and maintenance of the Kraków urban drainage climate-adaptation project outputs.]"
+        }
+      ],
+      "reason": "The missing operator and post-completion maintenance finance are both requested."
+    }
+  ],
+  "flagged_gaps": [
+    {
+      "unit_id": "gap/informacje_o_projekcie/project_title",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan and run name do not establish an official title for the particular funding application."
+    },
+    {
+      "unit_id": "gap/informacje_o_projekcie/project_period",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Only plan and plan-action dates are supplied, not start and end dates for a selected project."
+    },
+    {
+      "unit_id": "gap/informacje_o_projekcie/project_investment_components",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The citywide action list does not identify the components selected for this application."
+    },
+    {
+      "unit_id": "gap/informacje_o_projekcie/project_locations",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan lists potential locations but does not determine which are in the project."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/project_applicant",
+      "verdict": "answerable_from_inputs",
+      "evidence": [
+        {
+          "unit_id": "context/cc_context/city/name",
+          "quote": "Kraków"
+        },
+        {
+          "unit_id": "source/page-4",
+          "quote": "Gminy Miejskiej Kraków"
+        }
+      ],
+      "reason": "The inputs identify the city and its municipal legal identity. The chapter should name the City of Kraków rather than leave its applicant field blank; project-specific implementing arrangements are a separate question."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/lead_implementing_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Although KEGW is the principal implementer of municipal plan tasks, no selected project or lead for this application is confirmed."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/project_partner",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Cooperation under the plan does not establish a formal partner in this application."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/contact_person_name",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No input identifies an individual project-application contact."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/contact_person_email",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No input provides the project contact's business email."
+    },
+    {
+      "unit_id": "gap/wnioskodawca/contact_person_phone",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No input provides the project contact's telephone number."
+    },
+    {
+      "unit_id": "gap/uzasadnienie/project_investment_locations",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Documented problem areas cannot be equated with locations selected for the unknown project."
+    },
+    {
+      "unit_id": "gap/zadania/project_investment_components",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The action list is citywide; the question asks for the unprovided project selection."
+    },
+    {
+      "unit_id": "gap/zadania/project_lead_implementing_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Action-level assignments and KEGW's general plan role do not confirm the lead for the funding project."
+    },
+    {
+      "unit_id": "gap/zadania/project_implementation_period",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan's 2023–2035 horizon does not establish project start and end dates."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_product_indicator",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan names a product indicator, but the indicator to be adopted for an unselected project is not confirmed."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_product_indicator_baseline",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan's baseline of zero cannot automatically be assigned to an as-yet-undefined project indicator."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_product_indicator_target",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Targets for four plan objectives are not a target for the selected project's output."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_result_indicator",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "STRADOM is mentioned, but no result indicator for this project is specified."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_result_indicator_baseline",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No baseline for a project result measure is supplied."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_result_indicator_target",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No target for a project result measure is supplied."
+    },
+    {
+      "unit_id": "gap/wskazniki/project_indicator_reporting_frequency",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan's annual reports and evaluation do not specify the reporting frequency required for this project's indicators."
+    },
+    {
+      "unit_id": "gap/budzet/project_total_cost",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The PLN 1,275,867,730 estimate covers the plan, not the unknown project's total cost."
+    },
+    {
+      "unit_id": "gap/budzet/project_eligible_cost",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "No eligible expenditure total for the selected funding project is given."
+    },
+    {
+      "unit_id": "gap/budzet/requested_feniks_funding",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Neither the plan estimates nor the programme name specify a requested grant amount."
+    },
+    {
+      "unit_id": "gap/budzet/applicant_own_contribution",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan's city-budget funding statement does not quantify this project's own contribution."
+    },
+    {
+      "unit_id": "gap/budzet/other_project_funding_sources",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Potential external funding for the plan does not identify additional financing for this project."
+    },
+    {
+      "unit_id": "gap/ryzyka/project_risk_management_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan coordinator is named, but the entity accountable for this project's delivery risks is not."
+    },
+    {
+      "unit_id": "gap/ryzyka/post_completion_operation_maintenance_entity",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "Without selected project outputs, no post-completion operator can be identified from the inputs."
+    },
+    {
+      "unit_id": "gap/ryzyka/post_completion_operation_maintenance_financing_source",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan calls for adequate maintenance funding but supplies no financing arrangement for these project's completed outputs."
+    },
+    {
+      "unit_id": "gap/ryzyka/project_risk_assessment_and_mitigation_approach",
+      "verdict": "valid",
+      "evidence": [],
+      "reason": "The plan supplies its own risk ratings and response categories, not an adopted assessment and mitigation approach for the unselected project."
+    }
+  ]
+}

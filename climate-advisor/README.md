@@ -101,13 +101,14 @@ for concurrency, review invalidation, and regression tests.
 Chapter validation is triggered from CityCatalyst's **Review & export** button,
 not from chat. The guided review calls
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
-active chapter. Each call runs two structured passes in strict order:
+active chapter. Each call runs its structured passes in strict order:
 completeness first, comparing the generated `output` with the template and
 source evidence in `document`, then consistency, comparing the same output with
-the other active chapters in that document. Validation uses only explicit input
-claims and contains no programme-name or programme-specific keyword rules. The
-second pass receives the first result; large documents are batched without
-truncating the output or document chapters.
+the other active chapters in that document, and, while the output still has
+open questions, answered gaps, checking them against the other chapters.
+Validation uses only explicit input claims and contains no programme-name or
+programme-specific keyword rules. The second pass receives the first result;
+large documents are batched without truncating the output or document chapters.
 
 Before completeness, code matches the output's `template_section_id` against
 the normalized `chapter_ref` and builds `document.validation_profile` containing
@@ -126,7 +127,13 @@ This changes the JSON content contract, not the database columns. See the
 
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
-temperature zero. Model or parse failures persist nothing. Successful results
+temperature zero. Each validation runs a completeness pass, a consistency pass,
+and, while the chapter still asks for something, an answered-gaps pass
+(`prompts.cnb_chapter_validation_answered_gaps`) that reports each open question
+another chapter already answers. A statement that answers another chapter's open
+question is a cross-chapter conflict too. Evidence findings appear only for
+chapters with evidence links; drafting does not create links, so a chapter is
+never flagged merely for having none. Model or parse failures persist nothing. Successful results
 store actionable findings, never reasoning, and resolve model-selected evidence
 positions to trusted source labels, locations, claims, and summaries. Invalid or
 invented evidence positions reject the model result. Results are guarded
@@ -653,17 +660,27 @@ including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
 The chapter drafter uses GPT-5.6
 Terra with medium reasoning; the chapter validator uses GPT-5.6 Terra with
-medium reasoning, and the chat-edit planner uses GPT-6 Sol with high reasoning.
+medium reasoning, and the chat-edit planner uses GPT-6.1 Sol with high reasoning.
+After drafting, `models.cnb_chapter_support_checker` (GPT-5.6 Terra, medium)
+reviews each chapter with the drafter's exact inputs
+(`prompts.cnb_chapter_support_check`) and replaces passages the inputs do not
+support, such as an invented commitment, owner, baseline, or overstated result,
+with supported wording or a one-question `[Information needed: ...]` gap. Code
+applies only replacements that match one exact passage, leave headings and
+existing markers untouched, and bring a structured gap for every new marker; a
+failed check keeps the draft as written. The drafter writes one question per
+marker, and the chat-edit planner replaces a marker once the user supplies its
+value.
 
 Current CA model defaults:
 
 - General chat: `openai/gpt-5.6-terra`, reasoning `medium`.
-- CNB chat: `openai/gpt-6-sol`, reasoning `medium`.
+- CNB chat: `openai/gpt-6.1-sol`, reasoning `medium`.
 - Stationary Energy chat: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funding research and similar-project selection: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Funder-identity matching: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Document mapping and question-focused source readers: `openai/gpt-5.6-terra`, reasoning `medium`.
-- New-source chapter impact review: `openai/gpt-6-sol`, reasoning `medium`.
+- New-source chapter impact review: `openai/gpt-6.1-sol`, reasoning `medium`.
 - Document-summary synthesis: `openai/gpt-5.6-terra`, reasoning `medium`.
 - Uploaded funder and standalone-template extraction: `openai/gpt-6.1-sol`, reasoning `medium`.
 
@@ -689,8 +706,10 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.cnb_chat` routes Concept Note questions to source queries and explicit
   document-change requests to the available proposal tool; applying changes
   still requires user acceptance in the document review controls
-- the three `prompts.cnb_source_*` entries map document partitions, reduce them
-  to compact document summaries, and read focused questions for exact evidence
+- the `prompts.cnb_source_*` entries map document partitions, reduce them to
+  compact document summaries, read focused questions for exact evidence, and
+  (`cnb_source_chapter_evidence` and `cnb_source_chapter_evidence_selection`)
+  choose exact quotations for each template chapter's required fields
 - `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
   its single tool returns the chapter numbers that the source affects
 - `prompts.cnb_chat_edit_planner` creates bounded, grounded edit proposals from
@@ -732,15 +751,30 @@ model-facing result. An authorized edit request adds the proposal-only edit tool
 that tool invokes the separate `prompts.cnb_chat_edit_planner` prompt and typed
 output model. Durable chat-driven edits remain a separate workflow.
 
-When the verified text of every uploaded source totals at most
-`generation.prompt_budget.cnb_sources.full_text_max_tokens` (80,000 by default,
-counted with the drafter model's tokenizer), the context build stores that
-page-marked text in the bundle's `source_text` section. The chapter drafter and
-CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
+When the whole drafting request (the drafter instructions, the selected-source
+context, and the verified text of every uploaded source) fits
+`generation.prompt_budget.cnb_sources.context_window_tokens` (350,000 by
+default, counted with the drafter model's tokenizer), the context build stores
+the page-marked text in the bundle's `source_text` section. The chapter drafter
+and CNB chat then receive it as a second user-role `CONCEPT_NOTE_SOURCE_DOCUMENTS`
 message, after the JSON payload or bundle message, so every chapter is written
-from the complete documents instead of the compact summaries. Above the limit,
-or when a source cannot be re-read, `source_text.mode` is `summary` and agents
-use the summaries and `concept_note_sources_query` as before.
+from the complete documents instead of the compact summaries. Each chapter
+request is checked again before drafting, once its earlier chapters are known;
+a chapter that would exceed the window is drafted without the complete text.
+Above the window, or when a source cannot be re-read, `source_text.mode` is
+`summary` and agents use the summaries, quotations, and
+`concept_note_sources_query` as before.
+
+Each selected source keeps up to `max_key_excerpts` (8) quotations for the whole
+document and, once an application template is selected, up to
+`max_chapter_excerpts` (8) quotations per template chapter, chosen for that
+chapter's required fields by one chapter-evidence reading of the complete source
+(plus one selection call for chapters with more candidates). The drafter
+receives only the current chapter's quotations, and the edit planner and
+reviewer read them in each chapter's `source_excerpts`. Chapter quotations
+carry a fingerprint of the template requirements and settings; a funding change
+or a workspace open with a different template rebuilds them, reusing the
+unchanged document analysis.
 
 The edit planner and semantic reviewer receive allowlisted source evidence with
 the same one-based `source_index` values. Their `source_refs` contain those indices
@@ -1649,6 +1683,72 @@ uv run --directory service pytest tests/test_e2e_conversation.py -v
 ```bash
 uv run --directory service python -m scripts.run_ca_e2e
 ```
+
+### CNB Golden Set
+
+Fixtures under `benchmark/cnb/fixtures/` evaluate the Concept Note
+Builder pipeline stage by stage on three documents (two English, one Polish):
+
+1. **extraction**: production source analysis plus per-chapter quotations for
+   the fixture's template; every retained quotation and topic is judged against
+   the complete original document.
+2. **chapter_writing**: the production drafter and support check write every
+   chapter from that run's extraction; facts transferred, claim support,
+   chapter requirements, and `[Information needed: ...]` gaps (flagged,
+   invented, or answerable) are judged.
+3. **verification**: the production chapter validator runs on a frozen reference
+   draft with seeded defects; findings are mapped to defects and false alarms.
+4. **editing**: the production edit planner applies chat requests to the reference
+   draft; outcomes, scope, fidelity, and post-edit consistency are judged.
+
+Each stage runs once. Python checks the production output's exact quotations,
+locators, marker/gap parity, seeded edits, and changed chapters. A configured
+LLM judge evaluates meaning. Extraction is scored independently for every
+chapter–fact pair: all mandatory pairs must pass, while desirable coverage is
+reported separately. Code verifies extraction citations against retained text
+owned by the receiving chapter. Human approval binds the answer key to its
+source/template/requirement fingerprints; shipped fixtures remain pending.
+Generated source summaries are excluded from all judge inputs.
+Production generation is unchanged.
+
+```bash
+uv run pytest benchmark/cnb/tests -q
+uv run python -m benchmark.cnb.scripts.evaluate --label baseline
+uv run python -m benchmark.cnb.scripts.evaluate \
+  --fixture krakow-flood-drainage-plan --stage verification --stage editing
+# Rebuild the viewer from saved runs (no model calls).
+uv run python -m benchmark.cnb.scripts.publish
+```
+
+Reports record per-stage wall time, requests, tokens, and the cost OpenRouter
+reports, by agent (`--parallel` runs the fixtures concurrently).
+Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
+the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
+browser). The viewer shows each run by stage and document, and **Compare runs**
+diffs any two runs: configuration, stage results, and changed verdicts.
+CNB-specific code, scripts, viewer, judge prompts, fixtures, tests, and committed
+runs live in [`benchmark/cnb/`](benchmark/cnb/benchmark.md); reusable provider
+usage accounting lives in `benchmark/utils/`. Pass
+`--results-dir benchmark/cnb/results` to save a run with the committed ones.
+
+The live evaluation requires `OPENROUTER_API_KEY` for the production models and
+`models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
+[`benchmark/cnb/prompts/`](benchmark/cnb/prompts/). Reports record the configured
+models and hashes of the loaded judge prompts. The separate non-required live CI
+workflow runs only on manual dispatch to control provider usage. It supports frozen Markdown and fresh
+production PDF conversion, partial reports, approved-baseline comparison and
+downloadable viewer bundles. See [delivery setup and approvals](benchmark/cnb/DELIVERY.md)
+for credentials, trusted baseline selection, retention and exit codes.
+
+`python -m benchmark.cnb.scripts.calibrate` evaluates the judge against separately
+human-approved candidates, with labels hidden from requests. The 24 proposed
+cases cover English/Polish, tables, units, dates and responsibilities; none are
+yet human-approved. Reports separate agreement, serious false passes, pending
+approval and unavailable judgments. See [calibration approval](benchmark/cnb/calibration/README.md).
+Offline tests verify these contracts, not live judge accuracy.
+
+See the [fixture README](benchmark/cnb/fixtures/README.md) for
+stage details, gates, reports, and how to add or review fixtures.
 
 ## Docker Deployment (Local Testing)
 

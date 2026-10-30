@@ -15,7 +15,7 @@ models:
     description: "Agentic flow model for high-context review and source selection workflows."
     reasoning_effort: "medium"
   cnb_chat:
-    name: "openai/gpt-6-sol"
+    name: "openai/gpt-6.1-sol"
     description: "Concept Note Builder chat model."
     reasoning_effort: "medium"
   funding_research:
@@ -30,17 +30,25 @@ models:
   cnb_source_synthesizer:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
+  # Evaluation only; independent of the models producing the evaluated content.
+  cnb_golden_set_judge:
+    name: "openai/gpt-6.1-sol"
+    reasoning_effort: "high"
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
+  # Checks each drafted chapter's claims against the drafter's inputs.
+  cnb_chapter_support_checker:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
   cnb_source_impact_reviewer:
-    name: "openai/gpt-6-sol"
+    name: "openai/gpt-6.1-sol"
     reasoning_effort: "medium"
   cnb_chapter_validator:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
   cnb_chat_edit_planner:
-    name: "openai/gpt-6-sol"
+    name: "openai/gpt-6.1-sol"
     reasoning_effort: "high"
   # Reads uploaded funder documents and application templates
   cnb_funder_extractor:
@@ -62,11 +70,15 @@ generation:
       max_partition_tokens: 50000
       max_concurrency: 3
       max_key_excerpts: 8
+      # Exact quotations kept per template chapter and document, chosen for that
+      # chapter's required fields when a funding template is selected.
+      max_chapter_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
-      # Uploaded sources up to this many tokens in total are sent to the chapter
-      # drafter and chat as complete text; larger sets use summaries only.
-      full_text_max_tokens: 80000
+      # Agents receive the complete source text while their whole request
+      # (instructions, run context, earlier chapters, and every source) fits
+      # this context window; otherwise they get summaries and the quotations.
+      context_window_tokens: 350000
     cnb_source_impact:
       max_prompt_tokens: 50000
       max_chapter_slice_tokens: 12000
@@ -111,7 +123,15 @@ prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
+  cnb_source_chapter_evidence: "prompts/cnb/source_chapter_evidence.md"
+  cnb_source_chapter_evidence_selection: "prompts/cnb/source_chapter_evidence_selection.md"
+  # Evaluation-only judges for the four golden-set stages
+  cnb_golden_set_extraction_judge: "benchmark/cnb/prompts/extraction.md"
+  cnb_golden_set_chapter_writing_judge: "benchmark/cnb/prompts/chapter_writing.md"
+  cnb_golden_set_verification_judge: "benchmark/cnb/prompts/verification.md"
+  cnb_golden_set_editing_judge: "benchmark/cnb/prompts/editing.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
+  cnb_chapter_support_check: "prompts/cnb/chapter_support_check.md"
   cnb_source_impact_review: "prompts/cnb/source_impact_review.md"
   cnb_chat_edit_planner: "prompts/cnb/chat_edit_planner.md"
   cnb_chat_edit_review: "prompts/cnb/chat_edit_review.md"
@@ -119,6 +139,7 @@ prompts:
   cnb_draft_overview: "prompts/cnb/draft_overview.md"
   cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
   cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
+  cnb_chapter_validation_answered_gaps: "prompts/cnb/chapter_validation_answered_gaps.md"
   # Reads an uploaded funder document into a reviewable catalogue record
   cnb_funder_document_extraction: "prompts/cnb/funder_document_extraction.md"
   # Reads an uploaded application form into a note's own template

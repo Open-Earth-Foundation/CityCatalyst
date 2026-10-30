@@ -68,6 +68,18 @@ def omit_context_identifiers(value: Any) -> Any:
 SOURCE_DOCUMENTS_MESSAGE_HEADER = "CONCEPT_NOTE_SOURCE_DOCUMENTS"
 
 
+def chapter_excerpts_for(source: dict[str, Any], chapter_ref: str | None) -> list[dict[str, Any]]:
+    """Return the quotations a selected source keeps for one template chapter."""
+    return next(
+        (
+            item.get("excerpts", [])
+            for item in source.get("chapter_excerpts") or []
+            if chapter_ref is not None and item.get("chapter_ref") == chapter_ref
+        ),
+        [],
+    )
+
+
 def render_source_documents_message(documents: list[dict[str, Any]]) -> str:
     """Render complete uploaded source text as one model-facing message body.
 

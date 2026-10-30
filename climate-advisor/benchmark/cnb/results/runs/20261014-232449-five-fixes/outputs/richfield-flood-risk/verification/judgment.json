@@ -1,0 +1,135 @@
+{
+  "defects": [
+    {
+      "id": "concept-c-cost-conflict",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/12",
+          "quote": "Message: The output lists Wilson Pond Concept C at $13,733,000, while the project analysis lists the same concept at $17,333,000."
+        },
+        {
+          "unit_id": "finding/40",
+          "quote": "Message: The output lists Wilson Pond Concept C’s planning-level construction cost as $17,333,000, while the funding-breakdown chapter lists $13,733,000."
+        },
+        {
+          "unit_id": "finding/51",
+          "quote": "Message: Wilson Pond Concept C has incompatible planning-level construction cost estimates."
+        }
+      ],
+      "reason": "All three findings identify the conflicting Concept C estimates; finding/51 also supplies both amounts in its excerpts."
+    },
+    {
+      "id": "accuracy-range-conflict",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/11",
+          "quote": "Message: The output gives a planning-level estimate accuracy range of -10% to +15%, while the project analysis states the same concept estimates have an accuracy range of -30% to +50%."
+        },
+        {
+          "unit_id": "finding/41",
+          "quote": "Message: The output characterizes the construction-cost estimates as having a -30% to +50% accuracy range, while the funding-breakdown chapter gives a -10% to +15% range for the same planning-level estimates."
+        },
+        {
+          "unit_id": "finding/52",
+          "quote": "Message: The output and funding-breakdown chapter assign incompatible accuracy ranges to the same planning-level cost estimates."
+        }
+      ],
+      "reason": "The findings identify incompatible ranges for the same estimates; finding/52 gives the specific ranges in its excerpts."
+    },
+    {
+      "id": "location-count-mismatch",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/23",
+          "quote": "Message: The output says the study evaluated four priority locations for concept-level projects, while the project analysis states that City staff selected three priority flood-risk areas."
+        }
+      ],
+      "reason": "The finding identifies the erroneous count of four and contrasts it with the three priority locations stated elsewhere, giving the user an actionable correction even though it does not explicitly count the flood-damages chapter’s list."
+    },
+    {
+      "id": "subset-exceeds-total",
+      "verdict": "partially_detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/22",
+          "quote": "Message: The output states that 801 flood-risk areas are within or primarily within Richfield, while the project analysis states that 601 areas meet that description."
+        },
+        {
+          "unit_id": "finding/27",
+          "quote": "Message: The output states that 601 flood-risk areas were within or primarily within Richfield, while the flood-damages chapter states that 801 such areas were within or primarily within the municipal boundary."
+        },
+        {
+          "unit_id": "finding/39",
+          "quote": "Message: The output states that 601 flood-risk areas were within or primarily within Richfield, while the flood-damages chapter states that 801 such areas were within or primarily within the municipal boundary."
+        }
+      ],
+      "reason": "These findings locate the erroneous 801 count and its conflict with 601 elsewhere, but none diagnoses the seeded logic error that 801 within-boundary areas cannot be a subset of 746 total areas."
+    },
+    {
+      "id": "selection-gap-inconsistency",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/5",
+          "quote": "Message: The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected."
+        },
+        {
+          "unit_id": "finding/13",
+          "quote": "Message: The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected."
+        },
+        {
+          "unit_id": "finding/17",
+          "quote": "Message: The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected for this application."
+        },
+        {
+          "unit_id": "finding/24",
+          "quote": "Message: The open question about which location and concept will be submitted is answered in the Project description chapter: Wilson Pond Concept B was selected."
+        },
+        {
+          "unit_id": "finding/30",
+          "quote": "Message: The output states that Wilson Pond Concept B has been selected, while the other chapters still mark the project location and concept as requiring confirmation."
+        },
+        {
+          "unit_id": "finding/42",
+          "quote": "Message: The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: the City selected Wilson Pond Concept B."
+        },
+        {
+          "unit_id": "finding/53",
+          "quote": "Message: The open question asking which location and concept will be submitted for funding is answered in the Project description chapter: Wilson Pond Concept B has been selected."
+        }
+      ],
+      "reason": "Each finding identifies the contradiction between the stated selection of Wilson Pond Concept B and an unresolved selection question in another chapter."
+    },
+    {
+      "id": "contact-unflagged",
+      "verdict": "detected",
+      "finding_refs": [
+        {
+          "unit_id": "finding/4",
+          "quote": "Message: The local government contact's name, address, phone number, and email address are missing."
+        }
+      ],
+      "reason": "The finding identifies the empty required contact field and specifies the missing details."
+    }
+  ],
+  "findings": [
+    {
+      "unit_id": "finding/16",
+      "verdict": "valid",
+      "evidence": [
+        {
+          "unit_id": "draft/project_activities",
+          "quote": "Install approximately **24,000 cubic feet** of underground storage beneath the parking lot next to Lynwood Commons Apartments."
+        },
+        {
+          "unit_id": "draft/project_activities",
+          "quote": "approximately 8,000 square feet of surface area, a 3-foot depth, and an assumed 75% of underground volume available for stormwater storage."
+        }
+      ],
+      "reason": "The stated dimensions and available-volume factor yield 18,000 cubic feet, not 24,000. The source repeats the figures, but that does not resolve the calculation error in the draft."
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "upload_id": "7aaf3a6a-b1f0-597a-bf1e-159aec80a7fe",
+  "source_label": "Richfield Flood Risk Prioritization",
+  "filename": "Richfield_FloodRiskPrioritization.pdf",
+  "sha256": "4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977",
+  "source_format": "pdf",
+  "page_count": 55,
+  "block_count": null,
+  "analysis_contract_version": null,
+  "visual_context_contract_version": null,
+  "summary": "The Richfield Flood Risk Prioritization report states that the PCSWMM model was updated into one model file covering the entire city. Barr updated the existing PCSWMM model with 2022 LiDAR data and added the Taft Park storm pump station. The model study area covers approximately 8.8 square miles of watershed included in the H&H model. The report evaluates climate adaptation by simulating a larger storm and seeks to prioritize flood-risk project areas through environmental justice and additional factors.",
+  "topics": [
+    "stormwater model update",
+    "LiDAR data",
+    "Taft Park pump station",
+    "climate adaptation",
+    "flood-risk prioritization",
+    "environmental justice",
+    "watershed study area"
+  ],
+  "key_excerpts": [
+    {
+      "text": "The model has been updated to be one PCSWMM model file that covers the entire city.",
+      "page": 9,
+      "anchor": null
+    },
+    {
+      "text": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022",
+      "page": 9,
+      "anchor": null
+    },
+    {
+      "text": "the storm pump station at Taft Park was added to the model.",
+      "page": 9,
+      "anchor": null
+    },
+    {
+      "text": "The model study area covers the total watershed area included in the H&H model which is approximately 8.8 square miles",
+      "page": 7,
+      "anchor": null
+    },
+    {
+      "text": "Climate adaptation evaluation by simulating a larger storm in the model",
+      "page": 7,
+      "anchor": null
+    },
+    {
+      "text": "Prioritize flood-risk project areas through environmental justice and additional factors",
+      "page": 7,
+      "anchor": null
+    }
+  ],
+  "chapter_excerpts": [
+    {
+      "chapter_ref": "applicant_project_information",
+      "excerpts": [
+        {
+          "text": "Prepared for\nCity of Richfield",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "August 15, 2025\nDate",
+          "page": 2,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "funding_breakout",
+      "excerpts": [
+        {
+          "text": "*This study was paid for in part by a grant from the MPCA.*",
+          "page": 1,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "project_activities",
+      "excerpts": [
+        {
+          "text": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk. Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project.",
+          "page": 32,
+          "anchor": null
+        },
+        {
+          "text": "Three potential project flood-risk mitigation concepts were identified for the Wilson Pond area:\n\n- Flood Mitigation Concept A: Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from Wilson Pond south, discussed in Section 5.1.2.\n- Flood Mitigation Concept C: Increase the storm sewer capacity and number of pipes from Wilson Pond south, discussed in Section 5.1.3.",
+          "page": 32,
+          "anchor": null
+        },
+        {
+          "text": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |",
+          "page": 33,
+          "anchor": null
+        },
+        {
+          "text": "The concept design includes a gate with remote access controlled based on weather forecasts to lower the water level in Wilson Pond ahead of a storm event. This concept design would leverage the existing storage in Wilson Pond and result in approximately 5 acre-feet of additional storage ahead of a storm event with an assumed draw down time of 24-hours.",
+          "page": 33,
+          "anchor": null
+        },
+        {
+          "text": "The concept design includes adding approximately 354,000 cubic feet of underground storage for water retention based on a surface area of 300-foot by 300-foot, a depth of 5.25 feet, and an assumed 75% of underground volume available for stormwater storage.",
+          "page": 40,
+          "anchor": null
+        },
+        {
+          "text": "Two potential project flood-risk mitigation concepts were identified for the area near Woodlawn Terrace:\n\n- Flood Mitigation Concept A: Add underground storage chamber below the parking lot, discussed in Section 5.3.1.\n- Flood Mitigation Concept B: Increase the storm sewer capacity from the flood-risk area to Wood Lake by increasing the pipe sizes, discussed in Section 5.3.2.",
+          "page": 43,
+          "anchor": null
+        },
+        {
+          "text": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |",
+          "page": 43,
+          "anchor": null
+        },
+        {
+          "text": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model. Each concept provides some level of flood-risk mitigation but at varied cost and with additional project considerations. Additional design and evaluation of the alternatives will be required as the city plans for future flood-risk mitigation projects.",
+          "page": 49,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "flood_damages",
+      "excerpts": [
+        {
+          "text": "Model results of the peak water level for the 2-, 10-, 100-, and MCE100-year 24-hour rainfall events were used to create inundation areas. Inundation areas were delineated where water is stored in ponds, wetlands, and topographic depressions using level pool mapping in ArcGIS (i.e., inundation mapping of sloped water surface along roadways and through the floodplain was not completed).",
+          "page": 14,
+          "anchor": null
+        },
+        {
+          "text": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary.",
+          "page": 30,
+          "anchor": null
+        },
+        {
+          "text": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city. This area impacts the most residential structures in a single location, the lowest structures are affected during the 2-year 24-hour rainfall event, Wilson Pond is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city as well as a school.",
+          "page": 32,
+          "anchor": null
+        },
+        {
+          "text": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 10-year 24-hour duration rainfall event, the flood-risk area is located within an area of the city with a high social vulnerability index, and surface inundation impacts a critical transportation route through the city.",
+          "page": 40,
+          "anchor": null
+        },
+        {
+          "text": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures.",
+          "page": 43,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "existing_mitigation_regulation",
+      "excerpts": [
+        {
+          "text": "The stormwater model was originally developed for multiple purposes, which include:\n\n- Identifying inundation extents for the 2-, 10-, and 100-year 24-hour precipitation events\n- Identifying potentially flood-prone structures\n- Assessing the performance of existing stormwater infrastructure\n- Prioritizing areas for infrastructure upgrades and stormwater BMP implementation\n- Evaluating the impact of development and redevelopment within the city",
+          "page": 7,
+          "anchor": null
+        },
+        {
+          "text": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city. Updates to the model as part of this project included:\n\n- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3",
+          "page": 9,
+          "anchor": null
+        },
+        {
+          "text": "Barr updated the existing PCSWMM model to incorporate the Light Detection and Ranging (LiDAR) data collected in 2022 and published by the United States Geological Survey (USGS) [reference (2)]. The 2018 model was based on LiDAR data collected in 2011 [reference (3)].",
+          "page": 9,
+          "anchor": null
+        },
+        {
+          "text": "Barr updated the existing PCSWMM model for areas identified by the city as shown in Figure 2-1. These update areas included redevelopments, pond improvement projects, street and storm sewer projects, and areas of the city that had been part of stormwater evaluations since 2018.",
+          "page": 9,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "project_description",
+      "excerpts": [
+        {
+          "text": "The city has experienced redevelopment since the original model development, and the city's goals for this project were to:\n\n- Update the existing H&H stormwater model\n- Climate adaptation evaluation by simulating a larger storm in the model\n- Prioritize flood-risk project areas through environmental justice and additional factors\n- Evaluate concept-level flood-risk reduction projects at selected locations.",
+          "page": 7,
+          "anchor": null
+        },
+        {
+          "text": "The original stormwater model was developed using the Personal Computer Stormwater Management Model (PCSWMM) and had not been updated since provided to the city. Updates to the model as part of this project included:\n\n- New topographic information published by the USGS since the original model development, which was incorporated in the updated model, as discussed in Section 2.1.\n- City staff provided information about construction projects with stormwater impacts that have occurred in the study area since 2018, as discussed in Section 2.2.\n- Barr added additional data to the PCSWMM model based on collected survey data and information from the city of Minneapolis stormwater model, which is discussed in Section 2.3",
+          "page": 9,
+          "anchor": null
+        },
+        {
+          "text": "The additional watershed area, connecting storm sewer pipes, and boundary condition timeseries data were originally sourced from the city of Minneapolis stormwater model, with their approval [reference (4)].",
+          "page": 11,
+          "anchor": null
+        },
+        {
+          "text": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion.",
+          "page": 19,
+          "anchor": null
+        },
+        {
+          "text": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation. For each of these three areas, concept level flood-risk reduction projects were modeled to evaluate the reduction in flood risk. Based on the concept level design, a planning-level cost estimate was developed for city staff to consider when planning for further evaluation of each project.",
+          "page": 32,
+          "anchor": null
+        },
+        {
+          "text": "Model results assume sufficient capacity to route the additional flow away from the city which may need to be conveyed through the city of Bloomington or along the Highway 494 corridor to the Minnesota River. This assumption is not accounted for in the planning-level cost estimates, and further coordination will be required with the city of Bloomington or MnDOT if the city of Richfield decides to further evaluate one of the flood mitigation concepts.",
+          "page": 33,
+          "anchor": null
+        },
+        {
+          "text": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project.",
+          "page": 48,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "project_analysis",
+      "excerpts": [
+        {
+          "text": "Barr consulted with the city to identify criteria that would be considered in prioritizing flood-risk areas, and the city provided the scoring and weight applied to each criterion.",
+          "page": 19,
+          "anchor": null
+        },
+        {
+          "text": "The criteria selected to score the flood-risk areas are:\n\n- Storm system conditions\n- Critical infrastructure\n- Frequency of flooding\n- Social vulnerability index (SVI)\n- Number of flood-prone structures",
+          "page": 19,
+          "anchor": null
+        },
+        {
+          "text": "Options that were considered but not pursued for the area near Wilson Pond include adding surface storage areas, underground storage, and a pump to lower the water level in Wilson Pond ahead of a storm event. Surface storage was not considered due to a lack of undeveloped space near the flood-risk area and the city's direction to not consider property acquisition for flood-risk reduction. Underground storage was not considered due to the expected shallow groundwater in the area.",
+          "page": 32,
+          "anchor": null
+        },
+        {
+          "text": "|  2-year 24-hour | Existing Conditions | 823.9 | 825.3 | 825.9  |\n|   |  Mitigation Concept A | 822.0 | 825.2 | 821.6  |\n|   |  Lowered Water Level | 1.9 | 0.1 | 4.2  |\n|  10-year 24-hour | Existing Conditions | 826.9 | 826.8 | 827.3  |\n|   |  Mitigation Concept A | 825.4 | 826.0 | 823.4  |\n|   |  Lowered Water Level | 1.4 | 0.8 | 3.9  |\n|  100-year 24-hour | Existing Conditions | 828.6 | 828.4 | 828.6  |\n|   |  Mitigation Concept A | 828.3 | 828.1 | 828.3  |\n|   |  Lowered Water Level | 0.3 | 0.3 | 0.3  |",
+          "page": 34,
+          "anchor": null
+        },
+        {
+          "text": "Options that were considered but not pursued for the area Northwest of Roosevelt Park include adding surface storage areas and increasing capacity downstream of the flood-risk area. Surface storage was not considered because the undeveloped portion of Roosevelt Park is at a higher elevation than the nearby flood-risk area. Preliminary grading of a potential pond at this site did not add significant storage volume below the modeled water level of the flood-risk area and getting the water to the pond by gravity drainage was not feasible. Increasing capacity of the downstream storm sewer system was not evaluated further as the flood-risk area drains to Norby's Pond which is also identified as a flood-risk area.",
+          "page": 40,
+          "anchor": null
+        },
+        {
+          "text": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index, and the surface inundation impacts three high-density housing structures.",
+          "page": 43,
+          "anchor": null
+        },
+        {
+          "text": "Additional evaluations of each site and mitigation concept will need to be completed as they are pursued further. This includes design optimization, evaluating utility conflicts, reviewing permitting requirements, in some cases agreements with private landowners or other public entities, and additional considerations specific to each project.",
+          "page": 48,
+          "anchor": null
+        },
+        {
+          "text": "For example, the three mitigation concepts for Wilson Pond include increased flow to Highway 494 which would need to be conveyed to the Minnesota River through the city of Bloomington or along the Highway 494 corridor. The details of this stormwater routing beyond the city boundary have not been determined and would also require additional permitting discussions to find an acceptable solution.",
+          "page": 48,
+          "anchor": null
+        }
+      ]
+    },
+    {
+      "chapter_ref": "project_financing",
+      "excerpts": [
+        {
+          "text": "*This study was paid for in part by a grant from the MPCA.*",
+          "page": 1,
+          "anchor": null
+        },
+        {
+          "text": "|  A | Reduce the water level in Wilson Pond ahead of a storm event and modify the outlet by lowering the invert and increasing the storm sewer capacity | **$8,853,000** $6,198,000 – $15,493,000  |\n|  B | Increase storm sewer capacity | **$11,536,000** $8,076,000 – $20,188,000  |\n|  C | Increase storm sewer capacity and number of pipes | **$17,333,000** $12,134,000 – $30,333,000  |",
+          "page": 33,
+          "anchor": null
+        },
+        {
+          "text": "|  A | Add underground storage chamber | **$15,491,000** $10,844,000 – $27,110,000  |",
+          "page": 40,
+          "anchor": null
+        },
+        {
+          "text": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |\n|  B | Increase storm sewer capacity | **$7,440,000** $5,208,000 - $13,020,000  |",
+          "page": 43,
+          "anchor": null
+        },
+        {
+          "text": "The costs provided in this report are intended to provide a planning-level estimate for the potential system modifications that were evaluated.",
+          "page": 52,
+          "anchor": null
+        },
+        {
+          "text": "The cost of time escalation is not included in the opinions of probable cost. All costs are presented in 2025 US dollars.",
+          "page": 52,
+          "anchor": null
+        },
+        {
+          "text": "Costs associated with Base Planning Engineering and Design (PED), Construction Management (CM), Permitting, and Property or Easement acquisition are not included in the overall estimate for construction costs.",
+          "page": 52,
+          "anchor": null
+        },
+        {
+          "text": "The estimated accuracy range for this point estimate is -30% to +50%.",
+          "page": 53,
+          "anchor": null
+        }
+      ]
+    }
+  ],
+  "chapter_evidence_fingerprint": "c32f82bfd222c9d64d975c219a5c4d244807ae70b872701ce1f74b257deba510",
+  "structured_sha256": null,
+  "structured_schema_version": null,
+  "visual_context": []
+}

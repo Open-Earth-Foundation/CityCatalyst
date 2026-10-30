@@ -195,6 +195,10 @@ import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
+import {
+  exampleValuesFromRecord,
+  exampleValuesFromSingleRow,
+} from "@/util/example-values-from-source-row";
 import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import FileValidatorService from "@/backend/FileValidatorService";
 import {
@@ -401,36 +405,17 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     if (useExtractedRowsDisplay) {
       // PDF or key-value shaped: use row keys as Field Name; label = Interpreted As / Map To
       const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
-      const toDisplayValue = (raw: unknown): string | null => {
-        if (raw == null || raw === "") return null;
-        if (typeof raw === "number" && Number.isFinite(raw)) return String(raw);
-        if (typeof raw === "string") return raw;
-        if (typeof raw === "boolean") return raw ? "TRUE" : "FALSE";
-        if (typeof raw === "object") {
-          const o = raw as Record<string, unknown>;
-          if (typeof o.error === "string" && o.error)
-            return `#${o.error.toUpperCase()}!`;
-          if (o.result !== undefined) return toDisplayValue(o.result);
-        }
-        return null;
-      };
+      const examples = exampleValuesFromRecord(
+        first,
+        PDF_IMPORT_FIELD_DEFS.map(({ key }) => key),
+      );
       const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(
         ({ key, label }) => {
-          const raw = first[key];
-          let exampleValue: string | null = toDisplayValue(raw);
-          if (exampleValue != null && exampleValue.length > 50)
-            exampleValue = exampleValue.substring(0, 50);
-          const hasMultipleValues = pdfExtractedRows.some(
-            (row) => row[key] != null && row[key] !== "" && row[key] !== raw,
-          );
-          if (exampleValue && hasMultipleValues) {
-            exampleValue = exampleValue + " (and others)";
-          }
           return {
             columnName: key,
             interpretedAs: label,
             status: "detected" as const,
-            exampleValue: exampleValue || "-",
+            exampleValue: examples[key] || "-",
           };
         },
       );
@@ -438,8 +423,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         totalColumnsDetected: detectedColumnsList.length,
         columns: detectedColumnsList,
         requiredMappings,
-        errors: [],
-        warnings: [],
+        errors: importedFile.validationResults?.errors || [],
+        warnings: importedFile.validationResults?.warnings || [],
       };
     } else if (importedFile.validationResults?.detectedColumns) {
       let detectedColumnsList: DetectedColumnRow[] = [];
@@ -466,6 +451,10 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           if (parsedData.primarySheet) {
             const headers = parsedData.primarySheet.headers;
             const rows = parsedData.primarySheet.rows || [];
+            const { values: exampleValues } = exampleValuesFromSingleRow(
+              headers,
+              rows,
+            );
 
             // Re-run detection live so fixes to aliases are immediately reflected
             // without needing to re-upload the file.
@@ -488,28 +477,11 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
                 }
               }
 
-              // Example value: first non-empty value in this column across rows (so totalCO2e etc. show when not in row 0)
-              let exampleValue: string | null = null;
-              for (const row of rows) {
-                const raw = row[header];
-                if (raw == null || raw === "") continue;
-                const display =
-                  typeof raw === "object"
-                    ? (raw as Record<string, unknown>).error
-                      ? `#${String((raw as Record<string, unknown>).error).toUpperCase()}!`
-                      : null
-                    : String(raw);
-                if (display != null && display !== "[object Object]") {
-                  exampleValue = display.substring(0, 50);
-                  break;
-                }
-              }
-
               detectedColumnsList.push({
                 columnName: header,
                 interpretedAs,
                 status,
-                exampleValue,
+                exampleValue: exampleValues[header],
               });
             }
           }
@@ -636,7 +608,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           importSummary: {
             sourceFile: importedFile.originalFileName,
             formatDetected: importedFile.fileType.toUpperCase(),
-            rowsFound: importedFile.rowCount || 0,
+            rowsFound: sheet?.rows.length || importedFile.rowCount || 0,
             fieldsMapped: fieldMappings.length,
             rowsSkippedEmptyEmissions: sheet
               ? countRowsWithEmptyEmissionCells(

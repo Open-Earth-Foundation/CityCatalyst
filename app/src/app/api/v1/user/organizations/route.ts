@@ -32,6 +32,21 @@ export const GET = apiHandler(async (_req, { session }) => {
     );
   }
 
+  // Platform admins can switch into any organization, not only ones they belong to.
+  if (session.user.role === Roles.Admin) {
+    const allOrganizations = await db.models.Organization.findAll({
+      attributes: ["organizationId", "name"],
+      order: [["name", "ASC"]],
+    });
+    return NextResponse.json({
+      data: allOrganizations.map((organization) => ({
+        organizationId: organization.organizationId,
+        name: organization.name,
+        role: OrganizationRole.ADMIN,
+      })),
+    });
+  }
+
   const organizationsById = new Map<string, UserOrganization>();
 
   const addOrganization = (
@@ -122,21 +137,6 @@ export const GET = apiHandler(async (_req, { session }) => {
       cityUser.city?.project?.organization?.name,
       OrganizationRole.COLLABORATOR,
     );
-  }
-
-  // Platform admins can switch into any organization, not only ones they belong to.
-  if (session.user.role === Roles.Admin) {
-    const allOrganizations = await db.models.Organization.findAll({
-      attributes: ["organizationId", "name"],
-      order: [["name", "ASC"]],
-    });
-    for (const organization of allOrganizations) {
-      addOrganization(
-        organization.organizationId,
-        organization.name,
-        OrganizationRole.ADMIN,
-      );
-    }
   }
 
   return NextResponse.json({ data: [...organizationsById.values()] });

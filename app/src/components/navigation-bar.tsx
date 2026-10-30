@@ -373,7 +373,7 @@ export function NavigationBar({
               </MenuContent>
             </MenuRoot>
             {organizations && organizations.length > 1 && (
-              <Box display="flex">
+              <Box display={{ base: "none", md: "flex" }}>
                 <MenuRoot
                   onOpenChange={(details) => {
                     setOrgMenuOpen(details.open);

@@ -3,6 +3,7 @@
  * leave them out on every write path and every aggregate surface.
  */
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import ExcelJS from "exceljs";
 import { randomUUID } from "node:crypto";
 import { QueryTypes } from "sequelize";
 import { GET as getCityDashboard } from "@/app/api/v1/city/[city]/dashboard/route";
@@ -154,41 +155,23 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city!.addUser(testUserID);
 
-    scope1 = await db.models.Scope.create({
-      scopeId: randomUUID(),
-      scopeName: "1",
-    });
-    // Named as in the catalogue: the sector breakdown looks a sector up by name.
-    waste = await db.models.Sector.create({
-      sectorId: randomUUID(),
-      sectorName: "Waste",
-      referenceNumber: `${PREFIX}III`,
-    });
-    otherScope3 = await db.models.Sector.create({
-      sectorId: randomUUID(),
-      sectorName: `${PREFIX}other-scope-3`,
-      referenceNumber: `${PREFIX}VI`,
-    });
-    solidWaste = await db.models.SubSector.create({
-      subsectorId: randomUUID(),
-      sectorId: waste.sectorId,
-      subsectorName: `${PREFIX}solid-waste`,
-      scopeId: scope1.scopeId,
-      referenceNumber: `${PREFIX}III.1`,
-    });
-    otherScope3Sub = await db.models.SubSector.create({
-      subsectorId: randomUUID(),
-      sectorId: otherScope3.sectorId,
-      subsectorName: `${PREFIX}other-scope-3`,
-      referenceNumber: `${PREFIX}VI.1`,
-    });
-    importedWaste = await db.models.SubCategory.create({
-      subcategoryId: randomUUID(),
-      subsectorId: solidWaste.subsectorId,
-      subcategoryName: `${PREFIX}imported-waste`,
-      referenceNumber: "III.4.3",
-      scopeId: scope1.scopeId,
-    });
+    // The seeded catalogue: review round 1 found fabricated rows hid a rejected reference.
+    waste = (await db.models.Sector.findOne({
+      where: { referenceNumber: "III" },
+    }))!;
+    otherScope3 = (await db.models.Sector.findOne({
+      where: { referenceNumber: "VI" },
+    }))!;
+    solidWaste = (await db.models.SubSector.findOne({
+      where: { referenceNumber: "III.1" },
+    }))!;
+    otherScope3Sub = (await db.models.SubSector.findOne({
+      where: { referenceNumber: "VI.1" },
+    }))!;
+    importedWaste = (await db.models.SubCategory.findOne({
+      where: { referenceNumber: "III.4.3" },
+    }))!;
+    scope1 = (await db.models.Scope.findByPk(importedWaste.scopeId))!;
   });
 
   afterAll(async () => {
@@ -197,12 +180,6 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       where: { inventoryId: inventoryIds },
     });
     await db.models.Inventory.destroy({ where: { inventoryId: inventoryIds } });
-    await importedWaste?.destroy();
-    await solidWaste?.destroy();
-    await otherScope3Sub?.destroy();
-    await waste?.destroy();
-    await otherScope3?.destroy();
-    await scope1?.destroy();
     await cleanupTestData(testData);
     teardownTests();
     if (db.sequelize) await db.sequelize.close();
@@ -547,9 +524,7 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
         ),
       );
       expect(omitted).toEqual({ "III.2.3": -7000, "III.4.3": 608_000 });
-      expect(data.omittedFromTotal[0].activityTitle).toBe(
-        `${PREFIX}solid-waste`,
-      );
+      expect(data.omittedFromTotal[0].activityTitle).toBe(solidWaste.subsectorName);
       expect(data.omittedFromTotal[0].percentage).toBeNull();
     });
 
@@ -577,6 +552,20 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       expect(csvText).toContain("VI.1");
       expect(csvText).toContain("III.4.3");
       expect(csvText).toContain("1188394");
+    });
+
+    it("eCRF keeps III.x.3 on its own row", async () => {
+      const res = await downloadInventory(
+        mockRequest(undefined, { format: "ecrf" }),
+        { params: Promise.resolve({ inventory: inventory.inventoryId }) },
+      );
+      await expectStatusCode(res, 200);
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(await res.arrayBuffer());
+      const sheet = workbook.getWorksheet(2)!;
+      // III.4.3 on the wastewater row, III.x.1 and III.x.2 unchanged
+      expect(sheet.getCell("F20").value).toBe(608);
+      expect(sheet.getCell("D17").value).toBe(200);
     });
 
     it("batch results keep I.4.4 out", async () => {

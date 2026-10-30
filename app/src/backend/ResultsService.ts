@@ -99,7 +99,12 @@ interface GroupedActivityResult {
 
 /** we get this names for the sectors in the query from the FE */
 export type SectorNamesInFE =
-  "stationary-energy" | "transportation" | "waste" | "ippu" | "afolu";
+  | "stationary-energy"
+  | "transportation"
+  | "waste"
+  | "ippu"
+  | "afolu"
+  | "other-scope-3";
 
 /** and we convert them to the names they have in the DB */
 const SectorMappingsFromFEToDB = {
@@ -108,6 +113,7 @@ const SectorMappingsFromFEToDB = {
   waste: "Waste",
   ippu: "Industrial Processes and Product Uses (IPPU)",
   afolu: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+  "other-scope-3": "Other Scope 3",
 };
 
 export type SectorNamesInDB =
@@ -115,7 +121,8 @@ export type SectorNamesInDB =
   | "Transportation"
   | "Waste"
   | "Industrial Processes and Product Uses (IPPU)"
-  | "Agriculture, Forestry, and Other Land Use (AFOLU)";
+  | "Agriculture, Forestry, and Other Land Use (AFOLU)"
+  | "Other Scope 3";
 
 const SectorMappingsFromDBToFE = {
   "Stationary Energy": "stationary-energy",
@@ -123,6 +130,7 @@ const SectorMappingsFromDBToFE = {
   Waste: "waste",
   "Industrial Processes and Product Uses (IPPU)": "ippu",
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "afolu",
+  "Other Scope 3": "other-scope-3",
 };
 
 interface TotalEmissionsBySectorAndSubsector {

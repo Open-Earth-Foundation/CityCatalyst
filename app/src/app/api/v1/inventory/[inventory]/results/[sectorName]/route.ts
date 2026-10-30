@@ -51,6 +51,30 @@
  *                             type: number
  *                           percentage:
  *                             type: number
+ *                     byScope:
+ *                       type: array
+ *                       description: Rows counted in BASIC/BASIC+ totals.
+ *                       items:
+ *                         type: object
+ *                     grossTotalEmissions:
+ *                       type: string
+ *                       description: Sum of non-negative byScope rows, the percentage denominator.
+ *                     omittedFromTotal:
+ *                       type: array
+ *                       description: Stored rows left out of BASIC/BASIC+ totals, such as III.x.3 and VI.1. They are in no total or percentage. Use sectorName other-scope-3 for VI.1.
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           gpcReferenceNumber:
+ *                             type: string
+ *                             nullable: true
+ *                           activityTitle:
+ *                             type: string
+ *                           totalEmissions:
+ *                             type: string
+ *                           percentage:
+ *                             type: number
+ *                             nullable: true
  *                     lastUpdated:
  *                       type: string
  *                       format: date-time

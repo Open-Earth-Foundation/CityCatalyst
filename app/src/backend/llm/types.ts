@@ -21,12 +21,16 @@ export interface LLMCompleteOptions {
   maxTokens?: number;
   /** Ask for JSON output; adapter may set response_format / schema hint where supported. Caller still parses. */
   jsonMode?: boolean;
+  /** Reasoning effort ("low", "medium" or "high") for reasoning models; ignored by other models. Provider default if not set; any other value is dropped with a warning. */
+  reasoningEffort?: string;
 }
 
 export interface LLMUsage {
   promptTokens?: number;
   completionTokens?: number;
   totalTokens?: number;
+  /** Part of completionTokens spent on hidden reasoning (reasoning models only). */
+  reasoningTokens?: number;
 }
 
 export interface LLMCompleteResult {
@@ -34,6 +38,10 @@ export interface LLMCompleteResult {
   content: string;
   /** Token usage when available. */
   usage?: LLMUsage;
+  /** Model that answered, as reported by the provider. */
+  model?: string;
+  /** Why the model stopped, e.g. "stop" or "length" (cut off at the token limit). */
+  finishReason?: string;
   /** Raw provider response for debugging; avoid logging. */
   raw?: unknown;
 }
@@ -72,5 +80,8 @@ export interface LLMConfig {
 
 /** Internal adapter interface; one implementation per provider (OpenAI, Anthropic, etc.). */
 export interface ILLMAdapter {
-  complete(options: LLMCompleteOptions, config: LLMConfig): Promise<LLMCompleteResult>;
+  complete(
+    options: LLMCompleteOptions,
+    config: LLMConfig,
+  ): Promise<LLMCompleteResult>;
 }

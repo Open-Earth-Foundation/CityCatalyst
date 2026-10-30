@@ -2,6 +2,26 @@ export interface ConceptNoteChatMessage {
   id: string;
   role: "assistant" | "user";
   text: string;
+  choices?: string[];
+}
+
+/** The same bounded tool contract is used by the stream and saved history. */
+export function readConceptNoteChoices(value: unknown): string[] | undefined {
+  if (!isRecord(value) || value.name !== "concept_note_ask_question") return;
+  const options = value.options;
+  if (
+    !Array.isArray(options) ||
+    options.length < 2 ||
+    options.length > 6 ||
+    !options.every(
+      (option): option is string =>
+        typeof option === "string" && option.trim().length > 0,
+    ) ||
+    new Set(options.map((option) => option.trim().toLowerCase())).size !==
+      options.length
+  )
+    return;
+  return options;
 }
 
 export interface ConceptNoteReasoning {
@@ -78,6 +98,14 @@ export function readConceptNoteThreadMessages(
             : crypto.randomUUID(),
         role,
         text,
+        ...(role === "assistant" && message.choices
+          ? {
+              choices: readConceptNoteChoices({
+                name: "concept_note_ask_question",
+                options: message.choices,
+              }),
+            }
+          : {}),
       },
     ];
   });

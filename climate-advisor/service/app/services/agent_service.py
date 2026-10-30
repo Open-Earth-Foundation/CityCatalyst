@@ -43,6 +43,7 @@ from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
+from app.tools.concept_note_question import concept_note_ask_question
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
@@ -446,6 +447,7 @@ class AgentService:
 
         # The CNB source capability is captured to one persisted run and user.
         if self._has_concept_note_context:
+            tools.append(concept_note_ask_question)
             assert self.session_factory is not None
             assert self.concept_note_run_id is not None
             assert self.cc_user_id is not None
@@ -537,6 +539,11 @@ class AgentService:
         )
         agent = Agent(
             name="Climate Advisor",
+            tool_use_behavior=(
+                {"stop_at_tool_names": ["concept_note_ask_question"]}
+                if self._has_concept_note_context
+                else "run_llm_again"
+            ),
             instructions=agent_instructions,
             model=model_class(
                 model=agent_model,

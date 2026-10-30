@@ -2077,6 +2077,25 @@ checks, manual verification steps, and remaining limitations.
 
 ### Concept Note chat suggestions
 
+CNB can optionally use `concept_note_ask_question` when a short set of concrete
+choices makes a clarification or next-step decision easier for the user.
+It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
+cap, so an option can be a complete rewrite when the user asks for alternatives
+to choose from). The UI renders lettered answers and a custom-answer input
+inside that assistant bubble. Informational answers, acknowledgements, and
+open-ended questions can remain ordinary text; a previous choice does not force
+another question or set of choices.
+Clicking an option immediately sends its full text as a normal user message.
+The arrow or Enter sends a custom answer; document edits still require review.
+Older questions become read-only after a subsequent user message. Validated
+choices reload from existing `tools_used` history via the `choices` response
+field; raw tool audit data is not exposed.
+
+The drafting-overview turn may offer contextual next-step choices when helpful;
+it does not force the question tool.
+No migration or extra model call is required for choices within a normal turn.
+The standalone suggestions below are hidden while the latest message has choices.
+
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words
 and are limited to 80 characters each. The UI keeps them directly above the

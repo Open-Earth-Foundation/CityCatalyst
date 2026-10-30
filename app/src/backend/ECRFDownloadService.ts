@@ -35,18 +35,15 @@ interface DataSection {
 export default class ECRFDownloadService {
   public static async downloadECRF(
     output: InventoryWithInventoryValuesAndActivityValues,
-    lng: string,
   ) {
-    return await this.writeToECRFFILE(output, lng);
+    return await this.writeToECRFFILE(output);
   }
 
   private static async writeToECRFFILE(
     output: InventoryWithInventoryValuesAndActivityValues,
-    lng: string,
   ) {
     // eCRF is an English GPC template. Always write English labels into cells
     // even when the user is viewing the app in another language (CC-1153).
-    void lng;
     const t = i18next.getFixedT("en", "data");
     const workbook = new Excel.Workbook();
     try {

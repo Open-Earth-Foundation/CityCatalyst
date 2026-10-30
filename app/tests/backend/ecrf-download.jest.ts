@@ -58,7 +58,6 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
           gasValues: [],
         },
       ]),
-      "en",
     );
 
     expect(Buffer.isBuffer(buffer)).toBe(true);
@@ -78,7 +77,6 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
           ],
         },
       ]),
-      "en",
     );
 
     expect(Buffer.isBuffer(buffer)).toBe(true);
@@ -102,7 +100,6 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
           },
         ],
       } as unknown as InventoryWithInventoryValuesAndActivityValues,
-      "es",
     );
 
     const workbook = new Excel.Workbook();
@@ -149,7 +146,6 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
           },
         ],
       } as unknown as InventoryWithInventoryValuesAndActivityValues,
-      "en",
     );
 
     const workbook = new Excel.Workbook();

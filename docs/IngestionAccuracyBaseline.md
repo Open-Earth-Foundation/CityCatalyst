@@ -140,7 +140,7 @@ Evidence is in the run folders `docs/ingestion-accuracy-runs/2026-10-27-2058-620
 | About 90% to 100% | Auckland, Toronto 2020, Miami (3 cases), Sao Paulo, Rosario, Curitiba, Santiago, Buenos Aires, Mersin | 88% to 100% |
 | 15% to 40% | Philadelphia | 38% |
 | Under 15% | Phoenix, Toronto 2019, Seattle, New York, Peñalolén | 0% to 9% |
-| Total only (not GPC) | Madrid (-0.1%), Kyoto (-3.3%), Coimbatore (+0.1%) | n/a |
+| Total only (not GPC) | Madrid (-0.1%), Kyoto (-3.3%, outside tolerance), Coimbatore (+0.1%) | n/a |
 | No rows | Guadalajara, Münster | n/a |
 
 - **OCR step:** passes on all 22 files.

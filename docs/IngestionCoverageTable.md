@@ -53,7 +53,7 @@ Keys for all 22 cases are validated. C-022 to C-025 (Madrid, Kyoto, Coimbatore, 
 | 🔴 New York 2015 | ▱▱▱▱▱▱▱▱▱▱ 0% | 0 of 2 | +1806% | 24 to 32 rows extracted but only 8 groups stored; values land under other GPC refs |
 | 🔴 Peñalolén 2022 | ▱▱▱▱▱▱▱▱▱▱ 0% | 0 of 0 | +2563% | the model stores the regional totals (Tabla 7) instead of the comuna column (Tabla 10); the key is right |
 | 🟡 Madrid 2023 (not GPC, total only) | n/a | 0 of 0 | −0.1%, outside tolerance | total close; rows not scored |
-| 🟡 Kyoto 2023 (not GPC, total only) | n/a | 0 of 0 | −3.3%, within tolerance | rows not scored |
+| 🟡 Kyoto 2023 (not GPC, total only) | n/a | 0 of 0 | −3.3% (runs: 0%, −1.7%, −8.3%), outside tolerance | rows not scored; total varies between runs |
 | 🟡 Coimbatore 2019-20 (not GPC, total only) | n/a | 0 of 0 | +0.1%, outside tolerance | rows not scored |
 | 🔴 Guadalajara 2022 | no rows | | | extraction returns no rows (runs end `failed` after 8 to 15 LLM calls) |
 | 🔴 Münster 2022 (not GPC) | no rows | | | extraction returns no rows (runs end `failed`) |

@@ -7,6 +7,13 @@ import type {
   IngestScope,
 } from "./types";
 
+export interface IngestMatchResult {
+  targetCityId?: string | null;
+  targetInventoryId?: string | null;
+  coverageYears?: number[];
+  warnings?: string[];
+}
+
 export interface IngestPluginContext {
   job: IngestJobRecord;
   item: IngestItemRecord;
@@ -48,5 +55,10 @@ export interface IngestPlugin {
     ctx: IngestPluginContext,
     adapted: unknown,
   ): Promise<Record<string, unknown> | void> | Record<string, unknown> | void;
-  match?(ctx: IngestPluginContext): Promise<void> | void;
+  match?(
+    ctx: IngestPluginContext,
+  ):
+    | Promise<IngestMatchResult | void>
+    | IngestMatchResult
+    | void;
 }

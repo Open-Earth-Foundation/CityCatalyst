@@ -82,7 +82,7 @@ export function classifyBulkInventoryFile(validation: ValidationResult): {
   return { kind: "not_ecrf", detectedType: "unknown" };
 }
 
-async function buildImportResult(args: {
+export async function buildBulkInventoryImportResult(args: {
   kind: BulkInventoryAcceptedKind;
   buffer: Buffer;
   fileType: "xlsx" | "csv";
@@ -188,7 +188,7 @@ export class InventoryFileAutoImportService {
       );
     }
 
-    const importResult = await buildImportResult({
+    const importResult = await buildBulkInventoryImportResult({
       kind: classified.kind,
       buffer: input.buffer,
       fileType,

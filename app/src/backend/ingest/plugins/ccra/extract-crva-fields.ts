@@ -17,6 +17,8 @@ const MAX_CHUNK_CHARS = 30_000;
 const MAX_RESPONSE_TOKENS = 16_000;
 
 const IMAGE_REF = /!\[[^\]]*\]\([^)]*\)/g;
+const PAGE_MARKER = /<!-- page: \d+ -->\n/g;
+const EXCERPT_CLOSE = /<\/excerpt\s*>/gi;
 const NAMED_ITEM = `{"name": string, "description": string}`;
 const CAPACITY_FACTOR = `{"category": ${CRVA_CAPACITY_CATEGORIES.map((c) => `"${c}"`).join(" | ")}, "factor": string, "description": string}`;
 
@@ -80,13 +82,20 @@ function stripFurniture(
 /**
  * Splits the `<!-- page: N -->` output of mergeMistralPages into page bodies,
  * without running headers and footers, which prove nothing about a page.
- * Takes the last marker of each page, working back from the end, so a forged
- * marker in document text cannot move text onto a later page. A forged marker
- * for its own page can still move earlier text of that page to the page before.
+ * Document text can forge a marker: a last page holding markers 1 to N would
+ * replace every real page. So more markers than pages fails the item, even when
+ * the extra marker is harmless.
  */
 export function splitOcrPages(
   ocr: Pick<MistralOcrResult, "markdown" | "pageCount" | "structured">,
 ): Map<number, string> {
+  const markerCount = ocr.markdown.match(PAGE_MARKER)?.length ?? 0;
+  if (markerCount > ocr.pageCount) {
+    throw new IngestItemError(
+      "validation_failed",
+      `OCR output has ${markerCount} page markers for ${ocr.pageCount} pages`,
+    );
+  }
   const pages = new Map<number, string>();
   const ocrPages = ocr.structured.document.pages;
   let end = ocr.markdown.length;
@@ -159,7 +168,7 @@ async function extractChunk(
       { role: "system", content: SYSTEM_PROMPT },
       {
         role: "user",
-        content: `Fields:\n${fieldPrompt(group)}\n\n<excerpt>\n${chunk}</excerpt>`,
+        content: `Fields:\n${fieldPrompt(group)}\n\n<excerpt>\n${chunk.replace(EXCERPT_CLOSE, "")}</excerpt>`,
       },
     ],
     jsonMode: true,

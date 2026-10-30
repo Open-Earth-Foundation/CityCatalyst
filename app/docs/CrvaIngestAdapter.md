@@ -11,7 +11,7 @@
 5. `validate` warns about uncovered fields, source data over 10 years old (X.1), sources with no year, and years that are in the future or not in the quote.
 6. `approvalPolicy` always returns `review`. `reviewSummary` returns the bundle, coverage counts and warnings.
 
-These fail the item: OCR output with no text, any LLM `finish_reason` other than `stop`, invalid JSON, and an OCR failure. The check reads `raw.choices[0].finish_reason`. Replace it with `finishReason` after PR #3364 (CC-1191) merges.
+These fail the item: OCR output with no text or with more page markers than pages, any LLM `finish_reason` other than `stop`, invalid JSON, and an OCR failure. The check reads `raw.choices[0].finish_reason`. Replace it with `finishReason` after PR #3364 (CC-1191) merges.
 
 ## Covers
 
@@ -46,7 +46,7 @@ Code does not enforce the ratings and figures scope. The prompt excludes them an
 
 A verified quote proves only that the text is on the page. It does not prove that the quote supports the value.
 
-A crafted PDF can still shift page attribution. A forged `<!-- page: N -->` line for its own page moves earlier text of that page to the page before. Page offsets from the OCR step would close this.
+Document text can forge a `<!-- page: N -->` marker. A crafted last page holding markers 1 to N would replace every real page, with no error. So the item fails when the OCR output has more markers than pages. This also fails a document that only mentions such a marker. Page offsets from the OCR step would remove the need for this check.
 
 ## Madrid result
 

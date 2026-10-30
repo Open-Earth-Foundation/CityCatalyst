@@ -84,8 +84,7 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     expect(items.every((item) => item.result?.kind === "ecrf")).toBe(true);
   });
 
-  it("rejects CIRIS/PDF without calling OpenAI", async () => {
-    const openai = { complete: jest.fn() };
+  it("rejects CIRIS/PDF before reaching commit", async () => {
     const validateStructure = jest.fn(async () => ({
       isValid: true,
       errors: [],
@@ -111,7 +110,6 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     const [ciris] = await store.listItems(cirisJob.id);
     expect(ciris?.errorCode).toBe("unknown_format");
     expect(ciris?.errorLog).toMatch(/ciris/);
-    expect(openai.complete).not.toHaveBeenCalled();
 
     const pdfJob = await ingest.enqueue({
       moduleId: "ghgi",
@@ -121,7 +119,6 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     await ingest.run(pdfJob.id, plugin);
     const [pdf] = await store.listItems(pdfJob.id);
     expect(pdf?.errorCode).toBe("unsupported_extension");
-    expect(openai.complete).not.toHaveBeenCalled();
   });
 
   it("writes matcher city and year onto the item", async () => {

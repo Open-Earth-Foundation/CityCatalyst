@@ -4,14 +4,14 @@
 
 ## Flow
 
-1. `detect` accepts PDF only, up to 20 MiB (`CCRA_MAX_PDF_BYTES`). This limit is separate from the inventory limit.
+1. `detect` accepts PDF only, up to 20 MiB (`CCRA_MAX_PDF_BYTES`). This limit is separate from the inventory limit. The file must start with `%PDF-`, and missing bytes fail the item.
 2. `parse` gets a URL from the injected `resolveDocumentUrl` and runs `convertPdfUrlToMarkdown`.
-3. `adapt` splits the OCR output by page and heading, then calls the LLM once per field group and chunk. The model is `LLM_EXTRACTION_MODEL`, and `LLM_CHUNK_CONCURRENCY` caps parallel calls.
-4. `adapt` drops each value whose quote is not on its cited page, and reports it in `bundle.dropped`.
-5. `validate` warns about uncovered fields, source data over 10 years old (X.1) and sources with no year.
+3. `adapt` splits the OCR output by page and heading, without running headers and footers, then calls the LLM once per field group and chunk. The model is `LLM_EXTRACTION_MODEL`, and `LLM_CHUNK_CONCURRENCY` caps parallel calls.
+4. `adapt` drops each value whose quote is not in the body of its cited page, and reports it in `bundle.dropped`.
+5. `validate` warns about uncovered fields, source data over 10 years old (X.1), sources with no year, and years that are in the future or not in the quote.
 6. `approvalPolicy` always returns `review`. `reviewSummary` returns the bundle, coverage counts and warnings.
 
-A truncated LLM response, invalid JSON, or an OCR failure fails the item. The truncation check reads `raw.choices[0].finish_reason`. Replace it with `finishReason` after PR #3364 (CC-1191) merges.
+These fail the item: OCR output with no text, any LLM `finish_reason` other than `stop`, invalid JSON, and an OCR failure. The check reads `raw.choices[0].finish_reason`. Replace it with `finishReason` after PR #3364 (CC-1191) merges.
 
 ## Covers
 
@@ -42,22 +42,35 @@ Figures, maps and charts are listed in `bundle.figures` with page and caption, f
 - Saving to a database, an upload route, a review UI and durable drafts (CC-956).
 - PDFs over 20 MiB. Seattle and Buenos Aires do not run in v0.
 
+Code does not enforce the ratings and figures scope. The prompt excludes them and a stray `probability` key is removed, but free text can still hold a rating, and a value can quote a figure caption. Run 4 had neither. The reviewer checks this.
+
+A verified quote proves only that the text is on the page. It does not prove that the quote supports the value.
+
+A crafted PDF can still shift page attribution. A forged `<!-- page: N -->` line for its own page moves earlier text of that page to the page before. Page offsets from the OCR step would close this.
+
 ## Madrid result
 
 Four runs, 2026-10-30, on the 48-page scan of the Madrid 2015 report (10.5 MiB). OCR `mistral-ocr-latest`, extraction `gpt-5.6-luna`, about 1.7 minutes per run. Token cost was not recorded.
 
-| Measure                                                    | Result on the final code (run 4) |
-| ---------------------------------------------------------- | -------------------------------- |
-| Final state                                                | `awaiting_review`, no commit     |
-| Fields with at least one value                             | 12 of 12                         |
-| Values kept / dropped                                      | 96 / 0                           |
-| Kept quotes found on the same page of the digital original | 96 of 96                         |
-| Figures listed for review                                  | 15, of which 9 have a caption    |
-| Warnings                                                   | 16 (14 data age, 2 no year)      |
+| Measure                                  | Run 1  | Run 2  | Run 3  | Run 4  |
+| ---------------------------------------- | ------ | ------ | ------ | ------ |
+| Final state                              | review | review | review | review |
+| Fields with at least one value (of 12)   | 12     | 12     | 12     | 12     |
+| Values kept                              | 84     | 77     | 90     | 96     |
+| Values dropped                           | 1      | 18     | 1      | 0      |
+| D1 values                                | 41     | 29     | 50     | 44     |
+| C1 values                                | 4      | 2      | 4      | 6      |
+| E1 values                                | 2      | 3      | 3      | 3      |
+| Figures listed (15 each), with a caption | 8      | 8      | 8      | 9      |
+| Warnings                                 | 15     | 15     | 9      | 16     |
 
-Output varies between runs. Values kept and dropped were 84/1, 77/18, 90/1 and 96/0. Runs 1 to 3 used an earlier quote check: the 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes. The check now ignores that markup.
+"Review" means `awaiting_review`, with no commit.
 
-The hand review is from run 1. Every 4th value (21 values): 15 usable. In the same run, 83 of 84 kept quotes were also on the same page of the digital original. The one drop was correct: the quote is on page 42, not the cited page 43. The one quote not found in the original is a heading on page 24, which the original text layer does not expose.
+All four runs predate the final quote check, and output varies a lot between runs. The 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes.
+
+The final code was not run on Madrid with the LLM. Its checks were replayed on the run 4 values, using a separate saved OCR of the same scan. That replay kept 94 values and dropped 2, both quoting only the running header on page 24. So A1.1 and A1.2a lost one value each. It raised 15 warnings (14 data age, 1 no year) and no unverified year.
+
+The hand review is from run 1. Every 4th value (21 values): 15 usable. The drop in run 1 was correct: the quote is on page 42, not the cited page 43.
 
 The hand review counts a value as usable when its quote supports it. The 6 failures were:
 
@@ -68,22 +81,23 @@ The hand review counts a value as usable when its quote supports it. The 6 failu
 
 Other limits seen on Madrid:
 
-- "12 of 12 fields" means at least one value, not a complete field. C1 has 2 to 6 cells and E1 has 2 or 3 risks.
-- D1 has 41 to 50 values, depending on the run, and many are method indicators from the annex (pages 43 to 48), not factors the report argues.
+- "12 of 12 fields" means at least one value, not a complete field. C1 and E1 stay thin in every run, and A1.1 has no real boundary description.
+- D1 has 29 to 50 values, depending on the run, and many are method indicators from the annex (pages 43 to 48), not factors the report argues.
 - B1.2a has overlapping hazards, and one value cites the table of contents.
 - Madrid has no projection tables and its sources are old, so it tests warnings better than coverage.
 
 ## Proposed thresholds
 
-These are proposals, because the output format is still being defined. They come from one document, and the hand review from one run.
+These are proposals, because the output format is still being defined. They come from one document, and n = 21 for the hand review is too small to separate 71% from 80%.
 
-| Measure                              | Proposal          | Madrid     |
-| ------------------------------------ | ----------------- | ---------- |
-| Kept values with a verified quote    | 100%              | 100%       |
-| Quotes dropped                       | Under 5%          | 1.2%       |
-| Required v0 fields with a value      | At least 10 of 12 | 12 of 12   |
-| Sampled values usable by hand review | At least 80%      | 71%, fails |
+| Measure                              | Proposal          | Madrid                          |
+| ------------------------------------ | ----------------- | ------------------------------- |
+| Values dropped by the quote check    | Under 5%          | 0% in run 4, 2.1% in the replay |
+| Required v0 fields with a value      | At least 10 of 12 | 12 of 12 in runs 1 to 4         |
+| Sampled values usable by hand review | At least 80%      | 71% in run 1, fails             |
+
+The quote check removes every unverified value, so a "verified share" measure would always read 100%. Every value in a draft has a quote on its page by construction.
 
 ## Running locally
 
-The run script is in the Vault task `tasks/CC-1156/artifacts/run-ccra-ingest.jest.ts`. It sends the PDF bytes as a `data:` URL, because Mistral cannot fetch the `madrid.es` link (error 3310).
+No run script is committed. A local run needs an `IngestRunner` with `MemoryIngestStore`, `dryRun: true`, and a `resolveDocumentUrl` function. Mistral must be able to read that URL. It cannot fetch the `madrid.es` link (error 3310), so the Madrid runs sent the PDF bytes as a `data:` URL. Do not do that in a server path. Use the document pool URL from CC-955.

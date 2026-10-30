@@ -76,7 +76,13 @@ const field = <Id extends string, Value extends z.ZodTypeAny>(
 
 export const CrvaDraftValueSchema = z.discriminatedUnion("fieldId", [
   field("A1.1", text),
-  field("A1.2a", z.object({ name: text, year: z.number().int().nullable() })),
+  field(
+    "A1.2a",
+    z.object({
+      name: text,
+      year: z.number().int().min(1900).max(2100).nullable(),
+    }),
+  ),
   field("A2.1a", text),
   field("A2.1b", NamedItemSchema),
   field("A2.4a", NamedItemSchema),

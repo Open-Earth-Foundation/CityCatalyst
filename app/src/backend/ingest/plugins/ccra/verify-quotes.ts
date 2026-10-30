@@ -4,13 +4,15 @@ import type { CrvaDraftValue, CrvaDroppedValue } from "./draft-schema";
 const MIN_QUOTE_CHARS = 10;
 
 /**
- * NFKC folds ligatures. OCR adds `*` emphasis markup and breaks whitespace in
- * arbitrary places, and the LLM copies neither reliably.
+ * Folds ligatures only: full NFKC would also fold superscripts and change a
+ * number. Removes `*` emphasis markup added by OCR, which the LLM does not copy
+ * reliably, but keeps a `*` between digits. OCR also breaks whitespace.
  */
 export function normalizeForQuoteMatch(text: string): string {
   return text
-    .normalize("NFKC")
-    .replace(/[\u00ad*]/g, "")
+    .replace(/[ﬀ-ﬆ]/g, (ligature) => ligature.normalize("NFKC"))
+    .replace(/­/g, "")
+    .replace(/(?<!\d)\*+|\*+(?![\d*])/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }

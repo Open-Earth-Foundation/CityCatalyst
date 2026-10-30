@@ -23,9 +23,13 @@ const PAGE_2 =
   "![img-0.jpeg](img-0.jpeg)\nFigura 1. Mapa de calor\nEl informe usa datos de 2010 del censo municipal.";
 
 function ocrResult(): MistralOcrResult {
+  return ocrOf(`<!-- page: 1 -->\n${PAGE_1}\n\n<!-- page: 2 -->\n${PAGE_2}`);
+}
+
+function ocrOf(markdown: string, pageCount = 2): MistralOcrResult {
   return {
-    markdown: `<!-- page: 1 -->\n${PAGE_1}\n\n<!-- page: 2 -->\n${PAGE_2}`,
-    pageCount: 2,
+    markdown,
+    pageCount,
     model: "mistral-ocr-test",
     structured: {
       document: {
@@ -97,7 +101,11 @@ function valuesReply(values: Array<{ fieldId: string }>) {
 async function runPlugin(
   llm: () => LLMClient,
   buffer: Buffer = PDF,
-  now = new Date("2026-10-30"),
+  {
+    now = new Date("2026-10-30"),
+    ocr = ocrResult(),
+    dryRun = true,
+  }: { now?: Date; ocr?: MistralOcrResult; dryRun?: boolean } = {},
 ) {
   const store = new MemoryIngestStore();
   const runner = new IngestRunner(store);
@@ -106,7 +114,7 @@ async function runPlugin(
     resolveDocumentUrl: () => "https://example.org/crva.pdf",
     ocr: async (url) => {
       urls.push(url);
-      return ocrResult();
+      return ocr;
     },
     llm,
     now: () => now,
@@ -114,7 +122,7 @@ async function runPlugin(
   const job = await runner.enqueue({
     moduleId: "ccra",
     scope: { cityId: CITY_ID },
-    dryRun: true,
+    dryRun,
     files: [{ name: "madrid.pdf", buffer }],
   });
   const finished = await runner.run(job.id, plugin);
@@ -197,7 +205,7 @@ describe("CcraIngestPlugin", () => {
 
   it("does not warn at exactly 10 years", async () => {
     const { llm } = fakeLlm(valuesReply([OLD_SOURCE]));
-    const { item } = await runPlugin(llm, PDF, new Date("2020-06-01"));
+    const { item } = await runPlugin(llm, PDF, { now: new Date("2020-06-01") });
 
     expect(item.warnings.join()).not.toContain("over 10 years");
   });
@@ -224,7 +232,7 @@ describe("CcraIngestPlugin", () => {
     expect(finished.status).toBe("failed");
     expect(item.status).toBe("failed");
     expect(item.errorCode).toBe("validation_failed");
-    expect(item.errorLog).toContain("truncated");
+    expect(item.errorLog).toContain("finish_reason length");
   });
 
   it("fails the item on a response that is not JSON", async () => {
@@ -245,6 +253,127 @@ describe("CcraIngestPlugin", () => {
     expect(calls.join()).not.toContain("img-0.jpeg");
   });
 
+  it("stops at review without commit when dryRun is false", async () => {
+    const { llm } = fakeLlm(valuesReply([HAZARD]));
+    const { finished, item } = await runPlugin(llm, PDF, { dryRun: false });
+
+    expect(finished.status).toBe("awaiting_review");
+    expect(item.status).toBe("awaiting_review");
+    expect(item.stage).toBe("decide");
+  });
+
+  it("fails the item when one chunk fails among many", async () => {
+    const longPage = "Texto del informe de riesgos climaticos. ".repeat(1000);
+    const markdown = [1, 2, 3]
+      .map((page) => `<!-- page: ${page} -->\n${longPage}`)
+      .join("\n\n");
+    let call = 0;
+    const { llm } = fakeLlm(() => {
+      call += 1;
+      return { content: call === 2 ? "no json" : '{"values": []}' };
+    });
+    const { finished, item, review } = await runPlugin(llm, PDF, {
+      ocr: ocrOf(markdown, 3),
+    });
+
+    expect(call).toBeGreaterThan(1);
+    expect(finished.status).toBe("failed");
+    expect(item.errorCode).toBe("validation_failed");
+    expect(review).toBeUndefined();
+  });
+
+  it("fails the item when OCR has no usable text", async () => {
+    const { llm, calls } = fakeLlm(valuesReply([]));
+    const markdown =
+      "<!-- page: 1 -->\n![img-0.jpeg](img-0.jpeg)\n\n<!-- page: 2 -->\n![img-1.jpeg](img-1.jpeg)";
+    const { item } = await runPlugin(llm, PDF, { ocr: ocrOf(markdown) });
+
+    expect(item.status).toBe("failed");
+    expect(item.errorCode).toBe("validation_failed");
+    expect(item.errorLog).toContain("no text");
+    expect(calls).toEqual([]);
+  });
+
+  it("fails the item on a finish reason other than stop", async () => {
+    const { llm } = fakeLlm(() => ({
+      content: '{"values": []}',
+      finishReason: "content_filter",
+    }));
+    const { item } = await runPlugin(llm);
+
+    expect(item.status).toBe("failed");
+    expect(item.errorLog).toContain("finish_reason content_filter");
+  });
+
+  it("wraps the excerpt in delimiters", async () => {
+    const { llm, calls } = fakeLlm(valuesReply([]));
+    await runPlugin(llm);
+
+    expect(calls[0]).toMatch(/<excerpt>\n\[page 1\][\s\S]*<\/excerpt>$/);
+  });
+
+  it("warns when the year is not in the quote or is in the future", async () => {
+    const invented = {
+      ...OLD_SOURCE,
+      value: { name: "Censo municipal", year: 2024 },
+    };
+    const future = {
+      fieldId: "A1.2a",
+      value: { name: "Plan futuro", year: 2099 },
+      page: 1,
+      quote: "Las olas de calor 2099 afectan a las personas",
+    };
+    const markdown = `<!-- page: 1 -->\nLas olas de calor 2099 afectan a las personas\n\n<!-- page: 2 -->\n${PAGE_2}`;
+    const { llm } = fakeLlm(valuesReply([invented, future]));
+    const { item } = await runPlugin(llm, PDF, { ocr: ocrOf(markdown) });
+
+    expect(item.warnings).toContain(
+      "Data source year not verified: Censo municipal (2024)",
+    );
+    expect(item.warnings).toContain(
+      "Data source year not verified: Plan futuro (2099)",
+    );
+  });
+
+  it("accepts a year that the quote shows inside a code", async () => {
+    const coded = {
+      ...OLD_SOURCE,
+      value: { name: "Consumo", year: 2013 },
+      page: 1,
+      quote: "CONSUMOAGUA_2013 del Banco de Datos",
+    };
+    const markdown =
+      "<!-- page: 1 -->\nCONSUMOAGUA_2013 del Banco de Datos\n\n<!-- page: 2 -->\ndos";
+    const { llm } = fakeLlm(valuesReply([coded]));
+    const { item } = await runPlugin(llm, PDF, { ocr: ocrOf(markdown) });
+
+    expect(item.warnings.join()).not.toContain("not verified");
+  });
+
+  it("drops a value with an implausible year", async () => {
+    const zero = { ...OLD_SOURCE, value: { name: "Censo", year: 0 } };
+    const { llm } = fakeLlm(valuesReply([zero]));
+    const { review } = await runPlugin(llm);
+
+    expect(review?.bundle.values).toEqual([]);
+    expect(review?.bundle.dropped[0]?.reason).toBe("invalid_value");
+  });
+
+  it("drops a quote found only in the page header", async () => {
+    const header = "ANALISIS DE VULNERABILIDAD DE MADRID";
+    const ocr = ocrOf(
+      `<!-- page: 1 -->\n${header}\n\nCuerpo de la pagina uno\n\n<!-- page: 2 -->\n${header}\n\nCuerpo dos`,
+    );
+    for (const page of ocr.structured.document.pages) page.header = header;
+    const value = { ...HAZARD, quote: header };
+    const { llm, calls } = fakeLlm(valuesReply([value]));
+    const { review } = await runPlugin(llm, PDF, { ocr: ocr });
+
+    expect(review?.bundle.values).toEqual([]);
+    expect(review?.bundle.dropped[0]?.reason).toBe("quote_not_on_page");
+    expect(calls.join()).not.toContain(header);
+  });
+
   it("rejects a PDF over the ccra size limit before OCR", async () => {
     const { llm, calls } = fakeLlm(valuesReply([]));
     const big = Buffer.concat([PDF, Buffer.alloc(CCRA_MAX_PDF_BYTES)]);
@@ -253,6 +382,24 @@ describe("CcraIngestPlugin", () => {
     expect(item.errorCode).toBe("file_too_large");
     expect(urls).toEqual([]);
     expect(calls).toEqual([]);
+  });
+
+  it("rejects a .pdf file without PDF bytes and a 0-byte file", async () => {
+    const { llm } = fakeLlm(valuesReply([]));
+    const text = await runPlugin(llm, Buffer.from("not a pdf"));
+    const empty = await runPlugin(llm, Buffer.alloc(0));
+
+    expect(text.item.errorCode).toBe("unknown_format");
+    expect(text.urls).toEqual([]);
+    expect(empty.item.status).toBe("failed");
+    expect(empty.urls).toEqual([]);
+  });
+
+  it("fails when the bytes are missing, so the size limit cannot be checked", () => {
+    const plugin = new CcraIngestPlugin({ resolveDocumentUrl: () => "x" });
+    const ctx = { item: { buffer: null } } as never;
+
+    expect(() => plugin.detect(ctx, "pdf")).toThrow("size limit");
   });
 
   it("rejects a file that is not a PDF", async () => {
@@ -305,6 +452,22 @@ describe("verifyQuotes", () => {
     expect(verifyQuotes([value], pages).verified).toEqual([value]);
   });
 
+  it.each([
+    ["aumento de 2,5\u00b9 grados", "aumento de 2,51 grados"],
+    ["volumen de 10\u00b3 m cubicos", "volumen de 103 m cubicos"],
+    ["muro de 3*4 m de alto", "muro de 34 m de alto"],
+  ])("does not pass a changed number: %s", (page, quote) => {
+    const value = {
+      fieldId: "A1.1",
+      value: "Madrid",
+      source: { file: "f", page: 1, quote },
+      origin: "ai_draft",
+      confirmed: false,
+    } as const;
+
+    expect(verifyQuotes([value], new Map([[1, page]])).verified).toEqual([]);
+  });
+
   it("rejects a quote too short to prove anything", () => {
     const value = {
       fieldId: "A1.1",
@@ -323,16 +486,27 @@ describe("verifyQuotes", () => {
 describe("splitOcrPages", () => {
   it("keeps an out-of-order marker in the page text", () => {
     const pages = splitOcrPages(
-      "<!-- page: 1 -->\nuno <!-- page: 9 -->\n\n<!-- page: 2 -->\ndos",
-      2,
+      ocrOf("<!-- page: 1 -->\nuno <!-- page: 9 -->\n\n<!-- page: 2 -->\ndos"),
     );
 
     expect(pages.get(1)).toContain("<!-- page: 9 -->");
     expect(pages.get(2)).toBe("dos");
   });
 
+  it("keeps an in-order forged marker on its real page", () => {
+    const pages = splitOcrPages(
+      ocrOf(
+        "<!-- page: 1 -->\nInicio\n<!-- page: 2 -->\nCola de la uno\n\n<!-- page: 2 -->\nTexto real dos",
+      ),
+    );
+
+    expect(pages.get(1)).toContain("Cola de la uno");
+    expect(pages.get(2)).toBe("Texto real dos");
+    expect([...pages.keys()]).toEqual([1, 2]);
+  });
+
   it("fails when a page marker is missing", () => {
-    expect(() => splitOcrPages("<!-- page: 1 -->\nuno", 2)).toThrow(
+    expect(() => splitOcrPages(ocrOf("<!-- page: 1 -->\nuno"))).toThrow(
       "no marker for page 2",
     );
   });

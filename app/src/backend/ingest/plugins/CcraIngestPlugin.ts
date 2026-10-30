@@ -79,8 +79,18 @@ export class CcraIngestPlugin implements IngestPlugin {
         `CRVA plugin has no format for ${coarse}`,
       );
     }
-    if ((ctx.item.buffer?.length ?? 0) > CCRA_MAX_PDF_BYTES) {
+    const { buffer } = ctx.item;
+    if (!buffer) {
+      throw new IngestItemError(
+        "validation_failed",
+        "File bytes are missing, so the size limit cannot be checked",
+      );
+    }
+    if (buffer.length > CCRA_MAX_PDF_BYTES) {
       throw new IngestItemError("file_too_large");
+    }
+    if (buffer.toString("latin1", 0, 5) !== "%PDF-") {
+      throw new IngestItemError("unknown_format", "File is not a PDF");
     }
   }
 
@@ -102,7 +112,7 @@ export class CcraIngestPlugin implements IngestPlugin {
     try {
       const client = (this.options.llm ?? createLLMClient)();
       const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
-      const pages = splitOcrPages(ocr.markdown, ocr.pageCount);
+      const pages = splitOcrPages(ocr);
       const extracted = await extractCrvaFields({ client, model, file, pages });
       const { verified, dropped } = verifyQuotes(extracted.values, pages);
       const values = dedupeValues(verified);
@@ -163,13 +173,21 @@ export class CcraIngestPlugin implements IngestPlugin {
     const warnings = bundle.uncoveredFields.map(
       (id) => `Required field not covered: ${id} ${CRVA_FIELD_LABELS[id]}`,
     );
-    for (const { fieldId, value } of bundle.values) {
+    for (const { fieldId, value, source } of bundle.values) {
       if (fieldId !== "A1.2a") continue;
       if (value.year === null) {
         warnings.push(`Data source has no year: ${value.name}`);
-      } else if (currentYear - value.year > MAX_SOURCE_AGE_YEARS) {
+        continue;
+      }
+      if (currentYear - value.year > MAX_SOURCE_AGE_YEARS) {
         warnings.push(
           `Data source over ${MAX_SOURCE_AGE_YEARS} years old (X.1): ${value.name} (${value.year})`,
+        );
+      }
+      const yearInQuote = new RegExp(`(?<!\\d)${value.year}(?!\\d)`);
+      if (value.year > currentYear || !yearInQuote.test(source.quote)) {
+        warnings.push(
+          `Data source year not verified: ${value.name} (${value.year})`,
         );
       }
     }

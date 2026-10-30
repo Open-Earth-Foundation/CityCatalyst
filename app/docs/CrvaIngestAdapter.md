@@ -46,13 +46,14 @@ Figures, maps and charts are listed in `bundle.figures` with page and caption, f
 
 Four runs, 2026-10-30, on the 48-page scan of the Madrid 2015 report (10.5 MiB). OCR `mistral-ocr-latest`, extraction `gpt-5.6-luna`, about 1.7 minutes per run. Token cost was not recorded.
 
-| Measure | Result on the final code (run 4) |
-| --- | --- |
-| Final state | `awaiting_review`, no commit |
-| Fields with at least one value | 12 of 12 |
-| Values kept / dropped | 96 / 0 |
-| Figures listed for review | 15, of which 9 have a caption |
-| Warnings | 16 (14 data age, 2 no year) |
+| Measure                                                    | Result on the final code (run 4) |
+| ---------------------------------------------------------- | -------------------------------- |
+| Final state                                                | `awaiting_review`, no commit     |
+| Fields with at least one value                             | 12 of 12                         |
+| Values kept / dropped                                      | 96 / 0                           |
+| Kept quotes found on the same page of the digital original | 96 of 96                         |
+| Figures listed for review                                  | 15, of which 9 have a caption    |
+| Warnings                                                   | 16 (14 data age, 2 no year)      |
 
 Output varies between runs. Values kept and dropped were 84/1, 77/18, 90/1 and 96/0. Runs 1 to 3 used an earlier quote check: the 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes. The check now ignores that markup.
 

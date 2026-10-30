@@ -23,12 +23,45 @@ const OMITTED_FROM_TOTAL_GPC_REFS: ReadonlySet<string> = new Set([
   "VI.1",
 ]);
 
+/**
+ * III.x.3 rows are optional. Sector III requires scope 1, so these references
+ * stay out of inventory progress and required-row lists.
+ */
+const IMPORTED_WASTE_GPC_REFS: ReadonlySet<string> = new Set([
+  "III.1.3",
+  "III.2.3",
+  "III.3.3",
+  "III.4.3",
+]);
+
+export function isImportedWasteRef(gpcReferenceNumber?: string | null): boolean {
+  return (
+    gpcReferenceNumber != null &&
+    IMPORTED_WASTE_GPC_REFS.has(gpcReferenceNumber)
+  );
+}
+
 export function isOmittedFromTotalRef(
   gpcReferenceNumber?: string | null,
 ): boolean {
   return (
     gpcReferenceNumber != null &&
     OMITTED_FROM_TOTAL_GPC_REFS.has(gpcReferenceNumber)
+  );
+}
+
+/** True when a sector breakdown has nothing to show, counted or omitted. */
+export function isBreakdownEmpty(
+  breakdown?: {
+    byActivity?: object;
+    byScope?: unknown[];
+    omittedFromTotal?: unknown[];
+  } | null,
+): boolean {
+  return (
+    Object.keys(breakdown?.byActivity ?? {}).length === 0 &&
+    (breakdown?.byScope ?? []).length === 0 &&
+    (breakdown?.omittedFromTotal ?? []).length === 0
   );
 }
 

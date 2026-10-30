@@ -1,6 +1,7 @@
 import { db } from "@/models";
 import { Op } from "sequelize";
 import {
+  correctWasteDirection,
   resolveGpcRefFromLabels,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
@@ -733,8 +734,14 @@ export default class ECRFImportService {
       );
       const activityHint =
         row.activityType?.trim() || row.category?.trim() || undefined;
+      const copiedRef = row.gpcRefNo?.trim();
       const gpcRefNo =
-        row.gpcRefNo?.trim() ||
+        (copiedRef &&
+          correctWasteDirection(copiedRef, [
+            row.subsector,
+            row.category,
+            row.activityType,
+          ])) ||
         resolveGpcRefFromLabels({
           sector: row.sector,
           subsector: row.subsector,

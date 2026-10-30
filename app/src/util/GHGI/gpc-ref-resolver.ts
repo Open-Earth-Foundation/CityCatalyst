@@ -187,6 +187,30 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
+const GENERATED_OUTSIDE_TREATED_INSIDE =
+  /\b(generated|produced|originating)\b.*\boutside\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\b(within|inside|in)\b|\bimported waste/i;
+const GENERATED_INSIDE_TREATED_OUTSIDE =
+  /\b(generated|produced|originating)\b.*\b(within|inside|in)\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\boutside\b|\bexported waste/i;
+
+/**
+ * Corrects a waste reference when a row's label states the direction. III.x.2 is
+ * generated inside and treated outside; III.x.3 is generated outside and treated
+ * inside, and leaves BASIC totals, so a wrong .3 drops an amount from the total.
+ * Scope cannot separate them: .3 is scope 1 like .1. Rows with no direction in
+ * their label keep their reference.
+ */
+export function correctWasteDirection(
+  gpcRefNo: string,
+  labels: (string | null | undefined)[],
+): string {
+  const match = gpcRefNo.match(/^(III\.[1-4])\.[123]$/);
+  if (!match) return gpcRefNo;
+  const label = labels.filter(Boolean).join(" ");
+  if (GENERATED_OUTSIDE_TREATED_INSIDE.test(label)) return `${match[1]}.3`;
+  if (GENERATED_INSIDE_TREATED_OUTSIDE.test(label)) return `${match[1]}.2`;
+  return gpcRefNo;
+}
+
 /**
  * Resolve a missing GPC ref from the raw sector, sub-sector, fuel, and scope
  * labels, including "On-road > Passenger car" style splits.
@@ -234,5 +258,5 @@ export function resolveGpcRefFromLabels(input: {
       );
     }
   }
-  return resolved;
+  return resolved && correctWasteDirection(resolved, [rawSubsector, fuel]);
 }

@@ -291,6 +291,7 @@
   "import-row-issue-no-value-or-notation-key": "The row has no emissions value and no notation key.",
   "import-row-issue-invalid-row": "The row couldn't be read.",
   "import-row-issue-outside-inventory-type": "Only part of GPC BASIC+. It's imported, but doesn't count toward GPC BASIC completion.",
+  "import-row-issue-omitted-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals. Check that the waste really comes from outside the city.",
   "not-specified": "Not specified",
   "upload-failed": "Upload failed",
   "failed-to-upload-file": "Failed to upload file",

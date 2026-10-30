@@ -1,3 +1,4 @@
+import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
@@ -47,14 +48,20 @@ export async function previewImportRows(
     ),
   );
   for (const row of importedRows) {
-    if (outsideReferences.has(row.gpcRefNo)) {
+    // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
+    const issue = isOmittedFromTotalRef(row.gpcRefNo)
+      ? "omitted-from-total"
+      : outsideReferences.has(row.gpcRefNo)
+        ? "outside-inventory-type"
+        : null;
+    if (issue) {
       outcomes.push({
         rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
         status: "not-counted",
-        issue: "outside-inventory-type",
+        issue,
       });
     }
   }

@@ -23,7 +23,7 @@
   "download-csv-format": "Download in .CSV format",
   "download-csv-format-description": "The Comma-Separated Values (CSV) is a simple file format used to store tabular data (like spreadsheets or databases).",
   "download-ecrf-format": "Download in eCRF format",
-  "download-ecrf-format-description": "The Electronic Case Report Form (eCRF) is a standardized, regulatory-compliant tool used for reporting data in clinical trials.",
+  "download-ecrf-inventory-format-description": "The Electronic Common Reporting Framework (eCRF) is a standardized format for reporting greenhouse gas inventory data.",
   "update-to-cdp": "Update report to CDP",
   "update-to-cdp-description": "Update your GHG emissions inventory in your CDP report.",
   "publish-to-web": "Publish to the web",

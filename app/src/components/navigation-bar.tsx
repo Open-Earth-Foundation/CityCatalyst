@@ -167,8 +167,8 @@ export function NavigationBar({
     ? getParamValue(params.id)
     : undefined;
   const currentOrganizationId =
-    organization?.organizationId ??
     routeOrganizationId ??
+    organization?.organizationId ??
     organizations?.[0]?.organizationId;
   const currentOrganizationRawName = organizations?.find(
     (org) => org.organizationId === currentOrganizationId,
@@ -373,7 +373,7 @@ export function NavigationBar({
               </MenuContent>
             </MenuRoot>
             {organizations && organizations.length > 1 && (
-              <Box display={{ base: "none", md: "flex" }}>
+              <Box display="flex">
                 <MenuRoot
                   onOpenChange={(details) => {
                     setOrgMenuOpen(details.open);
@@ -638,7 +638,7 @@ export function NavigationBar({
           lng={activeLng}
           currentCityId={currentCityId}
           organizationId={
-            (organization?.organizationId ??
+            (currentOrganizationId ??
               userAccessStatus?.organizationId) as string
           }
           isOpen={isDrawerOpen}

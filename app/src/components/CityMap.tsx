@@ -2,9 +2,10 @@
 
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
-import { Box, Center, Spinner } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { FC, useEffect, useRef, useState } from "react";
 import { Map, GeoJson, GeoJsonFeature } from "pigeon-maps";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export interface CityMapProps {
   locode: string | null;
@@ -86,9 +87,7 @@ export const CityMap: FC<CityMapProps> = ({ locode, width, height }) => {
             pointerEvents: "none",
           }}
         >
-          <Center h="full">
-            <Spinner size="lg" />
-          </Center>
+          <ProgressLoader boxHeight="100%" boxWidth="100%" size="lg" />
         </Box>
       ) : (
         <Map

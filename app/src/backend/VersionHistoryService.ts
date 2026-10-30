@@ -1,6 +1,7 @@
 import "@/util/big_int_json";
 import { db } from "@/models";
 import type { Version } from "@/models/Version";
+import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
 import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
@@ -264,7 +265,15 @@ export default class VersionHistoryService {
 
       for (const version of toRestore) {
         const { model, idColumn } = modelFor(version);
-        const previousData = version.previousVersion.data!;
+        const previousData = { ...version.previousVersion.data! };
+        // A bulk update skips the model's beforeSave hook, and a snapshot can
+        // predate the rule, so restoring must not put the row back in totals.
+        if (
+          version.table === "InventoryValue" &&
+          isOmittedFromTotalRef(previousData.gpcReferenceNumber as string)
+        ) {
+          previousData.omitFromTotal = true;
+        }
         // restore the entry's earlier state, re-creating it if it was deleted since
         const [updatedCount] = await model.update(previousData, {
           where: { [idColumn]: version.entryId },

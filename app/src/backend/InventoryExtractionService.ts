@@ -8,7 +8,10 @@ import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import {
+  GRID_GENERATION_GPC_REF,
+  isOmittedFromTotalRef,
+} from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
@@ -1560,11 +1563,11 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
-/** Sum of imported values in tonnes, without rows left out of totals (I.4.4). */
+/** Sum of imported values in tonnes, without rows left out of totals. */
 function sumImported(rows: ExtractedRow[]): number {
   return rows.reduce(
     (sum, row) =>
-      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+      isOmittedFromTotalRef(row.gpcRefNo) || row.totalCO2e == null
         ? sum
         : sum + row.totalCO2e,
     0,

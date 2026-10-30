@@ -475,11 +475,18 @@ export interface ActivityDataByScope {
   activities?: ActivityValue[];
 }
 
+/** A stored value left out of BASIC/BASIC+ totals: percentage is always null */
+export interface OmittedActivityData extends ActivityDataByScope {
+  gpcReferenceNumber: string | null;
+}
+
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
   /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
   grossTotalEmissions: Decimal;
+  /** values shown apart from byScope; never part of a total or percentage */
+  omittedFromTotal: OmittedActivityData[];
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {

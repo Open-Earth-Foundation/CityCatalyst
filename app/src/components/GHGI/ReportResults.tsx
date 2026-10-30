@@ -96,7 +96,8 @@ function SectorTabs({
 
   const isEmptyInventory =
     Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
-    Object.entries(sectorBreakdown?.byScope || {}).length === 0;
+    Object.entries(sectorBreakdown?.byScope || {}).length === 0 &&
+    (sectorBreakdown?.omittedFromTotal ?? []).length === 0;
 
   return (
     <Tabs.Root
@@ -216,6 +217,7 @@ function SectorTabs({
                       inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
+                      omittedFromTotal={sectorBreakdown!.omittedFromTotal}
                       grossTotalEmissions={
                         new Decimal(sectorBreakdown!.grossTotalEmissions)
                       }

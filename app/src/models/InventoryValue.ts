@@ -11,7 +11,7 @@ import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { ActivityValue, ActivityValueId } from "./ActivityValue";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -305,9 +305,9 @@ export class InventoryValue
         ],
         hooks: {
           beforeSave: (inventoryValue: InventoryValue) => {
-            // Grid generation is stored for a territorial total and omitted
-            // from BASIC/BASIC+ totals. Other rows can set the flag directly.
-            if (inventoryValue.gpcReferenceNumber === GRID_GENERATION_GPC_REF) {
+            // These references stay stored and are omitted from BASIC/BASIC+
+            // totals. Other rows can set the flag directly.
+            if (isOmittedFromTotalRef(inventoryValue.gpcReferenceNumber)) {
               inventoryValue.omitFromTotal = true;
             }
           },

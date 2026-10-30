@@ -34,7 +34,9 @@ const IMPORTED_WASTE_GPC_REFS: ReadonlySet<string> = new Set([
   "III.4.3",
 ]);
 
-export function isImportedWasteRef(gpcReferenceNumber?: string | null): boolean {
+export function isImportedWasteRef(
+  gpcReferenceNumber?: string | null,
+): boolean {
   return (
     gpcReferenceNumber != null &&
     IMPORTED_WASTE_GPC_REFS.has(gpcReferenceNumber)

@@ -360,6 +360,7 @@ interface InventoryValueQueryResult {
   inventory_value_id: string;
   gpc_reference_number: string | null;
   omit_from_total: boolean;
+  subcategory_name: string | null;
 }
 
 interface InventoryValuesBySector {
@@ -373,6 +374,7 @@ interface InventoryValuesBySector {
   inventory_value_id: string;
   gpc_reference_number: string | null;
   omit_from_total: boolean;
+  subcategory_name: string | null;
   activities: ActivityValue[];
 }
 
@@ -392,7 +394,8 @@ const fetchInventoryValuesBySector = async (
       ds.source_type AS datasource_source_type,
       iv.id as inventory_value_id,
       iv.gpc_reference_number,
-      iv.omit_from_total
+      iv.omit_from_total,
+      sc.subcategory_name
     FROM "InventoryValue" iv
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
@@ -467,7 +470,8 @@ function toOmittedActivityData(
 ): OmittedActivityData {
   const totalEmissions = sumItemCo2eq(item);
   return {
-    activityTitle: item.subsector_name,
+    // The sub-sector name can state the opposite direction for III.x.3.
+    activityTitle: item.subcategory_name ?? item.subsector_name,
     gpcReferenceNumber: item.gpc_reference_number,
     scopes: item.scope_name ? { [item.scope_name]: totalEmissions } : {},
     totalEmissions,

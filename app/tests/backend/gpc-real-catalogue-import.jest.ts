@@ -188,15 +188,15 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
 
   it("stores file rows through processECRFFile", async () => {
     const { inventoryId } = await newInventory();
-    const processed: ECRFImportResult =
-      await ECRFImportService.processECRFFile(parsedFile(), {
+    const processed: ECRFImportResult = await ECRFImportService.processECRFFile(
+      parsedFile(),
+      {
         gpcRefNo: 0,
         totalCO2e: 1,
-      });
+      },
+    );
     expect(processed.errors).toEqual([]);
-    expect(
-      processed.rows.filter((row) => row.errors?.length),
-    ).toEqual([]);
+    expect(processed.rows.filter((row) => row.errors?.length)).toEqual([]);
 
     const summary = await InventoryImportService.importECRFData(
       inventoryId,

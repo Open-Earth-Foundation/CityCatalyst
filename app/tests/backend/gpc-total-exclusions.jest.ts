@@ -524,7 +524,14 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
         ),
       );
       expect(omitted).toEqual({ "III.2.3": -7000, "III.4.3": 608_000 });
-      expect(data.omittedFromTotal[0].activityTitle).toBe(solidWaste.subsectorName);
+      const title = (ref: string) =>
+        data.omittedFromTotal.find(
+          (row: { gpcReferenceNumber: string }) =>
+            row.gpcReferenceNumber === ref,
+        ).activityTitle;
+      expect(title("III.4.3")).toBe(importedWaste.subcategoryName);
+      // A row with no subcategory link falls back to the sub-sector name.
+      expect(title("III.2.3")).toBe(solidWaste.subsectorName);
       expect(data.omittedFromTotal[0].percentage).toBeNull();
     });
 

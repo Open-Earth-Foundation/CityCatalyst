@@ -149,10 +149,10 @@ function SubSectorPage(props: {
   const getFilteredSubsectorScopes = () => {
     if (!inventoryData || !subSectorData?.referenceNumber) return [];
     const subSectorReferenceNumber = subSectorData.referenceNumber;
+    // III.x.3 is scope 1 too: it goes inside the scope 1 tab, not in a second one
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorReferenceNumber))
       .map(([k, v]) => ({ ...v, referenceNumber: k }))
-      // III.x.3 is scope 1 too: it goes inside the scope 1 tab, not in a second one
       .filter((scope) => !isImportedWasteRef(scope.referenceNumber))
       .filter((scope) => {
         return getScopesForInventoryAndSector(

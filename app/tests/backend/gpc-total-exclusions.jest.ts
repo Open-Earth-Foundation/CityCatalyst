@@ -96,9 +96,10 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       subSectorId: isOther
         ? otherScope3Sub.subsectorId
         : solidWaste.subsectorId,
-      subCategoryId: gpcReferenceNumber === "III.4.3"
-        ? importedWaste.subcategoryId
-        : undefined,
+      subCategoryId:
+        gpcReferenceNumber === "III.4.3"
+          ? importedWaste.subcategoryId
+          : undefined,
       gpcReferenceNumber,
       co2eq,
       ...extra,
@@ -583,9 +584,9 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       await addValue(inventoryId, "III.1.1", 3n * TONNE);
       await addValue(inventoryId, "I.4.4", 2n * TONNE);
       const batch = await getEmissionResultsBatch([inventoryId]);
-      expect(
-        batch[inventoryId].totalEmissions.sumOfEmissions.toNumber(),
-      ).toBe(3000);
+      expect(batch[inventoryId].totalEmissions.sumOfEmissions.toNumber()).toBe(
+        3000,
+      );
     });
   });
 

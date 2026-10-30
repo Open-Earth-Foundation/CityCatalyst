@@ -302,6 +302,7 @@ describe("Results API", () => {
           },
         ],
         grossTotalEmissions: "1250",
+        omittedFromTotal: [],
       },
     };
     const result = await res.json();

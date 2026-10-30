@@ -42,7 +42,7 @@ Figures, maps and charts are listed in `bundle.figures` with page and caption, f
 - Saving to a database, an upload route, a review UI and durable drafts (CC-956).
 - PDFs over 20 MiB. Seattle and Buenos Aires do not run in v0.
 
-Code does not enforce the ratings and figures scope. The prompt excludes them and a stray `probability` key is removed, but free text can still hold a rating, and a value can quote a figure caption. Run 4 had neither. The reviewer checks this.
+Code does not enforce the ratings and figures scope. The prompt excludes them and a stray `probability` key is removed, but free text can still hold a rating, and a value can quote a figure caption. Runs 4 and 5 had neither. The reviewer checks this.
 
 A verified quote proves only that the text is on the page. It does not prove that the quote supports the value.
 
@@ -50,25 +50,25 @@ Document text can forge a `<!-- page: N -->` marker. A crafted last page holding
 
 ## Madrid result
 
-Four runs, 2026-10-30, on the 48-page scan of the Madrid 2015 report (10.5 MiB). OCR `mistral-ocr-latest`, extraction `gpt-5.6-luna`, about 1.7 minutes per run. Token cost was not recorded.
+Five runs, 2026-10-30, on the 48-page scan of the Madrid 2015 report (10.5 MiB). OCR `mistral-ocr-latest`, extraction `gpt-5.6-luna`, 1.4 to 1.7 minutes per run. Run 5 is the final code.
 
-| Measure                                  | Run 1  | Run 2  | Run 3  | Run 4  |
-| ---------------------------------------- | ------ | ------ | ------ | ------ |
-| Final state                              | review | review | review | review |
-| Fields with at least one value (of 12)   | 12     | 12     | 12     | 12     |
-| Values kept                              | 84     | 77     | 90     | 96     |
-| Values dropped                           | 1      | 18     | 1      | 0      |
-| D1 values                                | 41     | 29     | 50     | 44     |
-| C1 values                                | 4      | 2      | 4      | 6      |
-| E1 values                                | 2      | 3      | 3      | 3      |
-| Figures listed (15 each), with a caption | 8      | 8      | 8      | 9      |
-| Warnings                                 | 15     | 15     | 9      | 16     |
+| Measure                                  | Run 1  | Run 2  | Run 3  | Run 4  | Run 5  |
+| ---------------------------------------- | ------ | ------ | ------ | ------ | ------ |
+| Final state                              | review | review | review | review | review |
+| Fields with at least one value (of 12)   | 12     | 12     | 12     | 12     | 12     |
+| Values kept                              | 84     | 77     | 90     | 96     | 83     |
+| Values dropped                           | 1      | 18     | 1      | 0      | 1      |
+| D1 values                                | 41     | 29     | 50     | 44     | 39     |
+| C1 values                                | 4      | 2      | 4      | 6      | 4      |
+| E1 values                                | 2      | 3      | 3      | 3      | 3      |
+| Figures listed (15 each), with a caption | 8      | 8      | 8      | 9      | 8      |
+| Warnings                                 | 15     | 15     | 9      | 16     | 10     |
 
 "Review" means `awaiting_review`, with no commit.
 
-All four runs predate the final quote check, and output varies a lot between runs. The 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes.
+Runs 1 to 4 predate the final quote check, and output varies a lot between runs. The 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes.
 
-The final code was not run on Madrid with the LLM. Its checks were replayed on the run 4 values, using a separate saved OCR of the same scan. That replay kept 94 values and dropped 2, both quoting only the running header on page 24. So A1.1 and A1.2a lost one value each. It raised 15 warnings (14 data age, 1 no year) and no unverified year.
+Run 5 ran on the final code. It made 18 LLM calls, and each returned `finish_reason` `stop`. It used 106,137 prompt tokens and 19,234 completion tokens. Dropped values were 1 of 84 (1.2%): the quote joined two table rows of page 45. No quote came from a page header or footer. Warnings were 4 for data age and 6 for no year. The run used `dryRun: true`, so the runner stops at review, and `commit` was not called.
 
 The hand review is from run 1. Every 4th value (21 values): 15 usable. The drop in run 1 was correct: the quote is on page 42, not the cited page 43.
 
@@ -90,11 +90,11 @@ Other limits seen on Madrid:
 
 These are proposals, because the output format is still being defined. They come from one document, and n = 21 for the hand review is too small to separate 71% from 80%.
 
-| Measure                              | Proposal          | Madrid                          |
-| ------------------------------------ | ----------------- | ------------------------------- |
-| Values dropped by the quote check    | Under 5%          | 0% in run 4, 2.1% in the replay |
-| Required v0 fields with a value      | At least 10 of 12 | 12 of 12 in runs 1 to 4         |
-| Sampled values usable by hand review | At least 80%      | 71% in run 1, fails             |
+| Measure                              | Proposal          | Madrid                  |
+| ------------------------------------ | ----------------- | ----------------------- |
+| Values dropped by the quote check    | Under 5%          | 1.2% in run 5           |
+| Required v0 fields with a value      | At least 10 of 12 | 12 of 12 in runs 1 to 5 |
+| Sampled values usable by hand review | At least 80%      | 71% in run 1, fails     |
 
 The quote check removes every unverified value, so a "verified share" measure would always read 100%. Every value in a draft has a quote on its page by construction.
 

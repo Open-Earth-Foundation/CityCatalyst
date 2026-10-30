@@ -34,6 +34,8 @@ import {
 import Link from "next/link";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import GPC_REFERENCE_TABLE from "@/util/GHGI/data/gpc-reference-table.json";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import { toKebabCase } from "@/util/helpers";
 import {
   BreadcrumbCurrentLink,
@@ -150,6 +152,8 @@ function SubSectorPage(props: {
     return Object.entries(MANUAL_INPUT_HIERARCHY)
       .filter(([key]) => key.startsWith(subSectorReferenceNumber))
       .map(([k, v]) => ({ ...v, referenceNumber: k }))
+      // III.x.3 is scope 1 too: it goes inside the scope 1 tab, not in a second one
+      .filter((scope) => !isImportedWasteRef(scope.referenceNumber))
       .filter((scope) => {
         return getScopesForInventoryAndSector(
           inventoryData.inventoryType!,
@@ -158,6 +162,11 @@ function SubSectorPage(props: {
       });
   };
   const scopes = getFilteredSubsectorScopes();
+  const importedWasteRow = GPC_REFERENCE_TABLE.find(
+    (row) =>
+      isImportedWasteRef(row.gpcRefNo) &&
+      row.gpcRefNo.startsWith(`${subSectorData?.referenceNumber}.`),
+  );
 
   const MotionTabList = motion.create(
     // the display name is added below, but the linter isn't picking it up
@@ -461,6 +470,31 @@ function SubSectorPage(props: {
                       scope.referenceNumber,
                     )}
                   />
+                  {scope.scope === 1 && importedWasteRow && (
+                    <Box mt="48px" data-testid="imported-waste-section">
+                      <Text
+                        fontFamily="heading"
+                        fontSize="title.md"
+                        fontWeight="medium"
+                      >
+                        {t(importedWasteRow.subcategoryName!)}
+                      </Text>
+                      <Text fontSize="body.md" color="content.tertiary" mb={6}>
+                        {t("imported-waste-optional")}
+                      </Text>
+                      <ActivityTab
+                        referenceNumber={importedWasteRow.gpcRefNo}
+                        t={t}
+                        inventoryId={inventoryId}
+                        subsectorId={subsector}
+                        step={step}
+                        activityData={activityData}
+                        inventoryValues={getFilteredInventoryValues(
+                          importedWasteRow.gpcRefNo,
+                        )}
+                      />
+                    </Box>
+                  )}
                 </Tabs.Content>
               );
             })

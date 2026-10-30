@@ -1164,6 +1164,7 @@
   "emissions-from-energy-used-in-power-plant-auxiliary-operations-within-the-city-boundary": "Emissões de energia utilizada em operações auxiliares de usinas de energia dentro do limite da cidade",
   "emissions-from-fugitive-emissions-within-the-city-boundary": "Emissões de emissões fugitivas dentro do limite da cidade",
   "emissions-from-wastewater-generated-and-treated-within-the-city-boundary": "Emissões de águas residuais geradas e tratadas dentro dos limites da cidade",
+  "imported-waste-optional": "Opcional. Armazenado e mostrado no detalhe, mas não conta nos totais BASIC ou BASIC+ nem na conclusão.",
   "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-waterborne-navigation": "Emissões de energia fornecida pela rede consumida dentro dos limites da cidade para navegação fluvial",
   "emissions-from-fuel-combustion-for-railway-transportation-occurring-within-the-city-boundary": "Emissões provenientes da combustão de combustível para transporte ferroviário ocorrendo dentro dos limites da cidade",
   "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption-in-power-plant-auxiliary-operations": "Emissões provenientes de perdas na transmissão e distribuição de energia fornecida pela rede no consumo em operações auxiliares de usinas de energia",

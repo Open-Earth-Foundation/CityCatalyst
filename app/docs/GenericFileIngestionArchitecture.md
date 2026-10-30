@@ -71,7 +71,9 @@ These behaviors exist on `develop` as of 2026-10-26. The job/item runner in this
 
 GHGI today registers the **source file** at the start of approve (`syncGHGIImportedInventorySource`) and the **inventory extract** after commit (`syncGHGIInventory`). The target below moves the source-file registration earlier, to durable store, and leaves the extract registration after commit.
 
-On [PR #3344](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3344): `IngestJob` / `IngestItem`, the stage runner, the plugin contract, and a test plugin that does not write a module SoT. Core `detectCoarseFileKind` ([CC-959](https://linear.app/openearth/issue/CC-959/split-coarse-file-detect-core-from-format-detect-plugin)) maps files to `pdf | xlsx | csv | md | zip | unknown` and passes that into `plugin.detect`. Plugins do not MIME-allowlist. The GHGI wizard still uses `FileValidatorService` (`xlsx` / `csv` / `pdf`) until the GHGI plugin wraps it. Not running yet: document pool, Path B at store, GHGI plugin façade, from-document, withdraw/supersede. Those are the remaining children under [CC-953](https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine).
+On [PR #3344](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3344): `IngestJob` / `IngestItem`, the stage runner, the plugin contract, and a test plugin that does not write a module SoT. Core `detectCoarseFileKind` ([CC-959](https://linear.app/openearth/issue/CC-959/split-coarse-file-detect-core-from-format-detect-plugin)) maps files to `pdf | xlsx | csv | md | zip | unknown` and passes that into `plugin.detect`. Plugins do not MIME-allowlist. The GHGI wizard still uses `FileValidatorService` (`xlsx` / `csv` / `pdf`) until the GHGI plugin wraps it.
+
+[CC-955](https://linear.app/openearth/issue/CC-955/document-pool-early-path-b-nativeinputcatalog-registration) adds `IngestDocument` and Path B catalog rows (`kind = ingest_document`, `owningModule = ingest`) at the store stage. Dry-run skips the pool and Path B. GHGI `inventory_source_file` at approve is unchanged until the GHGI plugin. Not running yet: GHGI plugin façade, from-document, withdraw/supersede, HTTP enqueue. Those are the remaining children under [CC-953](https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine).
 
 ### Shared lessons from GHGI
 
@@ -649,3 +651,4 @@ Proposed (child tickets of CC-953). CC-989 has code on PR #3344; the rest is sti
 | 2026-10-13 | Product definitions. City owns documents and the uploader is the author. Concept-note working attachments stay inside the note until marked as a city document. Delete and replace keep imported values and the source link. One editor at a time on a review draft |
 | 2026-10-26 | Landed in `app/docs` on the CC-989 implementation PR. Recorded engineering notes: no city-admin role; CNB uploads are run-scoped; review lock columns shipped with the job migration; D7/D9 closed |
 | 2026-10-27 | CC-959: Core `detectCoarseFileKind` owns MIME/extension mapping; `plugin.detect` receives the coarse kind |
+| 2026-10-29 | CC-955: Core document pool + Path B `ingest_document` at store; dry-run does not register |

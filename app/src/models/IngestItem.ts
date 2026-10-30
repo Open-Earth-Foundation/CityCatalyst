@@ -17,6 +17,7 @@ export interface IngestItemAttributes {
   originalFileName: string;
   contentHash?: string | null;
   s3Key?: string | null;
+  documentId?: string | null;
   status: IngestItemStatus;
   stage?: IngestStage | null;
   errorCode?: string | null;
@@ -40,6 +41,7 @@ export type IngestItemOptionalAttributes =
   | "id"
   | "contentHash"
   | "s3Key"
+  | "documentId"
   | "status"
   | "stage"
   | "errorCode"
@@ -69,6 +71,7 @@ export class IngestItem
   declare originalFileName: string;
   declare contentHash?: string | null;
   declare s3Key?: string | null;
+  declare documentId?: string | null;
   declare status: IngestItemStatus;
   declare stage?: IngestStage | null;
   declare errorCode?: string | null;
@@ -121,6 +124,12 @@ export class IngestItem
           type: DataTypes.STRING(1024),
           allowNull: true,
           field: "s3_key",
+        },
+        documentId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "document_id",
+          references: { model: "IngestDocument", key: "id" },
         },
         status: {
           type: DataTypes.STRING(32),

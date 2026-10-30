@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import JSZip from "jszip";
 import { IngestRunner } from "@/backend/ingest/IngestRunner";
 import { MemoryIngestStore } from "@/backend/ingest/MemoryIngestStore";
+import { MemoryIngestDocumentPool } from "@/backend/ingest/document-pool";
 import { TestIngestPlugin } from "@/backend/ingest/plugins/TestIngestPlugin";
 import { IngestItemError } from "@/backend/ingest/types";
 
@@ -9,7 +10,13 @@ const CITY_ID = "53f808c2-c218-4d79-a3d8-ff4d3afc8aee";
 
 function runner() {
   const store = new MemoryIngestStore();
-  return { store, runner: new IngestRunner(store), plugin: new TestIngestPlugin() };
+  const documentPool = new MemoryIngestDocumentPool();
+  return {
+    store,
+    documentPool,
+    runner: new IngestRunner(store, documentPool),
+    plugin: new TestIngestPlugin(),
+  };
 }
 
 async function zipOf(files: Record<string, string>): Promise<Buffer> {
@@ -40,6 +47,7 @@ describe("IngestRunner", () => {
     expect(items[0]?.stage).toBe("publish");
     expect(items[0]?.contentHash).toHaveLength(64);
     expect(items[0]?.coarseKind).toBe("csv");
+    expect(items[0]?.documentId).toBeTruthy();
     expect(items[0]?.result).toMatchObject({
       committed: true,
       preview: "hello city",
@@ -71,7 +79,7 @@ describe("IngestRunner", () => {
   });
 
   it("skips commit and catalog on dryRun", async () => {
-    const { store, runner: ingest, plugin } = runner();
+    const { store, documentPool, runner: ingest, plugin } = runner();
     const job = await ingest.enqueue({
       moduleId: "test",
       dryRun: true,
@@ -86,6 +94,9 @@ describe("IngestRunner", () => {
     expect(item?.status).toBe("skipped");
     expect(item?.errorCode).toBe("dry_run");
     expect(item?.result).toBeUndefined();
+    expect(item?.documentId).toBeUndefined();
+    expect(documentPool.documents.size).toBe(0);
+    expect(documentPool.catalogByDocumentId.size).toBe(0);
   });
 
   it.each(["scan.pdf", "sheet.xlsx", "notes.md", "notes.txt", "scan.exe"])(

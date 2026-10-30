@@ -62,11 +62,9 @@ export default class FileParserService {
           }
         });
 
-        // Only add row if it has at least one non-null value
-        if (Object.values(rowData).some((val) => val !== null && val !== "")) {
-          rows.push(rowData);
-          rowNumbers.push(rowNum);
-        }
+        // Keep blank data rows so "rows in file" and skip counts match the sheet.
+        rows.push(rowData);
+        rowNumbers.push(rowNum);
       }
 
       sheets.push({
@@ -134,7 +132,7 @@ export default class FileParserService {
       const parser = stream.pipe(
         parse({
           columns: true, // Use first line as column names
-          skip_empty_lines: true,
+          skip_empty_lines: false,
           trim: true,
         }),
       );

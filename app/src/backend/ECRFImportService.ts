@@ -32,6 +32,14 @@ function resolveNotationFromActivity(args: {
   return { notationKey: undefined, activityType: args.activityType };
 }
 
+function isBlankParsedRow(
+  row: Record<string, string | number | null>,
+): boolean {
+  return !Object.values(row).some(
+    (value) => value != null && String(value).trim() !== "",
+  );
+}
+
 export interface ECRFRowData {
   gpcRefNo: string;
   sectorId: string;
@@ -156,6 +164,21 @@ export default class ECRFImportService {
       const sourceRowNumber = sheet.rowNumbers?.[i];
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
+
+      if (isBlankParsedRow(row)) {
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          issue: "no-value-or-notation-key",
+          errors: ["No gas values or notation key found"],
+        });
+        continue;
+      }
 
       let gpcRefNo: string | undefined = hasGpcRefNoColumn
         ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
@@ -557,6 +580,21 @@ export default class ECRFImportService {
     const validRows = rows.filter((r) => !r.errors || r.errors.length === 0);
     if (validRows.length === 0) {
       errors.push("No valid rows found in file");
+    }
+
+    // Review banner reads these stored "Row N:" strings (same shape as Adapter D).
+    for (const row of rows) {
+      const n = row.sourceRowNumber ?? row.rowIndex + 1;
+      if (
+        row.issue === "no-value-or-notation-key" ||
+        row.warnings?.some((message) => /No gas values/i.test(message))
+      ) {
+        warnings.push(
+          `Row ${n}: Skipped - no emission values or notation key`,
+        );
+      } else if (row.errors?.length) {
+        warnings.push(`Row ${n}: ${row.errors[0]}`);
+      }
     }
 
     const inferredYearFromFile =

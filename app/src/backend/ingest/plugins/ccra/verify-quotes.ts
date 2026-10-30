@@ -10,8 +10,8 @@ const MIN_QUOTE_CHARS = 10;
  */
 export function normalizeForQuoteMatch(text: string): string {
   return text
-    .replace(/[ﬀ-ﬆ]/g, (ligature) => ligature.normalize("NFKC"))
-    .replace(/­/g, "")
+    .replace(/[\ufb00-\ufb06]/g, (ligature) => ligature.normalize("NFKC"))
+    .replace(/\u00ad/g, "")
     .replace(/(?<!\d)\*+|\*+(?![\d*])/g, "")
     .replace(/\s+/g, " ")
     .trim();

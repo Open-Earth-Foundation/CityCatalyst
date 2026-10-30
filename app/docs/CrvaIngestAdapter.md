@@ -68,7 +68,7 @@ Five runs, 2026-10-30, on the 48-page scan of the Madrid 2015 report (10.5 MiB).
 
 Runs 1 to 4 predate the final quote check, and output varies a lot between runs. The 18 drops in run 2 were false negatives, because the LLM removed OCR `**` markup from quotes.
 
-Run 5 ran on the final code. It made 18 LLM calls, and each returned `finish_reason` `stop`. It used 106,137 prompt tokens and 19,234 completion tokens. Dropped values were 1 of 84 (1.2%): the quote joined two table rows of page 45. No quote came from a page header or footer. Warnings were 4 for data age and 6 for no year. The run used `dryRun: true`, so the runner stops at review, and `commit` was not called.
+Run 5 ran on the final code. It made 18 LLM calls, and each returned `finish_reason` `stop`. It used 106,137 prompt tokens and 19,234 completion tokens. Dropped values were 1 of 84 (1.2%): the quote joined two table rows of page 45. No quote came from a page header or footer. Warnings were 4 for data age and 6 for no year. Data-age warnings per run were 13, 7, 8, 14 and 4. The LLM reads years inconsistently, so a "no year" warning can hide an old source, and 4 is a lower bound for run 5. The run used `dryRun: true`, so the runner stops at review, and `commit` was not called.
 
 The hand review is from run 1. Every 4th value (21 values): 15 usable. The drop in run 1 was correct: the quote is on page 42, not the cited page 43.
 

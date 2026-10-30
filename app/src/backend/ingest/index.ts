@@ -8,6 +8,7 @@ export type { CoarseFileKind } from "./coarse-kind";
 export { IngestRunner } from "./IngestRunner";
 export { MemoryIngestStore } from "./MemoryIngestStore";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";
+export { CcraIngestPlugin } from "./plugins/CcraIngestPlugin";
 export type { IngestPlugin } from "./plugin";
 export type { IngestStore } from "./store";
 export {

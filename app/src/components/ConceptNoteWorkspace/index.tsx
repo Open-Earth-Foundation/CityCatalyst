@@ -38,6 +38,7 @@ import {
 } from "@/components/ConceptNoteDashboard/utils";
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
@@ -121,6 +122,7 @@ export function ConceptNoteWorkspace({
     content: string;
     id: string;
   } | null>(null);
+  const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(
     initialReviewChapterId ?? null,
   );
@@ -499,6 +501,12 @@ export function ConceptNoteWorkspace({
               contextBuildId={bundle.buildId}
               contextChanges={bundle.contextChanges}
               composerRequest={composerRequest}
+              gapAnswer={gapAnswer}
+              onCloseGap={() => setGapAnswer(null)}
+              onAddGapSource={() => {
+                setTab("context");
+                setUploadPickerRequest((value) => value + 1);
+              }}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
               lng={lng}
@@ -740,12 +748,10 @@ export function ConceptNoteWorkspace({
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
                   onAnswerGap={(chapter, row) =>
-                    setComposerRequest({
-                      id: crypto.randomUUID(),
-                      content: t("gap-answer-prefill", {
-                        chapter: chapter.title,
-                        question: row.question,
-                      }),
+                    setGapAnswer({
+                      chapterId: chapter.chapter_id,
+                      chapterTitle: chapter.title,
+                      row,
                     })
                   }
                   applicationContextFailed={applicationContextFailed}

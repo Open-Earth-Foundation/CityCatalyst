@@ -79,7 +79,7 @@ interface ConceptNoteChatController {
   progress: ConceptNoteProgress | null;
   reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, scope?: EditScope) => Promise<void>;
   requestDraftOverview: () => Promise<void>;
   retry: () => Promise<void>;
 }
@@ -295,7 +295,10 @@ export function useConceptNoteChat({
 
   useEffect(() => stopStream, [stopStream]);
 
-  async function sendMessage(content: string): Promise<void> {
+  async function sendMessage(
+    content: string,
+    scope = editScope,
+  ): Promise<void> {
     const normalizedContent = content.trim();
     if (!normalizedContent || !threadId || isGenerating) {
       return;
@@ -306,10 +309,10 @@ export function useConceptNoteChat({
     await streamReply(
       {
         content: normalizedContent,
-        context: editScope
+        context: scope
           ? {
               concept_note_edit: {
-                scope: editScope,
+                scope,
                 idempotency_key: crypto.randomUUID(),
               },
             }

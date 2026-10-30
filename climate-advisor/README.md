@@ -2077,6 +2077,17 @@ checks, manual verification steps, and remaining limitations.
 
 ### Concept Note chat suggestions
 
+`POST /v1/concept-notes/{run_id}/gap-question` uses the same read-only suggestion
+model with `prompts/cnb/gap_question.md` to produce one focused gap question and
+zero or two to five answer categories. It authorizes the run and validates the
+chapter/gap before reading a bounded chapter excerpt. A compound gap starts with
+one categorical decision; exact factual questions use free text. The browser
+adds Other and Not decided yet, and sends the selected answer through the existing
+review-only chapter-edit flow. These categories carry no source attribution and
+are never preselected. No gap or draft state is written by this endpoint.
+Provider/validation failures return 503 for retry or free-text fallback; browser
+disconnect cancels generation. No database migration or additional model is needed.
+
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words
 and are limited to 80 characters each. The UI keeps them directly above the

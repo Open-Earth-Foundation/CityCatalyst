@@ -232,6 +232,7 @@ class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
     cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
+    cnb_gap_question: str = "prompts/cnb/gap_question.md"
 
     core: str
     chat: str

@@ -757,3 +757,59 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "updated_at": row.updated_at,
         }
     )
+
+
+async def applied_gap_answers(
+    session: AsyncSession,
+    *,
+    run_id: UUID,
+    question: str,
+    limit: int = 3,
+    max_chars: int = 8_000,
+) -> list[str]:
+    """Return what the user accepted for this gap, newest first.
+
+    A fully applied request contributes its instruction without the repeated gap
+    question. A partially applied one contributes only the user text quoted by
+    its accepted changes, so rejected answers are asked again. Entries are kept
+    whole within max_chars: a cut entry would drop later answers and their
+    "Not decided yet" states.
+    """
+    # shortcut: matches the quoted question text, not a gap ID; store gap_id on
+    # proposals if answers ever need exact attribution.
+    rows = (
+        await session.execute(
+            select(
+                ConceptNoteEditProposal.instruction,
+                ConceptNoteEditProposal.status,
+                ConceptNoteEditProposal.changes,
+                ConceptNoteEditProposal.applied_result,
+            )
+            .where(
+                ConceptNoteEditProposal.run_id == run_id,
+                ConceptNoteEditProposal.status.in_(["applied", "partially_applied"]),
+                ConceptNoteEditProposal.instruction.contains(question, autoescape=True),
+            )
+            .order_by(ConceptNoteEditProposal.created_at.desc())
+            .limit(limit)
+        )
+    ).all()
+    answers: list[str] = []
+    used = 0
+    for row in rows:
+        if row.status == "applied":
+            answer = row.instruction.replace(question, "").strip()
+        else:
+            accepted = set((row.applied_result or {}).get("accepted_change_ids", []))
+            answer = "\n\n".join(
+                dict.fromkeys(
+                    change["user_input_quote"]
+                    for change in row.changes
+                    if change.get("change_id") in accepted
+                    and change.get("user_input_quote")
+                )
+            )
+        if answer and used + len(answer) <= max_chars:
+            answers.append(answer)
+            used += len(answer)
+    return answers

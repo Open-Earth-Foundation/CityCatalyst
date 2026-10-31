@@ -1,0 +1,306 @@
+[
+  {
+    "run": 1,
+    "ok": true,
+    "message": null,
+    "extractedRows": 14,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 27100000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 32330000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 9500000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.1",
+        "scope": "1",
+        "valueT": 1540000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 2020000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 29510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 50000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1620000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 3630000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 2870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.1",
+        "scope": "1",
+        "valueT": 120000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 1210000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "ok": true,
+    "message": null,
+    "extractedRows": 14,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 27100000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 32330000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 9500000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.4",
+        "scope": "1",
+        "valueT": 1540000,
+        "omit": true,
+        "notation": null
+      },
+      {
+        "gpc": "I.6.1",
+        "scope": "1",
+        "valueT": 380000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 2020000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 29510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 50000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1620000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 3630000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 2870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.1",
+        "scope": "1",
+        "valueT": 120000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 830000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "ok": true,
+    "message": null,
+    "extractedRows": 14,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 27100000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 32330000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 9500000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.4",
+        "scope": "1",
+        "valueT": 1540000,
+        "omit": true,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 2020000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 29510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 50000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1620000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 3630000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 2870000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.1",
+        "scope": "1",
+        "valueT": 120000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 830000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  }
+]

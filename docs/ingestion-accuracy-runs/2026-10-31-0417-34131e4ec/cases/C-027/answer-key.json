@@ -1,0 +1,243 @@
+{
+  "id": "C-027",
+  "city": "Chicago (City of Chicago column of the CMAP regional inventory)",
+  "country": "USA",
+  "year": 2019,
+  "fileName": "Chicago Metropolitan Agency for Planning 2022.pdf",
+  "expectedTotal": 27490000,
+  "toleranceText": "±5,000 t per row (2 decimals in MMT); total ±50,000 t",
+  "tolerance": 5000,
+  "totalTolerance": 50000,
+  "keyValueRows": 11,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Residential buildings",
+      "year": 2019,
+      "value": 6550000,
+      "gpc": "I.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "6.55 MMTCO2e."
+    },
+    {
+      "row": 2,
+      "description": "Commercial and institutional buildings and facilities + Wastewater treatment plants (energy use)",
+      "year": 2019,
+      "value": 10600000,
+      "gpc": "I.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "10.45 + 0.15 MMTCO2e. The report takes treatment plants out of commercial and institutional (PDF p. 9) only to show them on their own line; in GPC they are public facilities, I.2 (Q-CMAP-2, reviewed 29 Oct)."
+    },
+    {
+      "row": 3,
+      "description": "Manufacturing industries and construction",
+      "year": 2019,
+      "value": 1380000,
+      "gpc": "I.3.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "1.38 MMTCO2e."
+    },
+    {
+      "row": 4,
+      "description": "Energy industries",
+      "year": 2019,
+      "value": 0,
+      "gpc": "I.4.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Zero (no NK)",
+      "notation": "",
+      "scored": false,
+      "note": "Printed 0 for Chicago. Not scored."
+    },
+    {
+      "row": 5,
+      "description": "Wastewater treatment (energy use, under Stationary energy)",
+      "year": 2019,
+      "value": 150000,
+      "gpc": "I.2.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Merged into row 2",
+      "notation": "",
+      "scored": false,
+      "note": "0.15 MMTCO2e. Component of row 2 (Q-CMAP-2). Not scored on its own."
+    },
+    {
+      "row": 6,
+      "description": "Fugitive emissions from oil and natural gas systems",
+      "year": 2019,
+      "value": 200000,
+      "gpc": "I.8.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.20 MMTCO2e."
+    },
+    {
+      "row": 7,
+      "description": "On-road",
+      "year": 2019,
+      "value": 5110000,
+      "gpc": "II.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "5.11 MMTCO2e."
+    },
+    {
+      "row": 8,
+      "description": "Railways",
+      "year": 2019,
+      "value": 460000,
+      "gpc": "II.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.46 MMTCO2e."
+    },
+    {
+      "row": 9,
+      "description": "Waterborne navigation",
+      "year": 2019,
+      "value": 10000,
+      "gpc": "II.3.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.01 MMTCO2e: small number, the row tolerance (±5,000 t) is half the value."
+    },
+    {
+      "row": 10,
+      "description": "Aviation",
+      "year": 2019,
+      "value": 1620000,
+      "gpc": "II.4.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "1.62 MMTCO2e. Landing and take-off at O'Hare and Midway plus local flights (PDF p. 12). No scope column, so compared at sub-sector level; by GPC 7.6 most of it is scope 3 (Q-CMAP-3)."
+    },
+    {
+      "row": 11,
+      "description": "Off-road",
+      "year": 2019,
+      "value": 570000,
+      "gpc": "II.5.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.57 MMTCO2e."
+    },
+    {
+      "row": 12,
+      "description": "Disposal of solid waste generated in the region",
+      "year": 2019,
+      "value": 680000,
+      "gpc": "III.1.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.68 MMTCO2e. Landfill location not split by scope."
+    },
+    {
+      "row": 13,
+      "description": "Biological treatment of waste generated in the region",
+      "year": 2019,
+      "value": null,
+      "gpc": "III.2.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Below printed precision",
+      "notation": "",
+      "scored": false,
+      "note": "Printed '+' (does not exceed 0.005 MMTCO2e). No value can be keyed; not scored."
+    },
+    {
+      "row": 14,
+      "description": "Wastewater generated in the region",
+      "year": 2019,
+      "value": 330000,
+      "gpc": "III.4.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "0.33 MMTCO2e."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 16, other columns",
+      "what": "Cook (remainder), DuPage, Kane, Kendall, Lake, McHenry, Will and Regional total",
+      "examples": "Regional total 112.35; Stationary energy 72.88; Cook 32.33",
+      "numbers": [
+        112.35,
+        72.88,
+        32.33
+      ],
+      "failureMode": "Regional or county values imported instead of the city's (Peñalolén failure)."
+    },
+    {
+      "where": "PDF p. 16, sector rows",
+      "what": "Sector subtotals of the Chicago column",
+      "examples": "Stationary energy 18.72; Transportation 7.76; Waste 1.01",
+      "numbers": [
+        18.72,
+        7.76,
+        1.01
+      ],
+      "failureMode": "Double count."
+    },
+    {
+      "where": "PDF p. 5 and p. 8",
+      "what": "Per-capita value and percent changes 2010-2019",
+      "examples": "13.10 MTCO2e per person; -8%; -15%",
+      "numbers": [
+        13.1,
+        2,
+        8,
+        15
+      ],
+      "failureMode": "Intensity or % stored as emissions."
+    },
+    {
+      "where": "PDF p. 17",
+      "what": "Population, households, employment by county",
+      "examples": "Chicago 2,746,388; 1,142,725; 1,313,527",
+      "numbers": [
+        2746388,
+        1142725,
+        1313527
+      ],
+      "failureMode": "Non-emission number stored."
+    }
+  ]
+}

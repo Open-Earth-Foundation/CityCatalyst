@@ -1,0 +1,62 @@
+{
+  "id": "C-025",
+  "city": "Münster",
+  "country": "Germany",
+  "year": 2022,
+  "expectedTotal": 1788000,
+  "toleranceText": "±1,000 t",
+  "tolerance": 1000,
+  "totalTolerance": 1000,
+  "keyValueRows": 1,
+  "rows": [
+    {
+      "row": 1,
+      "description": "CO2-Emissionen im Stadtgebiet 2022, total (\"∑ Tonnen: 1.788.000\"; text: 1.788 kt)",
+      "year": 2022,
+      "value": 1788000,
+      "gpc": "Inventory total only",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Q-MUN-1: sector values exist only as % in a chart. The flow must store the total (or flag) and must not turn percentages into tonnes."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 9, Tabelle 2",
+      "what": "Carbon budget by sector",
+      "examples": "9.293.077; 2.600.300",
+      "numbers": [
+        9293077,
+        2600300
+      ],
+      "failureMode": "Budget stored as emissions."
+    },
+    {
+      "where": "PDF p. 4 and p. 11",
+      "what": "1990 total, energy GWh, agriculture (outside BISKO)",
+      "examples": "2.618 kt; 5.932 GWh; 54.000 t",
+      "numbers": [
+        2618,
+        5932,
+        54000
+      ],
+      "failureMode": "Wrong year, energy, or out-of-scope agriculture stored."
+    },
+    {
+      "where": "PDF p. 9, Abbildung 5",
+      "what": "Sector shares",
+      "examples": "27% / 33% / 9% / 31%",
+      "numbers": [
+        27,
+        33,
+        9,
+        31
+      ],
+      "failureMode": "Tonnes derived from percentages."
+    }
+  ],
+  "nonGpc": true
+}

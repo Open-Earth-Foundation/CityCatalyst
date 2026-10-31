@@ -1,0 +1,269 @@
+{
+  "id": "C-022",
+  "city": "Madrid",
+  "country": "Spain",
+  "year": 2023,
+  "expectedTotal": 7333400,
+  "toleranceText": "±200 t (kt rounding)",
+  "tolerance": 200,
+  "totalTolerance": 200,
+  "keyValueRows": 17,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Residencial, emisiones directas (1.139,2 kt)",
+      "year": 2023,
+      "value": 1139200,
+      "gpc": "I.1.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 2,
+      "description": "Servicios (comercial + institucional), emisiones directas (486,9 kt)",
+      "year": 2023,
+      "value": 486900,
+      "gpc": "I.2.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 3,
+      "description": "Industria, Alcance 1 (420,1 kt)",
+      "year": 2023,
+      "value": 420100,
+      "gpc": "I.3.1 + IV.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "SNAP 03 + 04 (combustion and process). Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 4,
+      "description": "Transporte por carretera, Alcance 1 (1.800,9 kt)",
+      "year": 2023,
+      "value": 1800900,
+      "gpc": "II.1.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 5,
+      "description": "Otros modos de transporte, Alcance 1 (756,0 kt)",
+      "year": 2023,
+      "value": 756000,
+      "gpc": "II.2.1 + II.3.1 + II.4.1 + II.5.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 6,
+      "description": "Tratamiento y eliminación de residuos, Alcance 1 (671,4 kt)",
+      "year": 2023,
+      "value": 671400,
+      "gpc": "III.x.1 (all subsectors, scope 1)",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 7,
+      "description": "Otros, Alcance 1 (344,7 kt)",
+      "year": 2023,
+      "value": 344700,
+      "gpc": "I.8.1 + IV.2 + V.x",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Fuel distribution, solvents and products, agriculture. Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 8,
+      "description": "RCI, Alcance 2 (1.244,4 kt)",
+      "year": 2023,
+      "value": 1244400,
+      "gpc": "I.1.2 + I.2.2",
+      "scope": "2",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 9,
+      "description": "Industria, Alcance 2 (64,2 kt)",
+      "year": 2023,
+      "value": 64200,
+      "gpc": "I.3.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 10,
+      "description": "Transporte por carretera, Alcance 2 (8,0 kt)",
+      "year": 2023,
+      "value": 8000,
+      "gpc": "II.1.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 11,
+      "description": "Otros modos de transporte, Alcance 2 (125,7 kt)",
+      "year": 2023,
+      "value": 125700,
+      "gpc": "II.2.2",
+      "scope": "2",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Mostly rail/metro electricity. Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 12,
+      "description": "Tratamiento y eliminación de residuos, Alcance 2 (5,6 kt)",
+      "year": 2023,
+      "value": 5600,
+      "gpc": "I.2.2 or I.3.2 (waste facilities electricity)",
+      "scope": "2",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 13,
+      "description": "RCI, Alcance 3 (229,0 kt)",
+      "year": 2023,
+      "value": 229000,
+      "gpc": "I.1.3 + I.2.3",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 14,
+      "description": "Industria, Alcance 3 (11,8 kt)",
+      "year": 2023,
+      "value": 11800,
+      "gpc": "I.3.3",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 15,
+      "description": "Transporte por carretera, Alcance 3 (1,5 kt)",
+      "year": 2023,
+      "value": 1500,
+      "gpc": "II.1.3",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 16,
+      "description": "Otros modos de transporte, Alcance 3 (23,1 kt)",
+      "year": 2023,
+      "value": 23100,
+      "gpc": "II.2.3",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    },
+    {
+      "row": 17,
+      "description": "Tratamiento y eliminación de residuos, Alcance 3 (1,0 kt)",
+      "year": 2023,
+      "value": 1000,
+      "gpc": "I.2.3 or I.3.3 (waste facilities T&D losses)",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in kt with 1 decimal (x1,000). Tolerance ±50 t. Q-MAD-1: SNAP sectors, closest GPC ref."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 20 (printed 15), Tabla 9",
+      "what": "Direct / indirect totals 1990-2023",
+      "examples": "2023: 5.619,1 / 1.714,4 / 7.333,4",
+      "numbers": [
+        2023,
+        5619.1,
+        1714.4,
+        7333.4
+      ],
+      "failureMode": "Totals stored as rows; wrong year."
+    },
+    {
+      "where": "PDF p. 21 (printed 16), Tabla 10",
+      "what": "Same 2023 emissions by sector, plus % contributions",
+      "examples": "RCI 3.099,5; 42,3%",
+      "numbers": [
+        3099.5,
+        42.3
+      ],
+      "failureMode": "Double count with Tabla 12."
+    },
+    {
+      "where": "PDF p. 22 (printed 17), Tabla 11, indirect columns",
+      "what": "Residential / services indirect (scope 2 + 3 together)",
+      "examples": "611,6; 861,9",
+      "numbers": [
+        611.6,
+        861.9
+      ],
+      "failureMode": "Double count with Tabla 12 RCI scope 2 and 3."
+    }
+  ],
+  "nonGpc": true
+}

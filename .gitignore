@@ -185,3 +185,6 @@ demo-recording/
 
 # Local load-test evidence generated during runs
 load-test/results/
+
+# Benchmark OCR text (third-party documents)
+docs/ingestion-accuracy-runs/.ocr-text/

@@ -78,6 +78,8 @@ export type RunSummary = {
   ocrModel?: string;
   prices?: Prices;
   runsPerFile: number;
+  /** Cases kept out of rule writing; reported apart from the validated set. */
+  heldOut?: string[];
   results: CaseResult[];
 };
 
@@ -158,6 +160,76 @@ export function aggregate(results: CaseResult[]): Aggregate {
     valueAccuracy: mean(metrics.map((m) => m.valueAccuracy)),
     classificationAccuracy: mean(metrics.map((m) => m.classificationAccuracy)),
   };
+}
+
+export type GroupSummary = Aggregate & {
+  /** Means over row-scored cases, counting a failed run (no rows) as 0. */
+  rowRecallWithFailed: number | null;
+  valueAccuracyWithFailed: number | null;
+  /** Cases with an expected total. */
+  totalCases: number;
+  /** Cases whose total is within tolerance in every run. */
+  totalCasesWithin: number;
+  totalRuns: number;
+  totalRunsWithin: number;
+};
+
+export function groupSummary(results: CaseResult[]): GroupSummary {
+  const scoredRuns = (result: CaseResult) =>
+    result.runs.flatMap((entry) => (entry.score ? [entry.score] : []));
+  const withFailed = (pick: (score: FileScore) => number | null) =>
+    mean(
+      results.map((result) =>
+        mean(
+          scoredRuns(result)
+            .filter((score) => score.rowRecall !== null)
+            .map((score) => pick(score) ?? 0),
+        ),
+      ),
+    );
+  const totals = results
+    .map((result) =>
+      scoredRuns(result).filter((score) => score.expectedTotal !== null),
+    )
+    .filter((scores) => scores.length > 0);
+  return {
+    ...aggregate(results),
+    rowRecallWithFailed: withFailed((score) => score.rowRecall),
+    valueAccuracyWithFailed: withFailed((score) => score.valueAccuracy),
+    totalCases: totals.length,
+    totalCasesWithin: totals.filter((scores) =>
+      scores.every((score) => score.totalWithinTolerance),
+    ).length,
+    totalRuns: totals.flat().length,
+    totalRunsWithin: totals.flat().filter((score) => score.totalWithinTolerance)
+      .length,
+  };
+}
+
+function groupLines(summary: RunSummary): string[] {
+  if (!summary.heldOut?.length) return [];
+  const heldOut = new Set(summary.heldOut);
+  const row = (name: string, results: CaseResult[]) => {
+    const group = groupSummary(results);
+    return `| ${name} | ${group.cases} | ${group.scored} | ${pct(group.rowRecall)} | ${pct(group.valueAccuracy)} | ${pct(group.rowRecallWithFailed)} | ${pct(group.valueAccuracyWithFailed)} | ${group.totalCasesWithin}/${group.totalCases} | ${group.totalRunsWithin}/${group.totalRuns} |`;
+  };
+  return [
+    "## Validated and held-out cases",
+    "",
+    "Means are over the cases scored row by row. The \"with failed\" columns count a failed run as 0. A case has its total within tolerance only when every run does.",
+    "",
+    "| Set | Cases | Scored by row | Recall | Value acc. | Recall with failed | Value acc. with failed | Totals within tolerance (cases) | (runs) |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    row(
+      "Validated",
+      summary.results.filter((result) => !heldOut.has(result.id)),
+    ),
+    row(
+      "Held-out",
+      summary.results.filter((result) => heldOut.has(result.id)),
+    ),
+    "",
+  ];
 }
 
 export const ZERO_TOKENS: Tokens = {
@@ -276,6 +348,7 @@ export function renderReport(
     `- Mean value accuracy: ${pct(total.valueAccuracy)}${delta(total.valueAccuracy, before?.valueAccuracy)}`,
     `- Mean classification accuracy: ${pct(total.classificationAccuracy)}${delta(total.classificationAccuracy, before?.classificationAccuracy)}`,
     "",
+    ...groupLines(summary),
     "## Cost of this run",
     "",
     `- LLM: ${usage.calls} calls, ${usage.promptTokens.toLocaleString("en-US")} input and ${usage.completionTokens.toLocaleString("en-US")} output tokens (${(usage.reasoningTokens ?? 0).toLocaleString("en-US")} of them reasoning); largest output of one call ${(usage.maxCompletionTokens ?? 0).toLocaleString("en-US")}; calls cut off at the token limit: ${usage.lengthStops ?? 0}`,

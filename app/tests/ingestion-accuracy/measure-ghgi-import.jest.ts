@@ -29,7 +29,7 @@ import env from "@next/env";
 import { NextRequest } from "next/server";
 import pino from "pino";
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import { Auth, type AppSession } from "@/lib/auth";
@@ -79,6 +79,8 @@ type Config = {
   prices?: Prices;
   /** LLM prices per extraction model (as in LLM_EXTRACTION_MODEL); override `prices` for that model. */
   modelPrices?: Record<string, Prices>;
+  /** File ids reported apart from the validated set. */
+  heldOut?: string[];
   files: FileSpec[];
 };
 
@@ -368,6 +370,12 @@ function pctDiff(actual: number, expected: number): number | null {
         const beforeOcr = snapshot();
         const ocrResult =
           kind === "pdf" ? await runOcr(buffer, fileName) : null;
+        if (ocrResult) {
+          // Third-party document text: kept next to the runs, ignored by git.
+          const ocrDir = join(outDir, ".ocr-text");
+          mkdirSync(ocrDir, { recursive: true });
+          writeFileSync(join(ocrDir, `${file.id}.md`), ocrResult.markdown);
+        }
         const ocrUsage = {
           ...since(beforeOcr),
           pages: (ocrResult?.stage.pages as number | null | undefined) ?? null,
@@ -479,6 +487,14 @@ function pctDiff(actual: number, expected: number): number | null {
               run,
               ok: done.importStatus === "completed",
               finalStatus: done.importStatus,
+              ...(done.importStatus === "completed"
+                ? {}
+                : {
+                    message:
+                      extractedRows === 0
+                        ? "extraction returned 0 rows"
+                        : `import ended ${done.importStatus}`,
+                  }),
               ms: Date.now() - started,
               extractedRows,
               failedPages,
@@ -545,6 +561,7 @@ function pctDiff(actual: number, expected: number): number | null {
           prices: { ...config.prices, ...modelPrices },
           ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
           runsPerFile: config.runs,
+          heldOut: config.heldOut,
           results: results as CaseResult[],
         },
         inputs: config.files.map((file) => ({

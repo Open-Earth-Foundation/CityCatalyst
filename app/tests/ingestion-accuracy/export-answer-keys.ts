@@ -92,13 +92,24 @@ const toNumber = (value: string): number | null => {
   return value.trim() !== "" && Number.isFinite(number) ? number : null;
 };
 
-function parseTolerance(text: string): {
+/**
+ * "Scored" applies to notation keys in the first workbook, where Value rows
+ * leave it blank. So a blank Value row is scored; only an explicit "No" is not.
+ */
+export function isScored(scored: string, rowType: string): boolean {
+  const text = (scored ?? "").trim().toLowerCase();
+  if (text) return text === "yes";
+  return (rowType ?? "").trim().startsWith("Value");
+}
+
+export function parseTolerance(text: string): {
   tolerance: number;
   totalTolerance: number;
 } {
   const first = text.replace("±", "").match(/([\d.,]+)\s*t/);
   const tolerance = first ? Number(first[1].replace(/,/g, "")) : 0;
-  const total = text.match(/total\s*±?\s*([\d,]+)/);
+  // Only "total ±N" is a tolerance; "text total 23,787,113" is a note about the source.
+  const total = text.match(/total\s*±\s*([\d,]+)/);
   return {
     tolerance,
     totalTolerance: total ? Number(total[1].replace(/,/g, "")) : tolerance,
@@ -147,7 +158,7 @@ export async function exportAnswerKeys(workbookPath: string) {
       ambiguous: key["Ambiguous?"].trim().toLowerCase() === "yes",
       rowType: key["Row type"].trim(),
       notation: key["Expected notation key"].trim(),
-      scored: key["Scored"].trim().toLowerCase() === "yes",
+      scored: isScored(key["Scored"], key["Row type"]),
       note: key["Note / rule applied"],
     };
     target.rows.push(row);

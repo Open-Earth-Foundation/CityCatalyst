@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import {
+  isGpcExcluded,
   parseRefs,
   scoreFile,
   type KeyFile,
@@ -18,7 +19,7 @@ function row(partial: Partial<KeyRow>): KeyRow {
     ambiguous: false,
     rowType: "Value",
     notation: "",
-    scored: false,
+    scored: true,
     note: "",
     ...partial,
   };
@@ -258,6 +259,60 @@ describe("scoreFile", () => {
       [stored("I.2.1", "1", 300)],
     );
     expect(score.rowRecall).toBe(0);
+  });
+
+  it("skips Value rows marked as not scored", () => {
+    const score = scoreFile(
+      keyFile([
+        row({ value: 100, gpc: "I.1.1", scope: "1" }),
+        row({ value: 50, gpc: "I.4.4", scope: "1", scored: false }),
+      ]),
+      [stored("I.1.1", "1", 100)],
+    );
+    expect(score.keyValueRows).toBe(1);
+    expect(score.rowRecall).toBe(1);
+  });
+
+  it("scores a key with no scored Value rows on the total only", () => {
+    const score = scoreFile(
+      keyFile([row({ value: 300, gpc: "I.1.1", scope: "1", scored: false })]),
+      [stored("I.1.1", "1", 300)],
+    );
+    expect(score.rowRecall).toBeNull();
+    expect(score.totalWithinTolerance).toBe(true);
+  });
+
+  it("matches a zero key row with no stored row", () => {
+    const score = scoreFile(
+      keyFile([
+        row({ value: 100, gpc: "I.1.1", scope: "1" }),
+        row({ value: 0, gpc: "I.4.1", scope: "1" }),
+      ]),
+      [stored("I.1.1", "1", 100), stored("I.4.1", "1", 0)],
+    );
+    expect(score.rowRecall).toBe(1);
+    expect(score.valueAccuracy).toBe(1);
+    expect(score.rowPrecision).toBe(1);
+  });
+
+  it("keeps the GPC exclusions out of the stored total", () => {
+    const score = scoreFile(keyFile([], { expectedTotal: 100 }), [
+      stored("I.1.1", "1", 100),
+      stored("I.4.4", "1", 7),
+      stored("III.4.3", "3", 608),
+      stored("VI.1", "1", 1188394),
+    ]);
+    expect(score.storedTotal).toBe(100);
+    expect(score.totalWithinTolerance).toBe(true);
+  });
+
+  it("recognises only the excluded references", () => {
+    expect(["I.4.4", "III.1.3", "III.4.3", "VI.1"].every(isGpcExcluded)).toBe(
+      true,
+    );
+    expect(["I.4.3", "III.1.2", "II.1.3", "IV.1"].some(isGpcExcluded)).toBe(
+      false,
+    );
   });
 
   it("scores a non-GPC file on the total only", () => {

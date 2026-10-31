@@ -128,15 +128,25 @@ function normalizeScope(scope: string | null | undefined): string {
     : value;
 }
 
+/** References outside BASIC and BASIC+: I.4.4, III.x.3 and VI.1. */
+export function isGpcExcluded(ref: string): boolean {
+  return ref === "I.4.4" || ref === "VI.1" || /^III\.(?:\d+|x)\.3$/.test(ref);
+}
+
 const ratio = (num: number, den: number): number | null =>
   den > 0 ? num / den : null;
 
 export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
   // The sources print whole tonnes; keep half a tonne of slack for the kg to t conversion.
   const tol = Math.max(file.tolerance, 0.5);
-  const valueRows = file.rows.filter(
+  const allValueRows = file.rows.filter(
     (row) => row.rowType.startsWith("Value") && row.value !== null,
   );
+  // Rows the Product key marks "Scored = No" (inferred or illustrative) are not measured.
+  const valueRows = allValueRows.filter((row) => row.scored);
+  // A key with Value rows but none scored (for example Seattle) is scored on the total only.
+  const totalOnly =
+    !!file.nonGpc || (allValueRows.length > 0 && valueRows.length === 0);
 
   const valueStored = stored.filter(
     (item) => !item.notation && item.valueT !== 0,
@@ -192,12 +202,15 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     const expected = rows.reduce((sum, row) => sum + (row.value ?? 0), 0);
     const slack = tol * rows.length;
     const group = groups.get(key);
-    if (group) foundByRef += rows.length;
-    const exact = !!group && Math.abs(group.valueT - expected) <= slack;
+    // A key row of 0 matches a stored zero or no stored row (stored zeros are dropped above).
+    const zeroMatch = !group && Math.abs(expected) <= slack;
+    if (group || zeroMatch) foundByRef += rows.length;
+    const exact =
+      zeroMatch || (!!group && Math.abs(group.valueT - expected) <= slack);
     if (exact) {
       matchedRows += rows.length;
       valueRight += rows.length;
-      explained.add(key);
+      if (group) explained.add(key);
     } else {
       missingRows.push(
         ...rows.map((row) => ({
@@ -283,8 +296,9 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     }
   }
 
+  // GPC keeps these out of BASIC and BASIC+. The app only flags I.4.4 today (CC-1201 covers the rest).
   const storedTotal = valueStored
-    .filter((item) => !item.omit)
+    .filter((item) => !item.omit && !isGpcExcluded(item.gpc))
     .reduce((sum, item) => sum + item.valueT, 0);
   const totalDiff =
     file.expectedTotal !== null ? storedTotal - file.expectedTotal : null;
@@ -307,7 +321,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     if (hit) notationRecovered += 1;
   }
 
-  const keyNumbers = new Set(valueRows.map((row) => row.value));
+  const keyNumbers = new Set(allValueRows.map((row) => row.value));
   const distractorsStored: FileScore["distractorsStored"] = [];
   for (const distractor of file.distractors) {
     for (const number of distractor.numbers) {
@@ -329,8 +343,8 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     .filter(([key]) => !explained.has(key))
     .map(([, g]) => ({ gpc: g.gpc, scope: g.scope || null, valueT: g.valueT }));
 
-  // Non-GPC documents are scored on the total only: no row-level metrics.
-  const rows = !file.nonGpc;
+  // Non-GPC documents and keys with no scored rows are scored on the total only.
+  const rows = !totalOnly;
   return {
     keyValueRows: valueRows.length,
     storedGroups: groups.size,

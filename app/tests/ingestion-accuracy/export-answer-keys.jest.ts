@@ -1,5 +1,34 @@
 import { describe, expect, it } from "@jest/globals";
-import { parseNumbers } from "./export-answer-keys";
+import { isScored, parseNumbers, parseTolerance } from "./export-answer-keys";
+
+describe("isScored", () => {
+  it("treats a blank Value row as scored and only an explicit No as not", () => {
+    expect(isScored("", "Value")).toBe(true);
+    expect(isScored("", "Value (not in total)")).toBe(true);
+    expect(isScored("Yes", "Value")).toBe(true);
+    expect(isScored("No", "Value (not in total)")).toBe(false);
+  });
+
+  it("does not score blank notation keys", () => {
+    expect(isScored("", "Notation key")).toBe(false);
+    expect(isScored("Yes", "Notation key")).toBe(true);
+  });
+});
+
+describe("parseTolerance", () => {
+  it("reads a separate total tolerance", () => {
+    expect(parseTolerance("±1 t (integers); total ±2 t")).toEqual({
+      tolerance: 1,
+      totalTolerance: 2,
+    });
+  });
+
+  it("does not read a total quoted in a note as the tolerance", () => {
+    expect(
+      parseTolerance("±25 t (text total 23,787,113 excludes aviation)"),
+    ).toEqual({ tolerance: 25, totalTolerance: 25 });
+  });
+});
 
 describe("parseNumbers", () => {
   it("reads European thousands separators", () => {

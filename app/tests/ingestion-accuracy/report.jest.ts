@@ -7,6 +7,7 @@ import {
   caseMetrics,
   caseUsage,
   costUsd,
+  groupSummary,
   totalUsage,
   renderReport,
   runFolderName,
@@ -77,6 +78,63 @@ function summary(
     results,
   };
 }
+
+describe("validated and held-out groups", () => {
+  const failed = (id: string): CaseResult => ({
+    ...result(id, 0),
+    runs: [
+      {
+        run: 1,
+        ok: false,
+        ms: 1,
+        extractedRows: 0,
+        score: score({ rowRecall: 0, valueAccuracy: null }),
+      },
+    ],
+  });
+
+  it("counts failed runs only in the with-failed means", () => {
+    const group = groupSummary([result("A", 0.8), failed("B")]);
+    expect(group.rowRecall).toBeCloseTo(0.8);
+    expect(group.rowRecallWithFailed).toBeCloseTo(0.4);
+    expect(group.valueAccuracyWithFailed).toBeCloseTo(0.4);
+  });
+
+  it("counts a total as within tolerance only when every run is", () => {
+    const within = score({ totalWithinTolerance: true });
+    const outside = score({ totalWithinTolerance: false });
+    const runs = (first: FileScore, second: FileScore) => [
+      { run: 1, ok: true, ms: 1, score: first },
+      { run: 2, ok: true, ms: 1, score: second },
+    ];
+    const group = groupSummary([
+      { ...result("A", 0.5), runs: runs(within, within) },
+      { ...result("B", 0.5), runs: runs(within, outside) },
+      {
+        ...result("C", 0.5),
+        runs: runs(
+          score({ expectedTotal: null, totalWithinTolerance: null }),
+          score({ expectedTotal: null, totalWithinTolerance: null }),
+        ),
+      },
+    ]);
+    expect(group.totalCases).toBe(2);
+    expect(group.totalCasesWithin).toBe(1);
+    expect(group.totalRuns).toBe(4);
+    expect(group.totalRunsWithin).toBe(3);
+  });
+
+  it("prints the two sets only when the run has held-out cases", () => {
+    const results = [result("A", 0.8), result("B", 0.4)];
+    const split = renderReport(
+      { ...summary(results), heldOut: ["B"] },
+      null,
+    );
+    expect(split).toContain("| Validated | 1 | 1 | 80%");
+    expect(split).toContain("| Held-out | 1 | 1 | 40%");
+    expect(renderReport(summary(results), null)).not.toContain("Held-out");
+  });
+});
 
 describe("usage and cost", () => {
   const withUsage = (id: string, pages: number | null): CaseResult => ({

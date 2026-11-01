@@ -21,6 +21,7 @@ function sheet(row: Record<string, string | number | null>): ParsedFileData {
     "Notation key",
     "Activity data - Amount",
     "Activity data - Description",
+    "Activity data - Source",
     "Emission factor - CO2",
     EF_TOTAL,
     GHGS_TOTAL,
@@ -35,6 +36,7 @@ function sheet(row: Record<string, string | number | null>): ParsedFileData {
     "Notation key": null,
     "Activity data - Amount": 100,
     "Activity data - Description": "Fuel consumption from utility bills",
+    "Activity data - Source": "SEEG",
     "Emission factor - CO2": 0.42,
     [EF_TOTAL]: 0.5,
     [GHGS_TOTAL]: 4961667,
@@ -64,6 +66,49 @@ describe("near-eCRF missing GPC ref", () => {
     expect(rows[0].emissionFactorCO2).toBe(0.42);
     expect(rows[0].emissionFactorTotalCO2e).toBe(0.5);
     expect(rows[0].totalCO2e).toBe(4961667);
+    expect(rows[0].activityDataSource).toBe("SEEG");
+  });
+
+  it("cites the Chile MEED 'Data source name' column on the row (CC-1136)", () => {
+    const headers = [
+      "Inventory Reference",
+      "GPC Reference Number",
+      "Scope",
+      "Subsector name",
+      "Total Emissions",
+      "Emission units",
+      "CO2 Emissions",
+      "CH4 Emissions",
+      "N2O Emissions",
+      "Data source name",
+    ];
+    const primarySheet = {
+      name: "inventory-CHL-13101-Santiago-2022",
+      headers,
+      rows: [
+        {
+          "Inventory Reference": "CHL-13101-2022",
+          "GPC Reference Number": "I.1.1",
+          Scope: "1",
+          "Subsector name": "Residential buildings",
+          "Total Emissions": 127000,
+          "Emission units": "tCO2e",
+          "CO2 Emissions": 126000,
+          "CH4 Emissions": 600,
+          "N2O Emissions": 400,
+          "Data source name": "MEED-CL-2022",
+        },
+      ],
+      rowCount: 2,
+      columnCount: headers.length,
+    };
+    const { rows } = FormatAdapterService.extractNearEcrfRows(
+      { sheets: [primarySheet], primarySheet, fileType: "csv" },
+      2022,
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].gpcRefNo).toBe("I.1.1");
+    expect(rows[0].activityDataSource).toBe("MEED-CL-2022");
   });
 
   it("resolves energy generation to I.4.4", () => {

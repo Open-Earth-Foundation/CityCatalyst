@@ -5,6 +5,7 @@ import {
   HighImpactActionRankedAttributes,
 } from "@/models/HighImpactActionRanked";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import { HIAP_DEFAULT_PAGE_SIZE } from "@/backend/agentic/hiap/registry";
 import { logger } from "@/services/logger";
 import { getTranslationFromDictionary } from "@/util/helpers";
 import {
@@ -14,7 +15,18 @@ import {
 } from "@/util/types";
 
 type HiapAvailability = "available" | "pending" | "failed" | "missing";
-type HiapSelectionMode = "city_selected" | "ranked_fallback" | "none";
+type HiapSelectionMode =
+  "city_selected" | "ranked_fallback" | "ranked_all" | "none";
+
+export type HiapContextOptions = {
+  scope?: "selected" | "ranked";
+  type?: ACTION_TYPES;
+  limit?: number;
+  offset?: number;
+};
+
+/** Keeps a full ranking inside the 64 KB tool result bound. */
+const MAX_CATEGORY_BYTES = 24 * 1024;
 
 type ClimateActionRecord = Record<string, unknown>;
 
@@ -45,7 +57,11 @@ type HiapCategoryContext = {
     ranked: number;
     selected: number;
     returned: number;
+    // Only present when the call asked for a scope, limit or offset.
+    total?: number;
+    offset?: number;
   };
+  truncated?: boolean;
   actions: HiapActionContext[];
 };
 
@@ -282,6 +298,7 @@ async function loadCategoryState(
 function buildCategoryContext(
   state: CategoryState,
   catalogueById: Map<string, ClimateActionRecord>,
+  options: HiapContextOptions = {},
 ): HiapCategoryContext {
   const rowsByActionId = new Map<string, HighImpactActionRanked[]>();
   for (const row of state.rankedRows) {
@@ -295,45 +312,107 @@ function buildCategoryContext(
     ...state.selectedUnrankedActionIds,
   ]);
   const hasCitySelection = selectedIds.size > 0;
+  // "ranked" lists the ranking whether or not actions are selected; "selected"
+  // never falls back to the ranking; no scope keeps the original behavior.
+  const rankedView = options.scope === "ranked";
+  const selectedOnly = options.scope === "selected";
   const rankedRows = [...rowsByActionId.values()]
     .map((rows) => preferredRankedRow(rows, state.effectiveLanguage))
     .filter(
-      (row) => !hasCitySelection || state.selectedActionIds.has(row.actionId),
+      (row) =>
+        rankedView ||
+        !hasCitySelection ||
+        state.selectedActionIds.has(row.actionId),
     )
-    .map((row) => rankedActionContext(row, hasCitySelection));
-  const unrankedActions = [...state.selectedUnrankedActionIds]
-    .filter((actionId) => !state.selectedActionIds.has(actionId))
-    .sort()
-    .map((actionId) =>
-      unrankedActionContext(
-        actionId,
-        state.type,
-        state.requestedLanguage,
-        catalogueById,
+    .filter((row) => !selectedOnly || state.selectedActionIds.has(row.actionId))
+    .map((row) =>
+      rankedActionContext(
+        row,
+        rankedView
+          ? state.selectedActionIds.has(row.actionId)
+          : hasCitySelection,
       ),
     );
-  const actions = [...rankedRows, ...unrankedActions].sort(
+  const unrankedActions = rankedView
+    ? []
+    : [...state.selectedUnrankedActionIds]
+        .filter((actionId) => !state.selectedActionIds.has(actionId))
+        .sort()
+        .map((actionId) =>
+          unrankedActionContext(
+            actionId,
+            state.type,
+            state.requestedLanguage,
+            catalogueById,
+          ),
+        );
+  const allActions = [...rankedRows, ...unrankedActions].sort(
     (left, right) =>
       (left.rank ?? Number.MAX_SAFE_INTEGER) -
         (right.rank ?? Number.MAX_SAFE_INTEGER) ||
       left.action_id.localeCompare(right.action_id),
   );
 
+  // The default projection is consumed by the Concept Note Builder, whose
+  // models forbid extra fields and check `counts.returned == len(actions)`.
+  // Keep it exactly as it was: no paging fields and no byte trim.
+  const paged =
+    options.scope !== undefined ||
+    options.limit !== undefined ||
+    options.offset !== undefined;
+  if (!paged) {
+    return {
+      status: state.status,
+      ranking_id: state.ranking?.id ?? null,
+      updated_at: state.ranking?.lastUpdated?.toISOString() ?? null,
+      language: state.effectiveLanguage ?? state.requestedLanguage,
+      selection_mode: hasCitySelection
+        ? "city_selected"
+        : allActions.length > 0
+          ? "ranked_fallback"
+          : "none",
+      counts: {
+        ranked: rowsByActionId.size,
+        selected: selectedIds.size,
+        returned: allActions.length,
+      },
+      actions: allActions,
+    };
+  }
+
+  // A ranked listing is paged; other views keep returning the whole list.
+  const offset = options.offset ?? 0;
+  const pageSize =
+    options.limit ?? (rankedView ? HIAP_DEFAULT_PAGE_SIZE : allActions.length);
+  let actions = allActions.slice(offset, offset + pageSize);
+  // Drop the tail instead of failing the whole read when the output is large.
+  while (
+    actions.length > 1 &&
+    Buffer.byteLength(JSON.stringify(actions), "utf8") > MAX_CATEGORY_BYTES
+  ) {
+    actions = actions.slice(0, -1);
+  }
+
   return {
     status: state.status,
     ranking_id: state.ranking?.id ?? null,
     updated_at: state.ranking?.lastUpdated?.toISOString() ?? null,
     language: state.effectiveLanguage ?? state.requestedLanguage,
-    selection_mode: hasCitySelection
-      ? "city_selected"
-      : actions.length > 0
-        ? "ranked_fallback"
-        : "none",
+    selection_mode: rankedView
+      ? "ranked_all"
+      : hasCitySelection
+        ? "city_selected"
+        : selectedOnly || actions.length === 0
+          ? "none"
+          : "ranked_fallback",
     counts: {
       ranked: rowsByActionId.size,
       selected: selectedIds.size,
       returned: actions.length,
+      total: allActions.length,
+      offset,
     },
+    truncated: offset + actions.length < allActions.length,
     actions,
   };
 }
@@ -360,13 +439,28 @@ function overallAvailability(
 export async function buildHiapInventoryContext(
   inventoryId: string,
   requestedLanguage: LANGUAGES,
+  options: HiapContextOptions = {},
 ) {
   const states = await Promise.all([
-    loadCategoryState(inventoryId, ACTION_TYPES.Mitigation, requestedLanguage),
-    loadCategoryState(inventoryId, ACTION_TYPES.Adaptation, requestedLanguage),
+    options.type === ACTION_TYPES.Adaptation
+      ? null
+      : loadCategoryState(
+          inventoryId,
+          ACTION_TYPES.Mitigation,
+          requestedLanguage,
+        ),
+    options.type === ACTION_TYPES.Mitigation
+      ? null
+      : loadCategoryState(
+          inventoryId,
+          ACTION_TYPES.Adaptation,
+          requestedLanguage,
+        ),
   ]);
   const selectedUnrankedIds = new Set(
-    states.flatMap((state) => [...state.selectedUnrankedActionIds]),
+    states.flatMap((state) =>
+      state ? [...state.selectedUnrankedActionIds] : [],
+    ),
   );
   let catalogueById = new Map<string, ClimateActionRecord>();
 
@@ -388,13 +482,22 @@ export async function buildHiapInventoryContext(
     }
   }
 
-  const mitigation = buildCategoryContext(states[0], catalogueById);
-  const adaptation = buildCategoryContext(states[1], catalogueById);
+  const mitigation = states[0]
+    ? buildCategoryContext(states[0], catalogueById, options)
+    : null;
+  const adaptation = states[1]
+    ? buildCategoryContext(states[1], catalogueById, options)
+    : null;
   return {
-    availability: overallAvailability([mitigation, adaptation]),
+    availability: overallAvailability(
+      [mitigation, adaptation].filter(
+        (category): category is HiapCategoryContext => category !== null,
+      ),
+    ),
     inventory_id: inventoryId,
     requested_language: requestedLanguage,
-    mitigation,
-    adaptation,
+    // A category outside the requested type is omitted, not reported empty.
+    ...(mitigation ? { mitigation } : {}),
+    ...(adaptation ? { adaptation } : {}),
   };
 }

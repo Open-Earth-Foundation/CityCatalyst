@@ -1,15 +1,14 @@
 "use client";
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
-import ProjectCard from "@/components/Organization/ProjectCard";
+import ProjectsGrid from "@/components/Organization/ProjectsGrid";
 import ProgressLoader from "@/components/ProgressLoader";
-import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { BodyLarge } from "@/components/package/Texts/Body";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
-import { ProjectWithCities } from "@/util/types";
-import { Box, Card, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
+import { Box, Card, Icon, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { use } from "react";
 import { MdArrowForward } from "react-icons/md";
@@ -65,21 +64,7 @@ export default function OrganizationPage(props: {
               <HeadlineLarge>{t("all-projects")}</HeadlineLarge>
               <BodyLarge>{t("explore-projects-description")}</BodyLarge>
             </VStack>
-            <SimpleGrid columns={{ base: 1, lg: 3 }} gap="24px" w="full">
-              {projects && projects.length > 0 ? (
-                projects.map((project: ProjectWithCities) => (
-                  <ProjectCard
-                    t={t}
-                    project={project}
-                    key={project.projectId}
-                    lng={lng}
-                    organizationId={organizationId}
-                  />
-                ))
-              ) : (
-                <BodyMedium>{t("no-projects-found")}</BodyMedium>
-              )}
-            </SimpleGrid>
+            <ProjectsGrid t={t} lng={lng} projects={projects ?? []} />
             <NextLink
               href="https://citycatalyst.openearth.org/learning-hub"
               target="_blank"

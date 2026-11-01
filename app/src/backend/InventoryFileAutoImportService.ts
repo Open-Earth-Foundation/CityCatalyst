@@ -9,6 +9,9 @@ import ECRFImportService, {
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
+import InventoryReplaceService, {
+  IMPORT_REPLACE_LABEL,
+} from "@/backend/InventoryReplaceService";
 import InventoryFileStorageService, {
   isS3Configured,
 } from "@/backend/InventoryFileStorageService";
@@ -131,30 +134,6 @@ export interface AutoImportInventoryFileResult {
   kind: BulkInventoryAcceptedKind;
   contentDigest: string;
   dryRun: boolean;
-}
-
-async function clearInventoryEmissions(inventoryId: string): Promise<void> {
-  const values = await db.models.InventoryValue.findAll({
-    where: { inventoryId },
-    attributes: ["id"],
-  });
-  const valueIds = values.map((value) => value.id);
-  if (valueIds.length === 0) return;
-  const activities = await db.models.ActivityValue.findAll({
-    where: { inventoryValueId: valueIds },
-    attributes: ["id"],
-  });
-  const activityIds = activities.map((activity) => activity.id);
-  if (activityIds.length > 0) {
-    await db.models.GasValue.destroy({
-      where: { activityValueId: activityIds },
-    });
-  }
-  await db.models.GasValue.destroy({ where: { inventoryValueId: valueIds } });
-  await db.models.ActivityValue.destroy({
-    where: { inventoryValueId: valueIds },
-  });
-  await db.models.InventoryValue.destroy({ where: { inventoryId } });
 }
 
 /**
@@ -309,14 +288,7 @@ export class InventoryFileAutoImportService {
         "Inventory already has a completed import; re-run with replaceExisting to overwrite",
       );
     }
-    if (existingForInventory && input.replaceExisting) {
-      await clearInventoryEmissions(inventoryId);
-      await existingForInventory.update({
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: "Superseded by a later bulk inventory import",
-        lastUpdated: new Date(),
-      });
-    }
+    const replacing = !!existingForInventory && !!input.replaceExisting;
 
     const storedName = `${randomUUID()}-${originalFileName}`;
     const mimeType = InventoryFileStorageService.mimeTypeForFileType(fileType);
@@ -359,22 +331,66 @@ export class InventoryFileAutoImportService {
 
     await syncGHGIImportedInventorySource(importedFile, contentDigest);
 
-    const summary = await InventoryImportService.importECRFData(
-      inventoryId,
-      importResult,
-      { defaultActivityDataSource: originalFileName },
+    // Replace, import and both status updates share one transaction; the
+    // replaced data stays restorable from the inventory's version history.
+    // Neither the superseded old file nor this file's COMPLETED status can
+    // disagree with whether the data change committed.
+    const { summary } = await db.sequelize!.transaction(
+      async (transaction) => {
+        const replacedData = replacing
+          ? await InventoryReplaceService.replaceInventoryValues(
+              inventoryId,
+              input.userId,
+              transaction,
+            )
+          : null;
+        const didReplace = !!replacedData?.restoreVersionId;
+        // Version rows only when replacing (nothing to restore on a first import)
+        const summary = await InventoryImportService.importECRFData(
+          inventoryId,
+          importResult,
+          {
+            defaultActivityDataSource: originalFileName,
+            authorId: didReplace ? input.userId : undefined,
+            versionLabel: didReplace ? IMPORT_REPLACE_LABEL : undefined,
+            transaction,
+          },
+        );
+        if (didReplace && summary.importedRows === 0) {
+          throw new BulkInventoryImportAutoImportError(
+            "no_rows_imported",
+            "No rows could be imported, so the existing inventory data was kept",
+          );
+        }
+        // replacing already implies existingForInventory is set
+        if (replacing) {
+          await existingForInventory!.update(
+            {
+              importStatus: ImportStatusEnum.FAILED,
+              errorLog: "Superseded by a later bulk inventory import",
+              lastUpdated: new Date(),
+            },
+            { transaction },
+          );
+        }
+        await importedFile.update(
+          {
+            importStatus: ImportStatusEnum.COMPLETED,
+            processedRowCount: summary.importedRows,
+            completedAt: new Date(),
+            lastUpdated: new Date(),
+            validationResults: {
+              ...(importedFile.validationResults as object),
+              importSummary: { ...summary, replacedData },
+            },
+          },
+          { transaction },
+        );
+        return { summary };
+      },
     );
 
-    await importedFile.update({
-      importStatus: ImportStatusEnum.COMPLETED,
-      processedRowCount: summary.importedRows,
-      completedAt: new Date(),
-      lastUpdated: new Date(),
-      validationResults: {
-        ...(importedFile.validationResults as object),
-        importSummary: summary,
-      },
-    });
+    // Best-effort: catalog sync logs and swallows its own errors.
     await syncGHGIInventory(importedFile);
 
     return {

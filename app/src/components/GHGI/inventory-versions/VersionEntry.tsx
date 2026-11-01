@@ -72,7 +72,6 @@ function getChangeSign(entry: VersionHistoryEntry): number {
   return co2eq < previousCo2eq ? 1 : -1;
 }
 
-
 function renderChangeText(
   t: TFunction,
   change: VersionChangeEntry,
@@ -188,10 +187,7 @@ export default function VersionEntry({
           tData(entry.subCategory.subcategoryName ?? "")
         : "-",
       totalEmissions: entry.version.data?.co2eq
-        ? toEmissionsString(
-            entry.version.data.co2eq as number,
-            numberFormat,
-          )
+        ? toEmissionsString(entry.version.data.co2eq as number, numberFormat)
         : "-",
       previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
         ? toEmissionsString(
@@ -292,6 +288,18 @@ export default function VersionEntry({
               />
               {userName}
             </Text>
+            {firstEntry.version.label && (
+              <Text
+                color="content.secondary"
+                fontSize="14px"
+                fontWeight="600"
+                lineHeight="20px"
+                letterSpacing="0.5px"
+                fontFamily="body"
+              >
+                {t(`inventory-versions-label-${firstEntry.version.label}`)}
+              </Text>
+            )}
           </VStack>
           <Spacer />
           {!isCurrent && (
@@ -469,9 +477,7 @@ export default function VersionEntry({
                           <Table.Cell bgColor={totalBgColor}>
                             {change.totalEmissions}
                           </Table.Cell>
-                          <Table.Cell
-                            bgColor={sourceBgColor}
-                          >
+                          <Table.Cell bgColor={sourceBgColor}>
                             {change.source}
                           </Table.Cell>
                         </>

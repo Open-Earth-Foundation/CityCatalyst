@@ -184,8 +184,9 @@ export default function OnboardingSetup(props: {
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
 
-  // An existing inventory for this year is reused. Block only when it already
-  // has activity data; an empty one can still be filled from this flow.
+  // An existing inventory for this year is reused. Without upload, a year that
+  // already has data is blocked; in upload mode the import replaces that data
+  // after the user confirms it in the wizard.
   const selectedYear =
     selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
   const existingInventoryForYear = useMemo(() => {
@@ -207,6 +208,7 @@ export default function OnboardingSetup(props: {
       existingInventoryProgress.totalProgress;
     return thirdParty + uploaded + reasonNE + reasonNO > 0;
   }, [existingInventoryProgress]);
+  const isYearBlocked = !isUploadMode && existingInventoryHasData;
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
@@ -313,7 +315,7 @@ export default function OnboardingSetup(props: {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
-    if (existingInventoryHasData) return;
+    if (isYearBlocked) return;
     setData({
       ...data,
       ...formData,
@@ -408,6 +410,7 @@ export default function OnboardingSetup(props: {
                 setSelectedGlobalWarmingPotentialValue
               }
               yearAlreadyExists={existingInventoryHasData}
+              replaceOnImport={isUploadMode}
               selectedYear={selectedYear}
             />
           )}
@@ -469,7 +472,7 @@ export default function OnboardingSetup(props: {
                   h="64px"
                   type="submit"
                   disabled={
-                    existingInventoryHasData ||
+                    isYearBlocked ||
                     (!!existingInventoryForYear && existingProgressLoading)
                   }
                 >
@@ -488,9 +491,7 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={
-                    isUploadMode ? onConfirm : handleSubmit(onSubmit)
-                  }
+                  onClick={isUploadMode ? onConfirm : handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
                   loading={isUploadMode && isConfirming}

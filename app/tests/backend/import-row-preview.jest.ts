@@ -315,4 +315,39 @@ describe("ECRFImportService.processECRFFile", () => {
       issue: "missing-gpc-reference",
     });
   });
+
+  it("counts fully blank sheet rows as skipped empty rows, not missing GPC", async () => {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector-I",
+      subsectorId: "subsector-I.1",
+      subcategoryId: "subcategory-I.1.1",
+      scopeId: "scope-1",
+    } as Awaited<ReturnType<typeof ECRFImportService.lookupGPCReference>>);
+
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "Inventory",
+          headers: ["GPC ref. no.", "Total CO2e"],
+          rows: [
+            { "GPC ref. no.": "I.1.1", "Total CO2e": 10 },
+            { "GPC ref. no.": null, "Total CO2e": null },
+            { "GPC ref. no.": "I.1.2", "Total CO2e": 4 },
+          ],
+          rowNumbers: [2, 3, 4],
+          rowCount: 4,
+          columnCount: 2,
+        },
+      },
+      { gpcRefNo: 0, totalCO2e: 1 },
+    );
+
+    expect(result.rowCount).toBe(3);
+    expect(result.rows[1]).toMatchObject({
+      sourceRowNumber: 3,
+      issue: "no-value-or-notation-key",
+    });
+  });
 });

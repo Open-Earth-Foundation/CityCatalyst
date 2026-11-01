@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import type { PdfOcrAnnotationMode } from "@/models/PdfOcrJob";
+import { logger } from "@/services/logger";
 import {
   parseVisualAnnotation,
   type VisualAnnotation,
@@ -38,6 +39,8 @@ const PROVIDER_TYPE_MAP: Record<string, NormalizedType> = {
 
 const CAPTION_HINT = /^\s*(figure|fig\.|table|tbl\.)\s*\d+/i;
 const IMAGE_REF = /!\[[^\]]*\]\(([^)]+)\)/;
+/** Ids Mistral gives to page images, such as `img-0.jpeg`. */
+const IMAGE_ID_SHAPE = /^[^\s]+\.(jpe?g|png|gif|webp|avif|bmp|tiff?)$/i;
 const HEADING_PREFIX = /^(#{1,6})(?:\s|$)/;
 
 export class StructuredDocumentError extends Error {
@@ -205,10 +208,12 @@ export function buildStructuredDocument(
     },
     document: {
       page_count: normalizedPages.length,
-      pages: normalizedPages.map(({ providerRelationships: _ignored, ...page }) => {
-        void _ignored;
-        return page;
-      }),
+      pages: normalizedPages.map(
+        ({ providerRelationships: _ignored, ...page }) => {
+          void _ignored;
+          return page;
+        },
+      ),
       relationships,
     },
   };
@@ -221,10 +226,15 @@ type NormalizedPage = StructuredDocument["document"]["pages"][number] & {
 function normalizePage(page: Record<string, unknown>): NormalizedPage {
   const pageIndex = requiredIndex(page);
   const dimensions = requiredDimensions(page.dimensions, pageIndex);
-  const normalized = normalizeBlocks(page.blocks, pageIndex, dimensions);
+  const images = normalizeImages(page.images, pageIndex, dimensions);
+  const normalized = normalizeBlocks(
+    page.blocks,
+    pageIndex,
+    dimensions,
+    images,
+  );
   const blocks = normalized.blocks;
   assignHierarchy(blocks, normalized.providerLevels);
-  const images = normalizeImages(page.images, pageIndex, dimensions);
   const tables = normalizeTables(page.tables, pageIndex, dimensions);
   linkKnownReferences(blocks, images, tables, pageIndex);
   return {
@@ -247,6 +257,7 @@ function normalizeBlocks(
   raw: unknown,
   pageIndex: number,
   dimensions: PageDimensions,
+  images: NormalizedImage[],
 ): { blocks: NormalizedBlock[]; providerLevels: Array<number | null> } {
   if (raw == null) {
     throw malformed(`Page ${pageIndex} is missing blocks`);
@@ -254,6 +265,7 @@ function normalizeBlocks(
   if (!Array.isArray(raw)) {
     throw malformed(`Page ${pageIndex} blocks must be an array`);
   }
+  const knownImageIds = new Set(images.map((image) => image.image_id));
   const providerLevels: Array<number | null> = [];
   const blocks = raw.map((block, readingOrderIndex) => {
     if (!isRecord(block)) {
@@ -279,14 +291,48 @@ function normalizeBlocks(
     );
     const relatedImage = IMAGE_REF.exec(content);
     const providerImageId = optionalIdentifier(block.image_id);
-    const markdownImageId = relatedImage?.[1] ?? null;
+    let markdownImageId = relatedImage?.[1] ?? null;
+    // A logo or header written as `![LOGO](Some Organisation Name)` is text, not a page
+    // image: the target is not an image id and no page image has it. A target that
+    // looks like an image id but is missing still fails below.
+    if (
+      markdownImageId &&
+      !providerImageId &&
+      !knownImageIds.has(markdownImageId) &&
+      !IMAGE_ID_SHAPE.test(markdownImageId)
+    ) {
+      logger.warn(
+        { pageIndex, blockIndex: readingOrderIndex },
+        "Mistral OCR block holds an image placeholder with no matching image; kept as text",
+      );
+      markdownImageId = null;
+    }
+    let relatedImageId = providerImageId ?? markdownImageId;
+    // Mistral sometimes returns a block `image_id` that differs from the image written in
+    // the block's own markdown (seen on Philadelphia, Toronto 2020 and Miami). Trust
+    // whichever id belongs to the page image drawn at the block's position; if neither
+    // does, drop the link instead of guessing. In `none` mode the document is kept;
+    // `visual_context` requires a linked annotation and fails validation if absent.
     if (
       providerImageId &&
       markdownImageId &&
       providerImageId !== markdownImageId
     ) {
-      throw malformed(
-        `Page ${pageIndex} block ${readingOrderIndex} image id does not match its markdown reference`,
+      relatedImageId =
+        [markdownImageId, providerImageId].find((id) =>
+          imageAtBlockPosition(images, id, boxes.bbox_px),
+        ) ?? null;
+      logger.warn(
+        {
+          pageIndex,
+          blockIndex: readingOrderIndex,
+          providerImageId,
+          markdownImageId,
+          resolvedImageId: relatedImageId,
+        },
+        relatedImageId
+          ? "Mistral OCR block image id differs from its markdown reference; resolved by position"
+          : "Mistral OCR block image id differs from its markdown reference; no image at the block position, link dropped",
       );
     }
     providerLevels.push(readProviderLevel(block.level));
@@ -307,12 +353,31 @@ function normalizeBlocks(
       confidence_metric: confidence?.metric ?? null,
       bbox_px: boxes.bbox_px,
       bbox_norm: boxes.bbox_norm,
-      related_image_id: providerImageId ?? markdownImageId,
+      related_image_id: relatedImageId,
       related_table_id: optionalIdentifier(block.table_id),
     };
     return normalized;
   });
   return { blocks, providerLevels };
+}
+
+const BBOX_TOLERANCE_PX = 2;
+
+function imageAtBlockPosition(
+  images: NormalizedImage[],
+  imageId: string,
+  box: BoundingBoxPx,
+): boolean {
+  const image = images.find((candidate) => candidate.image_id === imageId);
+  if (!image) return false;
+  return (
+    Math.abs(image.bbox_px.top_left_x - box.top_left_x) <= BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.top_left_y - box.top_left_y) <= BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.bottom_right_x - box.bottom_right_x) <=
+      BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.bottom_right_y - box.bottom_right_y) <=
+      BBOX_TOLERANCE_PX
+  );
 }
 
 function assignHierarchy(
@@ -437,9 +502,12 @@ function normalizeTables(
     }
     seen.add(tableId);
     const content = tableContent(table);
-    const hasAnyCorner = ["top_left_x", "top_left_y", "bottom_right_x", "bottom_right_y"].some(
-      (key) => table[key] != null,
-    );
+    const hasAnyCorner = [
+      "top_left_x",
+      "top_left_y",
+      "bottom_right_x",
+      "bottom_right_y",
+    ].some((key) => table[key] != null);
     const boxes = hasAnyCorner
       ? requiredBoxes(table, dimensions, `page ${pageIndex} table ${tableId}`)
       : null;
@@ -509,11 +577,16 @@ function isImageRegion(block: NormalizedBlock): boolean {
   );
 }
 
-function derivedCaptionRelationships(page: NormalizedPage): DocumentRelationship[] {
+function derivedCaptionRelationships(
+  page: NormalizedPage,
+): DocumentRelationship[] {
   const maxGap = page.dimensions.height * 0.1;
   const relationships: DocumentRelationship[] = [];
   page.blocks.forEach((block, index) => {
-    if (block.normalized_type !== "image" && block.normalized_type !== "table") {
+    if (
+      block.normalized_type !== "image" &&
+      block.normalized_type !== "table"
+    ) {
       return;
     }
     const candidates = [-1, 1]
@@ -595,9 +668,15 @@ function assertRelationshipTargets(
   pages: NormalizedPage[],
   relationships: DocumentRelationship[],
 ): void {
-  const blockIds = new Set(pages.flatMap((page) => page.blocks.map((block) => block.block_id)));
-  const imageIds = new Set(pages.flatMap((page) => page.images.map((image) => image.image_id)));
-  const tableIds = new Set(pages.flatMap((page) => page.tables.map((table) => table.table_id)));
+  const blockIds = new Set(
+    pages.flatMap((page) => page.blocks.map((block) => block.block_id)),
+  );
+  const imageIds = new Set(
+    pages.flatMap((page) => page.images.map((image) => image.image_id)),
+  );
+  const tableIds = new Set(
+    pages.flatMap((page) => page.tables.map((table) => table.table_id)),
+  );
   for (const page of pages) {
     for (const block of page.blocks) {
       if (block.related_image_id && !imageIds.has(block.related_image_id)) {
@@ -724,9 +803,14 @@ function optionalIdentifier(value: unknown): string | null {
 
 function imageSha256(image: Record<string, unknown>): string | null {
   if (typeof image.image_base64 === "string") {
-    return createHash("sha256").update(image.image_base64, "utf8").digest("hex");
+    return createHash("sha256")
+      .update(image.image_base64, "utf8")
+      .digest("hex");
   }
-  if (typeof image.image_sha256 === "string" && /^[0-9a-f]{64}$/i.test(image.image_sha256)) {
+  if (
+    typeof image.image_sha256 === "string" &&
+    /^[0-9a-f]{64}$/i.test(image.image_sha256)
+  ) {
     return image.image_sha256.toLowerCase();
   }
   return null;
@@ -770,7 +854,11 @@ function verticalGap(a: NormalizedBlock, b: NormalizedBlock): number {
 }
 
 function requiredIndex(page: Record<string, unknown>): number {
-  if (typeof page.index !== "number" || !Number.isInteger(page.index) || page.index < 0) {
+  if (
+    typeof page.index !== "number" ||
+    !Number.isInteger(page.index) ||
+    page.index < 0
+  ) {
     throw malformed("Mistral OCR page index must be a non-negative integer");
   }
   return page.index;

@@ -1,19 +1,9 @@
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
-import PopulationService from "@/backend/PopulationService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
+import { PublicDashboardService } from "@/backend/PublicDashboardService";
 import createHttpError from "http-errors";
 import { validate } from "uuid";
-import type {
-  CityDashboardResponse,
-  GHGInventorySummary,
-  HIAPSummary,
-  CCRASummary,
-} from "@/util/types";
-import { Inventory } from "@/models/Inventory";
-import { logger } from "@/services/logger";
+import type { CityDashboardResponse } from "@/util/types";
 
 /**
  * @swagger
@@ -88,136 +78,30 @@ export const GET = apiHandler(async (req, { params }) => {
     );
   }
 
-  // Check if city has any public inventories
-  const publicInventoriesCount = await db.models.Inventory.count({
-    where: {
-      cityId: cityId,
-      isPublic: true,
-    },
-  });
+  const shell = await PublicDashboardService.getDashboardShell(cityId);
 
-  if (publicInventoriesCount === 0) {
+  if (shell.status === "not-found") {
     throw new createHttpError.NotFound(
       "No public data available for this city",
     );
   }
 
-  // Fetch city data
-  const city = await db.models.City.findByPk(cityId, {
-    include: [
-      {
-        model: db.models.Project,
-        as: "project",
-        attributes: ["projectId", "name", "organizationId"],
-        include: [
-          {
-            model: db.models.Organization,
-            as: "organization",
-            attributes: ["organizationId", "name", "logoUrl", "active"],
-            include: [
-              {
-                model: db.models.Theme,
-                as: "theme",
-                attributes: ["themeKey"],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-
-  if (!city) {
-    throw new createHttpError.NotFound("City not found");
-  }
-
-  // Fetch public inventories and population in parallel
-  const [publicInventories, populationData] = await Promise.all([
-    // Get only public inventories
-    db.models.Inventory.findAll({
-      where: {
-        cityId,
-        isPublic: true,
-      },
-      order: [["year", "DESC"]],
-    }),
-    // Get most recent population
-    PopulationService.getMostRecentPopulationDataForCity(cityId),
-  ]);
-
-  const latestInventory = publicInventories[0] as Inventory | undefined;
-  const inventoryId = latestInventory?.inventoryId;
-
-  // Verify access to the inventory (handles public access automatically)
-  let ghgiData = null;
-  let hiapData = null;
-  let ccraData = null;
-
-  if (inventoryId) {
-    try {
-      // Check if user can access this inventory (handles public inventories)
-      const { resource } = await PermissionService.canAccessInventory(
-        null, // No session for public access
-        inventoryId,
-        { includeResource: true },
-      );
-
-      const inventory = resource as Inventory;
-
-      if (inventory && inventory.cityId === cityId) {
-        // Fetch widget data in parallel
-        [ghgiData, hiapData, ccraData] = await Promise.all([
-          // GHGI dashboard data
-          ModuleDashboardService.getGHGIDashboardData(cityId, inventory).catch(
-            (err) => {
-              logger.error({ error: err }, "Error fetching GHGI dashboard");
-              return null;
-            },
-          ),
-          // HIAP dashboard data
-          ModuleDashboardService.getHIAPDashboardData(
-            cityId,
-            inventory,
-            lng,
-          ).catch((err) => {
-            logger.error({ error: err }, "Error fetching HIAP dashboard");
-            return null;
-          }),
-          // CCRA dashboard data
-          ModuleDashboardService.getCCRADashboardData(cityId, inventory).catch(
-            (err) => {
-              logger.error({ error: err }, "Error fetching CCRA dashboard");
-              return null;
-            },
-          ),
-        ]);
-      }
-    } catch (err) {
-      // If access check fails, widgets will be null
-      logger.error({ error: err }, "Error checking inventory access");
-    }
-  }
+  const { ghgi, hiap, ccra } = PublicDashboardService.getStreamableWidgetData(
+    cityId,
+    shell.latestInventory,
+    lng,
+  );
+  const [ghgiData, hiapData, ccraData] = await Promise.all([ghgi, hiap, ccra]);
 
   const response: CityDashboardResponse = {
-    city: city as CityDashboardResponse["city"],
-    inventories: publicInventories.map((inv) => inv.toJSON()),
-    population:
-      populationData &&
-      populationData.year !== null &&
-      populationData.year !== undefined &&
-      populationData.population !== null &&
-      populationData.population !== undefined
-        ? {
-            cityId: populationData.cityId,
-            year: populationData.year as number,
-            population: populationData.population as number,
-          }
-        : null,
+    city: shell.city,
+    inventories: shell.inventories,
+    population: shell.population,
     organization: null, // Public dashboards don't include organization data
     widgets: {
-      ghgi: ghgiData as GHGInventorySummary | null,
-      hiap: hiapData as HIAPSummary | null,
-      ccra: ccraData as CCRASummary | null,
+      ghgi: ghgiData,
+      hiap: hiapData,
+      ccra: ccraData,
     },
   };
 

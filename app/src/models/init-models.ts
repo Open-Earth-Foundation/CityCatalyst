@@ -111,6 +111,16 @@ import type {
 } from "./BulkInventoryImportItem";
 import { BulkInventoryImportItem as _BulkInventoryImportItem } from "./BulkInventoryImportItem";
 import type {
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+} from "./IngestJob";
+import { IngestJob as _IngestJob } from "./IngestJob";
+import type {
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
+} from "./IngestItem";
+import { IngestItem as _IngestItem } from "./IngestItem";
+import type {
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
 } from "./PdfOcrJob";
@@ -331,6 +341,8 @@ export {
   _ImportedInventoryFile as ImportedInventoryFile,
   _BulkInventoryImportJob as BulkInventoryImportJob,
   _BulkInventoryImportItem as BulkInventoryImportItem,
+  _IngestJob as IngestJob,
+  _IngestItem as IngestItem,
   _PdfOcrJob as PdfOcrJob,
   _WebhookSubscription as WebhookSubscription,
   _WebhookDelivery as WebhookDelivery,
@@ -423,6 +435,10 @@ export type {
   BulkInventoryImportJobCreationAttributes,
   BulkInventoryImportItemAttributes,
   BulkInventoryImportItemCreationAttributes,
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
   WebhookSubscriptionAttributes,
@@ -540,6 +556,8 @@ export function initModels(sequelize: Sequelize) {
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const BulkInventoryImportJob = _BulkInventoryImportJob.initModel(sequelize);
   const BulkInventoryImportItem = _BulkInventoryImportItem.initModel(sequelize);
+  const IngestJob = _IngestJob.initModel(sequelize);
+  const IngestItem = _IngestItem.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
   const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
@@ -931,7 +949,7 @@ export function initModels(sequelize: Sequelize) {
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
   Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
   User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
-  Version.hasOne(Version, {
+  Version.belongsTo(Version, {
     as: "previousVersion",
     foreignKey: "previousVersionId",
   });
@@ -1413,6 +1431,60 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  IngestJob.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(User, {
+    as: "uploadedBy",
+    foreignKey: "uploadedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(IngestJob, {
+    as: "job",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.hasMany(IngestItem, {
+    as: "items",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(City, {
+    as: "targetCity",
+    foreignKey: "targetCityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(Inventory, {
+    as: "targetInventory",
+    foreignKey: "targetInventoryId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(User, {
+    as: "reviewLockedBy",
+    foreignKey: "reviewLockedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   BulkInventoryImportItem.belongsTo(City, {
     as: "city",
     foreignKey: "cityId",
@@ -1480,6 +1552,8 @@ export function initModels(sequelize: Sequelize) {
     ImportedInventoryFile: ImportedInventoryFile,
     BulkInventoryImportJob: BulkInventoryImportJob,
     BulkInventoryImportItem: BulkInventoryImportItem,
+    IngestJob: IngestJob,
+    IngestItem: IngestItem,
     PdfOcrJob: PdfOcrJob,
     WebhookSubscription: WebhookSubscription,
     WebhookDelivery: WebhookDelivery,

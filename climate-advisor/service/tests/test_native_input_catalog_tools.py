@@ -182,6 +182,27 @@ def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
             "capabilityId": {"type": "string", "minLength": 1},
             "language": {"type": "string", "maxLength": 16},
             "inventoryId": {"type": "string", "format": "uuid"},
+            "scope": {"type": "string", "enum": ["selected", "ranked"]},
+            "type": {"type": "string", "enum": ["mitigation", "adaptation"]},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 50},
+            "offset": {"type": "integer", "minimum": 0, "maximum": 1000},
+            "chapters": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "snapshot",
+                        "the_action",
+                        "action_impact",
+                        "city_fit",
+                        "policy_backing",
+                        "legal_mandate_delivery",
+                        "financing_precedents_pathway",
+                        "sources_assumptions",
+                    ],
+                },
+                "maxItems": 8,
+            },
         },
         "required": ["catalogId", "capabilityId"],
         "additionalProperties": False,
@@ -204,6 +225,58 @@ def test_tool_descriptions_route_ranked_action_questions_to_hiap_capability() ->
     assert "ghgi.inventory.emissions_context" in read_description
     assert "hiap_meed.ranking.context" in read_description
     assert "hiap_meed.output_plan.context" in read_description
+    assert "hiap.action_plan.context" in read_description
+    assert "offset" in read_description
+    assert (
+        "language is accepted only by hiap.inventory.context, "
+        "hiap_meed.ranking.context and hiap_meed.output_plan.context"
+    ) in read_description
+
+
+def test_description_language_claim_matches_the_capabilities_that_accept_it() -> None:
+    """The description names exactly the capabilities in _LANGUAGE_CAPABILITIES."""
+    from app.tools import native_input_catalog_tools as module
+
+    tools, _, _ = _build(_StubClient())
+    description = getattr(_tool(tools, "native_input_read"), "description")
+
+    assert module._LANGUAGE_CAPABILITIES == {
+        "hiap.inventory.context",
+        "hiap_meed.ranking.context",
+        "hiap_meed.output_plan.context",
+    }
+    for capability in module._LANGUAGE_CAPABILITIES:
+        assert capability in description.split("language is accepted only by")[1].split("Also")[0]
+
+
+def test_meed_data_has_only_read_capabilities_and_no_export_or_download() -> None:
+    """CC-1060 PR 2: HIAP-MEED data is interpreted in chat, never exported."""
+    import re
+
+    from app.tools import native_input_catalog_tools as module
+
+    meed = {c for c in module._CAPABILITY_DEFINITIONS if c.startswith("hiap_meed.")}
+    assert meed == {"hiap_meed.ranking.context", "hiap_meed.output_plan.context"}
+    forbidden = re.compile(r"export|download|file|csv|xlsx|pdf|docx", re.IGNORECASE)
+    assert not [c for c in module._CAPABILITY_DEFINITIONS if forbidden.search(c)]
+
+    tools, _, _ = _build(_StubClient())
+    assert set(tools) == {"native_input_discover", "native_input_read"}
+    assert not [name for name in tools if forbidden.search(name)]
+
+
+@pytest.mark.asyncio
+async def test_read_tool_refuses_an_invented_meed_export_capability() -> None:
+    """An export capability is rejected before Core is ever called."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.ranking.export"},
+    )
+    assert result["success"] is False
+    assert client.requests == []
 
 
 @pytest.mark.asyncio
@@ -692,19 +765,133 @@ async def test_override_also_drops_chat_organization_and_project() -> None:
 
 
 @pytest.mark.asyncio
-async def test_language_is_rejected_for_the_output_plan_capability() -> None:
-    """Core ignores language for the output plan, so the tool does not accept it."""
+@pytest.mark.parametrize(
+    ("capability_id", "arguments", "expected_extra"),
+    [
+        (
+            "hiap.inventory.context",
+            {"scope": "ranked", "type": "mitigation", "limit": 5, "offset": 10},
+            {"scope": "ranked", "type": "mitigation", "limit": 5, "offset": 10},
+        ),
+        ("hiap.inventory.context", {"scope": "selected"}, {"scope": "selected"}),
+        ("hiap_meed.ranking.context", {"limit": 50, "offset": 50}, {"limit": 50, "offset": 50}),
+        (
+            "hiap_meed.output_plan.context",
+            {"chapters": ["legal_mandate_delivery", "legal_mandate_delivery", "city_fit"], "language": "pt"},
+            {"chapters": ["legal_mandate_delivery", "city_fit"], "language": "pt"},
+        ),
+    ],
+)
+async def test_read_passes_validated_view_and_paging_arguments(
+    capability_id: str, arguments: dict[str, Any], expected_extra: dict[str, Any]
+) -> None:
+    """Scope, type, paging and chapter selection reach Core as validated input."""
     client = _StubClient()
     tools, _, _ = _build(client)
 
     result = await _call(
         tools,
         "native_input_read",
-        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.output_plan.context", "language": "pt"},
+        {"catalogId": "catalog-1", "capabilityId": capability_id, **arguments},
+    )
+
+    assert result["success"] is True
+    sent = client.requests[0]["request_payload"]["input"]
+    assert sent == {
+        "city_id": "city-1",
+        "inventory_id": "inventory-1",
+        "language": "en",
+        **expected_extra,
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("capability_id", "arguments"),
+    [
+        ("hiap.inventory.context", {"scope": "all"}),
+        ("hiap.inventory.context", {"type": "mitigation_x"}),
+        ("hiap.inventory.context", {"limit": 0}),
+        ("hiap.inventory.context", {"limit": 51}),
+        ("hiap.inventory.context", {"limit": True}),
+        ("hiap.inventory.context", {"offset": -1}),
+        ("hiap.inventory.context", {"offset": "5"}),
+        ("hiap.inventory.context", {"chapters": ["city_fit"]}),
+        ("hiap_meed.ranking.context", {"scope": "ranked"}),
+        ("hiap_meed.ranking.context", {"chapters": ["city_fit"]}),
+        ("hiap_meed.output_plan.context", {"limit": 5}),
+        ("hiap_meed.output_plan.context", {"chapters": ["not_a_chapter"]}),
+        ("hiap_meed.output_plan.context", {"chapters": "city_fit"}),
+        ("hiap.action_plan.context", {"language": "pt"}),
+        ("hiap.action_plan.context", {"limit": 5}),
+        ("ghgi.inventory.status_overview", {"offset": 0}),
+    ],
+)
+async def test_read_rejects_arguments_a_capability_does_not_accept(
+    capability_id: str, arguments: dict[str, Any]
+) -> None:
+    """Out-of-range or capability-foreign arguments never reach Core."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": capability_id, **arguments},
     )
 
     assert result["error_code"] == "invalid_arguments"
     assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_read_builds_the_plan_capability_request_without_language() -> None:
+    """The implementation plan read carries only captured scope."""
+    client = _StubClient()
+    tools, _, _ = _build(client)
+
+    result = await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "hiap.action_plan.context"},
+    )
+
+    assert result["success"] is True
+    assert client.requests[0]["request_payload"]["input"] == {
+        "city_id": "city-1",
+        "inventory_id": "inventory-1",
+    }
+
+
+@pytest.mark.asyncio
+async def test_discovery_exposes_a_safe_display_name_for_plan_entries() -> None:
+    """A stored display name reaches the model; entries without one stay unchanged."""
+    discovery = NativeInputDiscovery(
+        entries=(
+            {
+                "catalog_id": "plan-1",
+                "kind": "hiap_action_plan",
+                "owning_module": "hiap",
+                "source_type": "action_plan",
+                "capability_ids": ("hiap.action_plan.context",),
+                "display_name": "Solar rooftops",
+            },
+            {
+                "catalog_id": "ranking-1",
+                "kind": "hiap_ranking",
+                "owning_module": "hiap",
+                "source_type": "hiap_ranking",
+                "capability_ids": ("hiap.inventory.context",),
+            },
+        )
+    )
+    tools, _, _ = _build(_StubClient(), service=_StubService(discovery))
+
+    result = await _call(tools, "native_input_discover", {})
+
+    entries = result["data"]["entries"]
+    assert entries[0]["displayName"] == "Solar rooftops"
+    assert "displayName" not in entries[1]
 
 
 @pytest.mark.asyncio

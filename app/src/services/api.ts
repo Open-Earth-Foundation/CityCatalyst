@@ -868,8 +868,12 @@ export const api = createApi({
           response.data,
         providesTags: ["UserData"],
       }),
-      getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
-        query: () => `/user/invites`,
+      getCityInvites: builder.query<
+        GetUserCityInvitesResponse[],
+        { inviteId?: string }
+      >({
+        query: ({ inviteId }) =>
+          inviteId ? `/user/invites?inviteId=${inviteId}` : `/user/invites`,
         transformResponse: (response: { data: GetUserCityInvitesResponse[] }) =>
           response.data,
         providesTags: ["Invites"],
@@ -2350,14 +2354,23 @@ export const api = createApi({
           inventoryId: string;
           importedFileId: string;
           mappingOverrides?: Record<string, unknown>;
+          /** Confirmed by the user: the file replaces the inventory's existing data. */
+          replaceExisting?: boolean;
         }
       >({
-        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+        query: ({
+          cityId,
+          inventoryId,
+          importedFileId,
+          mappingOverrides,
+          replaceExisting,
+        }) => ({
           url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
           method: "POST",
           body: {
             importedFileId,
             mappingOverrides,
+            replaceExisting,
           },
         }),
         transformResponse: (response: {

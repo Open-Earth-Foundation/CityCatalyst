@@ -161,10 +161,15 @@ class NativeInputCatalogService:
         if any(not isinstance(capability_id, str) for capability_id in capability_ids):
             return None
 
-        return {
+        safe_entry: dict[str, Any] = {
             "catalog_id": entry["catalog_id"],
             "kind": entry["kind"],
             "owning_module": entry["owning_module"],
             "source_type": entry["source_type"],
             "capability_ids": tuple(capability_ids),
         }
+        labels = entry.get("labels")
+        display_name = labels.get("display_name") if isinstance(labels, dict) else None
+        if isinstance(display_name, str) and 0 < len(display_name) <= 200:
+            safe_entry["display_name"] = display_name
+        return safe_entry

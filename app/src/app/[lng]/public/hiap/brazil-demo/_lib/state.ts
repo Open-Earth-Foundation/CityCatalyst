@@ -33,6 +33,7 @@ const EMPTY_STATE: DemoTrackState = {
   preferences: EMPTY_PREFERENCES,
   generatedAt: null,
   visited: {},
+  cityOrder: [],
 };
 
 const EVENT = "hiap-br-demo:changed";
@@ -53,6 +54,7 @@ function parse(raw: string | null): DemoTrackState {
       },
       generatedAt: parsed.generatedAt ?? null,
       visited: parsed.visited ?? {},
+      cityOrder: parsed.cityOrder ?? [],
     };
   } catch {
     return EMPTY_STATE;
@@ -142,7 +144,20 @@ export function useDemoState(city: string, track: DemoTrack) {
     [update],
   );
 
+  const setCityOrder = useCallback(
+    (cityOrder: string[]) => update((s) => ({ ...s, cityOrder })),
+    [update],
+  );
+
   const reset = useCallback(() => update(() => EMPTY_STATE), [update]);
 
-  return { state, isReady, setPreferences, markVisited, markGenerated, reset };
+  return {
+    state,
+    isReady,
+    setPreferences,
+    markVisited,
+    markGenerated,
+    setCityOrder,
+    reset,
+  };
 }

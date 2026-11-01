@@ -1625,7 +1625,7 @@ export async function updateHiapActionSelections({
     updatedCount += unrankedActionIds.length;
   }
 
-  await syncHIAPSelections({ inventoryId, actionType, authorId });
+  await syncHIAPSelections({ inventoryId, actionType });
 
   return updatedCount;
 }

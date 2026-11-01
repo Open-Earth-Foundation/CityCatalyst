@@ -43,6 +43,7 @@ export default function SetInventoryDetailsStep({
   setSelectedInventoryGoalValue,
   setSelectedGlobalWarmingPotentialValue,
   yearAlreadyExists,
+  replaceOnImport,
   selectedYear,
 }: {
   t: TFunction;
@@ -58,6 +59,8 @@ export default function SetInventoryDetailsStep({
   selectedGlobalWarmingPotentialValue?: string;
   setSelectedGlobalWarmingPotentialValue: (value: string) => void;
   yearAlreadyExists?: boolean;
+  /** Upload flow: a year with data is allowed, the import replaces that data after confirmation. */
+  replaceOnImport?: boolean;
   selectedYear?: number | null;
 }) {
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
@@ -172,12 +175,16 @@ export default function SetInventoryDetailsStep({
             />
             <Box>
               <Text fontWeight="bold" color="content.primary">
-                {t("inventory-year-already-exists-title")}
+                {t("inventory-year-has-data-title")}
               </Text>
               <Text fontSize="body.md" color="content.secondary">
-                {t("inventory-year-already-exists-description", {
-                  year: selectedYear,
-                })}
+                {replaceOnImport
+                  ? t("inventory-year-has-data-replace-description", {
+                      year: selectedYear,
+                    })
+                  : t("inventory-year-has-data-blocked-description", {
+                      year: selectedYear,
+                    })}
               </Text>
             </Box>
           </Box>

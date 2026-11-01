@@ -234,7 +234,13 @@ jobs:
           kubectl create -f k8s/test/cc-test-migrate.yml -n default
           kubectl create -f k8s/test/cc-test-seed.yml -n default
           kubectl apply -f k8s/test/cc-test-sync-catalogue.yml -n default
+          # Batch every cc-test-web change below into a single rollout; resume even if a later command fails
+          kubectl rollout pause deployment/cc-test-web-deploy -n default
+          trap 'kubectl rollout resume deployment/cc-test-web-deploy -n default 2>/dev/null || true' EXIT
           kubectl apply -f k8s/test/cc-test-web-deploy.yml -n default
+          kubectl set image deployment/cc-test-web-deploy \
+            cc-test-web=ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }} \
+            -n default
           kubectl apply -f k8s/cc-web-pdb.yml -n default || echo "PDB apply skipped (requires policy API permissions)"
           kubectl set env deployment/cc-test-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
@@ -291,8 +297,15 @@ jobs:
           kubectl apply -f k8s/test/cc-test-process-bulk-inventory-import.yml -n default
           kubectl set env cronjob/citycatalyst-test-process-bulk-inventory-import \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
-          kubectl rollout restart deployment cc-test-web-deploy -n default
-          kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s
+          kubectl rollout resume deployment/cc-test-web-deploy -n default
+          kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=600s
+
+      - name: Rollout diagnostics
+        if: failure()
+        run: |
+          # No `describe pods`, logs or `-o yaml`: they print env values set via `kubectl set env` (secrets) in plain text
+          kubectl get rs,pods -l app=cc-test-web -n default -o wide || true
+          kubectl get events -n default --sort-by=.lastTimestamp | grep 'cc-test-web-deploy' | tail -60 || true
 
       - name: Notify Slack - Deployment Success
         if: steps.deploy.outputs.status == 'success'

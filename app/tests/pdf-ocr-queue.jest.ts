@@ -33,6 +33,16 @@ const getFilePrefix = jest.fn<AsyncMock>();
 const createSignedDownloadUrl = jest.fn<AsyncMock>();
 const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
+const extraction = {
+  rows: [{ sector: "Energy", totalCO2e: 12 }],
+  summary: {
+    reportedTotals: [],
+    droppedRows: {},
+    importedSum: 12,
+    yearAssumed: false,
+    targetYear: 2024,
+  },
+};
 const convertPdfUrlToMarkdown = jest.fn<AsyncMock>();
 const pdfFindByPk = jest.fn<AsyncMock>();
 const syncGHGIImportedInventorySource = jest.fn<AsyncMock>();
@@ -44,11 +54,7 @@ class MistralOcrError extends Error {
   code: string;
   retryable: boolean;
 
-  constructor(
-    code = "mistral_unavailable",
-    retryable = true,
-    message = code,
-  ) {
+  constructor(code = "mistral_unavailable", retryable = true, message = code) {
     super(message);
     this.code = code;
     this.retryable = retryable;
@@ -90,7 +96,7 @@ jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
   convertPdfUrlToMarkdown,
 }));
 jest.unstable_mockModule("@/backend/InventoryExtractionService", () => ({
-  extractInventoryRowsFromDocument: extractRows,
+  extractInventoryFromDocument: extractRows,
 }));
 jest.unstable_mockModule("@/backend/GHGINativeInputCatalogService", () => ({
   syncGHGIImportedInventorySource,
@@ -514,7 +520,7 @@ describe("PdfOcrJob queue", () => {
     );
     extractRows
       .mockRejectedValueOnce(new Error("row extraction failed"))
-      .mockResolvedValueOnce([{ sector: "Energy", totalCO2e: 12 }]);
+      .mockResolvedValueOnce(extraction);
     importedUpdate.mockImplementation(async (values) => {
       Object.assign(importedFile, values);
       return [1];
@@ -527,6 +533,12 @@ describe("PdfOcrJob queue", () => {
     importedFile.importStatus = "extracting";
     await extractInventoryRowsFromStoredMarkdown(job, "extractor-2");
     expect(importedFile.importStatus).toBe("waiting_for_approval");
+    expect(importedFile.mappingConfiguration).toEqual(
+      expect.objectContaining({
+        rows: extraction.rows,
+        extractionSummary: extraction.summary,
+      }),
+    );
     expect(getTextFile).toHaveBeenCalledTimes(2);
     expect(convertPdfUrlToMarkdown).not.toHaveBeenCalled();
   });
@@ -549,7 +561,7 @@ describe("PdfOcrJob queue", () => {
     importedFindByPk.mockResolvedValue(importedFile);
     inventoryFindByPk.mockResolvedValue({ year: 2024 });
     getTextFile.mockResolvedValue("OCR Markdown");
-    extractRows.mockResolvedValue([{ sector: "Energy", totalCO2e: 12 }]);
+    extractRows.mockResolvedValue(extraction);
     pdfOcrUpdate.mockResolvedValue([0]);
 
     await extractInventoryRowsFromStoredMarkdown(job, "stale-extractor");
@@ -848,9 +860,7 @@ describe("PdfOcrJob queue", () => {
   });
 });
 
-function claimableJob(
-  values: Record<string, unknown>,
-): {
+function claimableJob(values: Record<string, unknown>): {
   update: (next: Record<string, unknown>) => Promise<void>;
 } & Record<string, unknown> {
   const job: {

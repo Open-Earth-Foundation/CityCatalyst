@@ -8,6 +8,16 @@ import {
   draftRunStatusLabel,
   formatDraftRunUpdatedAt,
 } from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
+import {
+  proposalLabel,
+  proposalRationaleLabel,
+  sourceGeographyLabel,
+} from "@/components/StationaryEnergyDraft/utils";
+import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
+import { nameToI18NKey } from "@/util/helpers";
+import esData from "@/i18n/locales/es/data.json";
+import enAgentic from "@/i18n/locales/en/stationary-energy-agentic.json";
+import esAgentic from "@/i18n/locales/es/stationary-energy-agentic.json";
 import { draftFixture } from "./fixtures/stationary-energy-draft";
 
 describe("stationary energy draft display", () => {
@@ -47,6 +57,104 @@ describe("stationary energy draft display", () => {
     expect(formatDraftRunUpdatedAt(t, "invalid timestamp", "fr")).toBe(
       "drafts-panel-updated-at-unavailable",
     );
+  });
+
+  it("translates GPC names and scope in proposal labels", () => {
+    const es = esData as Record<string, string>;
+    const t = ((key: string, options?: { defaultValue?: string }) =>
+      es[key] ?? options?.defaultValue ?? key) as Parameters<
+      typeof proposalLabel
+    >[1];
+    const proposal = draftFixture().proposals[0];
+    proposal.target_ref = {
+      ...proposal.target_ref,
+      subsector_name: "Residential Buildings",
+      subcategory_name:
+        "Emissions From Fuel Combustion Within The City Boundary",
+      scope_name: "Scope 1",
+    };
+
+    expect(proposalLabel(proposal, t)).toBe(
+      `${es["residential-buildings"]} / ${es["emissions-from-fuel-combustion-within-the-city-boundary"]} / ${es.scope} 1`,
+    );
+    expect(proposalLabel(proposal)).toBe(
+      "Residential Buildings / Emissions From Fuel Combustion Within The City Boundary / Scope 1",
+    );
+  });
+
+  it("has data translations for every stationary energy GPC name", () => {
+    const es = esData as Record<string, string>;
+    // Mirrors the backend friendlyLabel() formatting of target_ref names.
+    const missing = (
+      gpcReferenceTable as {
+        sector: string;
+        subsector: string;
+        subcategoryName: string;
+      }[]
+    )
+      .filter((row) => row.sector === "stationary-energy")
+      .flatMap((row) => [row.subsector, row.subcategoryName])
+      .map((name) => nameToI18NKey(name.replace(/[-_]+/g, " ")))
+      .filter((key) => !es[key]);
+
+    expect(missing).toEqual([]);
+  });
+
+  it("translates source geography labels", () => {
+    const es = esAgentic as Record<string, string>;
+    const t = ((key: string) => es[key] ?? key) as Parameters<
+      typeof sourceGeographyLabel
+    >[1];
+
+    expect(sourceGeographyLabel("locode", t)).toBe("ciudad");
+    expect(sourceGeographyLabel("country", t)).toBe("país");
+    expect(sourceGeographyLabel("global", t)).toBeNull();
+    expect(sourceGeographyLabel("country")).toBe("country");
+  });
+
+  it("translates the review card rationale instead of the English backend text", () => {
+    const es = esAgentic as Record<string, string>;
+    const t = ((key: string, opts?: Record<string, string>) =>
+      (es[key] ?? key).replace(
+        "{{- notation}}",
+        opts?.notation ?? "",
+      )) as Parameters<typeof proposalRationaleLabel>[1];
+    const proposal = {
+      proposal_id: "p1",
+      target_ref: {},
+      alternative_candidate_ids: [],
+      rationale:
+        "Single applicable source; value taken directly from the connected dataset.",
+      status: "ready",
+    };
+
+    expect(proposalRationaleLabel(proposal, t)).toBe(
+      es["review-rationale-single-source"],
+    );
+    expect(
+      proposalRationaleLabel(
+        {
+          ...proposal,
+          status: "gap",
+          proposed_value: { notation_key: "NO" },
+        },
+        t,
+      ),
+    ).toBe("La fuente conectada reporta No ocurre (NO) para esta fila.");
+    expect(
+      proposalRationaleLabel({ ...proposal, status: "future_status" }, t),
+    ).toBe(proposal.rationale);
+  });
+
+  it("has no English leftovers in the Spanish stationary energy copy", () => {
+    // Values that read the same in both languages.
+    const sameInBoth = new Set(["Sector", "Clima", "Manual"]);
+    const es = esAgentic as Record<string, string>;
+    const untranslated = Object.entries(enAgentic)
+      .filter(([key, value]) => es[key] === value && !sameInBoth.has(value))
+      .map(([key]) => key);
+
+    expect(untranslated).toEqual([]);
   });
 
   it("maps proposals into artifact row states", () => {

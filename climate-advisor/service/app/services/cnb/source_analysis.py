@@ -359,7 +359,7 @@ async def extract_chapter_evidence(
     budget = settings.llm.generation.prompt_budget.cnb_sources
     tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
     reader_model = settings.llm.models.cnb_source_reader
-    client, owns_client = _resolve_analysis_client(settings, client)
+    client, owns_client = resolve_analysis_client(settings, client)
     reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
     context = {"source_label": source_label, "chapters": list(chapters)}
     try:
@@ -453,7 +453,7 @@ async def _select_chapter_excerpts(
     candidates in document order.
     """
     quota = settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpts
-    selection = await _run_agent(
+    selection = await run_agent(
         name="Concept Note chapter evidence selector",
         prompt=settings.llm.prompts.get_prompt("cnb_source_chapter_evidence_selection"),
         model_config=settings.llm.models.cnb_source_synthesizer,

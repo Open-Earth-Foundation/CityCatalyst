@@ -256,7 +256,7 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "concept_note_edit_propose" in composed
     assert "concept_note_render_visual" in composed
-    urls_in_composed = re.findall(r"https?://[^\s)>'\"]+", composed)
+    urls_in_composed = re.findall(r"https?://[^\s)>'\"`]+", composed)
     assert any(
         parsed.scheme == "https" and parsed.hostname == "cdn.jsdelivr.net"
         for parsed in (urlparse(url) for url in urls_in_composed)

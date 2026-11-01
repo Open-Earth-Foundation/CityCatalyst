@@ -1,3 +1,5 @@
+import type { CoarseFileKind } from "./coarse-kind";
+
 export const INGEST_MODULES = ["test", "ghgi", "ccra", "cnb"] as const;
 export type IngestModuleId = (typeof INGEST_MODULES)[number];
 
@@ -105,6 +107,8 @@ export interface IngestItemRecord {
   coverageYears: number[];
   result?: Record<string, unknown> | null;
   buffer?: Buffer | null;
+  /** Set by Core at coarse detect (stage 4a). */
+  coarseKind?: CoarseFileKind | null;
 }
 
 export class IngestItemError extends Error {

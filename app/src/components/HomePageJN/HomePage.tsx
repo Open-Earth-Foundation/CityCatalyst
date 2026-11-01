@@ -249,7 +249,13 @@ export default function HomePage({
             numberFormat={userInfo?.numberFormat}
           />
 
-          <Box display="flex" mx="auto" w="full" maxW="1090px">
+          <Box
+            display="flex"
+            mx="auto"
+            w="full"
+            maxW="1090px"
+            px={{ base: 4, md: 0 }}
+          >
             <VStack align="start" w="full">
               <ActionCards
                 t={t}
@@ -265,6 +271,7 @@ export default function HomePage({
             h="full"
             w="full"
             maxW="1090px"
+            px={{ base: 4, md: 0 }}
             pb="100px"
             bg="background.backgroundLight"
             mx="auto"

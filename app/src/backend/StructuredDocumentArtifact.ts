@@ -231,7 +231,7 @@ function normalizePage(page: Record<string, unknown>): NormalizedPage {
     page.blocks,
     pageIndex,
     dimensions,
-    new Set(images.map((image) => image.image_id)),
+    images,
   );
   const blocks = normalized.blocks;
   assignHierarchy(blocks, normalized.providerLevels);
@@ -257,7 +257,7 @@ function normalizeBlocks(
   raw: unknown,
   pageIndex: number,
   dimensions: PageDimensions,
-  knownImageIds: Set<string>,
+  images: NormalizedImage[],
 ): { blocks: NormalizedBlock[]; providerLevels: Array<number | null> } {
   if (raw == null) {
     throw malformed(`Page ${pageIndex} is missing blocks`);
@@ -265,6 +265,7 @@ function normalizeBlocks(
   if (!Array.isArray(raw)) {
     throw malformed(`Page ${pageIndex} blocks must be an array`);
   }
+  const knownImageIds = new Set(images.map((image) => image.image_id));
   const providerLevels: Array<number | null> = [];
   const blocks = raw.map((block, readingOrderIndex) => {
     if (!isRecord(block)) {
@@ -306,13 +307,32 @@ function normalizeBlocks(
       );
       markdownImageId = null;
     }
+    let relatedImageId = providerImageId ?? markdownImageId;
+    // Mistral sometimes returns a block `image_id` that differs from the image written in
+    // the block's own markdown (seen on Philadelphia, Toronto 2020 and Miami). Trust
+    // whichever id belongs to the page image drawn at the block's position; if neither
+    // does, drop the link instead of guessing. In `none` mode the document is kept;
+    // `visual_context` requires a linked annotation and fails validation if absent.
     if (
       providerImageId &&
       markdownImageId &&
       providerImageId !== markdownImageId
     ) {
-      throw malformed(
-        `Page ${pageIndex} block ${readingOrderIndex} image id does not match its markdown reference`,
+      relatedImageId =
+        [markdownImageId, providerImageId].find((id) =>
+          imageAtBlockPosition(images, id, boxes.bbox_px),
+        ) ?? null;
+      logger.warn(
+        {
+          pageIndex,
+          blockIndex: readingOrderIndex,
+          providerImageId,
+          markdownImageId,
+          resolvedImageId: relatedImageId,
+        },
+        relatedImageId
+          ? "Mistral OCR block image id differs from its markdown reference; resolved by position"
+          : "Mistral OCR block image id differs from its markdown reference; no image at the block position, link dropped",
       );
     }
     providerLevels.push(readProviderLevel(block.level));
@@ -333,12 +353,31 @@ function normalizeBlocks(
       confidence_metric: confidence?.metric ?? null,
       bbox_px: boxes.bbox_px,
       bbox_norm: boxes.bbox_norm,
-      related_image_id: providerImageId ?? markdownImageId,
+      related_image_id: relatedImageId,
       related_table_id: optionalIdentifier(block.table_id),
     };
     return normalized;
   });
   return { blocks, providerLevels };
+}
+
+const BBOX_TOLERANCE_PX = 2;
+
+function imageAtBlockPosition(
+  images: NormalizedImage[],
+  imageId: string,
+  box: BoundingBoxPx,
+): boolean {
+  const image = images.find((candidate) => candidate.image_id === imageId);
+  if (!image) return false;
+  return (
+    Math.abs(image.bbox_px.top_left_x - box.top_left_x) <= BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.top_left_y - box.top_left_y) <= BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.bottom_right_x - box.bottom_right_x) <=
+      BBOX_TOLERANCE_PX &&
+    Math.abs(image.bbox_px.bottom_right_y - box.bottom_right_y) <=
+      BBOX_TOLERANCE_PX
+  );
 }
 
 function assignHierarchy(

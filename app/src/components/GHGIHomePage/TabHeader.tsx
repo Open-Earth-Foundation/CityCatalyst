@@ -73,6 +73,7 @@ export function TabHeader({
             display="flex"
             alignItems="center"
             justifyContent="space-between"
+            flexWrap="wrap"
             gap={3}
             w="full"
           >
@@ -97,7 +98,7 @@ export function TabHeader({
               </Button>
             )}
           </Box>
-          <Box display="flex" alignItems="center" gap={3}>
+          <Box display="flex" flexWrap="wrap" alignItems="center" gap={3}>
             <Badge>
               <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
               {t("year")}: {inventory?.year}

@@ -512,12 +512,8 @@ const JNDrawer = ({
   const navigateToCity = useCitySwitchNavigation(lng);
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
-  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
-    undefined,
-    {
-      skip: !isOpen,
-    },
-  );
+  // Load orgs with the page so the drawer can show the org select immediately.
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery();
   const organizations = useMemo(
     () =>
       rawOrganizations &&

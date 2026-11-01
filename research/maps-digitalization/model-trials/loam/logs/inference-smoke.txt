@@ -1,0 +1,3 @@
+STRICT_LOAD <All keys matched successfully>
+MODEL 31061202 parameters CPU 2.5.1+cpu
+{"name": "porto-heat", "class": 0, "tile": [0, 0, 1024, 256], "tile_s": 2.708302899962291, "tiles": 1, "peak_rss_mb": 993.23828125}

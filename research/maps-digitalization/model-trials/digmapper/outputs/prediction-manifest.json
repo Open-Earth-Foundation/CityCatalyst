@@ -1,0 +1,8 @@
+{
+  "status": "no_predictions",
+  "reason": "No released full DIGMAPPER workflow or TOPAZ implementation/checkpoint located. Paper-linked layout weights unavailable; Detectron2 installation failed. GPT-4o calls prohibited by trial scope.",
+  "masks": [],
+  "geojson": [],
+  "overlay_status": "source_only_with_explicit_blocked_notice",
+  "no_empty_masks_fabricated": true
+}

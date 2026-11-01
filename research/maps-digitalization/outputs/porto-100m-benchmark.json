@@ -1,0 +1,240 @@
+{
+  "scope": "Porto Alegre heat only; existing 100m export, no parameter tuning or other hazards regenerated",
+  "evaluation": "Descriptive rerun on previously observed hash-selected 3km test blocks; not a new blind test; no spatial buffer",
+  "reference": "Same-author indexed numerical PNG derivative, original TIFF provenance unauthenticated; not ground survey truth",
+  "eligibility": "100m: >=3 valid reference pixels, ceil(15*(100/250)^2); 250m: >=15. Sensitivity at 1 and 5 pixels for 100m.",
+  "support_change": "PDF acceptance is >=3 recognized pixels at 100m versus >=8 at 250m; resolution and support both changed.",
+  "inputs": {
+    "100": {
+      "path": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-experimental-100m\\heat.geojson",
+      "sha256": "11817a918343b4cab962a5f1d7e6a4080c11e35807710734e097b6bf366b8d19"
+    },
+    "250": {
+      "path": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-experimental\\heat.geojson",
+      "sha256": "5b653d384e56f97ccca5f3164155c7c2bd0faa44b3e8d85bd57cb23a5b6bb2bc"
+    }
+  },
+  "reference_png_sha256": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+  "manifest_sha256": "6f2336eb529a192c15a85f6e05c2bd05e2ce9381c8a8be031e910ce67d8e0c08",
+  "script_sha256": "2bc7aeb3a0554d8d5dfb3b5abf0cdb68eac389d9951421a37a369ea0af863c32",
+  "native_grid": {
+    "100": {
+      "test": {
+        "eligible": 3374,
+        "common": 3219,
+        "missing": 155,
+        "missing_pct": 4.593953764078246,
+        "exact_common_pct": 77.44641192917055,
+        "exact_all_pct": 73.88855957320688,
+        "bias": 0.014996187512478618,
+        "mae": 0.05568400446013806,
+        "high_reference_count": 588,
+        "high_true_positive_count": 501,
+        "high_predicted_common_count": 712,
+        "high_recall_pct": 85.20408163265306,
+        "high_precision_common_pct": 70.36516853932584,
+        "predicted_cells": 3331,
+        "predicted_zero_reference_cells": 49,
+        "predicted_zero_reference_pct": 1.471029720804563,
+        "predicted_low_reference_cells": 63,
+        "predicted_low_reference_pct": 1.8913239267487243
+      },
+      "all": {
+        "eligible": 21660,
+        "common": 20231,
+        "missing": 1429,
+        "missing_pct": 6.59741458910434,
+        "exact_common_pct": 73.11057288319905,
+        "exact_all_pct": 68.28716528162512,
+        "bias": 0.006494218174155975,
+        "mae": 0.062441792365717785,
+        "high_reference_count": 3338,
+        "high_true_positive_count": 2700,
+        "high_predicted_common_count": 4442,
+        "high_recall_pct": 80.88675853804673,
+        "high_precision_common_pct": 60.783430886987844,
+        "predicted_cells": 21195,
+        "predicted_zero_reference_cells": 426,
+        "predicted_zero_reference_pct": 2.009907997169144,
+        "predicted_low_reference_cells": 538,
+        "predicted_low_reference_pct": 2.538334512856806
+      }
+    },
+    "250": {
+      "test": {
+        "eligible": 574,
+        "common": 569,
+        "missing": 5,
+        "missing_pct": 0.8710801393728222,
+        "exact_common_pct": 83.12829525483303,
+        "exact_all_pct": 82.40418118466899,
+        "bias": 0.011276502529613338,
+        "mae": 0.03830968615381222,
+        "high_reference_count": 81,
+        "high_true_positive_count": 74,
+        "high_predicted_common_count": 107,
+        "high_recall_pct": 91.35802469135803,
+        "high_precision_common_pct": 69.1588785046729,
+        "predicted_cells": 595,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0,
+        "predicted_low_reference_cells": 26,
+        "predicted_low_reference_pct": 4.369747899159663
+      },
+      "all": {
+        "eligible": 3809,
+        "common": 3735,
+        "missing": 74,
+        "missing_pct": 1.942767130480441,
+        "exact_common_pct": 80.10709504685408,
+        "exact_all_pct": 78.55080073510108,
+        "bias": 0.0019659504602011495,
+        "mae": 0.044146504602968255,
+        "high_reference_count": 469,
+        "high_true_positive_count": 421,
+        "high_predicted_common_count": 620,
+        "high_recall_pct": 89.76545842217485,
+        "high_precision_common_pct": 67.90322580645162,
+        "predicted_cells": 4031,
+        "predicted_zero_reference_cells": 15,
+        "predicted_zero_reference_pct": 0.37211610022326963,
+        "predicted_low_reference_cells": 281,
+        "predicted_low_reference_pct": 6.9709749441825855
+      }
+    }
+  },
+  "same_reference_pixels": {
+    "100": {
+      "all_eligible_locations": {
+        "eligible": 36704,
+        "common": 35713,
+        "missing": 991,
+        "missing_pct": 2.699978204010462,
+        "exact_common_pct": 75.958334500042,
+        "exact_all_pct": 73.90747602441151,
+        "bias": 0.019879791009309245,
+        "mae": 0.05856449370155534,
+        "high_reference_count": 7204,
+        "high_true_positive_count": 5818,
+        "high_predicted_common_count": 8288,
+        "high_recall_pct": 80.76068850638534,
+        "high_precision_common_pct": 70.19787644787645
+      },
+      "locations_predicted_by_both": {
+        "eligible": 35452,
+        "common": 35452,
+        "missing": 0,
+        "missing_pct": 0.0,
+        "exact_common_pct": 76.14238971003046,
+        "exact_all_pct": 76.14238971003046,
+        "bias": 0.02015741337781632,
+        "mae": 0.05807257596824404,
+        "high_reference_count": 7180,
+        "high_true_positive_count": 5818,
+        "high_predicted_common_count": 8261,
+        "high_recall_pct": 81.03064066852367,
+        "high_precision_common_pct": 70.4273090424888
+      }
+    },
+    "250": {
+      "all_eligible_locations": {
+        "eligible": 36704,
+        "common": 36224,
+        "missing": 480,
+        "missing_pct": 1.3077593722755012,
+        "exact_common_pct": 74.63007950530036,
+        "exact_all_pct": 73.65409764603314,
+        "bias": 0.017598404915840273,
+        "mae": 0.05612717236988686,
+        "high_reference_count": 7204,
+        "high_true_positive_count": 5363,
+        "high_predicted_common_count": 7870,
+        "high_recall_pct": 74.44475291504719,
+        "high_precision_common_pct": 68.1448538754765
+      },
+      "locations_predicted_by_both": {
+        "eligible": 35452,
+        "common": 35452,
+        "missing": 0,
+        "missing_pct": 0.0,
+        "exact_common_pct": 74.87024709466321,
+        "exact_all_pct": 74.87024709466321,
+        "bias": 0.01721012365979007,
+        "mae": 0.05552118745884754,
+        "high_reference_count": 7180,
+        "high_true_positive_count": 5342,
+        "high_predicted_common_count": 7766,
+        "high_recall_pct": 74.40111420612813,
+        "high_precision_common_pct": 68.78702034509399
+      }
+    }
+  },
+  "sensitivity_100m": {
+    "1": {
+      "eligible": 3531,
+      "common": 3282,
+      "missing": 249,
+      "missing_pct": 7.051826677994902,
+      "exact_common_pct": 76.56916514320537,
+      "exact_all_pct": 71.16964032851884,
+      "bias": 0.011800233382198037,
+      "mae": 0.05760086156079333,
+      "high_reference_count": 589,
+      "high_true_positive_count": 501,
+      "high_predicted_common_count": 712,
+      "high_recall_pct": 85.05942275042445,
+      "high_precision_common_pct": 70.36516853932584,
+      "predicted_cells": 3331,
+      "predicted_zero_reference_cells": 49,
+      "predicted_zero_reference_pct": 1.471029720804563,
+      "predicted_low_reference_cells": 0,
+      "predicted_low_reference_pct": 0.0
+    },
+    "3": {
+      "eligible": 3374,
+      "common": 3219,
+      "missing": 155,
+      "missing_pct": 4.593953764078246,
+      "exact_common_pct": 77.44641192917055,
+      "exact_all_pct": 73.88855957320688,
+      "bias": 0.014996187512478618,
+      "mae": 0.05568400446013806,
+      "high_reference_count": 588,
+      "high_true_positive_count": 501,
+      "high_predicted_common_count": 712,
+      "high_recall_pct": 85.20408163265306,
+      "high_precision_common_pct": 70.36516853932584,
+      "predicted_cells": 3331,
+      "predicted_zero_reference_cells": 49,
+      "predicted_zero_reference_pct": 1.471029720804563,
+      "predicted_low_reference_cells": 63,
+      "predicted_low_reference_pct": 1.8913239267487243
+    },
+    "5": {
+      "eligible": 3228,
+      "common": 3131,
+      "missing": 97,
+      "missing_pct": 3.004956629491945,
+      "exact_common_pct": 78.18588310443948,
+      "exact_all_pct": 75.8364312267658,
+      "bias": 0.01862468778551164,
+      "mae": 0.053644068192682894,
+      "high_reference_count": 586,
+      "high_true_positive_count": 501,
+      "high_predicted_common_count": 711,
+      "high_recall_pct": 85.49488054607508,
+      "high_precision_common_pct": 70.46413502109705,
+      "predicted_cells": 3331,
+      "predicted_zero_reference_cells": 49,
+      "predicted_zero_reference_pct": 1.471029720804563,
+      "predicted_low_reference_cells": 151,
+      "predicted_low_reference_pct": 4.533173221254878
+    }
+  },
+  "checks": [
+    "100m and 250m physical test-block membership identical, including edge cases",
+    "250m reference values/counts and all stored heat metrics reproduced",
+    "same-reference-location comparison shares identical denominator",
+    "input hashes recorded; original exports and recovery settings unchanged"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "uv",
+    "pip",
+    "install",
+    "--python",
+    "./.venv/Scripts/python.exe",
+    "torch==2.0.1",
+    "torchvision==0.15.2",
+    "numpy<2",
+    "setuptools<80",
+    "pip",
+    "wheel"
+  ],
+  "cwd": ".",
+  "started_at": "2026-10-30T11:50:39.220987+00:00",
+  "timeout_s": 300,
+  "exit_code": 0,
+  "elapsed_s": 30.646,
+  "log": "logs\\install-torch.log"
+}

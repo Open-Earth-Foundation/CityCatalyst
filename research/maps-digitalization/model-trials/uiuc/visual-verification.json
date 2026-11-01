@@ -1,0 +1,9 @@
+{
+  "overlay_html_initial_render": "verified through T3 html_preview",
+  "width_css_pixels": 728,
+  "content_height_css_pixels": 1527,
+  "console_messages": [],
+  "alignment": "Original and predicted masks share identical crop bounds and pixel dimensions; see visuals/alignment.json",
+  "display": "T3 html_render using the verified HTML",
+  "limitation": "Initial rendering was inspected; button interactions were not separately browser-automated. PNGs and standalone HTML are saved."
+}

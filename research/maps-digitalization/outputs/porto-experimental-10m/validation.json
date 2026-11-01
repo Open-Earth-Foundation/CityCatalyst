@@ -1,0 +1,37 @@
+{
+  "grid_size_m": 10,
+  "grid_shape": [
+    4066,
+    3800
+  ],
+  "accepted_cells": 1856109,
+  "visible_cells": 7615,
+  "source_pixel_size_m": [
+    33.273904819403754,
+    29.91452445128898
+  ],
+  "method": "Nearest accepted source pixel at each 10m cell centre; no smoothing; no-data preserved",
+  "crs": "EPSG:31982",
+  "origin": [
+    462000.0,
+    6692000.0
+  ],
+  "encoding": "steps -1=no-data, 0..9 => midpoint value=(step+0.5)/10",
+  "release_status": "research_only_unbenchmarked_10m_resampling",
+  "source_sha256": "6a6555c7620e83cf05ee0f35fe7b737a5a42afadf53eab6fe5d029785fff82b3",
+  "grid_sha256": "bb8b4395bddc0bc9abb0e5a9074cb1f62fb641d7f81881f52c74f6120e160824",
+  "affine": {
+    "mx": 33.273904819403754,
+    "bx": 463723.71457547834,
+    "my": -29.91452445128898,
+    "by": 6693690.166613673,
+    "tick_fit_max_residual_m": 10.099382807326037,
+    "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+  },
+  "checks": [
+    "10m dimensions",
+    "nearest-source values and no-data preserved",
+    "compressed data readback identical",
+    "original image and crop unchanged"
+  ]
+}

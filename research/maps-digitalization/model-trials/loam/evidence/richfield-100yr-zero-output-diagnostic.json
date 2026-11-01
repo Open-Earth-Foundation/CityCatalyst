@@ -1,0 +1,9 @@
+{
+  "foreground_probability_min": 4.099700163351372e-05,
+  "foreground_probability_max": 0.4770195484161377,
+  "foreground_probability_mean": 0.00044755087583325803,
+  "preprocessing_positive_pixels": {
+    "v2": 157,
+    "v7": 157
+  }
+}

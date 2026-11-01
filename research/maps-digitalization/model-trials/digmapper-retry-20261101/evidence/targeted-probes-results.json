@@ -1,0 +1,230 @@
+[
+  {
+    "name": "docker-jterstriep-tags",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/tags/?page_size=100",
+    "checked_at_utc": "2026-11-01T09:23:58.489079+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/tags/?page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "864",
+      "x-ratelimit-reset": "1793525099",
+      "x-ratelimit-remaining": "177"
+    },
+    "truncated": false,
+    "file": "evidence/docker-jterstriep-tags.body",
+    "bytes": 864,
+    "sha256": "1c1a0735f673311e7b010357a5d7df0beaa2ece8aa0af1fefe2b8e46f29b6f83",
+    "elapsed_s": 0.318
+  },
+  {
+    "name": "docker-jterstriep-repos",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/?page_size=100",
+    "checked_at_utc": "2026-11-01T09:23:58.489662+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/repositories/jterstriep/?page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-ratelimit-reset": "1793525099",
+      "x-ratelimit-remaining": "176"
+    },
+    "truncated": false,
+    "file": "evidence/docker-jterstriep-repos.body",
+    "bytes": 12170,
+    "sha256": "ca4e46014b8c48fe311fb8d371d327e05443369b6d4c099b6d25251b3ad16394",
+    "elapsed_s": 0.294
+  },
+  {
+    "name": "github-jterstriep",
+    "url": "https://api.github.com/users/jterstriep/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:58.490345+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/users/jterstriep/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"cb231ca6e64e6b9c77be8a6bdbb34f70bf424323d495f0c8b486c5effcfc2536\"",
+      "X-RateLimit-Remaining": "37",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-jterstriep.body",
+    "bytes": 207575,
+    "sha256": "cb231ca6e64e6b9c77be8a6bdbb34f70bf424323d495f0c8b486c5effcfc2536",
+    "elapsed_s": 1.192
+  },
+  {
+    "name": "lab-publications",
+    "url": "https://knowledge-computing.github.io/publications.html",
+    "checked_at_utc": "2026-11-01T09:23:58.490617+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://knowledge-computing.github.io/publications.html",
+    "headers": {
+      "Content-Length": "6897",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Fri, 25 Sep 2026 14:07:47 GMT",
+      "ETag": "\"6ab68033-1af1\""
+    },
+    "truncated": false,
+    "file": "evidence/lab-publications.body",
+    "bytes": 6897,
+    "sha256": "8a254088ed5a02c7d02d3b5198f67da3288f7145bb2253fd1ea3784ad40f3e99",
+    "elapsed_s": 0.296
+  },
+  {
+    "name": "author-weiwei",
+    "url": "https://weiweiduan.github.io/",
+    "checked_at_utc": "2026-11-01T09:23:58.783448+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://weiweiduan.github.io/",
+    "headers": {
+      "Content-Length": "5161",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Thu, 01 Dec 2022 17:40:09 GMT",
+      "ETag": "\"6388e6f9-1429\""
+    },
+    "truncated": false,
+    "file": "evidence/author-weiwei.body",
+    "bytes": 5161,
+    "sha256": "08707d9411e270acc80e40a7fda6d8d41e5d1e0b645b5dd9922389a6db30e319",
+    "elapsed_s": 0.276
+  },
+  {
+    "name": "author-fandel",
+    "url": "https://fandel-lin.github.io/",
+    "checked_at_utc": "2026-11-01T09:23:58.786377+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://fandel-lin.github.io/",
+    "headers": {
+      "Content-Length": "47614",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Sat, 17 Oct 2026 09:57:31 GMT",
+      "ETag": "\"6ad3468b-b9fe\""
+    },
+    "truncated": false,
+    "file": "evidence/author-fandel.body",
+    "bytes": 47614,
+    "sha256": "c562d41efc43cb5d09ef9133457f063038794b5d51c9198f48594b2d91944d2a",
+    "elapsed_s": 0.306
+  },
+  {
+    "name": "github-weiwei-repos",
+    "url": "https://api.github.com/users/weiweiduan/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:58.806905+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/users/weiweiduan/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"a4b3ae20c2bc8f5b7784ad52246f4e672d361edce875f029e049692fcbb5cf2a\"",
+      "X-RateLimit-Remaining": "36",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-weiwei-repos.body",
+    "bytes": 79764,
+    "sha256": "a4b3ae20c2bc8f5b7784ad52246f4e672d361edce875f029e049692fcbb5cf2a",
+    "elapsed_s": 0.644
+  },
+  {
+    "name": "github-fandel-repos",
+    "url": "https://api.github.com/users/fandel-lin/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:59.059273+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/users/fandel-lin/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"88f0ef7a940708ce54adc6fdbc69b44f42461ddb8876f56083e8993ff7da8f3e\"",
+      "X-RateLimit-Remaining": "35",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-fandel-repos.body",
+    "bytes": 101055,
+    "sha256": "88f0ef7a940708ce54adc6fdbc69b44f42461ddb8876f56083e8993ff7da8f3e",
+    "elapsed_s": 0.875
+  },
+  {
+    "name": "github-yijun-repos",
+    "url": "https://api.github.com/users/linyijun/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:59.092654+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/users/linyijun/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"3062631a8364db17860300b56961d236549412e85cc03d28888626d5c3f3d11f\"",
+      "X-RateLimit-Remaining": "34",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-yijun-repos.body",
+    "bytes": 68289,
+    "sha256": "3062631a8364db17860300b56961d236549412e85cc03d28888626d5c3f3d11f",
+    "elapsed_s": 0.632
+  },
+  {
+    "name": "github-sofia-repos",
+    "url": "https://api.github.com/users/sofiakirsanova/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:59.450507+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/users/sofiakirsanova/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"2a3a57c7e4ab112a692d0e98bc69f4679bbbc3761762ce862eae69a385faf0a7\"",
+      "X-RateLimit-Remaining": "33",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-sofia-repos.body",
+    "bytes": 82292,
+    "sha256": "2a3a57c7e4ab112a692d0e98bc69f4679bbbc3761762ce862eae69a385faf0a7",
+    "elapsed_s": 0.735
+  },
+  {
+    "name": "github-usc-repos",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:23:59.682838+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"9c7195d36334c9338c4f1b7545c4b3828e2cffb0e0f84299f1e997fe08fce3b9\"",
+      "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=2>; rel=\"next\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"last\"",
+      "X-RateLimit-Remaining": "32",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/github-usc-repos.body",
+    "bytes": 568796,
+    "sha256": "9c7195d36334c9338c4f1b7545c4b3828e2cffb0e0f84299f1e997fe08fce3b9",
+    "elapsed_s": 2.103
+  },
+  {
+    "name": "candidate-release-zip",
+    "url": "https://github.com/cxp114/criticalmaas-uncharted-ta1/releases/download/v0.1.0/criticalmaas-windows-v0.1.0-onedir.zip",
+    "checked_at_utc": "2026-11-01T09:23:59.724945+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/1380761764/ef04ac55-26ec-4b7c-9d54-6a511f6ee10b?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-01T10%3A04%3A56Z&rscd=attachment%3B+filename%3Dcriticalmaas-windows-v0.1.0-onedir.zip&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-01T09%3A04%3A46Z&ske=2026-11-01T10%3A04%3A56Z&sks=b&skv=2018-11-09&sig=MM0O%2FLGgvzcQsGsHz2S5EVZJLwLlJdT9s2Iwk%2F4%2FhKk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MzUyNTM0MCwibmJmIjoxNzkzNTI1MDQwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1xoN_xS0Ojnj2n_kOsL5o_Njqy3hQ-meP1orpdhmBo4&response-content-disposition=attachment%3B%20filename%3Dcriticalmaas-windows-v0.1.0-onedir.zip&response-content-type=application%2Foctet-stream",
+    "headers": {
+      "Content-Length": "7480718",
+      "Last-Modified": "Wed, 23 Sep 2026 03:31:22 GMT",
+      "ETag": "\"0x8DF192323B8D4F9\"",
+      "Content-Type": "application/octet-stream"
+    },
+    "truncated": false,
+    "file": "evidence/candidate-release-zip.body",
+    "bytes": 7480718,
+    "sha256": "94c02406b4c908d073336f7e86997e1115bd0c88d74bd6c3cf31543b19762382",
+    "elapsed_s": 0.964
+  }
+]

@@ -1,0 +1,16 @@
+test_actual_geopdf_scale_and_corner_fit (__main__.RecoveryChecks.test_actual_geopdf_scale_and_corner_fit) ... ok
+test_all_delivered_geometry (__main__.RecoveryChecks.test_all_delivered_geometry) ... ok
+test_cell_geometry_and_input_validation (__main__.RecoveryChecks.test_cell_geometry_and_input_validation) ... ok
+test_clipping_fill_and_stroke_and_draw_order (__main__.RecoveryChecks.test_clipping_fill_and_stroke_and_draw_order) ... ok
+test_curve_fails_closed (__main__.RecoveryChecks.test_curve_fails_closed) ... ok
+test_exported_and_missing_disjoint (__main__.RecoveryChecks.test_exported_and_missing_disjoint) ... ok
+test_fill_rules_and_holes (__main__.RecoveryChecks.test_fill_rules_and_holes) ... ok
+test_missing_denominator_and_zero_reference (__main__.RecoveryChecks.test_missing_denominator_and_zero_reference) ... ok
+test_spatial_split_shared_block (__main__.RecoveryChecks.test_spatial_split_shared_block) ... ok
+test_support_missing_and_midpoints (__main__.RecoveryChecks.test_support_missing_and_midpoints) ... ok
+test_uint8_colour_input (__main__.RecoveryChecks.test_uint8_colour_input) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 3.853s
+
+OK

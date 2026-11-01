@@ -1,0 +1,369 @@
+{
+  "started_utc": "2026-10-30T11:58:20.527452+00:00",
+  "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+  "layers": {
+    "porto-heat": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-heat"
+          ],
+          "exit_code": 0,
+          "seconds": 13.33325860009063,
+          "peak_rss_mb": 302.66015625,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-heat-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-heat"
+          ],
+          "exit_code": 0,
+          "seconds": 272.96337300003506,
+          "peak_rss_mb": 998.73046875,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-heat-run.txt"
+        }
+      ]
+    },
+    "porto-flood": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-flood"
+          ],
+          "exit_code": 0,
+          "seconds": 11.277856700005941,
+          "peak_rss_mb": 290.9453125,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-flood-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-flood"
+          ],
+          "exit_code": 0,
+          "seconds": 374.5963925999822,
+          "peak_rss_mb": 1003.82421875,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-flood-run.txt"
+        }
+      ]
+    },
+    "richfield-inundation-100yr": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "richfield-inundation-100yr"
+          ],
+          "exit_code": 0,
+          "seconds": 8.230599600006826,
+          "peak_rss_mb": 198.69140625,
+          "stop_reason": null,
+          "log": "logs\\preprocess-richfield-inundation-100yr-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "richfield-inundation-100yr"
+          ],
+          "exit_code": 0,
+          "seconds": 23.697532999911346,
+          "peak_rss_mb": 978.24609375,
+          "stop_reason": null,
+          "log": "logs\\infer-richfield-inundation-100yr-run.txt"
+        }
+      ]
+    },
+    "porto-landslide": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-landslide"
+          ],
+          "exit_code": 0,
+          "seconds": 10.25106689997483,
+          "peak_rss_mb": 303.37109375,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-landslide-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-landslide"
+          ],
+          "exit_code": 0,
+          "seconds": 364.3036853999365,
+          "peak_rss_mb": 1006.00390625,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-landslide-run.txt"
+        }
+      ]
+    },
+    "porto-drought": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-drought"
+          ],
+          "exit_code": 0,
+          "seconds": 13.412108800024725,
+          "peak_rss_mb": 324.51953125,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-drought-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-drought"
+          ],
+          "exit_code": 0,
+          "seconds": 364.1707897000015,
+          "peak_rss_mb": 998.7109375,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-drought-run.txt"
+        }
+      ]
+    },
+    "porto-arbovirus": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-arbovirus"
+          ],
+          "exit_code": 0,
+          "seconds": 10.231880399980582,
+          "peak_rss_mb": 323.44140625,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-arbovirus-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-arbovirus"
+          ],
+          "exit_code": 0,
+          "seconds": 367.69926080002915,
+          "peak_rss_mb": 1098.75390625,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-arbovirus-run.txt"
+        }
+      ]
+    },
+    "porto-storm": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-storm"
+          ],
+          "exit_code": 0,
+          "seconds": 12.294824699987657,
+          "peak_rss_mb": 339.7265625,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-storm-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "porto-storm"
+          ],
+          "exit_code": 0,
+          "seconds": 367.6348169000121,
+          "peak_rss_mb": 1106.32421875,
+          "stop_reason": null,
+          "log": "logs\\infer-porto-storm-run.txt"
+        }
+      ]
+    },
+    "richfield-inundation-2yr": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "richfield-inundation-2yr"
+          ],
+          "exit_code": 0,
+          "seconds": 6.143350400030613,
+          "peak_rss_mb": 200.14453125,
+          "stop_reason": null,
+          "log": "logs\\preprocess-richfield-inundation-2yr-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "richfield-inundation-2yr"
+          ],
+          "exit_code": 0,
+          "seconds": 22.61884020001162,
+          "peak_rss_mb": 1046.4296875,
+          "stop_reason": null,
+          "log": "logs\\infer-richfield-inundation-2yr-run.txt"
+        }
+      ]
+    },
+    "richfield-inundation-10yr": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "richfield-inundation-10yr"
+          ],
+          "exit_code": 0,
+          "seconds": 6.14271069993265,
+          "peak_rss_mb": 203.01171875,
+          "stop_reason": null,
+          "log": "logs\\preprocess-richfield-inundation-10yr-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "richfield-inundation-10yr"
+          ],
+          "exit_code": 0,
+          "seconds": 23.71147550002206,
+          "peak_rss_mb": 1047.484375,
+          "stop_reason": null,
+          "log": "logs\\infer-richfield-inundation-10yr-run.txt"
+        }
+      ]
+    },
+    "richfield-inundation-mce100": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "richfield-inundation-mce100"
+          ],
+          "exit_code": 0,
+          "seconds": 7.172543699969538,
+          "peak_rss_mb": 200.3203125,
+          "stop_reason": null,
+          "log": "logs\\preprocess-richfield-inundation-mce100-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "richfield-inundation-mce100"
+          ],
+          "exit_code": 0,
+          "seconds": 22.63261670002248,
+          "peak_rss_mb": 982.234375,
+          "stop_reason": null,
+          "log": "logs\\infer-richfield-inundation-mce100-run.txt"
+        }
+      ]
+    },
+    "richfield-prioritization-score": {
+      "status": "succeeded",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "richfield-prioritization-score"
+          ],
+          "exit_code": 0,
+          "seconds": 7.212294600089081,
+          "peak_rss_mb": 216.71484375,
+          "stop_reason": null,
+          "log": "logs\\preprocess-richfield-prioritization-score-run.txt"
+        },
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "infer.py",
+            "richfield-prioritization-score"
+          ],
+          "exit_code": 0,
+          "seconds": 86.66035740007646,
+          "peak_rss_mb": 990.5,
+          "stop_reason": null,
+          "log": "logs\\infer-richfield-prioritization-score-run.txt"
+        }
+      ]
+    }
+  }
+}

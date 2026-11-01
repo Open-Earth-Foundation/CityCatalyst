@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pip",
+    "freeze"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper",
+  "started_at": "2026-10-30T11:57:09.159968+00:00",
+  "timeout_s": 30,
+  "exit_code": 0,
+  "elapsed_s": 1.016,
+  "log": "logs\\package-versions.log"
+}

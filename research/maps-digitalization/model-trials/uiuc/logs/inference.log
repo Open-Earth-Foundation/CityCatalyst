@@ -1,0 +1,91 @@
+START porto-heat 2026-10-30T11:54:40.000988+00:00
+LEGEND porto-heat 1 positive 498707 seconds 33.63
+LEGEND porto-heat 2 positive 15855 seconds 36.22
+LEGEND porto-heat 3 positive 50879 seconds 33.33
+LEGEND porto-heat 4 positive 127510 seconds 37.03
+LEGEND porto-heat 5 positive 182072 seconds 37.69
+LEGEND porto-heat 6 positive 175138 seconds 38.49
+LEGEND porto-heat 7 positive 58377 seconds 36.49
+LEGEND porto-heat 8 positive 10267 seconds 44.88
+LEGEND porto-heat 9 positive 21621 seconds 38.18
+LEGEND porto-heat 10 positive 5733 seconds 35.75
+DONE {"id": "porto-heat", "status": "succeeded", "started_utc": "2026-10-30T11:54:40.000988+00:00", "completed_utc": "2026-10-30T12:00:52.058342+00:00", "seconds": 372.03557519998867, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1758, 1213], "model_forward_calls": 540, "source_pixels": 2132454, "unknown_pixels": 1397746, "overlapping_positive_pixels": 199297, "label_counts": {"0": 1397746, "1": 495379, "2": 4905, "3": 27971, "4": 40494, "5": 82575, "6": 78927, "7": 1279, "8": 191, "9": 2621, "10": 366}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "2d936c9f694e9856129ee9e2771be232332aa1cbb96dbf83a62980d1b401e952"}
+START porto-flood 2026-10-30T12:00:52.286972+00:00
+LEGEND porto-flood 1 positive 489007 seconds 35.52
+LEGEND porto-flood 2 positive 12369 seconds 35.97
+LEGEND porto-flood 3 positive 28855 seconds 38.3
+LEGEND porto-flood 4 positive 16942 seconds 34.33
+LEGEND porto-flood 5 positive 47299 seconds 36.35
+LEGEND porto-flood 6 positive 38107 seconds 38.19
+LEGEND porto-flood 7 positive 7587 seconds 35.7
+LEGEND porto-flood 8 positive 4221 seconds 41.71
+LEGEND porto-flood 9 positive 7071 seconds 34.61
+LEGEND porto-flood 10 positive 2893 seconds 34.65
+DONE {"id": "porto-flood", "status": "succeeded", "started_utc": "2026-10-30T12:00:52.286972+00:00", "completed_utc": "2026-10-30T12:06:57.932111+00:00", "seconds": 365.6292766999686, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1668, 1155], "model_forward_calls": 540, "source_pixels": 1926540, "unknown_pixels": 1350725, "overlapping_positive_pixels": 51847, "label_counts": {"0": 1350725, "1": 484358, "2": 6811, "3": 22817, "4": 10054, "5": 29205, "6": 19312, "7": 296, "8": 254, "9": 2663, "10": 45}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "5cc026b857780967592a8453bdf638c34c4482793b2ef65b783ecc9e52cb64ea"}
+START porto-landslide 2026-10-30T12:06:58.149222+00:00
+LEGEND porto-landslide 1 positive 508470 seconds 36.24
+LEGEND porto-landslide 2 positive 21722 seconds 36.67
+LEGEND porto-landslide 3 positive 38715 seconds 35.84
+LEGEND porto-landslide 4 positive 122461 seconds 38.29
+LEGEND porto-landslide 5 positive 180322 seconds 36.2
+LEGEND porto-landslide 6 positive 175284 seconds 34.91
+LEGEND porto-landslide 7 positive 48847 seconds 42.51
+LEGEND porto-landslide 8 positive 12956 seconds 34.17
+LEGEND porto-landslide 9 positive 22770 seconds 35.39
+LEGEND porto-landslide 10 positive 5327 seconds 34.21
+DONE {"id": "porto-landslide", "status": "succeeded", "started_utc": "2026-10-30T12:06:58.149222+00:00", "completed_utc": "2026-10-30T12:13:02.906289+00:00", "seconds": 364.74212419998366, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1758, 1213], "model_forward_calls": 540, "source_pixels": 2132454, "unknown_pixels": 1390297, "overlapping_positive_pixels": 201422, "label_counts": {"0": 1390297, "1": 500285, "2": 8870, "3": 17859, "4": 48473, "5": 92109, "6": 66653, "7": 4580, "8": 191, "9": 2771, "10": 366}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "4e4de1295a437d45a235b7b3abfe88e6dbe6e73d3c83ea45201a28f16c897a61"}
+START porto-drought 2026-10-30T12:13:03.111678+00:00
+LEGEND porto-drought 1 positive 508270 seconds 39.9
+LEGEND porto-drought 2 positive 21153 seconds 40.16
+LEGEND porto-drought 3 positive 52820 seconds 39.87
+LEGEND porto-drought 4 positive 156930 seconds 40.92
+LEGEND porto-drought 5 positive 208584 seconds 40.57
+LEGEND porto-drought 6 positive 115117 seconds 42.82
+LEGEND porto-drought 7 positive 9279 seconds 40.6
+LEGEND porto-drought 8 positive 3648 seconds 39.9
+LEGEND porto-drought 9 positive 5640 seconds 40.33
+LEGEND porto-drought 10 positive 3394 seconds 39.7
+DONE {"id": "porto-drought", "status": "succeeded", "started_utc": "2026-10-30T12:13:03.111678+00:00", "completed_utc": "2026-10-30T12:19:48.213822+00:00", "seconds": 405.0861767999595, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1758, 1218], "model_forward_calls": 630, "source_pixels": 2141244, "unknown_pixels": 1398653, "overlapping_positive_pixels": 204406, "label_counts": {"0": 1398653, "1": 499289, "2": 7825, "3": 28482, "4": 54052, "5": 123559, "6": 26600, "7": 101, "8": 112, "9": 2301, "10": 270}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "d25a5f03939a3446547ce912eac941b0a31d1a0c084906470112adcbfacafb24"}
+START porto-arbovirus 2026-10-30T12:19:48.424599+00:00
+LEGEND porto-arbovirus 1 positive 491335 seconds 33.93
+LEGEND porto-arbovirus 2 positive 11904 seconds 35.11
+LEGEND porto-arbovirus 3 positive 46831 seconds 34.04
+LEGEND porto-arbovirus 4 positive 138243 seconds 35.51
+LEGEND porto-arbovirus 5 positive 203915 seconds 39.51
+LEGEND porto-arbovirus 6 positive 160321 seconds 33.38
+LEGEND porto-arbovirus 7 positive 22799 seconds 34.96
+LEGEND porto-arbovirus 8 positive 4080 seconds 35.71
+LEGEND porto-arbovirus 9 positive 8571 seconds 35.28
+LEGEND porto-arbovirus 10 positive 3760 seconds 35.83
+DONE {"id": "porto-arbovirus", "status": "succeeded", "started_utc": "2026-10-30T12:19:48.424599+00:00", "completed_utc": "2026-10-30T12:25:42.106277+00:00", "seconds": 353.6708472999744, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1758, 1213], "model_forward_calls": 540, "source_pixels": 2132454, "unknown_pixels": 1391125, "overlapping_positive_pixels": 198529, "label_counts": {"0": 1391125, "1": 489926, "2": 4007, "3": 30450, "4": 41016, "5": 117359, "6": 55594, "7": 76, "8": 191, "9": 2344, "10": 366}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "6c63a83cc3f8641afa024861ff9e625913dc1a8e0a61d860854beb030a7b3bc7"}
+START porto-storm 2026-10-30T12:25:42.325792+00:00
+LEGEND porto-storm 1 positive 498758 seconds 35.0
+LEGEND porto-storm 2 positive 13231 seconds 37.21
+LEGEND porto-storm 3 positive 34589 seconds 35.53
+LEGEND porto-storm 4 positive 107613 seconds 42.6
+LEGEND porto-storm 5 positive 171670 seconds 35.03
+LEGEND porto-storm 6 positive 181679 seconds 32.64
+LEGEND porto-storm 7 positive 73298 seconds 34.74
+LEGEND porto-storm 8 positive 21895 seconds 34.91
+LEGEND porto-storm 9 positive 33172 seconds 34.94
+LEGEND porto-storm 10 positive 7152 seconds 34.79
+DONE {"id": "porto-storm", "status": "succeeded", "started_utc": "2026-10-30T12:25:42.325792+00:00", "completed_utc": "2026-10-30T12:31:40.047999+00:00", "seconds": 357.7121315000113, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1758, 1213], "model_forward_calls": 540, "source_pixels": 2132454, "unknown_pixels": 1399893, "overlapping_positive_pixels": 194560, "label_counts": {"0": 1399893, "1": 494727, "2": 3649, "3": 20166, "4": 42387, "5": 85583, "6": 75960, "7": 6182, "8": 191, "9": 3350, "10": 366}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "dcbc99127da4997a7b0e61509a0a0f041be06582c3f9f9d73b2e85400fa4da1f"}
+START richfield-inundation-100yr 2026-10-30T12:31:40.292689+00:00
+LEGEND richfield-inundation-100yr 1 positive 8034 seconds 66.47
+DONE {"id": "richfield-inundation-100yr", "status": "succeeded", "started_utc": "2026-10-30T12:31:40.292689+00:00", "completed_utc": "2026-10-30T12:32:47.407708+00:00", "seconds": 67.1137643000111, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1584, 2448], "model_forward_calls": 104, "source_pixels": 3877632, "unknown_pixels": 3869598, "overlapping_positive_pixels": 0, "label_counts": {"0": 3869598, "1": 8034}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "eed84e23db8f9cc6cf99b6f582593252c8b427364632410420394f958f1aa3d2"}
+START richfield-inundation-2yr 2026-10-30T12:32:47.584978+00:00
+LEGEND richfield-inundation-2yr 1 positive 727017 seconds 77.26
+DONE {"id": "richfield-inundation-2yr", "status": "succeeded", "started_utc": "2026-10-30T12:32:47.584978+00:00", "completed_utc": "2026-10-30T12:34:05.482596+00:00", "seconds": 77.89503000001423, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1584, 2448], "model_forward_calls": 104, "source_pixels": 3877632, "unknown_pixels": 3150615, "overlapping_positive_pixels": 0, "label_counts": {"0": 3150615, "1": 727017}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "ec6cca66b486a386f3881b933b7477cccd1b26fec14ac1758cda09affbb9738d"}
+START richfield-inundation-10yr 2026-10-30T12:34:05.703320+00:00
+LEGEND richfield-inundation-10yr 1 positive 53823 seconds 68.33
+DONE {"id": "richfield-inundation-10yr", "status": "succeeded", "started_utc": "2026-10-30T12:34:05.703320+00:00", "completed_utc": "2026-10-30T12:35:14.729358+00:00", "seconds": 69.0229616999859, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1584, 2448], "model_forward_calls": 104, "source_pixels": 3877632, "unknown_pixels": 3823809, "overlapping_positive_pixels": 0, "label_counts": {"0": 3823809, "1": 53823}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "4ca1bcd7dfe7d67fc148ef9aebdcaee07bc6652f6f0226c34e8e4819b6fd2ac3"}
+START richfield-inundation-mce100 2026-10-30T12:35:14.908660+00:00
+LEGEND richfield-inundation-mce100 1 positive 300148 seconds 65.54
+DONE {"id": "richfield-inundation-mce100", "status": "succeeded", "started_utc": "2026-10-30T12:35:14.908660+00:00", "completed_utc": "2026-10-30T12:36:21.175276+00:00", "seconds": 66.26532840006985, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1584, 2448], "model_forward_calls": 104, "source_pixels": 3877632, "unknown_pixels": 3577484, "overlapping_positive_pixels": 0, "label_counts": {"0": 3577484, "1": 300148}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"}
+START richfield-prioritization-score 2026-10-30T12:36:21.357192+00:00
+LEGEND richfield-prioritization-score 1 positive 128554 seconds 66.33
+LEGEND richfield-prioritization-score 2 positive 90791 seconds 69.54
+LEGEND richfield-prioritization-score 3 positive 39758 seconds 62.18
+LEGEND richfield-prioritization-score 4 positive 161021 seconds 60.09
+DONE {"id": "richfield-prioritization-score", "status": "succeeded", "started_utc": "2026-10-30T12:36:21.357192+00:00", "completed_utc": "2026-10-30T12:40:40.071038+00:00", "seconds": 258.70837030000985, "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79", "shape": [1584, 2448], "model_forward_calls": 416, "source_pixels": 3877632, "unknown_pixels": 3460032, "overlapping_positive_pixels": 2524, "label_counts": {"0": 3460032, "1": 127728, "2": 90393, "3": 39515, "4": 159964}, "device": "cpu", "precision": "float32", "source_pixel_coverage_check": "all pixels exactly once after overlap discard", "labels_sha256": "de124e5f2d6912cdd57ad7b724e3814556f6ac674eec34ed1c2d8af72f73c62e"}
+TOTAL PROCESS SECONDS 2761.0817443999695

@@ -1,0 +1,24 @@
+{
+  "id": "richfield-inundation-mce100",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:35:14.908660+00:00",
+  "completed_utc": "2026-10-30T12:36:21.175276+00:00",
+  "seconds": 66.26532840006985,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1584,
+    2448
+  ],
+  "model_forward_calls": 104,
+  "source_pixels": 3877632,
+  "unknown_pixels": 3577484,
+  "overlapping_positive_pixels": 0,
+  "label_counts": {
+    "0": 3577484,
+    "1": 300148
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"
+}

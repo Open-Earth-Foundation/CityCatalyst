@@ -1,0 +1,644 @@
+{
+  "source_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+  "layers": {
+    "inundation-2yr": {
+      "page": 15,
+      "source_paths": {
+        "f": 378
+      },
+      "cross_class_overlap_page_pt2": 0.0,
+      "source_area_ha": {
+        "2yr": 179.21252948833794
+      },
+      "rounding_area_change_m2": [
+        0.007224973989650607
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "2yr": {
+          "rendered_colour_interior_pixels": 178212,
+          "rendered_colour_interior_covered_pct": 99.99775548223464,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9801823790395747,
+          "full_mask_mismatch_m2": 35936.001395675084,
+          "narrow_polygon_count": 1863,
+          "narrow_polygon_area_fraction": 0.030174359741980912
+        }
+      },
+      "old_vs_document_geometry": {
+        "2yr": {
+          "jvp_vs_source_iou": 0.28954507676515445,
+          "source_area_recovered_by_jvp": 0.34602675845189357
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "2yr": {
+          "median_m": 2.2294950212199835e-05,
+          "p95_m": 5.2207396040420934e-05,
+          "p99_9_m": 6.505024630893195e-05,
+          "max_m": 0.0001767881636141995,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 204885
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "2yr": 2.1573577393300354e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "2yr": {
+          "median_m": 1.204921443395107,
+          "p95_m": 3.8099834053444424,
+          "p99_9_m": 3.810038254833676,
+          "max_m": 3.8100396181746023,
+          "vertices_over_0_1m": 180844,
+          "vertices_checked": 204885
+        }
+      }
+    },
+    "inundation-10yr": {
+      "page": 16,
+      "source_paths": {
+        "f": 577
+      },
+      "cross_class_overlap_page_pt2": 0.0,
+      "source_area_ha": {
+        "10yr": 250.9752243158405
+      },
+      "rounding_area_change_m2": [
+        0.03223609970882535
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "10yr": {
+          "rendered_colour_interior_pixels": 260281,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99962895212369,
+          "full_mask_iou": 0.9884040553843794,
+          "full_mask_mismatch_m2": 29258.48587601194,
+          "narrow_polygon_count": 1602,
+          "narrow_polygon_area_fraction": 0.028792855762205437
+        }
+      },
+      "old_vs_document_geometry": {
+        "10yr": {
+          "jvp_vs_source_iou": 0.33228636136966566,
+          "source_area_recovered_by_jvp": 0.4079406381493111
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "10yr": {
+          "median_m": 2.21888509928018e-05,
+          "p95_m": 5.160942419395933e-05,
+          "p99_9_m": 6.479249603235313e-05,
+          "max_m": 7.209005560813468e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 174438
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "10yr": 1.657527217148354e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "10yr": {
+          "median_m": 1.7837355882783918,
+          "p95_m": 3.810007456938361,
+          "p99_9_m": 3.8100388928272384,
+          "max_m": 3.810039655990022,
+          "vertices_over_0_1m": 160083,
+          "vertices_checked": 174438
+        }
+      }
+    },
+    "inundation-100yr": {
+      "page": 17,
+      "source_paths": {
+        "f": 746
+      },
+      "cross_class_overlap_page_pt2": 1.4551915228366852e-11,
+      "source_area_ha": {
+        "100yr": 406.34430152270124
+      },
+      "rounding_area_change_m2": [
+        0.07327220495790243
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "100yr": {
+          "rendered_colour_interior_pixels": 428441,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99932686525638,
+          "full_mask_iou": 0.9897215021811975,
+          "full_mask_mismatch_m2": 41955.44292209606,
+          "narrow_polygon_count": 1625,
+          "narrow_polygon_area_fraction": 0.016626314615798287
+        }
+      },
+      "old_vs_document_geometry": {
+        "100yr": {
+          "jvp_vs_source_iou": 0.39189527338829155,
+          "source_area_recovered_by_jvp": 0.4919357572238947
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "100yr": {
+          "median_m": 2.2176964607751872e-05,
+          "p95_m": 5.146944012311853e-05,
+          "p99_9_m": 6.481518367321745e-05,
+          "max_m": 3.407529266819383,
+          "vertices_over_0_1m": 1,
+          "vertices_checked": 241561
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "100yr": 1.5301801397084548e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "100yr": {
+          "median_m": 1.9424816475268376,
+          "p95_m": 3.8100091868400776,
+          "p99_9_m": 3.8100388707534987,
+          "max_m": 3.810039654571625,
+          "vertices_over_0_1m": 222170,
+          "vertices_checked": 241561
+        }
+      }
+    },
+    "inundation-mce100": {
+      "page": 18,
+      "source_paths": {
+        "f": 746
+      },
+      "cross_class_overlap_page_pt2": -1.4551915228366852e-11,
+      "source_area_ha": {
+        "mce100": 505.7410518137156
+      },
+      "rounding_area_change_m2": [
+        0.00017221085727214813
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "mce100": {
+          "rendered_colour_interior_pixels": 544513,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.85914008711536,
+          "full_mask_iou": 0.9909293190889671,
+          "full_mask_mismatch_m2": 46052.27611531934,
+          "narrow_polygon_count": 1497,
+          "narrow_polygon_area_fraction": 0.009758104814257337
+        }
+      },
+      "old_vs_document_geometry": {
+        "mce100": {
+          "jvp_vs_source_iou": 0.4249822180134332,
+          "source_area_recovered_by_jvp": 0.519225418328057
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "mce100": {
+          "median_m": 2.2157730561206045e-05,
+          "p95_m": 5.130608745623329e-05,
+          "p99_9_m": 6.478834570385717e-05,
+          "max_m": 0.4483277412146681,
+          "vertices_over_0_1m": 3,
+          "vertices_checked": 259690
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "mce100": 1.3346727484457885e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "mce100": {
+          "median_m": 2.092316997374488,
+          "p95_m": 3.8100109584755892,
+          "p99_9_m": 3.8100388457200767,
+          "max_m": 3.81003968768316,
+          "vertices_over_0_1m": 239022,
+          "vertices_checked": 259690
+        }
+      }
+    },
+    "prioritization-score": {
+      "page": 31,
+      "source_paths": {
+        "fs": 474,
+        "f": 272
+      },
+      "cross_class_overlap_page_pt2": 0.06028362900542561,
+      "source_area_ha": {
+        "0.0 - 2.4": 154.51584867520555,
+        "2.5 - 4.4": 128.67537815013242,
+        "4.5 - 6.4": 43.21196265127066,
+        "6.5 - 10": 79.94116045155761
+      },
+      "rounding_area_change_m2": [
+        0.011244705179706216,
+        0.017792029539123178,
+        0.024353999411687255,
+        0.022957718931138515
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "0.0 - 2.4": {
+          "rendered_colour_interior_pixels": 155994,
+          "rendered_colour_interior_covered_pct": 99.9993589497032,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9698578376966769,
+          "full_mask_mismatch_m2": 47658.750863528156,
+          "narrow_polygon_count": 946,
+          "narrow_polygon_area_fraction": 0.03603233130812175
+        },
+        "2.5 - 4.4": {
+          "rendered_colour_interior_pixels": 159414,
+          "rendered_colour_interior_covered_pct": 99.99937270252299,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9277993036837376,
+          "full_mask_mismatch_m2": 99543.36903660158,
+          "narrow_polygon_count": 272,
+          "narrow_polygon_area_fraction": 0.0046602858457819455
+        },
+        "4.5 - 6.4": {
+          "rendered_colour_interior_pixels": 41657,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99771752031407,
+          "full_mask_iou": 0.8752159070817522,
+          "full_mask_mismatch_m2": 59194.40086271434,
+          "narrow_polygon_count": 189,
+          "narrow_polygon_area_fraction": 0.00801943287000972
+        },
+        "6.5 - 10": {
+          "rendered_colour_interior_pixels": 74246,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9355695058580512,
+          "full_mask_mismatch_m2": 51516.870941555746,
+          "narrow_polygon_count": 242,
+          "narrow_polygon_area_fraction": 0.0036785065916304116
+        }
+      },
+      "old_vs_document_geometry": {
+        "0.0 - 2.4": {
+          "jvp_vs_source_iou": 0.08380796147065284,
+          "source_area_recovered_by_jvp": 0.08780600274431348
+        },
+        "2.5 - 4.4": {
+          "jvp_vs_source_iou": 0.6191251972067149,
+          "source_area_recovered_by_jvp": 0.6884861480585919
+        },
+        "4.5 - 6.4": {
+          "jvp_vs_source_iou": 0.4549488018075253,
+          "source_area_recovered_by_jvp": 0.562512611019404
+        },
+        "6.5 - 10": {
+          "jvp_vs_source_iou": 0.42867323636662186,
+          "source_area_recovered_by_jvp": 0.5171071462512242
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "0.0 - 2.4": {
+          "median_m": 2.235204317893364e-05,
+          "p95_m": 5.150835063438506e-05,
+          "p99_9_m": 6.470077164299523e-05,
+          "max_m": 0.00016381228819674026,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 106635
+        },
+        "2.5 - 4.4": {
+          "median_m": 2.2034888706538376e-05,
+          "p95_m": 5.143243956026241e-05,
+          "p99_9_m": 6.47006839331616e-05,
+          "max_m": 6.725115830581484e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 47370
+        },
+        "4.5 - 6.4": {
+          "median_m": 2.1995903517944966e-05,
+          "p95_m": 5.1073350147210357e-05,
+          "p99_9_m": 6.434042076122592e-05,
+          "max_m": 1.7040370251111479,
+          "vertices_over_0_1m": 1,
+          "vertices_checked": 30978
+        },
+        "6.5 - 10": {
+          "median_m": 2.2024367523860782e-05,
+          "p95_m": 5.1034362039686987e-05,
+          "p99_9_m": 6.459839637621488e-05,
+          "max_m": 6.76871309828315e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 56798
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "0.0 - 2.4": 1.9298462640635887e-06,
+        "2.5 - 4.4": 9.003386565732973e-07,
+        "4.5 - 6.4": 1.6885825096430617e-06,
+        "6.5 - 10": 1.667660859833335e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "0.0 - 2.4": {
+          "median_m": 1.704069181326616,
+          "p95_m": 3.8100053746963463,
+          "p99_9_m": 3.810038841789569,
+          "max_m": 3.8100396286674285,
+          "vertices_over_0_1m": 97506,
+          "vertices_checked": 106635
+        },
+        "2.5 - 4.4": {
+          "median_m": 2.0446608556285817,
+          "p95_m": 3.8100075269360567,
+          "p99_9_m": 3.8100386238162156,
+          "max_m": 3.8100395693644833,
+          "vertices_over_0_1m": 43621,
+          "vertices_checked": 47370
+        },
+        "4.5 - 6.4": {
+          "median_m": 2.1550180960312333,
+          "p95_m": 3.8100130603850593,
+          "p99_9_m": 3.81003897758482,
+          "max_m": 4.819470869555162,
+          "vertices_over_0_1m": 28599,
+          "vertices_checked": 30978
+        },
+        "6.5 - 10": {
+          "median_m": 2.155161130521374,
+          "p95_m": 3.8100136552786945,
+          "p99_9_m": 3.8100389532742365,
+          "max_m": 3.810039626233768,
+          "vertices_over_0_1m": 52628,
+          "vertices_checked": 56798
+        }
+      }
+    }
+  },
+  "shoreline_check": {
+    "method": "GeoPDF only for fit; OSM matching checks shorelines, not surveyed ground truth. No roads checked.",
+    "candidate_lakes": 24,
+    "matched_lakes": 12,
+    "unmatched": [
+      {
+        "area_m2": 23348.04778775673,
+        "centroid_utm": [
+          475720.8238188161,
+          4966527.717435436
+        ]
+      },
+      {
+        "area_m2": 21441.226519726104,
+        "centroid_utm": [
+          480681.7905502708,
+          4972166.62396494
+        ]
+      },
+      {
+        "area_m2": 99532.34400604421,
+        "centroid_utm": [
+          476965.64953353663,
+          4970323.181706534
+        ]
+      },
+      {
+        "area_m2": 225320.12816050876,
+        "centroid_utm": [
+          479286.23667366605,
+          4970408.330847328
+        ]
+      },
+      {
+        "area_m2": 31577.085878075184,
+        "centroid_utm": [
+          479221.6566936951,
+          4967065.871639593
+        ]
+      },
+      {
+        "area_m2": 43666.319082035036,
+        "centroid_utm": [
+          480153.59700992226,
+          4971485.662820455
+        ]
+      },
+      {
+        "area_m2": 2582.1725625524773,
+        "centroid_utm": [
+          474251.96557933145,
+          4966462.780456718
+        ]
+      },
+      {
+        "area_m2": 467798.2996382835,
+        "centroid_utm": [
+          476789.18152617477,
+          4969262.614575536
+        ]
+      },
+      {
+        "area_m2": 444019.1924513431,
+        "centroid_utm": [
+          480976.3361918359,
+          4971113.395704952
+        ]
+      },
+      {
+        "area_m2": 23763.81872912286,
+        "centroid_utm": [
+          474219.4932065636,
+          4968398.850012735
+        ]
+      },
+      {
+        "area_m2": 5059.814820895559,
+        "centroid_utm": [
+          479045.9602021056,
+          4970946.312328058
+        ]
+      },
+      {
+        "area_m2": 3843.6378235994225,
+        "centroid_utm": [
+          479113.36557950644,
+          4970891.991284544
+        ]
+      }
+    ],
+    "selection_note": "Overlap and area-ratio matching conditions on agreement; only OSM ways and exterior shorelines are checked.",
+    "median_m": 3.4881270100498343,
+    "p90_m": 11.538949165185064,
+    "per_lake": [
+      {
+        "samples": 294,
+        "median_m": 4.859682155168038,
+        "p90_m": 9.973183846787132
+      },
+      {
+        "samples": 402,
+        "median_m": 4.33189784904625,
+        "p90_m": 20.315632825229848
+      },
+      {
+        "samples": 215,
+        "median_m": 3.2511380855859495,
+        "p90_m": 7.649891332988964
+      },
+      {
+        "samples": 69,
+        "median_m": 5.494471175846099,
+        "p90_m": 15.717357536983577
+      },
+      {
+        "samples": 168,
+        "median_m": 1.7698617257018796,
+        "p90_m": 4.884456492107034
+      },
+      {
+        "samples": 110,
+        "median_m": 1.6000226445738925,
+        "p90_m": 4.958136001488311
+      },
+      {
+        "samples": 125,
+        "median_m": 3.23486566278914,
+        "p90_m": 8.51570485740696
+      },
+      {
+        "samples": 141,
+        "median_m": 2.38871747280263,
+        "p90_m": 5.984634657150383
+      },
+      {
+        "samples": 124,
+        "median_m": 1.9397399671203934,
+        "p90_m": 3.5945569543112272
+      },
+      {
+        "samples": 77,
+        "median_m": 4.1219447199345876,
+        "p90_m": 9.983857584652387
+      },
+      {
+        "samples": 48,
+        "median_m": 3.064546967105591,
+        "p90_m": 8.131235468388226
+      },
+      {
+        "samples": 184,
+        "median_m": 11.445342461386659,
+        "p90_m": 38.86869316697829
+      }
+    ]
+  },
+  "limitation": "Source fidelity, not hazard accuracy: serialized GeoJSON inverse-projected and compared to MuPDF rasterization of isolated path/clip commands obtained from the same PyMuPDF extraction. Independent of Shapely fill interpretation, NOT independent of PyMuPDF extraction. Source interiors exclude a 2/3 PDF-point boundary band; MuPDF interiors exclude 2 raster pixels. Full-mask metrics supplement this blind band. Roundtrip gates: p99.9 vertex-to-boundary error <=0.1m and symmetric-difference area <=0.01%; maxima and outlier counts retained because tiny degenerate spikes can collapse. Shifted negative controls must fail the boundary gate. Narrow shapes can have no interior samples. Labels, strokes and blend styling omitted. No road control or survey validation."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "porto-heat",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T11:54:40.000988+00:00",
+  "completed_utc": "2026-10-30T12:00:52.058342+00:00",
+  "seconds": 372.03557519998867,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1758,
+    1213
+  ],
+  "model_forward_calls": 540,
+  "source_pixels": 2132454,
+  "unknown_pixels": 1397746,
+  "overlapping_positive_pixels": 199297,
+  "label_counts": {
+    "0": 1397746,
+    "1": 495379,
+    "2": 4905,
+    "3": 27971,
+    "4": 40494,
+    "5": 82575,
+    "6": 78927,
+    "7": 1279,
+    "8": 191,
+    "9": 2621,
+    "10": 366
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "2d936c9f694e9856129ee9e2771be232332aa1cbb96dbf83a62980d1b401e952"
+}

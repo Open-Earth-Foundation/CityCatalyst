@@ -1,0 +1,18 @@
+[
+  {
+    "name": "acm-pdf",
+    "url": "https://dl.acm.org/doi/pdf/10.1145/3748636.3764602"
+  },
+  {
+    "name": "github-topaz-readme-search",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon+in%3Areadme&per_page=100"
+  },
+  {
+    "name": "github-digmapper-readme-search",
+    "url": "https://api.github.com/search/repositories?q=DIGMAPPER+in%3Areadme&per_page=100"
+  },
+  {
+    "name": "github-inferlink-critical-search",
+    "url": "https://api.github.com/search/repositories?q=Inferlink+CriticalMAAS+in%3Areadme&per_page=100"
+  }
+]

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/1wIeIPXDlpaqlhdUtYeNKffBLJ8</id>
+  <title>arXiv Query: search_query=&amp;id_list=2506.16006&amp;start=0&amp;max_results=10</title>
+  <updated>2026-11-01T09:22:25Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2506.16006" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2506.16006v1</id>
+    <title>DIGMAPPER: A Modular System for Automated Geologic Map Digitization</title>
+    <updated>2025-06-19T03:51:47Z</updated>
+    <link href="https://arxiv.org/abs/2506.16006v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.16006v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Historical geologic maps contain rich geospatial information, such as rock units, faults, folds, and bedding planes, that is critical for assessing mineral resources essential to renewable energy, electric vehicles, and national security. However, digitizing maps remains a labor-intensive and time-consuming task. We present DIGMAPPER, a modular, scalable system developed in collaboration with the United States Geological Survey (USGS) to automate the digitization of geologic maps. DIGMAPPER features a fully dockerized, workflow-orchestrated architecture that integrates state-of-the-art deep learning models for map layout analysis, feature extraction, and georeferencing. To overcome challenges such as limited training data and complex visual content, our system employs innovative techniques, including in-context learning with large language models, synthetic data generation, and transformer-based models. Evaluations on over 100 annotated maps from the DARPA-USGS dataset demonstrate high accuracy across polygon, line, and point feature extraction, and reliable georeferencing performance. Deployed at USGS, DIGMAPPER significantly accelerates the creation of analysis-ready geospatial datasets, supporting national-scale critical mineral assessments and broader geoscientific applications.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-19T03:51:47Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Weiwei Duan</name>
+    </author>
+    <author>
+      <name>Michael P. Gerlek</name>
+    </author>
+    <author>
+      <name>Steven N. Minton</name>
+    </author>
+    <author>
+      <name>Craig A. Knoblock</name>
+    </author>
+    <author>
+      <name>Fandel Lin</name>
+    </author>
+    <author>
+      <name>Theresa Chen</name>
+    </author>
+    <author>
+      <name>Leeje Jang</name>
+    </author>
+    <author>
+      <name>Sofia Kirsanova</name>
+    </author>
+    <author>
+      <name>Zekun Li</name>
+    </author>
+    <author>
+      <name>Yijun Lin</name>
+    </author>
+    <author>
+      <name>Yao-Yi Chiang</name>
+    </author>
+  </entry>
+</feed>

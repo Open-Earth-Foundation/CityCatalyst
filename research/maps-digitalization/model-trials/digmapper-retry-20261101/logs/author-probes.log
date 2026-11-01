@@ -1,0 +1,12 @@
+{"name": "author-poly-tree", "status": 200, "bytes": 252674, "truncated": false, "transport_error": null}
+{"name": "author-poly-readme", "status": 200, "bytes": 0, "truncated": false, "transport_error": null}
+{"name": "author-poly-releases", "status": 200, "bytes": 2, "truncated": false, "transport_error": null}
+{"name": "author-dovetail-tree", "status": 200, "bytes": 630, "truncated": false, "transport_error": null}
+{"name": "author-dovetail-readme", "status": 200, "bytes": 184, "truncated": false, "transport_error": null}
+{"name": "author-polydetr-readme", "status": 404, "bytes": 14, "truncated": false, "transport_error": null}
+{"name": "author-spolydetr-readme", "status": 200, "bytes": 971, "truncated": false, "transport_error": null}
+{"name": "author-glyph-readme", "status": 200, "bytes": 1531, "truncated": false, "transport_error": null}
+{"name": "usc-repos-page2", "status": 200, "bytes": 569594, "truncated": false, "transport_error": null}
+{"name": "jterstriep-dockerfiles-tree", "status": 200, "bytes": 2411, "truncated": false, "transport_error": null}
+{"name": "candidate-launcher", "status": 200, "bytes": 9329, "truncated": false, "transport_error": null}
+{"name": "candidate-launcher-main", "status": 404, "bytes": 14, "truncated": false, "transport_error": null}

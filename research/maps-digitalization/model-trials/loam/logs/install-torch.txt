@@ -1,0 +1,16 @@
+Resolved 12 packages in 1.17s
+Downloading torch (195.9MiB)
+Downloading torchvision (1.5MiB)
+Downloading sympy (5.9MiB)
+ Downloaded torchvision
+ Downloaded sympy
+ Downloaded torch
+Prepared 7 packages in 9.76s
+Installed 7 packages in 5.69s
+ + fsspec==2026.9.0
+ + jinja2==3.1.6
+ + markupsafe==3.0.3
+ + mpmath==1.3.0
+ + sympy==1.13.1
+ + torch==2.5.1+cpu
+ + torchvision==0.20.1+cpu

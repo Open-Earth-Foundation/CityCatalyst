@@ -1,0 +1,317 @@
+{
+  "status": "succeeded",
+  "page": 85,
+  "run": {
+    "id": "porto-flood",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T12:00:52.286972+00:00",
+    "completed_utc": "2026-10-30T12:06:57.932111+00:00",
+    "seconds": 365.6292766999686,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1668,
+      1155
+    ],
+    "model_forward_calls": 540,
+    "source_pixels": 1926540,
+    "unknown_pixels": 1350725,
+    "overlapping_positive_pixels": 51847,
+    "label_counts": {
+      "0": 1350725,
+      "1": 484358,
+      "2": 6811,
+      "3": 22817,
+      "4": 10054,
+      "5": 29205,
+      "6": 19312,
+      "7": 296,
+      "8": 254,
+      "9": 2663,
+      "10": 45
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "5cc026b857780967592a8453bdf638c34c4482793b2ef65b783ecc9e52cb64ea"
+  },
+  "metrics": {
+    "all": {
+      "eligible": 1805,
+      "common": 1379,
+      "missing": 426,
+      "correct": 814,
+      "missing_pct": 23.601108033240997,
+      "exact_common_pct": 59.028281363306746,
+      "exact_all_pct": 45.096952908587255,
+      "bias": -0.10593468887599139,
+      "mae": 0.12304301695865709,
+      "sum_error": -146.08393595999212,
+      "sum_abs_error": 169.67632038598813,
+      "high_true_positive_cells": 14,
+      "high_reference_cells": 371,
+      "predicted_high_common_cells": 18,
+      "high_recall_pct": 3.7735849056603774,
+      "high_precision_common_pct": 77.77777777777777,
+      "predicted_cells": 2596,
+      "predicted_zero_reference_cells": 883,
+      "predicted_zero_reference_pct": 34.01386748844376,
+      "predicted_low_reference_cells": 334,
+      "predicted_low_reference_pct": 12.865947611710324,
+      "confusion_matrix_with_missing": [
+        [
+          21,
+          9,
+          0,
+          0,
+          0,
+          20
+        ],
+        [
+          17,
+          292,
+          20,
+          0,
+          0,
+          78
+        ],
+        [
+          47,
+          212,
+          492,
+          3,
+          1,
+          222
+        ],
+        [
+          26,
+          62,
+          163,
+          9,
+          5,
+          106
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "development": {
+      "eligible": 1008,
+      "common": 816,
+      "missing": 192,
+      "correct": 483,
+      "missing_pct": 19.047619047619047,
+      "exact_common_pct": 59.19117647058823,
+      "exact_all_pct": 47.916666666666664,
+      "bias": -0.10425110690701539,
+      "mae": 0.12332988591935501,
+      "sum_error": -85.06890323612456,
+      "sum_abs_error": 100.63718691019369,
+      "high_true_positive_cells": 9,
+      "high_reference_cells": 197,
+      "predicted_high_common_cells": 9,
+      "high_recall_pct": 4.568527918781726,
+      "high_precision_common_pct": 100.0,
+      "predicted_cells": 1558,
+      "predicted_zero_reference_cells": 546,
+      "predicted_zero_reference_pct": 35.04492939666239,
+      "predicted_low_reference_cells": 196,
+      "predicted_low_reference_pct": 12.58023106546855,
+      "confusion_matrix_with_missing": [
+        [
+          10,
+          2,
+          0,
+          0,
+          0,
+          19
+        ],
+        [
+          14,
+          169,
+          16,
+          0,
+          0,
+          57
+        ],
+        [
+          30,
+          115,
+          299,
+          0,
+          0,
+          80
+        ],
+        [
+          18,
+          31,
+          103,
+          5,
+          4,
+          36
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "validation": {
+      "eligible": 514,
+      "common": 341,
+      "missing": 173,
+      "correct": 207,
+      "missing_pct": 33.65758754863813,
+      "exact_common_pct": 60.70381231671554,
+      "exact_all_pct": 40.27237354085603,
+      "bias": -0.1115414086414258,
+      "mae": 0.12947662682209377,
+      "sum_error": -38.0356203467262,
+      "sum_abs_error": 44.15152974633397,
+      "high_true_positive_cells": 5,
+      "high_reference_cells": 131,
+      "predicted_high_common_cells": 9,
+      "high_recall_pct": 3.816793893129771,
+      "high_precision_common_pct": 55.55555555555556,
+      "predicted_cells": 621,
+      "predicted_zero_reference_cells": 187,
+      "predicted_zero_reference_pct": 30.112721417069242,
+      "predicted_low_reference_cells": 93,
+      "predicted_low_reference_pct": 14.97584541062802,
+      "confusion_matrix_with_missing": [
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          2,
+          46,
+          4,
+          0,
+          0,
+          20
+        ],
+        [
+          15,
+          33,
+          157,
+          3,
+          1,
+          99
+        ],
+        [
+          4,
+          18,
+          51,
+          4,
+          1,
+          53
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "test": {
+      "eligible": 283,
+      "common": 222,
+      "missing": 61,
+      "correct": 124,
+      "missing_pct": 21.554770318021202,
+      "exact_common_pct": 55.85585585585586,
+      "exact_all_pct": 43.81625441696113,
+      "bias": -0.10351086656369982,
+      "mae": 0.11210632310567782,
+      "sum_error": -22.979412377141358,
+      "sum_abs_error": 24.887603729460476,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 43,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 417,
+      "predicted_zero_reference_cells": 150,
+      "predicted_zero_reference_pct": 35.97122302158273,
+      "predicted_low_reference_cells": 45,
+      "predicted_low_reference_pct": 10.79136690647482,
+      "confusion_matrix_with_missing": [
+        [
+          11,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          77,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          2,
+          64,
+          36,
+          0,
+          0,
+          43
+        ],
+        [
+          4,
+          13,
+          9,
+          0,
+          0,
+          17
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    }
+  },
+  "municipal_source_pixels": 450053,
+  "municipal_recognized_pixels": 100361
+}

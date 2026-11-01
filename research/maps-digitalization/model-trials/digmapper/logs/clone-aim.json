@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/knowledge-computing/CriticalMAAS_AIM.git",
+    "./upstream/CriticalMAAS_AIM"
+  ],
+  "cwd": ".",
+  "started_at": "2026-10-30T11:51:33.421520+00:00",
+  "timeout_s": 90,
+  "exit_code": 0,
+  "elapsed_s": 0.638,
+  "log": "logs\\clone-aim.log"
+}

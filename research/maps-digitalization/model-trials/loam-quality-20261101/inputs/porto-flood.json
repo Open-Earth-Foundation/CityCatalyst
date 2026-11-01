@@ -1,0 +1,146 @@
+{
+  "shapes": [
+    {
+      "label": "bin00_poly",
+      "points": [
+        [
+          127,
+          1030
+        ],
+        [
+          138,
+          1041
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin01_poly",
+      "points": [
+        [
+          126,
+          1045
+        ],
+        [
+          137,
+          1056
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin02_poly",
+      "points": [
+        [
+          126,
+          1063
+        ],
+        [
+          137,
+          1074
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin03_poly",
+      "points": [
+        [
+          125,
+          1080
+        ],
+        [
+          136,
+          1091
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin04_poly",
+      "points": [
+        [
+          125,
+          1098
+        ],
+        [
+          136,
+          1109
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin05_poly",
+      "points": [
+        [
+          125,
+          1116
+        ],
+        [
+          136,
+          1127
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin06_poly",
+      "points": [
+        [
+          125,
+          1133
+        ],
+        [
+          136,
+          1144
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin07_poly",
+      "points": [
+        [
+          125,
+          1150
+        ],
+        [
+          136,
+          1161
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin08_poly",
+      "points": [
+        [
+          125,
+          1168
+        ],
+        [
+          136,
+          1179
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin09_poly",
+      "points": [
+        [
+          125,
+          1186
+        ],
+        [
+          136,
+          1197
+        ]
+      ],
+      "shape_type": "rectangle"
+    }
+  ],
+  "imageHeight": 1668,
+  "imageWidth": 1155
+}

@@ -1,0 +1,8 @@
+{"argv": ["C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe", "-X", "utf8", "setup.py", "build_ext", "--inplace"], "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\upstream\\LDTR\\models\\ops", "started_at": "2026-10-30T11:54:21.022001+00:00", "timeout_s": 60}
+Traceback (most recent call last):
+  File "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\upstream\LDTR\models\ops\setup.py", line 69, in <module>
+    ext_modules=get_extensions(),
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\upstream\LDTR\models\ops\setup.py", line 47, in get_extensions
+    raise NotImplementedError('Cuda is not availabel')
+NotImplementedError: Cuda is not availabel

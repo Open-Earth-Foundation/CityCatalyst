@@ -1,0 +1,92 @@
+Parameter Settings: False True True True
+========================================== Setting of Metadata Preprocessing for Polygon Extraction ==========================================
+*Preprocessing output directory => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/porto-storm/"
+*Intput map tif for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\porto-storm.tif"
+*Intput map json for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\porto-storm.json"
+*Intput bound geojson for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\porto-storm-bound.json"
+*Output for polygon extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/porto-storm/intermediate7_2/Output"
+ - Output for intermediate basemap => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/porto-storm/intermediate7"
+ - Output for intermediate extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/porto-storm/intermediate7_2/(Map_Name)"
+ - Output for cropped map => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/porto-storm/intermediate6/cropped_map_mask" (Supporting point, line, polygon)
+
+*Adjustable (Set to "True" is highly recommended due to time complexity)
+ - Multiprocessing => True
+ - Simple preprocessing => True
+
+*Multiprocessing with 1 processes...
+==============================================================================================================================================
+
+=== Specify maps with polygon features ===
+As the format for gpkg is not determined, please provide json file in competition format to indicate the map key of a map at this stage.
+Will update to read the gpkg file once the format is determined...
+Total number of maps to extract:  1
+Title of maps:  ['porto-storm']
+Number of keys:  [10]
+
+=== Preparing basemaps with different representations / Checking area segmentation ===
+Working on map: porto-storm
+time check... segmentation_reading and representation_preprocessing:  0:00:02.859458
+
+=== Extract boundaries from the maps ===
+Working on map: porto-storm.tif
+time checkpoint _vt0: 0:00:00.264917
+Working on map: porto-storm.tif
+Working on map: porto-storm.tif
+time check... worker_boundary_extraction:  0:00:00.473218
+
+=== Extract auxiliary information from the maps ===
+Working on map: porto-storm.tif
+time checkpoint _v0: 0:00:00.154429
+time checkpoint _v1: 0:00:00.214752
+time checkpoint _v2: 0:00:00.217505
+time check... worker_auxiliary_info:  0:00:00.219510
+
+=== Apply recoloring (color-set matching) for the maps ===
+Applying recoloring...
+Working on map: porto-storm.tif
+time checkpoint _v0: 0:00:00.133367
+Add ocean color...
+total # of colors: 73
+total # of keys: 13
+Start multi-processing...
+processing _v0 >>> _v1 (finding the closest color)... (grid completed 1/4)... : 0:00:14.050860
+processing _v0 >>> _v1 (finding the closest color)... (grid completed 2/4)... : 0:00:14.050860
+processing _v0 >>> _v1 (finding the closest color)... (grid completed 3/4)... : 0:00:14.052894
+processing _v0 >>> _v1 (finding the closest color)... (grid completed 4/4)... : 0:00:14.052894
+Applying recoloring...
+Working on map: porto-storm.tif
+time check... worker_recoloring:  0:00:14.585626
+
+=== Apply general metadata preprocessing for polygon extraction from the maps ===
+Working on map: porto-storm.tif
+time checkpoint _v0: 0:00:00.200894
+time checkpoint _v1: 0:00:04.360137
+processing _v0 >>> _v2 (legend 10/10)... : 0:00:04.666074
+time checkpoint _v2: 0:00:04.666074
+looping... (round: 1/1)... (legend: 0-10 /10)
+processing _v2 >>> _v3 (iteration 1/4)... (legend 10/10)... : 0:00:05.056341
+processing _v2 >>> _v3 (iteration 2/4)... (legend 10/10)... : 0:00:05.412203
+processing _v2 >>> _v3 (iteration 3/4)... (legend 10/10)... : 0:00:05.769749
+processing _v2 >>> _v3 (iteration 4/4)... (legend 10/10)... : 0:00:06.153689
+time checkpoint _v3: 0:00:06.153689
+processing _v3 >>> _v4 (iteration 1/2)... (legend 10/10)... : 0:00:06.861170
+processing _v3 >>> _v4 (iteration 2/2)... (legend 10/10)... : 0:00:10.275460
+ - dynamic update (10 / 10)
+time checkpoint _v4: 0:00:10.279668
+processing _v4 >>> _v5 (iteration 1/1)... (legend 10/10)... : 0:00:12.808850
+time checkpoint _v5: 0:00:12.816930
+proceed to text-pattern matching with connected-component analysis...
+time checkpoint _text_v0: 0:00:12.820931
+[]
+time checkpoint _text_v1: 0:00:13.061059
+time checkpoint _text_v2: 0:00:13.061059
+[]
+time checkpoint _text_v3: 0:00:13.063674
+Text-pattern matching with connected-component analysis is finished...
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:368: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:378: NotGeoreferencedWarning: The given matrix is equal to Affine.identity or its flipped counterpart. GDAL may ignore this matrix and save no geotransform without raising an error. This behavior is somewhat driver-specific.
+  dataset = writer(
+time checkpoint _v7: 0:00:13.932762
+time check... worker_main_component:  0:00:13.934770
+PREPROCESS_SUCCESS 32.097090799943544

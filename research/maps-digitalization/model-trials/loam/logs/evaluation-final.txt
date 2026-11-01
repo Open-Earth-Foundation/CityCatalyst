@@ -1,0 +1,34 @@
+EVALUATING porto-heat
+EVALUATING porto-flood
+EVALUATING porto-landslide
+EVALUATING porto-drought
+EVALUATING porto-arbovirus
+EVALUATING porto-storm
+EVALUATING richfield-inundation-100yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:77: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  source={f['properties']['class']:transform(to_page,transform(richfield.UTM.transform,shape(f['geometry']))) for f in data['features']}
+EVALUATING richfield-inundation-2yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:77: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  source={f['properties']['class']:transform(to_page,transform(richfield.UTM.transform,shape(f['geometry']))) for f in data['features']}
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+EVALUATING richfield-inundation-10yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:77: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  source={f['properties']['class']:transform(to_page,transform(richfield.UTM.transform,shape(f['geometry']))) for f in data['features']}
+EVALUATING richfield-inundation-mce100
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:77: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  source={f['properties']['class']:transform(to_page,transform(richfield.UTM.transform,shape(f['geometry']))) for f in data['features']}
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+EVALUATING richfield-prioritization-score
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:77: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  source={f['properties']['class']:transform(to_page,transform(richfield.UTM.transform,shape(f['geometry']))) for f in data['features']}
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\evaluate.py:90: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  ll=transform(richfield.LL.transform,richfield.project(page_geom,geo))
+METRICS_SAVED {'all': {'exact_common_pct': 78.41039739346787, 'exact_all_pct': 12.222694868739524, 'missing_pct': 84.42395327623287, 'mae': 0.06826844525046512, 'bias': -0.047734586050612794, 'high_recall_pct': 0.7068457118465483, 'high_precision_common_pct': 69.11764705882354, 'predicted_zero_reference_pct': 1.9700815002649499, 'predicted_low_reference_pct': 4.222177826844549}, 'development': {'exact_common_pct': 79.2260875778998, 'exact_all_pct': 14.18040035466864, 'missing_pct': 82.09116360228852, 'mae': 0.06767926014936693, 'bias': -0.04665797580919325, 'high_recall_pct': 0.6063632076780117, 'high_precision_common_pct': 77.77777777777777, 'predicted_zero_reference_pct': 1.742196028468949, 'predicted_low_reference_pct': 4.622844474510898}, 'validation': {'exact_common_pct': 78.16990653450195, 'exact_all_pct': 4.720016396967984, 'missing_pct': 93.97606643799405, 'mae': 0.07070531004623602, 'bias': -0.04944796109503428, 'high_recall_pct': 1.1425730796357474, 'high_precision_common_pct': 68.33333333333333, 'predicted_zero_reference_pct': 2.8714670128126447, 'predicted_low_reference_pct': 5.769037917708565}, 'test': {'exact_common_pct': 76.66456313813597, 'exact_all_pct': 20.96662340103398, 'missing_pct': 72.71842725245956, 'mae': 0.06884072742442444, 'bias': -0.049856144965143644, 'high_recall_pct': 0.0, 'predicted_zero_reference_pct': 2.023726004719745, 'predicted_low_reference_pct': 2.521351258220548}}

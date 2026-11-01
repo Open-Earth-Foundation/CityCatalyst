@@ -1,0 +1,317 @@
+{
+  "status": "succeeded",
+  "page": 111,
+  "run": {
+    "id": "porto-arbovirus",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T12:19:48.424599+00:00",
+    "completed_utc": "2026-10-30T12:25:42.106277+00:00",
+    "seconds": 353.6708472999744,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1758,
+      1213
+    ],
+    "model_forward_calls": 540,
+    "source_pixels": 2132454,
+    "unknown_pixels": 1391125,
+    "overlapping_positive_pixels": 198529,
+    "label_counts": {
+      "0": 1391125,
+      "1": 489926,
+      "2": 4007,
+      "3": 30450,
+      "4": 41016,
+      "5": 117359,
+      "6": 55594,
+      "7": 76,
+      "8": 191,
+      "9": 2344,
+      "10": 366
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "6c63a83cc3f8641afa024861ff9e625913dc1a8e0a61d860854beb030a7b3bc7"
+  },
+  "metrics": {
+    "all": {
+      "eligible": 3809,
+      "common": 3554,
+      "missing": 255,
+      "correct": 2556,
+      "missing_pct": 6.694670517196115,
+      "exact_common_pct": 71.9189645469893,
+      "exact_all_pct": 67.1042268311893,
+      "bias": -0.024392827995360026,
+      "mae": 0.06976310752739634,
+      "sum_error": -86.69211069550953,
+      "sum_abs_error": 247.93808415236657,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 136,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 4644,
+      "predicted_zero_reference_cells": 691,
+      "predicted_zero_reference_pct": 14.879414298018949,
+      "predicted_low_reference_cells": 399,
+      "predicted_low_reference_pct": 8.591731266149871,
+      "confusion_matrix_with_missing": [
+        [
+          22,
+          32,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          22,
+          582,
+          361,
+          0,
+          0,
+          68
+        ],
+        [
+          11,
+          444,
+          1952,
+          0,
+          0,
+          178
+        ],
+        [
+          1,
+          9,
+          117,
+          0,
+          0,
+          9
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "development": {
+      "eligible": 1997,
+      "common": 1886,
+      "missing": 111,
+      "correct": 1342,
+      "missing_pct": 5.558337506259389,
+      "exact_common_pct": 71.1558854718982,
+      "exact_all_pct": 67.2008012018027,
+      "bias": -0.018550520383275534,
+      "mae": 0.07120586712580304,
+      "sum_error": -34.98628144285766,
+      "sum_abs_error": 134.29426539926453,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 63,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 2539,
+      "predicted_zero_reference_cells": 422,
+      "predicted_zero_reference_pct": 16.62071681764474,
+      "predicted_low_reference_cells": 231,
+      "predicted_low_reference_pct": 9.09807010634108,
+      "confusion_matrix_with_missing": [
+        [
+          6,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          9,
+          315,
+          249,
+          0,
+          0,
+          45
+        ],
+        [
+          3,
+          213,
+          1021,
+          0,
+          0,
+          63
+        ],
+        [
+          0,
+          0,
+          60,
+          0,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "validation": {
+      "eligible": 1238,
+      "common": 1136,
+      "missing": 102,
+      "correct": 867,
+      "missing_pct": 8.239095315024233,
+      "exact_common_pct": 76.32042253521126,
+      "exact_all_pct": 70.03231017770598,
+      "bias": -0.020744679368841987,
+      "mae": 0.061744752027940275,
+      "sum_error": -23.565955763004496,
+      "sum_abs_error": 70.14203830374015,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 47,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 1483,
+      "predicted_zero_reference_cells": 200,
+      "predicted_zero_reference_pct": 13.486176668914363,
+      "predicted_low_reference_cells": 147,
+      "predicted_low_reference_pct": 9.912339851652057,
+      "confusion_matrix_with_missing": [
+        [
+          0,
+          5,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          131,
+          83,
+          0,
+          0,
+          15
+        ],
+        [
+          0,
+          137,
+          736,
+          0,
+          0,
+          83
+        ],
+        [
+          0,
+          2,
+          41,
+          0,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "test": {
+      "eligible": 574,
+      "common": 532,
+      "missing": 42,
+      "correct": 347,
+      "missing_pct": 7.317073170731708,
+      "exact_common_pct": 65.22556390977444,
+      "exact_all_pct": 60.45296167247387,
+      "bias": -0.05289449904069055,
+      "mae": 0.08177026400256,
+      "sum_error": -28.139873489647375,
+      "sum_abs_error": 43.501780449361924,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 26,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 622,
+      "predicted_zero_reference_cells": 69,
+      "predicted_zero_reference_pct": 11.093247588424438,
+      "predicted_low_reference_cells": 21,
+      "predicted_low_reference_pct": 3.3762057877813505,
+      "confusion_matrix_with_missing": [
+        [
+          16,
+          17,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          13,
+          136,
+          29,
+          0,
+          0,
+          8
+        ],
+        [
+          8,
+          94,
+          195,
+          0,
+          0,
+          32
+        ],
+        [
+          1,
+          7,
+          16,
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    }
+  },
+  "municipal_source_pixels": 498062,
+  "municipal_recognized_pixels": 253011
+}

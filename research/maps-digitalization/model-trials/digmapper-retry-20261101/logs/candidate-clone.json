@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "git",
+    "-c",
+    "credential.interactive=never",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/cxp114/criticalmaas-uncharted-ta1.git",
+    "upstream\\windows-launcher"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper-retry-20261101",
+  "started_at_utc": "2026-11-01T09:26:19.983971+00:00",
+  "exit_code": 0,
+  "elapsed_s": 1.621
+}

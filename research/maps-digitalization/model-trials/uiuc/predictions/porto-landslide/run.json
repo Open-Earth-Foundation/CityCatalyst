@@ -1,0 +1,33 @@
+{
+  "id": "porto-landslide",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:06:58.149222+00:00",
+  "completed_utc": "2026-10-30T12:13:02.906289+00:00",
+  "seconds": 364.74212419998366,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1758,
+    1213
+  ],
+  "model_forward_calls": 540,
+  "source_pixels": 2132454,
+  "unknown_pixels": 1390297,
+  "overlapping_positive_pixels": 201422,
+  "label_counts": {
+    "0": 1390297,
+    "1": 500285,
+    "2": 8870,
+    "3": 17859,
+    "4": 48473,
+    "5": 92109,
+    "6": 66653,
+    "7": 4580,
+    "8": 191,
+    "9": 2771,
+    "10": 366
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "4e4de1295a437d45a235b7b3abfe88e6dbe6e73d3c83ea45201a28f16c897a61"
+}

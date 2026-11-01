@@ -1,0 +1,25 @@
+{
+  "started_utc": "2026-10-30T11:53:54.852413+00:00",
+  "settings_sha256": "880d787ff2b24555676ea8c3c023d7de781add360e2d7814a497ef1ab3b3714d",
+  "layers": {
+    "porto-heat": {
+      "status": "running",
+      "stages": [
+        {
+          "command": [
+            "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8",
+            "preprocess.py",
+            "porto-heat"
+          ],
+          "exit_code": 0,
+          "seconds": 12.112940299906768,
+          "peak_rss_mb": 5.1953125,
+          "stop_reason": null,
+          "log": "logs\\preprocess-porto-heat-run.txt"
+        }
+      ]
+    }
+  }
+}

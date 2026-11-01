@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "provenance": {
+    "model": "official LOAM epoch14",
+    "rasterization": "whole page 72 DPI; original source fills used only for evaluation",
+    "geo": {
+      "E": [
+        7.619839217505011,
+        0.000361578981483035,
+        473821.20243080024
+      ],
+      "N": [
+        -0.0005641302493018645,
+        -7.620285794939264,
+        4972344.5602340335
+      ],
+      "corner_residual_m": 0.07799141539945154,
+      "scale_m_per_point": [
+        7.619839238387534,
+        7.62028580351764
+      ],
+      "page_frame": [
+        36.0,
+        18.0,
+        1029.6,
+        774.0
+      ]
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "class": "2yr",
+        "source_page": 15,
+        "pixel_size_points": 1,
+        "method": "LOAM model mask; source GeoPDF registration"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -93.23869356327361,
+              44.890689376010535
+            ],
+            [
+              -93.23859706769434,
+              44.890689572570764
+            ],
+            [
+              -93.23859735589103,
+              44.89075817054084
+            ],
+            [
+              -93.238693851585,
+              44.890757973980136
+            ],
+            [
+              -93.23869356327361,
+              44.890689376010535
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

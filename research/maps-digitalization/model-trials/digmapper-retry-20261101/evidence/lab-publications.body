@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Publications</title>
+  <meta name="description" content="Knowledge Computing Lab at the Computer Science & Engineering Department, University of Minnesota, Twin Cities.
+">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/images/kc-lab-logo_icon.png">
+  <link rel="apple-touch-icon" href="/images/kc-lab-logo_icon.png">
+
+  <link rel="stylesheet" href="/css/foundation.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/fontello.css">
+  <link rel="stylesheet" href="/css/font-awesome.css">
+  <script src="/javascripts/libs.js" type="text/javascript"></script>
+  <script>
+    // terrificjs bootstrap
+    (function($) {
+        $(document).ready(function() {
+            var $page = $('body');
+            var config = {
+              dependencyPath: {
+                plugin: 'javascripts/'
+              }
+            }
+            var application = new Tc.Application($page, config);
+            application.registerModules();
+            application.start();
+        });
+    })(Tc.$);
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,700,300" media="screen" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/masonry.pkgd.js" type="text/javascript"></script>
+  <script src="/javascripts/imagesloaded.pkgd.min.js" type="text/javascript"></script>
+  <script src="/javascripts/slick.min.js" type="text/javascript"></script>
+  <script src="/javascripts/json2.js" type="text/javascript"></script>
+  <link rel="canonical" href="https://knowledge-computing.github.io/publications.html">
+  <link rel="alternate" type="application/rss+xml" title="KnowledgeComputing" href="https://knowledge-computing.github.io/feed.xml" />
+</head>
+
+
+  <body>
+
+    <div class='contain-to-grid sticky'>
+  <nav class='top-bar' data-options='sticky_on: large' data-topbar=''>
+    <ul class='title-area'>
+      <li class='name'>
+          <a href="https://knowledge-computing.github.io/index.html">
+            <img alt="" src="https://knowledge-computing.github.io/images/knowledge_computing_sticker.jpg" style="width:400px"/>
+          </a>
+      </li>
+    </ul>
+    <section class='top-bar-section'>
+      <ul class="right">
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/publications.html" style="font-size:1.1rem">Publications</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/datasets.html" style="font-size:1.1rem">Datasets</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/people.html" style="font-size:1.1rem">People</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/join.html" style="font-size:1.1rem">Join Us</a>
+            </li>
+          
+        
+      </ul>
+    </section>
+  </nav>
+</div>
+
+    <div id='main' role='main'>
+      <div class='full parallax' style='background-image: url(images/background/publications.png); color: #fff;'>
+  <div class='two spacing'></div>
+  <div class='row'>
+    <div class='large-12 columns'>
+      <div class="mod modSectionHeader big">
+  <div class="special-title centered-text">
+    <h2 style="color: #fff;">Publications</h2>
+  </div>
+  
+</div>
+    </div>
+  </div>
+  <div class='three spacing'></div>
+</div>
+
+<div class='full'>
+  <div class='row'>
+    <script src="https://bibbase.org/show?bib=http%3A%2F%2Fknowledge-computing.github.io%2Fpublications.bib&amp;jsonp=1"></script>
+    </div>
+</div>
+
+<!-- <div class='full'>
+  <div class='row'>
+    <h2>Book</h2>
+    <ol reversed="reversed" type="1" style="font-size: 1.2rem;">
+      
+    </ol>
+  </div>
+  <div class='spacing'></div>
+</div>
+ -->
+
+<div class='three spacing'></div>
+
+    </div>
+
+    <div id='footer'>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+</div>
+
+
+<!-- <div id='footer'>
+  <div class='three spacing'></div>
+  <div class='row'>
+    <div class='large-3 medium-3 columns'>
+      <h1>
+        <a href='index.html'>
+          <img alt="" src="https://knowledge-computing.github.io/images/spatial_computing_sticker.jpg" />
+        </a>
+      </h1>
+      <p>©2014 Devoll. All rights reserved.</p>
+      <div class='spacing'></div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <div class='links'>
+        <h4>Some pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="portfolio.html">View some works here</a></li>
+          <li><a href="blog.html">Follow our blog</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+          <li><a href="services.html">Our services</a></li>
+        </ul>
+      </div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <div class='links'>
+        <h4>Recent posts</h4>
+        <ul>
+          
+        </ul>
+      </div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <h4>Contact us</h4>
+      <ul>
+        <li>Phone: +86 (03) 9810 4612</li>
+        <li>Emial: info@devoll-team.com</li>
+        <li>Location: 41 Dean Street, London, UK</li>
+      </ul>
+      <div class='spacing'></div>
+      <ul class='socials'>
+        <li>
+          <a href='http://facebook.com'>
+            <i class='fa fa-facebook'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://twitter.com'>
+            <i class='fa fa-twitter'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://dribbble.com'>
+            <i class='fa fa-dribbble'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://tumblr.com'>
+            <i class='fa fa-tumblr'></i>
+          </a>
+        </li>
+      </ul>
+      <div class='spacing'></div>
+    </div>
+  </div>
+  <div class='two spacing'></div>
+</div> -->
+
+<script src="/javascripts/jquery.countTo.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.appear.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.validate.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.sequence-min.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.easing.1.3.js" type="text/javascript"></script>
+<script src="/javascripts/app.js" type="text/javascript"></script>
+
+
+  </body>
+
+</html>

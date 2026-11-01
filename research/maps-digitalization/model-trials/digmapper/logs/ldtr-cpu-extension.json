@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "../../../../.venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "setup.py",
+    "build_ext",
+    "--inplace"
+  ],
+  "cwd": "./upstream/LDTR/models/ops",
+  "started_at": "2026-10-30T11:54:03.580023+00:00",
+  "timeout_s": 60,
+  "exit_code": null,
+  "error": "FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+  "elapsed_s": 0.016,
+  "log": "logs\\ldtr-cpu-extension.log"
+}

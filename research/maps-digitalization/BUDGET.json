@@ -1,0 +1,136 @@
+{
+  "openrouter_authorized_cap_usd": 10.0,
+  "openrouter_spent_usd": 0.8458760000000001,
+  "requests": [
+    {
+      "round": "implementation",
+      "model": "anthropic/claude-opus-5.5",
+      "reserved_usd": 0.480488,
+      "pricing": {
+        "prompt": "0.000004",
+        "completion": "0.00002",
+        "web_search": "0.01",
+        "input_cache_read": "0.0000002",
+        "input_cache_write": "0.000005",
+        "input_cache_write_1h": "0.000008"
+      },
+      "prompt_sha256": "08582801bbfe9f17d195d8a22ea37f31c726ab418eb61bb1fce2221123bbdc61",
+      "state": "complete",
+      "time_unix": 1793189296.2458916,
+      "cost_usd": 0.285028,
+      "usage": {
+        "prompt_tokens": 31257,
+        "completion_tokens": 8000,
+        "total_tokens": 39257,
+        "cost": 0.285028,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.285028,
+          "upstream_inference_prompt_cost": 0.125028,
+          "upstream_inference_completions_cost": 0.16
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 8000,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response_id": "gen-1793189297-uz2sB1q8Fu2i4d2FZt47",
+      "returned_model": "anthropic/claude-opus-5.5",
+      "finish_reason": "length"
+    },
+    {
+      "round": "validation",
+      "model": "anthropic/claude-opus-5.5",
+      "reserved_usd": 0.720388,
+      "pricing": {
+        "prompt": "0.000004",
+        "completion": "0.00002",
+        "web_search": "0.01",
+        "input_cache_read": "0.0000002",
+        "input_cache_write": "0.000005",
+        "input_cache_write_1h": "0.000008"
+      },
+      "prompt_sha256": "24ab08ac8383163722ae6adf9754e922197ef81a8706c2cf04ff66674d7e6bf1",
+      "state": "complete",
+      "time_unix": 1793189553.0742612,
+      "cost_usd": 0.277144,
+      "usage": {
+        "prompt_tokens": 24736,
+        "completion_tokens": 8910,
+        "total_tokens": 33646,
+        "cost": 0.277144,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.277144,
+          "upstream_inference_prompt_cost": 0.098944,
+          "upstream_inference_completions_cost": 0.1782
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 5038,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response_id": "gen-1793189554-ObilcMa5QbrKpz452HJO",
+      "returned_model": "anthropic/claude-opus-5.5",
+      "finish_reason": "stop"
+    },
+    {
+      "round": "closeout",
+      "model": "anthropic/claude-opus-5.5",
+      "reserved_usd": 0.878876,
+      "pricing": {
+        "prompt": "0.000004",
+        "completion": "0.00002",
+        "web_search": "0.01",
+        "input_cache_read": "0.0000002",
+        "input_cache_write": "0.000005",
+        "input_cache_write_1h": "0.000008"
+      },
+      "prompt_sha256": "b56d93b41043aaacac77bc88d79224f07f0b6d55f32b4089f7db95b407ab0a21",
+      "state": "complete",
+      "time_unix": 1793191599.611087,
+      "cost_usd": 0.283704,
+      "usage": {
+        "prompt_tokens": 41901,
+        "completion_tokens": 5805,
+        "total_tokens": 47706,
+        "cost": 0.283704,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.283704,
+          "upstream_inference_prompt_cost": 0.167604,
+          "upstream_inference_completions_cost": 0.1161
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 3128,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response_id": "gen-1793191600-2Gci10axTvkeNgZaCwEl",
+      "returned_model": "anthropic/claude-opus-5.5",
+      "finish_reason": "stop"
+    }
+  ],
+  "note": "Native design consultation completed; two native follow-ups rate-limited. OpenRouter Opus5.5 calls tracked here, including first truncated review with no final content."
+}

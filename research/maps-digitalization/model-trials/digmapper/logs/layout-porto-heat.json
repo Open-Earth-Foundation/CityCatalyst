@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "./scripts/attempt_layout.py",
+    "porto-heat"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper",
+  "started_at": "2026-10-30T11:56:28.986433+00:00",
+  "timeout_s": 60,
+  "exit_code": 1,
+  "elapsed_s": 27.36,
+  "log": "logs\\layout-porto-heat.log"
+}

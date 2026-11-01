@@ -1,0 +1,110 @@
+{
+  "status": "passed",
+  "completed_layers": 3,
+  "checks": [
+    {
+      "layer": "porto-heat",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1213
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 26569,
+      "unknown_pixels": 2105885,
+      "valid_export_features": 563
+    },
+    {
+      "layer": "porto-flood",
+      "status": "passed",
+      "full_shape_hw": [
+        1668,
+        1155
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 17099,
+      "unknown_pixels": 1909441,
+      "valid_export_features": 378
+    },
+    {
+      "layer": "porto-landslide",
+      "status": "running",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "porto-drought",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "porto-arbovirus",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "porto-storm",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "richfield-inundation-100yr",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 1,
+      "predicted_pixels": 0,
+      "unknown_pixels": 969408,
+      "valid_export_features": 0
+    },
+    {
+      "layer": "richfield-inundation-2yr",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "richfield-inundation-10yr",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "richfield-inundation-mce100",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    },
+    {
+      "layer": "richfield-prioritization-score",
+      "status": "not attempted",
+      "check": "no completed output claimed"
+    }
+  ],
+  "alignment": {
+    "porto_heat": {
+      "source_crop_xyxy": [
+        770,
+        1209,
+        862,
+        1269
+      ],
+      "source_resolution": "native embedded figure",
+      "display_scale": "same for both layers",
+      "numeric_reference_used": false,
+      "predicted_pixels_in_crop": 0,
+      "crop_pixels": 5520
+    },
+    "richfield": {
+      "source_crop_points": [
+        280,
+        285,
+        600,
+        465
+      ],
+      "source_render_pixels_per_point": 3,
+      "model_native_pixels_per_point": 1,
+      "model_enlargement": "nearest neighbor 3x",
+      "numeric_reference_used": false
+    }
+  },
+  "scope": "artifact/schema/count/provenance/spatial checks; accuracy is separately reported in metrics.json"
+}

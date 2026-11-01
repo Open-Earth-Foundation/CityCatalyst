@@ -1,0 +1,12 @@
+source_ready porto-heat [1213, 1758]
+source_ready porto-flood [1155, 1668]
+source_ready richfield-inundation-100yr [2448, 1584]
+source_ready porto-landslide [1213, 1758]
+source_ready porto-drought [1218, 1758]
+source_ready porto-arbovirus [1213, 1758]
+source_ready porto-storm [1213, 1758]
+source_ready richfield-inundation-2yr [2448, 1584]
+source_ready richfield-inundation-10yr [2448, 1584]
+source_ready richfield-inundation-mce100 [2448, 1584]
+source_ready richfield-prioritization-score [2448, 1584]
+unchanged_scorer_synthetic_contract_passed

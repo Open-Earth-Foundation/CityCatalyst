@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>pantera-file-test</BucketName><RequestId>K9WHQYC0JKNN1V6Y</RequestId><HostId>XBQa7luyWO3ehNfUk9pYXyDhRAJbde0fuCcy/Gmtu6acYKCDSb2rnwMv52MTCew2ChW9MDpTo5P3CHjDbdhWXo8L9qQtludK</HostId></Error>

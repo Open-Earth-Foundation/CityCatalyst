@@ -1,0 +1,7 @@
+torch 2.15.0+cpu cuda False
+keys ['epoch', 'global_step', 'pytorch-lightning_version', 'state_dict', 'loops', 'callbacks', 'optimizer_states', 'lr_schedulers'] hyper None
+<All keys matched successfully>
+forward 0 0.5188657999970019 shape [1, 2, 256, 256] finite True
+forward 1 0.42984739993698895 shape [1, 2, 256, 256] finite True
+forward 2 0.4850150999845937 shape [1, 2, 256, 256] finite True
+total 1.9057151000015438

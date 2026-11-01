@@ -1,0 +1,23 @@
+{"argv": ["uv", "pip", "install", "--python", "./.venv/Scripts/python.exe", "numpy<2", "opencv-python<4.12", "boto3", "shapely", "transformers==4.49", "timm==0.9.16"], "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper", "started_at": "2026-10-30T11:54:50.730381+00:00", "timeout_s": 120}
+Resolved 35 packages in 259ms
+Downloading botocore (15.4MiB)
+Downloading timm (2.1MiB)
+ Downloaded timm
+ Downloaded botocore
+Prepared 4 packages in 1.31s
+Installed 15 packages in 927ms
+ + boto3==1.43.122
+ + botocore==1.43.122
+ + fsspec==2026.9.0
+ + huggingface-hub==0.36.2
+ + jmespath==1.1.0
+ + opencv-python==4.11.0.86
+ + python-dateutil==2.9.0.post0
+ + regex==2026.9.29
+ + s3transfer==0.19.3
+ + safetensors==0.8.0
+ + shapely==2.2.0
+ + six==1.17.0
+ + timm==0.9.16
+ + tokenizers==0.21.4
+ + transformers==4.49.0

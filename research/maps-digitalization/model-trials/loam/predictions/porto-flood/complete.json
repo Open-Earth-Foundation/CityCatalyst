@@ -1,0 +1,94 @@
+{
+  "status": "succeeded",
+  "name": "porto-flood",
+  "seconds_this_invocation": 372.2970642000437,
+  "class_seconds_total": 371.3751471999567,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 36.18491880001966,
+      "tiles": 14,
+      "positive_pixels": 228,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 1,
+      "seconds": 38.18265839992091,
+      "tiles": 14,
+      "positive_pixels": 944,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 2,
+      "seconds": 37.72959040000569,
+      "tiles": 14,
+      "positive_pixels": 9244,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 3,
+      "seconds": 40.28662929998245,
+      "tiles": 14,
+      "positive_pixels": 2932,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 4,
+      "seconds": 35.116179700009525,
+      "tiles": 14,
+      "positive_pixels": 1137,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 5,
+      "seconds": 35.66418999992311,
+      "tiles": 14,
+      "positive_pixels": 1264,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 6,
+      "seconds": 36.5985354000004,
+      "tiles": 14,
+      "positive_pixels": 844,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 7,
+      "seconds": 37.11336920002941,
+      "tiles": 14,
+      "positive_pixels": 597,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 8,
+      "seconds": 36.07182960002683,
+      "tiles": 14,
+      "positive_pixels": 597,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    },
+    {
+      "index": 9,
+      "seconds": 38.42724640003871,
+      "tiles": 14,
+      "positive_pixels": 318,
+      "peak_rss_mb": 994.4296875,
+      "torch_threads": 4
+    }
+  ],
+  "overlap_pixels": 1006,
+  "unknown_pixels": 1909441,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+  "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+  "tiles": 140
+}

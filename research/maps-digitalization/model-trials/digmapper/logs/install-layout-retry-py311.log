@@ -1,0 +1,17 @@
+{"argv": ["uv", "pip", "install", "--python", "../../.venv/Scripts/python.exe", "--no-build-isolation", "-e", "./tasks[segmentation]", "-e", "./pipelines/segmentation"], "cwd": "./upstream/uncharted-ta1", "started_at": "2026-10-30T11:51:59.527902+00:00", "timeout_s": 240}
+Using Python 3.11.15 environment at: C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\.venv
+  × Failed to download and build `detectron2 @
+  │ git+https://github.com/facebookresearch/detectron2.git@a59f05630a8f205756064244bf5beb8661f96180`
+  ├─▶ Git operation failed
+  ╰─▶ process didn't exit successfully: `C:\Program Files\Git\cmd\git.exe
+      reset --hard a59f05630a8f205756064244bf5beb8661f96180` (exit code: 128)
+      --- stderr
+      error: unable to create file
+      projects/Panoptic-DeepLab/configs/COCO-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_200k_bs64_crop_640_640_coco_dsconv.yaml:
+      Filename too long
+      error: unable to create file
+      projects/Panoptic-DeepLab/configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml:
+      Filename too long
+      fatal: Could not reset index file to revision
+      'a59f05630a8f205756064244bf5beb8661f96180'.
+

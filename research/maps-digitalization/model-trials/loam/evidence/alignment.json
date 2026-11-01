@@ -1,0 +1,28 @@
+{
+  "porto_heat": {
+    "source_crop_xyxy": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "source_resolution": "native embedded figure",
+    "display_scale": "same for both layers",
+    "numeric_reference_used": false,
+    "predicted_pixels_in_crop": 0,
+    "crop_pixels": 5520
+  },
+  "richfield": {
+    "source_crop_points": [
+      280,
+      285,
+      600,
+      465
+    ],
+    "source_render_pixels_per_point": 3,
+    "model_native_pixels_per_point": 1,
+    "model_enlargement": "nearest neighbor 3x",
+    "numeric_reference_used": false,
+    "predicted_display_pixels": 0
+  }
+}

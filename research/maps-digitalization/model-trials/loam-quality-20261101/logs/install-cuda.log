@@ -1,0 +1,10 @@
+Using Python 3.11.15 environment at: model-trials\loam-quality-20261101\.venv
+Resolved 12 packages in 946ms
+Downloading torch (2.3GiB)
+Downloading torchvision (5.9MiB)
+ Downloaded torchvision
+ Downloaded torch
+Prepared 2 packages in 43.79s
+Installed 2 packages in 1.97s
+ + torch==2.5.1+cu124
+ + torchvision==0.20.1+cu124

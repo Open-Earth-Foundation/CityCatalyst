@@ -1,0 +1,48 @@
+name: Build Containers
+
+# manual trigger only
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag for the created images"
+        required: false
+        default: "latest"
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.LARA_AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.LARA_AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ca-central-1
+
+  SEGMENTATION_MODEL_NAME: layoutlmv3_20240925
+  SEGMENTATION_MODEL: ${{ github.workspace }}/models/segmentation/layoutlmv3_20240925
+
+  POINTS_MODEL_NAME: lara_yolo9_20241204_best.pt
+  POINTS_MODEL: ${{ github.workspace }}/models/points/lara_yolo9_20241204_best.pt
+
+jobs:
+  build:
+    if: github.repository == 'uncharted-lara/lara-models'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Docker login
+        run: docker login -u ${{ secrets.uncharted_docker_username }} -p ${{ secrets.uncharted_docker_pw }}
+      - name: Copy segmentation model
+        run: |
+          mkdir -p ${{ env.SEGMENTATION_MODEL }}
+          aws s3 cp s3://pantera-file-test/lara/segmentation/${{ env.SEGMENTATION_MODEL_NAME }} ${{ env.SEGMENTATION_MODEL }} --recursive
+      - name: Copy points model
+        run: |
+          mkdir -p $(dirname ${{ env.POINTS_MODEL }})
+          aws s3 cp s3://pantera-file-test/lara/points/${{ env.POINTS_MODEL_NAME }} ${{ env.POINTS_MODEL }}
+      - name: Image build
+        run: make build
+      - name: Image push
+        run: |
+          make DEV_TAG=${{ github.event.inputs.image_tag }} tag_dev
+          make DEV_TAG=${{ github.event.inputs.image_tag }} push_dev

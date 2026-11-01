@@ -1,0 +1,4 @@
+errors:
+denied: requested access to the resource is denied
+unauthorized: authentication required
+

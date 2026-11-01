@@ -1,0 +1,50 @@
+[
+  {
+    "name": "author-poly-tree",
+    "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "author-poly-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/HEAD/README.md"
+  },
+  {
+    "name": "author-poly-releases",
+    "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/releases"
+  },
+  {
+    "name": "author-dovetail-tree",
+    "url": "https://api.github.com/repos/Fandel-Lin/DOVETAIL/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "author-dovetail-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/DOVETAIL/HEAD/README.md"
+  },
+  {
+    "name": "author-polydetr-readme",
+    "url": "https://raw.githubusercontent.com/WeiweiDuan/PolyDETR/HEAD/README.md"
+  },
+  {
+    "name": "author-spolydetr-readme",
+    "url": "https://raw.githubusercontent.com/WeiweiDuan/S-PolyDETR/HEAD/README.md"
+  },
+  {
+    "name": "author-glyph-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/GLYPH/HEAD/README.md"
+  },
+  {
+    "name": "usc-repos-page2",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=2"
+  },
+  {
+    "name": "jterstriep-dockerfiles-tree",
+    "url": "https://api.github.com/repos/jterstriep/dockerfiles/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "candidate-launcher",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/cli.py"
+  },
+  {
+    "name": "candidate-launcher-main",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/__main__.py"
+  }
+]

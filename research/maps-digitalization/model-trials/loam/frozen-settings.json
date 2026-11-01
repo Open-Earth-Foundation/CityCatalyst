@@ -1,0 +1,30 @@
+{
+  "upstream_commit": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048",
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "freeze_stage": "before model inference and before reading any reference values",
+  "seed": 0,
+  "preprocessing": "upstream metadata_preprocessing, trade_off=6, sequential execution; original whole source figures; source-derived map-frame and legend boxes",
+  "porto_resolution": "native PDF embedded image, no resizing",
+  "richfield_resolution": "72 DPI, whole original page, not isolated fills",
+  "inference": "original LOAM 7-channel 2-class network, strict checkpoint loading, CPU float32, batch=1, threads=4 (initial heat bins at 2 threads)",
+  "tile_size_hw": [
+    256,
+    1024
+  ],
+  "tile_padding": "zero bitmap padding at bottom/right; no overlap; no resizing",
+  "mask_decode": "foreground logit greater than background logit, equivalent to original 2-class argmax",
+  "arbitration": "largest foreground probability among accepted binary masks; ties go to smaller legend index; no accepted masks means unknown",
+  "porto_values": "ten legend bin midpoints (k+0.5)/10",
+  "minimum_predicted_pixels_per_250m_cell": 3,
+  "reference_support_minimum": 15,
+  "classes": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "spatial_folds": "unchanged benchmark.py 3km SHA256 blocks; retrospective, not blind",
+  "richfield_evaluation": "full GeoPDF map frame; direct recovered f and fs vector fills rasterized at pixel centers; pre-label/stroke source geometry",
+  "reference_values_used_in_preprocessing": false,
+  "resource_update": "CPU threads increased from 2 to 4 on 20-logical-core host, prior to evaluation; no changes to decoding, dimensions, masks, arbitration or support. Initial completed heat bins retained. Scheduler restarted to correctly account for Windows venv descendant memory."
+}

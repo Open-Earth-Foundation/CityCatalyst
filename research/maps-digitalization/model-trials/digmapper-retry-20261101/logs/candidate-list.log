@@ -1,0 +1,5 @@
+geo_referencing: --model <georeferencing-model-dir>
+metadata_extraction: --model <segmentation-model-dir-or-null>
+point_extraction: --model_point_extractor <point-model-file-or-dir>, [--model_segmenter <segmentation-model-dir>]
+segmentation: --model <segmentation-model-dir>
+text_extraction: no external model path

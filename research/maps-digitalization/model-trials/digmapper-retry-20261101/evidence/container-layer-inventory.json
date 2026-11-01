@@ -1,0 +1,898 @@
+[
+  {
+    "name": "opt",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/.dockerignore",
+    "bytes": 16
+  },
+  {
+    "name": "opt/topaz/.gitattributes",
+    "bytes": 42
+  },
+  {
+    "name": "opt/topaz/.github",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/.github/actions",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/.github/actions/Dockerfile",
+    "bytes": 301
+  },
+  {
+    "name": "opt/topaz/.github/actions/LICENSE",
+    "bytes": 1076
+  },
+  {
+    "name": "opt/topaz/.github/actions/README.md",
+    "bytes": 1217
+  },
+  {
+    "name": "opt/topaz/.github/actions/action.yml",
+    "bytes": 419
+  },
+  {
+    "name": "opt/topaz/.github/actions/entrypoint.sh",
+    "bytes": 824
+  },
+  {
+    "name": "opt/topaz/.github/workflows",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/.github/workflows/ci.yml",
+    "bytes": 1312
+  },
+  {
+    "name": "opt/topaz/.github/workflows/publish_conda.yml",
+    "bytes": 366
+  },
+  {
+    "name": "opt/topaz/.github/workflows/publish_pypi.yml",
+    "bytes": 1056
+  },
+  {
+    "name": "opt/topaz/.readthedocs.yaml",
+    "bytes": 247
+  },
+  {
+    "name": "opt/topaz/Dockerfile",
+    "bytes": 937
+  },
+  {
+    "name": "opt/topaz/LICENSE",
+    "bytes": 35147
+  },
+  {
+    "name": "opt/topaz/MANIFEST.in",
+    "bytes": 126
+  },
+  {
+    "name": "opt/topaz/README.md",
+    "bytes": 23913
+  },
+  {
+    "name": "opt/topaz/Singularity",
+    "bytes": 1599
+  },
+  {
+    "name": "opt/topaz/conda-build",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/conda-build/conda_build_config.yml",
+    "bytes": 210
+  },
+  {
+    "name": "opt/topaz/conda-build/conda_publish_env.yaml",
+    "bytes": 210
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.0.0.yaml",
+    "bytes": 631
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.1.0.yaml",
+    "bytes": 632
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.2.0.yaml",
+    "bytes": 632
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.2.1.yaml",
+    "bytes": 632
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.2.2.yaml",
+    "bytes": 632
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.2.3.yaml",
+    "bytes": 632
+  },
+  {
+    "name": "opt/topaz/conda-build/meta-v0.2.4.yaml",
+    "bytes": 649
+  },
+  {
+    "name": "opt/topaz/conda-build/meta.yaml",
+    "bytes": 722
+  },
+  {
+    "name": "opt/topaz/docs",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/docs/Makefile",
+    "bytes": 638
+  },
+  {
+    "name": "opt/topaz/docs/make.bat",
+    "bytes": 769
+  },
+  {
+    "name": "opt/topaz/docs/requirements.txt",
+    "bytes": 205
+  },
+  {
+    "name": "opt/topaz/docs/source",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/docs/source/algorithms.md",
+    "bytes": 98
+  },
+  {
+    "name": "opt/topaz/docs/source/commands",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/convert.md",
+    "bytes": 124
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/denoise.md",
+    "bytes": 124
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/denoise3d.md",
+    "bytes": 131
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/downsample.md",
+    "bytes": 133
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/extract.md",
+    "bytes": 124
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/file_utilities.md",
+    "bytes": 115
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/gui.md",
+    "bytes": 151
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/image_processing.md",
+    "bytes": 121
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/normalize.md",
+    "bytes": 128
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/particle_picking.md",
+    "bytes": 110
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/particle_stack.md",
+    "bytes": 145
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/precision_recall.md",
+    "bytes": 169
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/preprocess.md",
+    "bytes": 133
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/segment.md",
+    "bytes": 124
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/split.md",
+    "bytes": 118
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/train.md",
+    "bytes": 118
+  },
+  {
+    "name": "opt/topaz/docs/source/commands/train_test_split.md",
+    "bytes": 151
+  },
+  {
+    "name": "opt/topaz/docs/source/commands.md",
+    "bytes": 160
+  },
+  {
+    "name": "opt/topaz/docs/source/conf.py",
+    "bytes": 2113
+  },
+  {
+    "name": "opt/topaz/docs/source/cryosparc.md",
+    "bytes": 21
+  },
+  {
+    "name": "opt/topaz/docs/source/denoising.md",
+    "bytes": 94
+  },
+  {
+    "name": "opt/topaz/docs/source/description.md",
+    "bytes": 666
+  },
+  {
+    "name": "opt/topaz/docs/source/index.md",
+    "bytes": 463
+  },
+  {
+    "name": "opt/topaz/docs/source/installation",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/docs/source/installation/conda_install.md",
+    "bytes": 1437
+  },
+  {
+    "name": "opt/topaz/docs/source/installation/docker_install.md",
+    "bytes": 1822
+  },
+  {
+    "name": "opt/topaz/docs/source/installation/pip_install.md",
+    "bytes": 659
+  },
+  {
+    "name": "opt/topaz/docs/source/installation/singularity.md",
+    "bytes": 506
+  },
+  {
+    "name": "opt/topaz/docs/source/installation/source_install.md",
+    "bytes": 1362
+  },
+  {
+    "name": "opt/topaz/docs/source/installation.md",
+    "bytes": 413
+  },
+  {
+    "name": "opt/topaz/docs/source/methods.md",
+    "bytes": 92
+  },
+  {
+    "name": "opt/topaz/docs/source/metrics_stats.md",
+    "bytes": 189
+  },
+  {
+    "name": "opt/topaz/docs/source/models.md",
+    "bytes": 928
+  },
+  {
+    "name": "opt/topaz/docs/source/relion.md",
+    "bytes": 18
+  },
+  {
+    "name": "opt/topaz/docs/source/scripts.md",
+    "bytes": 9
+  },
+  {
+    "name": "opt/topaz/docs/source/transforms.md",
+    "bytes": 126
+  },
+  {
+    "name": "opt/topaz/docs/source/tutorial.md",
+    "bytes": 382
+  },
+  {
+    "name": "opt/topaz/docs/source/utils.md",
+    "bytes": 1232
+  },
+  {
+    "name": "opt/topaz/images",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/images/anoble.png",
+    "bytes": 1840680
+  },
+  {
+    "name": "opt/topaz/images/tbepler.png",
+    "bytes": 361518
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/LICENSE",
+    "bytes": 35149
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/README.md",
+    "bytes": 6273
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/run_topaz_denoise.py",
+    "bytes": 3704
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/run_topaz_pick.py",
+    "bytes": 6703
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/run_topaz_train.py",
+    "bytes": 7208
+  },
+  {
+    "name": "opt/topaz/relion_run_topaz/run_topaz_train_denoise.py",
+    "bytes": 5546
+  },
+  {
+    "name": "opt/topaz/requirements.txt",
+    "bytes": 109
+  },
+  {
+    "name": "opt/topaz/scripts",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/scripts/filter_images.py",
+    "bytes": 953
+  },
+  {
+    "name": "opt/topaz/scripts/generate_image_list.py",
+    "bytes": 649
+  },
+  {
+    "name": "opt/topaz/scripts/match_extracted_particles.py",
+    "bytes": 2310
+  },
+  {
+    "name": "opt/topaz/scripts/subsample_particles.py",
+    "bytes": 1017
+  },
+  {
+    "name": "opt/topaz/scripts/train_test_split.py",
+    "bytes": 1710
+  },
+  {
+    "name": "opt/topaz/setup.py",
+    "bytes": 1153
+  },
+  {
+    "name": "opt/topaz/test",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/data_utils",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/data_utils/test_coordinates.py",
+    "bytes": 215
+  },
+  {
+    "name": "opt/topaz/test/data_utils/test_loader.py",
+    "bytes": 3214
+  },
+  {
+    "name": "opt/topaz/test/data_utils/test_partition.py",
+    "bytes": 155
+  },
+  {
+    "name": "opt/topaz/test/data_utils/test_sampler.py",
+    "bytes": 951
+  },
+  {
+    "name": "opt/topaz/test/models",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/models/test__model_utils.py",
+    "bytes": 92
+  },
+  {
+    "name": "opt/topaz/test/models/test_basic.py",
+    "bytes": 491
+  },
+  {
+    "name": "opt/topaz/test/models/test_classifier.py",
+    "bytes": 327
+  },
+  {
+    "name": "opt/topaz/test/models/test_densenet.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/models/test_factory.py",
+    "bytes": 314
+  },
+  {
+    "name": "opt/topaz/test/models/test_generative.py",
+    "bytes": 153
+  },
+  {
+    "name": "opt/topaz/test/models/test_msnet.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/models/test_resnet.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts/test_filter_images.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts/test_generate_image_list.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts/test_match_extracted_particles.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts/test_subsample_particles.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/scripts/test_train_test_split.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/test_commands_simple.py",
+    "bytes": 3243
+  },
+  {
+    "name": "opt/topaz/test/test_example.py",
+    "bytes": 75
+  },
+  {
+    "name": "opt/topaz/test/topaz",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_algorithms.py",
+    "bytes": 297
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_denoise.py",
+    "bytes": 737
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_filters.py",
+    "bytes": 156
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_main.py",
+    "bytes": 70
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_methods.py",
+    "bytes": 683
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_metrics.py",
+    "bytes": 174
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_mrc.py",
+    "bytes": 441
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_predict.py",
+    "bytes": 165
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_stats.py",
+    "bytes": 239
+  },
+  {
+    "name": "opt/topaz/test/topaz/test_torch.py",
+    "bytes": 173
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils/test_conversions.py",
+    "bytes": 506
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils/test_files.py",
+    "bytes": 645
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils/test_image.py",
+    "bytes": 465
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils/test_picks.py",
+    "bytes": 87
+  },
+  {
+    "name": "opt/topaz/test/topaz_utils/test_star.py",
+    "bytes": 270
+  },
+  {
+    "name": "opt/topaz/test/transforms",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/test/transforms/test_scaled_gaussian_mixture.py",
+    "bytes": 224
+  },
+  {
+    "name": "opt/topaz/topaz",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/__init__.py",
+    "bytes": 39
+  },
+  {
+    "name": "opt/topaz/topaz/_version.py",
+    "bytes": 22
+  },
+  {
+    "name": "opt/topaz/topaz/algorithms.py",
+    "bytes": 3148
+  },
+  {
+    "name": "opt/topaz/topaz/commands",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/commands/__init__.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/commands/boxes_to_coordinates.py",
+    "bytes": 1932
+  },
+  {
+    "name": "opt/topaz/topaz/commands/convert.py",
+    "bytes": 10410
+  },
+  {
+    "name": "opt/topaz/topaz/commands/coordinates_to_boxes.py",
+    "bytes": 2423
+  },
+  {
+    "name": "opt/topaz/topaz/commands/coordinates_to_eman2_json.py",
+    "bytes": 2270
+  },
+  {
+    "name": "opt/topaz/topaz/commands/coordinates_to_star.py",
+    "bytes": 2965
+  },
+  {
+    "name": "opt/topaz/topaz/commands/denoise.py",
+    "bytes": 21687
+  },
+  {
+    "name": "opt/topaz/topaz/commands/denoise3d.py",
+    "bytes": 29176
+  },
+  {
+    "name": "opt/topaz/topaz/commands/downsample.py",
+    "bytes": 1411
+  },
+  {
+    "name": "opt/topaz/topaz/commands/extract.py",
+    "bytes": 13192
+  },
+  {
+    "name": "opt/topaz/topaz/commands/gui.py",
+    "bytes": 747
+  },
+  {
+    "name": "opt/topaz/topaz/commands/normalize.py",
+    "bytes": 5669
+  },
+  {
+    "name": "opt/topaz/topaz/commands/particle_stack.py",
+    "bytes": 6402
+  },
+  {
+    "name": "opt/topaz/topaz/commands/precision_recall_curve.py",
+    "bytes": 3346
+  },
+  {
+    "name": "opt/topaz/topaz/commands/preprocess.py",
+    "bytes": 380
+  },
+  {
+    "name": "opt/topaz/topaz/commands/scale_coordinates.py",
+    "bytes": 1276
+  },
+  {
+    "name": "opt/topaz/topaz/commands/segment.py",
+    "bytes": 2539
+  },
+  {
+    "name": "opt/topaz/topaz/commands/split.py",
+    "bytes": 2646
+  },
+  {
+    "name": "opt/topaz/topaz/commands/star_particles_threshold.py",
+    "bytes": 1514
+  },
+  {
+    "name": "opt/topaz/topaz/commands/star_to_coordinates.py",
+    "bytes": 1791
+  },
+  {
+    "name": "opt/topaz/topaz/commands/train.py",
+    "bytes": 31850
+  },
+  {
+    "name": "opt/topaz/topaz/commands/train_test_split.py",
+    "bytes": 5169
+  },
+  {
+    "name": "opt/topaz/topaz/cuda.py",
+    "bytes": 887
+  },
+  {
+    "name": "opt/topaz/topaz/denoise.py",
+    "bytes": 41310
+  },
+  {
+    "name": "opt/topaz/topaz/filters.py",
+    "bytes": 2336
+  },
+  {
+    "name": "opt/topaz/topaz/gui",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/gui/topaz.html",
+    "bytes": 546155
+  },
+  {
+    "name": "opt/topaz/topaz/main.py",
+    "bytes": 5374
+  },
+  {
+    "name": "opt/topaz/topaz/methods.py",
+    "bytes": 11433
+  },
+  {
+    "name": "opt/topaz/topaz/metrics.py",
+    "bytes": 2806
+  },
+  {
+    "name": "opt/topaz/topaz/model",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/model/__init__.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/model/classifier.py",
+    "bytes": 1177
+  },
+  {
+    "name": "opt/topaz/topaz/model/factory.py",
+    "bytes": 1883
+  },
+  {
+    "name": "opt/topaz/topaz/model/features",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/model/features/__init__.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/model/features/basic.py",
+    "bytes": 3787
+  },
+  {
+    "name": "opt/topaz/topaz/model/features/densenet.py",
+    "bytes": 4842
+  },
+  {
+    "name": "opt/topaz/topaz/model/features/msnet.py",
+    "bytes": 13752
+  },
+  {
+    "name": "opt/topaz/topaz/model/features/resnet.py",
+    "bytes": 12158
+  },
+  {
+    "name": "opt/topaz/topaz/model/generative.py",
+    "bytes": 1944
+  },
+  {
+    "name": "opt/topaz/topaz/model/utils.py",
+    "bytes": 1089
+  },
+  {
+    "name": "opt/topaz/topaz/mrc.py",
+    "bytes": 5895
+  },
+  {
+    "name": "opt/topaz/topaz/predict.py",
+    "bytes": 967
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/affine_L1_v0.2.2.sav",
+    "bytes": 4418
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/fcnn_L1_v0.2.2.sav",
+    "bytes": 2046069
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/unet-3d-10a-v0.2.4.sav",
+    "bytes": 11669801
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/unet-3d-20a-v0.2.4.sav",
+    "bytes": 11669801
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/unet_L2_v0.2.1.sav",
+    "bytes": 3884883
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/unet_L2_v0.2.2.sav",
+    "bytes": 4429141
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/denoise/unet_small_L1_v0.2.2.sav",
+    "bytes": 2600122
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/detector",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/detector/resnet16_u32.sav",
+    "bytes": 1839890
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/detector/resnet16_u64.sav",
+    "bytes": 7317922
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/detector/resnet8_u32.sav",
+    "bytes": 1319025
+  },
+  {
+    "name": "opt/topaz/topaz/pretrained/detector/resnet8_u64.sav",
+    "bytes": 5247485
+  },
+  {
+    "name": "opt/topaz/topaz/stats.py",
+    "bytes": 7714
+  },
+  {
+    "name": "opt/topaz/topaz/torch.py",
+    "bytes": 367
+  },
+  {
+    "name": "opt/topaz/topaz/transform",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/transform/__init__.py",
+    "bytes": 59
+  },
+  {
+    "name": "opt/topaz/topaz/transform/scaled_gaussian_mixture.py",
+    "bytes": 6353
+  },
+  {
+    "name": "opt/topaz/topaz/utils",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/utils/__init__.py",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/utils/conversions.py",
+    "bytes": 3162
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data/__init__.py",
+    "bytes": 1
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data/coordinates.py",
+    "bytes": 1839
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data/loader.py",
+    "bytes": 6526
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data/partition.py",
+    "bytes": 1286
+  },
+  {
+    "name": "opt/topaz/topaz/utils/data/sampler.py",
+    "bytes": 6779
+  },
+  {
+    "name": "opt/topaz/topaz/utils/files.py",
+    "bytes": 8056
+  },
+  {
+    "name": "opt/topaz/topaz/utils/image.py",
+    "bytes": 2186
+  },
+  {
+    "name": "opt/topaz/topaz/utils/picks.py",
+    "bytes": 561
+  },
+  {
+    "name": "opt/topaz/topaz/utils/printing.py",
+    "bytes": 118
+  },
+  {
+    "name": "opt/topaz/topaz/utils/star.py",
+    "bytes": 3060
+  },
+  {
+    "name": "opt/topaz/tutorial",
+    "bytes": 0
+  },
+  {
+    "name": "opt/topaz/tutorial/01_quick_start_guide.ipynb",
+    "bytes": 15037
+  },
+  {
+    "name": "opt/topaz/tutorial/02_walkthrough.ipynb",
+    "bytes": 4660250
+  },
+  {
+    "name": "opt/topaz/tutorial/03_cross_validation.ipynb",
+    "bytes": 8441914
+  },
+  {
+    "name": "opt/topaz/tutorial/04_denoising.ipynb",
+    "bytes": 7508545
+  }
+]

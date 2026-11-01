@@ -1,0 +1,48 @@
+EVALUATE porto-flood
+EVALUATE richfield-inundation-100yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE porto-landslide
+EVALUATE porto-drought
+EVALUATE porto-arbovirus
+EVALUATE porto-storm
+EVALUATE richfield-inundation-2yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-10yr
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-mce100
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-prioritization-score
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-100yr-72dpi-control
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-2yr-72dpi-control
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-10yr-72dpi-control
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-inundation-mce100-72dpi-control
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+EVALUATE richfield-prioritization-score-72dpi-control
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py:116: DeprecationWarning: The 'shapely.ops.transform()' function is deprecated. Use 'shapely.transform()' or 'shapely.transform_coordseq()' instead. See https://shapely.readthedocs.io/en/latest/manual.html#shapely.ops.transform for more details.
+  utm=richfield.project(model,geo);ll=geom_transform(richfield.LL.transform,utm)
+METRICS_SAVED {'previous': {'exact_all_pct': 17.474900562725733, 'exact_common_pct': 88.21495553006825, 'missing_pct': 80.2098630327273, 'mae': 0.04821074783686585, 'bias': -0.029833568900281503, 'high_recall_pct': 0.0}, 'mode0': {'exact_all_pct': 17.326556762307163, 'exact_common_pct': 87.55748175776426, 'missing_pct': 80.21468850264036, 'mae': 0.049058966579710976, 'bias': -0.029148146042500257, 'high_recall_pct': 0.002682571815768174}}

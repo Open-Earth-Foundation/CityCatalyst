@@ -1,0 +1,64 @@
+Parameter Settings: False True True True
+========================================== Setting of Metadata Preprocessing for Polygon Extraction ==========================================
+*Preprocessing output directory => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-flood/"
+*Intput map tif for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-flood.tif"
+*Intput map json for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-flood.json"
+*Intput bound geojson for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-flood-bound.json"
+*Output for polygon extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-flood/intermediate7_2/Output"
+ - Output for intermediate basemap => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-flood/intermediate7"
+ - Output for intermediate extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-flood/intermediate7_2/(Map_Name)"
+ - Output for cropped map => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-flood/intermediate6/cropped_map_mask" (Supporting point, line, polygon)
+
+*Adjustable (Set to "True" is highly recommended due to time complexity)
+ - Multiprocessing => True
+ - Simple preprocessing => True
+
+*Multiprocessing with 1 processes...
+==============================================================================================================================================
+
+=== Specify maps with polygon features ===
+As the format for gpkg is not determined, please provide json file in competition format to indicate the map key of a map at this stage.
+Will update to read the gpkg file once the format is determined...
+Total number of maps to extract:  1
+Title of maps:  ['porto-flood']
+Number of keys:  [10]
+
+=== Preparing basemaps with different representations / Checking area segmentation ===
+Working on map: porto-flood
+time check... segmentation_reading and representation_preprocessing:  0:00:04.301674
+
+=== Extract boundaries from the maps ===
+Working on map: porto-flood.tif
+time checkpoint _vt0: 0:00:00.448660
+Working on map: porto-flood.tif
+Working on map: porto-flood.tif
+time check... worker_boundary_extraction:  0:00:00.806176
+
+=== Extract auxiliary information from the maps ===
+Working on map: porto-flood.tif
+time checkpoint _v0: 0:00:00.290726
+time checkpoint _v1: 0:00:00.375823
+time checkpoint _v2: 0:00:00.380821
+time check... worker_auxiliary_info:  0:00:00.381858
+
+=== Apply recoloring (color-set matching) for the maps ===
+
+=== Apply general metadata preprocessing for polygon extraction from the maps ===
+Working on map: porto-flood.tif
+time checkpoint _v0: 0:00:00.291190
+time checkpoint _v1: 0:00:00.294193
+processing _v0 >>> _v2 (legend 10/10)... : 0:00:00.697728
+time checkpoint _v2: 0:00:00.697728
+looping... (round: 1/1)... (legend: 0-10 /10)
+time checkpoint _v3: 0:00:00.697728
+processing _v3 >>> _v4 (iteration 1/2)... (legend 10/10)... : 0:00:00.706778
+processing _v3 >>> _v4 (iteration 2/2)... (legend 10/10)... : 0:00:00.713270
+ - dynamic update (0 / 0)
+time checkpoint _v4: 0:00:00.719015
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\.venv\Lib\site-packages\rasterio\__init__.py:368: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\.venv\Lib\site-packages\rasterio\__init__.py:378: NotGeoreferencedWarning: The given matrix is equal to Affine.identity or its flipped counterpart. GDAL may ignore this matrix and save no geotransform without raising an error. This behavior is somewhat driver-specific.
+  dataset = writer(
+time checkpoint _v7: 0:00:01.669907
+time check... worker_main_component:  0:00:01.671907
+PREPROCESS_SUCCESS 7.18042929994408

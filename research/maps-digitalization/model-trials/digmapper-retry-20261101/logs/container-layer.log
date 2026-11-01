@@ -1,0 +1,131 @@
+opt/topaz/README.md [![Python package](https://github.com/tbepler/topaz/actions/workflows/ci.yml/badge.svg)](https://github.com/tbepler/topaz/actions/workflows/ci.yml)
+[![Documentation Status](https://readthedocs.org/projects/topaz-em/badge/?version=latest)](https://topaz-em.readthedocs.io/en/latest/?badge=latest)
+[![Anaconda-Server Badge](https://anaconda.org/tbepler/topaz/badges/version.svg)](https://anaconda.org/tbepler/topaz)
+[![Anaconda-Server Badge](https://anaconda.org/tbepler/topaz/badges/installer/conda.svg)](https://conda.anaconda.org/tbepler)
+
+
+# Topaz
+A pipeline for particle detection in cryo-electron microscopy images using convolutional neural networks trained from positive and unlabeled examples. Topaz also includes methods for micrograph and tomogram denoising using deep denoising models.
+
+**Check out our [Discussion](https://github.com/tbepler/topaz/discussions) section for general help, suggestions, and tips on using Topaz. You can also find our documentation site [here](https://topaz-em.readthedocs.io/en/latest/?badge=latest).**
+
+## New in v0.2.5
+- Added Relion integration scripts
+- Topaz extract can now write particle coordinates to one file per input micrograph
+- Added Gaussian filter option for after 3D denoising
+- Added info on Topaz Workshops
+- Topaz GUI update
+- Various bug fixes
+
+## New in v0.2.4
+- Added 3D denoising with __topaz denoise3d__ and two pretrained 3D denoising models
+- Added argument for setting number of threads to multithreaded commands
+- Topaz GUI update
+- Various bug fixes
+
+## New in v0.2.3
+- Improvements to the pretrained denoising models
+- Topaz now includes pretrained particle picking models
+- Updated tutorials
+- Updated GUI to include denoising commands
+- Denoising paper preprint is available [here](https://doi.org/10.1101/838920)
+
+## New in v0.2.2
+- The Topaz publication is out [here](https://doi.org/10.1038/s41592-019-0575-8)
+- Bug fixes and GUI update
+
+## New in v0.2.0
+
+- Topaz now supports the newest versions of pytorch (>= 1.0.0). If you have pytorch installed for an older version of topaz, it will need to be upgraded. See installation instructions for details.
+- Added __topaz denoise__, a command for denoising micrographs using neural networks.
+- Usability improvements to the GUI.
+
+# Prerequisites
+
+- An Nvidia GPU with CUDA support for GPU acceleration.
+
+- Basic Unix/Linux knowledge.
+
+# Installation
+
+**<details><summary>(Recommended) Click here to install *using Anaconda*</summary><p>**
+
+If you do not have the Anaconda python distribution, [please install it following the instructions on their website](https://www.anaconda.com/download).
+
+We strongly recommend installing Topaz into a separate conda environment. To create a conda environment for Topaz:
+```
+conda create -n topaz python=3.6 # or 2.7 if you prefer python 2
+source activate topaz # this changes to the topaz conda environment, 'conda activate topaz' can be used with anaconda >= 4.4 if properly configured
+# source deactivate # returns to the base conda environment
+```
+More information on conda environments can be found [here](https://conda.io/docs/user-guide/tasks/manage-environments.html).
+
+## Install Topaz
+
+To install the precompiled Topaz package and its dependencies, including pytorch:
+```
+conda install topaz -c tbepler -c pytorch
+```
+This installs pytorch from the official channel. To install pytorch for specific cuda versions, you will need to add the 'cudatoolkit=X.X' package. E.g. to install pytorch for CUDA 9.0:
+```
+conda install cudatoolkit=9.0 -c pytorch
+```
+or combined into a single command:
+```
+conda install topaz cudatoolkit=9.0 -c tbepler -c pytorch
+```
+See [here](https://pytorch.org/get-started/locally/) for additional pytorch installation instructions.
+
+That's it! Topaz is now installed in your anaconda environment.
+
+</p></details>
+
+**<details><summary>Click here to install *using Pip*</summary><p>**
+
+We strongly recommend installing Topaz into a _virtual environment_. See [installation instructions](https://virtualenv
+opt/topaz/setup.py from setuptools import setup, find_packages
+
+name = 'topaz-em'
+version = '0.2.5'
+
+description = 'Particle picking with positive-unlabeled CNNs'
+long_description = 'Particle picking software for single particle cryo-electron microscopy using convolutional neural networks and positive-unlabeled learning. Includes methods for micrograph denoising.'
+
+keywords = 'cryoEM particle-picking CNN positive-unlabeled denoise topaz'
+
+url = 'https://github.com/tbepler/topaz'
+
+author = 'Tristan Bepler'
+author_email = 'tbepler@mit.edu'
+
+license = 'GPLv3'
+
+setup(
+    name = name,
+    version=version,
+    description=description,
+    long_description=long_description,
+    keywords=keywords,
+    url=url,
+    author=author,
+    author_email=author_email,
+    license=license,
+
+    packages=find_packages(),
+    #package_dir = {'': 'topaz'},
+    entry_points = {'console_scripts': ['topaz = topaz.main:main']},
+    include_package_data = True,
+
+    install_requires=[
+        'torch>=1.0.0',
+        'torchvision',
+        'numpy>=1.11',
+        'pandas',
+        'scikit-learn>=0.19.0',
+        'scipy>=0.17.0',
+        'pillow>=6.2.0',
+        'future',
+    ],
+)
+
+{"url": "https://registry-1.docker.io/v2/jterstriep/topaz/blobs/sha256:3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98", "status": 200, "bytes": 65602698, "sha256": "3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98", "file": "evidence/topaz-container-application.tar.gz", "checked_at_utc": "2026-11-01T09:26:19.642875+00:00", "elapsed_s": 3.045}

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "registry-auth",
+    "url": "https://auth.docker.io/token?service=registry.docker.io&scope=repository%3Ajterstriep%2Ftopaz%3Apull",
+    "checked_at_utc": "2026-11-01T09:25:25.107823+00:00",
+    "status": 200,
+    "bytes": 5495,
+    "sha256": "4cff2f6443554ad90f0d9d5b0a83f643b250384b3ebba317c5ed70fcb8a25b28",
+    "body_not_retained": "Anonymous registry authentication response; token kept in memory only",
+    "elapsed_s": 0.241
+  },
+  {
+    "name": "topaz-container-manifest",
+    "url": "https://registry-1.docker.io/v2/jterstriep/topaz/manifests/0.2.5",
+    "checked_at_utc": "2026-11-01T09:25:25.349143+00:00",
+    "status": 200,
+    "bytes": 5597,
+    "sha256": "73a765c2314324082686ec877bdd1facb2628af89a8825c65810a18a2cf2c5ac",
+    "file": "evidence/topaz-container-manifest.body",
+    "elapsed_s": 0.541
+  },
+  {
+    "name": "topaz-container-config",
+    "url": "https://registry-1.docker.io/v2/jterstriep/topaz/blobs/sha256:a6e760f92fb72126d820be3aa380e4c54bad0705fe5fe4d96522e9a3f7d49912",
+    "checked_at_utc": "2026-11-01T09:25:25.890882+00:00",
+    "status": 200,
+    "bytes": 24821,
+    "sha256": "a6e760f92fb72126d820be3aa380e4c54bad0705fe5fe4d96522e9a3f7d49912",
+    "file": "evidence/topaz-container-config.body",
+    "elapsed_s": 1.021
+  }
+]

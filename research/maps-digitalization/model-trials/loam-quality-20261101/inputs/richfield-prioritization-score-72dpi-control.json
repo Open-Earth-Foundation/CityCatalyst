@@ -1,0 +1,62 @@
+{
+  "shapes": [
+    {
+      "label": "bin00_poly",
+      "points": [
+        [
+          1038,
+          65
+        ],
+        [
+          1062,
+          77
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin01_poly",
+      "points": [
+        [
+          1038,
+          82
+        ],
+        [
+          1062,
+          94
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin02_poly",
+      "points": [
+        [
+          1038,
+          99
+        ],
+        [
+          1062,
+          111
+        ]
+      ],
+      "shape_type": "rectangle"
+    },
+    {
+      "label": "bin03_poly",
+      "points": [
+        [
+          1038,
+          116
+        ],
+        [
+          1062,
+          128
+        ]
+      ],
+      "shape_type": "rectangle"
+    }
+  ],
+  "imageHeight": 792,
+  "imageWidth": 1224
+}

@@ -1,0 +1,966 @@
+{
+  "read_only_inputs_unchanged": 71,
+  "frozen_config_unchanged": true,
+  "layers": {
+    "porto-heat": {
+      "dimensions": [
+        1213,
+        1758
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 2084468,
+      "overlap_pixels": 980
+    },
+    "porto-flood": {
+      "dimensions": [
+        1155,
+        1668
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 1880424,
+      "overlap_pixels": 368
+    },
+    "richfield-inundation-100yr": {
+      "dimensions": [
+        2448,
+        1584
+      ],
+      "queries": 1,
+      "canonical_tiles": 6,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 3737966,
+      "overlap_pixels": 0
+    },
+    "porto-landslide": {
+      "dimensions": [
+        1213,
+        1758
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 2084071,
+      "overlap_pixels": 1901
+    },
+    "porto-drought": {
+      "dimensions": [
+        1218,
+        1758
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 2085848,
+      "overlap_pixels": 1921
+    },
+    "porto-arbovirus": {
+      "dimensions": [
+        1213,
+        1758
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 2080323,
+      "overlap_pixels": 769
+    },
+    "porto-storm": {
+      "dimensions": [
+        1213,
+        1758
+      ],
+      "queries": 10,
+      "canonical_tiles": 40,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 2082169,
+      "overlap_pixels": 743
+    },
+    "richfield-inundation-2yr": {
+      "dimensions": [
+        2448,
+        1584
+      ],
+      "queries": 1,
+      "canonical_tiles": 6,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 3656782,
+      "overlap_pixels": 0
+    },
+    "richfield-inundation-10yr": {
+      "dimensions": [
+        2448,
+        1584
+      ],
+      "queries": 1,
+      "canonical_tiles": 6,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 3752291,
+      "overlap_pixels": 0
+    },
+    "richfield-inundation-mce100": {
+      "dimensions": [
+        2448,
+        1584
+      ],
+      "queries": 1,
+      "canonical_tiles": 6,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 3730045,
+      "overlap_pixels": 0
+    },
+    "richfield-prioritization-score": {
+      "dimensions": [
+        2448,
+        1584
+      ],
+      "queries": 4,
+      "canonical_tiles": 24,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 3323322,
+      "overlap_pixels": 319
+    },
+    "richfield-inundation-100yr-72dpi-control": {
+      "dimensions": [
+        1224,
+        792
+      ],
+      "queries": 1,
+      "canonical_tiles": 2,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 919944,
+      "overlap_pixels": 0
+    },
+    "richfield-inundation-2yr-72dpi-control": {
+      "dimensions": [
+        1224,
+        792
+      ],
+      "queries": 1,
+      "canonical_tiles": 2,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 909621,
+      "overlap_pixels": 0
+    },
+    "richfield-inundation-10yr-72dpi-control": {
+      "dimensions": [
+        1224,
+        792
+      ],
+      "queries": 1,
+      "canonical_tiles": 2,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 920863,
+      "overlap_pixels": 0
+    },
+    "richfield-inundation-mce100-72dpi-control": {
+      "dimensions": [
+        1224,
+        792
+      ],
+      "queries": 1,
+      "canonical_tiles": 2,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 918930,
+      "overlap_pixels": 0
+    },
+    "richfield-prioritization-score-72dpi-control": {
+      "dimensions": [
+        1224,
+        792
+      ],
+      "queries": 4,
+      "canonical_tiles": 8,
+      "winner_arbitration_exact": true,
+      "all_probability_arrays_valid": true,
+      "unknown_pixels": 813500,
+      "overlap_pixels": 1299
+    }
+  },
+  "tiffs": [
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\arbovirus\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "dfadbf1957cbc73ef33a0eb35613d956038b5ae9130011844f83f28e749f92c4"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\arbovirus\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "304c40446f4c4eb1e11d3f0e51a37b7a270769004688bfa099efc0d9fae71612"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\drought\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "edbd057dd596218265cd4e5ddc0dd5f29e88ee70dee18827c012d126e1bdc071"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\drought\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d092eb0dfce645ecbf7127637ef95d34119ef4ebb0c9a481445e03b0ede8d2c8"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\flood\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "3f590b1511bd8668be9738f72a82fdf07bc1febb5e42c60c5c49da2703131c6a"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\flood\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "be8179b610848a1b0e9f7a43088edbb1c5591d89bdf2a612f5517a516cf09836"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\heat\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8fdd4ee6107fced3468f0258a530dc4471ad758294c1aa26d5d70e033cf1e61f"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\heat\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "a9ae10df4b307561aef9df7f10d312b1d195030c97bcc1b7d840b766a088e4a6"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\landslide\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "c497953c7af5fc7cbb2b5452ece3672b2c48e3da14c3dac39275cc2956089d21"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\landslide\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "aa155b23f851e5042a7684d984e22cf519fc4cd0c3a43a21af64a91190f51fed"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\storm\\mode0-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "b692e235469c318475def957b229a1b3a784f8880e7294df14e6da3cfaa84031"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\storm\\previous-10m.tif",
+      "shape": [
+        4200,
+        3800
+      ],
+      "crs": "EPSG:31982",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "edfb29ff01fc9a852fcb10e6daf3fcc78049d3205fa68ed7d586c0a3341c49fb"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "1fdec85847aef31ab31532d16a8538849d50ce4ce27e13b14a71d99479f35639"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "481583d893a52c42cf2216897d463ac4de63c46122c7a9eb986f95090c8d18a3"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr-72dpi-control\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "53e57a2e10c71e2ea29df7a9e053d69215f8b7ea8d36e11552efe718c7a253a4"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr-72dpi-control\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr-72dpi-control\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "481583d893a52c42cf2216897d463ac4de63c46122c7a9eb986f95090c8d18a3"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "b6f747450acc2ee87c4fb88b9e68f1ff651faf20ef85c262680709ed4e68d394"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d23ab6196c9e436a04c9e813b132d81868f6663288fbd96beec1ad05ffffe7b5"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr-72dpi-control\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "2ff374b56dca33c301e1b738694e2287928805d97113057c98fb51cecc87e6de"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr-72dpi-control\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr-72dpi-control\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d23ab6196c9e436a04c9e813b132d81868f6663288fbd96beec1ad05ffffe7b5"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d3d2e192e06a1f0219ca4c54a14bdb9bee9d54e77a7bccff6e368101209c1f4f"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "4f08f797ce0d0cdb4baf3ef33c9ba6ceb05ceb98027d8b7b9599f2483bd1634c"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr-72dpi-control\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "c919a01de63eeb433d183cc32186d49eef3c8cb8e261ab91d6f8250d3c237731"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr-72dpi-control\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "8d2724a54525e264a6194d13709b085f04ee70420fdadceddccba16735f8ae14"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr-72dpi-control\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "4f08f797ce0d0cdb4baf3ef33c9ba6ceb05ceb98027d8b7b9599f2483bd1634c"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "de272085338cbd37b09a1b686ae55622f324fb49b6e05282387a1b5e419af21b"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d90157c1f46f055d4728525759489a84ee410a65ee36b9e42bf44d0daa9a24be"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "619858880751bc0928ccfbf85b1cefea9af78e1944d31ef8c610feaa1d8684f6"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100-72dpi-control\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "fdd30f0cbd9878e7bcc602ab14fb13c6d8b3e710066ca7346c4f254710e6eb2d"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100-72dpi-control\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "d90157c1f46f055d4728525759489a84ee410a65ee36b9e42bf44d0daa9a24be"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100-72dpi-control\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "619858880751bc0928ccfbf85b1cefea9af78e1944d31ef8c610feaa1d8684f6"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "c2d6df17e2da2125d7e85eb1b4267fb17ac831f7d8b31bda5049a0e93813ff89"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "76fb47ac6e21e7ac5acd8428d1fc731ec8907ddd49e3dd8fe28184b737b5fc6d"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "861b8c0e2c1f8f4bc710d4b5e609d314ac7d2f8d0d8073638fb3f4fca96e911b"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score-72dpi-control\\mode0-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "389b5578af2b7032d2e5f5540254740ef61443e8aaa3712b1e6995f8c74adc69"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score-72dpi-control\\previous72-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "76fb47ac6e21e7ac5acd8428d1fc731ec8907ddd49e3dd8fe28184b737b5fc6d"
+    },
+    {
+      "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score-72dpi-control\\source-10m.tif",
+      "shape": [
+        577,
+        758
+      ],
+      "crs": "EPSG:26915",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "sha256": "861b8c0e2c1f8f4bc710d4b5e609d314ac7d2f8d0d8073638fb3f4fca96e911b"
+    }
+  ],
+  "mode0_channel_evidence": {
+    "porto-heat": [
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate7_2\\porto-heat\\porto-heat_bin00_poly_v7.png",
+        "sha256": "65aae0708d6337579072a1bc065584a2198fdd8c1b07837781cfe0971703d3dd",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 103,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate7_2\\porto-heat\\porto-heat_bin00_poly_v4v.png",
+        "sha256": "537b6ca967bb02ccd22c7c43ab9c780aea4b2293b6ece2531fd2ee3ea93e6965",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 84,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate7_2\\porto-heat\\porto-heat_bin00_poly_c0_x.png",
+        "sha256": "368e8011104c8c5a1c726e9fe017ceebb36208484750371bc78de314f2a8a9fd",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 103619,
+        "unique_values": 52
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate7_2\\porto-heat\\porto-heat_bin00_poly_c1_x.png",
+        "sha256": "483722a5f569bfe87d027884a033332324b9756131162953200a02261395f584",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 2812,
+        "unique_values": 52
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate7\\porto-heat_crop_blackregion.png",
+        "sha256": "58bf40f1bae26c3c4b88f3a3c2aa5d25bb7d59670284bb673d94b6b5a76233fc",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 63611,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate5\\Extraction_3\\porto-heat_overall_boundary_candidate.png",
+        "sha256": "b74f9e1f66f8604ffc1e078d0098fc2ef4d78101941cd1792878761b1d201f30",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 57303,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-heat\\intermediate8_2\\porto-heat\\porto-heat_bin00_poly_rc_v0.png",
+        "sha256": "e594592e0677b0dfb42bb193c0856bed4634ddfcecae195fe9cbba976615b0cd",
+        "shape": [
+          1758,
+          1213
+        ],
+        "nonzero_values": 12238,
+        "unique_values": 2
+      }
+    ],
+    "porto-flood": [
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate7_2\\porto-flood\\porto-flood_bin00_poly_v7.png",
+        "sha256": "2779052a606967d495a68b742655a3848a59a205a32501d961a0612b6548df75",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 120,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate7_2\\porto-flood\\porto-flood_bin00_poly_v4v.png",
+        "sha256": "2779052a606967d495a68b742655a3848a59a205a32501d961a0612b6548df75",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 120,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate7_2\\porto-flood\\porto-flood_bin00_poly_c0_x.png",
+        "sha256": "104503b56a8fd07e338bdb7f119c7879ab38c1077eeb0be6e6457cae7d1e1ff9",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 93889,
+        "unique_values": 52
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate7_2\\porto-flood\\porto-flood_bin00_poly_c1_x.png",
+        "sha256": "7316103bac8ddca9e387edde0ee222871bba8cd4a4731d9d6ff27a53f14c78aa",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 2075,
+        "unique_values": 52
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate7\\porto-flood_crop_blackregion.png",
+        "sha256": "087debaa9c9732e834ff3786e45d225122dc5ada71fb22910ed7fd350fefcde3",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 63911,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate5\\Extraction_3\\porto-flood_overall_boundary_candidate.png",
+        "sha256": "3902744f622089998edfb4468586ebde90fa33236cdff29040fc38671cb66e85",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 59082,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\porto-flood\\intermediate8_2\\porto-flood\\porto-flood_bin00_poly_rc_v0.png",
+        "sha256": "df19ba9001375cc75c1fb5391c499bed41aa3c8cf4ce1124c76b0676db8a9ae4",
+        "shape": [
+          1668,
+          1155
+        ],
+        "nonzero_values": 14004,
+        "unique_values": 2
+      }
+    ],
+    "richfield-inundation-100yr": [
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate7_2\\richfield-inundation-100yr\\richfield-inundation-100yr_bin00_poly_v7.png",
+        "sha256": "f22370bbd2fccccdece73d245208ed42275d8213670632f8faf2ee3dc8dadb04",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 1275,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate7_2\\richfield-inundation-100yr\\richfield-inundation-100yr_bin00_poly_v4v.png",
+        "sha256": "211d8a9fc146034f104efaa00b0330200711f1375dabbf1f6bd096339d649868",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 695,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate7_2\\richfield-inundation-100yr\\richfield-inundation-100yr_bin00_poly_c0_x.png",
+        "sha256": "33307d45f92395bba9056c4c1dbec169adfeaabd4f0ae09fb83bcbd902efb8be",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 715,
+        "unique_values": 43
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate7_2\\richfield-inundation-100yr\\richfield-inundation-100yr_bin00_poly_c1_x.png",
+        "sha256": "ac35fb3de5973c0ba484217ba24e9360bf64077715287c5efb8bb49e3341808a",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 699,
+        "unique_values": 29
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate7\\richfield-inundation-100yr_crop_blackregion.png",
+        "sha256": "6b99417993141e1f602338dc152857714ff16ba0110b519d5fcfe2047ba2b813",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 265773,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate5\\Extraction_3\\richfield-inundation-100yr_overall_boundary_candidate.png",
+        "sha256": "39b9899feed1d9e77ace984cb815414fd23c17941437ce18ea110dfc27c0a8ca",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 242353,
+        "unique_values": 2
+      },
+      {
+        "file": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\intermediate\\richfield-inundation-100yr\\intermediate8_2\\richfield-inundation-100yr\\richfield-inundation-100yr_bin00_poly_rc_v0.png",
+        "sha256": "78361fd7ce2a54f0fbe793de6e3ef8bfdae49e068049bbe3a0b2cd2b97231557",
+        "shape": [
+          1584,
+          2448
+        ],
+        "nonzero_values": 1404937,
+        "unique_values": 2
+      }
+    ]
+  },
+  "porto_prior_exact_contract_match": true,
+  "own_gpu_lock_released": true
+}

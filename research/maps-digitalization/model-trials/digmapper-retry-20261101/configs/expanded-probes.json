@@ -1,0 +1,90 @@
+[
+  {
+    "name": "candidate-metadata",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1"
+  },
+  {
+    "name": "candidate-tree",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "candidate-releases",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/releases"
+  },
+  {
+    "name": "candidate-readme",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/HEAD/README.md"
+  },
+  {
+    "name": "uncharted-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "lab-website",
+    "url": "https://knowledge-computing.github.io/"
+  },
+  {
+    "name": "lab-criticalmaas-site",
+    "url": "https://knowledge-computing.github.io/criticalmaas-web/"
+  },
+  {
+    "name": "lab-criticalmaas-tree",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-web/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "lab-packages",
+    "url": "https://api.github.com/orgs/knowledge-computing/packages?package_type=container"
+  },
+  {
+    "name": "inferlink-packages",
+    "url": "https://api.github.com/orgs/InferLink/packages?package_type=container"
+  },
+  {
+    "name": "darpa-packages",
+    "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/packages?package_type=container"
+  },
+  {
+    "name": "ta1-evaluation-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/TA1-Evaluation/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "cdr-examples-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/cdr_client_examples/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "docker-topaz-search-page2",
+    "url": "https://hub.docker.com/v2/search/repositories/?page=2&page_size=100&query=topaz"
+  },
+  {
+    "name": "docker-jterstriep-topaz",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/"
+  },
+  {
+    "name": "docker-mapsense-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=mapsense&page_size=100"
+  },
+  {
+    "name": "ghcr-lab-package-page",
+    "url": "https://github.com/orgs/knowledge-computing/packages?repo_name=CriticalMAAS_AIM"
+  },
+  {
+    "name": "legend-releases",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/releases"
+  },
+  {
+    "name": "legend-tree",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/git/trees/HEAD?recursive=1"
+  },
+  {
+    "name": "hf-polygon-models",
+    "url": "https://huggingface.co/api/models?search=polygon&limit=100"
+  },
+  {
+    "name": "hf-geologic-models",
+    "url": "https://huggingface.co/api/models?search=geologic&limit=100"
+  },
+  {
+    "name": "hf-topaz-cryomodel-card",
+    "url": "https://huggingface.co/scitomo/topaz-v0.2.4-unet-l2-2d/raw/main/README.md"
+  }
+]

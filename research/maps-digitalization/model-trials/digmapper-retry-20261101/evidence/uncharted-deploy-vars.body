@@ -1,0 +1,16 @@
+{
+    "work_dir": "s3://example_bucket/workdir",
+    "image_dir": "s3://example_bucket/images",
+    "aws_access_key_id": "[REDACTED_CREDENTIAL_PATTERN]",
+    "aws_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    "aws_region": "us-west-2",
+    "cdr_api_token": "1234567890abcdef1234567890abcdef",
+    "cdr_host": "https://example.com/cdr",
+    "cog_host": "https://s3.amazonaws.com/example/cogs",
+    "azure_openai_api_key": "1234567890abcdef1234567890abcdef",
+    "azure_openai_endpoint": "https://azure/endpoint",
+    "google_application_credentials_dir": "~/lara/credentials",
+    "tag": "latest",
+    "cdr": true,
+    "llm_provider": "azure"
+}

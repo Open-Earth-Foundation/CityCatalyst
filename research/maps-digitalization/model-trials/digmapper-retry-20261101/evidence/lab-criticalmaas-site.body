@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>CriticalMAAS AIM &amp; MinMod | Discovering Critical Minerals from Maps and Historical Archives</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="CriticalMAAS AIM &amp; MinMod" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Discovering Critical Minerals from Maps and Historical Archives" />
+<meta property="og:description" content="Discovering Critical Minerals from Maps and Historical Archives" />
+<link rel="canonical" href="https://knowledge-computing.github.io/criticalmaas-web/" />
+<meta property="og:url" content="https://knowledge-computing.github.io/criticalmaas-web/" />
+<meta property="og:site_name" content="CriticalMAAS AIM &amp; MinMod" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="CriticalMAAS AIM &amp; MinMod" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Discovering Critical Minerals from Maps and Historical Archives","headline":"CriticalMAAS AIM &amp; MinMod","name":"CriticalMAAS AIM &amp; MinMod","url":"https://knowledge-computing.github.io/criticalmaas-web/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/criticalmaas-web/assets/css/style.css?v=a26949d6eaebbe3825ed8d284efc3ad444c32f6e">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/criticalmaas-web/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <h1 class="project-name">CriticalMAAS AIM & MinMod</h1>
+      <h2 class="project-tagline">Discovering Critical Minerals from Maps and Historical Archives</h2>
+
+<!--       <a href="https://github.com/knowledge-computing/CriticalMAAS_AIM" class="btn">Code</a> -->
+      <a href="https://zekun-li.github.io/files/posters/MSI-poster.pdf" class="btn">Poster</a>
+<!--       <a href="assets/MinMod-White-Paper.pdf" class="btn">Documentation</a> -->
+      <a href="https://knowledge-computing.github.io/mapkurator-doc" class="btn">mapKurator</a>
+      <a href="https://minmod.isi.edu/" class="btn">Mineral Data Browser</a>
+
+
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <p><strong>Critical minerals</strong> are vital components in modern technology and the global economy, playing essential roles in products like smartphones, computers, electric vehicles, and renewable energy storage. However, geological maps and reports that are necessary for locating mine deposits often exist in non-analytic formats. Therefore, we are undertaking a two-part project that includes <strong>AIM</strong> (AI for Maps) and <strong>MinMod</strong>. AIM focuses on automating critical mineral assessments by utilizing machine learning algorithms to georeference geological maps and extract valuable features, streamlining the exploration and security efforts for critical minerals. On the other hand, MinMod aims to automate the creation of grade and tonnage models and rich mineral site data by harnessing AI and machine learning techniques to process academic, governmental, and industry datasets and reports. This innovative approach seeks to significantly reduce the time required for generating mineral models, making it possible to maintain up-to-date information for prospectivity modeling and ensure the availability of current grade and tonnage models and mineral site data for various minerals and deposit types.</p>
+
+<h1 id="news">News</h1>
+<ul>
+  <li>[2023/09/08] Our paper <strong>The mapKurator System: A complete Pipeline for Extracting and Linking Text From Historical Maps</strong> for extracting text labels on maps is accepted as a demo paper at the <a href="https://sigspatial2023.sigspatial.org/">ACM SIGSPATIAL’23</a></li>
+  <li>[2023/09/08] Our paper <strong>Exploiting Polygon Metadata to Understand Raster Maps</strong> focusing on polygonal feature extraction is accepted as a full paper at the <a href="https://sigspatial2023.sigspatial.org/">ACM SIGSPATIAL’23</a></li>
+  <li>[2023/08/15] We are excited to attend the project <a href="https://www.darpa.mil/program/critical-mineral-assessments-with-ai-support">kick-off meeting</a> at Shepherdstown, WV hosted by DARPA, USGS and MITRE :earth_americas:</li>
+</ul>
+
+<h1 id="pis">PIs:</h1>
+
+<div class="people">
+    <div class="person">
+      <a href="https://yaoyichi.github.io/" align="middle">
+        <div class="img-rect">
+
+        <img src="assets/img/yaoyi.png" />
+        </div>
+        Yao-Yi Chiang 
+      </a>
+        UMN PI
+    </div>
+    <div class="person">
+      <a href="https://usc-isi-i2.github.io/knoblock/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/Knoblock.png" />
+        </div>
+        Craig Knoblock
+      </a>
+        USC PI
+    </div>
+    <div class="person">
+      <a href="https://www.linkedin.com/in/steve-minton-483a" align="middle">
+        <div class="img-rect">
+        <img src="assets/img/steve.png" />
+        </div>
+      Steve Minton 
+      </a>
+      Inferlink PI
+    </div>
+    <div class="person">
+      <a href="https://sunju.org/" align="middle">
+        <div class="img-rect">
+
+        <img src="assets/img/Ju_S.png" />
+        </div>
+        Ju Sun 
+      </a>
+        UMN Co-PI
+    </div>
+
+
+  </div>
+
+<h1 id="members">Members:</h1>
+
+<div class="people">
+    <div class="person">
+      <a href="https://zekun-li.github.io/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/zekun.png" />
+        </div>
+        Zekun Li
+      </a>
+    </div>
+    <div class="person">
+      <a href="https://weiweiduan.github.io/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/weiwei.png" />
+        </div>
+      Weiwei Duan
+      </a>
+    </div>
+    <div class="person">
+      <a href="https://linyijun.github.io/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/Yijun.png" />
+        </div>        Yijun Li
+      </a>
+    </div>
+    <div class="person">
+        <!-- <a href="https://linyijun.github.io/" align="middle"> -->
+          <div class="img-rect">
+            <img src="assets/img/Theresa.png" />
+          </div>
+          Theresa Chen
+        <!-- </a> -->
+    </div>
+    <div class="person">
+        <a href="https://leejejang.github.io/" align="middle">
+          <div class="img-rect">
+            <img src="assets/img/Leeje.png" />
+          </div>
+            Leeje Jang
+        </a>
+    </div>
+
+
+    <div class="person">
+        <a href="https://fandel-lin.github.io/" align="middle">
+          <div class="img-rect">
+            <img src="assets/img/Lin.png" />
+          </div>          
+          Fandel Lin
+        </a>
+    </div>
+
+    <div class="person">
+      <a href="https://shbita.com/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/Basel.png" />
+        </div>
+                Basel Shbita
+      </a>
+    </div>
+    <div class="person">
+      <a href="https://jina-kim.github.io/" align="middle">
+        <div class="img-rect">
+          <img src="assets/img/Jina.png" />
+        </div>        Jina Kim
+      </a>
+    </div>
+
+
+    <div class="person">
+      <div class="img-rect">
+        <img src="assets/img/Jiyoon.png" />
+      </div>      Jiyoon Pyo
+    </div>
+
+    <div class="person">
+      <div class="img-rect">
+        <img src="assets/img/no_pic.png" />
+      </div>      Jinwei Zhou
+    </div>
+    
+    <div class="person">
+    <a href="https://www.linkedin.com/in/namrata-sharma-b97681143" align="middle">
+      <div class="img-rect">
+        <img src="assets/img/namrata.jpg" />
+      </div>      Namrata Sharma
+    </a>
+    </div>
+
+    <div class="person">
+    <a href="https://binh-vu.github.io/" align="middle">
+      <div class="img-rect">
+        <img src="assets/img/binh.jpg" />
+      </div>      Binh Vu
+    </a>
+    </div>
+
+    <div class="person">
+      <div class="img-rect">
+        <img src="assets/img/goran.jpg" />
+      </div>        Goran Muric
+    </div>
+
+    <div class="person">
+      <div class="img-rect">
+        <img src="assets/img/no_pic.png" />
+      </div>      Hengkang Wang
+    </div>
+    
+  </div>
+
+
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">University of Minnesota © 2023</span>
+      </footer>
+    </main>
+  </body>
+</html>

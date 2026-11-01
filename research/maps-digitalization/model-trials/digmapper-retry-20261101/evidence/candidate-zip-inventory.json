@@ -1,0 +1,1537 @@
+[
+  {
+    "name": "criticalmaas/criticalmaas.exe",
+    "bytes": 1172823,
+    "crc32": 1849144182
+  },
+  {
+    "name": "criticalmaas/_internal/repo/",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/_bz2.pyd",
+    "bytes": 83736,
+    "crc32": 3782074865
+  },
+  {
+    "name": "criticalmaas/_internal/_decimal.pyd",
+    "bytes": 254744,
+    "crc32": 2044809637
+  },
+  {
+    "name": "criticalmaas/_internal/_hashlib.pyd",
+    "bytes": 64792,
+    "crc32": 3685695529
+  },
+  {
+    "name": "criticalmaas/_internal/_lzma.pyd",
+    "bytes": 158488,
+    "crc32": 3171617716
+  },
+  {
+    "name": "criticalmaas/_internal/_socket.pyd",
+    "bytes": 79128,
+    "crc32": 485126416
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-console-l1-1-0.dll",
+    "bytes": 22072,
+    "crc32": 1581133427
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-datetime-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 77317910
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-debug-l1-1-0.dll",
+    "bytes": 21944,
+    "crc32": 2354483501
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-errorhandling-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 1013510440
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-fibers-l1-1-0.dll",
+    "bytes": 22072,
+    "crc32": 3256735872
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-fibers-l1-1-1.dll",
+    "bytes": 22072,
+    "crc32": 1029804693
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-file-l1-1-0.dll",
+    "bytes": 26152,
+    "crc32": 2650655594
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-file-l1-2-0.dll",
+    "bytes": 22056,
+    "crc32": 511966685
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-file-l2-1-0.dll",
+    "bytes": 21960,
+    "crc32": 2787058304
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-handle-l1-1-0.dll",
+    "bytes": 21944,
+    "crc32": 974941957
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-heap-l1-1-0.dll",
+    "bytes": 22072,
+    "crc32": 2755975736
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-interlocked-l1-1-0.dll",
+    "bytes": 22072,
+    "crc32": 84221281
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-kernel32-legacy-l1-1-1.dll",
+    "bytes": 22080,
+    "crc32": 3168865847
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-libraryloader-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 4283616220
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-localization-l1-2-0.dll",
+    "bytes": 22080,
+    "crc32": 1098474441
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-memory-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 3284429915
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-namedpipe-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 4100521678
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-processenvironment-l1-1-0.dll",
+    "bytes": 21968,
+    "crc32": 611696683
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-processthreads-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 1411675577
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-processthreads-l1-1-1.dll",
+    "bytes": 22072,
+    "crc32": 2177435893
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-profile-l1-1-0.dll",
+    "bytes": 22080,
+    "crc32": 3354161533
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-rtlsupport-l1-1-0.dll",
+    "bytes": 21960,
+    "crc32": 1657803190
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-string-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 1149365510
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-synch-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 4136756709
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-synch-l1-2-0.dll",
+    "bytes": 22080,
+    "crc32": 937078067
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-sysinfo-l1-1-0.dll",
+    "bytes": 22072,
+    "crc32": 2408709476
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-sysinfo-l1-2-0.dll",
+    "bytes": 22080,
+    "crc32": 2821832029
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-timezone-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 4832464
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-core-util-l1-1-0.dll",
+    "bytes": 21944,
+    "crc32": 3341879058
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-conio-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 953965955
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-convert-l1-1-0.dll",
+    "bytes": 26056,
+    "crc32": 1290363485
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-environment-l1-1-0.dll",
+    "bytes": 22080,
+    "crc32": 1154882178
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-filesystem-l1-1-0.dll",
+    "bytes": 22056,
+    "crc32": 3121168929
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-heap-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 1820240431
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-locale-l1-1-0.dll",
+    "bytes": 22080,
+    "crc32": 1281966827
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-math-l1-1-0.dll",
+    "bytes": 30248,
+    "crc32": 3304583271
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-process-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 2608751328
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-runtime-l1-1-0.dll",
+    "bytes": 26152,
+    "crc32": 991465242
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-stdio-l1-1-0.dll",
+    "bytes": 26168,
+    "crc32": 649521975
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-string-l1-1-0.dll",
+    "bytes": 26176,
+    "crc32": 1184486580
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-time-l1-1-0.dll",
+    "bytes": 22096,
+    "crc32": 2355895119
+  },
+  {
+    "name": "criticalmaas/_internal/api-ms-win-crt-utility-l1-1-0.dll",
+    "bytes": 21952,
+    "crc32": 3089878745
+  },
+  {
+    "name": "criticalmaas/_internal/base_library.zip",
+    "bytes": 880569,
+    "crc32": 476802812
+  },
+  {
+    "name": "criticalmaas/_internal/libcrypto-1_1.dll",
+    "bytes": 3450648,
+    "crc32": 1177752512
+  },
+  {
+    "name": "criticalmaas/_internal/LICENSE",
+    "bytes": 1128,
+    "crc32": 1225297504
+  },
+  {
+    "name": "criticalmaas/_internal/python310.dll",
+    "bytes": 4458776,
+    "crc32": 3099876950
+  },
+  {
+    "name": "criticalmaas/_internal/README.md",
+    "bytes": 11066,
+    "crc32": 3141917198
+  },
+  {
+    "name": "criticalmaas/_internal/select.pyd",
+    "bytes": 29976,
+    "crc32": 3103705069
+  },
+  {
+    "name": "criticalmaas/_internal/ucrtbase.dll",
+    "bytes": 1361448,
+    "crc32": 3725493327
+  },
+  {
+    "name": "criticalmaas/_internal/unicodedata.pyd",
+    "bytes": 1123608,
+    "crc32": 1017576785
+  },
+  {
+    "name": "criticalmaas/_internal/VCRUNTIME140.dll",
+    "bytes": 98224,
+    "crc32": 3871626859
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/chaining_result_subscriber.py",
+    "bytes": 4889,
+    "crc32": 3219847112
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/pyproject.toml",
+    "bytes": 474,
+    "crc32": 2692478131
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/request_publisher.py",
+    "bytes": 6030,
+    "crc32": 1249099551
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/requirements.txt",
+    "bytes": 2531,
+    "crc32": 325547541
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/server.py",
+    "bytes": 19428,
+    "crc32": 1662435007
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/deploy/build.sh",
+    "bytes": 617,
+    "crc32": 1366042829
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/deploy/Dockerfile",
+    "bytes": 909,
+    "crc32": 3441164456
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr/deploy/run.sh",
+    "bytes": 449,
+    "crc32": 1160547191
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/pyproject.toml",
+    "bytes": 305,
+    "crc32": 4113100228
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/requirements.txt",
+    "bytes": 2545,
+    "crc32": 1334688526
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/result_writer.py",
+    "bytes": 1942,
+    "crc32": 1866075785
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/write_result_subscriber.py",
+    "bytes": 17137,
+    "crc32": 1617589064
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/deploy/build.sh",
+    "bytes": 658,
+    "crc32": 1057168039
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/deploy/Dockerfile",
+    "bytes": 942,
+    "crc32": 1873507306
+  },
+  {
+    "name": "criticalmaas/_internal/repo/cdr_writer/deploy/run.sh",
+    "bytes": 480,
+    "crc32": 2718056363
+  },
+  {
+    "name": "criticalmaas/_internal/repo/data/country_codes.csv",
+    "bytes": 4110,
+    "crc32": 1752147557
+  },
+  {
+    "name": "criticalmaas/_internal/repo/data/geocoded_places_reference.json",
+    "bytes": 572,
+    "crc32": 2591209399
+  },
+  {
+    "name": "criticalmaas/_internal/repo/data/state_codes.csv",
+    "bytes": 1043,
+    "crc32": 1566792112
+  },
+  {
+    "name": "criticalmaas/_internal/repo/data/state_plane_reference.csv",
+    "bytes": 275838,
+    "crc32": 1418943458
+  },
+  {
+    "name": "criticalmaas/_internal/repo/data/USA_State_Plane_Zones_NAD27.geojson",
+    "bytes": 988624,
+    "crc32": 226429682
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/georeferencing_pipeline.py",
+    "bytes": 10523,
+    "crc32": 202415296
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/output.py",
+    "bytes": 13672,
+    "crc32": 1648978135
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/pipeline_input_utils.py",
+    "bytes": 3121,
+    "crc32": 3125478146
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/pyproject.toml",
+    "bytes": 346,
+    "crc32": 4229590788
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/README.md",
+    "bytes": 6674,
+    "crc32": 1570827349
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/requirements.txt",
+    "bytes": 3657,
+    "crc32": 3779664846
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/run_pipeline.py",
+    "bytes": 8173,
+    "crc32": 645434110
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/run_server.py",
+    "bytes": 8420,
+    "crc32": 4226814644
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/build.sh",
+    "bytes": 1012,
+    "crc32": 1951573391
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/Dockerfile",
+    "bytes": 798,
+    "crc32": 2268660730
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/run_eval_no_clues.sh",
+    "bytes": 1933,
+    "crc32": 881571017
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/run_eval.sh",
+    "bytes": 2057,
+    "crc32": 3187527411
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/run_gpu.sh",
+    "bytes": 744,
+    "crc32": 2423220405
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/deploy/run.sh",
+    "bytes": 698,
+    "crc32": 480123797
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/test/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/geo_referencing/test/test_output.py",
+    "bytes": 2227,
+    "crc32": 1105844826
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/metadata_extraction_pipeline.py",
+    "bytes": 7684,
+    "crc32": 2793094113
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/pyproject.toml",
+    "bytes": 355,
+    "crc32": 295069147
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/README.md",
+    "bytes": 5499,
+    "crc32": 30702558
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/requirements.txt",
+    "bytes": 3670,
+    "crc32": 3647482524
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/run_pipeline.py",
+    "bytes": 3888,
+    "crc32": 2428803097
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/run_scoring.py",
+    "bytes": 624,
+    "crc32": 2963557018
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/run_server.py",
+    "bytes": 6590,
+    "crc32": 4262832740
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/scorer.py",
+    "bytes": 8466,
+    "crc32": 3223036340
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/data/ground_truth.jsonl",
+    "bytes": 60851,
+    "crc32": 3850017439
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/deploy/build.sh",
+    "bytes": 1008,
+    "crc32": 443002402
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/deploy/Dockerfile",
+    "bytes": 753,
+    "crc32": 3230992782
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/deploy/run_gpu.sh",
+    "bytes": 776,
+    "crc32": 1140336669
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/deploy/run.sh",
+    "bytes": 732,
+    "crc32": 1198831439
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/baseline_output.txt",
+    "bytes": 10269,
+    "crc32": 115783474
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/extractions_v3_score.jsonl",
+    "bytes": 173807,
+    "crc32": 435394945
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/extractions_v3.jsonl",
+    "bytes": 130593,
+    "crc32": 2911866734
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/v4_scores_with_preds.jsonl",
+    "bytes": 174603,
+    "crc32": 4160858968
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/v4_scores.jsonl",
+    "bytes": 174603,
+    "crc32": 4160858968
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/metadata_extraction/results/v4_scores.txt",
+    "bytes": 641,
+    "crc32": 176776921
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/point_extraction_pipeline.py",
+    "bytes": 13663,
+    "crc32": 2164179518
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/pyproject.toml",
+    "bytes": 347,
+    "crc32": 2237311306
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/README.md",
+    "bytes": 7950,
+    "crc32": 1856424108
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/requirements.txt",
+    "bytes": 3728,
+    "crc32": 1983225416
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/run_pipeline.py",
+    "bytes": 7221,
+    "crc32": 4179673796
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/run_server.py",
+    "bytes": 5743,
+    "crc32": 1524777081
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/build.sh",
+    "bytes": 1415,
+    "crc32": 1730882043
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/Dockerfile",
+    "bytes": 886,
+    "crc32": 1200379027
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/run_eval_no_clues.sh",
+    "bytes": 1371,
+    "crc32": 367907194
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/run_eval.sh",
+    "bytes": 1528,
+    "crc32": 2396973454
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/run_gpu.sh",
+    "bytes": 823,
+    "crc32": 3611903580
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/point_extraction/deploy/run.sh",
+    "bytes": 816,
+    "crc32": 1108816809
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/pyproject.toml",
+    "bytes": 341,
+    "crc32": 4202794222
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/README.md",
+    "bytes": 4500,
+    "crc32": 3433150206
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/requirements.txt",
+    "bytes": 3656,
+    "crc32": 1704132522
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/run_pipeline.py",
+    "bytes": 3454,
+    "crc32": 2754696900
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/run_server.py",
+    "bytes": 5891,
+    "crc32": 3592745886
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/segmentation_pipeline.py",
+    "bytes": 7167,
+    "crc32": 1231811659
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/data/cascade_layoutlmv3_lara.yaml",
+    "bytes": 2492,
+    "crc32": 2774926708
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/deploy/build.sh",
+    "bytes": 977,
+    "crc32": 300316293
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/deploy/Dockerfile",
+    "bytes": 829,
+    "crc32": 1455575810
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/deploy/run_gpu.sh",
+    "bytes": 651,
+    "crc32": 1448683577
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/segmentation/deploy/run.sh",
+    "bytes": 607,
+    "crc32": 1903165055
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/.dockerignore",
+    "bytes": 116,
+    "crc32": 2853921735
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/.env",
+    "bytes": 360,
+    "crc32": 160540401
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/env_defaults.py",
+    "bytes": 1237,
+    "crc32": 2716299532
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/pyproject.toml",
+    "bytes": 308,
+    "crc32": 3120520693
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/README.md",
+    "bytes": 3406,
+    "crc32": 1352946759
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/requirements.txt",
+    "bytes": 2565,
+    "crc32": 1142479148
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/run_pipeline.py",
+    "bytes": 3024,
+    "crc32": 3113402193
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/run_server.py",
+    "bytes": 5067,
+    "crc32": 919146692
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/text_extraction_pipeline.py",
+    "bytes": 7386,
+    "crc32": 2167780157
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/deploy/build.sh",
+    "bytes": 415,
+    "crc32": 3393606666
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/deploy/Dockerfile",
+    "bytes": 638,
+    "crc32": 1769252957
+  },
+  {
+    "name": "criticalmaas/_internal/repo/pipelines/text_extraction/deploy/run.sh",
+    "bytes": 587,
+    "crc32": 379744936
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/area_extraction.py",
+    "bytes": 2211,
+    "crc32": 2808153982
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/common.py",
+    "bytes": 846,
+    "crc32": 1798056913
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/document.py",
+    "bytes": 4005,
+    "crc32": 1168976032
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/events.py",
+    "bytes": 215,
+    "crc32": 4172435831
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/feature_results.py",
+    "bytes": 1850,
+    "crc32": 2902949884
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/georeference.py",
+    "bytes": 4926,
+    "crc32": 482538975
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/map_results.py",
+    "bytes": 764,
+    "crc32": 69719599
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/map.py",
+    "bytes": 967,
+    "crc32": 100069241
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/metadata.py",
+    "bytes": 2380,
+    "crc32": 3169008631
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/mineral.py",
+    "bytes": 7112,
+    "crc32": 1921054761
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/prospectivity_input.py",
+    "bytes": 2310,
+    "crc32": 3748309381
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/prospectivity_models.py",
+    "bytes": 2519,
+    "crc32": 3994652268
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/cdr_responses/area_extractions.py",
+    "bytes": 1796,
+    "crc32": 214149986
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/cdr_responses/features.py",
+    "bytes": 5614,
+    "crc32": 339708207
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/cdr_responses/legend_items.py",
+    "bytes": 2706,
+    "crc32": 644079040
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/features/line_features.py",
+    "bytes": 4700,
+    "crc32": 2030885091
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/features/point_features.py",
+    "bytes": 4969,
+    "crc32": 1083203624
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/cdr_schemas/features/polygon_features.py",
+    "bytes": 5206,
+    "crc32": 39425639
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/mappers/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/schema/mappers/cdr.py",
+    "bytes": 14396,
+    "crc32": 2073329895
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/pyproject.toml",
+    "bytes": 1544,
+    "crc32": 2675466603
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/README.md",
+    "bytes": 6390,
+    "crc32": 2054958247
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/image_cache.py",
+    "bytes": 2367,
+    "crc32": 2711138746
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/image_io.py",
+    "bytes": 2585,
+    "crc32": 913106079
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/io.py",
+    "bytes": 18850,
+    "crc32": 2435482578
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/pipeline.py",
+    "bytes": 6610,
+    "crc32": 3011774022
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/request_client.py",
+    "bytes": 21538,
+    "crc32": 753799102
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/result_subscriber.py",
+    "bytes": 8168,
+    "crc32": 4008497136
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/s3_data_cache.py",
+    "bytes": 5588,
+    "crc32": 3973584631
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/task.py",
+    "bytes": 8142,
+    "crc32": 2083931096
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/test/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/test/test_image_cache.py",
+    "bytes": 2626,
+    "crc32": 1438791248
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/test/test_io.py",
+    "bytes": 10178,
+    "crc32": 1703765949
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/common/test/test_s3_data_cache.py",
+    "bytes": 2366,
+    "crc32": 3468682311
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/coordinates_extractor.py",
+    "bytes": 29608,
+    "crc32": 3594570868
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/corner_point_extractor.py",
+    "bytes": 6650,
+    "crc32": 772204123
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/entities.py",
+    "bytes": 6342,
+    "crc32": 4247286797
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/filter.py",
+    "bytes": 11044,
+    "crc32": 272223191
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/finalize_coordinates.py",
+    "bytes": 17313,
+    "crc32": 838033497
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/geo_coordinates.py",
+    "bytes": 6687,
+    "crc32": 2899581970
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/geo_fencing.py",
+    "bytes": 9844,
+    "crc32": 1105035143
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/geo_projection.py",
+    "bytes": 4507,
+    "crc32": 1273341062
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/georeference.py",
+    "bytes": 18495,
+    "crc32": 2643811992
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/ground_control.py",
+    "bytes": 9179,
+    "crc32": 960224507
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/inference.py",
+    "bytes": 8229,
+    "crc32": 1830195839
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/outlier_filter.py",
+    "bytes": 11092,
+    "crc32": 3938028964
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/point_geocoder.py",
+    "bytes": 10502,
+    "crc32": 2652561813
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/roi_extractor.py",
+    "bytes": 3582,
+    "crc32": 863655186
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/scale_analyzer.py",
+    "bytes": 6121,
+    "crc32": 2156365411
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/state_plane_extractor.py",
+    "bytes": 26066,
+    "crc32": 743473410
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/util.py",
+    "bytes": 13719,
+    "crc32": 1127573936
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/geo_referencing/utm_extractor.py",
+    "bytes": 19692,
+    "crc32": 672314590
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/entities.py",
+    "bytes": 2784,
+    "crc32": 2806091433
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/geocoder.py",
+    "bytes": 14405,
+    "crc32": 4110619098
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/geocoding_service.py",
+    "bytes": 12305,
+    "crc32": 2485534034
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/metadata_extraction.py",
+    "bytes": 40013,
+    "crc32": 134749741
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/text_filter.py",
+    "bytes": 5154,
+    "crc32": 121605187
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/test/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/test/test_text_filter.py",
+    "bytes": 3670,
+    "crc32": 1744356444
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/util/download_cloudfront_maps.py",
+    "bytes": 1177,
+    "crc32": 1222800383
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/metadata_extraction/util/sort_metadata_jsonl.py",
+    "bytes": 597,
+    "crc32": 1405800587
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/entities.py",
+    "bytes": 7447,
+    "crc32": 2659606186
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/finalize_point_extractions.py",
+    "bytes": 1852,
+    "crc32": 3462521180
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/label_map.py",
+    "bytes": 3806,
+    "crc32": 2721535517
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/legend_analyzer.py",
+    "bytes": 12807,
+    "crc32": 3415747281
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/legend_item_utils.py",
+    "bytes": 12114,
+    "crc32": 697626402
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/point_extractor_utils.py",
+    "bytes": 15132,
+    "crc32": 1460778211
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/point_extractor.py",
+    "bytes": 10129,
+    "crc32": 2049657156
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/point_orientation_extractor.py",
+    "bytes": 18480,
+    "crc32": 2334665092
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/task_config.py",
+    "bytes": 939,
+    "crc32": 3957485919
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/template_match_point_extractor.py",
+    "bytes": 20971,
+    "crc32": 2557645562
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/tiling.py",
+    "bytes": 16274,
+    "crc32": 256452770
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/pytorch/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/pytorch/mobilenet_rcnn.py",
+    "bytes": 2569,
+    "crc32": 269631503
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/pytorch/utils.py",
+    "bytes": 1203,
+    "crc32": 3737579619
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/inclined_foliation_igneous_pt_north.png",
+    "bytes": 5551,
+    "crc32": 4029953772
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/inclined_foliation_pt_north.png",
+    "bytes": 5553,
+    "crc32": 93503659
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/lineation_pt_north.png",
+    "bytes": 5842,
+    "crc32": 907823583
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/mine_transparent_black.png",
+    "bytes": 873,
+    "crc32": 106266366
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/mine_transparent.png",
+    "bytes": 4955,
+    "crc32": 742012368
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/mine_tunnel_pt_north.png",
+    "bytes": 4849,
+    "crc32": 2447832730
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/mine.png",
+    "bytes": 9104,
+    "crc32": 2414387849
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/overturned_bedding_pt_north.png",
+    "bytes": 5510,
+    "crc32": 111843433
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/strike_dip_black_on_white_north_synthetic.png",
+    "bytes": 4510,
+    "crc32": 2874328713
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/strike_dip_black_on_white_north.png",
+    "bytes": 5146,
+    "crc32": 1049608765
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/strike_dip_black_on_white_north2.png",
+    "bytes": 33657,
+    "crc32": 3256221135
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/vertical_bedding_pt_north.png",
+    "bytes": 4863,
+    "crc32": 2524341097
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/vertical_foliation_pt_north.png",
+    "bytes": 5697,
+    "crc32": 3751651858
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/vertical_joint_pt_north.png",
+    "bytes": 5008,
+    "crc32": 913161213
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/point_extraction/templates/vertical_joint_pt_north2.png",
+    "bytes": 5026,
+    "crc32": 4138533620
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/.dockerignore",
+    "bytes": 116,
+    "crc32": 2853921735
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/denoise_segments.py",
+    "bytes": 4074,
+    "crc32": 3347251792
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/detectron_segmenter.py",
+    "bytes": 13893,
+    "crc32": 3250919678
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/entities.py",
+    "bytes": 1092,
+    "crc32": 2751599114
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/segmenter_utils.py",
+    "bytes": 5161,
+    "crc32": 1174101678
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/text_with_segments.py",
+    "bytes": 3182,
+    "crc32": 3654960919
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/__init__.py",
+    "bytes": 873,
+    "crc32": 2052158508
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/backbone.py",
+    "bytes": 7648,
+    "crc32": 75823540
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/beit.py",
+    "bytes": 33662,
+    "crc32": 2548846663
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/config.py",
+    "bytes": 1043,
+    "crc32": 1764992125
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/dataset_mapper.py",
+    "bytes": 5351,
+    "crc32": 3259219574
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/deit.py",
+    "bytes": 18157,
+    "crc32": 3793780255
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/icdar_evaluation.py",
+    "bytes": 3978,
+    "crc32": 4216296573
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/mycheckpointer.py",
+    "bytes": 16035,
+    "crc32": 3428487425
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/mytrainer.py",
+    "bytes": 32000,
+    "crc32": 3906087580
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/rcnn_vl.py",
+    "bytes": 6944,
+    "crc32": 2004897160
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/table_evaluation/__init__.py",
+    "bytes": 40,
+    "crc32": 2945557090
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/table_evaluation/data_structure.py",
+    "bytes": 23402,
+    "crc32": 3234373786
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/ditod/table_evaluation/evaluate.py",
+    "bytes": 16919,
+    "crc32": 461895999
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/__init__.py",
+    "bytes": 198,
+    "crc32": 1984870632
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/__init__.py",
+    "bytes": 78,
+    "crc32": 1559359708
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/cord.py",
+    "bytes": 10830,
+    "crc32": 3974825282
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/data_collator.py",
+    "bytes": 7038,
+    "crc32": 1244630494
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/funsd.py",
+    "bytes": 5853,
+    "crc32": 2357227479
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/image_utils.py",
+    "bytes": 10802,
+    "crc32": 45907617
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/data/xfund.py",
+    "bytes": 9585,
+    "crc32": 2079692930
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/__init__.py",
+    "bytes": 202,
+    "crc32": 2804412531
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/layoutlmv3/__init__.py",
+    "bytes": 1333,
+    "crc32": 1200919021
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/layoutlmv3/configuration_layoutlmv3.py",
+    "bytes": 2275,
+    "crc32": 1731452117
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/layoutlmv3/modeling_layoutlmv3.py",
+    "bytes": 58559,
+    "crc32": 826690196
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/layoutlmv3/tokenization_layoutlmv3_fast.py",
+    "bytes": 1428,
+    "crc32": 3261012171
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/segmentation/layoutlmft/models/layoutlmv3/tokenization_layoutlmv3.py",
+    "bytes": 1232,
+    "crc32": 2248930937
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/.dockerignore",
+    "bytes": 121,
+    "crc32": 1182831957
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/entities.py",
+    "bytes": 707,
+    "crc32": 165402808
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/text_extractor.py",
+    "bytes": 14112,
+    "crc32": 797562408
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/ocr/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/ocr/cloud_authenticator.py",
+    "bytes": 4371,
+    "crc32": 3454524378
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/ocr/google_vision_ocr.py",
+    "bytes": 13748,
+    "crc32": 1547864973
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/test/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/test/test_text_extractor.py",
+    "bytes": 4813,
+    "crc32": 2489567795
+  },
+  {
+    "name": "criticalmaas/_internal/repo/tasks/text_extraction/test/data/test.jpg",
+    "bytes": 5117,
+    "crc32": 978331319
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/coordinate.py",
+    "bytes": 477,
+    "crc32": 1468663679
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/json.py",
+    "bytes": 181,
+    "crc32": 458381206
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/logging.py",
+    "bytes": 399,
+    "crc32": 3839577099
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/etl/ngmdb_to_contest.py",
+    "bytes": 5017,
+    "crc32": 1302800659
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/etl/pixel_to_geo.py",
+    "bytes": 3419,
+    "crc32": 1597126129
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/etl/pyproject.toml",
+    "bytes": 312,
+    "crc32": 1596444536
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/messaging/__init__.py",
+    "bytes": 0,
+    "crc32": 0
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/messaging/receive.py",
+    "bytes": 1307,
+    "crc32": 3863613526
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/messaging/send.py",
+    "bytes": 1532,
+    "crc32": 2590797946
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/messaging/stub_cdr.py",
+    "bytes": 1476,
+    "crc32": 918264460
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/viz/viz_georef_gcps.py",
+    "bytes": 3729,
+    "crc32": 3200067467
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/viz/viz_point_extractions.py",
+    "bytes": 8697,
+    "crc32": 1675669835
+  },
+  {
+    "name": "criticalmaas/_internal/repo/util/viz/viz_segmentation_extractions.py",
+    "bytes": 2395,
+    "crc32": 4274193984
+  }
+]

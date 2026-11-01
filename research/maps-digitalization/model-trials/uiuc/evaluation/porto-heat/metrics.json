@@ -1,0 +1,317 @@
+{
+  "status": "succeeded",
+  "page": 100,
+  "run": {
+    "id": "porto-heat",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T11:54:40.000988+00:00",
+    "completed_utc": "2026-10-30T12:00:52.058342+00:00",
+    "seconds": 372.03557519998867,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1758,
+      1213
+    ],
+    "model_forward_calls": 540,
+    "source_pixels": 2132454,
+    "unknown_pixels": 1397746,
+    "overlapping_positive_pixels": 199297,
+    "label_counts": {
+      "0": 1397746,
+      "1": 495379,
+      "2": 4905,
+      "3": 27971,
+      "4": 40494,
+      "5": 82575,
+      "6": 78927,
+      "7": 1279,
+      "8": 191,
+      "9": 2621,
+      "10": 366
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "2d936c9f694e9856129ee9e2771be232332aa1cbb96dbf83a62980d1b401e952"
+  },
+  "metrics": {
+    "all": {
+      "eligible": 3809,
+      "common": 3515,
+      "missing": 294,
+      "correct": 2306,
+      "missing_pct": 7.71856130217905,
+      "exact_common_pct": 65.6045519203414,
+      "exact_all_pct": 60.54082436334996,
+      "bias": -0.025457198932345236,
+      "mae": 0.08251596956314522,
+      "sum_error": -89.4820542471935,
+      "sum_abs_error": 290.04363301445545,
+      "high_true_positive_cells": 4,
+      "high_reference_cells": 469,
+      "predicted_high_common_cells": 16,
+      "high_recall_pct": 0.8528784648187633,
+      "high_precision_common_pct": 25.0,
+      "predicted_cells": 4537,
+      "predicted_zero_reference_cells": 642,
+      "predicted_zero_reference_pct": 14.15031959444567,
+      "predicted_low_reference_cells": 380,
+      "predicted_low_reference_pct": 8.375578576151643,
+      "confusion_matrix_with_missing": [
+        [
+          46,
+          49,
+          12,
+          0,
+          0,
+          28
+        ],
+        [
+          33,
+          612,
+          326,
+          1,
+          1,
+          171
+        ],
+        [
+          5,
+          309,
+          1644,
+          8,
+          2,
+          93
+        ],
+        [
+          1,
+          37,
+          425,
+          4,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "development": {
+      "eligible": 1997,
+      "common": 1866,
+      "missing": 131,
+      "correct": 1203,
+      "missing_pct": 6.559839759639459,
+      "exact_common_pct": 64.46945337620579,
+      "exact_all_pct": 60.24036054081122,
+      "bias": -0.01962337015253035,
+      "mae": 0.08541060118820491,
+      "sum_error": -36.61720870462163,
+      "sum_abs_error": 159.37618181719037,
+      "high_true_positive_cells": 2,
+      "high_reference_cells": 257,
+      "predicted_high_common_cells": 11,
+      "high_recall_pct": 0.7782101167315175,
+      "high_precision_common_pct": 18.181818181818183,
+      "predicted_cells": 2471,
+      "predicted_zero_reference_cells": 387,
+      "predicted_zero_reference_pct": 15.66167543504654,
+      "predicted_low_reference_cells": 218,
+      "predicted_low_reference_pct": 8.822339133953864,
+      "confusion_matrix_with_missing": [
+        [
+          13,
+          30,
+          9,
+          0,
+          0,
+          27
+        ],
+        [
+          6,
+          335,
+          204,
+          1,
+          1,
+          85
+        ],
+        [
+          1,
+          151,
+          853,
+          5,
+          2,
+          17
+        ],
+        [
+          0,
+          22,
+          231,
+          2,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "validation": {
+      "eligible": 1238,
+      "common": 1121,
+      "missing": 117,
+      "correct": 786,
+      "missing_pct": 9.450726978998384,
+      "exact_common_pct": 70.11596788581623,
+      "exact_all_pct": 63.48949919224556,
+      "bias": -0.01950611936355252,
+      "mae": 0.07537154845873585,
+      "sum_error": -21.866359806542373,
+      "sum_abs_error": 84.49150582224289,
+      "high_true_positive_cells": 2,
+      "high_reference_cells": 131,
+      "predicted_high_common_cells": 4,
+      "high_recall_pct": 1.5267175572519085,
+      "high_precision_common_pct": 50.0,
+      "predicted_cells": 1453,
+      "predicted_zero_reference_cells": 190,
+      "predicted_zero_reference_pct": 13.076393668272539,
+      "predicted_low_reference_cells": 142,
+      "predicted_low_reference_pct": 9.772883688919476,
+      "confusion_matrix_with_missing": [
+        [
+          13,
+          9,
+          3,
+          0,
+          0,
+          1
+        ],
+        [
+          12,
+          151,
+          103,
+          0,
+          0,
+          55
+        ],
+        [
+          3,
+          74,
+          620,
+          2,
+          0,
+          61
+        ],
+        [
+          0,
+          1,
+          128,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "test": {
+      "eligible": 574,
+      "common": 528,
+      "missing": 46,
+      "correct": 317,
+      "missing_pct": 8.013937282229966,
+      "exact_common_pct": 60.03787878787879,
+      "exact_all_pct": 55.22648083623693,
+      "bias": -0.05870925328793464,
+      "mae": 0.08745444199814813,
+      "sum_error": -30.998485736029487,
+      "sum_abs_error": 46.17594537502221,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 81,
+      "predicted_high_common_cells": 1,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": 0.0,
+      "predicted_cells": 613,
+      "predicted_zero_reference_cells": 65,
+      "predicted_zero_reference_pct": 10.603588907014682,
+      "predicted_low_reference_cells": 20,
+      "predicted_low_reference_pct": 3.2626427406199023,
+      "confusion_matrix_with_missing": [
+        [
+          20,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          15,
+          126,
+          19,
+          0,
+          0,
+          31
+        ],
+        [
+          1,
+          84,
+          171,
+          1,
+          0,
+          15
+        ],
+        [
+          1,
+          14,
+          66,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    }
+  },
+  "municipal_source_pixels": 498062,
+  "municipal_recognized_pixels": 243577
+}

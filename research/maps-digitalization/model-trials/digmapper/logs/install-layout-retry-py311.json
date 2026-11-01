@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "uv",
+    "pip",
+    "install",
+    "--python",
+    "../../.venv/Scripts/python.exe",
+    "--no-build-isolation",
+    "-e",
+    "./tasks[segmentation]",
+    "-e",
+    "./pipelines/segmentation"
+  ],
+  "cwd": "./upstream/uncharted-ta1",
+  "started_at": "2026-10-30T11:51:59.527902+00:00",
+  "timeout_s": 240,
+  "exit_code": 1,
+  "elapsed_s": 2.906,
+  "log": "logs\\install-layout-retry-py311.log"
+}

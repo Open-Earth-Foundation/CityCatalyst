@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "./scripts/test_offline_legend.py"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper",
+  "started_at": "2026-10-30T11:57:06.316455+00:00",
+  "timeout_s": 90,
+  "exit_code": 0,
+  "elapsed_s": 1.922,
+  "log": "logs\\offline-legend.log"
+}

@@ -1,0 +1,39 @@
+{
+  "frozen_utc": "2026-11-01T09:22:45.159127+00:00",
+  "upstream_revision": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048",
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "mode": 0,
+  "mode_evidence": "Pinned README: 0 highest accuracy, 6 highest efficiency; source enables recoloring at <=1 and step5/text matching at <=0.",
+  "channels": [
+    "v7",
+    "v4v",
+    "c0_x",
+    "c1_x",
+    "blackregion",
+    "overall_boundary_candidate",
+    "rc_v0"
+  ],
+  "preprocessing": "Unmodified upstream metadata_preprocessing; serial deep-copied Pool jobs, process-count override disabled only; source-derived manual bounds.",
+  "network": "Unmodified original LOAM, 7 channels, 2 classes; strict original checkpoint load; eval; CUDA FP32; TF32 disabled; batch 1",
+  "tiles_hw": [
+    1024,
+    1024
+  ],
+  "stride_hw": [
+    1024,
+    1024
+  ],
+  "padding": "zeros bottom/right, no shortened strips, no overlap, no resizing",
+  "interface": "Use actual upstream bitmap worker at crop_size=1024 and BasicDataset.preprocess(scale=1); same-size bilinear decoder interpolation then two-class argmax.",
+  "arbitration": "Highest float32 foreground softmax probability among accepted masks; strict > update in legend order, ties lower index; no accepted class=255 unknown",
+  "porto_resolution": "Native embedded PDF figures, unchanged",
+  "richfield_resolution_dpi": 144,
+  "richfield_control_dpi": 72,
+  "control": "Mode0 full-tile 72 DPI source inputs identical to previous mode6/strip trial; distinct from primary144DPI results.",
+  "evaluation": "Import unchanged benchmark_10m_all.py sample/reference_grid/scores/save_grid; physical3km SHA256 blocks; reference!=255; literal .2/.4/.6/.8 classes; no averaging.",
+  "richfield_reference": "Direct source PDF f/fs paths with clip/draw order, unchanged GeoPDF affine. Same-resolution source-center comparisons and 10m geospatial-center comparisons.",
+  "reference_values_used_for_prediction_or_tuning": false,
+  "retrospective_not_blind": true,
+  "resource_policy": "No process multiplication; serial layers; own exclusive gpu.lock per inference process, removed in finally. No host configuration or other-process changes.",
+  "predeclared_fallback": "If CUDA FP32 canonical tile OOM, diagnose memory; never silently shorten context/change mode. Any adaptation separately logged before scoring."
+}

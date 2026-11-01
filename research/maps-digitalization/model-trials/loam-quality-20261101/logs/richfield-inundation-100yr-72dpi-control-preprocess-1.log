@@ -1,0 +1,81 @@
+Parameter Settings: False True True True
+========================================== Setting of Metadata Preprocessing for Polygon Extraction ==========================================
+*Preprocessing output directory => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-inundation-100yr-72dpi-control/"
+*Intput map tif for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-inundation-100yr-72dpi-control.tif"
+*Intput map json for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-inundation-100yr-72dpi-control.json"
+*Intput bound geojson for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-inundation-100yr-72dpi-control-bound.json"
+*Output for polygon extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-inundation-100yr-72dpi-control/intermediate7_2/Output"
+ - Output for intermediate basemap => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-inundation-100yr-72dpi-control/intermediate7"
+ - Output for intermediate extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-inundation-100yr-72dpi-control/intermediate7_2/(Map_Name)"
+ - Output for cropped map => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-inundation-100yr-72dpi-control/intermediate6/cropped_map_mask" (Supporting point, line, polygon)
+
+*Adjustable (Set to "True" is highly recommended due to time complexity)
+ - Multiprocessing => True
+ - Simple preprocessing => True
+
+*Multiprocessing with 1 processes...
+==============================================================================================================================================
+
+=== Specify maps with polygon features ===
+As the format for gpkg is not determined, please provide json file in competition format to indicate the map key of a map at this stage.
+Will update to read the gpkg file once the format is determined...
+Total number of maps to extract:  1
+Title of maps:  ['richfield-inundation-100yr-72dpi-control']
+Number of keys:  [1]
+
+=== Preparing basemaps with different representations / Checking area segmentation ===
+Working on map: richfield-inundation-100yr-72dpi-control
+time check... segmentation_reading and representation_preprocessing:  0:00:01.753367
+
+=== Extract boundaries from the maps ===
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time checkpoint _vt0: 0:00:00.081758
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time check... worker_boundary_extraction:  0:00:00.190792
+
+=== Extract auxiliary information from the maps ===
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time checkpoint _v0: 0:00:00.067031
+time checkpoint _v1: 0:00:00.106642
+time checkpoint _v2: 0:00:00.106642
+time check... worker_auxiliary_info:  0:00:00.107639
+
+=== Apply recoloring (color-set matching) for the maps ===
+Applying recoloring...
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time checkpoint _v0: 0:00:00.061155
+Add ocean color...
+total # of colors: 10
+total # of keys: 4
+processing _v0 >>> _v1 (finding the closest color)... : 0:00:00.390113
+Applying recoloring...
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time check... worker_recoloring:  0:00:01.091944
+
+=== Apply general metadata preprocessing for polygon extraction from the maps ===
+Working on map: richfield-inundation-100yr-72dpi-control.tif
+time checkpoint _v0: 0:00:00.063863
+time checkpoint _v1: 0:00:00.208526
+processing _v0 >>> _v2 (legend 1/1)... : 0:00:00.219111
+time checkpoint _v2: 0:00:00.219111
+looping... (round: 1/1)... (legend: 0-1 /1)
+processing _v2 >>> _v3 (iteration 1/4)... (legend 1/1)... : 0:00:00.232407
+processing _v2 >>> _v3 (iteration 2/4)... (legend 1/1)... : 0:00:00.244760
+processing _v2 >>> _v3 (iteration 3/4)... (legend 1/1)... : 0:00:00.256466
+processing _v2 >>> _v3 (iteration 4/4)... (legend 1/1)... : 0:00:00.269362
+time checkpoint _v3: 0:00:00.269362
+processing _v3 >>> _v4 (iteration 1/2)... (legend 1/1)... : 0:00:00.297187
+processing _v3 >>> _v4 (iteration 2/2)... (legend 1/1)... : 0:00:00.445644
+ - dynamic update (1 / 1)
+time checkpoint _v4: 0:00:00.446644
+processing _v4 >>> _v5 (iteration 1/1)... (legend 1/1)... : 0:00:00.542777
+time checkpoint _v5: 0:00:00.542777
+no text-pattern matching with connected-component analysis is needed...
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:368: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:378: NotGeoreferencedWarning: The given matrix is equal to Affine.identity or its flipped counterpart. GDAL may ignore this matrix and save no geotransform without raising an error. This behavior is somewhat driver-specific.
+  dataset = writer(
+time checkpoint _v7: 0:00:00.577662
+time check... worker_main_component:  0:00:00.579928
+PREPROCESS_SUCCESS 3.7456054999493062

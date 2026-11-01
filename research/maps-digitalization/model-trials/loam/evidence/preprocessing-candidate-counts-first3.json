@@ -1,0 +1,92 @@
+{
+  "porto-heat": [
+    {
+      "bin": 0,
+      "candidate_pixels": 462
+    },
+    {
+      "bin": 1,
+      "candidate_pixels": 1976
+    },
+    {
+      "bin": 2,
+      "candidate_pixels": 7746
+    },
+    {
+      "bin": 3,
+      "candidate_pixels": 1337
+    },
+    {
+      "bin": 4,
+      "candidate_pixels": 1863
+    },
+    {
+      "bin": 5,
+      "candidate_pixels": 1674
+    },
+    {
+      "bin": 6,
+      "candidate_pixels": 436
+    },
+    {
+      "bin": 7,
+      "candidate_pixels": 449
+    },
+    {
+      "bin": 8,
+      "candidate_pixels": 333
+    },
+    {
+      "bin": 9,
+      "candidate_pixels": 259
+    }
+  ],
+  "porto-flood": [
+    {
+      "bin": 0,
+      "candidate_pixels": 136
+    },
+    {
+      "bin": 1,
+      "candidate_pixels": 524
+    },
+    {
+      "bin": 2,
+      "candidate_pixels": 4617
+    },
+    {
+      "bin": 3,
+      "candidate_pixels": 1523
+    },
+    {
+      "bin": 4,
+      "candidate_pixels": 637
+    },
+    {
+      "bin": 5,
+      "candidate_pixels": 724
+    },
+    {
+      "bin": 6,
+      "candidate_pixels": 537
+    },
+    {
+      "bin": 7,
+      "candidate_pixels": 334
+    },
+    {
+      "bin": 8,
+      "candidate_pixels": 340
+    },
+    {
+      "bin": 9,
+      "candidate_pixels": 270
+    }
+  ],
+  "richfield-inundation-100yr": [
+    {
+      "bin": 0,
+      "candidate_pixels": 157
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{"argv": ["uv", "pip", "install", "--python", "./.venv/Scripts/python.exe", "poetry-core", "cython"], "cwd": ".", "started_at": "2026-10-30T11:51:33.481222+00:00", "timeout_s": 90}
+Resolved 2 packages in 334ms
+Downloading cython (2.7MiB)
+ Downloaded cython
+Prepared 2 packages in 353ms
+Installed 2 packages in 117ms
+ + cython==3.3.0
+ + poetry-core==2.5.0

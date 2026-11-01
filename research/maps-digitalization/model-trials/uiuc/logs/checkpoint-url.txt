@@ -1,0 +1,1 @@
+https://media.githubusercontent.com/media/xiyuez2/Darpa_Unet_Release/7f6f6450108e43df83a1db2a51b6c7b893c65f11/jaccard_index_value%3D0.9229.ckpt

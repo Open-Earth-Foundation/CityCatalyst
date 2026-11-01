@@ -1,0 +1,2185 @@
+{
+  "provenance": {
+    "derived": false,
+    "headline": "OFFICIAL — the ARVC rasters as delivered by SMAMUS.",
+    "received": "2026-08-11, from SMAMUS (Secretaria Municipal do Meio Ambiente, Urbanismo e Sustentabilidade), Prefeitura Municipal de Porto Alegre.",
+    "source_document": "P3 — Análise de Riscos e Vulnerabilidade Climáticas, Plano de Ação Climática de Porto Alegre (2023)",
+    "source_authors": "WayCarbon, ICLEI América do Sul, Ludovino Lopes Advogados, Ecofinance",
+    "commissioned_by": "Banco Mundial / Prefeitura Municipal de Porto Alegre",
+    "source_crs": "EPSG:31997 (SIRGAS 1995 / UTM 22S)",
+    "native_resolution_m": 29.1321579,
+    "scenario": "SSP3-7.0 (CMIP6 AR6). GCM ensemble: MIROC6, MRI-ESM2-0, NorESM2-MM, GFDL-ESM4, ACCESS-ESM1-5, IPSL-CM6A-LR. Windows: historical 1995–2014, 2030 = 2021–2040, 2050 = 2041–2060.",
+    "method": "R = ∛(ameaça × exposição × vulnerabilidade), per IPCC AR5/AR6. Reproduced from the delivered A/E/V rasters to a mean absolute error of 0.0035 (r = 0.997), so the components and the composite are mutually consistent.",
+    "attribution": "Prefeitura Municipal de Porto Alegre / SMAMUS — Plano de Ação Climática, produto P3 (WayCarbon, ICLEI, Ludovino Lopes Advogados, Ecofinance)",
+    "encoding": {
+      "format": "8-bit paletted PNG in EPSG:3857",
+      "value": "value = paletteIndex / 254, for indices 0..254",
+      "nodata_index": 255,
+      "value_levels": 255
+    }
+  },
+  "layers": {
+    "arvc_off_exposure_population": {
+      "id": "arvc_off_exposure_population",
+      "file": "EXPO_POP",
+      "component": "exposure",
+      "hazard": null,
+      "period": null,
+      "name_en": "Population exposure",
+      "name_pt": "Índice de exposição da população total",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959767
+        ],
+        [
+          -29.932041377026767,
+          -51.018535884286536
+        ]
+      ],
+      "stats": {
+        "min": 0.0018201112980023026,
+        "max": 0.9972970485687256,
+        "mean": 0.49412092566490173,
+        "valid_px": 229369,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5EB"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE7D1"
+          },
+          {
+            "value": 0.4,
+            "color": "#FDD4AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FDB97D"
+          },
+          {
+            "value": 0.8,
+            "color": "#FD9B50"
+          }
+        ]
+      }
+    },
+    "arvc_off_exposure_black_population": {
+      "id": "arvc_off_exposure_black_population",
+      "file": "EXPO_POP_NEGRA",
+      "component": "exposure",
+      "hazard": null,
+      "period": null,
+      "name_en": "Black population exposure",
+      "name_pt": "Índice de exposição da população negra",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.00021664633823093027,
+        "max": 0.2517992854118347,
+        "mean": 0.12311150878667831,
+        "valid_px": 212968,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFFCDA"
+          },
+          {
+            "value": 0.2,
+            "color": "#EFE0B4"
+          },
+          {
+            "value": 0.4,
+            "color": "#E0C58E"
+          },
+          {
+            "value": 0.6,
+            "color": "#D1AA69"
+          },
+          {
+            "value": 0.8,
+            "color": "#C28F43"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_flood": {
+      "id": "arvc_off_vulnerability_flood",
+      "file": "FLOOD_VULN",
+      "component": "vulnerability",
+      "hazard": "flood",
+      "period": null,
+      "name_en": "River flood vulnerability",
+      "name_pt": "Vulnerabilidade — Inundação Fluvial",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.04016244038939476,
+        "max": 0.8074475526809692,
+        "mean": 0.44417229294776917,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_flood_historical": {
+      "id": "arvc_off_threat_flood_historical",
+      "file": "THREAT_FLOOD_HIS_2004",
+      "component": "threat",
+      "hazard": "flood",
+      "period": "historical",
+      "name_en": "River flood hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Inundação Fluvial — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.6079882979393005,
+        "max": 0.765600323677063,
+        "mean": 0.701565682888031,
+        "valid_px": 228007,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_flood_historical": {
+      "id": "arvc_off_risk_flood_historical",
+      "file": "RISK_FLOOD_HIS_2004",
+      "component": "risk",
+      "hazard": "flood",
+      "period": "historical",
+      "name_en": "River flood risk — Historical (1995–2014)",
+      "name_pt": "Risco — Inundação Fluvial — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.07010922580957413,
+        "max": 0.8092959523200989,
+        "mean": 0.4838307201862335,
+        "valid_px": 88960,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_flood_2030": {
+      "id": "arvc_off_threat_flood_2030",
+      "file": "THREAT_FLOOD_370_2030",
+      "component": "threat",
+      "hazard": "flood",
+      "period": "2030",
+      "name_en": "River flood hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Inundação Fluvial — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.5935675501823425,
+        "max": 0.7697023749351501,
+        "mean": 0.6928735971450806,
+        "valid_px": 228007,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_flood_2030": {
+      "id": "arvc_off_risk_flood_2030",
+      "file": "RISK_FLOOD_370_2030",
+      "component": "risk",
+      "hazard": "flood",
+      "period": "2030",
+      "name_en": "River flood risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Inundação Fluvial — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.07006319612264633,
+        "max": 0.8018546104431152,
+        "mean": 0.4818561375141144,
+        "valid_px": 88960,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_flood_2050": {
+      "id": "arvc_off_threat_flood_2050",
+      "file": "THREAT_FLOOD_370_2050",
+      "component": "threat",
+      "hazard": "flood",
+      "period": "2050",
+      "name_en": "River flood hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Inundação Fluvial — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.6366978287696838,
+        "max": 0.810081422328949,
+        "mean": 0.7386475801467896,
+        "valid_px": 228007,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      },
+      "valueScale": 254,
+      "valueNodata": 16777215
+    },
+    "arvc_off_risk_flood_2050": {
+      "id": "arvc_off_risk_flood_2050",
+      "file": "RISK_FLOOD_370_2050",
+      "component": "risk",
+      "hazard": "flood",
+      "period": "2050",
+      "name_en": "River flood risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Inundação Fluvial — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.07147306203842163,
+        "max": 0.8212003111839294,
+        "mean": 0.49220138788223267,
+        "valid_px": 88960,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_landslide": {
+      "id": "arvc_off_vulnerability_landslide",
+      "file": "LANDS_VULN",
+      "component": "vulnerability",
+      "hazard": "landslide",
+      "period": null,
+      "name_en": "Landslide vulnerability",
+      "name_pt": "Vulnerabilidade — Deslizamento",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.9486833214759827,
+        "mean": 0.5726592540740967,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_landslide_historical": {
+      "id": "arvc_off_threat_landslide_historical",
+      "file": "THREAT_LANDS_HIS_2004",
+      "component": "threat",
+      "hazard": "landslide",
+      "period": "historical",
+      "name_en": "Landslide hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Deslizamento — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.6306686997413635,
+        "mean": 0.41616055369377136,
+        "valid_px": 552353,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_landslide_historical": {
+      "id": "arvc_off_risk_landslide_historical",
+      "file": "RISK_LANDS_HIS_2004",
+      "component": "risk",
+      "hazard": "landslide",
+      "period": "historical",
+      "name_en": "Landslide risk — Historical (1995–2014)",
+      "name_pt": "Risco — Deslizamento — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7773842215538025,
+        "mean": 0.46276891231536865,
+        "valid_px": 227791,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_landslide_2030": {
+      "id": "arvc_off_threat_landslide_2030",
+      "file": "THREAT_LANDS_370_2030",
+      "component": "threat",
+      "hazard": "landslide",
+      "period": "2030",
+      "name_en": "Landslide hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Deslizamento — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.6429880261421204,
+        "mean": 0.4233347475528717,
+        "valid_px": 552353,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_landslide_2030": {
+      "id": "arvc_off_risk_landslide_2030",
+      "file": "RISK_LANDS_370_2030",
+      "component": "risk",
+      "hazard": "landslide",
+      "period": "2030",
+      "name_en": "Landslide risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Deslizamento — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7803686857223511,
+        "mean": 0.4653535783290863,
+        "valid_px": 227791,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_landslide_2050": {
+      "id": "arvc_off_threat_landslide_2050",
+      "file": "THREAT_LANDS_370_2050",
+      "component": "threat",
+      "hazard": "landslide",
+      "period": "2050",
+      "name_en": "Landslide hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Deslizamento — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.643638014793396,
+        "mean": 0.4240865111351013,
+        "valid_px": 552353,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      },
+      "valueScale": 254,
+      "valueNodata": 16777215
+    },
+    "arvc_off_risk_landslide_2050": {
+      "id": "arvc_off_risk_landslide_2050",
+      "file": "RISK_LANDS_370_2050",
+      "component": "risk",
+      "hazard": "landslide",
+      "period": "2050",
+      "name_en": "Landslide risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Deslizamento — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.782029926776886,
+        "mean": 0.46587899327278137,
+        "valid_px": 227791,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_heat": {
+      "id": "arvc_off_vulnerability_heat",
+      "file": "HEATWAVE_VUL",
+      "component": "vulnerability",
+      "hazard": "heat",
+      "period": null,
+      "name_en": "Heat wave vulnerability",
+      "name_pt": "Vulnerabilidade — Ondas de Calor",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.9983319640159607,
+        "mean": 0.34263500571250916,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_heat_historical": {
+      "id": "arvc_off_threat_heat_historical",
+      "file": "THREAT_HEAT_HIS_2004",
+      "component": "threat",
+      "hazard": "heat",
+      "period": "historical",
+      "name_en": "Heat wave hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Ondas de Calor — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.011351600289344788,
+        "max": 0.7502357363700867,
+        "mean": 0.4397129416465759,
+        "valid_px": 557365,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_heat_historical": {
+      "id": "arvc_off_risk_heat_historical",
+      "file": "RISK_HEAT_HIS_2004",
+      "component": "risk",
+      "hazard": "heat",
+      "period": "historical",
+      "name_en": "Heat wave risk — Historical (1995–2014)",
+      "name_pt": "Risco — Ondas de Calor — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7576789259910583,
+        "mean": 0.4410622715950012,
+        "valid_px": 229084,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_heat_2030": {
+      "id": "arvc_off_threat_heat_2030",
+      "file": "THREAT_HEAT_370_2030",
+      "component": "threat",
+      "hazard": "heat",
+      "period": "2030",
+      "name_en": "Heat wave hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Ondas de Calor — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.012555672787129879,
+        "max": 0.8139300346374512,
+        "mean": 0.4813632071018219,
+        "valid_px": 557365,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_heat_2030": {
+      "id": "arvc_off_risk_heat_2030",
+      "file": "RISK_HEAT_370_2030",
+      "component": "risk",
+      "hazard": "heat",
+      "period": "2030",
+      "name_en": "Heat wave risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Ondas de Calor — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.779633641242981,
+        "mean": 0.45415452122688293,
+        "valid_px": 229084,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_heat_2050": {
+      "id": "arvc_off_threat_heat_2050",
+      "file": "THREAT_HEAT_370_2050",
+      "component": "threat",
+      "hazard": "heat",
+      "period": "2050",
+      "name_en": "Heat wave hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Ondas de Calor — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.013583265244960785,
+        "max": 0.8824402689933777,
+        "mean": 0.5209880471229553,
+        "valid_px": 557365,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      },
+      "valueScale": 254,
+      "valueNodata": 16777215
+    },
+    "arvc_off_risk_heat_2050": {
+      "id": "arvc_off_risk_heat_2050",
+      "file": "RISK_HEAT_370_2050",
+      "component": "risk",
+      "hazard": "heat",
+      "period": "2050",
+      "name_en": "Heat wave risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Ondas de Calor — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.8007205128669739,
+        "mean": 0.46629858016967773,
+        "valid_px": 229084,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_drought": {
+      "id": "arvc_off_vulnerability_drought",
+      "file": "DROUGHT_VUL",
+      "component": "vulnerability",
+      "hazard": "drought",
+      "period": null,
+      "name_en": "Meteorological drought vulnerability",
+      "name_pt": "Vulnerabilidade — Secas Meteorológicas",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.8566162586212158,
+        "mean": 0.4313173294067383,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_drought_historical": {
+      "id": "arvc_off_threat_drought_historical",
+      "file": "THREAT_DROUGHT_HIS_2004",
+      "component": "threat",
+      "hazard": "drought",
+      "period": "historical",
+      "name_en": "Meteorological drought hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Secas Meteorológicas — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.48752325773239136,
+        "max": 0.5038094520568848,
+        "mean": 0.49261361360549927,
+        "valid_px": 501596,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_drought_historical": {
+      "id": "arvc_off_risk_drought_historical",
+      "file": "RISK_DROUGHT_HIS_2004",
+      "component": "risk",
+      "hazard": "drought",
+      "period": "historical",
+      "name_en": "Meteorological drought risk — Historical (1995–2014)",
+      "name_pt": "Risco — Secas Meteorológicas — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7062602043151855,
+        "mean": 0.41514790058135986,
+        "valid_px": 226214,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_drought_2030": {
+      "id": "arvc_off_threat_drought_2030",
+      "file": "THREAT_DROUGHT_370_2030",
+      "component": "threat",
+      "hazard": "drought",
+      "period": "2030",
+      "name_en": "Meteorological drought hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Secas Meteorológicas — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.49768558144569397,
+        "max": 0.506554365158081,
+        "mean": 0.5044553279876709,
+        "valid_px": 501596,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_drought_2030": {
+      "id": "arvc_off_risk_drought_2030",
+      "file": "RISK_DROUGHT_370_2030",
+      "component": "risk",
+      "hazard": "drought",
+      "period": "2030",
+      "name_en": "Meteorological drought risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Secas Meteorológicas — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7125604748725891,
+        "mean": 0.41803479194641113,
+        "valid_px": 226214,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_drought_2050": {
+      "id": "arvc_off_threat_drought_2050",
+      "file": "THREAT_DROUGHT_370_2050",
+      "component": "threat",
+      "hazard": "drought",
+      "period": "2050",
+      "name_en": "Meteorological drought hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Secas Meteorológicas — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.5115658044815063,
+        "max": 0.5406771898269653,
+        "mean": 0.5195633172988892,
+        "valid_px": 501596,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_drought_2050": {
+      "id": "arvc_off_risk_drought_2050",
+      "file": "RISK_DROUGHT_370_2050",
+      "component": "risk",
+      "hazard": "drought",
+      "period": "2050",
+      "name_en": "Meteorological drought risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Secas Meteorológicas — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.7178176641464233,
+        "mean": 0.4230439364910126,
+        "valid_px": 226214,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_arbovirus": {
+      "id": "arvc_off_vulnerability_arbovirus",
+      "file": "DISEASE_VULN",
+      "component": "vulnerability",
+      "hazard": "arbovirus",
+      "period": null,
+      "name_en": "Arbovirus vectors vulnerability",
+      "name_pt": "Vulnerabilidade — Vetores de Arboviroses",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.03147095814347267,
+        "max": 0.8339914679527283,
+        "mean": 0.43441611528396606,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_arbovirus_historical": {
+      "id": "arvc_off_threat_arbovirus_historical",
+      "file": "THREAT_DISEASE_HIS_2004",
+      "component": "threat",
+      "hazard": "arbovirus",
+      "period": "historical",
+      "name_en": "Arbovirus vectors hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Vetores de Arboviroses — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.5410075187683105,
+        "max": 0.5519067049026489,
+        "mean": 0.5443958640098572,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_arbovirus_historical": {
+      "id": "arvc_off_risk_arbovirus_historical",
+      "file": "RISK_DISEASE_HIS_2004",
+      "component": "risk",
+      "hazard": "arbovirus",
+      "period": "historical",
+      "name_en": "Arbovirus vectors risk — Historical (1995–2014)",
+      "name_pt": "Risco — Vetores de Arboviroses — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.058741725981235504,
+        "max": 0.7323204874992371,
+        "mean": 0.4215475022792816,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_arbovirus_2030": {
+      "id": "arvc_off_threat_arbovirus_2030",
+      "file": "THREAT_DISEASE_370_2030",
+      "component": "threat",
+      "hazard": "arbovirus",
+      "period": "2030",
+      "name_en": "Arbovirus vectors hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Vetores de Arboviroses — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.6360409259796143,
+        "max": 0.652660608291626,
+        "mean": 0.6467066407203674,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_arbovirus_2030": {
+      "id": "arvc_off_risk_arbovirus_2030",
+      "file": "RISK_DISEASE_370_2030",
+      "component": "risk",
+      "hazard": "arbovirus",
+      "period": "2030",
+      "name_en": "Arbovirus vectors risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Vetores de Arboviroses — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.062248289585113525,
+        "max": 0.7760360240936279,
+        "mean": 0.44646337628364563,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_arbovirus_2050": {
+      "id": "arvc_off_threat_arbovirus_2050",
+      "file": "THREAT_DISEASE_370_2050",
+      "component": "threat",
+      "hazard": "arbovirus",
+      "period": "2050",
+      "name_en": "Arbovirus vectors hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Vetores de Arboviroses — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.6576622724533081,
+        "max": 0.6723098158836365,
+        "mean": 0.6664831042289734,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_arbovirus_2050": {
+      "id": "arvc_off_risk_arbovirus_2050",
+      "file": "RISK_DISEASE_370_2050",
+      "component": "risk",
+      "hazard": "arbovirus",
+      "period": "2050",
+      "name_en": "Arbovirus vectors risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Vetores de Arboviroses — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.06286050379276276,
+        "max": 0.7836683988571167,
+        "mean": 0.45093265175819397,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_vulnerability_storm": {
+      "id": "arvc_off_vulnerability_storm",
+      "file": "STORM_VULN",
+      "component": "vulnerability",
+      "hazard": "storm",
+      "period": null,
+      "name_en": "Storm vulnerability",
+      "name_pt": "Vulnerabilidade — Tempestades",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.471966952085495,
+        "valid_px": 553107,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FCFBFD"
+          },
+          {
+            "value": 0.2,
+            "color": "#F0EEF5"
+          },
+          {
+            "value": 0.4,
+            "color": "#DEDEED"
+          },
+          {
+            "value": 0.6,
+            "color": "#C6C6E1"
+          },
+          {
+            "value": 0.8,
+            "color": "#ABA9D0"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_storm_historical": {
+      "id": "arvc_off_threat_storm_historical",
+      "file": "THREAT_STORM_HIS_2004",
+      "component": "threat",
+      "hazard": "storm",
+      "period": "historical",
+      "name_en": "Storm hazard — Historical (1995–2014)",
+      "name_pt": "Ameaça — Tempestades — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.5631423592567444,
+        "max": 0.6165890693664551,
+        "mean": 0.5983615517616272,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_storm_historical": {
+      "id": "arvc_off_risk_storm_historical",
+      "file": "RISK_STORM_HIS_2004",
+      "component": "risk",
+      "hazard": "storm",
+      "period": "historical",
+      "name_en": "Storm risk — Historical (1995–2014)",
+      "name_pt": "Risco — Tempestades — Historical (1995–2014)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.8075966238975525,
+        "mean": 0.47443974018096924,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_storm_2030": {
+      "id": "arvc_off_threat_storm_2030",
+      "file": "THREAT_STORM_370_2030",
+      "component": "threat",
+      "hazard": "storm",
+      "period": "2030",
+      "name_en": "Storm hazard — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Ameaça — Tempestades — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.5923203825950623,
+        "max": 0.6097074747085571,
+        "mean": 0.5966212153434753,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_storm_2030": {
+      "id": "arvc_off_risk_storm_2030",
+      "file": "RISK_STORM_370_2030",
+      "component": "risk",
+      "hazard": "storm",
+      "period": "2030",
+      "name_en": "Storm risk — 2030 (2021–2040, SSP3-7.0)",
+      "name_pt": "Risco — Tempestades — 2030 (2021–2040, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.8051890730857849,
+        "mean": 0.47485965490341187,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    },
+    "arvc_off_threat_storm_2050": {
+      "id": "arvc_off_threat_storm_2050",
+      "file": "THREAT_STORM_370_2050",
+      "component": "threat",
+      "hazard": "storm",
+      "period": "2050",
+      "name_en": "Storm hazard — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Ameaça — Tempestades — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.6188416481018066,
+        "max": 0.6475476026535034,
+        "mean": 0.6275675892829895,
+        "valid_px": 557534,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#008080"
+          },
+          {
+            "value": 0.2,
+            "color": "#4A988D"
+          },
+          {
+            "value": 0.4,
+            "color": "#86B09A"
+          },
+          {
+            "value": 0.6,
+            "color": "#B4C8A8"
+          },
+          {
+            "value": 0.8,
+            "color": "#E0E0B6"
+          }
+        ]
+      }
+    },
+    "arvc_off_risk_storm_2050": {
+      "id": "arvc_off_risk_storm_2050",
+      "file": "RISK_STORM_370_2050",
+      "component": "risk",
+      "hazard": "storm",
+      "period": "2050",
+      "name_en": "Storm risk — 2050 (2041–2060, SSP3-7.0)",
+      "name_pt": "Risco — Tempestades — 2050 (2041–2060, SSP3-7.0)",
+      "bounds": [
+        [
+          -30.269552412156614,
+          -51.30005468959769
+        ],
+        [
+          -29.932041377026767,
+          -51.01853588428654
+        ]
+      ],
+      "stats": {
+        "min": 0.0,
+        "max": 0.8186665177345276,
+        "mean": 0.4834901988506317,
+        "valid_px": 229216,
+        "width": 928,
+        "height": 1286,
+        "legend": [
+          {
+            "value": 0.0,
+            "color": "#FFF5F0"
+          },
+          {
+            "value": 0.2,
+            "color": "#FEE2D5"
+          },
+          {
+            "value": 0.4,
+            "color": "#FCC3AB"
+          },
+          {
+            "value": 0.6,
+            "color": "#FC9F81"
+          },
+          {
+            "value": 0.8,
+            "color": "#FB7B5B"
+          }
+        ]
+      }
+    }
+  }
+}

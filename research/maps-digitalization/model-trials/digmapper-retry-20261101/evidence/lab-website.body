@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>KnowledgeComputing</title>
+  <meta name="description" content="Knowledge Computing Lab at the Computer Science & Engineering Department, University of Minnesota, Twin Cities.
+">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/images/kc-lab-logo_icon.png">
+  <link rel="apple-touch-icon" href="/images/kc-lab-logo_icon.png">
+
+  <link rel="stylesheet" href="/css/foundation.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/fontello.css">
+  <link rel="stylesheet" href="/css/font-awesome.css">
+  <script src="/javascripts/libs.js" type="text/javascript"></script>
+  <script>
+    // terrificjs bootstrap
+    (function($) {
+        $(document).ready(function() {
+            var $page = $('body');
+            var config = {
+              dependencyPath: {
+                plugin: 'javascripts/'
+              }
+            }
+            var application = new Tc.Application($page, config);
+            application.registerModules();
+            application.start();
+        });
+    })(Tc.$);
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,700,300" media="screen" rel="stylesheet" type="text/css" />
+  <script src="/javascripts/masonry.pkgd.js" type="text/javascript"></script>
+  <script src="/javascripts/imagesloaded.pkgd.min.js" type="text/javascript"></script>
+  <script src="/javascripts/slick.min.js" type="text/javascript"></script>
+  <script src="/javascripts/json2.js" type="text/javascript"></script>
+  <link rel="canonical" href="https://knowledge-computing.github.io/">
+  <link rel="alternate" type="application/rss+xml" title="KnowledgeComputing" href="https://knowledge-computing.github.io/feed.xml" />
+</head>
+
+
+  <body>
+
+    <div class='contain-to-grid sticky'>
+  <nav class='top-bar' data-options='sticky_on: large' data-topbar=''>
+    <ul class='title-area'>
+      <li class='name'>
+          <a href="https://knowledge-computing.github.io/index.html">
+            <img alt="" src="https://knowledge-computing.github.io/images/knowledge_computing_sticker.jpg" style="width:400px"/>
+          </a>
+      </li>
+    </ul>
+    <section class='top-bar-section'>
+      <ul class="right">
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/publications.html" style="font-size:1.1rem">Publications</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/datasets.html" style="font-size:1.1rem">Datasets</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/people.html" style="font-size:1.1rem">People</a>
+            </li>
+          
+        
+          
+
+          
+            <li class="">
+              <a href="https://knowledge-computing.github.io/join.html" style="font-size:1.1rem">Join Us</a>
+            </li>
+          
+        
+      </ul>
+    </section>
+  </nav>
+</div>
+
+    <div id='main' role='main'>
+      <div class='full parallax' style='background-image: url(images/background/slider_historical_map.jpeg); color: #fff;'>
+  <div class='two spacing'></div>
+  <div class='row'>
+    <div class='large-12 columns'>
+      <div class="special-title centered-text">
+        <a href="https://github.com/knowledge-computing/knowledge-computing.github.io"><h2 style="font-size: 4.0rem; color: white; -webkit-text-stroke: 1px black;">Knowledge Computing</h2></a>
+      </div>
+      
+      <div class='two spacing'></div>
+ 
+    </div>
+  </div>
+  <div class='four spacing'></div>
+</div>
+
+<div class="full"  style="background: #f5f5f5;">
+  <div class="row">
+    <div class="large-12 columns">
+      <div class="two spacing"></div>
+      <div class="mod modSectionHeader ">
+  <div class="special-title centered-text">
+    <h2 style="color: ;">Our Research</h2>
+  </div>
+  
+</div>
+
+      <p style="font-size: 1.3rem">Welcome to our research lab at the <a href="https://cse.umn.edu/cs">Computer Science & Engineering Department</a>, <a href="https://twin-cities.umn.edu/">University of Minnesota, Twin Cities</a>.</p>
+<p style="font-size: 1.3rem">Our research focuses on applied machine learning and data science, thriving at the intersection of <b>computer science</b> and <b>spatial sciences</b>. We create advanced machine learning algorithms and intelligent systems to tackle real-world challenges by:
+<ul style="font-size: 1.3rem"> <li>Discovering, gathering, integrating, and interpreting data from diverse sources</li> <li>Leveraging multimodal data characterized by diverse spatial and temporal scales, completeness, and coverage</li> </ul>
+
+<p style="font-size: 1.3rem">We are currently concentrating on building machine learning frameworks that exploit spatial data properties and structural knowledge to address challenges in <b>natural language processing</b>, <b>computer vision</b>, and <b>spatiotemporal data prediction & forecasting</b>. We collaborate with domain experts in fields such as:</p>
+<ul style="font-size: 1.3rem">
+  <li>Transportation</li>
+  <li>Health and public health</li>
+  <li>Human geography and history</li>
+  <li>Digital humanities, library science, and museums</li>
+  <li>Agriculture</li>
+</ul>
+<p style="font-size: 1.3rem">Our work involves analyzing a wide range of datasets, including:</p>
+<ul style="font-size: 1.3rem">
+  <li>Scenic photos (e.g., Google Street View)</li>
+  <li>Complex scanned documents (e.g., scanned maps)</li>
+  <li>In-situ sensor observations (e.g., air quality monitors, ECG data)</li>
+  <li>Remote sensor data (e.g., satellite imagery, elevation data)</li>
+  <li>Time series data (e.g., weather and traffic data)</li>
+  <li>Natural language data</li>
+  <li>Graph data (e.g., network logs, linked data)</li>
+  <li>Spatial data (e.g., moving trajectories)</li>
+</ul>
+<p style="font-size: 1.3rem"><a href="research.html">Learn more about our research</a> and <a href="https://github.com/knowledge-computing/">find our Github</a>  (In 2021, we transitioned from the Spatial Sciences Institute at the University of Southern California (USC) to Minnesota. <a href="https://spatial-computing.github.io/">Explore our lab page at USC.</a>)</p>
+
+<p style="font-size: 1.3rem">Our lab is proud to host <a href="https://spatialwomen.github.io/">SpatialWomen (SpatialW)</a>, an organization dedicated to actively networking with female researchers in computer science and spatial science. SpatialW works with conference organizers to hold networking and educational events and provides invited talks from senior researchers in academia and industry. </p>
+
+      
+      <!-- <div class='full'>
+        <div class='row'>
+          <div class='mod modGallery'>
+            <div class='gallery-nav'>
+              <ul style="font-size: 1.3rem;">
+                <li class='current'><a data-cat='all' href='#'>All</a></li>
+                <li><a data-cat='cv' href='#'>Computer Vision</a></li>
+                <li><a data-cat='st' href='#'>Spatiotemporal Data Analysis</a></li>
+                <li><a data-cat='nlp' href='#'>Natural Language Understanding</a></li>
+                <li><a data-cat='kg' href='#'>Knowledge Graphs</a></li>
+                <li><a data-cat='map' href='#'>Digital Map Processing</a></li>
+                <li><a data-cat='health' href='#'>Health</a></li>
+                <li><a data-cat='smartcity' href='#'>Smart City</a></li>
+                <li><a data-cat='trans' href='#'>Transportation</a></li>
+                <li><a data-cat='geoint' href='#'>Geospatial Intelligence (GeoINT)</a></li>
+                <li><a data-cat='others' href='#'>Others</a></li>
+              </ul>
+            </div>
+
+            <ul class='gallery large-block-grid-4'>
+              
+                <li class="">
+                  <a href='/research.html#AI Climate'>
+                    <img alt="" src="images/research/AI_Climate.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>AI Climate</h3>
+                        <p>Utilizing AI to enhance knowledge of the environment and climate, specifically in fields such as agriculture or forestry.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Permafrost Peatlands Mapping Modeling'>
+                    <img alt="" src="images/research/permafrost.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Permafrost Peatlands Mapping Modeling</h3>
+                        <p>Employing ML models to map and predict permafrost and peatlands across U.S.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#CEDAR'>
+                    <img alt="" src="images/research/cedar.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>CEDAR</h3>
+                        <p>Estimating aboveground biomass and carbon stocks in forests.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Critical MAAS'>
+                    <img alt="" src="images/research/Critical_MAAS.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Critical MAAS</h3>
+                        <p>Developing tools to rapidly and accurately assess resources of critical mineral commodities in the United States.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#HAYSTAC'>
+                    <img alt="" src="images/research/haystac.jpeg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>HAYSTAC</h3>
+                        <p>Establishing models of “normal” human movement across times, locations, and people in order to characterize what makes an activity detectable as anomalous.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#LASI-DAD'>
+                    <img alt="" src="images/research/lasi.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>LASI-DAD</h3>
+                        <p>Exploring human and environment interaction to better understand the determinants of dementia and its impact on society in India</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Physics + ML'>
+                    <img alt="" src="images/research/physics_ml.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Physics + ML</h3>
+                        <p>Physics-guided ML methods</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Aquasense: Time Series Analysis with Sparse Sensor Data'>
+                    <img alt="" src="images/research/aquasense.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Aquasense: Time Series Analysis with Sparse Sensor Data</h3>
+                        <p>Real-time water quality monitoring and assessment</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#AI-based Program for Advancing Research, Education and Extension Activities in Precision Agriculture at PVAMU'>
+                    <img alt="" src="images/research/no-image.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>AI-based Program for Advancing Research, Education and Extension Activities in Precision Agriculture at PVAMU</h3>
+                        <p></p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#SCH: Wearables for Health and Disease Knowledge (W4H)'>
+                    <img alt="" src="images/research/no-image.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>SCH: Wearables for Health and Disease Knowledge (W4H)</h3>
+                        <p></p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Gateway Exposome Coordinating Center (GECC) For AD/ADRD Research'>
+                    <img alt="" src="images/research/no-image.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Gateway Exposome Coordinating Center (GECC) For AD/ADRD Research</h3>
+                        <p></p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Building Long-term, National-scale Spatiotemporal Data Collections from Historical Map Archives'>
+                    <img alt="" src="images/research/no-image.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Building Long-term, National-scale Spatiotemporal Data Collections from Historical Map Archives</h3>
+                        <p></p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#MNDot'>
+                    <img alt="" src="images/research/mndot.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>MNDot</h3>
+                        <p>Evaluating the performance of different kinds of traffic detection systems in actuated control intersections under a variety of environmental conditions.</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="">
+                  <a href='/research.html#Seaport'>
+                    <img alt="" src="images/research/seaport.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Seaport</h3>
+                        <p>Identifying the target seaport(s) described in a document so that a geoint analyst can extract relevant information from the document about the seaport(s)</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="nlp geoint kg">
+                  <a href='/research.html#GeoBERT'>
+                    <img alt="" src="images/research/geobert.jpg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>GeoBERT</h3>
+                        <p>Building a geolocality aware natural language model using geographic and linguistic contex</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st geoint health smartcity">
+                  <a href='/research.html#DeepLATTE'>
+                    <img alt="" src="images/research/deeplatte.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>DeepLATTE</h3>
+                        <p>Building a spatially-explicit approach for hierarchical forecasting on geolocated multiscale multivariate time-series data</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="cv map geoint">
+                  <a href='/research.html#EarthScan'>
+                    <img alt="" src="images/research/earthscan.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>EarthScan</h3>
+                        <p>Incorporating prior knowledge for robust object detection and geographic layer extraction from overhead imagery</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="cv map geoint kg">
+                  <a href='/research.html#Machines Reading Maps'>
+                    <img alt="" src="images/research/mrm.jpeg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Machines Reading Maps</h3>
+                        <p>Make text on maps an accessible resource</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st geoint trans smartcity">
+                  <a href='/research.html#Moving Behavior Detection from Trajectory'>
+                    <img alt="" src="images/research/detect.jpg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Moving Behavior Detection from Trajectory</h3>
+                        <p>Mining Large Multi-Scale Trajectory Data for Moving Behavior Detection</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st others">
+                  <a href='/research.html#AI-Driven Analytics for Network Operations'>
+                    <img alt="" src="images/research/ntt.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>AI-Driven Analytics for Network Operations</h3>
+                        <p>Predicting network events from large network log data</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="cv map geoint kg">
+                  <a href='/research.html#mapKurator'>
+                    <img alt="" src="images/research/mapkurator.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>mapKurator</h3>
+                        <p>Generating rich metadata from historical map content</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="cv map geoint">
+                  <a href='/research.html#Strabo'>
+                    <img alt="" src="images/research/strabo.jpg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Strabo</h3>
+                        <p>Harvesting geographic features from heterogeneous historical maps</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st health smartcity">
+                  <a href='/research.html#Jonsnow'>
+                    <img alt="" src="images/research/jonsnow.jpg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Jonsnow</h3>
+                        <p>Predicting and forecasting fine-scale air quality</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="cv map geoint kg">
+                  <a href='/research.html#LinkedMap'>
+                    <img alt="" src="images/research/linked_maps.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>LinkedMap</h3>
+                        <p>Exploiting context in cartographic evolutionary documents to extract and build linked spatial-temporal datasets</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="geoint">
+                  <a href='/research.html#MINT'>
+                    <img alt="" src="images/research/mint.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>MINT</h3>
+                        <p>Model Integration through Knowledge-Rich Data and Process Composition</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st smartcity trans">
+                  <a href='/research.html#Bus Arrival Time Estimation'>
+                    <img alt="" src="images/research/bus.png" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Bus Arrival Time Estimation</h3>
+                        <p>Forecasting Large-scale and Long-term Performance Measurement of Public Transportation Systems</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+                <li class="st smartcity trans">
+                  <a href='/research.html#Archived Data Management System'>
+                    <img alt="" src="images/research/adms.jpg" style="border: 1px solid black;" />
+                    <div class='overlay'>
+                      <div class='thumb-info' style="padding: 0 10px;">
+                        <h3>Archived Data Management System</h3>
+                        <p>Building a Large Real-Time and Historical Traffic Database</p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div> -->
+    </div> 
+  </div>
+  <div class='three spacing'></div>
+</div>
+
+
+<div class='full'>
+  <div class='row'>
+    <div class='large-12 columns'>
+      <div class="mod modSectionHeader ">
+  <div class="special-title centered-text">
+    <h2 style="color: ;">Our Sponsors</h2>
+  </div>
+  
+</div>
+    </div>
+    <div class='four spacing'></div>
+    <div class='centered-text'>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/darpa.jpeg" style="object-fit:scale-down;" />
+        <!-- <h3>DARPA</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/nsf.jpeg" style="object-fit:scale-down;" />
+        <!-- <h3>NSF</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/nga.jpeg" style="object-fit:scale-down;" />
+        <!-- <h3>NGA</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/nih.png" style="object-fit:scale-down;" />
+        <!-- <h3>NIH</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/neh.jpeg" style="object-fit:scale-down;" />
+        <!-- <h3>NEH</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/googleai.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>Google AI</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/microsoft.png" style="object-fit:scale-down;" />
+        <!-- <h3>MICROSOFT</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/lametro.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>LA Metro</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/caltrans.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>Caltrans</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/nvidia.png" style="object-fit:scale-down;" />
+        <!-- <h3>NVIDIA</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/bae.png" style="object-fit:scale-down;" />
+        <!-- <h3>BAE</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/risksolutions.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>CLS</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/ntt.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>NTT</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/terrago.png" style="object-fit:scale-down;" />
+        <!-- <h3>TERRAGO</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/metrans.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>Metrans</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/usc.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>USC</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/umn.jpg" style="object-fit:scale-down;" />
+        <!-- <h3>UMN</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/rumsey.png" style="object-fit:scale-down;" />
+        <!-- <h3>Rumsey</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/nifa.png" style="object-fit:scale-down;" />
+        <!-- <h3>NIFA</h3> -->
+      </div>
+      
+      <div class='modSponsor'>
+        <img class="avatar" alt="" src="images/sponsors/mndot.png" style="object-fit:scale-down;" />
+        <!-- <h3>MnDOT</h3> -->
+      </div>
+      
+    </div>
+</div>
+
+<div class='three spacing'></div>
+
+    </div>
+
+    <div id='footer'>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+  <div class='spacing'></div>
+</div>
+
+
+<!-- <div id='footer'>
+  <div class='three spacing'></div>
+  <div class='row'>
+    <div class='large-3 medium-3 columns'>
+      <h1>
+        <a href='index.html'>
+          <img alt="" src="https://knowledge-computing.github.io/images/spatial_computing_sticker.jpg" />
+        </a>
+      </h1>
+      <p>©2014 Devoll. All rights reserved.</p>
+      <div class='spacing'></div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <div class='links'>
+        <h4>Some pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="portfolio.html">View some works here</a></li>
+          <li><a href="blog.html">Follow our blog</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+          <li><a href="services.html">Our services</a></li>
+        </ul>
+      </div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <div class='links'>
+        <h4>Recent posts</h4>
+        <ul>
+          
+        </ul>
+      </div>
+      <div class='spacing'></div>
+    </div>
+    <div class='large-3 medium-3 columns'>
+      <div class='spacing'></div>
+      <h4>Contact us</h4>
+      <ul>
+        <li>Phone: +86 (03) 9810 4612</li>
+        <li>Emial: info@devoll-team.com</li>
+        <li>Location: 41 Dean Street, London, UK</li>
+      </ul>
+      <div class='spacing'></div>
+      <ul class='socials'>
+        <li>
+          <a href='http://facebook.com'>
+            <i class='fa fa-facebook'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://twitter.com'>
+            <i class='fa fa-twitter'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://dribbble.com'>
+            <i class='fa fa-dribbble'></i>
+          </a>
+        </li>
+        <li>
+          <a href='http://tumblr.com'>
+            <i class='fa fa-tumblr'></i>
+          </a>
+        </li>
+      </ul>
+      <div class='spacing'></div>
+    </div>
+  </div>
+  <div class='two spacing'></div>
+</div> -->
+
+<script src="/javascripts/jquery.countTo.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.appear.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.validate.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.sequence-min.js" type="text/javascript"></script>
+<script src="/javascripts/jquery.easing.1.3.js" type="text/javascript"></script>
+<script src="/javascripts/app.js" type="text/javascript"></script>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+  "inputs/arvc-manifest.json": "6f2336eb529a192c15a85f6e05c2bd05e2ce9381c8a8be031e910ce67d8e0c08",
+  "inputs/arvc_off_risk_heat_2050.png": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+  "inputs/arvc_off_risk_flood_2050.png": "2c561fa164ca74be08267b2ff5c7e37009d634df8e0a2d38a3f02e473d639462",
+  "inputs/arvc_off_risk_landslide_2050.png": "3d023b210e50f5d964ef5e5e891b2a097bc8e620fcecb3930f05aa805e43eb66",
+  "inputs/arvc_off_risk_drought_2050.png": "a715e0ec4bb1406d823e256633cbc4f6828a28c1a1cbbccba2cf3104803597e6",
+  "inputs/arvc_off_risk_arbovirus_2050.png": "c960d7e85138cdda2f3ddf2440ae010fab45a7496c50ebcb9405a10b14e5f965",
+  "inputs/arvc_off_risk_storm_2050.png": "f3df031bad6a19a3418a5fdd728861974591b982277e47f1921cf22d6c525f6a",
+  "outputs/richfield/inundation-100yr.geojson": "f2b04dd159a9690a33ae5dadae099553445ab3a70f4d5faad8244669af69d9ed",
+  "outputs/richfield/inundation-10yr.geojson": "3fd094eb608b8d55002f76cbc69d445ca4c7ed4338694004e0df4115235202dc",
+  "outputs/richfield/inundation-2yr.geojson": "a6a55fd770d221cb50002cc0613f990681920e9eeaf793ba6d83ce2e70743ce3",
+  "outputs/richfield/inundation-mce100.geojson": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+  "outputs/richfield/prioritization-score.geojson": "b4130ed899972ce60a4c489a916f9f03b50ca4c008771fa4701ce7e3befe8a43",
+  "outputs/richfield/validation.json": "ec2d88f4ea315994509be828d891e6e624dcf4253d99837b0ffe1a50b0061f8b"
+}

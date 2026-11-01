@@ -1,0 +1,36 @@
+---
+license: gpl-3.0
+library_name: scitomo
+tags:
+- cryo-em
+- tomography
+- denoising
+---
+
+# Topaz v0.2.4 pretrained 2-D UDenoiseNet L2
+
+Official Topaz pretrained weights by Tristan Bepler and colleagues, converted
+without retraining to Scitomo native FORMAT 2. This is a projection-plane denoiser;
+it supplies derived guidance in SC-Net workflows. It is not an SC-Net checkpoint.
+
+Source: https://github.com/tbepler/topaz/blob/c6dde54398875dcc6a210f83de019c9165fb474c/topaz/pretrained/denoise/unet_L2_v0.2.2.sav
+Revision: `c6dde54398875dcc6a210f83de019c9165fb474c`
+Original SHA-256: `02709ad0bfe382f221b7ed9d4f9c14981689c2e0222e004036f925a002819c3e` (4,429,141 bytes).
+Architecture: nf=48, base_width=11, top_width=5; full topology is construction.json.
+All 34 source tensors are renamed without changing their values.
+
+Inference: each V/U plane uses its own sample standard deviation (correction=1),
+no outlier cutoff, and restored original intensity scaling. Projection shape,
+coordinates and leading dimensions are preserved. Optional filters and vendor
+tiled inference are excluded. The package is consumed by TopazProjectionDenoising.
+
+CPU float32/float64 forward and input/parameter gradients match the pinned source
+exactly for declared cases. Projection inference passes the recorded tolerances.
+Evidence is under resources/; this package has no trusted CUDA/human blessing.
+Constant or non-finite planes fail closed. Domain quality for any particular
+tomogram requires evaluation; numerical parity does not assert denoising efficacy.
+
+Publication: https://doi.org/10.1038/s41467-020-18952-1
+Corresponding upstream source: https://github.com/tbepler/topaz/tree/c6dde54398875dcc6a210f83de019c9165fb474c
+GPL-3.0 license: resources/TOPAZ_LICENSE.txt.
+Native state loading requires Scitomo >=0.7.4 with safetensors.

@@ -1,0 +1,4 @@
+usage: criticalmaas pipeline [-h]
+                             {geo_referencing,metadata_extraction,point_extraction,segmentation,text_extraction}
+                             ...
+criticalmaas pipeline: error: argument pipeline: invalid choice: 'topaz' (choose from 'geo_referencing', 'metadata_extraction', 'point_extraction', 'segmentation', 'text_extraction')

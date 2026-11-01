@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "uv",
+    "pip",
+    "install",
+    "--python",
+    "./.venv/Scripts/python.exe",
+    "numpy<2",
+    "opencv-python<4.12",
+    "boto3",
+    "shapely",
+    "transformers==4.49",
+    "timm==0.9.16"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper",
+  "started_at": "2026-10-30T11:54:50.730381+00:00",
+  "timeout_s": 120,
+  "exit_code": 0,
+  "elapsed_s": 2.594,
+  "log": "logs\\install-layout-import-deps.log"
+}

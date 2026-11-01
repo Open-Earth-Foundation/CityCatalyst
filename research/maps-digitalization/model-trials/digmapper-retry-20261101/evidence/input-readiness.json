@@ -1,0 +1,359 @@
+{
+  "created_at_utc": "2026-11-01T09:28:41.349929+00:00",
+  "python": "3.13.12 (main, Mar 24 2026, 22:56:40) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\WBW\\AppData\\Local\\Temp\\pdf-geojson-verification-20261028\\.venv\\Scripts\\python.exe",
+  "reference_values_decoded": false,
+  "source_preparation_is_inference": false,
+  "layers": [
+    {
+      "id": "porto-heat",
+      "dataset": "porto",
+      "page_1based": 100,
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-heat\\source.png",
+      "source_image_sha256": "1888b0b92d264552d9ffbac3cadddbd0035d59d8ba9941b3d3b6b328f330a3e7",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-heat\\legend-manual.png",
+      "legend_image_sha256": "587cf272b633dedbb7ec4ccb1caad2908666de51d7364d0a263214e673d6e01c",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.144
+    },
+    {
+      "id": "porto-flood",
+      "dataset": "porto",
+      "page_1based": 85,
+      "size": [
+        1155,
+        1668
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-flood\\source.png",
+      "source_image_sha256": "0a504315191367f624d79cafa3ac651e5bbeba7766ad6c7d2c8aadf8c1853206",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 34.94320910867071,
+        "bx": 463724.57753983536,
+        "my": -31.527975087184213,
+        "by": 6693688.76928158,
+        "tick_fit_max_residual_m": 8.112984475912526,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-flood\\legend-manual.png",
+      "legend_image_sha256": "53982e79530706c73b6eb77f8ae6852612c936e0bc39ecb7b67873a7bcb4e7de",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.078
+    },
+    {
+      "id": "richfield-inundation-100yr",
+      "dataset": "richfield",
+      "page_1based": 17,
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-100yr\\source.png",
+      "source_image_sha256": "7ae99c1d7c3fd4b13194d20b9562afd9ac04f28d9e051c31a0f839c32452cb46",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-100yr\\legend-manual.png",
+      "legend_image_sha256": "b47076f155f01e62dc50f0f943978df8cde478a6a0b7cbadb744d1484ed83d4c",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.379
+    },
+    {
+      "id": "porto-landslide",
+      "dataset": "porto",
+      "page_1based": 93,
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-landslide\\source.png",
+      "source_image_sha256": "5a58bcdae200d211e2df1b992d2fc41962d45facfe0f6e908d7c80fd76754cfa",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-landslide\\legend-manual.png",
+      "legend_image_sha256": "587cf272b633dedbb7ec4ccb1caad2908666de51d7364d0a263214e673d6e01c",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.081
+    },
+    {
+      "id": "porto-drought",
+      "dataset": "porto",
+      "page_1based": 106,
+      "size": [
+        1218,
+        1758
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-drought\\source.png",
+      "source_image_sha256": "bef92eaf4059aa422e3597272c9d4d7ccaa89680505dc833d93c9940167002c2",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 33.11258278145683,
+        "bx": 463741.7218543049,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 6.412081521004438,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-drought\\legend-manual.png",
+      "legend_image_sha256": "9a835b96edb160ad7f14fae4ee022d3ab13cbedf563eb21186caaa2a2f73361d",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.081
+    },
+    {
+      "id": "porto-arbovirus",
+      "dataset": "porto",
+      "page_1based": 111,
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-arbovirus\\source.png",
+      "source_image_sha256": "323450961650f5f9d0bc67b25443e5d499c76b78ef62f7b8ecc113993bb202ab",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-arbovirus\\legend-manual.png",
+      "legend_image_sha256": "587cf272b633dedbb7ec4ccb1caad2908666de51d7364d0a263214e673d6e01c",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.079
+    },
+    {
+      "id": "porto-storm",
+      "dataset": "porto",
+      "page_1based": 117,
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-storm\\source.png",
+      "source_image_sha256": "4413b7b49c22ec259bd31de56751f91f218097bf3f5ff4f7cb4666839378e03f",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-storm\\legend-manual.png",
+      "legend_image_sha256": "587cf272b633dedbb7ec4ccb1caad2908666de51d7364d0a263214e673d6e01c",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.081
+    },
+    {
+      "id": "richfield-inundation-2yr",
+      "dataset": "richfield",
+      "page_1based": 15,
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-2yr\\source.png",
+      "source_image_sha256": "43d31b8283bc2049edcc98ba4071cf45ef01016fe4a8e56fab3b066eed0cf62c",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-2yr\\legend-manual.png",
+      "legend_image_sha256": "51759de7cf1630f5fefb4948d8078e7cfe94150acf2c24b4b34c7a4cf1bb6567",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.396
+    },
+    {
+      "id": "richfield-inundation-10yr",
+      "dataset": "richfield",
+      "page_1based": 16,
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-10yr\\source.png",
+      "source_image_sha256": "e4829d97324d4167f7a2f50de2d31ec22595a39c0cf98280c2c335881e353597",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-10yr\\legend-manual.png",
+      "legend_image_sha256": "0424c0177f399608b6e5db64e03a113ea608e6ea45fadb9efbc333246a4d2b26",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.745
+    },
+    {
+      "id": "richfield-inundation-mce100",
+      "dataset": "richfield",
+      "page_1based": 18,
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-mce100\\source.png",
+      "source_image_sha256": "6e05df8178aa3cea8e8182fbaffdb40d5db8a5981457ce5691131b60fda10a9e",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-inundation-mce100\\legend-manual.png",
+      "legend_image_sha256": "0a364e4b04b51869aeefb3de4e97432b050a3b31f3001bfdf394da1245b1d8a2",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.877
+    },
+    {
+      "id": "richfield-prioritization-score",
+      "dataset": "richfield",
+      "page_1based": 31,
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-prioritization-score\\source.png",
+      "source_image_sha256": "494f2b083adeaaa9e70f9fe3e7c2ed3fdc4075e80e56b27fbbd1ef1f7d562f30",
+      "source_equals_fresh_pdf_pixels": true,
+      "source_transform": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "legend_image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\richfield-prioritization-score\\legend-manual.png",
+      "legend_image_sha256": "3994327bfc029bc1ed36cc0a202fae32a2fcf75ba398cde3bef0fd511c5dd70d",
+      "manual_aids_available": true,
+      "manual_aids_used_for_inference": false,
+      "elapsed_s": 0.874
+    }
+  ]
+}

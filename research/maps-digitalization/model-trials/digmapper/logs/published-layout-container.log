@@ -1,0 +1,5 @@
+{"argv": ["docker", "manifest", "inspect", "uncharted/lara-segmentation:latest"], "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper", "started_at": "2026-10-30T11:57:27.962799+00:00", "timeout_s": 30}
+errors:
+denied: requested access to the resource is denied
+unauthorized: authentication required
+

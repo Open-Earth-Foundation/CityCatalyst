@@ -1,0 +1,50 @@
+[
+  {
+    "name": "poly-system-config",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/config.yaml"
+  },
+  {
+    "name": "poly-system-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/README.md"
+  },
+  {
+    "name": "poly-system-main",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/main.py"
+  },
+  {
+    "name": "poly-polygon-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/README.md"
+  },
+  {
+    "name": "poly-loam-model",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/LOAM/loam_model.py"
+  },
+  {
+    "name": "poly-loam-handler",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/loam_handler.py"
+  },
+  {
+    "name": "publication-acm",
+    "url": "https://dl.acm.org/doi/10.1145/3748636.3764602"
+  },
+  {
+    "name": "publication-crossref",
+    "url": "https://api.crossref.org/works/10.1145/3748636.3764602"
+  },
+  {
+    "name": "usc-repos-page3",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=3"
+  },
+  {
+    "name": "uncharted-segmentation-readme",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/pipelines/segmentation/README.md"
+  },
+  {
+    "name": "uncharted-deploy-template",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/docker-compose.j2"
+  },
+  {
+    "name": "uncharted-deploy-vars",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/vars_example.json"
+  }
+]

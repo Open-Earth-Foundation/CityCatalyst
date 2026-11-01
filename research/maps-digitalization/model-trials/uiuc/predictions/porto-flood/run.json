@@ -1,0 +1,33 @@
+{
+  "id": "porto-flood",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:00:52.286972+00:00",
+  "completed_utc": "2026-10-30T12:06:57.932111+00:00",
+  "seconds": 365.6292766999686,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1668,
+    1155
+  ],
+  "model_forward_calls": 540,
+  "source_pixels": 1926540,
+  "unknown_pixels": 1350725,
+  "overlapping_positive_pixels": 51847,
+  "label_counts": {
+    "0": 1350725,
+    "1": 484358,
+    "2": 6811,
+    "3": 22817,
+    "4": 10054,
+    "5": 29205,
+    "6": 19312,
+    "7": 296,
+    "8": 254,
+    "9": 2663,
+    "10": 45
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "5cc026b857780967592a8453bdf638c34c4482793b2ef65b783ecc9e52cb64ea"
+}

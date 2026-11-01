@@ -1,0 +1,156 @@
+[
+  {
+    "name": "paper-abs",
+    "url": "https://arxiv.org/abs/2506.16006"
+  },
+  {
+    "name": "paper-latest-html",
+    "url": "https://arxiv.org/html/2506.16006"
+  },
+  {
+    "name": "paper-api",
+    "url": "https://export.arxiv.org/api/query?id_list=2506.16006"
+  },
+  {
+    "name": "aim-metadata",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM"
+  },
+  {
+    "name": "aim-contents",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/contents"
+  },
+  {
+    "name": "aim-releases",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/releases"
+  },
+  {
+    "name": "aim-branches",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/branches"
+  },
+  {
+    "name": "aim-deployments",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/deployments"
+  },
+  {
+    "name": "lab-repos",
+    "url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100"
+  },
+  {
+    "name": "inferlink-repos",
+    "url": "https://api.github.com/orgs/InferLink/repos?per_page=100"
+  },
+  {
+    "name": "criticalmaas-repos",
+    "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100"
+  },
+  {
+    "name": "github-digmapper",
+    "url": "https://api.github.com/search/repositories?q=DIGMAPPER"
+  },
+  {
+    "name": "github-topaz-geologic",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+geologic"
+  },
+  {
+    "name": "github-topaz-polygon",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon"
+  },
+  {
+    "name": "github-topaz-criticalmaas",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+CriticalMAAS"
+  },
+  {
+    "name": "github-polygon-inferlink",
+    "url": "https://api.github.com/search/repositories?q=polygon+org%3AInferLink"
+  },
+  {
+    "name": "author-project",
+    "url": "https://sofiakirsanova.github.io/projects/criticalmaas/"
+  },
+  {
+    "name": "inferlink-mapsense",
+    "url": "https://www.inferlink.com/mapsense"
+  },
+  {
+    "name": "hf-digmapper-models",
+    "url": "https://huggingface.co/api/models?search=digmapper&limit=100"
+  },
+  {
+    "name": "hf-topaz-models",
+    "url": "https://huggingface.co/api/models?search=topaz&limit=100"
+  },
+  {
+    "name": "hf-criticalmaas-models",
+    "url": "https://huggingface.co/api/models?search=criticalmaas&limit=100"
+  },
+  {
+    "name": "hf-digmapper-spaces",
+    "url": "https://huggingface.co/api/spaces?search=digmapper&limit=100"
+  },
+  {
+    "name": "hf-topaz-spaces",
+    "url": "https://huggingface.co/api/spaces?search=topaz&limit=100"
+  },
+  {
+    "name": "docker-digmapper-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=digmapper&page_size=100"
+  },
+  {
+    "name": "docker-topaz-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=topaz&page_size=100"
+  },
+  {
+    "name": "docker-criticalmaas-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=criticalmaas&page_size=100"
+  },
+  {
+    "name": "docker-inferlink",
+    "url": "https://hub.docker.com/v2/repositories/inferlink/?page_size=100"
+  },
+  {
+    "name": "docker-knowledge-computing",
+    "url": "https://hub.docker.com/v2/repositories/knowledgecomputing/?page_size=100"
+  },
+  {
+    "name": "quay-digmapper",
+    "url": "https://quay.io/api/v1/find/repositories?query=digmapper"
+  },
+  {
+    "name": "quay-topaz",
+    "url": "https://quay.io/api/v1/find/repositories?query=topaz"
+  },
+  {
+    "name": "uncharted-metadata",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1"
+  },
+  {
+    "name": "uncharted-releases",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases"
+  },
+  {
+    "name": "uncharted-build-workflow",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/.github/workflows/build_containers.yml"
+  },
+  {
+    "name": "docker-lara-tags",
+    "url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=100"
+  },
+  {
+    "name": "s3-layout-config-yaml",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml"
+  },
+  {
+    "name": "s3-layout-config-json",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json"
+  },
+  {
+    "name": "s3-layout-weights",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "range": "bytes=0-4095"
+  },
+  {
+    "name": "s3-layout-weights-global",
+    "url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "range": "bytes=0-4095"
+  }
+]

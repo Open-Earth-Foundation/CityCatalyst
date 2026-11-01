@@ -1,0 +1,1 @@
+SAVED_OVERLAY 15970 {'porto_heat': {'source_crop_xyxy': (770, 1209, 862, 1269), 'source_resolution': 'native embedded figure', 'display_scale': 'same for both layers', 'numeric_reference_used': False}}

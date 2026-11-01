@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Weiwei Duan | 段伟玮</title>
+  <meta name="description" content="A PhD student in GIS and Computer Vision, USC.">
+  <meta name="author" content="Weiwei Duan | 段伟玮">
+  <meta name="google-site-verification" content="-iPJLkLeOB_5BQeVxeQUcb2Vhd1NgMo3GI5xRKObxn0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" type="text/css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <style>.nanx-footer{font-size:90%;}.nanx-footer a{font-weight:500;color:#495057}.nanx-footer a:hover{color:#007bff}</style>
+</head>
+
+<body>
+
+<div class="pt-5">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-md-10 offset-1">
+        <div class="row">
+
+          <div class="col-md-2">
+            <img src="images/Weiwei_Duan_img.jpg" class="img-fluid d-block rounded">
+          </div>
+
+          <div class="col-md-9">
+            <h1 class="display-4">Weiwei Duan</h1>
+            <p class="text-muted">PhD candidate in Computer Science and Spatial Sciences <br> 
+              University of Southern California <br>
+              Email address: weiweidu@usc.edu
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <hr>
+        <ul class="nav nav-pills nav-justified">
+          <li class="nav-item">
+            <a href="#" class="active nav-link">Home</a>
+          </li>
+<!--           <li class="nav-item">
+            <a href="software/" class="nav-link">Software</a>
+          </li> -->
+          <li class="nav-item">
+            <a href="publications/" class="nav-link">Publications</a>
+          </li>
+          <li class="nav-item">
+            <a href="projects/" class="nav-link">Projects</a>
+          </li>
+          <li class="nav-item">
+            <a href="CV/CV.pdf" class="nav-link">Curriculum Vitae</a>
+          </li>
+<!--           <li class="nav-item">
+            <a href="blog/" class="nav-link">Blog</a>
+          </li> -->
+        </ul>
+        <hr>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pt-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <h2 class="">About</h2>
+        <p>I am a Ph.D. candidate in <a> Computer Science </a> in <a> University of Southern Californa (USC) </a> advised by Prof. 
+          <a href="https://yaoyichi.github.io/">Yao-Yi Chiang </a> and <br> 
+          <a href="http://usc-isi-i2.github.io/knoblock/">Craig Knoblock <a>, expected to gradudate in December 2022.
+          I studied in USC for master degree from 2014 to 2016 and 
+          <a href="https://en.wikipedia.org/wiki/Anhui_University"> Anhui University </a> for bachelor degree from 2010 to 2014.
+       </p>
+        <p>
+          My expertise are in Computer Vision, Deep Learning, Geospatial Information Sciences, Spatial Database, and Data Integration. <br> 
+          <a href="projects/"> The research project </a> that I am working on is geospatial object detection in satellite imagery and topographic map images. 
+           It its a challenging task to detect accuate geospatial objects' locations due to limited labeled data and the ambugious visual appearances between <br>
+          desired and other geospatial objects.
+        </p>
+        <p>
+          I built a Transformer-based graph detector to accurately extract polylines in topographic map images.
+          The detection model won the first place in <a href="https://criticalminerals.darpa.mil/Leaderboard"> the DARPA competition 2022 </a>, and outperformed the second place by 184%. 
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="weiwei-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <hr>
+        <p class="text-muted">
+          &copy; 2022 <a >Weiwei Duan</a>. 
+        <ul class="list-inline">
+          <li class="list-inline-item"><a href="https://github.com/WeiweiDuan" target="_blank">GitHub</a></li>
+<!--           <li class="list-inline-item"><a href="https://twitter.com/road2stat" target="_blank">Twitter</a></li> -->
+          <li class="list-inline-item"><a href="https://www.linkedin.com/in/weiwei-duan-a39645118/" target="_blank">LinkedIn</a></li>
+<!--           <li class="list-inline-item"><a href="https://scholar.google.com/citations?user=BNizRecAAAAJ&hl=en" target="_blank">Google Scholar</a></li> -->
+        </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-66394392-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+</body>
+
+</html>

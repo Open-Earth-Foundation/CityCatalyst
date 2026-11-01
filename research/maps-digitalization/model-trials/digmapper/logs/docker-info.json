@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "docker",
+    "info",
+    "--format",
+    "{{.ServerVersion}}"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper",
+  "started_at": "2026-10-30T11:57:08.384039+00:00",
+  "timeout_s": 25,
+  "exit_code": 0,
+  "elapsed_s": 0.719,
+  "log": "logs\\docker-info.log"
+}

@@ -1,0 +1,23 @@
+STRICT_LOAD <All keys matched successfully>
+MODEL 31061202 parameters CPU 2.5.1+cpu threads 4
+{"name": "porto-flood", "class": 0, "tile": [1024, 768, 131, 256], "tile_s": 2.9053362000267953, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 0, "seconds": 36.18491880001966, "tiles": 14, "positive_pixels": 228, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 1, "tile": [1024, 768, 131, 256], "tile_s": 2.568154799984768, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 1, "seconds": 38.18265839992091, "tiles": 14, "positive_pixels": 944, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 2, "tile": [1024, 768, 131, 256], "tile_s": 2.558388900011778, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 2, "seconds": 37.72959040000569, "tiles": 14, "positive_pixels": 9244, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 3, "tile": [1024, 768, 131, 256], "tile_s": 2.567382200038992, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 3, "seconds": 40.28662929998245, "tiles": 14, "positive_pixels": 2932, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 4, "tile": [1024, 768, 131, 256], "tile_s": 2.5059413999551907, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 4, "seconds": 35.116179700009525, "tiles": 14, "positive_pixels": 1137, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 5, "tile": [1024, 768, 131, 256], "tile_s": 2.537288899999112, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 5, "seconds": 35.66418999992311, "tiles": 14, "positive_pixels": 1264, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 6, "tile": [1024, 768, 131, 256], "tile_s": 2.576958499965258, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 6, "seconds": 36.5985354000004, "tiles": 14, "positive_pixels": 844, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 7, "tile": [1024, 768, 131, 256], "tile_s": 2.673820599913597, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 7, "seconds": 37.11336920002941, "tiles": 14, "positive_pixels": 597, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 8, "tile": [1024, 768, 131, 256], "tile_s": 2.485049800015986, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 8, "seconds": 36.07182960002683, "tiles": 14, "positive_pixels": 597, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+{"name": "porto-flood", "class": 9, "tile": [1024, 768, 131, 256], "tile_s": 2.646058800048195, "tiles": 8, "peak_rss_mb": 994.4296875}
+CLASS_COMPLETE {"index": 9, "seconds": 38.42724640003871, "tiles": 14, "positive_pixels": 318, "peak_rss_mb": 994.4296875, "torch_threads": 4}
+INFERENCE_SUCCESS {"status": "succeeded", "name": "porto-flood", "seconds_this_invocation": 372.2970642000437, "class_seconds_total": 371.3751471999567, "classes": [{"index": 0, "seconds": 36.18491880001966, "tiles": 14, "positive_pixels": 228, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 1, "seconds": 38.18265839992091, "tiles": 14, "positive_pixels": 944, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 2, "seconds": 37.72959040000569, "tiles": 14, "positive_pixels": 9244, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 3, "seconds": 40.28662929998245, "tiles": 14, "positive_pixels": 2932, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 4, "seconds": 35.116179700009525, "tiles": 14, "positive_pixels": 1137, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 5, "seconds": 35.66418999992311, "tiles": 14, "positive_pixels": 1264, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 6, "seconds": 36.5985354000004, "tiles": 14, "positive_pixels": 844, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 7, "seconds": 37.11336920002941, "tiles": 14, "positive_pixels": 597, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 8, "seconds": 36.07182960002683, "tiles": 14, "positive_pixels": 597, "peak_rss_mb": 994.4296875, "torch_threads": 4}, {"index": 9, "seconds": 38.42724640003871, "tiles": 14, "positive_pixels": 318, "peak_rss_mb": 994.4296875, "torch_threads": 4}], "overlap_pixels": 1006, "unknown_pixels": 1909441, "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73", "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b", "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32", "tiles": 140}

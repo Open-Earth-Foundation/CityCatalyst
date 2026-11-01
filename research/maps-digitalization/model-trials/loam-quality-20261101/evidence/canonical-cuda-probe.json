@@ -1,0 +1,24 @@
+{
+  "layer": "porto-heat",
+  "class": 0,
+  "origin": [
+    0,
+    0
+  ],
+  "tile_shape": [
+    1024,
+    1024
+  ],
+  "valid_shape": [
+    1024,
+    1024
+  ],
+  "seconds": 0.5860791000304744,
+  "peak_cuda_allocated_mib": 2092.9482421875,
+  "peak_cuda_reserved_mib": 2686.0,
+  "rss_mib": 943.8984375,
+  "strict_load": "<All keys matched successfully>",
+  "torch": "2.5.1+cu124",
+  "full_precision": true,
+  "tf32": false
+}

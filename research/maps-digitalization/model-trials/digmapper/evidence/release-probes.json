@@ -1,0 +1,112 @@
+[
+  {
+    "name": "s3-layout-config",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "file": "evidence/s3-layout-config.txt",
+    "bytes": 327,
+    "sha256": "ee92fd6233013403d2959b0a2de026a0556c1a93d4b93505d7eef1f205a654e5",
+    "elapsed_s": 0.533
+  },
+  {
+    "name": "s3-layout-config-json",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "file": "evidence/s3-layout-config-json.txt",
+    "bytes": 327,
+    "sha256": "ebf06577132849f621da7bc5e072806209659ce9c0b515f86f9e37a2748335f4",
+    "elapsed_s": 0.429
+  },
+  {
+    "name": "s3-layout-weights",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "file": "evidence/s3-layout-weights.txt",
+    "bytes": 327,
+    "sha256": "b194fcf62c562b77d57e3b5d6dc1e6cbfc6c1d61744af54ffabc00de64b93228",
+    "elapsed_s": 0.46
+  },
+  {
+    "name": "uncharted-releases",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+    "file": "evidence/uncharted-releases.txt",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.314
+  },
+  {
+    "name": "uncharted-issues",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues?state=all&per_page=100",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues?state=all&per_page=100",
+    "file": "evidence/uncharted-issues.txt",
+    "bytes": 25888,
+    "sha256": "6cf149f4215f57232e5654067e4ec67ebafbd376f51ea7a94275fd8af724f131",
+    "elapsed_s": 0.506
+  },
+  {
+    "name": "dockerhub-tags",
+    "url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=20",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "file": "evidence/dockerhub-tags.txt",
+    "bytes": 43,
+    "sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+    "elapsed_s": 0.213
+  },
+  {
+    "name": "hf-digmapper",
+    "url": "https://huggingface.co/api/models?search=digmapper",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=digmapper",
+    "file": "evidence/hf-digmapper.txt",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.232
+  },
+  {
+    "name": "hf-layoutlmv3-date",
+    "url": "https://huggingface.co/api/models?search=layoutlmv3_20240925",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=layoutlmv3_20240925",
+    "file": "evidence/hf-layoutlmv3-date.txt",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.195
+  },
+  {
+    "name": "author-project",
+    "url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+    "status": 200,
+    "final_url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+    "file": "evidence/author-project.txt",
+    "bytes": 15860,
+    "sha256": "182d822d5ec721d62f46387809902eee272400bdcd13a4c64f885780a796edec",
+    "elapsed_s": 0.512
+  },
+  {
+    "name": "inferlink-mapsense",
+    "url": "https://www.inferlink.com/mapsense",
+    "status": 200,
+    "final_url": "https://www.inferlink.com/mapsense",
+    "file": "evidence/inferlink-mapsense.txt",
+    "bytes": 523199,
+    "sha256": "5cd778de9fdda9d247fd0ca50585e82066e8a755f9057f9345074f4b185ca902",
+    "elapsed_s": 0.336
+  },
+  {
+    "name": "author-lab-repos",
+    "url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+    "file": "evidence/author-lab-repos.txt",
+    "bytes": 262342,
+    "sha256": "13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a",
+    "elapsed_s": 1.615
+  }
+]

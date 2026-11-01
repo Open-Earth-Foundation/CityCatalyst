@@ -1,0 +1,118 @@
+{
+  "status": "succeeded",
+  "name": "porto-drought",
+  "seconds": 18.46481949998997,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 1.8792077000252903,
+      "tiles": 4,
+      "positive_pixels": 677,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 1,
+      "seconds": 1.5484098000451922,
+      "tiles": 4,
+      "positive_pixels": 8484,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 2,
+      "seconds": 1.5906288999831304,
+      "tiles": 4,
+      "positive_pixels": 35688,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 3,
+      "seconds": 1.5841378000332043,
+      "tiles": 4,
+      "positive_pixels": 4548,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 4,
+      "seconds": 1.55230640002992,
+      "tiles": 4,
+      "positive_pixels": 5397,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 5,
+      "seconds": 1.6004358999198303,
+      "tiles": 4,
+      "positive_pixels": 781,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 6,
+      "seconds": 1.5863807999994606,
+      "tiles": 4,
+      "positive_pixels": 558,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 7,
+      "seconds": 1.5765699000330642,
+      "tiles": 4,
+      "positive_pixels": 616,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 8,
+      "seconds": 2.2285207000095397,
+      "tiles": 4,
+      "positive_pixels": 491,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    },
+    {
+      "index": 9,
+      "seconds": 2.739657099940814,
+      "tiles": 4,
+      "positive_pixels": 77,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 944.51953125
+    }
+  ],
+  "tiles": 40,
+  "unknown_pixels": 2085848,
+  "overlap_pixels": 1921,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "config_sha256": "5156bff19034c5d68e997f68b2601e5c3684eb4adc9d20fd68849d1568e31696",
+  "strict_load": "<All keys matched successfully>",
+  "mode": 0,
+  "dtype": "float32",
+  "device": "cuda",
+  "tile_hw": [
+    1024,
+    1024
+  ],
+  "torch": "2.5.1+cu124",
+  "gpu_lock_owner": {
+    "owner": "loam-quality-5180cdba-ff34-4dc5-a096-bbf2b489737d",
+    "pid": 33248,
+    "directory": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101",
+    "layer": "porto-drought",
+    "created": 1793525281.1785953
+  }
+}

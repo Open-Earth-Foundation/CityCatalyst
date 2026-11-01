@@ -1,0 +1,9 @@
+{
+  "index": 0,
+  "seconds": 2.846033599926159,
+  "tiles": 6,
+  "positive_pixels": 139666,
+  "peak_cuda_allocated_mib": 2092.9482421875,
+  "peak_cuda_reserved_mib": 2686.0,
+  "peak_rss_mib": 948.5
+}

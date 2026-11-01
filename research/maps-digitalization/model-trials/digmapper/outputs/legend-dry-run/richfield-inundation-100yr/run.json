@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "fingerprint": "bb147bdf62bc53a2cf8436ed46bb9c4392d4c5f48a5add793c081d91e85fc4c4",
+  "example_map": "porto-heat-manual-example",
+  "target_map": "richfield-inundation-100yr",
+  "example_record": "inputs/example.json",
+  "target_record": "inputs/target.json",
+  "evaluation_truth": "evaluation_truth.json",
+  "evaluation_truth_sha256": "aa557b7b54adb19e5193d728f55f0cd295b5a5dc66c46c724c3cd66d5dc3e3ee",
+  "model_requested": "gpt-4o",
+  "api": "responses",
+  "configuration": {
+    "model": "gpt-4o",
+    "temperature": 0.0,
+    "api": "responses",
+    "output_format": "json_object"
+  },
+  "num_examples": 5,
+  "seed": 1337,
+  "normalized": false,
+  "example_pair_ids": [
+    "4",
+    "2",
+    "3",
+    "0",
+    "1"
+  ],
+  "crop_bbox": [
+    2062,
+    36,
+    2412,
+    600
+  ],
+  "request_image_order": [
+    "porto-heat-manual-example",
+    "richfield-inundation-100yr"
+  ],
+  "created_at": "2026-10-30T11:57:08.169351+00:00",
+  "source": {
+    "revision": "a12e9603c3ea0ee8d4eb8fc53a326e37be53c930",
+    "source_digest": "3f4eb3d4299b07031d99812b195a18fd7c0ecea4061488f2c101f4714be0a39d",
+    "source_files": {
+      "__init__.py": "c8c75bc68c3533bea08f3deea70e617039a154213cd5f2efbff9f3a04e871131",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "annotations.py": "7981886060cad015e60aae2f72bb9f16fc2019b8d77b968c74a736bc8b1a2f20",
+      "artifacts.py": "097d035a8331890c1f1b36ec30f22f2959d611990672d8d7f5771c11e41c729f",
+      "cli.py": "45eba03785012f82a29460080f1c90b483b4d75354df9a44122715d38344ce29",
+      "comparison.py": "4aa28f6f6ff4a2d69a5cafaf16ad18d77d098e60cbe97d67618462b609cab56e",
+      "dataset.py": "30f90b08389bd953d1473fc510dda7bf7c14c6687f2c9d1557b4c1f1fbf3e04e",
+      "experiments.py": "4866d12f14913fc4470d7848ffceb01e3eff9791c41a6c271fc1f19349d539fd",
+      "geometry.py": "49fabf3a28d276e13a50839a04269eda537ff11bc790205334ac1c4fc92d9e06",
+      "inference.py": "c1cbb9aa0d754622a28a97fe78d3897adfc9235f8aac8f779bb5048267ed5c63",
+      "io.py": "0204848fa62390fd3ea7b3ba3f6e9447595a43178b7a1befa71c9f22ed745540",
+      "metrics.py": "52db2221f9f46de35b21f1fa34dc3d57dff6bae9955b3d91e381dee8aba39bd8",
+      "prepare.py": "8eaa791a83fa7794b6e6ce24ef648298756ca5ed8f0dfaf19de440c1131bba63",
+      "provenance.py": "83833da53f1fae11a7ebb4497e7fe6317bbbfcdaadc012dce390a8d53d3f91ad",
+      "smoke.py": "c44ad957bac945bcb14787988de06ca86f0c24e7cf1473507afc849c1eac3c59"
+    }
+  },
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "Pillow": "12.3.0",
+      "openai": "2.54.0",
+      "PyYAML": "6.0.3",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1"
+    }
+  },
+  "effective_request": {
+    "parts": [
+      {
+        "type": "input_image",
+        "image_url": "sha256:4e653da5be4898cec2bf85f6d26922b1a5bd5ab183bab442b098f4fbdae0b3e2",
+        "detail": "high"
+      },
+      {
+        "type": "input_text",
+        "text": "{\"task\": \"Given a scanned map legend area, detect legend items and their descriptions coordinates\", \"examples from porto-heat-manual-example_legend.png\": [{\"legend_item\": [20.0, 188.0, 46.0, 225.0], \"description\": [60.0, 188.0, 170.0, 213.0]}, {\"legend_item\": [20.0, 113.0, 46.0, 151.0], \"description\": [60.0, 113.0, 170.0, 138.0]}, {\"legend_item\": [20.0, 151.0, 46.0, 188.0], \"description\": [60.0, 151.0, 170.0, 176.0]}, {\"legend_item\": [20.0, 38.0, 46.0, 75.0], \"description\": [60.0, 38.0, 170.0, 63.0]}, {\"legend_item\": [20.0, 75.0, 46.0, 113.0], \"description\": [60.0, 75.0, 170.0, 100.0]}], \"predictions for richfield-inundation-100yr_legend.png\": [{\"legend_item\": [\"??\", \"??\", \"??\", \"??\"], \"description\": [\"??\", \"??\", \"??\", \"??\"]}]}\nReturn the predictions object as JSON."
+      },
+      {
+        "type": "input_image",
+        "image_url": "sha256:f9f392eb40647cef32892893249fa6aabc373bae141e24b6834db535084bf89e",
+        "detail": "high"
+      }
+    ],
+    "model": "gpt-4o",
+    "temperature": 0.0,
+    "api": "responses",
+    "output_format": "json_object",
+    "schema": null,
+    "max_output_tokens": 16000,
+    "store": false
+  },
+  "inference_kind": "model_request",
+  "status": "dry_run"
+}

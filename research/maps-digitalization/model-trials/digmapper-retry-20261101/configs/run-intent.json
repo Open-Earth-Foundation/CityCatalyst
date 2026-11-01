@@ -1,0 +1,38 @@
+{
+  "method": "DIGMAPPER",
+  "required_polygon_component": "TOPAZ",
+  "priority_order": [
+    "porto-heat",
+    "porto-flood",
+    "richfield-inundation-100yr"
+  ],
+  "all_layers": [
+    "porto-heat",
+    "porto-flood",
+    "richfield-inundation-100yr",
+    "porto-landslide",
+    "porto-drought",
+    "porto-arbovirus",
+    "porto-storm",
+    "richfield-inundation-2yr",
+    "richfield-inundation-10yr",
+    "richfield-inundation-mce100",
+    "richfield-prioritization-score"
+  ],
+  "full_workflow_preferred": true,
+  "source_only_manual_aids_allowed": true,
+  "reference_values_allowed_for_evaluation_only": true,
+  "native_pixels_approximately_m": 30,
+  "evaluation_grid_m": 10,
+  "no_250m_averaging": true,
+  "gpu_policy": "Reserved principally for LOAM. Atomic exclusive model-trials/gpu.lock required before GPU inference; release only own lock.",
+  "gpu_acquired": false,
+  "model_checkpoint": null,
+  "inference_command": null,
+  "decoder": null,
+  "model_thresholds": null,
+  "paid_api_calls": 0,
+  "external_source_uploads": 0,
+  "host_changes": 0,
+  "reason_no_inference_configuration": "No exact runnable TOPAZ model obtained; inventing a runner or decoder would misidentify the method."
+}

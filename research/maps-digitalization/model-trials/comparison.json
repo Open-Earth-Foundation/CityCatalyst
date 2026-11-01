@@ -1,0 +1,279 @@
+{
+  "contract": "Existing test blocks; 250m; reference >=15 pixels; equal-hazard macro averages; retrospective",
+  "summary": [
+    {
+      "method": "Golden-Muscat",
+      "exact_all_pct": 55.1131510856564,
+      "exact_common_pct": 61.20415251480666,
+      "missing_pct": 10.157132452390991,
+      "high_recall_pct": 0.0,
+      "mae": 0.08969982463285171
+    },
+    {
+      "method": "JVP",
+      "exact_all_pct": 63.21799690599193,
+      "exact_common_pct": 74.3964743874422,
+      "missing_pct": 15.483894841485602,
+      "high_recall_pct": 13.597489734864242,
+      "mae": 0.06880992020046581
+    },
+    {
+      "method": "LOAM mode 6 / strips",
+      "exact_all_pct": 20.96662340103398,
+      "exact_common_pct": 76.66456313813596,
+      "missing_pct": 72.71842725245956,
+      "high_recall_pct": 0.0,
+      "mae": 0.06884072742442444
+    },
+    {
+      "method": "Our colour recovery",
+      "exact_all_pct": 79.21798341211671,
+      "exact_common_pct": 79.91966833827821,
+      "missing_pct": 0.8729244455652095,
+      "high_recall_pct": 82.97316602840388,
+      "mae": 0.04612281630778783
+    }
+  ],
+  "per_hazard": [
+    {
+      "hazard": "flood",
+      "method": "JVP",
+      "eligible": 283,
+      "exact_all_pct": 43.81625441696113,
+      "exact_common_pct": 59.90338164251208,
+      "missing_pct": 26.85512367491166,
+      "high_recall_pct": 11.627906976744185,
+      "mae": 0.11437190753892075
+    },
+    {
+      "hazard": "flood",
+      "method": "Our colour recovery",
+      "eligible": 283,
+      "exact_all_pct": 68.19787985865725,
+      "exact_common_pct": 68.68327402135232,
+      "missing_pct": 0.7067137809187279,
+      "high_recall_pct": 53.48837209302326,
+      "mae": 0.07179578114335217
+    },
+    {
+      "hazard": "flood",
+      "method": "Golden-Muscat",
+      "eligible": 283,
+      "exact_all_pct": 43.81625441696113,
+      "exact_common_pct": 55.85585585585586,
+      "missing_pct": 21.554770318021202,
+      "high_recall_pct": 0.0,
+      "mae": 0.11210632310567782
+    },
+    {
+      "hazard": "flood",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 283,
+      "exact_all_pct": 22.968197879858657,
+      "exact_common_pct": 81.25,
+      "missing_pct": 71.73144876325088,
+      "high_recall_pct": 0.0,
+      "mae": 0.06606755391491544
+    },
+    {
+      "hazard": "landslide",
+      "method": "JVP",
+      "eligible": 574,
+      "exact_all_pct": 66.2020905923345,
+      "exact_common_pct": 76.61290322580645,
+      "missing_pct": 13.588850174216027,
+      "high_recall_pct": 19.672131147540984,
+      "mae": 0.061851149282077446
+    },
+    {
+      "hazard": "landslide",
+      "method": "Our colour recovery",
+      "eligible": 574,
+      "exact_all_pct": 82.57839721254355,
+      "exact_common_pct": 83.45070422535211,
+      "missing_pct": 1.0452961672473868,
+      "high_recall_pct": 85.24590163934427,
+      "mae": 0.04160994430632254
+    },
+    {
+      "hazard": "landslide",
+      "method": "Golden-Muscat",
+      "eligible": 574,
+      "exact_all_pct": 59.059233449477354,
+      "exact_common_pct": 63.60225140712946,
+      "missing_pct": 7.142857142857143,
+      "high_recall_pct": 0.0,
+      "mae": 0.08420847469322965
+    },
+    {
+      "hazard": "landslide",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 574,
+      "exact_all_pct": 17.94425087108014,
+      "exact_common_pct": 75.18248175182482,
+      "missing_pct": 76.13240418118467,
+      "high_recall_pct": 0.0,
+      "mae": 0.06843628773564706
+    },
+    {
+      "hazard": "heat",
+      "method": "JVP",
+      "eligible": 574,
+      "exact_all_pct": 65.15679442508711,
+      "exact_common_pct": 75.25150905432595,
+      "missing_pct": 13.414634146341463,
+      "high_recall_pct": 14.814814814814815,
+      "mae": 0.05973680522765871
+    },
+    {
+      "hazard": "heat",
+      "method": "Our colour recovery",
+      "eligible": 574,
+      "exact_all_pct": 82.40418118466899,
+      "exact_common_pct": 83.12829525483303,
+      "missing_pct": 0.8710801393728222,
+      "high_recall_pct": 91.35802469135803,
+      "mae": 0.03830968615381222
+    },
+    {
+      "hazard": "heat",
+      "method": "Golden-Muscat",
+      "eligible": 574,
+      "exact_all_pct": 55.22648083623693,
+      "exact_common_pct": 60.03787878787879,
+      "missing_pct": 8.013937282229966,
+      "high_recall_pct": 0.0,
+      "mae": 0.08745444199814813
+    },
+    {
+      "hazard": "heat",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 574,
+      "exact_all_pct": 18.118466898954704,
+      "exact_common_pct": 73.75886524822695,
+      "missing_pct": 75.43554006968641,
+      "high_recall_pct": 0.0,
+      "mae": 0.0743182826480067
+    },
+    {
+      "hazard": "drought",
+      "method": "JVP",
+      "eligible": 573,
+      "exact_all_pct": 72.25130890052355,
+      "exact_common_pct": 81.81818181818181,
+      "missing_pct": 11.69284467713787,
+      "high_recall_pct": 0.0,
+      "mae": 0.05396197534382769
+    },
+    {
+      "hazard": "drought",
+      "method": "Our colour recovery",
+      "eligible": 573,
+      "exact_all_pct": 81.15183246073299,
+      "exact_common_pct": 81.72231985940246,
+      "missing_pct": 0.6980802792321117,
+      "high_recall_pct": 90.9090909090909,
+      "mae": 0.04246321340231903
+    },
+    {
+      "hazard": "drought",
+      "method": "Golden-Muscat",
+      "eligible": 573,
+      "exact_all_pct": 59.16230366492147,
+      "exact_common_pct": 64.81835564053537,
+      "missing_pct": 8.726003490401396,
+      "high_recall_pct": 0.0,
+      "mae": 0.07487483958619366
+    },
+    {
+      "hazard": "drought",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 573,
+      "exact_all_pct": 25.305410122164048,
+      "exact_common_pct": 80.11049723756906,
+      "missing_pct": 68.41186736474694,
+      "high_recall_pct": 0.0,
+      "mae": 0.0630929728831294
+    },
+    {
+      "hazard": "arbovirus",
+      "method": "JVP",
+      "eligible": 574,
+      "exact_all_pct": 68.29268292682927,
+      "exact_common_pct": 79.35222672064778,
+      "missing_pct": 13.937282229965156,
+      "high_recall_pct": 7.6923076923076925,
+      "mae": 0.059822351939198805
+    },
+    {
+      "hazard": "arbovirus",
+      "method": "Our colour recovery",
+      "eligible": 574,
+      "exact_all_pct": 80.66202090592334,
+      "exact_common_pct": 81.51408450704226,
+      "missing_pct": 1.0452961672473868,
+      "high_recall_pct": 84.61538461538461,
+      "mae": 0.040740417561183934
+    },
+    {
+      "hazard": "arbovirus",
+      "method": "Golden-Muscat",
+      "eligible": 574,
+      "exact_all_pct": 60.45296167247387,
+      "exact_common_pct": 65.22556390977444,
+      "missing_pct": 7.317073170731708,
+      "high_recall_pct": 0.0,
+      "mae": 0.08177026400256
+    },
+    {
+      "hazard": "arbovirus",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 574,
+      "exact_all_pct": 21.60278745644599,
+      "exact_common_pct": 77.9874213836478,
+      "missing_pct": 72.29965156794425,
+      "high_recall_pct": 0.0,
+      "mae": 0.06993380011881935
+    },
+    {
+      "hazard": "storm",
+      "method": "JVP",
+      "eligible": 574,
+      "exact_all_pct": 63.58885017421603,
+      "exact_common_pct": 73.44064386317908,
+      "missing_pct": 13.414634146341463,
+      "high_recall_pct": 27.77777777777778,
+      "mae": 0.06311533187111139
+    },
+    {
+      "hazard": "storm",
+      "method": "Our colour recovery",
+      "eligible": 574,
+      "exact_all_pct": 80.31358885017421,
+      "exact_common_pct": 81.01933216168717,
+      "missing_pct": 0.8710801393728222,
+      "high_recall_pct": 92.22222222222223,
+      "mae": 0.04181785527973703
+    },
+    {
+      "hazard": "storm",
+      "method": "Golden-Muscat",
+      "eligible": 574,
+      "exact_all_pct": 52.961672473867594,
+      "exact_common_pct": 57.685009487666036,
+      "missing_pct": 8.18815331010453,
+      "high_recall_pct": 0.0,
+      "mae": 0.09778460441130105
+    },
+    {
+      "hazard": "storm",
+      "method": "LOAM mode 6 / strips",
+      "eligible": 574,
+      "exact_all_pct": 19.860627177700348,
+      "exact_common_pct": 71.69811320754717,
+      "missing_pct": 72.29965156794425,
+      "high_recall_pct": 0.0,
+      "mae": 0.07119546724602871
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{"name": "docker-jterstriep-tags", "status": 200, "bytes": 864, "truncated": false, "transport_error": null}
+{"name": "docker-jterstriep-repos", "status": 200, "bytes": 12170, "truncated": false, "transport_error": null}
+{"name": "github-jterstriep", "status": 200, "bytes": 207575, "truncated": false, "transport_error": null}
+{"name": "lab-publications", "status": 200, "bytes": 6897, "truncated": false, "transport_error": null}
+{"name": "author-weiwei", "status": 200, "bytes": 5161, "truncated": false, "transport_error": null}
+{"name": "author-fandel", "status": 200, "bytes": 47614, "truncated": false, "transport_error": null}
+{"name": "github-weiwei-repos", "status": 200, "bytes": 79764, "truncated": false, "transport_error": null}
+{"name": "github-fandel-repos", "status": 200, "bytes": 101055, "truncated": false, "transport_error": null}
+{"name": "github-yijun-repos", "status": 200, "bytes": 68289, "truncated": false, "transport_error": null}
+{"name": "github-sofia-repos", "status": 200, "bytes": 82292, "truncated": false, "transport_error": null}
+{"name": "github-usc-repos", "status": 200, "bytes": 568796, "truncated": false, "transport_error": null}
+{"name": "candidate-release-zip", "status": 200, "bytes": 7480718, "truncated": false, "transport_error": null}

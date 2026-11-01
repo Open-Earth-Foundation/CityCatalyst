@@ -1,0 +1,217 @@
+[
+  {
+    "name": "poly-system-config",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/config.yaml",
+    "checked_at_utc": "2026-11-01T09:25:22.677541+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/config.yaml",
+    "headers": {
+      "Content-Length": "3010",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"b18f1efc71d9ff1689e56293556a54733199dac4e3f77dc2a09047880c93e684\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-system-config.body",
+    "bytes": 3010,
+    "sha256": "378aa50b8ab431765c1c405029699e394f35ef0ef15b5225c2ca2eedde50f90f",
+    "elapsed_s": 0.372
+  },
+  {
+    "name": "poly-system-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/README.md",
+    "checked_at_utc": "2026-11-01T09:25:22.677970+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/README.md",
+    "headers": {
+      "Content-Length": "1892",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"f04d7c73b9077bcebfcfb99ce4ca7cc1f762387274d3fbe61be192813f1fc9dd\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-system-readme.body",
+    "bytes": 1892,
+    "sha256": "139297d42d85f57624b10de05b87b035fc1f33aa288527c908e4dbe03be003c8",
+    "elapsed_s": 0.366
+  },
+  {
+    "name": "poly-system-main",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/main.py",
+    "checked_at_utc": "2026-11-01T09:25:22.678292+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/main.py",
+    "headers": {
+      "Content-Length": "6691",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"04c4142dd083570a8e30ec5f013aff75b251fb3ba5116deb454ee0562a163771\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-system-main.body",
+    "bytes": 6691,
+    "sha256": "acdc69662e0378a94f9db1b2c2eb218a01b3c71bf02d31d2fa0a8b3626cca828",
+    "elapsed_s": 0.363
+  },
+  {
+    "name": "poly-polygon-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/README.md",
+    "checked_at_utc": "2026-11-01T09:25:22.678721+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/README.md",
+    "headers": {
+      "Content-Length": "5596",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"db2124fe0a49b9e37d6d372b278080f18a9bb78ebaa5da7826f202b1737772f4\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-polygon-readme.body",
+    "bytes": 5596,
+    "sha256": "81b61ccd339dcf489368227d9f4e8f63856e4acd5f63ffcc3f69f3c9dbec2042",
+    "elapsed_s": 0.361
+  },
+  {
+    "name": "poly-loam-model",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/LOAM/loam_model.py",
+    "checked_at_utc": "2026-11-01T09:25:23.039765+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/LOAM/loam_model.py",
+    "headers": {
+      "Content-Length": "2652",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"1c1b8ec3cba78881ed750bc3f034ef0845e140e7c8ec8e7e38aa12fe0038977e\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-loam-model.body",
+    "bytes": 2652,
+    "sha256": "9ddf54730cbc32bd9c9a90df6e4870ad7853b78662db4eea525e12d874333ed2",
+    "elapsed_s": 0.3
+  },
+  {
+    "name": "poly-loam-handler",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/loam_handler.py",
+    "checked_at_utc": "2026-11-01T09:25:23.041057+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/loam_handler.py",
+    "headers": {
+      "Content-Length": "19113",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"909085317d053ac71709ca1bda3f6a24482864c0206d1209c930c0a52cc52bdf\""
+    },
+    "truncated": false,
+    "file": "evidence/poly-loam-handler.body",
+    "bytes": 19113,
+    "sha256": "9964460933df61b6b2ad757f742450a8b2899957f8ab83a9b44d3976f1231777",
+    "elapsed_s": 0.309
+  },
+  {
+    "name": "publication-acm",
+    "url": "https://dl.acm.org/doi/10.1145/3748636.3764602",
+    "checked_at_utc": "2026-11-01T09:25:23.043894+00:00",
+    "method": "GET",
+    "status": 403,
+    "final_url": "https://dl.acm.org/doi/10.1145/3748636.3764602",
+    "headers": {
+      "Content-Type": "text/html; charset=UTF-8",
+      "Content-Length": "5556"
+    },
+    "truncated": false,
+    "file": "evidence/publication-acm.body",
+    "bytes": 5556,
+    "sha256": "dcb19b5bd7548b7863afb5652e7315f23678fe4208921e31a2be8e6197b44547",
+    "elapsed_s": 0.129
+  },
+  {
+    "name": "publication-crossref",
+    "url": "https://api.crossref.org/works/10.1145/3748636.3764602",
+    "checked_at_utc": "2026-11-01T09:25:23.049370+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.crossref.org/works/10.1145/3748636.3764602",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "truncated": false,
+    "file": "evidence/publication-crossref.body",
+    "bytes": 31713,
+    "sha256": "7f10eea5f3192506a9ab3443b144b5feaabb813537e174b9dbccc109aba21f90",
+    "elapsed_s": 0.577
+  },
+  {
+    "name": "usc-repos-page3",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=3",
+    "checked_at_utc": "2026-11-01T09:25:23.172991+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=3",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"23eeaac57e4d7ac687f9d5056e1fcf99d0b75a4ff5653648462bee95dad6f463\"",
+      "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=2>; rel=\"prev\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"first\"",
+      "X-RateLimit-Remaining": "26",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/usc-repos-page3.body",
+    "bytes": 391031,
+    "sha256": "23eeaac57e4d7ac687f9d5056e1fcf99d0b75a4ff5653648462bee95dad6f463",
+    "elapsed_s": 1.818
+  },
+  {
+    "name": "uncharted-segmentation-readme",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/pipelines/segmentation/README.md",
+    "checked_at_utc": "2026-11-01T09:25:23.339880+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/pipelines/segmentation/README.md",
+    "headers": {
+      "Content-Length": "4389",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"5211d8a101a1699fc374392020981e3df55393911db605d63de327be9de914e0\""
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-segmentation-readme.body",
+    "bytes": 4389,
+    "sha256": "2b80e560bced998fb181e74ae10702bf9c907564d4bb3d8d10ac3cc6cf2fb6c6",
+    "elapsed_s": 0.319
+  },
+  {
+    "name": "uncharted-deploy-template",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/docker-compose.j2",
+    "checked_at_utc": "2026-11-01T09:25:23.350479+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/docker-compose.j2",
+    "headers": {
+      "Content-Length": "9798",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"b7407df10510e17b15bad8aed806eb6f3dca4dbbe4747910a06551cd7126017e\""
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-deploy-template.body",
+    "bytes": 9798,
+    "sha256": "3ce2497a60b3fc0cda9f8f129bae5c9a9a952b1ae3d13dbe36910d84ffc53473",
+    "elapsed_s": 0.295
+  },
+  {
+    "name": "uncharted-deploy-vars",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/vars_example.json",
+    "checked_at_utc": "2026-11-01T09:25:23.626363+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/vars_example.json",
+    "headers": {
+      "Content-Length": "656",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"62a8b3110f9a4b66342e4aba7c3a720dc0de6f433e59b4143d52ffc7eb7ce893\""
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-deploy-vars.body",
+    "bytes": 656,
+    "sha256": "af06f70ed4ee6eb61d84b06ee629597b18d84d4b8ac08bdbba00c4424a2bf409",
+    "elapsed_s": 0.306
+  }
+]

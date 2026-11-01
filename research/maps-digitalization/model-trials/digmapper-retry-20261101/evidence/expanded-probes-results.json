@@ -1,0 +1,426 @@
+[
+  {
+    "name": "candidate-metadata",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1",
+    "checked_at_utc": "2026-11-01T09:23:29.708086+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"4a9c120a130aa7b6d1e927aeded7893f2737c1d49c0bc2ea34d84a7bf7088084\"",
+      "Last-Modified": "Tue, 22 Sep 2026 03:18:16 GMT",
+      "X-RateLimit-Remaining": "49",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "5868"
+    },
+    "truncated": false,
+    "file": "evidence/candidate-metadata.body",
+    "bytes": 5868,
+    "sha256": "4a9c120a130aa7b6d1e927aeded7893f2737c1d49c0bc2ea34d84a7bf7088084",
+    "elapsed_s": 0.409
+  },
+  {
+    "name": "candidate-tree",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:29.708545+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"33f572ca4d72b5b4ad67e7dfd8bc052477e79b17dae2630584cfbbc0487a97cb\"",
+      "Last-Modified": "Tue, 22 Sep 2026 03:18:16 GMT",
+      "X-RateLimit-Remaining": "48",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/candidate-tree.body",
+    "bytes": 87832,
+    "sha256": "33f572ca4d72b5b4ad67e7dfd8bc052477e79b17dae2630584cfbbc0487a97cb",
+    "elapsed_s": 0.482
+  },
+  {
+    "name": "candidate-releases",
+    "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/releases",
+    "checked_at_utc": "2026-11-01T09:23:29.708838+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/releases",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"42f6642a2b660d97aa71728f26b191b191f74a0fa68e4270d4edf84d932b5f8a\"",
+      "X-RateLimit-Remaining": "47",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "4175"
+    },
+    "truncated": false,
+    "file": "evidence/candidate-releases.body",
+    "bytes": 4175,
+    "sha256": "42f6642a2b660d97aa71728f26b191b191f74a0fa68e4270d4edf84d932b5f8a",
+    "elapsed_s": 0.49
+  },
+  {
+    "name": "candidate-readme",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:23:29.709102+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/HEAD/README.md",
+    "headers": {
+      "Content-Length": "10726",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"a7a2c6fc8e974d9ba7f44e2089329ac46476050d65badd2a1bf125ab5f883898\""
+    },
+    "truncated": false,
+    "file": "evidence/candidate-readme.body",
+    "bytes": 10726,
+    "sha256": "6ae7c32db6d54dae713c8c56c95dd38bba3b2e0cbac343bb9f086df36c7c6b46",
+    "elapsed_s": 0.487
+  },
+  {
+    "name": "uncharted-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:30.116695+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"14376a4b83fdc59934835d5711934decc413d76ba4c08c8101aabcf5a11300ee\"",
+      "Last-Modified": "Tue, 22 Sep 2026 21:25:22 GMT",
+      "X-RateLimit-Remaining": "46",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-tree.body",
+    "bytes": 85050,
+    "sha256": "14376a4b83fdc59934835d5711934decc413d76ba4c08c8101aabcf5a11300ee",
+    "elapsed_s": 0.441
+  },
+  {
+    "name": "lab-website",
+    "url": "https://knowledge-computing.github.io/",
+    "checked_at_utc": "2026-11-01T09:23:30.190851+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://knowledge-computing.github.io/",
+    "headers": {
+      "Content-Length": "31371",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Fri, 25 Sep 2026 14:07:47 GMT",
+      "ETag": "\"6ab68033-7a8b\""
+    },
+    "truncated": false,
+    "file": "evidence/lab-website.body",
+    "bytes": 31371,
+    "sha256": "77896785ae3af50fe362bc4b05b38e439439135994193350f71ed453f09616be",
+    "elapsed_s": 0.301
+  },
+  {
+    "name": "lab-criticalmaas-site",
+    "url": "https://knowledge-computing.github.io/criticalmaas-web/",
+    "checked_at_utc": "2026-11-01T09:23:30.195821+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://knowledge-computing.github.io/criticalmaas-web/",
+    "headers": {
+      "Content-Length": "9147",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Mon, 15 Jan 2024 04:59:43 GMT",
+      "ETag": "\"65a4bbbf-23bb\""
+    },
+    "truncated": false,
+    "file": "evidence/lab-criticalmaas-site.body",
+    "bytes": 9147,
+    "sha256": "57600f3a145fcf8e873ce7df2a107c81324d852aadebae51025d5f9a64c33305",
+    "elapsed_s": 0.297
+  },
+  {
+    "name": "lab-criticalmaas-tree",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-web/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:30.199043+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-web/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"77836285c7c411acffcf22849eccdccbfab384d6580c2564dc11bffc8702a2b6\"",
+      "Last-Modified": "Tue, 26 Sep 2023 02:09:32 GMT",
+      "X-RateLimit-Remaining": "45",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "14187"
+    },
+    "truncated": false,
+    "file": "evidence/lab-criticalmaas-tree.body",
+    "bytes": 14187,
+    "sha256": "77836285c7c411acffcf22849eccdccbfab384d6580c2564dc11bffc8702a2b6",
+    "elapsed_s": 0.44
+  },
+  {
+    "name": "lab-packages",
+    "url": "https://api.github.com/orgs/knowledge-computing/packages?package_type=container",
+    "checked_at_utc": "2026-11-01T09:23:30.492249+00:00",
+    "method": "GET",
+    "status": 401,
+    "final_url": "https://api.github.com/orgs/knowledge-computing/packages?package_type=container",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "44",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "120"
+    },
+    "truncated": false,
+    "file": "evidence/lab-packages.body",
+    "bytes": 120,
+    "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+    "elapsed_s": 0.245
+  },
+  {
+    "name": "inferlink-packages",
+    "url": "https://api.github.com/orgs/InferLink/packages?package_type=container",
+    "checked_at_utc": "2026-11-01T09:23:30.492357+00:00",
+    "method": "GET",
+    "status": 401,
+    "final_url": "https://api.github.com/orgs/InferLink/packages?package_type=container",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "43",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "120"
+    },
+    "truncated": false,
+    "file": "evidence/inferlink-packages.body",
+    "bytes": 120,
+    "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+    "elapsed_s": 0.238
+  },
+  {
+    "name": "darpa-packages",
+    "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/packages?package_type=container",
+    "checked_at_utc": "2026-11-01T09:23:30.557428+00:00",
+    "method": "GET",
+    "status": 401,
+    "final_url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/packages?package_type=container",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "42",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "120"
+    },
+    "truncated": false,
+    "file": "evidence/darpa-packages.body",
+    "bytes": 120,
+    "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+    "elapsed_s": 0.255
+  },
+  {
+    "name": "ta1-evaluation-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/TA1-Evaluation/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:30.639182+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/TA1-Evaluation/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"e3c6f1fcb20908024f58df2bae8d5fec5b98458507302e713056033f96941989\"",
+      "Last-Modified": "Sun, 12 Jan 2025 20:19:26 GMT",
+      "X-RateLimit-Remaining": "41",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "14178"
+    },
+    "truncated": false,
+    "file": "evidence/ta1-evaluation-tree.body",
+    "bytes": 14178,
+    "sha256": "e3c6f1fcb20908024f58df2bae8d5fec5b98458507302e713056033f96941989",
+    "elapsed_s": 0.486
+  },
+  {
+    "name": "cdr-examples-tree",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/cdr_client_examples/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:30.730483+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/cdr_client_examples/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"429489abf89690d0c82531a9d31ec91f91469691a93b4f9947321d5ec9455857\"",
+      "Last-Modified": "Tue, 13 Aug 2024 16:39:24 GMT",
+      "X-RateLimit-Remaining": "40",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "9763"
+    },
+    "truncated": false,
+    "file": "evidence/cdr-examples-tree.body",
+    "bytes": 9763,
+    "sha256": "429489abf89690d0c82531a9d31ec91f91469691a93b4f9947321d5ec9455857",
+    "elapsed_s": 0.444
+  },
+  {
+    "name": "docker-topaz-search-page2",
+    "url": "https://hub.docker.com/v2/search/repositories/?page=2&page_size=100&query=topaz",
+    "checked_at_utc": "2026-11-01T09:23:30.737739+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/search/repositories/?page=2&page_size=100&query=topaz",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-ratelimit-reset": "1793525071",
+      "x-ratelimit-remaining": "178"
+    },
+    "truncated": false,
+    "file": "evidence/docker-topaz-search-page2.body",
+    "bytes": 11207,
+    "sha256": "53d6823ff9fe43c97ea0409d4c3851dc3bcbae624729d63a50d0ec700368ea57",
+    "elapsed_s": 0.255
+  },
+  {
+    "name": "docker-jterstriep-topaz",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/",
+    "checked_at_utc": "2026-11-01T09:23:30.812410+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "704",
+      "x-ratelimit-reset": "1793525071",
+      "x-ratelimit-remaining": "177"
+    },
+    "truncated": false,
+    "file": "evidence/docker-jterstriep-topaz.body",
+    "bytes": 704,
+    "sha256": "fefeee3da6ad64d8e0b8ef304a7e750fb3090d84ad1d2db2e1672f50b84993ac",
+    "elapsed_s": 0.234
+  },
+  {
+    "name": "docker-mapsense-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=mapsense&page_size=100",
+    "checked_at_utc": "2026-11-01T09:23:30.992872+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/search/repositories/?query=mapsense&page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-ratelimit-reset": "1793525071",
+      "x-ratelimit-remaining": "176"
+    },
+    "truncated": false,
+    "file": "evidence/docker-mapsense-search.body",
+    "bytes": 1082,
+    "sha256": "44867d6e1aa8b81750b93bce3d29a27a8b87bec7a60cfa396f89ccd6aff1dc6c",
+    "elapsed_s": 0.207
+  },
+  {
+    "name": "ghcr-lab-package-page",
+    "url": "https://github.com/orgs/knowledge-computing/packages?repo_name=CriticalMAAS_AIM",
+    "checked_at_utc": "2026-11-01T09:23:31.046845+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://github.com/orgs/knowledge-computing/packages?repo_name=CriticalMAAS_AIM",
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8",
+      "ETag": "W/\"174b5ac2dea6c745872fb92ff389b59f\""
+    },
+    "truncated": false,
+    "file": "evidence/ghcr-lab-package-page.body",
+    "bytes": 145139,
+    "sha256": "fe2ccd52e3091942f0485de8e6cc33c9d896773ea0a23b2e23203c201001f0da",
+    "elapsed_s": 0.542
+  },
+  {
+    "name": "legend-releases",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/releases",
+    "checked_at_utc": "2026-11-01T09:23:31.125106+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/releases",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "39",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/legend-releases.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.326
+  },
+  {
+    "name": "legend-tree",
+    "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:23:31.174791+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"11ba232e665f4998b6b460d8aff9c2e8cc59c2ab6519c2f2d38ac63277acf1cb\"",
+      "Last-Modified": "Tue, 13 Oct 2026 15:00:55 GMT",
+      "X-RateLimit-Remaining": "38",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "10544"
+    },
+    "truncated": false,
+    "file": "evidence/legend-tree.body",
+    "bytes": 10544,
+    "sha256": "11ba232e665f4998b6b460d8aff9c2e8cc59c2ab6519c2f2d38ac63277acf1cb",
+    "elapsed_s": 0.366
+  },
+  {
+    "name": "hf-polygon-models",
+    "url": "https://huggingface.co/api/models?search=polygon&limit=100",
+    "checked_at_utc": "2026-11-01T09:23:31.200053+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=polygon&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "12781",
+      "ETag": "W/\"31ed-I+LvlEff1DmrkxfETTtfgOf47Oc\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-polygon-models.body",
+    "bytes": 12781,
+    "sha256": "5b99b729d4ef1aac8fd33e0b952550e8cdc02df6e63c85a5fc98e2a305c2f1a4",
+    "elapsed_s": 0.217
+  },
+  {
+    "name": "hf-geologic-models",
+    "url": "https://huggingface.co/api/models?search=geologic&limit=100",
+    "checked_at_utc": "2026-11-01T09:23:31.416838+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=geologic&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "1117",
+      "ETag": "W/\"45d-whu0OnywDkGPuS18gCI2iEu3zdI\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-geologic-models.body",
+    "bytes": 1117,
+    "sha256": "4508acfaf6470e0ced36dd67506f450f6d09f5aafa06b34536e889a713bdd905",
+    "elapsed_s": 0.188
+  },
+  {
+    "name": "hf-topaz-cryomodel-card",
+    "url": "https://huggingface.co/scitomo/topaz-v0.2.4-unet-l2-2d/raw/main/README.md",
+    "checked_at_utc": "2026-11-01T09:23:31.451423+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/scitomo/topaz-v0.2.4-unet-l2-2d/raw/main/README.md",
+    "headers": {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Length": "1819",
+      "ETag": "\"80acde1d48cdf66648f524f26dd2fa2eb3041ae3\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-topaz-cryomodel-card.body",
+    "bytes": 1819,
+    "sha256": "a494a3ef6101bf5f3324bcea6daa02a177721015bfb8a50c962aa0365c03848e",
+    "elapsed_s": 0.227
+  }
+]

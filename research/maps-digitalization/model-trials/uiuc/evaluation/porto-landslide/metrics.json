@@ -1,0 +1,317 @@
+{
+  "status": "succeeded",
+  "page": 93,
+  "run": {
+    "id": "porto-landslide",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T12:06:58.149222+00:00",
+    "completed_utc": "2026-10-30T12:13:02.906289+00:00",
+    "seconds": 364.74212419998366,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1758,
+      1213
+    ],
+    "model_forward_calls": 540,
+    "source_pixels": 2132454,
+    "unknown_pixels": 1390297,
+    "overlapping_positive_pixels": 201422,
+    "label_counts": {
+      "0": 1390297,
+      "1": 500285,
+      "2": 8870,
+      "3": 17859,
+      "4": 48473,
+      "5": 92109,
+      "6": 66653,
+      "7": 4580,
+      "8": 191,
+      "9": 2771,
+      "10": 366
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "4e4de1295a437d45a235b7b3abfe88e6dbe6e73d3c83ea45201a28f16c897a61"
+  },
+  "metrics": {
+    "all": {
+      "eligible": 3806,
+      "common": 3531,
+      "missing": 275,
+      "correct": 2255,
+      "missing_pct": 7.22543352601156,
+      "exact_common_pct": 63.862928348909655,
+      "exact_all_pct": 59.2485549132948,
+      "bias": -0.03947107425179765,
+      "mae": 0.08638429667886892,
+      "sum_error": -139.3723631830975,
+      "sum_abs_error": 305.0229515730862,
+      "high_true_positive_cells": 26,
+      "high_reference_cells": 405,
+      "predicted_high_common_cells": 61,
+      "high_recall_pct": 6.419753086419753,
+      "high_precision_common_pct": 42.622950819672134,
+      "predicted_cells": 4605,
+      "predicted_zero_reference_cells": 689,
+      "predicted_zero_reference_pct": 14.96199782844734,
+      "predicted_low_reference_cells": 385,
+      "predicted_low_reference_pct": 8.360477741585234,
+      "confusion_matrix_with_missing": [
+        [
+          115,
+          33,
+          12,
+          0,
+          0,
+          21
+        ],
+        [
+          51,
+          471,
+          287,
+          4,
+          0,
+          107
+        ],
+        [
+          25,
+          460,
+          1643,
+          30,
+          1,
+          141
+        ],
+        [
+          0,
+          25,
+          348,
+          26,
+          0,
+          6
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "development": {
+      "eligible": 1994,
+      "common": 1870,
+      "missing": 124,
+      "correct": 1213,
+      "missing_pct": 6.218655967903711,
+      "exact_common_pct": 64.8663101604278,
+      "exact_all_pct": 60.83249749247743,
+      "bias": -0.03485178367992523,
+      "mae": 0.08593498103241194,
+      "sum_error": -65.17283548146018,
+      "sum_abs_error": 160.69841453061034,
+      "high_true_positive_cells": 11,
+      "high_reference_cells": 203,
+      "predicted_high_common_cells": 24,
+      "high_recall_pct": 5.41871921182266,
+      "high_precision_common_pct": 45.833333333333336,
+      "predicted_cells": 2481,
+      "predicted_zero_reference_cells": 400,
+      "predicted_zero_reference_pct": 16.12253123740427,
+      "predicted_low_reference_cells": 211,
+      "predicted_low_reference_pct": 8.504635227730754,
+      "confusion_matrix_with_missing": [
+        [
+          60,
+          11,
+          3,
+          0,
+          0,
+          21
+        ],
+        [
+          24,
+          247,
+          185,
+          3,
+          0,
+          51
+        ],
+        [
+          14,
+          218,
+          895,
+          9,
+          1,
+          49
+        ],
+        [
+          0,
+          15,
+          174,
+          11,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "validation": {
+      "eligible": 1238,
+      "common": 1128,
+      "missing": 110,
+      "correct": 703,
+      "missing_pct": 8.88529886914378,
+      "exact_common_pct": 62.322695035460995,
+      "exact_all_pct": 56.78513731825525,
+      "bias": -0.039251376994089676,
+      "mae": 0.08815728726151106,
+      "sum_error": -44.27555324933316,
+      "sum_abs_error": 99.44142003098447,
+      "high_true_positive_cells": 15,
+      "high_reference_cells": 141,
+      "predicted_high_common_cells": 37,
+      "high_recall_pct": 10.638297872340425,
+      "high_precision_common_pct": 40.54054054054054,
+      "predicted_cells": 1504,
+      "predicted_zero_reference_cells": 223,
+      "predicted_zero_reference_pct": 14.827127659574469,
+      "predicted_low_reference_cells": 153,
+      "predicted_low_reference_pct": 10.172872340425531,
+      "confusion_matrix_with_missing": [
+        [
+          25,
+          12,
+          9,
+          0,
+          0,
+          0
+        ],
+        [
+          20,
+          97,
+          77,
+          1,
+          0,
+          28
+        ],
+        [
+          11,
+          151,
+          566,
+          21,
+          0,
+          79
+        ],
+        [
+          0,
+          6,
+          117,
+          15,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "test": {
+      "eligible": 574,
+      "common": 533,
+      "missing": 41,
+      "correct": 339,
+      "missing_pct": 7.142857142857143,
+      "exact_common_pct": 63.60225140712946,
+      "exact_all_pct": 59.059233449477354,
+      "bias": -0.05614254118631171,
+      "mae": 0.08420847469322965,
+      "sum_error": -29.923974452304144,
+      "sum_abs_error": 44.8831170114914,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 61,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 620,
+      "predicted_zero_reference_cells": 66,
+      "predicted_zero_reference_pct": 10.64516129032258,
+      "predicted_low_reference_cells": 21,
+      "predicted_low_reference_pct": 3.3870967741935485,
+      "confusion_matrix_with_missing": [
+        [
+          30,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          7,
+          127,
+          25,
+          0,
+          0,
+          28
+        ],
+        [
+          0,
+          91,
+          182,
+          0,
+          0,
+          13
+        ],
+        [
+          0,
+          4,
+          57,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    }
+  },
+  "municipal_source_pixels": 498062,
+  "municipal_recognized_pixels": 249840
+}

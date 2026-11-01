@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "uv",
+    "pip",
+    "install",
+    "--python",
+    "./.venv/Scripts/python.exe",
+    "poetry-core",
+    "cython"
+  ],
+  "cwd": ".",
+  "started_at": "2026-10-30T11:51:33.481222+00:00",
+  "timeout_s": 90,
+  "exit_code": 0,
+  "elapsed_s": 0.84,
+  "log": "logs\\install-build-deps.log"
+}

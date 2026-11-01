@@ -1,0 +1,20 @@
+{
+  "shapes": [
+    {
+      "label": "bin00_poly",
+      "points": [
+        [
+          1038,
+          60
+        ],
+        [
+          1063,
+          73
+        ]
+      ],
+      "shape_type": "rectangle"
+    }
+  ],
+  "imageHeight": 792,
+  "imageWidth": 1224
+}

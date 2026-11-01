@@ -1,0 +1,2352 @@
+{
+  "method": "LOAM",
+  "availability": "official pretrained checkpoint downloaded; original network ran on CPU",
+  "upstream": {
+    "url": "https://github.com/Fandel-Lin/LOAM",
+    "revision": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048"
+  },
+  "checkpoint": {
+    "url": "https://drive.google.com/uc?id=1eqbLoJ2XkWBe9mlZ4hpttc9rFpYUXrGK",
+    "sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+    "bytes": 124342193
+  },
+  "settings": {
+    "upstream_commit": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048",
+    "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+    "freeze_stage": "before model inference and before reading any reference values",
+    "seed": 0,
+    "preprocessing": "upstream metadata_preprocessing, trade_off=6, sequential execution; original whole source figures; source-derived map-frame and legend boxes",
+    "porto_resolution": "native PDF embedded image, no resizing",
+    "richfield_resolution": "72 DPI, whole original page, not isolated fills",
+    "inference": "original LOAM 7-channel 2-class network, strict checkpoint loading, CPU float32, batch=1, threads=4 (initial heat bins at 2 threads)",
+    "tile_size_hw": [
+      256,
+      1024
+    ],
+    "tile_padding": "zero bitmap padding at bottom/right; no overlap; no resizing",
+    "mask_decode": "foreground logit greater than background logit, equivalent to original 2-class argmax",
+    "arbitration": "largest foreground probability among accepted binary masks; ties go to smaller legend index; no accepted masks means unknown",
+    "porto_values": "ten legend bin midpoints (k+0.5)/10",
+    "minimum_predicted_pixels_per_250m_cell": 3,
+    "reference_support_minimum": 15,
+    "classes": [
+      0.2,
+      0.4,
+      0.6,
+      0.8
+    ],
+    "spatial_folds": "unchanged benchmark.py 3km SHA256 blocks; retrospective, not blind",
+    "richfield_evaluation": "full GeoPDF map frame; direct recovered f and fs vector fills rasterized at pixel centers; pre-label/stroke source geometry",
+    "reference_values_used_in_preprocessing": false,
+    "resource_update": "CPU threads increased from 2 to 4 on 20-logical-core host, prior to evaluation; no changes to decoding, dimensions, masks, arbitration or support. Initial completed heat bins retained. Scheduler restarted to correctly account for Windows venv descendant memory."
+  },
+  "layers": {
+    "porto-heat": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-heat"
+            ],
+            "exit_code": 0,
+            "seconds": 13.33325860009063,
+            "peak_rss_mb": 302.66015625,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-heat-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-heat"
+            ],
+            "exit_code": 0,
+            "seconds": 272.96337300003506,
+            "peak_rss_mb": 998.73046875,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-heat-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-heat",
+        "seconds_this_invocation": 270.02858990000095,
+        "class_seconds_total": 466.6145090003265,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 59.664729200070724,
+            "tiles": 14,
+            "positive_pixels": 451,
+            "peak_rss_mb": 993.484375,
+            "torch_threads": 2
+          },
+          {
+            "index": 1,
+            "seconds": 67.51060979999602,
+            "tiles": 14,
+            "positive_pixels": 4607,
+            "peak_rss_mb": 993.484375,
+            "torch_threads": 2
+          },
+          {
+            "index": 2,
+            "seconds": 70.5058031999506,
+            "tiles": 14,
+            "positive_pixels": 15562,
+            "peak_rss_mb": 993.484375,
+            "torch_threads": 2
+          },
+          {
+            "index": 3,
+            "seconds": 42.69829840003513,
+            "tiles": 14,
+            "positive_pixels": 1913,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 41.76831970002968,
+            "tiles": 14,
+            "positive_pixels": 2320,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 36.574938900070265,
+            "tiles": 14,
+            "positive_pixels": 1751,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 36.33393960003741,
+            "tiles": 14,
+            "positive_pixels": 645,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 36.281872300081886,
+            "tiles": 14,
+            "positive_pixels": 692,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 38.101721800048836,
+            "tiles": 14,
+            "positive_pixels": 627,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 37.174276100005955,
+            "tiles": 14,
+            "positive_pixels": 327,
+            "peak_rss_mb": 978.03515625,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 2326,
+        "unknown_pixels": 2105885,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 3809,
+            "common": 537,
+            "missing": 3272,
+            "correct_class_count": 413,
+            "exact_common_pct": 76.90875232774674,
+            "exact_all_pct": 10.84274087687057,
+            "missing_pct": 85.90181149908112,
+            "bias": -0.04218025464023683,
+            "mae": 0.06662264552704834,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 469,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 563,
+            "predicted_zero_reference_cells": 6,
+            "predicted_low_reference_cells": 20,
+            "predicted_zero_reference_pct": 1.0657193605683837,
+            "predicted_low_reference_pct": 3.552397868561279,
+            "sum_error_common": -22.650796741807177,
+            "sum_abs_error_common": 35.77636064802496
+          },
+          "development": {
+            "eligible": 1997,
+            "common": 329,
+            "missing": 1668,
+            "correct_class_count": 259,
+            "exact_common_pct": 78.72340425531915,
+            "exact_all_pct": 12.969454181271908,
+            "missing_pct": 83.52528793189785,
+            "bias": -0.036835828858474466,
+            "mae": 0.06146781871567596,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 257,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 344,
+            "predicted_zero_reference_cells": 3,
+            "predicted_low_reference_cells": 12,
+            "predicted_zero_reference_pct": 0.872093023255814,
+            "predicted_low_reference_pct": 3.488372093023256,
+            "sum_error_common": -12.118987694438099,
+            "sum_abs_error_common": 20.222912357457393
+          },
+          "validation": {
+            "eligible": 1238,
+            "common": 67,
+            "missing": 1171,
+            "correct_class_count": 50,
+            "exact_common_pct": 74.6268656716418,
+            "exact_all_pct": 4.038772213247173,
+            "missing_pct": 94.58804523424878,
+            "bias": -0.043161114597822986,
+            "mae": 0.07573985727162118,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 131,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 74,
+            "predicted_zero_reference_cells": 2,
+            "predicted_low_reference_cells": 5,
+            "predicted_zero_reference_pct": 2.7027027027027026,
+            "predicted_low_reference_pct": 6.756756756756757,
+            "sum_error_common": -2.89179467805414,
+            "sum_abs_error_common": 5.074570437198619
+          },
+          "test": {
+            "eligible": 574,
+            "common": 141,
+            "missing": 433,
+            "correct_class_count": 104,
+            "exact_common_pct": 73.75886524822695,
+            "exact_all_pct": 18.118466898954704,
+            "missing_pct": 75.43554006968641,
+            "bias": -0.05418449907315557,
+            "mae": 0.0743182826480067,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 81,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 145,
+            "predicted_zero_reference_cells": 1,
+            "predicted_low_reference_cells": 3,
+            "predicted_zero_reference_pct": 0.6896551724137931,
+            "predicted_low_reference_pct": 2.0689655172413794,
+            "sum_error_common": -7.640014369314935,
+            "sum_abs_error_common": 10.478877853368946
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 21760,
+        "municipal_domain_pixels": 498062,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "porto-flood": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-flood"
+            ],
+            "exit_code": 0,
+            "seconds": 11.277856700005941,
+            "peak_rss_mb": 290.9453125,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-flood-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-flood"
+            ],
+            "exit_code": 0,
+            "seconds": 374.5963925999822,
+            "peak_rss_mb": 1003.82421875,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-flood-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-flood",
+        "seconds_this_invocation": 372.2970642000437,
+        "class_seconds_total": 371.3751471999567,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 36.18491880001966,
+            "tiles": 14,
+            "positive_pixels": 228,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 38.18265839992091,
+            "tiles": 14,
+            "positive_pixels": 944,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 37.72959040000569,
+            "tiles": 14,
+            "positive_pixels": 9244,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 40.28662929998245,
+            "tiles": 14,
+            "positive_pixels": 2932,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 35.116179700009525,
+            "tiles": 14,
+            "positive_pixels": 1137,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 35.66418999992311,
+            "tiles": 14,
+            "positive_pixels": 1264,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 36.5985354000004,
+            "tiles": 14,
+            "positive_pixels": 844,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 37.11336920002941,
+            "tiles": 14,
+            "positive_pixels": 597,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 36.07182960002683,
+            "tiles": 14,
+            "positive_pixels": 597,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 38.42724640003871,
+            "tiles": 14,
+            "positive_pixels": 318,
+            "peak_rss_mb": 994.4296875,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 1006,
+        "unknown_pixels": 1909441,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 1805,
+            "common": 332,
+            "missing": 1473,
+            "correct_class_count": 258,
+            "exact_common_pct": 77.71084337349397,
+            "exact_all_pct": 14.293628808864266,
+            "missing_pct": 81.60664819944598,
+            "bias": -0.052177345438124946,
+            "mae": 0.06928198978258628,
+            "high_true_positive": 6,
+            "high_reference_all_eligible": 371,
+            "high_predicted_common": 8,
+            "high_predicted_all_output": 10,
+            "high_recall_pct": 1.6172506738544474,
+            "high_precision_common_pct": 75.0,
+            "predicted_cells": 378,
+            "predicted_zero_reference_cells": 21,
+            "predicted_low_reference_cells": 25,
+            "predicted_zero_reference_pct": 5.555555555555555,
+            "predicted_low_reference_pct": 6.613756613756614,
+            "sum_error_common": -17.322878685457482,
+            "sum_abs_error_common": 23.001620607818644
+          },
+          "development": {
+            "eligible": 1008,
+            "common": 220,
+            "missing": 788,
+            "correct_class_count": 170,
+            "exact_common_pct": 77.27272727272727,
+            "exact_all_pct": 16.865079365079364,
+            "missing_pct": 78.17460317460318,
+            "bias": -0.049264372834383056,
+            "mae": 0.06841203606525882,
+            "high_true_positive": 2,
+            "high_reference_all_eligible": 197,
+            "high_predicted_common": 3,
+            "high_predicted_all_output": 4,
+            "high_recall_pct": 1.015228426395939,
+            "high_precision_common_pct": 66.66666666666667,
+            "predicted_cells": 251,
+            "predicted_zero_reference_cells": 13,
+            "predicted_low_reference_cells": 18,
+            "predicted_zero_reference_pct": 5.179282868525896,
+            "predicted_low_reference_pct": 7.171314741035856,
+            "sum_error_common": -10.838162023564273,
+            "sum_abs_error_common": 15.05064793435694
+          },
+          "validation": {
+            "eligible": 514,
+            "common": 32,
+            "missing": 482,
+            "correct_class_count": 23,
+            "exact_common_pct": 71.875,
+            "exact_all_pct": 4.474708171206226,
+            "missing_pct": 93.77431906614785,
+            "bias": -0.07725038903306201,
+            "mae": 0.0832990112583896,
+            "high_true_positive": 4,
+            "high_reference_all_eligible": 131,
+            "high_predicted_common": 5,
+            "high_predicted_all_output": 6,
+            "high_recall_pct": 3.053435114503817,
+            "high_precision_common_pct": 80.0,
+            "predicted_cells": 38,
+            "predicted_zero_reference_cells": 2,
+            "predicted_low_reference_cells": 4,
+            "predicted_zero_reference_pct": 5.2631578947368425,
+            "predicted_low_reference_pct": 10.526315789473685,
+            "sum_error_common": -2.4720124490579845,
+            "sum_abs_error_common": 2.665568360268467
+          },
+          "test": {
+            "eligible": 283,
+            "common": 80,
+            "missing": 203,
+            "correct_class_count": 65,
+            "exact_common_pct": 81.25,
+            "exact_all_pct": 22.968197879858657,
+            "missing_pct": 71.73144876325088,
+            "bias": -0.0501588026604403,
+            "mae": 0.06606755391491544,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 43,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 89,
+            "predicted_zero_reference_cells": 6,
+            "predicted_low_reference_cells": 3,
+            "predicted_zero_reference_pct": 6.741573033707865,
+            "predicted_low_reference_pct": 3.3707865168539324,
+            "sum_error_common": -4.012704212835224,
+            "sum_abs_error_common": 5.285404313193235
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 12720,
+        "municipal_domain_pixels": 450053,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "porto-landslide": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-landslide"
+            ],
+            "exit_code": 0,
+            "seconds": 10.25106689997483,
+            "peak_rss_mb": 303.37109375,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-landslide-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-landslide"
+            ],
+            "exit_code": 0,
+            "seconds": 364.3036853999365,
+            "peak_rss_mb": 1006.00390625,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-landslide-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-landslide",
+        "seconds_this_invocation": 361.3157161999261,
+        "class_seconds_total": 360.36108889989555,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 39.79478790005669,
+            "tiles": 14,
+            "positive_pixels": 949,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 37.70228319999296,
+            "tiles": 14,
+            "positive_pixels": 7758,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 35.05147079995368,
+            "tiles": 14,
+            "positive_pixels": 12507,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 35.99935199995525,
+            "tiles": 14,
+            "positive_pixels": 1987,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 35.015303699998185,
+            "tiles": 14,
+            "positive_pixels": 1675,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 35.220472900080495,
+            "tiles": 14,
+            "positive_pixels": 1218,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 35.050420099985786,
+            "tiles": 14,
+            "positive_pixels": 657,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 35.14509579993319,
+            "tiles": 14,
+            "positive_pixels": 692,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 35.69872290000785,
+            "tiles": 14,
+            "positive_pixels": 627,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 35.683179599931464,
+            "tiles": 14,
+            "positive_pixels": 327,
+            "peak_rss_mb": 996.4453125,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 2341,
+        "unknown_pixels": 2106398,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 3806,
+            "common": 508,
+            "missing": 3298,
+            "correct_class_count": 383,
+            "exact_common_pct": 75.39370078740157,
+            "exact_all_pct": 10.063058328954282,
+            "missing_pct": 86.65265370467682,
+            "bias": -0.05160122004758936,
+            "mae": 0.07124094700765304,
+            "high_true_positive": 1,
+            "high_reference_all_eligible": 405,
+            "high_predicted_common": 2,
+            "high_predicted_all_output": 2,
+            "high_recall_pct": 0.24691358024691357,
+            "high_precision_common_pct": 50.0,
+            "predicted_cells": 530,
+            "predicted_zero_reference_cells": 6,
+            "predicted_low_reference_cells": 16,
+            "predicted_zero_reference_pct": 1.1320754716981132,
+            "predicted_low_reference_pct": 3.018867924528302,
+            "sum_error_common": -26.213419784175393,
+            "sum_abs_error_common": 36.19040107988775
+          },
+          "development": {
+            "eligible": 1994,
+            "common": 307,
+            "missing": 1687,
+            "correct_class_count": 234,
+            "exact_common_pct": 76.2214983713355,
+            "exact_all_pct": 11.735205616850552,
+            "missing_pct": 84.60381143430291,
+            "bias": -0.05472163563815221,
+            "mae": 0.07113779686828758,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 203,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 323,
+            "predicted_zero_reference_cells": 4,
+            "predicted_low_reference_cells": 12,
+            "predicted_zero_reference_pct": 1.238390092879257,
+            "predicted_low_reference_pct": 3.7151702786377707,
+            "sum_error_common": -16.799542140912727,
+            "sum_abs_error_common": 21.83930363856429
+          },
+          "validation": {
+            "eligible": 1238,
+            "common": 64,
+            "missing": 1174,
+            "correct_class_count": 46,
+            "exact_common_pct": 71.875,
+            "exact_all_pct": 3.715670436187399,
+            "missing_pct": 94.83037156704361,
+            "bias": -0.0536979706937316,
+            "mae": 0.07773946908655952,
+            "high_true_positive": 1,
+            "high_reference_all_eligible": 141,
+            "high_predicted_common": 2,
+            "high_predicted_all_output": 2,
+            "high_recall_pct": 0.7092198581560284,
+            "high_precision_common_pct": 50.0,
+            "predicted_cells": 66,
+            "predicted_zero_reference_cells": 1,
+            "predicted_low_reference_cells": 1,
+            "predicted_zero_reference_pct": 1.5151515151515151,
+            "predicted_low_reference_pct": 1.5151515151515151,
+            "sum_error_common": -3.4366701243988222,
+            "sum_abs_error_common": 4.975326021539809
+          },
+          "test": {
+            "eligible": 574,
+            "common": 137,
+            "missing": 437,
+            "correct_class_count": 103,
+            "exact_common_pct": 75.18248175182482,
+            "exact_all_pct": 17.94425087108014,
+            "missing_pct": 76.13240418118467,
+            "bias": -0.043629251962509816,
+            "mae": 0.06843628773564706,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 61,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 141,
+            "predicted_zero_reference_cells": 1,
+            "predicted_low_reference_cells": 3,
+            "predicted_zero_reference_pct": 0.7092198581560284,
+            "predicted_low_reference_pct": 2.127659574468085,
+            "sum_error_common": -5.977207518863845,
+            "sum_abs_error_common": 9.375771419783646
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 21255,
+        "municipal_domain_pixels": 498062,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "porto-drought": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-drought"
+            ],
+            "exit_code": 0,
+            "seconds": 13.412108800024725,
+            "peak_rss_mb": 324.51953125,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-drought-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-drought"
+            ],
+            "exit_code": 0,
+            "seconds": 364.1707897000015,
+            "peak_rss_mb": 998.7109375,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-drought-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-drought",
+        "seconds_this_invocation": 360.67157760006376,
+        "class_seconds_total": 359.7094139001565,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 35.80038629996125,
+            "tiles": 14,
+            "positive_pixels": 374,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 35.490864200051874,
+            "tiles": 14,
+            "positive_pixels": 8229,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 35.14921319996938,
+            "tiles": 14,
+            "positive_pixels": 17472,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 35.39498109999113,
+            "tiles": 14,
+            "positive_pixels": 1687,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 34.8379367000889,
+            "tiles": 14,
+            "positive_pixels": 1989,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 34.832974900025874,
+            "tiles": 14,
+            "positive_pixels": 984,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 34.91164810000919,
+            "tiles": 14,
+            "positive_pixels": 623,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 35.716461100033484,
+            "tiles": 14,
+            "positive_pixels": 665,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 34.882401400012895,
+            "tiles": 14,
+            "positive_pixels": 606,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 42.69254690001253,
+            "tiles": 14,
+            "positive_pixels": 329,
+            "peak_rss_mb": 984.38671875,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 2340,
+        "unknown_pixels": 2110630,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 3744,
+            "common": 619,
+            "missing": 3125,
+            "correct_class_count": 497,
+            "exact_common_pct": 80.2907915993538,
+            "exact_all_pct": 13.274572649572649,
+            "missing_pct": 83.46688034188034,
+            "bias": -0.05172776608056389,
+            "mae": 0.06720237257123529,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 27,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 654,
+            "predicted_zero_reference_cells": 10,
+            "predicted_low_reference_cells": 25,
+            "predicted_zero_reference_pct": 1.529051987767584,
+            "predicted_low_reference_pct": 3.8226299694189603,
+            "sum_error_common": -32.01948720386905,
+            "sum_abs_error_common": 41.59826862159464
+          },
+          "development": {
+            "eligible": 1957,
+            "common": 368,
+            "missing": 1589,
+            "correct_class_count": 291,
+            "exact_common_pct": 79.07608695652173,
+            "exact_all_pct": 14.86969851814001,
+            "missing_pct": 81.19570771589167,
+            "bias": -0.057183056364545196,
+            "mae": 0.07006980779117143,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 11,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 392,
+            "predicted_zero_reference_cells": 6,
+            "predicted_low_reference_cells": 18,
+            "predicted_zero_reference_pct": 1.530612244897959,
+            "predicted_low_reference_pct": 4.591836734693878,
+            "sum_error_common": -21.043364742152633,
+            "sum_abs_error_common": 25.785689267151085
+          },
+          "validation": {
+            "eligible": 1214,
+            "common": 70,
+            "missing": 1144,
+            "correct_class_count": 61,
+            "exact_common_pct": 87.14285714285714,
+            "exact_all_pct": 5.0247116968698515,
+            "missing_pct": 94.2339373970346,
+            "bias": -0.03757712518737457,
+            "mae": 0.0627535894656734,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 5,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 74,
+            "predicted_zero_reference_cells": 1,
+            "predicted_low_reference_cells": 3,
+            "predicted_zero_reference_pct": 1.3513513513513513,
+            "predicted_low_reference_pct": 4.054054054054054,
+            "sum_error_common": -2.63039876311622,
+            "sum_abs_error_common": 4.392751262597138
+          },
+          "test": {
+            "eligible": 573,
+            "common": 181,
+            "missing": 392,
+            "correct_class_count": 145,
+            "exact_common_pct": 80.11049723756906,
+            "exact_all_pct": 25.305410122164048,
+            "missing_pct": 68.41186736474694,
+            "bias": -0.04610897071049833,
+            "mae": 0.0630929728831294,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 11,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 188,
+            "predicted_zero_reference_cells": 3,
+            "predicted_low_reference_cells": 4,
+            "predicted_zero_reference_pct": 1.5957446808510638,
+            "predicted_low_reference_pct": 2.127659574468085,
+            "sum_error_common": -8.345723698600198,
+            "sum_abs_error_common": 11.419828091846421
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 25911,
+        "municipal_domain_pixels": 500478,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "porto-arbovirus": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-arbovirus"
+            ],
+            "exit_code": 0,
+            "seconds": 10.231880399980582,
+            "peak_rss_mb": 323.44140625,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-arbovirus-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-arbovirus"
+            ],
+            "exit_code": 0,
+            "seconds": 367.69926080002915,
+            "peak_rss_mb": 1098.75390625,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-arbovirus-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-arbovirus",
+        "seconds_this_invocation": 365.3479226999916,
+        "class_seconds_total": 364.3987954000477,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 32.691264700028114,
+            "tiles": 14,
+            "positive_pixels": 339,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 35.7546849999344,
+            "tiles": 14,
+            "positive_pixels": 3413,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 36.37745829997584,
+            "tiles": 14,
+            "positive_pixels": 18048,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 36.081321400008164,
+            "tiles": 14,
+            "positive_pixels": 1631,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 36.62125099997502,
+            "tiles": 14,
+            "positive_pixels": 2930,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 35.597430400084704,
+            "tiles": 14,
+            "positive_pixels": 1338,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 37.46268090000376,
+            "tiles": 14,
+            "positive_pixels": 645,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 36.13747900002636,
+            "tiles": 14,
+            "positive_pixels": 692,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 42.062437399988994,
+            "tiles": 14,
+            "positive_pixels": 627,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 35.61278730002232,
+            "tiles": 14,
+            "positive_pixels": 327,
+            "peak_rss_mb": 996.48828125,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 1390,
+        "unknown_pixels": 2103854,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 3809,
+            "common": 573,
+            "missing": 3236,
+            "correct_class_count": 476,
+            "exact_common_pct": 83.0715532286213,
+            "exact_all_pct": 12.49671829876608,
+            "missing_pct": 84.95668154371226,
+            "bias": -0.0405867678473117,
+            "mae": 0.06270099380518003,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 136,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 606,
+            "predicted_zero_reference_cells": 6,
+            "predicted_low_reference_cells": 27,
+            "predicted_zero_reference_pct": 0.9900990099009901,
+            "predicted_low_reference_pct": 4.455445544554456,
+            "sum_error_common": -23.256217976509607,
+            "sum_abs_error_common": 35.92766945036816
+          },
+          "development": {
+            "eligible": 1997,
+            "common": 332,
+            "missing": 1665,
+            "correct_class_count": 278,
+            "exact_common_pct": 83.73493975903614,
+            "exact_all_pct": 13.920881321982975,
+            "missing_pct": 83.37506259389083,
+            "bias": -0.035124275242713845,
+            "mae": 0.06157609976023123,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 63,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 354,
+            "predicted_zero_reference_cells": 3,
+            "predicted_low_reference_cells": 19,
+            "predicted_zero_reference_pct": 0.847457627118644,
+            "predicted_low_reference_pct": 5.367231638418079,
+            "sum_error_common": -11.661259380580997,
+            "sum_abs_error_common": 20.443265120396767
+          },
+          "validation": {
+            "eligible": 1238,
+            "common": 82,
+            "missing": 1156,
+            "correct_class_count": 74,
+            "exact_common_pct": 90.2439024390244,
+            "exact_all_pct": 5.977382875605816,
+            "missing_pct": 93.37641357027464,
+            "bias": -0.03615189952461144,
+            "mae": 0.053230855013159994,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 47,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 88,
+            "predicted_zero_reference_cells": 2,
+            "predicted_low_reference_cells": 4,
+            "predicted_zero_reference_pct": 2.272727272727273,
+            "predicted_low_reference_pct": 4.545454545454546,
+            "sum_error_common": -2.964455761018138,
+            "sum_abs_error_common": 4.364930111079119
+          },
+          "test": {
+            "eligible": 574,
+            "common": 159,
+            "missing": 415,
+            "correct_class_count": 124,
+            "exact_common_pct": 77.9874213836478,
+            "exact_all_pct": 21.60278745644599,
+            "missing_pct": 72.29965156794425,
+            "bias": -0.05427989204346207,
+            "mae": 0.06993380011881935,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 26,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 164,
+            "predicted_zero_reference_cells": 1,
+            "predicted_low_reference_cells": 4,
+            "predicted_zero_reference_pct": 0.6097560975609756,
+            "predicted_low_reference_pct": 2.4390243902439024,
+            "sum_error_common": -8.63050283491047,
+            "sum_abs_error_common": 11.119474218892275
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 23797,
+        "municipal_domain_pixels": 498062,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "porto-storm": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "porto-storm"
+            ],
+            "exit_code": 0,
+            "seconds": 12.294824699987657,
+            "peak_rss_mb": 339.7265625,
+            "stop_reason": null,
+            "log": "logs\\preprocess-porto-storm-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "porto-storm"
+            ],
+            "exit_code": 0,
+            "seconds": 367.6348169000121,
+            "peak_rss_mb": 1106.32421875,
+            "stop_reason": null,
+            "log": "logs\\infer-porto-storm-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "porto-storm",
+        "seconds_this_invocation": 365.0040121000493,
+        "class_seconds_total": 364.1372370000463,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 34.31314460001886,
+            "tiles": 14,
+            "positive_pixels": 891,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 35.7333507000003,
+            "tiles": 14,
+            "positive_pixels": 3899,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 35.539011100074276,
+            "tiles": 14,
+            "positive_pixels": 16006,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 35.82287599996198,
+            "tiles": 14,
+            "positive_pixels": 2249,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 4,
+            "seconds": 35.78860209998675,
+            "tiles": 14,
+            "positive_pixels": 3106,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 5,
+            "seconds": 34.92341889999807,
+            "tiles": 14,
+            "positive_pixels": 2131,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 6,
+            "seconds": 37.828501699958,
+            "tiles": 14,
+            "positive_pixels": 853,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 7,
+            "seconds": 41.83820330002345,
+            "tiles": 14,
+            "positive_pixels": 801,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 8,
+            "seconds": 35.635671800002456,
+            "tiles": 14,
+            "positive_pixels": 627,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          },
+          {
+            "index": 9,
+            "seconds": 36.71445680002216,
+            "tiles": 14,
+            "positive_pixels": 327,
+            "peak_rss_mb": 996.0625,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 1543,
+        "unknown_pixels": 2103108,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 140
+      },
+      "metrics": {
+        "scores": {
+          "all": {
+            "eligible": 3809,
+            "common": 611,
+            "missing": 3198,
+            "correct_class_count": 471,
+            "exact_common_pct": 77.08674304418986,
+            "exact_all_pct": 12.365450249409294,
+            "missing_pct": 83.95904436860069,
+            "bias": -0.04813416224985009,
+            "mae": 0.0725617228090878,
+            "high_true_positive": 14,
+            "high_reference_all_eligible": 589,
+            "high_predicted_common": 17,
+            "high_predicted_all_output": 18,
+            "high_recall_pct": 2.3769100169779285,
+            "high_precision_common_pct": 82.3529411764706,
+            "predicted_cells": 646,
+            "predicted_zero_reference_cells": 10,
+            "predicted_low_reference_cells": 25,
+            "predicted_zero_reference_pct": 1.5479876160990713,
+            "predicted_low_reference_pct": 3.869969040247678,
+            "sum_error_common": -29.409973134658408,
+            "sum_abs_error_common": 44.33521263635265
+          },
+          "development": {
+            "eligible": 1997,
+            "common": 366,
+            "missing": 1631,
+            "correct_class_count": 294,
+            "exact_common_pct": 80.32786885245902,
+            "exact_all_pct": 14.72208312468703,
+            "missing_pct": 81.67250876314472,
+            "bias": -0.046818685916890736,
+            "mae": 0.07341200169557657,
+            "high_true_positive": 8,
+            "high_reference_all_eligible": 305,
+            "high_predicted_common": 9,
+            "high_predicted_all_output": 9,
+            "high_recall_pct": 2.622950819672131,
+            "high_precision_common_pct": 88.88888888888889,
+            "predicted_cells": 382,
+            "predicted_zero_reference_cells": 3,
+            "predicted_low_reference_cells": 13,
+            "predicted_zero_reference_pct": 0.7853403141361257,
+            "predicted_low_reference_pct": 3.4031413612565444,
+            "sum_error_common": -17.13563904558201,
+            "sum_abs_error_common": 26.868792620581026
+          },
+          "validation": {
+            "eligible": 1238,
+            "common": 86,
+            "missing": 1152,
+            "correct_class_count": 63,
+            "exact_common_pct": 73.25581395348837,
+            "exact_all_pct": 5.088852988691438,
+            "missing_pct": 93.05331179321486,
+            "bias": -0.04884926753360308,
+            "mae": 0.07146907818201244,
+            "high_true_positive": 6,
+            "high_reference_all_eligible": 194,
+            "high_predicted_common": 8,
+            "high_predicted_all_output": 9,
+            "high_recall_pct": 3.0927835051546393,
+            "high_precision_common_pct": 75.0,
+            "predicted_cells": 97,
+            "predicted_zero_reference_cells": 4,
+            "predicted_low_reference_cells": 7,
+            "predicted_zero_reference_pct": 4.123711340206185,
+            "predicted_low_reference_pct": 7.216494845360825,
+            "sum_error_common": -4.201037007889865,
+            "sum_abs_error_common": 6.146340723653069
+          },
+          "test": {
+            "eligible": 574,
+            "common": 159,
+            "missing": 415,
+            "correct_class_count": 114,
+            "exact_common_pct": 71.69811320754717,
+            "exact_all_pct": 19.860627177700348,
+            "missing_pct": 72.29965156794425,
+            "bias": -0.050775453340795786,
+            "mae": 0.07119546724602871,
+            "high_true_positive": 0,
+            "high_reference_all_eligible": 90,
+            "high_predicted_common": 0,
+            "high_predicted_all_output": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted_cells": 167,
+            "predicted_zero_reference_cells": 3,
+            "predicted_low_reference_cells": 5,
+            "predicted_zero_reference_pct": 1.7964071856287425,
+            "predicted_low_reference_pct": 2.9940119760479043,
+            "sum_error_common": -8.07329708118653,
+            "sum_abs_error_common": 11.320079292118564
+          }
+        },
+        "prediction_pixels_in_municipal_domain": 24545,
+        "municipal_domain_pixels": 498062,
+        "registration": "unchanged source tick fit; no numeric reference registration",
+        "comparison_reference": "same-author indexed PNG derivatives, not independently authenticated TIFF truth"
+      }
+    },
+    "richfield-inundation-100yr": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "richfield-inundation-100yr"
+            ],
+            "exit_code": 0,
+            "seconds": 8.230599600006826,
+            "peak_rss_mb": 198.69140625,
+            "stop_reason": null,
+            "log": "logs\\preprocess-richfield-inundation-100yr-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "richfield-inundation-100yr"
+            ],
+            "exit_code": 0,
+            "seconds": 23.697532999911346,
+            "peak_rss_mb": 978.24609375,
+            "stop_reason": null,
+            "log": "logs\\infer-richfield-inundation-100yr-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "richfield-inundation-100yr",
+        "seconds_this_invocation": 20.533494799979962,
+        "class_seconds_total": 20.301230099983513,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 20.301230099983513,
+            "tiles": 8,
+            "positive_pixels": 0,
+            "peak_rss_mb": 976.9453125,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 0,
+        "unknown_pixels": 969408,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 8
+      },
+      "metrics": {
+        "classes": {
+          "100yr": {
+            "intersection_pixels": 0,
+            "union_pixels": 69935,
+            "prediction_pixels": 0,
+            "source_pixels": 69935,
+            "false_positive_pixels": 0,
+            "false_negative_pixels": 69935,
+            "iou": 0.0,
+            "precision": null,
+            "recall": 0.0,
+            "edge_errors": {
+              "status": "undefined_empty_boundary",
+              "prediction_edge_pixels": 0,
+              "source_edge_pixels": 22241
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 69980.51203346085,
+              "prediction_pt2": 0.0,
+              "source_pt2": 69980.51203346084,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          }
+        },
+        "micro": {
+          "intersection": 0,
+          "union": 69935,
+          "predicted": 0,
+          "reference": 69935,
+          "iou": 0.0,
+          "precision": null,
+          "recall": 0.0
+        },
+        "source_path_counts": {
+          "f": 746
+        },
+        "evaluation_frame_pixels": 751464,
+        "source_vector_sha256": "f2b04dd159a9690a33ae5dadae099553445ab3a70f4d5faad8244669af69d9ed",
+        "pixel_metres": 7.620062520952587,
+        "comparison_reference": "direct PDF f and fs fills, prior to labels and strokes; source fidelity, not flood truth",
+        "registration": "embedded GeoPDF transform, unchanged",
+        "continuous_micro": {
+          "intersection_pt2": 0.0,
+          "union_pt2": 69980.51203346085,
+          "prediction_pt2": 0.0,
+          "source_pt2": 69980.51203346084,
+          "iou": 0.0,
+          "precision": null,
+          "recall": 0.0
+        }
+      }
+    },
+    "richfield-inundation-2yr": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "richfield-inundation-2yr"
+            ],
+            "exit_code": 0,
+            "seconds": 6.143350400030613,
+            "peak_rss_mb": 200.14453125,
+            "stop_reason": null,
+            "log": "logs\\preprocess-richfield-inundation-2yr-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "richfield-inundation-2yr"
+            ],
+            "exit_code": 0,
+            "seconds": 22.61884020001162,
+            "peak_rss_mb": 1046.4296875,
+            "stop_reason": null,
+            "log": "logs\\infer-richfield-inundation-2yr-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "richfield-inundation-2yr",
+        "seconds_this_invocation": 19.92488790000789,
+        "class_seconds_total": 19.696503499988467,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 19.696503499988467,
+            "tiles": 8,
+            "positive_pixels": 1,
+            "peak_rss_mb": 976.69140625,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 0,
+        "unknown_pixels": 969407,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 8
+      },
+      "metrics": {
+        "classes": {
+          "2yr": {
+            "intersection_pixels": 1,
+            "union_pixels": 30811,
+            "prediction_pixels": 1,
+            "source_pixels": 30811,
+            "false_positive_pixels": 0,
+            "false_negative_pixels": 30810,
+            "iou": 3.245594106001104e-05,
+            "precision": 1.0,
+            "recall": 3.245594106001104e-05,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 1,
+              "source_edge_pixels": 9645,
+              "mean_points": 422.933590350989,
+              "median_points": 463.3076694852318,
+              "p95_points": 821.578815394438,
+              "max_points": 933.8543783695615,
+              "mean_m": 3222.780400685486,
+              "p95_m": 6260.481939195782,
+              "max_m": 7116.028748641371,
+              "prediction_to_source_mean_m": 32.32918728978619,
+              "source_to_prediction_mean_m": 3223.1111887843344
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 1.0,
+              "union_pt2": 30863.93546729039,
+              "prediction_pt2": 1.0,
+              "source_pt2": 30863.935467290397,
+              "iou": 3.240027510619313e-05,
+              "precision": 1.0,
+              "recall": 3.240027510619312e-05,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          }
+        },
+        "micro": {
+          "intersection": 1,
+          "union": 30811,
+          "predicted": 1,
+          "reference": 30811,
+          "iou": 3.245594106001104e-05,
+          "precision": 1.0,
+          "recall": 3.245594106001104e-05
+        },
+        "source_path_counts": {
+          "f": 378
+        },
+        "evaluation_frame_pixels": 751464,
+        "source_vector_sha256": "a6a55fd770d221cb50002cc0613f990681920e9eeaf793ba6d83ce2e70743ce3",
+        "pixel_metres": 7.620062520952587,
+        "comparison_reference": "direct PDF f and fs fills, prior to labels and strokes; source fidelity, not flood truth",
+        "registration": "embedded GeoPDF transform, unchanged",
+        "continuous_micro": {
+          "intersection_pt2": 1.0,
+          "union_pt2": 30863.93546729039,
+          "prediction_pt2": 1.0,
+          "source_pt2": 30863.935467290397,
+          "iou": 3.240027510619313e-05,
+          "precision": 1.0,
+          "recall": 3.240027510619312e-05
+        }
+      }
+    },
+    "richfield-inundation-10yr": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "richfield-inundation-10yr"
+            ],
+            "exit_code": 0,
+            "seconds": 6.14271069993265,
+            "peak_rss_mb": 203.01171875,
+            "stop_reason": null,
+            "log": "logs\\preprocess-richfield-inundation-10yr-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "richfield-inundation-10yr"
+            ],
+            "exit_code": 0,
+            "seconds": 23.71147550002206,
+            "peak_rss_mb": 1047.484375,
+            "stop_reason": null,
+            "log": "logs\\infer-richfield-inundation-10yr-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "richfield-inundation-10yr",
+        "seconds_this_invocation": 21.148819099995308,
+        "class_seconds_total": 20.840896300040185,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 20.840896300040185,
+            "tiles": 8,
+            "positive_pixels": 0,
+            "peak_rss_mb": 977.19140625,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 0,
+        "unknown_pixels": 969408,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 8
+      },
+      "metrics": {
+        "classes": {
+          "10yr": {
+            "intersection_pixels": 0,
+            "union_pixels": 43191,
+            "prediction_pixels": 0,
+            "source_pixels": 43191,
+            "false_positive_pixels": 0,
+            "false_negative_pixels": 43191,
+            "iou": 0.0,
+            "precision": null,
+            "recall": 0.0,
+            "edge_errors": {
+              "status": "undefined_empty_boundary",
+              "prediction_edge_pixels": 0,
+              "source_edge_pixels": 12997
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 43222.88893533326,
+              "prediction_pt2": 0.0,
+              "source_pt2": 43222.88893533323,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          }
+        },
+        "micro": {
+          "intersection": 0,
+          "union": 43191,
+          "predicted": 0,
+          "reference": 43191,
+          "iou": 0.0,
+          "precision": null,
+          "recall": 0.0
+        },
+        "source_path_counts": {
+          "f": 577
+        },
+        "evaluation_frame_pixels": 751464,
+        "source_vector_sha256": "3fd094eb608b8d55002f76cbc69d445ca4c7ed4338694004e0df4115235202dc",
+        "pixel_metres": 7.620062520952587,
+        "comparison_reference": "direct PDF f and fs fills, prior to labels and strokes; source fidelity, not flood truth",
+        "registration": "embedded GeoPDF transform, unchanged",
+        "continuous_micro": {
+          "intersection_pt2": 0.0,
+          "union_pt2": 43222.88893533326,
+          "prediction_pt2": 0.0,
+          "source_pt2": 43222.88893533323,
+          "iou": 0.0,
+          "precision": null,
+          "recall": 0.0
+        }
+      }
+    },
+    "richfield-inundation-mce100": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "richfield-inundation-mce100"
+            ],
+            "exit_code": 0,
+            "seconds": 7.172543699969538,
+            "peak_rss_mb": 200.3203125,
+            "stop_reason": null,
+            "log": "logs\\preprocess-richfield-inundation-mce100-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "richfield-inundation-mce100"
+            ],
+            "exit_code": 0,
+            "seconds": 22.63261670002248,
+            "peak_rss_mb": 982.234375,
+            "stop_reason": null,
+            "log": "logs\\infer-richfield-inundation-mce100-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "richfield-inundation-mce100",
+        "seconds_this_invocation": 20.21532890002709,
+        "class_seconds_total": 19.737548299948685,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 19.737548299948685,
+            "tiles": 8,
+            "positive_pixels": 836,
+            "peak_rss_mb": 976.734375,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 0,
+        "unknown_pixels": 968572,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 8
+      },
+      "metrics": {
+        "classes": {
+          "mce100": {
+            "intersection_pixels": 674,
+            "union_pixels": 87209,
+            "prediction_pixels": 836,
+            "source_pixels": 87047,
+            "false_positive_pixels": 162,
+            "false_negative_pixels": 86373,
+            "iou": 0.007728560125675102,
+            "precision": 0.80622009569378,
+            "recall": 0.007742943467322252,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 451,
+              "source_edge_pixels": 25876,
+              "mean_points": 69.32595322625598,
+              "median_points": 68.87670143089025,
+              "p95_points": 138.19189556555045,
+              "max_points": 186.45374761586316,
+              "mean_m": 528.2680979087053,
+              "p95_m": 1053.030884098445,
+              "max_m": 1420.7892140987917,
+              "prediction_to_source_mean_m": 33.764924802222424,
+              "source_to_prediction_mean_m": 536.8869312319014
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 663.8233388727823,
+              "union_pt2": 87270.7701264587,
+              "prediction_pt2": 836.0,
+              "source_pt2": 87098.59346533146,
+              "iou": 0.00760647967138226,
+              "precision": 0.7940470560679214,
+              "recall": 0.007621516174506413,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          }
+        },
+        "micro": {
+          "intersection": 674,
+          "union": 87209,
+          "predicted": 836,
+          "reference": 87047,
+          "iou": 0.007728560125675102,
+          "precision": 0.80622009569378,
+          "recall": 0.007742943467322252
+        },
+        "source_path_counts": {
+          "f": 746
+        },
+        "evaluation_frame_pixels": 751464,
+        "source_vector_sha256": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+        "pixel_metres": 7.620062520952587,
+        "comparison_reference": "direct PDF f and fs fills, prior to labels and strokes; source fidelity, not flood truth",
+        "registration": "embedded GeoPDF transform, unchanged",
+        "continuous_micro": {
+          "intersection_pt2": 663.8233388727823,
+          "union_pt2": 87270.7701264587,
+          "prediction_pt2": 836.0,
+          "source_pt2": 87098.59346533146,
+          "iou": 0.00760647967138226,
+          "precision": 0.7940470560679214,
+          "recall": 0.007621516174506413
+        }
+      }
+    },
+    "richfield-prioritization-score": {
+      "status": "succeeded",
+      "runtime": {
+        "status": "succeeded",
+        "stages": [
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "preprocess.py",
+              "richfield-prioritization-score"
+            ],
+            "exit_code": 0,
+            "seconds": 7.212294600089081,
+            "peak_rss_mb": 216.71484375,
+            "stop_reason": null,
+            "log": "logs\\preprocess-richfield-prioritization-score-run.txt"
+          },
+          {
+            "command": [
+              "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe",
+              "-X",
+              "utf8",
+              "infer.py",
+              "richfield-prioritization-score"
+            ],
+            "exit_code": 0,
+            "seconds": 86.66035740007646,
+            "peak_rss_mb": 990.5,
+            "stop_reason": null,
+            "log": "logs\\infer-richfield-prioritization-score-run.txt"
+          }
+        ]
+      },
+      "inference": {
+        "status": "succeeded",
+        "name": "richfield-prioritization-score",
+        "seconds_this_invocation": 84.38689770002384,
+        "class_seconds_total": 84.03374139987864,
+        "classes": [
+          {
+            "index": 0,
+            "seconds": 19.053913199924864,
+            "tiles": 8,
+            "positive_pixels": 28801,
+            "peak_rss_mb": 977.01171875,
+            "torch_threads": 4
+          },
+          {
+            "index": 1,
+            "seconds": 20.795163700007834,
+            "tiles": 8,
+            "positive_pixels": 23102,
+            "peak_rss_mb": 977.01171875,
+            "torch_threads": 4
+          },
+          {
+            "index": 2,
+            "seconds": 21.515025799977593,
+            "tiles": 8,
+            "positive_pixels": 7617,
+            "peak_rss_mb": 977.01171875,
+            "torch_threads": 4
+          },
+          {
+            "index": 3,
+            "seconds": 22.669638699968345,
+            "tiles": 8,
+            "positive_pixels": 14285,
+            "peak_rss_mb": 977.01171875,
+            "torch_threads": 4
+          }
+        ],
+        "overlap_pixels": 122,
+        "unknown_pixels": 895725,
+        "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+        "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+        "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+        "tiles": 32
+      },
+      "metrics": {
+        "classes": {
+          "0.0 - 2.4": {
+            "intersection_pixels": 20051,
+            "union_pixels": 35311,
+            "prediction_pixels": 28748,
+            "source_pixels": 26614,
+            "false_positive_pixels": 8697,
+            "false_negative_pixels": 6563,
+            "iou": 0.5678400498428252,
+            "precision": 0.6974746069291777,
+            "recall": 0.7534004659201924,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 3308,
+              "source_edge_pixels": 9776,
+              "mean_points": 16.124331034256798,
+              "median_points": 3.0,
+              "p95_points": 83.54639429682169,
+              "max_points": 137.44089638822936,
+              "mean_m": 122.86841058957289,
+              "p95_m": 636.628747941938,
+              "max_m": 1047.3082234140743,
+              "prediction_to_source_mean_m": 12.790879598028702,
+              "source_to_prediction_mean_m": 160.11641309775908
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 20051.42747479766,
+              "union_pt2": 35307.25192536169,
+              "prediction_pt2": 28748.0,
+              "source_pt2": 26610.6794001594,
+              "iou": 0.5679124367193936,
+              "precision": 0.6974894766522074,
+              "recall": 0.7535105426386652,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          },
+          "2.5 - 4.4": {
+            "intersection_pixels": 19834,
+            "union_pixels": 25333,
+            "prediction_pixels": 23042,
+            "source_pixels": 22125,
+            "false_positive_pixels": 3208,
+            "false_negative_pixels": 2291,
+            "iou": 0.7829313543599258,
+            "precision": 0.8607759743077857,
+            "recall": 0.8964519774011299,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 2297,
+              "source_edge_pixels": 4543,
+              "mean_points": 7.694142816650457,
+              "median_points": 1.4142135623730951,
+              "p95_points": 46.82839151544307,
+              "max_points": 106.6770828247567,
+              "mean_m": 58.62984930801472,
+              "p95_m": 356.8352711033219,
+              "max_m": 812.8860406774834,
+              "prediction_to_source_mean_m": 8.44424836400088,
+              "source_to_prediction_mean_m": 84.00434311571883
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 19828.919994495816,
+              "union_pt2": 25373.52073873646,
+              "prediction_pt2": 23042.0,
+              "source_pt2": 22160.440733232255,
+              "iou": 0.7814808279335085,
+              "precision": 0.8605555070955566,
+              "recall": 0.8947890627806855,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          },
+          "4.5 - 6.4": {
+            "intersection_pixels": 6136,
+            "union_pixels": 8893,
+            "prediction_pixels": 7610,
+            "source_pixels": 7419,
+            "false_positive_pixels": 1474,
+            "false_negative_pixels": 1283,
+            "iou": 0.6899808838412235,
+            "precision": 0.8063074901445466,
+            "recall": 0.8270656422698477,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 1423,
+              "source_edge_pixels": 2755,
+              "mean_points": 4.330315719648315,
+              "median_points": 1.0,
+              "p95_points": 25.062919807636163,
+              "max_points": 118.06777714516353,
+              "mean_m": 32.997276519183956,
+              "p95_m": 190.98101589180854,
+              "max_m": 899.683843556043,
+              "prediction_to_source_mean_m": 7.352814054270351,
+              "source_to_prediction_mean_m": 46.24303698654223
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 6141.462451449722,
+              "union_pt2": 8910.491027106551,
+              "prediction_pt2": 7610.0,
+              "source_pt2": 7441.9534785562555,
+              "iou": 0.6892395079874741,
+              "precision": 0.8070252892838005,
+              "recall": 0.8252487023932821,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          },
+          "6.5 - 10": {
+            "intersection_pixels": 11548,
+            "union_pixels": 16533,
+            "prediction_pixels": 14283,
+            "source_pixels": 13798,
+            "false_positive_pixels": 2735,
+            "false_negative_pixels": 2250,
+            "iou": 0.6984818242303272,
+            "precision": 0.8085136175873416,
+            "recall": 0.8369328888244674,
+            "edge_errors": {
+              "method": "bidirectional raster boundary pixel-center distances, 72 DPI; label/stroke holes are part of model mismatch",
+              "prediction_edge_pixels": 2352,
+              "source_edge_pixels": 5213,
+              "mean_points": 2.3272477807293375,
+              "median_points": 1.0,
+              "p95_points": 8.06225774829855,
+              "max_points": 65.80273550544841,
+              "mean_m": 17.73377359090571,
+              "p95_m": 61.434908102069365,
+              "max_m": 501.4209586012235,
+              "prediction_to_source_mean_m": 5.701680118292155,
+              "source_to_prediction_mean_m": 23.16241043103367
+            },
+            "continuous_page_geometry": {
+              "intersection_pt2": 11476.252377218469,
+              "union_pt2": 16574.19404633775,
+              "prediction_pt2": 14283.0,
+              "source_pt2": 13767.446423556245,
+              "iou": 0.6924169190449578,
+              "precision": 0.8034903295679107,
+              "recall": 0.8335788659821826,
+              "note": "Exact Shapely area overlap of model pixel-square geometry with recovered PDF vector fills in page points; no reference rasterization for these area metrics."
+            }
+          }
+        },
+        "micro": {
+          "intersection": 57569,
+          "union": 86070,
+          "predicted": 73683,
+          "reference": 69956,
+          "iou": 0.6688625537353317,
+          "precision": 0.7813064071766893,
+          "recall": 0.8229315569786723
+        },
+        "source_path_counts": {
+          "fs": 474,
+          "f": 272
+        },
+        "evaluation_frame_pixels": 751464,
+        "source_vector_sha256": "b4130ed899972ce60a4c489a916f9f03b50ca4c008771fa4701ce7e3befe8a43",
+        "pixel_metres": 7.620062520952587,
+        "comparison_reference": "direct PDF f and fs fills, prior to labels and strokes; source fidelity, not flood truth",
+        "registration": "embedded GeoPDF transform, unchanged",
+        "continuous_micro": {
+          "intersection_pt2": 57498.06229796166,
+          "union_pt2": 86165.45773754246,
+          "prediction_pt2": 73683.0,
+          "source_pt2": 69980.52003550416,
+          "iou": 0.6672982864328201,
+          "precision": 0.7803436654039827,
+          "recall": 0.821629537316819
+        }
+      }
+    }
+  },
+  "evaluation_is_blind": false,
+  "porto_completed_hazards": 6,
+  "porto_macro_average": {
+    "all": {
+      "exact_common_pct": 78.41039739346787,
+      "exact_all_pct": 12.222694868739524,
+      "missing_pct": 84.42395327623287,
+      "mae": 0.06826844525046512,
+      "bias": -0.047734586050612794,
+      "high_recall_pct": 0.7068457118465483,
+      "high_precision_common_pct": 69.11764705882354,
+      "predicted_zero_reference_pct": 1.9700815002649499,
+      "predicted_low_reference_pct": 4.222177826844549
+    },
+    "development": {
+      "exact_common_pct": 79.2260875778998,
+      "exact_all_pct": 14.18040035466864,
+      "missing_pct": 82.09116360228852,
+      "mae": 0.06767926014936693,
+      "bias": -0.04665797580919325,
+      "high_recall_pct": 0.6063632076780117,
+      "high_precision_common_pct": 77.77777777777777,
+      "predicted_zero_reference_pct": 1.742196028468949,
+      "predicted_low_reference_pct": 4.622844474510898
+    },
+    "validation": {
+      "exact_common_pct": 78.16990653450195,
+      "exact_all_pct": 4.720016396967984,
+      "missing_pct": 93.97606643799405,
+      "mae": 0.07070531004623602,
+      "bias": -0.04944796109503428,
+      "high_recall_pct": 1.1425730796357474,
+      "high_precision_common_pct": 68.33333333333333,
+      "predicted_zero_reference_pct": 2.8714670128126447,
+      "predicted_low_reference_pct": 5.769037917708565
+    },
+    "test": {
+      "exact_common_pct": 76.66456313813597,
+      "exact_all_pct": 20.96662340103398,
+      "missing_pct": 72.71842725245956,
+      "mae": 0.06884072742442444,
+      "bias": -0.049856144965143644,
+      "high_recall_pct": 0.0,
+      "predicted_zero_reference_pct": 2.023726004719745,
+      "predicted_low_reference_pct": 2.521351258220548
+    }
+  },
+  "porto_macro_contributing_hazards": {
+    "all": {
+      "exact_common_pct": 6,
+      "exact_all_pct": 6,
+      "missing_pct": 6,
+      "mae": 6,
+      "bias": 6,
+      "high_recall_pct": 6,
+      "high_precision_common_pct": 3,
+      "predicted_zero_reference_pct": 6,
+      "predicted_low_reference_pct": 6
+    },
+    "development": {
+      "exact_common_pct": 6,
+      "exact_all_pct": 6,
+      "missing_pct": 6,
+      "mae": 6,
+      "bias": 6,
+      "high_recall_pct": 6,
+      "high_precision_common_pct": 2,
+      "predicted_zero_reference_pct": 6,
+      "predicted_low_reference_pct": 6
+    },
+    "validation": {
+      "exact_common_pct": 6,
+      "exact_all_pct": 6,
+      "missing_pct": 6,
+      "mae": 6,
+      "bias": 6,
+      "high_recall_pct": 6,
+      "high_precision_common_pct": 3,
+      "predicted_zero_reference_pct": 6,
+      "predicted_low_reference_pct": 6
+    },
+    "test": {
+      "exact_common_pct": 6,
+      "exact_all_pct": 6,
+      "missing_pct": 6,
+      "mae": 6,
+      "bias": 6,
+      "high_recall_pct": 6,
+      "high_precision_common_pct": 0,
+      "predicted_zero_reference_pct": 6,
+      "predicted_low_reference_pct": 6
+    }
+  },
+  "porto_pooled": {
+    "all": {
+      "eligible": 20782,
+      "common": 3180,
+      "missing": 17602,
+      "correct_class_count": 2498,
+      "high_true_positive": 21,
+      "high_reference_all_eligible": 1997,
+      "high_predicted_common": 27,
+      "predicted_cells": 3377,
+      "predicted_zero_reference_cells": 59,
+      "predicted_low_reference_cells": 138,
+      "sum_error_common": -150.87277352647712,
+      "sum_abs_error_common": 216.8295330440468,
+      "exact_all_pct": 12.020017322683092,
+      "exact_common_pct": 78.55345911949685,
+      "mae": 0.06818538774970025
+    },
+    "development": {
+      "eligible": 10950,
+      "common": 1922,
+      "missing": 9028,
+      "correct_class_count": 1526,
+      "high_true_positive": 10,
+      "high_reference_all_eligible": 1036,
+      "high_predicted_common": 12,
+      "predicted_cells": 2046,
+      "predicted_zero_reference_cells": 32,
+      "predicted_low_reference_cells": 92,
+      "sum_error_common": -89.59695502723073,
+      "sum_abs_error_common": 130.2106109385075,
+      "exact_all_pct": 13.93607305936073,
+      "exact_common_pct": 79.39646201873049,
+      "mae": 0.06774745626353147
+    },
+    "validation": {
+      "eligible": 6680,
+      "common": 401,
+      "missing": 6279,
+      "correct_class_count": 317,
+      "high_true_positive": 11,
+      "high_reference_all_eligible": 649,
+      "high_predicted_common": 15,
+      "predicted_cells": 437,
+      "predicted_zero_reference_cells": 12,
+      "predicted_low_reference_cells": 24,
+      "sum_error_common": -18.596368783535173,
+      "sum_abs_error_common": 27.61948691633622,
+      "exact_all_pct": 4.745508982035928,
+      "exact_common_pct": 79.05236907730674,
+      "mae": 0.0688765259759008
+    },
+    "test": {
+      "eligible": 3152,
+      "common": 857,
+      "missing": 2295,
+      "correct_class_count": 655,
+      "high_true_positive": 0,
+      "high_reference_all_eligible": 312,
+      "high_predicted_common": 0,
+      "predicted_cells": 894,
+      "predicted_zero_reference_cells": 15,
+      "predicted_low_reference_cells": 22,
+      "sum_error_common": -42.67944971571121,
+      "sum_abs_error_common": 58.99943518920308,
+      "exact_all_pct": 20.78045685279188,
+      "exact_common_pct": 76.4294049008168,
+      "mae": 0.06884414841213896
+    }
+  },
+  "evaluation_seconds": 16.207787699997425,
+  "execution_summary": {
+    "completed_layers": 11,
+    "requested_layers": 11,
+    "complete_model_queries": 68,
+    "complete_network_tiles": 904,
+    "completed_class_compute_seconds": 2451.2061110002687,
+    "resumed_run_stage_wall_seconds": 2396.3916363001335,
+    "sampled_peak_process_tree_mib": 1106.32421875,
+    "interrupted_first_attempt": "logs/attempt1; retained complete bins included in class time, abandoned partial work excluded from complete compute sum",
+    "gpu_used": false,
+    "numerical_reference_used_for_inference": false
+  }
+}

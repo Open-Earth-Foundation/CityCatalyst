@@ -1,0 +1,14 @@
+{
+  "experimental_candidate": "blend35_8",
+  "configuration": {
+    "minimum_alpha": 0.35,
+    "recognized_pixel_minimum": 8,
+    "aggregation": "mean"
+  },
+  "reason": "Of grey-blending candidates, this has the lowest validation zero-reference coverage and lowest MAE. Its class recovery is higher than baseline. It nevertheless fails the empty-reference coverage gate, so it is research-only and is not the recommended Porto output.",
+  "frozen_before_test_scoring": true,
+  "production_pdf_fallback": "existing JVP values corrected by 0.9*v+0.05; original absence retained; no assumption absent means masked at source",
+  "preferred_numeric_source": "published indexed-raster derivatives, explicitly not authenticated original TIFFs",
+  "protocol_notes": "Keep the predeclared 3km hash-block split. Opus proposed a different split after development scoring; switching would expose formerly scored blocks to the test. No spatial buffer was predeclared. This limits independence. Richfield GeoPDF replaces planned OSM fitting because embedded source georeferencing was discovered. No further ML candidates were trained.",
+  "post_test_bugfix": "A new exact-swatch unit test found the red-pixel filter rejected palette steps8/9. Change G>=B-3 to G>=B-16 (printed ramp max B-G=13 plus3 tolerance). No candidate/parameter reselection; rerun fixed pipeline and disclose that test was already observed. All experimental outputs remain quarantined."
+}

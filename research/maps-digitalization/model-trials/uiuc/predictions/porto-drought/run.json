@@ -1,0 +1,33 @@
+{
+  "id": "porto-drought",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:13:03.111678+00:00",
+  "completed_utc": "2026-10-30T12:19:48.213822+00:00",
+  "seconds": 405.0861767999595,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1758,
+    1218
+  ],
+  "model_forward_calls": 630,
+  "source_pixels": 2141244,
+  "unknown_pixels": 1398653,
+  "overlapping_positive_pixels": 204406,
+  "label_counts": {
+    "0": 1398653,
+    "1": 499289,
+    "2": 7825,
+    "3": 28482,
+    "4": 54052,
+    "5": 123559,
+    "6": 26600,
+    "7": 101,
+    "8": 112,
+    "9": 2301,
+    "10": 270
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "d25a5f03939a3446547ce912eac941b0a31d1a0c084906470112adcbfacafb24"
+}

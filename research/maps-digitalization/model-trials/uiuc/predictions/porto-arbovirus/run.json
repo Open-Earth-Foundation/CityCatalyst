@@ -1,0 +1,33 @@
+{
+  "id": "porto-arbovirus",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:19:48.424599+00:00",
+  "completed_utc": "2026-10-30T12:25:42.106277+00:00",
+  "seconds": 353.6708472999744,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1758,
+    1213
+  ],
+  "model_forward_calls": 540,
+  "source_pixels": 2132454,
+  "unknown_pixels": 1391125,
+  "overlapping_positive_pixels": 198529,
+  "label_counts": {
+    "0": 1391125,
+    "1": 489926,
+    "2": 4007,
+    "3": 30450,
+    "4": 41016,
+    "5": 117359,
+    "6": 55594,
+    "7": 76,
+    "8": 191,
+    "9": 2344,
+    "10": 366
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "6c63a83cc3f8641afa024861ff9e625913dc1a8e0a61d860854beb030a7b3bc7"
+}

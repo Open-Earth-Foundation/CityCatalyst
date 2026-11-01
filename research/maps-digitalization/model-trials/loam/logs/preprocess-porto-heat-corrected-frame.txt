@@ -1,0 +1,64 @@
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\.venv\Lib\site-packages\rasterio\__init__.py:368: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\.venv\Lib\site-packages\rasterio\__init__.py:378: NotGeoreferencedWarning: The given matrix is equal to Affine.identity or its flipped counterpart. GDAL may ignore this matrix and save no geotransform without raising an error. This behavior is somewhat driver-specific.
+  dataset = writer(
+Parameter Settings: False True True True
+========================================== Setting of Metadata Preprocessing for Polygon Extraction ==========================================
+*Preprocessing output directory => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-heat/"
+*Intput map tif for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-heat.tif"
+*Intput map json for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-heat.json"
+*Intput bound geojson for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam\inputs\porto-heat-bound.json"
+*Output for polygon extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-heat/intermediate7_2/Output"
+ - Output for intermediate basemap => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-heat/intermediate7"
+ - Output for intermediate extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-heat/intermediate7_2/(Map_Name)"
+ - Output for cropped map => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam/intermediate/porto-heat/intermediate6/cropped_map_mask" (Supporting point, line, polygon)
+
+*Adjustable (Set to "True" is highly recommended due to time complexity)
+ - Multiprocessing => True
+ - Simple preprocessing => True
+
+*Multiprocessing with 1 processes...
+==============================================================================================================================================
+
+=== Specify maps with polygon features ===
+As the format for gpkg is not determined, please provide json file in competition format to indicate the map key of a map at this stage.
+Will update to read the gpkg file once the format is determined...
+Total number of maps to extract:  1
+Title of maps:  ['porto-heat']
+Number of keys:  [10]
+
+=== Preparing basemaps with different representations / Checking area segmentation ===
+Working on map: porto-heat
+time check... segmentation_reading and representation_preprocessing:  0:00:03.910964
+
+=== Extract boundaries from the maps ===
+Working on map: porto-heat.tif
+time checkpoint _vt0: 0:00:00.342732
+Working on map: porto-heat.tif
+Working on map: porto-heat.tif
+time check... worker_boundary_extraction:  0:00:00.662525
+
+=== Extract auxiliary information from the maps ===
+Working on map: porto-heat.tif
+time checkpoint _v0: 0:00:00.234306
+time checkpoint _v1: 0:00:00.319020
+time checkpoint _v2: 0:00:00.323104
+time check... worker_auxiliary_info:  0:00:00.323104
+
+=== Apply recoloring (color-set matching) for the maps ===
+
+=== Apply general metadata preprocessing for polygon extraction from the maps ===
+Working on map: porto-heat.tif
+time checkpoint _v0: 0:00:00.248757
+time checkpoint _v1: 0:00:00.251755
+processing _v0 >>> _v2 (legend 10/10)... : 0:00:00.542556
+time checkpoint _v2: 0:00:00.542556
+looping... (round: 1/1)... (legend: 0-10 /10)
+time checkpoint _v3: 0:00:00.542556
+processing _v3 >>> _v4 (iteration 1/2)... (legend 10/10)... : 0:00:00.549065
+processing _v3 >>> _v4 (iteration 2/2)... (legend 10/10)... : 0:00:00.554664
+ - dynamic update (0 / 0)
+time checkpoint _v4: 0:00:00.561029
+time checkpoint _v7: 0:00:01.442136
+time check... worker_main_component:  0:00:01.443135
+PREPROCESS_SUCCESS 6.357807699940167

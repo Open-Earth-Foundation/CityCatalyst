@@ -1,0 +1,16 @@
+Resolved 10 packages in 480ms
+Downloading pymupdf (17.6MiB)
+Downloading rasterio (24.5MiB)
+ Downloaded pymupdf
+ Downloaded rasterio
+Prepared 7 packages in 2.66s
+Uninstalled 1 package in 513ms
+Installed 7 packages in 116ms
+ + affine==3.0.1
+ + attrs==26.1.0
+ + click==8.5.0
+ + click-plugins==1.1.1.2
+ + cligj==0.7.2
+ - pymupdf==2.0
+ + pymupdf==1.26.7
+ + rasterio==1.4.4

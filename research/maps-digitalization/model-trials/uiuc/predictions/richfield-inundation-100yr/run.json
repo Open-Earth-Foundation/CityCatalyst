@@ -1,0 +1,24 @@
+{
+  "id": "richfield-inundation-100yr",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:31:40.292689+00:00",
+  "completed_utc": "2026-10-30T12:32:47.407708+00:00",
+  "seconds": 67.1137643000111,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1584,
+    2448
+  ],
+  "model_forward_calls": 104,
+  "source_pixels": 3877632,
+  "unknown_pixels": 3869598,
+  "overlapping_positive_pixels": 0,
+  "label_counts": {
+    "0": 3869598,
+    "1": 8034
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "eed84e23db8f9cc6cf99b6f582593252c8b427364632410420394f958f1aa3d2"
+}

@@ -1,0 +1,75 @@
+[
+  {
+    "name": "acm-pdf",
+    "url": "https://dl.acm.org/doi/pdf/10.1145/3748636.3764602",
+    "checked_at_utc": "2026-11-01T09:26:54.419242+00:00",
+    "method": "GET",
+    "status": 403,
+    "final_url": "https://dl.acm.org/doi/pdf/10.1145/3748636.3764602",
+    "headers": {
+      "Content-Type": "text/html; charset=UTF-8",
+      "Content-Length": "5568"
+    },
+    "truncated": false,
+    "file": "evidence/acm-pdf.body",
+    "bytes": 5568,
+    "sha256": "653e763318f822cb126f93d24a62b2d489c6764ffb99a30da4bcc3ee0bc92ad0",
+    "elapsed_s": 0.171
+  },
+  {
+    "name": "github-topaz-readme-search",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon+in%3Areadme&per_page=100",
+    "checked_at_utc": "2026-11-01T09:26:54.420273+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=TOPAZ+polygon+in%3Areadme&per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "8",
+      "X-RateLimit-Reset": "1793525275"
+    },
+    "truncated": false,
+    "file": "evidence/github-topaz-readme-search.body",
+    "bytes": 533390,
+    "sha256": "eebe373d296b1540c4cc2d8b08c6d517c124266595fb22f0907bcda2de717a0c",
+    "elapsed_s": 2.753
+  },
+  {
+    "name": "github-digmapper-readme-search",
+    "url": "https://api.github.com/search/repositories?q=DIGMAPPER+in%3Areadme&per_page=100",
+    "checked_at_utc": "2026-11-01T09:26:54.420897+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=DIGMAPPER+in%3Areadme&per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "9",
+      "X-RateLimit-Reset": "1793525275",
+      "Content-Length": "55"
+    },
+    "truncated": false,
+    "file": "evidence/github-digmapper-readme-search.body",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.426
+  },
+  {
+    "name": "github-inferlink-critical-search",
+    "url": "https://api.github.com/search/repositories?q=Inferlink+CriticalMAAS+in%3Areadme&per_page=100",
+    "checked_at_utc": "2026-11-01T09:26:54.421400+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=Inferlink+CriticalMAAS+in%3Areadme&per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "7",
+      "X-RateLimit-Reset": "1793525275",
+      "Content-Length": "11807"
+    },
+    "truncated": false,
+    "file": "evidence/github-inferlink-critical-search.body",
+    "bytes": 11807,
+    "sha256": "f6241cee89f923fbbd03bf36c1fd1cf6f95c2d4d189c06267bcdb07132eb9145",
+    "elapsed_s": 0.704
+  }
+]

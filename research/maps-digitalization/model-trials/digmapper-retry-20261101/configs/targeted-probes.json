@@ -1,0 +1,50 @@
+[
+  {
+    "name": "docker-jterstriep-tags",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/tags/?page_size=100"
+  },
+  {
+    "name": "docker-jterstriep-repos",
+    "url": "https://hub.docker.com/v2/repositories/jterstriep/?page_size=100"
+  },
+  {
+    "name": "github-jterstriep",
+    "url": "https://api.github.com/users/jterstriep/repos?per_page=100"
+  },
+  {
+    "name": "lab-publications",
+    "url": "https://knowledge-computing.github.io/publications.html"
+  },
+  {
+    "name": "author-weiwei",
+    "url": "https://weiweiduan.github.io/"
+  },
+  {
+    "name": "author-fandel",
+    "url": "https://fandel-lin.github.io/"
+  },
+  {
+    "name": "github-weiwei-repos",
+    "url": "https://api.github.com/users/weiweiduan/repos?per_page=100"
+  },
+  {
+    "name": "github-fandel-repos",
+    "url": "https://api.github.com/users/fandel-lin/repos?per_page=100"
+  },
+  {
+    "name": "github-yijun-repos",
+    "url": "https://api.github.com/users/linyijun/repos?per_page=100"
+  },
+  {
+    "name": "github-sofia-repos",
+    "url": "https://api.github.com/users/sofiakirsanova/repos?per_page=100"
+  },
+  {
+    "name": "github-usc-repos",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100"
+  },
+  {
+    "name": "candidate-release-zip",
+    "url": "https://github.com/cxp114/criticalmaas-uncharted-ta1/releases/download/v0.1.0/criticalmaas-windows-v0.1.0-onedir.zip"
+  }
+]

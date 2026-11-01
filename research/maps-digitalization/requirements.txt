@@ -1,0 +1,6 @@
+numpy==2.5.4
+scipy==1.18.1
+pillow==13.0.0
+shapely==2.2.0
+pyproj==3.8.0
+pymupdf==2.0

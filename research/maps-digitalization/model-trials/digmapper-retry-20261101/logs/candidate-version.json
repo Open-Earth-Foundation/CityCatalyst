@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "git",
+    "-C",
+    "upstream\\windows-launcher",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper-retry-20261101",
+  "started_at_utc": "2026-11-01T09:26:53.959912+00:00",
+  "exit_code": 0,
+  "elapsed_s": 0.08
+}

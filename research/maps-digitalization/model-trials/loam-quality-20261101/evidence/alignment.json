@@ -1,0 +1,299 @@
+{
+  "porto-heat": {
+    "source_crop_xyxy": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "source_size": [
+      1213,
+      1758
+    ],
+    "new_mask_size": [
+      1213,
+      1758
+    ],
+    "previous_display_mask_size": [
+      1213,
+      1758
+    ],
+    "focus_size": [
+      92,
+      60
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "porto-flood": {
+    "source_crop_xyxy": [
+      734,
+      1147,
+      820,
+      1204
+    ],
+    "source_size": [
+      1155,
+      1668
+    ],
+    "new_mask_size": [
+      1155,
+      1668
+    ],
+    "previous_display_mask_size": [
+      1155,
+      1668
+    ],
+    "focus_size": [
+      86,
+      57
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "richfield-inundation-100yr": {
+    "source_crop_xyxy": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "source_size": [
+      2448,
+      1584
+    ],
+    "new_mask_size": [
+      2448,
+      1584
+    ],
+    "previous_display_mask_size": [
+      2448,
+      1584
+    ],
+    "focus_size": [
+      640,
+      360
+    ],
+    "note": "Fixed Wood Lake fragment: PDF page points (280,285)-(600,465), rendered at144DPI. Previous72DPI mask enlarged nearest-neighbor2x for alignment only.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "porto-landslide": {
+    "source_crop_xyxy": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "source_size": [
+      1213,
+      1758
+    ],
+    "new_mask_size": [
+      1213,
+      1758
+    ],
+    "previous_display_mask_size": [
+      1213,
+      1758
+    ],
+    "focus_size": [
+      92,
+      60
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "porto-drought": {
+    "source_crop_xyxy": [
+      774,
+      1209,
+      865,
+      1269
+    ],
+    "source_size": [
+      1218,
+      1758
+    ],
+    "new_mask_size": [
+      1218,
+      1758
+    ],
+    "previous_display_mask_size": [
+      1218,
+      1758
+    ],
+    "focus_size": [
+      91,
+      60
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "porto-arbovirus": {
+    "source_crop_xyxy": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "source_size": [
+      1213,
+      1758
+    ],
+    "new_mask_size": [
+      1213,
+      1758
+    ],
+    "previous_display_mask_size": [
+      1213,
+      1758
+    ],
+    "focus_size": [
+      92,
+      60
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "porto-storm": {
+    "source_crop_xyxy": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "source_size": [
+      1213,
+      1758
+    ],
+    "new_mask_size": [
+      1213,
+      1758
+    ],
+    "previous_display_mask_size": [
+      1213,
+      1758
+    ],
+    "focus_size": [
+      92,
+      60
+    ],
+    "note": "Same fixed 3km x 1.75km physical fragment used by prior overlay; native source pixels. Unknown predictions are transparent.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "richfield-inundation-2yr": {
+    "source_crop_xyxy": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "source_size": [
+      2448,
+      1584
+    ],
+    "new_mask_size": [
+      2448,
+      1584
+    ],
+    "previous_display_mask_size": [
+      2448,
+      1584
+    ],
+    "focus_size": [
+      640,
+      360
+    ],
+    "note": "Fixed Wood Lake fragment: PDF page points (280,285)-(600,465), rendered at144DPI. Previous72DPI mask enlarged nearest-neighbor2x for alignment only.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "richfield-inundation-10yr": {
+    "source_crop_xyxy": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "source_size": [
+      2448,
+      1584
+    ],
+    "new_mask_size": [
+      2448,
+      1584
+    ],
+    "previous_display_mask_size": [
+      2448,
+      1584
+    ],
+    "focus_size": [
+      640,
+      360
+    ],
+    "note": "Fixed Wood Lake fragment: PDF page points (280,285)-(600,465), rendered at144DPI. Previous72DPI mask enlarged nearest-neighbor2x for alignment only.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "richfield-inundation-mce100": {
+    "source_crop_xyxy": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "source_size": [
+      2448,
+      1584
+    ],
+    "new_mask_size": [
+      2448,
+      1584
+    ],
+    "previous_display_mask_size": [
+      2448,
+      1584
+    ],
+    "focus_size": [
+      640,
+      360
+    ],
+    "note": "Fixed Wood Lake fragment: PDF page points (280,285)-(600,465), rendered at144DPI. Previous72DPI mask enlarged nearest-neighbor2x for alignment only.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  },
+  "richfield-prioritization-score": {
+    "source_crop_xyxy": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "source_size": [
+      2448,
+      1584
+    ],
+    "new_mask_size": [
+      2448,
+      1584
+    ],
+    "previous_display_mask_size": [
+      2448,
+      1584
+    ],
+    "focus_size": [
+      640,
+      360
+    ],
+    "note": "Fixed Wood Lake fragment: PDF page points (280,285)-(600,465), rendered at144DPI. Previous72DPI mask enlarged nearest-neighbor2x for alignment only.",
+    "source_only_crop": true,
+    "numeric_reference_used_for_prediction": false
+  }
+}

@@ -1,0 +1,228 @@
+[
+  {
+    "name": "author-poly-tree",
+    "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:24:32.053075+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"ecc625c5a0b3312202b14f9c999006178c05fbf5ab78411fc4f64bfaac5d212d\"",
+      "Last-Modified": "Fri, 15 Mar 2024 21:51:42 GMT",
+      "X-RateLimit-Remaining": "31",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/author-poly-tree.body",
+    "bytes": 252674,
+    "sha256": "ecc625c5a0b3312202b14f9c999006178c05fbf5ab78411fc4f64bfaac5d212d",
+    "elapsed_s": 0.648
+  },
+  {
+    "name": "author-poly-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:24:32.053366+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/HEAD/README.md",
+    "headers": {
+      "Content-Length": "0",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"aae1d56222a9cafc63743594c537cd2e698c0090a4e3f7d75bd425ddd0a66100\""
+    },
+    "truncated": false,
+    "file": "evidence/author-poly-readme.body",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "elapsed_s": 0.403
+  },
+  {
+    "name": "author-poly-releases",
+    "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/releases",
+    "checked_at_utc": "2026-11-01T09:24:32.053721+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/releases",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "30",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/author-poly-releases.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.377
+  },
+  {
+    "name": "author-dovetail-tree",
+    "url": "https://api.github.com/repos/Fandel-Lin/DOVETAIL/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:24:32.054135+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/Fandel-Lin/DOVETAIL/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"1c45de1d04dbe91704b87b6fc8877f3eff3662c928a42a2a538e0cdc54cd83b2\"",
+      "Last-Modified": "Thu, 31 Oct 2024 15:39:28 GMT",
+      "X-RateLimit-Remaining": "29",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "630"
+    },
+    "truncated": false,
+    "file": "evidence/author-dovetail-tree.body",
+    "bytes": 630,
+    "sha256": "1c45de1d04dbe91704b87b6fc8877f3eff3662c928a42a2a538e0cdc54cd83b2",
+    "elapsed_s": 0.419
+  },
+  {
+    "name": "author-dovetail-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/DOVETAIL/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:24:32.430270+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/DOVETAIL/HEAD/README.md",
+    "headers": {
+      "Content-Length": "184",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"7487dd92d82f909b36cbedd7d399eda2772d0d1d28d854127a8b5fc531a3bd21\""
+    },
+    "truncated": false,
+    "file": "evidence/author-dovetail-readme.body",
+    "bytes": 184,
+    "sha256": "81a65385ad5e0132102128aa354bc21a0c3aea793aabe227c9f43287b7152980",
+    "elapsed_s": 0.35
+  },
+  {
+    "name": "author-polydetr-readme",
+    "url": "https://raw.githubusercontent.com/WeiweiDuan/PolyDETR/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:24:32.456719+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://raw.githubusercontent.com/WeiweiDuan/PolyDETR/HEAD/README.md",
+    "headers": {
+      "Content-Length": "14",
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "truncated": false,
+    "file": "evidence/author-polydetr-readme.body",
+    "bytes": 14,
+    "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+    "elapsed_s": 0.326
+  },
+  {
+    "name": "author-spolydetr-readme",
+    "url": "https://raw.githubusercontent.com/WeiweiDuan/S-PolyDETR/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:24:32.472821+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/WeiweiDuan/S-PolyDETR/HEAD/README.md",
+    "headers": {
+      "Content-Length": "971",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"d987c33d49bb70a3cbb26a0f75a4f90afca1e1b2fdc887d86a88449aec0e1b89\""
+    },
+    "truncated": false,
+    "file": "evidence/author-spolydetr-readme.body",
+    "bytes": 971,
+    "sha256": "e1ea35f99475931f7454a48b4636be65fbe0148f5b2d121d5aef69157dac568c",
+    "elapsed_s": 0.337
+  },
+  {
+    "name": "author-glyph-readme",
+    "url": "https://raw.githubusercontent.com/Fandel-Lin/GLYPH/HEAD/README.md",
+    "checked_at_utc": "2026-11-01T09:24:32.701272+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/Fandel-Lin/GLYPH/HEAD/README.md",
+    "headers": {
+      "Content-Length": "1531",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"44adc3802f76780e7623a51b7f50129f5cccec6c562f5bdbf9b48a9cc383efbb\""
+    },
+    "truncated": false,
+    "file": "evidence/author-glyph-readme.body",
+    "bytes": 1531,
+    "sha256": "83558cdac6e18a21dc43ccc6389b8f059a77a2a8ce6509708e56c1710ff8f062",
+    "elapsed_s": 0.353
+  },
+  {
+    "name": "usc-repos-page2",
+    "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=2",
+    "checked_at_utc": "2026-11-01T09:24:32.779937+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=2",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"38cfcb1642f01597f65f4a532aa111abe8ef89b6ba0dd28f28a4044058bf6054\"",
+      "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"prev\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"next\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"last\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"first\"",
+      "X-RateLimit-Remaining": "28",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/usc-repos-page2.body",
+    "bytes": 569594,
+    "sha256": "38cfcb1642f01597f65f4a532aa111abe8ef89b6ba0dd28f28a4044058bf6054",
+    "elapsed_s": 2.772
+  },
+  {
+    "name": "jterstriep-dockerfiles-tree",
+    "url": "https://api.github.com/repos/jterstriep/dockerfiles/git/trees/HEAD?recursive=1",
+    "checked_at_utc": "2026-11-01T09:24:32.783099+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/jterstriep/dockerfiles/git/trees/HEAD?recursive=1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"fb109e38b05ddc128c1bfbb9d7bcaf427a9be752316a6cd107905e74dc31f8c7\"",
+      "Last-Modified": "Wed, 04 Feb 2015 23:20:46 GMT",
+      "X-RateLimit-Remaining": "27",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "2411"
+    },
+    "truncated": false,
+    "file": "evidence/jterstriep-dockerfiles-tree.body",
+    "bytes": 2411,
+    "sha256": "fb109e38b05ddc128c1bfbb9d7bcaf427a9be752316a6cd107905e74dc31f8c7",
+    "elapsed_s": 0.335
+  },
+  {
+    "name": "candidate-launcher",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/cli.py",
+    "checked_at_utc": "2026-11-01T09:24:32.809890+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/cli.py",
+    "headers": {
+      "Content-Length": "9329",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"bcb0a79ea533357897fcc1ac45ece9d66cac66bf101c853370bdd26583924631\""
+    },
+    "truncated": false,
+    "file": "evidence/candidate-launcher.body",
+    "bytes": 9329,
+    "sha256": "0b95f8f15de8f24d4e80efca7eebb18680e6298239daf6467fd111611af7ed00",
+    "elapsed_s": 0.309
+  },
+  {
+    "name": "candidate-launcher-main",
+    "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/__main__.py",
+    "checked_at_utc": "2026-11-01T09:24:33.054307+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/__main__.py",
+    "headers": {
+      "Content-Length": "14",
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "truncated": false,
+    "file": "evidence/candidate-launcher-main.body",
+    "bytes": 14,
+    "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+    "elapsed_s": 0.285
+  }
+]

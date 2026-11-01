@@ -1,0 +1,64 @@
+{
+  "status": "succeeded",
+  "name": "richfield-prioritization-score",
+  "seconds": 10.188455700059421,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 2.609527299995534,
+      "tiles": 6,
+      "positive_pixels": 92856,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 947.3671875
+    },
+    {
+      "index": 1,
+      "seconds": 2.3869202999630943,
+      "tiles": 6,
+      "positive_pixels": 378875,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 947.4609375
+    },
+    {
+      "index": 2,
+      "seconds": 2.3612660000799224,
+      "tiles": 6,
+      "positive_pixels": 30963,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 949.265625
+    },
+    {
+      "index": 3,
+      "seconds": 2.3527078001061454,
+      "tiles": 6,
+      "positive_pixels": 51935,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 949.27734375
+    }
+  ],
+  "tiles": 24,
+  "unknown_pixels": 3323322,
+  "overlap_pixels": 319,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "config_sha256": "5156bff19034c5d68e997f68b2601e5c3684eb4adc9d20fd68849d1568e31696",
+  "strict_load": "<All keys matched successfully>",
+  "mode": 0,
+  "dtype": "float32",
+  "device": "cuda",
+  "tile_hw": [
+    1024,
+    1024
+  ],
+  "torch": "2.5.1+cu124",
+  "gpu_lock_owner": {
+    "owner": "loam-quality-e90799c5-2e71-4c70-bac5-b2e362a40f8a",
+    "pid": 24616,
+    "directory": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101",
+    "layer": "richfield-prioritization-score",
+    "created": 1793525528.947313
+  }
+}

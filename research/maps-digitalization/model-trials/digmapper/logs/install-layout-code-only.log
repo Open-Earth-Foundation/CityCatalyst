@@ -1,0 +1,11 @@
+{"argv": ["uv", "pip", "install", "--python", "../../.venv/Scripts/python.exe", "--no-deps", "-e", "./tasks", "-e", "./pipelines/segmentation"], "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\upstream\\uncharted-ta1", "started_at": "2026-10-30T11:54:53.408637+00:00", "timeout_s": 60}
+Using Python 3.11.15 environment at: C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\.venv
+Resolved 2 packages in 17ms
+   Building lara-map-segmentation @ file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/pipelines/segmentation
+   Building lara-tasks @ file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/tasks
+      Built lara-map-segmentation @ file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/pipelines/segmentation
+      Built lara-tasks @ file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/tasks
+Prepared 2 packages in 1.46s
+Installed 2 packages in 23ms
+ + lara-map-segmentation==1.0.0 (from file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/pipelines/segmentation)
+ + lara-tasks==1.0.0 (from file:///C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/digmapper/upstream/uncharted-ta1/tasks)

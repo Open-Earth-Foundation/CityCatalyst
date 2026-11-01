@@ -1,0 +1,12 @@
+# Predeclared improvement experiment
+
+Two document-specific profiles, not a claim of a universal PDF parser. Original files remain unchanged. Runtime input hashes will accompany exports.
+
+1. Richfield: recover explicit legend-colour PDF fills including fill-and-stroke paths, using verified even-odd semantics, retaining source holes and small shapes; no nesting edits. Export with calibrated OSM-lake registration and explicit non-survey status. Evaluate page-geometry fidelity separately from registration. Hold out lake shorelines, not merely centre-shift stability.
+2. Porto: direct raster ingestion is the preferred source route when numerical rasters are available. It is an ingestion feature, not an accuracy experiment against itself. Separately improve PDF-only reconstruction using printed tick strokes, bin-centre value estimates, colour mixing and supported-cell aggregation. Never use reference values to fill PDF recovery output.
+3. Fixed deterministic PDF candidates: midpoint nearest-colour with support15; midpoint nearest-colour with support3; grey-compositing with support3 and alpha>=.35; grey-compositing with support8 and alpha>=.35; grey-compositing with support3 and alpha>=.55; grey-compositing with support3 using median aggregation. Freeze selected settings before test evaluation. At most six deterministic candidates; any ML follow-up must declare its split/features before training.
+4. Spatial split: 3km square blocks (12x12 benchmark cells), stable hash fold0 test, fold1 validation, folds2-4 development. All six hazard layers at a geographic block share the split. Select on validation only. Evaluate false coverage, exact intended-class and literal-number agreement, missing fraction, MAE/bias and high-class recall. No claim of pristine blindness: these datasets were explored in the preceding audit. Reference remains same-author published raster derivatives.
+5. Improvements must not obtain coverage by unqualified filling. Export support counts, source resolution, ambiguity/intervals, provenance and reasons for abstention. Never label the entire square as observed source risk extent.
+6. No generative modification of map pixels. AI/ML is optional and must beat deterministic baselines on the declared split. No paid API calls without per-call price accounting and a total cap of $10. No credentials in logs or artifacts.
+
+Consult Opus before finalising the design and again on code/results. Any necessary protocol amendment is documented before new selection/evaluation.

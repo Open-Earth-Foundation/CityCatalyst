@@ -1,0 +1,56 @@
+[
+  {
+    "url": "https://arxiv.org/html/2506.16006v1",
+    "status": 200,
+    "final_url": "https://arxiv.org/html/2506.16006v1",
+    "bytes": 221428,
+    "sha256": "e3ee0491e1f5b095d3bf9f2d64d194c1138657ca68c72091c486f62b7793cdbc",
+    "file": "paper.html",
+    "elapsed_s": 0.434
+  },
+  {
+    "url": "https://arxiv.org/pdf/2506.16006v1",
+    "status": 200,
+    "final_url": "https://arxiv.org/pdf/2506.16006v1",
+    "bytes": 16321364,
+    "sha256": "086ff43ef1ff4b077df80cbba7635eeba6ed6471644e87ceaa30a6b75698781a",
+    "file": "paper.pdf",
+    "elapsed_s": 11.881
+  },
+  {
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/pipelines/segmentation/README.md",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/pipelines/segmentation/README.md",
+    "bytes": 4389,
+    "sha256": "2b80e560bced998fb181e74ae10702bf9c907564d4bb3d8d10ac3cc6cf2fb6c6",
+    "file": "layout-readme.md",
+    "elapsed_s": 0.352
+  },
+  {
+    "url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+    "bytes": 5871,
+    "sha256": "7822ee9e2383dbbe23651ff483347a0030df061b64a232a4fbe07d6a15f7da3f",
+    "file": "github-digmapper-search.json",
+    "elapsed_s": 0.6
+  },
+  {
+    "url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+    "bytes": 27696,
+    "sha256": "82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67",
+    "file": "github-inferlink-repos.json",
+    "elapsed_s": 0.808
+  },
+  {
+    "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+    "bytes": 241020,
+    "sha256": "3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624",
+    "file": "github-criticalmaas-repos.json",
+    "elapsed_s": 1.809
+  }
+]

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "map_id": "porto-arbovirus",
+  "image": "legend.png",
+  "source_image": "porto-arbovirus.png",
+  "image_size": [
+    270,
+    405
+  ],
+  "source_image_size": [
+    1213,
+    1758
+  ],
+  "crop_bbox": [
+    105,
+    1040,
+    375,
+    1445
+  ],
+  "crop_method": "manual",
+  "coordinate_frame": "crop_pixels",
+  "pairs": [],
+  "source_pairs": [],
+  "has_ground_truth": false,
+  "pairs_excluded_by_crop": 0,
+  "annotation": null,
+  "original_locations": {
+    "image": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\inputs\\porto-arbovirus\\porto-arbovirus.png",
+    "annotation": "None"
+  },
+  "source_image_sha256": "323450961650f5f9d0bc67b25443e5d499c76b78ef62f7b8ecc113993bb202ab",
+  "annotation_sha256": null,
+  "min_confidence": 0.25,
+  "merge_groups": false,
+  "preparation_status": "prepared",
+  "prepared_at": "2026-10-30T11:57:06.990925+00:00",
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "Pillow": "12.3.0",
+      "openai": "2.54.0",
+      "PyYAML": "6.0.3",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1"
+    }
+  },
+  "preparation_source": {
+    "revision": "a12e9603c3ea0ee8d4eb8fc53a326e37be53c930",
+    "source_digest": "3f4eb3d4299b07031d99812b195a18fd7c0ecea4061488f2c101f4714be0a39d",
+    "source_files": {
+      "__init__.py": "c8c75bc68c3533bea08f3deea70e617039a154213cd5f2efbff9f3a04e871131",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "annotations.py": "7981886060cad015e60aae2f72bb9f16fc2019b8d77b968c74a736bc8b1a2f20",
+      "artifacts.py": "097d035a8331890c1f1b36ec30f22f2959d611990672d8d7f5771c11e41c729f",
+      "cli.py": "45eba03785012f82a29460080f1c90b483b4d75354df9a44122715d38344ce29",
+      "comparison.py": "4aa28f6f6ff4a2d69a5cafaf16ad18d77d098e60cbe97d67618462b609cab56e",
+      "dataset.py": "30f90b08389bd953d1473fc510dda7bf7c14c6687f2c9d1557b4c1f1fbf3e04e",
+      "experiments.py": "4866d12f14913fc4470d7848ffceb01e3eff9791c41a6c271fc1f19349d539fd",
+      "geometry.py": "49fabf3a28d276e13a50839a04269eda537ff11bc790205334ac1c4fc92d9e06",
+      "inference.py": "c1cbb9aa0d754622a28a97fe78d3897adfc9235f8aac8f779bb5048267ed5c63",
+      "io.py": "0204848fa62390fd3ea7b3ba3f6e9447595a43178b7a1befa71c9f22ed745540",
+      "metrics.py": "52db2221f9f46de35b21f1fa34dc3d57dff6bae9955b3d91e381dee8aba39bd8",
+      "prepare.py": "8eaa791a83fa7794b6e6ce24ef648298756ca5ed8f0dfaf19de440c1131bba63",
+      "provenance.py": "83833da53f1fae11a7ebb4497e7fe6317bbbfcdaadc012dce390a8d53d3f91ad",
+      "smoke.py": "c44ad957bac945bcb14787988de06ca86f0c24e7cf1473507afc849c1eac3c59"
+    }
+  },
+  "warnings": [],
+  "preparation_fingerprint": "3df8a44bd459f6672e1a381af1b9b14becfc4d357ad31caa86ee325485cd7692"
+}

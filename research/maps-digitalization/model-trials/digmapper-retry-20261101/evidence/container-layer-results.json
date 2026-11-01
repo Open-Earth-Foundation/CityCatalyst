@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://registry-1.docker.io/v2/jterstriep/topaz/blobs/sha256:3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98",
+    "status": 200,
+    "bytes": 65602698,
+    "sha256": "3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98",
+    "file": "evidence/topaz-container-application.tar.gz",
+    "checked_at_utc": "2026-11-01T09:26:19.642875+00:00",
+    "elapsed_s": 3.045
+  }
+]

@@ -1,0 +1,63 @@
+[
+  {
+    "component": "DIGMAPPER full system / author AIM",
+    "status": "blocked_release_not_obtained",
+    "evidence": [
+      "aim-metadata.body",
+      "aim-contents.body",
+      "aim-branches.body",
+      "aim-releases.body",
+      "aim-deployments.body",
+      "../logs/aim-ls-remote.log"
+    ],
+    "result": "Repository size 0; contents 404; branches/releases/deployments empty; git ls-remote succeeded with no refs."
+  },
+  {
+    "component": "TOPAZ polygon model",
+    "status": "not_located_in_examined_public_sources",
+    "repository": null,
+    "checkpoint_url": null,
+    "checkpoint_sha256": null,
+    "result": "No verified TOPAZ polygon implementation/checkpoint or runnable DIGMAPPER deployment obtained. Public negative evidence is bounded; private or differently named releases remain possible."
+  },
+  {
+    "component": "Third-party Windows launcher",
+    "status": "executed_identity_checks_only",
+    "repository": "https://github.com/cxp114/criticalmaas-uncharted-ta1",
+    "revision": "d346eb549f2d91139cc78594eee30a05ae7afb23",
+    "release": "v0.1.0",
+    "release_sha256": "94c02406b4c908d073336f7e86997e1115bd0c88d74bd6c3cf31543b19762382",
+    "result": "307 archive entries, no .pth/.pt/.ckpt/.safetensors/.onnx files. Source CLI lists five non-polygon pipelines; TOPAZ target rejected with exit 2. No inference."
+  },
+  {
+    "component": "Author poly_itemseg_update system",
+    "status": "excluded_wrong_polygon_method",
+    "repository": "https://github.com/Fandel-Lin/poly_itemseg_update",
+    "revision": "67bb6ab710fa88b630dc403e46abf85bcbbf99e8",
+    "result": "938-entry complete tree, polygon README/model/handler name LOAM; available point weights do not supply TOPAZ. Not run or relabelled."
+  },
+  {
+    "component": "jterstriep/topaz:0.2.5 Linux image",
+    "status": "excluded_name_collision",
+    "manifest_digest": "sha256:73a765c2314324082686ec877bdd1facb2628af89a8825c65810a18a2cf2c5ac",
+    "inspected_application_layer_sha256": "3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98",
+    "result": "Downloaded and digest-verified 65,602,698-byte application layer; README/setup.py identify tbepler/topaz, package topaz-em 0.2.5 for cryo-EM. Full 7.35 GB image not pulled or run."
+  },
+  {
+    "component": "Paper-linked LARA LayoutLMv3",
+    "status": "unavailable_public_weights_and_image",
+    "revision": "7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9",
+    "result": "Fresh 404 NoSuchBucket for config.yaml/config.json/model_final.pth and global weight endpoint; docker manifest denied/unauthorized. No new Detectron2 build or layout startup."
+  },
+  {
+    "component": "Author legend package",
+    "status": "not_reexecuted_no_polygon_model",
+    "revision": "a12e9603c3ea0ee8d4eb8fc53a326e37be53c930",
+    "result": "Release tree revision verified. Prior preparation-only result not counted as current inference. No GPT-4o calls."
+  },
+  {
+    "component": "LDTR / point extraction / other polygon methods",
+    "status": "not_run_outside_requested_polygon_model",
+    "result": "No substitution for TOPAZ; no redundant LDTR extension build."
+  }
+]

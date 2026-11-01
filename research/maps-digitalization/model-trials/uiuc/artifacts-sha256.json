@@ -1,0 +1,2082 @@
+[
+  {
+    "path": "adapter-verification.json",
+    "bytes": 1217,
+    "sha256": "30ba56c3e2883368271d100b46f11f68dcbdd3e4b6d0087affa7f56941bb9ddf"
+  },
+  {
+    "path": "checkpoint-inspection.json",
+    "bytes": 617,
+    "sha256": "6cb6ae53e8b633e564cd436535b23963bd65c3ab783938707f753f6a787ed70b"
+  },
+  {
+    "path": "commands.md",
+    "bytes": 3452,
+    "sha256": "9873b658266a1d6aa1782653a231cc6f35345e802fde53df6e47dc5e1aa5b57d"
+  },
+  {
+    "path": "evaluate.py",
+    "bytes": 14034,
+    "sha256": "45854482a8a2ebaaa6993ff04f37570ea9e68c829377264965c5cdf77cf136ac"
+  },
+  {
+    "path": "evaluation-reference-hashes.json",
+    "bytes": 1467,
+    "sha256": "f1e3871596f7801dd18605e1d8a76cee9b9a28b0c1272c78e066d9f267a2531c"
+  },
+  {
+    "path": "frozen-config.json",
+    "bytes": 32996,
+    "sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79"
+  },
+  {
+    "path": "frozen-config.sha256",
+    "bytes": 66,
+    "sha256": "05b4e6543a2848d359dc8010c92bf6cd3bd8bca471183527b610b0d367095e94"
+  },
+  {
+    "path": "helper-hashes.json",
+    "bytes": 544,
+    "sha256": "9b8dabe5483b3ee3b966742bfc83d8a50f2e712dd79d4409f67023acccbd4498"
+  },
+  {
+    "path": "infer.py",
+    "bytes": 6806,
+    "sha256": "53a2e05a26302d42bd31dfb9517bd451988003c3a5bf91781b4e962c6d5fb116"
+  },
+  {
+    "path": "metrics.json",
+    "bytes": 80535,
+    "sha256": "42af435a161c9cab9f082d1d6f4773f88e2cdd726d4ed79b7549ac1beb115fdd"
+  },
+  {
+    "path": "output-verification.json",
+    "bytes": 2976,
+    "sha256": "bd4edb3e94b9c75f078d79ac174469978586456861e91a20e0d71d0b438c9288"
+  },
+  {
+    "path": "overlay-preview.html",
+    "bytes": 5470,
+    "sha256": "c1dca1fe7903706b7901f6eaae1100d8030cde5d91e501dae19894b563f3fa7b"
+  },
+  {
+    "path": "overlay.html",
+    "bytes": 707588,
+    "sha256": "82d7f6600a4bc3aee55920b185a3c1bb7bba01a9f1b00482ddc8055d2d75fe1c"
+  },
+  {
+    "path": "prepare.py",
+    "bytes": 5440,
+    "sha256": "dad4bc3bbce86b8bf4294a688023e30edcd4688c4c173dfd7ad066313a7581e7"
+  },
+  {
+    "path": "report.md",
+    "bytes": 16359,
+    "sha256": "bf4309483ed5a759e57997af75d9fe124e4dc2a2ad1aa128498c5229b1118d1d"
+  },
+  {
+    "path": "report.py",
+    "bytes": 18151,
+    "sha256": "625bacb287e3242fe3a402d8169b8b34c84cc60bc2fcfef62b14e166b2d3f4cf"
+  },
+  {
+    "path": "requirements-lock.txt",
+    "bytes": 840,
+    "sha256": "a299b4a5a8f4685336fe07c923a92fecb233d01ce523e71a08e515aef10de683"
+  },
+  {
+    "path": "rerun.ps1",
+    "bytes": 1275,
+    "sha256": "2a5057d12358ac19b1cf1d3ef64da2e4ad08dc73aae13d35a7865a3fbed74b03"
+  },
+  {
+    "path": "verify_adapter.py",
+    "bytes": 3074,
+    "sha256": "436c5b189a18baae438d8202beb115e78843c3849237cb75eed1bcbcb50b5170"
+  },
+  {
+    "path": "verify_outputs.py",
+    "bytes": 3447,
+    "sha256": "6667547cfdaa89146e0c792db5d0824ba19ea0802d54bf1be846190ca8cbf518"
+  },
+  {
+    "path": "versions.json",
+    "bytes": 1414,
+    "sha256": "9e322ccd0cddf807a8302aacbc4941d45a3934ecc28020e30fc82523773ce83a"
+  },
+  {
+    "path": "visual-verification.json",
+    "bytes": 488,
+    "sha256": "ea146f55071e40fad631895bf2ff745f4ac6a48bcb3f1b1434b2bf069b198e45"
+  },
+  {
+    "path": "visualize.py",
+    "bytes": 6328,
+    "sha256": "1ef20115ebaa638d76119d94a0008cc1b8e7b0236166d03cbc7e70ffe439bd4f"
+  },
+  {
+    "path": "Darpa_Unet_Release/.gitattributes",
+    "bytes": 69,
+    "sha256": "65b54f32ba5ed4142d2e1405b7e12fd4d7e3fe1741114fd248c3efbb34fe8739"
+  },
+  {
+    "path": "Darpa_Unet_Release/datasets.py",
+    "bytes": 15081,
+    "sha256": "8dc719a448d4ca49f0ee325ccdfbcd6cdb2aa56b5e08b0b6c76968129128099d"
+  },
+  {
+    "path": "Darpa_Unet_Release/env.yaml",
+    "bytes": 5836,
+    "sha256": "2fa2d3933272babf5777cd9e4922232798e68ab6cc39952705b3d7944a256fa1"
+  },
+  {
+    "path": "Darpa_Unet_Release/h5Image.py",
+    "bytes": 12756,
+    "sha256": "2c3cfca0a80907ea3e211bb5d1d15207cea1f12b4dfb958f2e653ef9d6d14f32"
+  },
+  {
+    "path": "Darpa_Unet_Release/inference.py",
+    "bytes": 14270,
+    "sha256": "a7ef62d181e1d6b3214f67e7e336c1977216bd1c72f508efb19a13d8ad25b0ac"
+  },
+  {
+    "path": "Darpa_Unet_Release/jaccard_index_value=0.9229.ckpt",
+    "bytes": 134,
+    "sha256": "759714eea374760bcea1add3d9a4102cbbb67d559916a3df73d21c6192d8ca7c"
+  },
+  {
+    "path": "Darpa_Unet_Release/README.md",
+    "bytes": 886,
+    "sha256": "a68db4d3d088bf1d491b926c50c4976cfa9925f13a43361bae4021a8c7f0d35a"
+  },
+  {
+    "path": "Darpa_Unet_Release/test.py",
+    "bytes": 2545,
+    "sha256": "f1eb96253f51240d2ff0902232742a7f51b15e0bc7b33df24a876dd761d56dbc"
+  },
+  {
+    "path": "Darpa_Unet_Release/train.py",
+    "bytes": 4361,
+    "sha256": "745aa75148ececb07a599d2b3c868e051cdde6e16b95149126c9c0d14fde6a71"
+  },
+  {
+    "path": "Darpa_Unet_Release/transforms.py",
+    "bytes": 4407,
+    "sha256": "4212acc8ba3a0fd0e0bed37d2e6bd7aa3175d6e5d71f0cba1b740c8a7cd95fa5"
+  },
+  {
+    "path": "Darpa_Unet_Release/two_branch_unet.swb",
+    "bytes": 575,
+    "sha256": "251981011510d7514a53a33cf0db1304421a3d76b00bad3ac57932df68423cb5"
+  },
+  {
+    "path": "Darpa_Unet_Release/unet.swb",
+    "bytes": 511,
+    "sha256": "bc170633cac3b78ce438e8fb1fbb733e0f07db9cc7fdfad84ec724b87d3c8e96"
+  },
+  {
+    "path": "Darpa_Unet_Release/utils.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "logs/checkpoint-download.log",
+    "bytes": 1187,
+    "sha256": "c19791d74b71bd646be7f0072f8c5baa31f8b528303bcc305c4222840d56220e"
+  },
+  {
+    "path": "logs/checkpoint-url.txt",
+    "bytes": 145,
+    "sha256": "ea5608a2dc0915d077e31f9aef6a7d04412dc238474370e8ef594eeda549fb58"
+  },
+  {
+    "path": "logs/clone-model.log",
+    "bytes": 105,
+    "sha256": "7bbf59c88ac5984b36e1c07e2560253acb6a038c27a36484cb5a21c24b8bf9e6"
+  },
+  {
+    "path": "logs/clone-pipeline.log",
+    "bytes": 100,
+    "sha256": "d476ab71d0ffff7f4a8038d6b4aeacc2f9b569bb3b40e0c798d6c139a3288a0e"
+  },
+  {
+    "path": "logs/cpu-performance.log",
+    "bytes": 208,
+    "sha256": "8852ceb10ade14471cd9686bbe8f9cfbe52109db6347772c8c4224a654e49967"
+  },
+  {
+    "path": "logs/environment.log",
+    "bytes": 236,
+    "sha256": "01db3bcc287521ebe571146a7da629db6c5cae77387d471ae6c5c2698c81edcd"
+  },
+  {
+    "path": "logs/evaluation-first-four.log",
+    "bytes": 3921,
+    "sha256": "fe33ca1539394caf098036a17d85cb395789d2a6605b47480b8ade150fc00bc3"
+  },
+  {
+    "path": "logs/evaluation-first-ten.log",
+    "bytes": 7950,
+    "sha256": "63c45b99a5f9e47c0dc871232be348178d74f5f7f5f6323e90dd23531e5f543d"
+  },
+  {
+    "path": "logs/evaluation-first-two.log",
+    "bytes": 1482,
+    "sha256": "91038f180a8a85049af55ec68f65012ed3b3c1907b8a9310b8250a197a913f41"
+  },
+  {
+    "path": "logs/evaluation-initial.log",
+    "bytes": 774,
+    "sha256": "828ded8ef6af529b56c3c308c52ccb3e76c7b927b7a51fa4903cf9bae9f6f033"
+  },
+  {
+    "path": "logs/evaluation-porto-and-first-richfield.log",
+    "bytes": 6424,
+    "sha256": "1c5b8a6c68299eb1c7eb9474143eee4a785957003cdce24497334c56fe8a5108"
+  },
+  {
+    "path": "logs/evaluation.log",
+    "bytes": 8786,
+    "sha256": "8ca87ab3bae9eb123e6670077812a3e3e9d2928017af154cb47c06982ea31f9a"
+  },
+  {
+    "path": "logs/inference.log",
+    "bytes": 12410,
+    "sha256": "c2fc09ebc9923faba870f6dfeeecfc226580d6892fcc211aa1a0d247333a5252"
+  },
+  {
+    "path": "logs/install-lightning.log",
+    "bytes": 561,
+    "sha256": "7a62ea6041762da39fe52cbd216cb20b59047bc17c902c2897cc0b38e6a9754d"
+  },
+  {
+    "path": "logs/install.log",
+    "bytes": 1566,
+    "sha256": "940dbd18ed1ec5060b0b0ef799b327a22839d7f419fe02ccec5710c12971316f"
+  },
+  {
+    "path": "logs/model-smoke.log",
+    "bytes": 428,
+    "sha256": "944c15f77d315c9d865c1cca548a37e6db391caa3f33b4793b3608ee8270aafb"
+  },
+  {
+    "path": "logs/prepare.log",
+    "bytes": 6411,
+    "sha256": "9a70bc6658be9f8b49bf2bd7c872dcaa22fa9c0bfbfdd5afd382271ad9d0eec1"
+  },
+  {
+    "path": "logs/process-resource-snapshot.json",
+    "bytes": 343,
+    "sha256": "97c0dcd1249b0a396a1fee8e7fcb045a2fb7dc33404f171b8ae7388775695392"
+  },
+  {
+    "path": "logs/report.log",
+    "bytes": 41,
+    "sha256": "fda158748473484f3d67750d9ba9153f9db3d6c98280b45dce13b3269602d0ac"
+  },
+  {
+    "path": "logs/verify-adapter.log",
+    "bytes": 1219,
+    "sha256": "c5f1be5e9f437f3ccfe9edd66c834922147dad0684ba19b3b175c41df670e2ea"
+  },
+  {
+    "path": "logs/verify-outputs.log",
+    "bytes": 2978,
+    "sha256": "da09469b9095fa4433ba9d3d57fe10fefaa5dfaaea34cbc28edfde038a19b63f"
+  },
+  {
+    "path": "logs/visualization.log",
+    "bytes": 87,
+    "sha256": "7179e0271f630f07c3a4179d594f2e28de6384e549537a4be97bf57e5f6c0524"
+  },
+  {
+    "path": "sources/inundation-100yr-page.png",
+    "bytes": 1878612,
+    "sha256": "21dc57b8a49c99e1c781686f77732ce71c4fc2a35f3bb3501f504c081aba222f"
+  },
+  {
+    "path": "sources/inundation-10yr-page.png",
+    "bytes": 1861000,
+    "sha256": "f516e1336db25b7ddaaa8277f741e5a952bb4623c616f60574ce00dc80178f8b"
+  },
+  {
+    "path": "sources/inundation-2yr-page.png",
+    "bytes": 1840461,
+    "sha256": "db0af78de04f07da1ffc8399341a3fbe927e2e35685d2d2a89c26111bf3482da"
+  },
+  {
+    "path": "sources/inundation-mce100-page.png",
+    "bytes": 1886694,
+    "sha256": "79ce1d6242f7617ef87f45d2438fd6449eed5fee301264755a29825bbc7b4e82"
+  },
+  {
+    "path": "sources/porto-heat-native.png",
+    "bytes": 1692441,
+    "sha256": "1888b0b92d264552d9ffbac3cadddbd0035d59d8ba9941b3d3b6b328f330a3e7"
+  },
+  {
+    "path": "sources/porto-heat-preview.png",
+    "bytes": 732410,
+    "sha256": "d687608537de30fd1d0786adbdc8ac087ab238dcdd7ed1cfba404f4d42efde96"
+  },
+  {
+    "path": "sources/porto-legend-detail.png",
+    "bytes": 66520,
+    "sha256": "d6be9b88c2c3fb84c3bf52ae2b52b1c1724995849ad63bdcb66b44eda0092af7"
+  },
+  {
+    "path": "sources/prioritization-score-page.png",
+    "bytes": 1729970,
+    "sha256": "87f99969f879236cd9f35795e61bf621f2368cd1a803efa4d79dca379412c341"
+  },
+  {
+    "path": "uiuc-pipeline/.dockerignore",
+    "bytes": 253,
+    "sha256": "364560a628f0922356c5218540a8d215cbbffb95049b19c5ccbb8d24547c8782"
+  },
+  {
+    "path": "uiuc-pipeline/.gitignore",
+    "bytes": 251,
+    "sha256": "e3b90e3cee537fe203c4a4324d24a54757c0e882ebdea46d69a099edb5ae88cf"
+  },
+  {
+    "path": "uiuc-pipeline/.gitmodules",
+    "bytes": 953,
+    "sha256": "1e27a155d0bf8def2f88628d7fab8384c2052c752bcc2bb7f32254b78ded25ac"
+  },
+  {
+    "path": "uiuc-pipeline/CHANGELOG.md",
+    "bytes": 4194,
+    "sha256": "30caa5ba963a3d39dc5b90a4e0cac02e124e4de79397e36382d63c1680017c3f"
+  },
+  {
+    "path": "uiuc-pipeline/Dockerfile",
+    "bytes": 1350,
+    "sha256": "6a1c6fff6ccb8a8ee4d6ad20988770effbddc8121c156b35c08d1bc3346b66dc"
+  },
+  {
+    "path": "uiuc-pipeline/entrypoint.sh",
+    "bytes": 305,
+    "sha256": "3c216699b1283148d91ec4f5c2b9fb79f7b6e08a23a8c52cad05c438b2e2c090"
+  },
+  {
+    "path": "uiuc-pipeline/environment.yml",
+    "bytes": 975,
+    "sha256": "ff3c8b9986366019378bbf322cc0ae09dea72a06ac66d7c334cc1bba2b0a671c"
+  },
+  {
+    "path": "uiuc-pipeline/pipeline.py",
+    "bytes": 33621,
+    "sha256": "31ecb72451029ff18cf8600857682df5e70ba441977cf162a8b51094beac13d3"
+  },
+  {
+    "path": "uiuc-pipeline/README.md",
+    "bytes": 16803,
+    "sha256": "7795b5b53cfd8dad9ed928b1200912dfc87de862f556986f7f16d79f0fe11979"
+  },
+  {
+    "path": "uiuc-pipeline/requirements.txt",
+    "bytes": 972,
+    "sha256": "6decd3a27b0ff4ed51e1f868d52561db5554eb99747309c9fdbef73f00fb2761"
+  },
+  {
+    "path": "uiuc-pipeline/start_pipeline.sh",
+    "bytes": 528,
+    "sha256": "3380ddcd5989c1c8d339d0c4b560036ab984ec3fee31117c1dea75be169000e0"
+  },
+  {
+    "path": "uiuc-pipeline/submit.sh",
+    "bytes": 652,
+    "sha256": "307d0418eedfac82fb29e9279cd8635643b62bd60dc143ccc1b71e14fd06032d"
+  },
+  {
+    "path": "visuals/alignment.json",
+    "bytes": 502,
+    "sha256": "e43f4eb17073320b9e3c907736f23b12714c7c51744fd0990e8170a0d4356414"
+  },
+  {
+    "path": "visuals/heat-model-initial-review.png",
+    "bytes": 173129,
+    "sha256": "a64179fdfba233b72bfaf8934b6676f79b1a561518cd9f230a262c5b56d15c11"
+  },
+  {
+    "path": "visuals/porto-heat-full-model.png",
+    "bytes": 199268,
+    "sha256": "a57638b336dd0e13bafb4ecf943353c6d18f92354a534642b18af349b3312738"
+  },
+  {
+    "path": "visuals/porto-heat-full-original.png",
+    "bytes": 617973,
+    "sha256": "71f5901dc8929916aa902ab2940ee9abdc8dba954a47bade3164692ccf4e67a2"
+  },
+  {
+    "path": "visuals/porto-heat-model.png",
+    "bytes": 123,
+    "sha256": "c15ddb58114871f99d1ba146a2c723cf65cdee9ddf3558fb1ce71d583a8d8299"
+  },
+  {
+    "path": "visuals/porto-heat-original.png",
+    "bytes": 10126,
+    "sha256": "c51fe769ebdc4cd7be8c18c993f9697c7a6dce04cfa9574048e92d843a2b63d3"
+  },
+  {
+    "path": "visuals/porto-heat-overlay.png",
+    "bytes": 11796,
+    "sha256": "d5ec7d6700ca9b9fb1f826016780472bf59828d519db9aa4f6812c82c25c1dd1"
+  },
+  {
+    "path": "visuals/richfield-inundation-100yr-full-model.png",
+    "bytes": 5390,
+    "sha256": "5308424c28cef57681a4c8cca28f0095d197c25b18f77a03db2bfa8a7de9bd4b"
+  },
+  {
+    "path": "visuals/richfield-inundation-100yr-full-original.png",
+    "bytes": 840482,
+    "sha256": "e43a798be130e3fb5fcbd8e4f80f7547a6a5b6a50bfa557dbda6fa23088d2270"
+  },
+  {
+    "path": "visuals/richfield-inundation-100yr-model.png",
+    "bytes": 1019,
+    "sha256": "f1fb306f08aba2e3b498a86831caf689f20b84736c1a2d1417a5b5b8e79ed153"
+  },
+  {
+    "path": "visuals/richfield-inundation-100yr-original.png",
+    "bytes": 515563,
+    "sha256": "3c42e483b52cbd6736143872d5dd7c7e8ac8f7301bef9cdcf2818f3ccd58298a"
+  },
+  {
+    "path": "visuals/richfield-inundation-100yr-overlay.png",
+    "bytes": 572172,
+    "sha256": "78a3f0522933773d4d4cb52607437d0a2dfaa210061a89c3ca0ddba447dcd8c8"
+  },
+  {
+    "path": "weights/jaccard_index_value=0.9229.ckpt",
+    "bytes": 372605901,
+    "sha256": "453a711c315ff456965d8bb383c07dd5b0038a3d50615b8dfe5bc55f48160973"
+  },
+  {
+    "path": "Darpa_Unet_Release/models/models.py",
+    "bytes": 15712,
+    "sha256": "e5da1d0bc2e0d510d5dc5e480cabfa41e82624e8bf41c46566c864fb9892d05d"
+  },
+  {
+    "path": "Darpa_Unet_Release/models/res_unet.py",
+    "bytes": 4894,
+    "sha256": "61525ba62bf72d736e6bf423dce3314f77d560f06e964493c1a1abd4e0d90647"
+  },
+  {
+    "path": "Darpa_Unet_Release/models/__init__.py",
+    "bytes": 37,
+    "sha256": "9b83d5f102aaff65b776e770ff40065fc4c31817c322e10f85abcd7fca95022e"
+  },
+  {
+    "path": "evaluation/porto-arbovirus/cells-250m.geojson",
+    "bytes": 4429900,
+    "sha256": "9ed996c16f2bf412d7bc99ddc141c550e4acb64293509a7dae987b2cd53d9a8e"
+  },
+  {
+    "path": "evaluation/porto-arbovirus/cells.csv",
+    "bytes": 287730,
+    "sha256": "4d423b0f55e5fef036c59dc2a2092e6dc47071b4a9863a39fd337acf6f839e6e"
+  },
+  {
+    "path": "evaluation/porto-arbovirus/labels-georeferenced.tif",
+    "bytes": 60826,
+    "sha256": "c25b9bfd47141b4d2ebb14950dcbeb9087b81aa544c0bd1ccef80dcee4504e37"
+  },
+  {
+    "path": "evaluation/porto-arbovirus/metrics.json",
+    "bytes": 7376,
+    "sha256": "323f5d1f12413862fdb0acacfa9d76ab3bdec79c0d336a206db7f87b18b5735c"
+  },
+  {
+    "path": "evaluation/porto-arbovirus/predicted-cells.json",
+    "bytes": 140486,
+    "sha256": "9a865c1b5638624504c5cdeccb3b3d3b31c4744e0d6dc959a7fc233003977563"
+  },
+  {
+    "path": "evaluation/porto-drought/cells-250m.geojson",
+    "bytes": 4354919,
+    "sha256": "d5f1b271bfaa5c08cb8fd74346a5b2484f67c4b856042ad4ba1ecc90403536f4"
+  },
+  {
+    "path": "evaluation/porto-drought/cells.csv",
+    "bytes": 284379,
+    "sha256": "49dc69f4d3e3361d5ef93f37029f6a30870e47de02c208e813719b17970ec518"
+  },
+  {
+    "path": "evaluation/porto-drought/labels-georeferenced.tif",
+    "bytes": 61351,
+    "sha256": "e3d31d4627b117f1d0e4b0676462a82780bf0345bed513656008fbdbd37e2e1f"
+  },
+  {
+    "path": "evaluation/porto-drought/metrics.json",
+    "bytes": 7377,
+    "sha256": "d492c7a95747d52dce705fa03145841fd57d6a42cf53c4361992cc2a9101796a"
+  },
+  {
+    "path": "evaluation/porto-drought/predicted-cells.json",
+    "bytes": 139172,
+    "sha256": "7e519b703953b1884e7476fc16c7f03527e7c07529d91784fa7b6e730b2b6566"
+  },
+  {
+    "path": "evaluation/porto-flood/cells-250m.geojson",
+    "bytes": 2474116,
+    "sha256": "fcd9ab07452c1a10d836e44f1c6005a405d1717ffd60500e8464bc9fbff76edb"
+  },
+  {
+    "path": "evaluation/porto-flood/cells.csv",
+    "bytes": 156325,
+    "sha256": "7f1b2866b6486a2577b350ff9a6a3e332d6f9fee0ed8db4a30f9badf05d22555"
+  },
+  {
+    "path": "evaluation/porto-flood/labels-georeferenced.tif",
+    "bytes": 55329,
+    "sha256": "4d49b8a2d46b030a40fc64b877c953334e3c9c2899f03467d4223809b6ad0f0e"
+  },
+  {
+    "path": "evaluation/porto-flood/metrics.json",
+    "bytes": 7446,
+    "sha256": "b1a0ca3af18f76ac5b68b5978c0de7858a7e51e80c40284dc0a26d5454934ed1"
+  },
+  {
+    "path": "evaluation/porto-flood/predicted-cells.json",
+    "bytes": 73865,
+    "sha256": "26efaa064c4b3e17942a02e9e8e6bf4a3c1c3d868fdc2bd5980dfb53252fd484"
+  },
+  {
+    "path": "evaluation/porto-heat/cells-250m.geojson",
+    "bytes": 4307057,
+    "sha256": "1667980d5f0e17b9459ba12739596951f90857cd217088e2fff388875e4bc423"
+  },
+  {
+    "path": "evaluation/porto-heat/cells.csv",
+    "bytes": 283855,
+    "sha256": "d065b2aec7980c74367b34d26253877c5a29eaf46833e1616d374d8bdb2e87e5"
+  },
+  {
+    "path": "evaluation/porto-heat/labels-georeferenced.tif",
+    "bytes": 62862,
+    "sha256": "1f75b8cce7625a5e917dbeafb2dfb6c7973fca354917a94d09ab8b822cff6416"
+  },
+  {
+    "path": "evaluation/porto-heat/metrics.json",
+    "bytes": 7445,
+    "sha256": "2eac84a1cbef979cf9054e6e70844a23ad26951bb62c147a8a1be1e1fa149e8a"
+  },
+  {
+    "path": "evaluation/porto-heat/predicted-cells.json",
+    "bytes": 137248,
+    "sha256": "7f2cb0b57cd5cdcb5a737a49dd0c89f7825766451fb8e983cf53dd87b3aeedc4"
+  },
+  {
+    "path": "evaluation/porto-landslide/cells-250m.geojson",
+    "bytes": 4395264,
+    "sha256": "612e587187a0712e55f1591b7b8875a97cbaeee41ddcc851a9e5977ee1b2723d"
+  },
+  {
+    "path": "evaluation/porto-landslide/cells.csv",
+    "bytes": 288548,
+    "sha256": "448dbc28d04412a10186981028569e9d990e45aa7dbb39503fafded7925eb20b"
+  },
+  {
+    "path": "evaluation/porto-landslide/labels-georeferenced.tif",
+    "bytes": 60522,
+    "sha256": "6755ffc23a4ecb9ce969440fc03205a24d1f35630454f9c0d63df7d587e18c10"
+  },
+  {
+    "path": "evaluation/porto-landslide/metrics.json",
+    "bytes": 7486,
+    "sha256": "1ab894da8b4b918efeb55ae0f6e87b6f4e693e4fcbbb71cb7259bbaa8d73986f"
+  },
+  {
+    "path": "evaluation/porto-landslide/predicted-cells.json",
+    "bytes": 141662,
+    "sha256": "6f6ddd546ff0b7534072dcc0fe0794038bdd11aec4e6f5df7c66cfcc592adf5b"
+  },
+  {
+    "path": "evaluation/porto-storm/cells-250m.geojson",
+    "bytes": 4297457,
+    "sha256": "4ca531449a2bffb1fb6f26fa01eed07c4d89cd60a08db44e61759b623050db24"
+  },
+  {
+    "path": "evaluation/porto-storm/cells.csv",
+    "bytes": 284457,
+    "sha256": "b5d83c617e6c068b10d8ea4c0652fc3786e9bc1520223c022f72e0cca4338325"
+  },
+  {
+    "path": "evaluation/porto-storm/labels-georeferenced.tif",
+    "bytes": 60358,
+    "sha256": "b7a019db891e945606adf1987c812fc7db61487fe34b576f12e5f38b2b18c037"
+  },
+  {
+    "path": "evaluation/porto-storm/metrics.json",
+    "bytes": 7456,
+    "sha256": "c4a3a6c44075733a6e06e248bcd8e848a3ef0af72a8f8e7ef1cc6030298b3d39"
+  },
+  {
+    "path": "evaluation/porto-storm/predicted-cells.json",
+    "bytes": 138164,
+    "sha256": "89b188459eea49555cc68076691143e41b95eaa53d4abf83ee928b0a573e1125"
+  },
+  {
+    "path": "evaluation/richfield-inundation-100yr/labels-georeferenced.tif",
+    "bytes": 22489,
+    "sha256": "5a0502105ac71dff096e8e72101dd0e35ad91a52d04bacd275bc014cc5e7210b"
+  },
+  {
+    "path": "evaluation/richfield-inundation-100yr/metrics.json",
+    "bytes": 2881,
+    "sha256": "ee0b9b0d9e2368456dffbfd1bb27e6be819a275a4bca00b7382c6a8239119a9b"
+  },
+  {
+    "path": "evaluation/richfield-inundation-100yr/source-fill-labels.png",
+    "bytes": 54143,
+    "sha256": "07c47759f0eb5739cc4c797db9ab7b45e40163e36f9802c1b46b44a3e68c3c95"
+  },
+  {
+    "path": "evaluation/richfield-inundation-10yr/labels-georeferenced.tif",
+    "bytes": 28526,
+    "sha256": "4faf7a641f40915add534d09e8a7f949426ffebcb21173b067b97f7d3a470ac3"
+  },
+  {
+    "path": "evaluation/richfield-inundation-10yr/metrics.json",
+    "bytes": 2885,
+    "sha256": "7f7f950dc0b27276d6178095dbccb93f763680035ba979825f22de6bf59f2758"
+  },
+  {
+    "path": "evaluation/richfield-inundation-10yr/source-fill-labels.png",
+    "bytes": 38953,
+    "sha256": "0686cdc8d7818b895b2d45343396bc2b7b531ea5ebdab00614976746f306f9f4"
+  },
+  {
+    "path": "evaluation/richfield-inundation-2yr/labels-georeferenced.tif",
+    "bytes": 66302,
+    "sha256": "ead0ea878dd496c6914897eb466aaddc093a9c44eee1589ea896bcb0a93d2a2c"
+  },
+  {
+    "path": "evaluation/richfield-inundation-2yr/metrics.json",
+    "bytes": 2881,
+    "sha256": "ed0590dd34feb278539948ad2aba6bbc582988005dfe6df877d1659de59a4859"
+  },
+  {
+    "path": "evaluation/richfield-inundation-2yr/source-fill-labels.png",
+    "bytes": 33491,
+    "sha256": "ecdc187a24ee9804a8e9ffe88ac70bcd529bf1f2f52b9ff82e4645c95f121cac"
+  },
+  {
+    "path": "evaluation/richfield-inundation-mce100/labels-georeferenced.tif",
+    "bytes": 68052,
+    "sha256": "fd044420d3253fe7cd8e1ddcdf316d774f4cd4684d3534b45745957a2f1142e5"
+  },
+  {
+    "path": "evaluation/richfield-inundation-mce100/metrics.json",
+    "bytes": 2897,
+    "sha256": "244e7787019ddf916846f36e40c1da0dfb43dae3c2c04264867645a468f7e01e"
+  },
+  {
+    "path": "evaluation/richfield-inundation-mce100/source-fill-labels.png",
+    "bytes": 58542,
+    "sha256": "661f93d4ef0b0025f69f45e8b39aa1f6e0fcf07ba91beb59a89deac902a0d000"
+  },
+  {
+    "path": "evaluation/richfield-prioritization-score/labels-georeferenced.tif",
+    "bytes": 63279,
+    "sha256": "31f9d2d5ef9cd3d9f6fda5b6e135aa5697786dcaf3fc456a0fdf0de91c3020f0"
+  },
+  {
+    "path": "evaluation/richfield-prioritization-score/metrics.json",
+    "bytes": 5659,
+    "sha256": "98ef89cb5987fd6ef994da959fa145a74b5e510b0fe4051d2b907711ce4c1835"
+  },
+  {
+    "path": "evaluation/richfield-prioritization-score/source-fill-labels.png",
+    "bytes": 57309,
+    "sha256": "6624ce6d2305036400b3c5d23a3f54847c66ce597c76dbbdaaefa973f3e86871"
+  },
+  {
+    "path": "predictions/porto-arbovirus/confidence.npz",
+    "bytes": 3644896,
+    "sha256": "15b98466914fc9da3ee1d11223e45bdd584295adee4e17970d9fbe46c09c63cd"
+  },
+  {
+    "path": "predictions/porto-arbovirus/labels.png",
+    "bytes": 46188,
+    "sha256": "6c63a83cc3f8641afa024861ff9e625913dc1a8e0a61d860854beb030a7b3bc7"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-01.png",
+    "bytes": 25413,
+    "sha256": "0f2b1566051117b9416a4169b295a002ea49930984db0b26773b5ae1fd5e5034"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-02.png",
+    "bytes": 4213,
+    "sha256": "b9132a7bf2c4d40dd05ae4263d24b4df80adb403a7e38882c6e2d10008a4b516"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-03.png",
+    "bytes": 7765,
+    "sha256": "e6906fa7adbbae2946ec50719b69320f3c6a2261b159d87276299b309f66bcc8"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-04.png",
+    "bytes": 15943,
+    "sha256": "a95a1c41155cf5d48a6d40eff91853cab99a37f960211647b1c88c295920665b"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-05.png",
+    "bytes": 13380,
+    "sha256": "a578a7768235bc459779bb05396d98c43864d2a896635bea2f80790d56cefc01"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-06.png",
+    "bytes": 13800,
+    "sha256": "4f674c1618c4e78d08a9de2c2a969272a71f2fcda40b9510caa3b83d8395a1b7"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-07.png",
+    "bytes": 7054,
+    "sha256": "e57625521b23a15cf911b954b8cfecc6a882c68bb12b0ff1ab9c7a43d6b9d788"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-08.png",
+    "bytes": 3033,
+    "sha256": "f47dff87db3a4498c58a5a8c2f768355454f69fa47f9f1407cbe4d7f24dd6693"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-09.png",
+    "bytes": 4838,
+    "sha256": "deb7c122842e28af0679c72b7a54f0b907bcae30b458e1352b257ff9f4bb34fc"
+  },
+  {
+    "path": "predictions/porto-arbovirus/mask-10.png",
+    "bytes": 3231,
+    "sha256": "f3e0b6b380688a188ff7b1e37d446a6e8fb4f6782158c60cc14578651729d39a"
+  },
+  {
+    "path": "predictions/porto-arbovirus/positive-count.png",
+    "bytes": 54476,
+    "sha256": "8290b63a68cc9b4a95cc3529e7d4e48895ea440fe6a4024eb95248dd311a14d3"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-01.npz",
+    "bytes": 3770250,
+    "sha256": "9156ca0ef8c8ee2b6464c868d01df9cb86ddc9b2c80c5354a362bcf41a2431ff"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-02.npz",
+    "bytes": 3323206,
+    "sha256": "790da753a2ce62c7f88a316df481ccdfac5bc9890b04f95c08ea9cc0187229d2"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-03.npz",
+    "bytes": 3338714,
+    "sha256": "98f8337207f4d4839ec9b3ae2bb9f044a88100340942d09c41fc0b214435d92a"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-04.npz",
+    "bytes": 3546947,
+    "sha256": "eed8399ceb2a465803bd886b45159001f7a5d8454e879aea926d05bfa30f2f3d"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-05.npz",
+    "bytes": 3544754,
+    "sha256": "67b8ccd9af4065dc083dbce4b1eaf9187f7b91dfe7a2dde5d9328442089275f6"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-06.npz",
+    "bytes": 3593031,
+    "sha256": "407cab5d5a76ab5a232aef19892e8169c5b800ecf5d129039871b66b87e8ea35"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-07.npz",
+    "bytes": 3611000,
+    "sha256": "6b1f2b8640b9403aeb8d431ff229258548326ed11939f91a54de512f19a02030"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-08.npz",
+    "bytes": 3624176,
+    "sha256": "fae37b45f0adcf9b527bbb8b76dc19a1058a7bcbc95cfcbebdfc7acf84c5a97f"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-09.npz",
+    "bytes": 3647368,
+    "sha256": "48c6b8520b3c6dd499bdc2768fa48902d0ba4e462d128db62fe8041a873d8910"
+  },
+  {
+    "path": "predictions/porto-arbovirus/probability-10.npz",
+    "bytes": 3640417,
+    "sha256": "38512a4f6951be46545d955281b46cd9e24e3fd092e1ef736b90addc252f9a77"
+  },
+  {
+    "path": "predictions/porto-arbovirus/run.json",
+    "bytes": 888,
+    "sha256": "62f076810d3301fd8e284babdc68b1c00ff5a339515fe18367c470f4103492d3"
+  },
+  {
+    "path": "predictions/porto-drought/confidence.npz",
+    "bytes": 3647977,
+    "sha256": "2ee6880aad193f2390707e75c9d4a203f76e33f18aa4d4e37c092d01c931b5ab"
+  },
+  {
+    "path": "predictions/porto-drought/labels.png",
+    "bytes": 46673,
+    "sha256": "d25a5f03939a3446547ce912eac941b0a31d1a0c084906470112adcbfacafb24"
+  },
+  {
+    "path": "predictions/porto-drought/mask-01.png",
+    "bytes": 27874,
+    "sha256": "0405db32c867f42b16cd965da86950e939596ab2c8e89cff88e6e738a3d8da29"
+  },
+  {
+    "path": "predictions/porto-drought/mask-02.png",
+    "bytes": 5173,
+    "sha256": "1039884f3d4f9fedbaaf96d0bc5ceeed4ffecf4d5ff0f6699e610e813324b879"
+  },
+  {
+    "path": "predictions/porto-drought/mask-03.png",
+    "bytes": 9107,
+    "sha256": "7f9b0e956d61d36891dc58df85533ec4aab52e592a40a9b85874cdcac9d778bf"
+  },
+  {
+    "path": "predictions/porto-drought/mask-04.png",
+    "bytes": 17295,
+    "sha256": "49e723fe7aaaa92c4a7ccfb40ad7d5c42cc752bdd3d1492b9b4b2add9affdad0"
+  },
+  {
+    "path": "predictions/porto-drought/mask-05.png",
+    "bytes": 12076,
+    "sha256": "c642be5b6b0400046f97ea95506cef1aa89542a443a75aa439375888674ea0c4"
+  },
+  {
+    "path": "predictions/porto-drought/mask-06.png",
+    "bytes": 13839,
+    "sha256": "2c9e202aa5020bcc1a6ea931eb6368cdf808c3f457201870771345500f865718"
+  },
+  {
+    "path": "predictions/porto-drought/mask-07.png",
+    "bytes": 4234,
+    "sha256": "3900744fd5d70b42481f7c42cb0d76705ea437b36beda49c93be64ae15866421"
+  },
+  {
+    "path": "predictions/porto-drought/mask-08.png",
+    "bytes": 2866,
+    "sha256": "91ae8bc9ea6b7bbb4a5d8aea5d341a66d89cf40260ed62b2ea113a67f20b21b5"
+  },
+  {
+    "path": "predictions/porto-drought/mask-09.png",
+    "bytes": 3554,
+    "sha256": "fc5eed6ba07ce676870994c21ffe3b1ed00d13503e482a5f6d345cf6d26b1b1e"
+  },
+  {
+    "path": "predictions/porto-drought/mask-10.png",
+    "bytes": 3013,
+    "sha256": "c5760ca74ffccd77ce63d579adb6cd9d56fd02df94f0703cee5c4cb4eaea35d7"
+  },
+  {
+    "path": "predictions/porto-drought/positive-count.png",
+    "bytes": 55749,
+    "sha256": "d29189c861ebd7497cdfa31030aa0068d8f7bb266fb06a62501e64523b38e414"
+  },
+  {
+    "path": "predictions/porto-drought/probability-01.npz",
+    "bytes": 3763316,
+    "sha256": "be23ba5c2b862a753675eb7ad0fa1d92fad87ad254dc61bbb31896b3e482809b"
+  },
+  {
+    "path": "predictions/porto-drought/probability-02.npz",
+    "bytes": 3348291,
+    "sha256": "092c57efd8cedd4cc4071483d6721517a7ef5db3faa756763d01f5cc4ae32bc7"
+  },
+  {
+    "path": "predictions/porto-drought/probability-03.npz",
+    "bytes": 3350900,
+    "sha256": "9bec7111bb072b11fdb9eed32f79c25abb022887a6f8f819e79f95afba6d980e"
+  },
+  {
+    "path": "predictions/porto-drought/probability-04.npz",
+    "bytes": 3539894,
+    "sha256": "236a8ec7128a24543078539fb944500ca591b4bff870a17892e2db7308f90d1c"
+  },
+  {
+    "path": "predictions/porto-drought/probability-05.npz",
+    "bytes": 3548631,
+    "sha256": "382a9a71880900750701407a73b2a192c674272ff272a35a7b3cde49d0de575a"
+  },
+  {
+    "path": "predictions/porto-drought/probability-06.npz",
+    "bytes": 3596887,
+    "sha256": "71e8d1d858ea1ea3e964ee9ef79f46f79da3254609ab4d24f0d02351257f81bd"
+  },
+  {
+    "path": "predictions/porto-drought/probability-07.npz",
+    "bytes": 3605055,
+    "sha256": "d0ede113f0b7abb26aff62e24310a14d1adf98a61cf7fef4162525e8ad4145c5"
+  },
+  {
+    "path": "predictions/porto-drought/probability-08.npz",
+    "bytes": 3626296,
+    "sha256": "c0122ff53d3f901e55b2831c1f8ad67ce9d3f26308b2b47f80ca0f8c9c04bb6b"
+  },
+  {
+    "path": "predictions/porto-drought/probability-09.npz",
+    "bytes": 3656892,
+    "sha256": "d72bfbb6c0e3d3eb97981fb19fd40767a2db2836bcc27dcc1b7b0a0f17e1b211"
+  },
+  {
+    "path": "predictions/porto-drought/probability-10.npz",
+    "bytes": 3649396,
+    "sha256": "e2e9c5f1e0d88f3d42f3880569fc3316bdf63aabedc8ece1d033f6dde00e0fef"
+  },
+  {
+    "path": "predictions/porto-drought/run.json",
+    "bytes": 887,
+    "sha256": "acc6e12bba77d17b98105dbc0caefa4a1a07e0e6525b14c0adc56f0a0b80d36b"
+  },
+  {
+    "path": "predictions/porto-flood/confidence.npz",
+    "bytes": 3396880,
+    "sha256": "200f77d46e90866da43da15f51ea7165cd5e27e6ec332170e238fd6007ea0d82"
+  },
+  {
+    "path": "predictions/porto-flood/labels.png",
+    "bytes": 44562,
+    "sha256": "5cc026b857780967592a8453bdf638c34c4482793b2ef65b783ecc9e52cb64ea"
+  },
+  {
+    "path": "predictions/porto-flood/mask-01.png",
+    "bytes": 30728,
+    "sha256": "1350534e5005135d4ec14ef1619ebe246169ce945f99c1bbe995c5237db1eb8a"
+  },
+  {
+    "path": "predictions/porto-flood/mask-02.png",
+    "bytes": 6440,
+    "sha256": "4abebce086e06dae0ba478eb7d2c2a7e6cc3f668371b1501bd043d966341690c"
+  },
+  {
+    "path": "predictions/porto-flood/mask-03.png",
+    "bytes": 6860,
+    "sha256": "49e20086e63c283f3b7d217b95807afb1a7fa8f7f1a77b105fb3a9e91a6ea17f"
+  },
+  {
+    "path": "predictions/porto-flood/mask-04.png",
+    "bytes": 6776,
+    "sha256": "fdcf534e6e88fc82aa2332024ab674583c8021a600b65c1c7f1a293c31811ae9"
+  },
+  {
+    "path": "predictions/porto-flood/mask-05.png",
+    "bytes": 10094,
+    "sha256": "89106e6e2530ab42e32b055aa444b9396aaac071dbb62ca6404d4079ecd6e31b"
+  },
+  {
+    "path": "predictions/porto-flood/mask-06.png",
+    "bytes": 8347,
+    "sha256": "5ede571da334252e7fa3a610c5ff4f171777e483007c3de63e66594a26f6f81e"
+  },
+  {
+    "path": "predictions/porto-flood/mask-07.png",
+    "bytes": 4249,
+    "sha256": "2aad89d60f64cd898d5e4dd8a849f28f494dc066e0502befe1702bf4d1b4c11a"
+  },
+  {
+    "path": "predictions/porto-flood/mask-08.png",
+    "bytes": 3137,
+    "sha256": "42a3064b90fb511addc59ce279c0f313b0b033d2b2fd2eded5fa5e76be79910d"
+  },
+  {
+    "path": "predictions/porto-flood/mask-09.png",
+    "bytes": 3964,
+    "sha256": "3b7ad22c2974ba0b72aae95ae9fa0296f208e3ecdf3d3a21499bbc21e7c7602c"
+  },
+  {
+    "path": "predictions/porto-flood/mask-10.png",
+    "bytes": 2817,
+    "sha256": "5a62731b6ddbdf5e30378570d99ea854ae81b212ba9181447364733c03de992f"
+  },
+  {
+    "path": "predictions/porto-flood/positive-count.png",
+    "bytes": 47570,
+    "sha256": "80086272595e73c1e4c08efe52eeb93312d3f411c8a3e8fb285221c9810aaca7"
+  },
+  {
+    "path": "predictions/porto-flood/probability-01.npz",
+    "bytes": 3436287,
+    "sha256": "5be2ee0eb7139fe9aa418171d630c05688e3c813b02ff4007488dcc940302320"
+  },
+  {
+    "path": "predictions/porto-flood/probability-02.npz",
+    "bytes": 2952452,
+    "sha256": "542e91678df5182909c33ff9f5f826886de31a0945aef5732383e1338f06494c"
+  },
+  {
+    "path": "predictions/porto-flood/probability-03.npz",
+    "bytes": 3037504,
+    "sha256": "85e2bece4e3ab41a45787d18398cc7e34a25d7712bb123e3ab56b52787125c6e"
+  },
+  {
+    "path": "predictions/porto-flood/probability-04.npz",
+    "bytes": 3214626,
+    "sha256": "6d678add4eaf91c48a626399abbfa48250727d4bdc2e7b8d80b5c38f1ca52c3f"
+  },
+  {
+    "path": "predictions/porto-flood/probability-05.npz",
+    "bytes": 3216743,
+    "sha256": "c99d270e334db3b6d2d6708d2b66eccb1cd331bd245dc192c9166ce5b30e699c"
+  },
+  {
+    "path": "predictions/porto-flood/probability-06.npz",
+    "bytes": 3252155,
+    "sha256": "9f5b48a0149daee1ebb9c76fd14d1afbf981c3f789a19563b366b5f3cac7c3a7"
+  },
+  {
+    "path": "predictions/porto-flood/probability-07.npz",
+    "bytes": 3255929,
+    "sha256": "ea0f5705805a7a0871f2429e6ea16a8808e04f9fe771b1f5d56b01a17a8a7db6"
+  },
+  {
+    "path": "predictions/porto-flood/probability-08.npz",
+    "bytes": 3274039,
+    "sha256": "065334e696f74c6eb049fc21c14253a246b190a3964ce036f72c18131400377e"
+  },
+  {
+    "path": "predictions/porto-flood/probability-09.npz",
+    "bytes": 3309581,
+    "sha256": "11c8949dff4d02ba89640cb0bc9dbae7f6e76eeedec31f906364d23b8098d56e"
+  },
+  {
+    "path": "predictions/porto-flood/probability-10.npz",
+    "bytes": 3311931,
+    "sha256": "8b9819bd7a54c8e83c4eda361ce7bc020305f867221531fe714bd932f90861c8"
+  },
+  {
+    "path": "predictions/porto-flood/run.json",
+    "bytes": 882,
+    "sha256": "37f566ec0d0502277daf300cab54f505a78676301c7a1b6c19481b5db83c3799"
+  },
+  {
+    "path": "predictions/porto-heat/confidence.npz",
+    "bytes": 3668856,
+    "sha256": "8b6e8ebe6c4ccebe483351d617f6a1d7d34ded6f9fd0b1a0eb734ad68ff39a5a"
+  },
+  {
+    "path": "predictions/porto-heat/labels.png",
+    "bytes": 48659,
+    "sha256": "2d936c9f694e9856129ee9e2771be232332aa1cbb96dbf83a62980d1b401e952"
+  },
+  {
+    "path": "predictions/porto-heat/mask-01.png",
+    "bytes": 26424,
+    "sha256": "59141a9148b41bfd66d5b42374347aac252c2479d8f3b5f036e1f8cc03159bce"
+  },
+  {
+    "path": "predictions/porto-heat/mask-02.png",
+    "bytes": 5257,
+    "sha256": "cf04a40787e4591fc0bfd611870932d61cd7a81309ef9af3b1b5e1a715498d69"
+  },
+  {
+    "path": "predictions/porto-heat/mask-03.png",
+    "bytes": 11307,
+    "sha256": "e151788836ec3171551fa241e1c297d5789955f17eff7ad4fe622e6ae469aa34"
+  },
+  {
+    "path": "predictions/porto-heat/mask-04.png",
+    "bytes": 17251,
+    "sha256": "6c80160f910d8fc93f63e9c1393d377339279b6ea657dc75c3153144caa624da"
+  },
+  {
+    "path": "predictions/porto-heat/mask-05.png",
+    "bytes": 14247,
+    "sha256": "b23594e1b80a7f8aa26cdb722b34b71d1234d10dddd6a36fbe1b5e6b54a6fb19"
+  },
+  {
+    "path": "predictions/porto-heat/mask-06.png",
+    "bytes": 12389,
+    "sha256": "4ce5a788d26b10e17421641cf6e2f1643ad05b30cfe60e2683ec7197c5f4b7c5"
+  },
+  {
+    "path": "predictions/porto-heat/mask-07.png",
+    "bytes": 10718,
+    "sha256": "57066d7747dac6e5e204aaafa3cc4456baf8ca32242792974834a77ed7740c9e"
+  },
+  {
+    "path": "predictions/porto-heat/mask-08.png",
+    "bytes": 5416,
+    "sha256": "5d879e62e45b937f07e3e4445bfd600b6eacc6c845f62e0d0b72e610a8766c43"
+  },
+  {
+    "path": "predictions/porto-heat/mask-09.png",
+    "bytes": 8242,
+    "sha256": "b29b5ea32a67b8eb1eb55ba7e4ac389cadc975f8d828e3f4c49b9ebced08aebd"
+  },
+  {
+    "path": "predictions/porto-heat/mask-10.png",
+    "bytes": 4588,
+    "sha256": "2186f4db443f94eef9c32c4081efd308385678b305d24348e32e528d32ebd2f5"
+  },
+  {
+    "path": "predictions/porto-heat/positive-count.png",
+    "bytes": 62390,
+    "sha256": "ce177c03d29b6581802d38d7e886e075dfed3d2d7f874e68b0c5ffa2ba3ac77a"
+  },
+  {
+    "path": "predictions/porto-heat/probability-01.npz",
+    "bytes": 3788902,
+    "sha256": "d051027c88e086f5218ebeac30bffe756456fa0b3c70c363044d907cfda8be28"
+  },
+  {
+    "path": "predictions/porto-heat/probability-02.npz",
+    "bytes": 3342374,
+    "sha256": "76fe522a395ffe53a7de2888d4f02450906740be9120b0047f10e1ae911a09ee"
+  },
+  {
+    "path": "predictions/porto-heat/probability-03.npz",
+    "bytes": 3367752,
+    "sha256": "e8876afda364ed4558f41168b5a9e223bf23e97bb1a0413d59f08d56b20601a4"
+  },
+  {
+    "path": "predictions/porto-heat/probability-04.npz",
+    "bytes": 3563637,
+    "sha256": "019ada686441906f6a173948ec9b9abe4d2131044a98c73da3315c948853d2d0"
+  },
+  {
+    "path": "predictions/porto-heat/probability-05.npz",
+    "bytes": 3564790,
+    "sha256": "8d05999653fd407f8525c01cfe0a4a4eb24a834780c5ce5783d2350a6d532210"
+  },
+  {
+    "path": "predictions/porto-heat/probability-06.npz",
+    "bytes": 3595313,
+    "sha256": "ea54bab9f7e8e55f9aaae7f2712bc5168fa9541ce76f9a1d997bc16d7cbdca0f"
+  },
+  {
+    "path": "predictions/porto-heat/probability-07.npz",
+    "bytes": 3629751,
+    "sha256": "3304b3382ea1f700d5ddd127c1636751d6009ba056986324bc00ce4e6c0f385f"
+  },
+  {
+    "path": "predictions/porto-heat/probability-08.npz",
+    "bytes": 3650579,
+    "sha256": "d69201ee262ac55f40929d2d20134ea55ef7e727303297fe6fa216159738555a"
+  },
+  {
+    "path": "predictions/porto-heat/probability-09.npz",
+    "bytes": 3664370,
+    "sha256": "c7abd7819b3759bad417abd2d392d0c58b5d5d137a2ad4556f91d8b5a36b2146"
+  },
+  {
+    "path": "predictions/porto-heat/probability-10.npz",
+    "bytes": 3655698,
+    "sha256": "68f6e8334fd0c8ba09c1bec9e21d6cde7a5d634746680677094417e16f8a3e05"
+  },
+  {
+    "path": "predictions/porto-heat/run.json",
+    "bytes": 885,
+    "sha256": "6bed5d0d199774d281872df6ebc1604cc4322e30dda247caf107e6d12a269d50"
+  },
+  {
+    "path": "predictions/porto-landslide/confidence.npz",
+    "bytes": 3659963,
+    "sha256": "bf87b7973d451af466c8510ff22b1834628f2773843e1e4e35529ebef3982c3a"
+  },
+  {
+    "path": "predictions/porto-landslide/labels.png",
+    "bytes": 45775,
+    "sha256": "4e4de1295a437d45a235b7b3abfe88e6dbe6e73d3c83ea45201a28f16c897a61"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-01.png",
+    "bytes": 26476,
+    "sha256": "dbded86da1d68deec152ab9c19c88b49ed82c5f0e4724de3273a317e228ebc4b"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-02.png",
+    "bytes": 5492,
+    "sha256": "8cdeeba29e3dbd1e332bde384959539a3a549db7c237fa7bf335919ed60d7e20"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-03.png",
+    "bytes": 7598,
+    "sha256": "a5b55795515b587b02db30eb8d3c8b7955b9c397cc34a076d5e7047cd63e6d14"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-04.png",
+    "bytes": 15529,
+    "sha256": "9e51cfe1eb0e3ea5afa039f1a0375d7f5c13d4095630ad02661db7943aecf6ae"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-05.png",
+    "bytes": 13370,
+    "sha256": "a06df46ea7221952e433fe400486365ba27046a1a7ab22d1634605434489e757"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-06.png",
+    "bytes": 12482,
+    "sha256": "5caf87fe785644e6cba0ed71c7e2b03341551e97efcbd334899b0f4c030beb47"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-07.png",
+    "bytes": 9329,
+    "sha256": "096cca5b15b42be2cb33d76513feca3d4d8c1a3fa87c5162656bce26d767627e"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-08.png",
+    "bytes": 5556,
+    "sha256": "b69e6797007ebdb97b095a383d67aae9ee61043071958c0496115eb1ae313901"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-09.png",
+    "bytes": 8086,
+    "sha256": "e05422cf561b324cd9f079787e7c950a9a155d2f2c9d9e9844a7163f24acd9bf"
+  },
+  {
+    "path": "predictions/porto-landslide/mask-10.png",
+    "bytes": 3918,
+    "sha256": "b8008c4654f041c949d19ec6a96881797a94eadd38a910e4a45274baf2bb80ba"
+  },
+  {
+    "path": "predictions/porto-landslide/positive-count.png",
+    "bytes": 58133,
+    "sha256": "41390b6f46b6a1cef38483a510cce9c539c150df8f376d60ebea85533d001fcf"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-01.npz",
+    "bytes": 3783740,
+    "sha256": "ed1b3f2ff4bae100d2e10548b4a37ce3599bed18c343ca787235742089872cc7"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-02.npz",
+    "bytes": 3337125,
+    "sha256": "4429bab214b8b6a65a7513ed003a528cd7eed9a7aad429edc38755c7fd5b3f9a"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-03.npz",
+    "bytes": 3358358,
+    "sha256": "9316f23d7fbc792dc5ec7bf5dfce3d9fd94dc070fc82495a96793bbaac9fa26f"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-04.npz",
+    "bytes": 3566486,
+    "sha256": "278d4af07201ff7a0238de57c04cc0cef5e49680b98f2843b8e804f8e3400ee6"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-05.npz",
+    "bytes": 3564574,
+    "sha256": "488499e9c4742f59ccaabc59c4fdeb0b5db1009f757ef7265fab32fcbf50f697"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-06.npz",
+    "bytes": 3597112,
+    "sha256": "26d4ff97570797f69e31b34a22b14c95ce9b58b20ef91b55137fdccc7d905c86"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-07.npz",
+    "bytes": 3629396,
+    "sha256": "cb36a51e1d9bfac84cecb109874bee2f4c39cd762cadc4d9295c1f5ed1c6a617"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-08.npz",
+    "bytes": 3649154,
+    "sha256": "8e2de9b6054b3b01f7f15433f423a11a71267aa450ca16f26102c89acf3001cd"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-09.npz",
+    "bytes": 3664971,
+    "sha256": "1c92b7787a098fd9c0d921ed4ad6b7b42a0e91362c6a31005e58aff457a5c6df"
+  },
+  {
+    "path": "predictions/porto-landslide/probability-10.npz",
+    "bytes": 3656104,
+    "sha256": "b2c7bdabda6a024167e33cceb78c6f2fe1d051728c9d04af4c81462fd92eba05"
+  },
+  {
+    "path": "predictions/porto-landslide/run.json",
+    "bytes": 890,
+    "sha256": "2b141ac149eddc44ea4d31056fe95dac89d703efbf58b60b1a7ff453996fdc06"
+  },
+  {
+    "path": "predictions/porto-storm/confidence.npz",
+    "bytes": 3661503,
+    "sha256": "d7b665180a8d9ab9cae0bc6d450784bd8523d94943f801a5fdb1a8dd3809649e"
+  },
+  {
+    "path": "predictions/porto-storm/labels.png",
+    "bytes": 45322,
+    "sha256": "dcbc99127da4997a7b0e61509a0a0f041be06582c3f9f9d73b2e85400fa4da1f"
+  },
+  {
+    "path": "predictions/porto-storm/mask-01.png",
+    "bytes": 26282,
+    "sha256": "0c9944d31356a12fc6ba4a945c2bcb952d2f1e3922a5ae179dd1a84ac819e066"
+  },
+  {
+    "path": "predictions/porto-storm/mask-02.png",
+    "bytes": 5309,
+    "sha256": "66cfd20c2095ec2e9b352a82e35ca8fabcd3347b099e8297cee5d3767932db5f"
+  },
+  {
+    "path": "predictions/porto-storm/mask-03.png",
+    "bytes": 6618,
+    "sha256": "f1dc15fc4fb73b64660a634682b855533a74b6afc6a8dd9602956eac2cdec874"
+  },
+  {
+    "path": "predictions/porto-storm/mask-04.png",
+    "bytes": 14347,
+    "sha256": "ec47de09f4f3849f7fcd371079adadc38cb1b94a6a9d32e36259be0f14e44189"
+  },
+  {
+    "path": "predictions/porto-storm/mask-05.png",
+    "bytes": 14173,
+    "sha256": "6e722fca17d9c62ec845a05241671e72b755d067b313b247e51776dba37bfc07"
+  },
+  {
+    "path": "predictions/porto-storm/mask-06.png",
+    "bytes": 12663,
+    "sha256": "443a3e24060231ba984729820c39cc217dbdc280368a46b82f7421579f31485a"
+  },
+  {
+    "path": "predictions/porto-storm/mask-07.png",
+    "bytes": 12368,
+    "sha256": "22354f99bd0f73e5b4c206f5aae50e41b3fafe47f19def1939630d2a0f3db37c"
+  },
+  {
+    "path": "predictions/porto-storm/mask-08.png",
+    "bytes": 7257,
+    "sha256": "69f73ce9d59e0c73e69fcf6bfe976c060952bc09f67af6fdbd01e527b2c80ead"
+  },
+  {
+    "path": "predictions/porto-storm/mask-09.png",
+    "bytes": 10517,
+    "sha256": "970bdb7aa11477ff8e711c501df7f012d116279acedea4baf61ea5404ecd207c"
+  },
+  {
+    "path": "predictions/porto-storm/mask-10.png",
+    "bytes": 4783,
+    "sha256": "1d9d5f4eee6e0caedc660a593e58638c75cebe30acd8e92de5f7c77a75273b5b"
+  },
+  {
+    "path": "predictions/porto-storm/positive-count.png",
+    "bytes": 60531,
+    "sha256": "b25791bdead71c19e907af34995e092b91715ed71a63b472824193dfcc103470"
+  },
+  {
+    "path": "predictions/porto-storm/probability-01.npz",
+    "bytes": 3783261,
+    "sha256": "def997a08adf1f48d5bc3af483fc9a0933d73e2a75a1da6c0ba5f3ee68013933"
+  },
+  {
+    "path": "predictions/porto-storm/probability-02.npz",
+    "bytes": 3337267,
+    "sha256": "b54ae706898c0619ed51e0757397a2af35ff1fa8f7beb311cb383891fcb51fa9"
+  },
+  {
+    "path": "predictions/porto-storm/probability-03.npz",
+    "bytes": 3349989,
+    "sha256": "d63343d8c763c34bba010eb4650adf1dde5d79751ca15deff6d2435364e90e5f"
+  },
+  {
+    "path": "predictions/porto-storm/probability-04.npz",
+    "bytes": 3559429,
+    "sha256": "9a718a11146f313efe6dd5ca12cc4df32b04b785dca0244713c8b88479278139"
+  },
+  {
+    "path": "predictions/porto-storm/probability-05.npz",
+    "bytes": 3566066,
+    "sha256": "56b90be76a99865cdc0962d6740be09a04d6843394649cc7dfd4fb817c62d21a"
+  },
+  {
+    "path": "predictions/porto-storm/probability-06.npz",
+    "bytes": 3602168,
+    "sha256": "8285f92289c057f2dcadcd20a63fabd2f80e781371afb2f6bb3f3a3d59a7a6d2"
+  },
+  {
+    "path": "predictions/porto-storm/probability-07.npz",
+    "bytes": 3636475,
+    "sha256": "ee6bc25e0396c1d895c6d6e4b8a88739fe8978bb2436d3f4e4621134d050b2a6"
+  },
+  {
+    "path": "predictions/porto-storm/probability-08.npz",
+    "bytes": 3660444,
+    "sha256": "b7e5c4a1b9e97c77f45bf3ba858d91ac327c5b0821639501cce8ac81c49f57b1"
+  },
+  {
+    "path": "predictions/porto-storm/probability-09.npz",
+    "bytes": 3668997,
+    "sha256": "d422acc7526fcdefcb73d8cbdb8993c0836f08cc931d783db0e728769fef3729"
+  },
+  {
+    "path": "predictions/porto-storm/probability-10.npz",
+    "bytes": 3657012,
+    "sha256": "a240e1fd77a030e844bcf5ec4a78018fc829798450050980a98d20dc1eca70be"
+  },
+  {
+    "path": "predictions/porto-storm/run.json",
+    "bytes": 885,
+    "sha256": "87fbcd479ec0b929a3dbba673ec466f66c787baa5310ba3bb516f847de90c8ed"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/confidence.npz",
+    "bytes": 6828543,
+    "sha256": "482b9b08000ffee1cc3112db0c77a61d38e72d10bd87bed645edb694ec2404da"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/labels.png",
+    "bytes": 5749,
+    "sha256": "eed84e23db8f9cc6cf99b6f582593252c8b427364632410420394f958f1aa3d2"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/mask-01.png",
+    "bytes": 5747,
+    "sha256": "322852590817ea957770886a542f619436c4c9a1c7a3e7c89173db9a38b606b5"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/positive-count.png",
+    "bytes": 5749,
+    "sha256": "eed84e23db8f9cc6cf99b6f582593252c8b427364632410420394f958f1aa3d2"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/probability-01.npz",
+    "bytes": 6828545,
+    "sha256": "94af5bf8ae877b66c6857ef6673ad90869f8f743c622b85b0ed44f76e2f592f7"
+  },
+  {
+    "path": "predictions/richfield-inundation-100yr/run.json",
+    "bytes": 745,
+    "sha256": "d816e86c818f82ecd6dd2ed951531eb37b1b79328b05b65fa2e2dc0b4b5596a6"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/confidence.npz",
+    "bytes": 6315565,
+    "sha256": "8624a9094d13f19d198c790d8a4a87faaf14f560bba37d6d976b1c71b1bbab88"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/labels.png",
+    "bytes": 11201,
+    "sha256": "4ca1bcd7dfe7d67fc148ef9aebdcaee07bc6652f6f0226c34e8e4819b6fd2ac3"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/mask-01.png",
+    "bytes": 11226,
+    "sha256": "d7bbe860c87ff8c1d66d5e134c619f5d5bbf1d49c0b7d7d6af77006ba80d38b3"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/positive-count.png",
+    "bytes": 11201,
+    "sha256": "4ca1bcd7dfe7d67fc148ef9aebdcaee07bc6652f6f0226c34e8e4819b6fd2ac3"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/probability-01.npz",
+    "bytes": 6315567,
+    "sha256": "1fc98b9f2789db232603d829d38749124c4c0b81ba1119e03618014c3eb54652"
+  },
+  {
+    "path": "predictions/richfield-inundation-10yr/run.json",
+    "bytes": 745,
+    "sha256": "5cc69a585bff6be12128468081d589ebd454935d59b252aeb88bf4f695934508"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/confidence.npz",
+    "bytes": 6809070,
+    "sha256": "61f8237e468d06da7bf2d58afe6ee93b765adbe17b6f7f933f7537fdd1f8b4d2"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/labels.png",
+    "bytes": 42101,
+    "sha256": "ec6cca66b486a386f3881b933b7477cccd1b26fec14ac1758cda09affbb9738d"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/mask-01.png",
+    "bytes": 42095,
+    "sha256": "3ad044f8d6ac7b92ba3b6a5b9aa46e94917885f290820671bde9dd662caf88a9"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/positive-count.png",
+    "bytes": 42101,
+    "sha256": "ec6cca66b486a386f3881b933b7477cccd1b26fec14ac1758cda09affbb9738d"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/probability-01.npz",
+    "bytes": 6809072,
+    "sha256": "af19c1c7e43422194a2122fa5b04c2712d30fa70c659300764d7fb76ee26a4b1"
+  },
+  {
+    "path": "predictions/richfield-inundation-2yr/run.json",
+    "bytes": 746,
+    "sha256": "633b983ba27f99ff94f4bbaf727b9a8572bc42c72f9237c11be57efae9b5eece"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/confidence.npz",
+    "bytes": 6728348,
+    "sha256": "8f8f94aaf6958cf563ff0dcb2c6ce4daf5a0a0afeaf83eb5f146829e89a97ec0"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/labels.png",
+    "bytes": 47221,
+    "sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/mask-01.png",
+    "bytes": 47237,
+    "sha256": "7fe51a4dd84e8f4be4cc881f45a9eea45c2f09fd01da0140f7529755158738e4"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/positive-count.png",
+    "bytes": 47221,
+    "sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/probability-01.npz",
+    "bytes": 6728350,
+    "sha256": "30a4d5bcec212d7a9c3ae77de2699c67c7fc16f70c641bb09048773b4878fb4e"
+  },
+  {
+    "path": "predictions/richfield-inundation-mce100/run.json",
+    "bytes": 749,
+    "sha256": "dec09c2d96bb2a54a90a1e003712ac0375b52c26b2076d00e5272acba26d6521"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/confidence.npz",
+    "bytes": 6560780,
+    "sha256": "2cc7ab3942a53bce3d40298971c740231fd5fa5b2b71dca0f75199834ce7b8b8"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/labels.png",
+    "bytes": 39824,
+    "sha256": "de124e5f2d6912cdd57ad7b724e3814556f6ac674eec34ed1c2d8af72f73c62e"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/mask-01.png",
+    "bytes": 18452,
+    "sha256": "2c9d71c87dacf923d6c2f5546e6d5f1a6b64eaad27301cbe900c133db33eb4c4"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/mask-02.png",
+    "bytes": 12108,
+    "sha256": "c4006472fc5ecd713074dd0954001b42742d0a6dbc7bb4ba2bd47a709a23f44c"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/mask-03.png",
+    "bytes": 9829,
+    "sha256": "b3dc4b7b3ee4a3b42383fc1a34321f8014b0e3f327ea4f1ec9814a19fe6f56be"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/mask-04.png",
+    "bytes": 16778,
+    "sha256": "28d7899ba064299250800e1a1b31c835984ec345c36d8eb2b254d575c41c6554"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/positive-count.png",
+    "bytes": 38213,
+    "sha256": "9b80a99ea1bea41f631cdbbb396557916b0a375b9b1212094ad76c65b372fc00"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/probability-01.npz",
+    "bytes": 6219636,
+    "sha256": "149d42525a16d0d2c7e4d17369bf9409767d22c86680394844dc4edb90b362c2"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/probability-02.npz",
+    "bytes": 6119381,
+    "sha256": "6467ee9b3be693092e1f95a82f8f5cb70283ac01166566c5e9c7932399f4704c"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/probability-03.npz",
+    "bytes": 6094593,
+    "sha256": "75cad988ecfc22c63820e72e9aaca5dff20f9045aee9ee45c883255cc062490b"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/probability-04.npz",
+    "bytes": 6690830,
+    "sha256": "2e837758745916b4a40601f56d94b69cedc30fe8756c19a6eceb07003e979109"
+  },
+  {
+    "path": "predictions/richfield-prioritization-score/run.json",
+    "bytes": 808,
+    "sha256": "d2e2e629a51572a3ef593c260bbca076a63fb3e782515bafd039dfd07e2fb47a"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-01.png",
+    "bytes": 96,
+    "sha256": "8c5ca805c0ce00fae7064bf6e56cc69a61f5cfd73c8b23d1510f60e907d63f4b"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-02.png",
+    "bytes": 120,
+    "sha256": "752fe348142c2bcaea57c56c25cc1412f9fec70a3802f4a5902ad84f7be16a2f"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-03.png",
+    "bytes": 117,
+    "sha256": "8d8ea4552998e53145779bfd5cbcbeacf28d155f55c13edc30a90517e15ef1e4"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-04.png",
+    "bytes": 83,
+    "sha256": "f1528f37f7dd0aa8ee75b493faf6c2b0094fec77288d101f1c2dd21ef31968ec"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-05.png",
+    "bytes": 132,
+    "sha256": "44f77ce90e5abd391a15eb93d8f0f6c6445baa7995c333939c065deb34179797"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-06.png",
+    "bytes": 120,
+    "sha256": "4e46c24a202baa22e098770097aad4df35c45ae5d39e3893f29de4b024232cc2"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-07.png",
+    "bytes": 117,
+    "sha256": "9745cef549f0915f4cb5ff7b6faf5932803588ad69528cf4c81962e97807e142"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-08.png",
+    "bytes": 129,
+    "sha256": "771e7df897aaf8d78c31c814f79d40704a5307b34d4d97b171d3286c06f4477f"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-09.png",
+    "bytes": 136,
+    "sha256": "77608e05d9ceac720d4f8ddddfb50830348daded5f922f13127ca72b0a2b0b68"
+  },
+  {
+    "path": "sources/porto-arbovirus/legend-10.png",
+    "bytes": 77,
+    "sha256": "37e74bcb6d0830a52f38d59f53e2cb4f9eb5bc5d07da8473f4a2cbd55c04cfa8"
+  },
+  {
+    "path": "sources/porto-arbovirus/map.png",
+    "bytes": 1672871,
+    "sha256": "323450961650f5f9d0bc67b25443e5d499c76b78ef62f7b8ecc113993bb202ab"
+  },
+  {
+    "path": "sources/porto-drought/legend-01.png",
+    "bytes": 86,
+    "sha256": "d1a522ffee2951cc26dafa16acf7c7f9fb1dddd99da236ea2afbc8c57fe2c47c"
+  },
+  {
+    "path": "sources/porto-drought/legend-02.png",
+    "bytes": 120,
+    "sha256": "c199eb4752789cdd9181975886bf0549e420d61149d3186037786c290eb6ae6f"
+  },
+  {
+    "path": "sources/porto-drought/legend-03.png",
+    "bytes": 117,
+    "sha256": "6631f3d5409089bce6fc70a760a462a5853ecb3a39a3ebb5c05d69624fdb2c9f"
+  },
+  {
+    "path": "sources/porto-drought/legend-04.png",
+    "bytes": 83,
+    "sha256": "69c61227716ca1ff683dcaa5af0b9c485461f10d8402c46b4e4801177af44443"
+  },
+  {
+    "path": "sources/porto-drought/legend-05.png",
+    "bytes": 128,
+    "sha256": "4a2dba351aed07fee23a22f4fa357ecbbde5a38508618f8aabcfbd6caa988016"
+  },
+  {
+    "path": "sources/porto-drought/legend-06.png",
+    "bytes": 115,
+    "sha256": "84941af9b2690825f4b501782f4bd63f0329b41877c8f80aeb1dba5d3d4f4ec5"
+  },
+  {
+    "path": "sources/porto-drought/legend-07.png",
+    "bytes": 102,
+    "sha256": "21b5d38f78b9f9bf0e4645288dee1af50ea94c8fad858c7600394ebeac63d108"
+  },
+  {
+    "path": "sources/porto-drought/legend-08.png",
+    "bytes": 127,
+    "sha256": "493546cbb7f10276992d73ac84d75b95b7a74c41f7c576672ea0ff39d5a956a1"
+  },
+  {
+    "path": "sources/porto-drought/legend-09.png",
+    "bytes": 132,
+    "sha256": "fddd89edb0a8bd912b223fda4c4162b2109460b0f8574c0db1ecd34a1ac07a8c"
+  },
+  {
+    "path": "sources/porto-drought/legend-10.png",
+    "bytes": 77,
+    "sha256": "37e74bcb6d0830a52f38d59f53e2cb4f9eb5bc5d07da8473f4a2cbd55c04cfa8"
+  },
+  {
+    "path": "sources/porto-drought/map.png",
+    "bytes": 1669849,
+    "sha256": "bef92eaf4059aa422e3597272c9d4d7ccaa89680505dc833d93c9940167002c2"
+  },
+  {
+    "path": "sources/porto-flood/legend-01.png",
+    "bytes": 81,
+    "sha256": "446a48b746dd7f1ce50599ed43875edbde72f3bfbb3d12c6c0c3aeba9889af11"
+  },
+  {
+    "path": "sources/porto-flood/legend-02.png",
+    "bytes": 147,
+    "sha256": "4135d5f907423f9d065d23e42ec48e9e212e27495e088d356ad9170ad244e53e"
+  },
+  {
+    "path": "sources/porto-flood/legend-03.png",
+    "bytes": 174,
+    "sha256": "871a628efea59fb07f2875ecb9192a73de52c8195d61a095d8fc23cd327735bf"
+  },
+  {
+    "path": "sources/porto-flood/legend-04.png",
+    "bytes": 162,
+    "sha256": "140f6c8aeca1840d242da8209d7ebb0b018c60dcd6fe58e929bab094836d6ef5"
+  },
+  {
+    "path": "sources/porto-flood/legend-05.png",
+    "bytes": 174,
+    "sha256": "b2d534818d3383ca369b5c698b698944ee6324fdc5547bdd3ac20e6e0f78bd10"
+  },
+  {
+    "path": "sources/porto-flood/legend-06.png",
+    "bytes": 178,
+    "sha256": "4b8dc0b3f96b313abe3bb79f7625cbdfc04143833843f1de71243ff04b76648d"
+  },
+  {
+    "path": "sources/porto-flood/legend-07.png",
+    "bytes": 167,
+    "sha256": "0dc16b0adf210e6190216f2d8bc70dac51a668f1ff1805505c02f567b6c5f644"
+  },
+  {
+    "path": "sources/porto-flood/legend-08.png",
+    "bytes": 175,
+    "sha256": "9e618d6fae430280bc8fb14357a79cdefb76ae237e4a6ae369400c6d26e51b5e"
+  },
+  {
+    "path": "sources/porto-flood/legend-09.png",
+    "bytes": 181,
+    "sha256": "15cc15b9c6fa6488872a0799383abf6777b4051d3263780351971b0361940d2b"
+  },
+  {
+    "path": "sources/porto-flood/legend-10.png",
+    "bytes": 125,
+    "sha256": "85a65f060d41f92ed946bca391b2ba2fb58748c753b018f63fb6ec84a24d9d46"
+  },
+  {
+    "path": "sources/porto-flood/map.png",
+    "bytes": 1575663,
+    "sha256": "0a504315191367f624d79cafa3ac651e5bbeba7766ad6c7d2c8aadf8c1853206"
+  },
+  {
+    "path": "sources/porto-heat/legend-01.png",
+    "bytes": 96,
+    "sha256": "8c5ca805c0ce00fae7064bf6e56cc69a61f5cfd73c8b23d1510f60e907d63f4b"
+  },
+  {
+    "path": "sources/porto-heat/legend-02.png",
+    "bytes": 120,
+    "sha256": "752fe348142c2bcaea57c56c25cc1412f9fec70a3802f4a5902ad84f7be16a2f"
+  },
+  {
+    "path": "sources/porto-heat/legend-03.png",
+    "bytes": 117,
+    "sha256": "8d8ea4552998e53145779bfd5cbcbeacf28d155f55c13edc30a90517e15ef1e4"
+  },
+  {
+    "path": "sources/porto-heat/legend-04.png",
+    "bytes": 83,
+    "sha256": "f1528f37f7dd0aa8ee75b493faf6c2b0094fec77288d101f1c2dd21ef31968ec"
+  },
+  {
+    "path": "sources/porto-heat/legend-05.png",
+    "bytes": 132,
+    "sha256": "44f77ce90e5abd391a15eb93d8f0f6c6445baa7995c333939c065deb34179797"
+  },
+  {
+    "path": "sources/porto-heat/legend-06.png",
+    "bytes": 120,
+    "sha256": "4e46c24a202baa22e098770097aad4df35c45ae5d39e3893f29de4b024232cc2"
+  },
+  {
+    "path": "sources/porto-heat/legend-07.png",
+    "bytes": 117,
+    "sha256": "9745cef549f0915f4cb5ff7b6faf5932803588ad69528cf4c81962e97807e142"
+  },
+  {
+    "path": "sources/porto-heat/legend-08.png",
+    "bytes": 129,
+    "sha256": "771e7df897aaf8d78c31c814f79d40704a5307b34d4d97b171d3286c06f4477f"
+  },
+  {
+    "path": "sources/porto-heat/legend-09.png",
+    "bytes": 136,
+    "sha256": "77608e05d9ceac720d4f8ddddfb50830348daded5f922f13127ca72b0a2b0b68"
+  },
+  {
+    "path": "sources/porto-heat/legend-10.png",
+    "bytes": 77,
+    "sha256": "37e74bcb6d0830a52f38d59f53e2cb4f9eb5bc5d07da8473f4a2cbd55c04cfa8"
+  },
+  {
+    "path": "sources/porto-heat/map.png",
+    "bytes": 1692441,
+    "sha256": "1888b0b92d264552d9ffbac3cadddbd0035d59d8ba9941b3d3b6b328f330a3e7"
+  },
+  {
+    "path": "sources/porto-landslide/legend-01.png",
+    "bytes": 96,
+    "sha256": "8c5ca805c0ce00fae7064bf6e56cc69a61f5cfd73c8b23d1510f60e907d63f4b"
+  },
+  {
+    "path": "sources/porto-landslide/legend-02.png",
+    "bytes": 120,
+    "sha256": "752fe348142c2bcaea57c56c25cc1412f9fec70a3802f4a5902ad84f7be16a2f"
+  },
+  {
+    "path": "sources/porto-landslide/legend-03.png",
+    "bytes": 117,
+    "sha256": "8d8ea4552998e53145779bfd5cbcbeacf28d155f55c13edc30a90517e15ef1e4"
+  },
+  {
+    "path": "sources/porto-landslide/legend-04.png",
+    "bytes": 83,
+    "sha256": "f1528f37f7dd0aa8ee75b493faf6c2b0094fec77288d101f1c2dd21ef31968ec"
+  },
+  {
+    "path": "sources/porto-landslide/legend-05.png",
+    "bytes": 132,
+    "sha256": "44f77ce90e5abd391a15eb93d8f0f6c6445baa7995c333939c065deb34179797"
+  },
+  {
+    "path": "sources/porto-landslide/legend-06.png",
+    "bytes": 120,
+    "sha256": "4e46c24a202baa22e098770097aad4df35c45ae5d39e3893f29de4b024232cc2"
+  },
+  {
+    "path": "sources/porto-landslide/legend-07.png",
+    "bytes": 117,
+    "sha256": "9745cef549f0915f4cb5ff7b6faf5932803588ad69528cf4c81962e97807e142"
+  },
+  {
+    "path": "sources/porto-landslide/legend-08.png",
+    "bytes": 129,
+    "sha256": "771e7df897aaf8d78c31c814f79d40704a5307b34d4d97b171d3286c06f4477f"
+  },
+  {
+    "path": "sources/porto-landslide/legend-09.png",
+    "bytes": 136,
+    "sha256": "77608e05d9ceac720d4f8ddddfb50830348daded5f922f13127ca72b0a2b0b68"
+  },
+  {
+    "path": "sources/porto-landslide/legend-10.png",
+    "bytes": 77,
+    "sha256": "37e74bcb6d0830a52f38d59f53e2cb4f9eb5bc5d07da8473f4a2cbd55c04cfa8"
+  },
+  {
+    "path": "sources/porto-landslide/map.png",
+    "bytes": 1696687,
+    "sha256": "5a58bcdae200d211e2df1b992d2fc41962d45facfe0f6e908d7c80fd76754cfa"
+  },
+  {
+    "path": "sources/porto-storm/legend-01.png",
+    "bytes": 96,
+    "sha256": "8c5ca805c0ce00fae7064bf6e56cc69a61f5cfd73c8b23d1510f60e907d63f4b"
+  },
+  {
+    "path": "sources/porto-storm/legend-02.png",
+    "bytes": 120,
+    "sha256": "752fe348142c2bcaea57c56c25cc1412f9fec70a3802f4a5902ad84f7be16a2f"
+  },
+  {
+    "path": "sources/porto-storm/legend-03.png",
+    "bytes": 117,
+    "sha256": "8d8ea4552998e53145779bfd5cbcbeacf28d155f55c13edc30a90517e15ef1e4"
+  },
+  {
+    "path": "sources/porto-storm/legend-04.png",
+    "bytes": 83,
+    "sha256": "f1528f37f7dd0aa8ee75b493faf6c2b0094fec77288d101f1c2dd21ef31968ec"
+  },
+  {
+    "path": "sources/porto-storm/legend-05.png",
+    "bytes": 132,
+    "sha256": "44f77ce90e5abd391a15eb93d8f0f6c6445baa7995c333939c065deb34179797"
+  },
+  {
+    "path": "sources/porto-storm/legend-06.png",
+    "bytes": 120,
+    "sha256": "4e46c24a202baa22e098770097aad4df35c45ae5d39e3893f29de4b024232cc2"
+  },
+  {
+    "path": "sources/porto-storm/legend-07.png",
+    "bytes": 117,
+    "sha256": "9745cef549f0915f4cb5ff7b6faf5932803588ad69528cf4c81962e97807e142"
+  },
+  {
+    "path": "sources/porto-storm/legend-08.png",
+    "bytes": 129,
+    "sha256": "771e7df897aaf8d78c31c814f79d40704a5307b34d4d97b171d3286c06f4477f"
+  },
+  {
+    "path": "sources/porto-storm/legend-09.png",
+    "bytes": 136,
+    "sha256": "77608e05d9ceac720d4f8ddddfb50830348daded5f922f13127ca72b0a2b0b68"
+  },
+  {
+    "path": "sources/porto-storm/legend-10.png",
+    "bytes": 77,
+    "sha256": "37e74bcb6d0830a52f38d59f53e2cb4f9eb5bc5d07da8473f4a2cbd55c04cfa8"
+  },
+  {
+    "path": "sources/porto-storm/map.png",
+    "bytes": 1696674,
+    "sha256": "4413b7b49c22ec259bd31de56751f91f218097bf3f5ff4f7cb4666839378e03f"
+  },
+  {
+    "path": "sources/richfield-inundation-100yr/legend-01.png",
+    "bytes": 147,
+    "sha256": "f8b5c86b6b25062bdc3dfbc1aa4dd876c2625f181dce54a2f54ea2514393a182"
+  },
+  {
+    "path": "sources/richfield-inundation-100yr/map.png",
+    "bytes": 6358026,
+    "sha256": "7ae99c1d7c3fd4b13194d20b9562afd9ac04f28d9e051c31a0f839c32452cb46"
+  },
+  {
+    "path": "sources/richfield-inundation-10yr/legend-01.png",
+    "bytes": 145,
+    "sha256": "4b0fe377235c67996ded8a220a710a7ee0d1e8fbe2b1519324335a6ec70b4300"
+  },
+  {
+    "path": "sources/richfield-inundation-10yr/map.png",
+    "bytes": 6379829,
+    "sha256": "e4829d97324d4167f7a2f50de2d31ec22595a39c0cf98280c2c335881e353597"
+  },
+  {
+    "path": "sources/richfield-inundation-2yr/legend-01.png",
+    "bytes": 135,
+    "sha256": "3b0e6eaf38f2ab4b6e807621afd5f78eb8c08f6dc01539e4d9333ee280620ca1"
+  },
+  {
+    "path": "sources/richfield-inundation-2yr/map.png",
+    "bytes": 6376729,
+    "sha256": "43d31b8283bc2049edcc98ba4071cf45ef01016fe4a8e56fab3b066eed0cf62c"
+  },
+  {
+    "path": "sources/richfield-inundation-mce100/legend-01.png",
+    "bytes": 149,
+    "sha256": "b5fc20c340a9d04db5ec30209edee3d5f228ea391f045cfe83f62ee6cec509a7"
+  },
+  {
+    "path": "sources/richfield-inundation-mce100/map.png",
+    "bytes": 6331298,
+    "sha256": "6e05df8178aa3cea8e8182fbaffdb40d5db8a5981457ce5691131b60fda10a9e"
+  },
+  {
+    "path": "sources/richfield-prioritization-score/legend-01.png",
+    "bytes": 92,
+    "sha256": "860d8ca3149d66f01dff622f5cd60a736703bf453eb20196444c66a824a63654"
+  },
+  {
+    "path": "sources/richfield-prioritization-score/legend-02.png",
+    "bytes": 92,
+    "sha256": "70cad06beab9ffc1d8d0bd34c290302fb1c9b5a8d14fcf8836b4192d8628fe59"
+  },
+  {
+    "path": "sources/richfield-prioritization-score/legend-03.png",
+    "bytes": 92,
+    "sha256": "21dbf024b80b15de4300e97b7edb2c0c964ca00b1115d046ebff6329f6ee255c"
+  },
+  {
+    "path": "sources/richfield-prioritization-score/legend-04.png",
+    "bytes": 92,
+    "sha256": "4ef2914f9e5c1430dd31f5db19eebb097a0f09f51abaa9354dd05040238a6aaa"
+  },
+  {
+    "path": "sources/richfield-prioritization-score/map.png",
+    "bytes": 6005358,
+    "sha256": "494f2b083adeaaa9e70f9fe3e7c2ed3fdc4075e80e56b27fbbd1ef1f7d562f30"
+  },
+  {
+    "path": "uiuc-pipeline/img/UnchartedJson.png",
+    "bytes": 52102,
+    "sha256": "e1161137e143f96253de0a14ab63b1328d5e3fdacdb8826104b973de8343fe75"
+  },
+  {
+    "path": "uiuc-pipeline/img/USGSJson.png",
+    "bytes": 58869,
+    "sha256": "e907d818575dd6bd5930205384a81ee79535aaf815fc235eb8a35fa32885c593"
+  },
+  {
+    "path": "uiuc-pipeline/src/patching.py",
+    "bytes": 3389,
+    "sha256": "b5dde3b6d9f5bf860d1a7805e7485085edbd101a29e514c0ef7740674ab67d80"
+  },
+  {
+    "path": "uiuc-pipeline/src/pipeline_communication.py",
+    "bytes": 2110,
+    "sha256": "9399cff219e4f97a890fd4b8e07107733816994e3f08ce38f50f7c2e163fa1eb"
+  },
+  {
+    "path": "uiuc-pipeline/src/pipeline_manager.py",
+    "bytes": 20774,
+    "sha256": "e618fd15446f7c345a78f0d81bdb7712e725b02f6112159ac72b197e1cb221b5"
+  },
+  {
+    "path": "uiuc-pipeline/src/pipeline_steps.py",
+    "bytes": 24520,
+    "sha256": "8bf232207db7bf180e5f35f21795cbe94061f0cf683888bf994998b36e32fdad"
+  },
+  {
+    "path": "uiuc-pipeline/src/utils.py",
+    "bytes": 5607,
+    "sha256": "bd1f5a4ecb7087ffbf6bbfc402d85e60e6ffcd4a6d24d3dc1652394f3a195122"
+  },
+  {
+    "path": "uiuc-pipeline/.github/workflows/docker.yml",
+    "bytes": 3268,
+    "sha256": "7e84be0fbae2c306502b1e96257a285f836517092e7f7c5f7e8d6898604761d9"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/blaring_foundry_model.py",
+    "bytes": 6408,
+    "sha256": "6679a3ab534340a5e1ac0e618715687a0ccdc5614ef238fc02c9b2d3bad57fb5"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/drab_volcano_legend.json",
+    "bytes": 14590,
+    "sha256": "dd585eb3ad68a2b961db7e6046f87d16afe2b551199ad2a92f73f846a1298257"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/drab_volcano_model.py",
+    "bytes": 4089,
+    "sha256": "dd3725368f58a46cf88e03c1de01f767b01c253825fdb833c6d3263d97c55652"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/flat_iceberg_model.py",
+    "bytes": 5542,
+    "sha256": "b0793dfff9555a6b86013363641292e62a43e63616465d1ebdc8424f88a7e326"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/golden_muscat_model.py",
+    "bytes": 6288,
+    "sha256": "4624bd0698da252a1d0d81fefcc4be4cf800285011eec2932e2ce4d60cda38ab"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/icy_resin_model.py",
+    "bytes": 6275,
+    "sha256": "7f40f61f700148f4ff4b7557914b9ed44c72c163f93e81ce0b75181cfde1716d"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/legend_extraction_model.py",
+    "bytes": 4007,
+    "sha256": "4171e097926e98b3032955d694d2919710d98663f574045b3dcb9b06346d43ff"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/pipeline_model.py",
+    "bytes": 549,
+    "sha256": "2bb0b8c30728899fad2580135b0ce6608839fb0e33ab2db1478c1d2594fe90c5"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/pipeline_pytorch_model.py",
+    "bytes": 5504,
+    "sha256": "483e35c48f1a6288cf598c62c467923770b830a71995d9944398b79efab51f06"
+  },
+  {
+    "path": "uiuc-pipeline/src/models/rigid_wasabi_model.py",
+    "bytes": 6069,
+    "sha256": "1620eb3f53ae8d42675e1c34d4b9c7fc88d97354edc9024eb0ac566da1ee7730"
+  }
+]

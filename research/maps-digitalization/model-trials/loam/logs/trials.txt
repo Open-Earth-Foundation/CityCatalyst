@@ -1,0 +1,2 @@
+LAYER_START porto-heat
+STAGE_END porto-heat preprocess {"command": ["C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe", "-X", "utf8", "preprocess.py", "porto-heat"], "exit_code": 0, "seconds": 12.112940299906768, "peak_rss_mb": 5.1953125, "stop_reason": null, "log": "logs\\preprocess-porto-heat-run.txt"}

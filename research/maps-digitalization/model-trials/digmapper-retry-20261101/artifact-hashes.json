@@ -1,0 +1,2359 @@
+{
+  "created_at_utc": "2026-11-01T09:32:34.983327+00:00",
+  "excluded": [
+    "artifact-hashes.json (self)",
+    "upstream Git internal database"
+  ],
+  "files": [
+    {
+      "path": "commands.ps1",
+      "bytes": 1761,
+      "sha256": "dc6c88a8e294dda7c7ca93eec0b20f9924d2cb1eed11c511d2c8ff44b6a132d1"
+    },
+    {
+      "path": "configs/assets-probes.json",
+      "bytes": 2065,
+      "sha256": "ba4b35231c95864f601f1ad49b57ed3ee2a29b5aa7715aae1224b1ca913df232"
+    },
+    {
+      "path": "configs/author-probes.json",
+      "bytes": 1762,
+      "sha256": "451b2a427275dffb45442739aa7850b1fb3acb308828beac5e8116bd9c1a590b"
+    },
+    {
+      "path": "configs/evaluation-contract.json",
+      "bytes": 4047,
+      "sha256": "b2958928a54531e7e82bc5bd75b1991f25b780af05d0dd60296355cd207c7ef4"
+    },
+    {
+      "path": "configs/expanded-probes.json",
+      "bytes": 2994,
+      "sha256": "e3da2a7d624b4eb951f8536cbe1f56c0089b630aae0816f9523f2a103719d495"
+    },
+    {
+      "path": "configs/final-probes.json",
+      "bytes": 574,
+      "sha256": "a068d307229a246bb2364feb547dcb2e1321fc2912e1508259d9020edb9572b8"
+    },
+    {
+      "path": "configs/run-intent.json",
+      "bytes": 1238,
+      "sha256": "0ab7ab109277009114cfd1adfa1ab5f60d4f5f7b7a363a49e1839d8b12f857ae"
+    },
+    {
+      "path": "configs/seed-probes.json",
+      "bytes": 4925,
+      "sha256": "06e29904296121a2350152703ca249455fa915d4a6d264a4ba092784c1f8effe"
+    },
+    {
+      "path": "configs/targeted-probes.json",
+      "bytes": 1451,
+      "sha256": "a163bb0cdfcda3090f70abd1117fa9bc3f01bceae548486e872b95a95b0ee45c"
+    },
+    {
+      "path": "evidence/acm-pdf.body",
+      "bytes": 5568,
+      "sha256": "653e763318f822cb126f93d24a62b2d489c6764ffb99a30da4bcc3ee0bc92ad0"
+    },
+    {
+      "path": "evidence/aim-branches.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/aim-contents.body",
+      "bytes": 132,
+      "sha256": "b228a6778d38c40279891f510870a11ead8a6f191c4a0b4442d012876e0ef0e6"
+    },
+    {
+      "path": "evidence/aim-deployments.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/aim-metadata.body",
+      "bytes": 7109,
+      "sha256": "559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f"
+    },
+    {
+      "path": "evidence/aim-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/assets-probes-results.json",
+      "bytes": 9692,
+      "sha256": "4d1c0c3609f3d6f1a71b674f281b4177c5bfdb33a453dcef3c2957041c0400ae"
+    },
+    {
+      "path": "evidence/author-dovetail-readme.body",
+      "bytes": 184,
+      "sha256": "81a65385ad5e0132102128aa354bc21a0c3aea793aabe227c9f43287b7152980"
+    },
+    {
+      "path": "evidence/author-dovetail-tree.body",
+      "bytes": 630,
+      "sha256": "1c45de1d04dbe91704b87b6fc8877f3eff3662c928a42a2a538e0cdc54cd83b2"
+    },
+    {
+      "path": "evidence/author-fandel.body",
+      "bytes": 47614,
+      "sha256": "c562d41efc43cb5d09ef9133457f063038794b5d51c9198f48594b2d91944d2a"
+    },
+    {
+      "path": "evidence/author-glyph-readme.body",
+      "bytes": 1531,
+      "sha256": "83558cdac6e18a21dc43ccc6389b8f059a77a2a8ce6509708e56c1710ff8f062"
+    },
+    {
+      "path": "evidence/author-poly-readme.body",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/author-poly-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/author-poly-tree.body",
+      "bytes": 252674,
+      "sha256": "ecc625c5a0b3312202b14f9c999006178c05fbf5ab78411fc4f64bfaac5d212d"
+    },
+    {
+      "path": "evidence/author-polydetr-readme.body",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+    },
+    {
+      "path": "evidence/author-probes-results.json",
+      "bytes": 9769,
+      "sha256": "e79320fc0ba92888028e1c728aefcf6d5c8773918c8ff8807056c509886afe25"
+    },
+    {
+      "path": "evidence/author-project.body",
+      "bytes": 15860,
+      "sha256": "182d822d5ec721d62f46387809902eee272400bdcd13a4c64f885780a796edec"
+    },
+    {
+      "path": "evidence/author-project.txt",
+      "bytes": 8299,
+      "sha256": "5978b9bf52d5edcc40a5227df8cd81488a6641affac2678d7c4384c026b37721"
+    },
+    {
+      "path": "evidence/author-spolydetr-readme.body",
+      "bytes": 971,
+      "sha256": "e1ea35f99475931f7454a48b4636be65fbe0148f5b2d121d5aef69157dac568c"
+    },
+    {
+      "path": "evidence/author-weiwei.body",
+      "bytes": 5161,
+      "sha256": "08707d9411e270acc80e40a7fda6d8d41e5d1e0b645b5dd9922389a6db30e319"
+    },
+    {
+      "path": "evidence/availability-summary.json",
+      "bytes": 3178,
+      "sha256": "4f53b08d0bdb6e046f970ee41ce2654361531e3d94d9d6663bf64126419abf73"
+    },
+    {
+      "path": "evidence/candidate-launcher-main.body",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+    },
+    {
+      "path": "evidence/candidate-launcher.body",
+      "bytes": 9329,
+      "sha256": "0b95f8f15de8f24d4e80efca7eebb18680e6298239daf6467fd111611af7ed00"
+    },
+    {
+      "path": "evidence/candidate-metadata.body",
+      "bytes": 5868,
+      "sha256": "4a9c120a130aa7b6d1e927aeded7893f2737c1d49c0bc2ea34d84a7bf7088084"
+    },
+    {
+      "path": "evidence/candidate-readme.body",
+      "bytes": 10726,
+      "sha256": "6ae7c32db6d54dae713c8c56c95dd38bba3b2e0cbac343bb9f086df36c7c6b46"
+    },
+    {
+      "path": "evidence/candidate-release-zip.body",
+      "bytes": 7480718,
+      "sha256": "94c02406b4c908d073336f7e86997e1115bd0c88d74bd6c3cf31543b19762382"
+    },
+    {
+      "path": "evidence/candidate-releases.body",
+      "bytes": 4175,
+      "sha256": "42f6642a2b660d97aa71728f26b191b191f74a0fa68e4270d4edf84d932b5f8a"
+    },
+    {
+      "path": "evidence/candidate-tree.body",
+      "bytes": 87832,
+      "sha256": "33f572ca4d72b5b4ad67e7dfd8bc052477e79b17dae2630584cfbbc0487a97cb"
+    },
+    {
+      "path": "evidence/candidate-zip-inventory.json",
+      "bytes": 41919,
+      "sha256": "38728a6d53ae06b1d2c7050024e4b463d03f83e9c708072c9ab1ef7e448f50bf"
+    },
+    {
+      "path": "evidence/cdr-examples-tree.body",
+      "bytes": 9763,
+      "sha256": "429489abf89690d0c82531a9d31ec91f91469691a93b4f9947321d5ec9455857"
+    },
+    {
+      "path": "evidence/container-layer-inventory.json",
+      "bytes": 18363,
+      "sha256": "67be79449b89d4e0360706ce5143114718daacaf2a43a1ab8942aeda233984b0"
+    },
+    {
+      "path": "evidence/container-layer-results.json",
+      "bytes": 426,
+      "sha256": "ca4614bee966a8c9969f1102adcee04da2f73e7618a2c55a2f06c1ceb0149f77"
+    },
+    {
+      "path": "evidence/container-README.md.txt",
+      "bytes": 23913,
+      "sha256": "8016a8189b0df872270a6aed2d6dcbd94a512ba9f2dbff3d41c684b70bf5bdfe"
+    },
+    {
+      "path": "evidence/container-setup.py.txt",
+      "bytes": 1153,
+      "sha256": "08119f4a7942f9435792902201b1e74f0e9e38aec639a498a5cb0a1c9f3fc56f"
+    },
+    {
+      "path": "evidence/criticalmaas-repos.body",
+      "bytes": 241020,
+      "sha256": "3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624"
+    },
+    {
+      "path": "evidence/darpa-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e"
+    },
+    {
+      "path": "evidence/docker-criticalmaas-search.body",
+      "bytes": 983,
+      "sha256": "f0e3964cc565bd52c3083895d825bdb04649280e696ccd31d291c938408d1198"
+    },
+    {
+      "path": "evidence/docker-digmapper-search.body",
+      "bytes": 49,
+      "sha256": "4605ecc2be9b52faa3bdf4ea25f755535bd7312693f057abbc675cda4f5eb1d8"
+    },
+    {
+      "path": "evidence/docker-inferlink.body",
+      "bytes": 1551,
+      "sha256": "b55baa334de188bc4eb2e42ff0dd4632281c844d802bf41657c81b8759b5a73b"
+    },
+    {
+      "path": "evidence/docker-jterstriep-repos.body",
+      "bytes": 12170,
+      "sha256": "ca4e46014b8c48fe311fb8d371d327e05443369b6d4c099b6d25251b3ad16394"
+    },
+    {
+      "path": "evidence/docker-jterstriep-tags.body",
+      "bytes": 864,
+      "sha256": "1c1a0735f673311e7b010357a5d7df0beaa2ece8aa0af1fefe2b8e46f29b6f83"
+    },
+    {
+      "path": "evidence/docker-jterstriep-topaz.body",
+      "bytes": 704,
+      "sha256": "fefeee3da6ad64d8e0b8ef304a7e750fb3090d84ad1d2db2e1672f50b84993ac"
+    },
+    {
+      "path": "evidence/docker-knowledge-computing.body",
+      "bytes": 604,
+      "sha256": "8bbc2bdb4c440c82340dd269a94e59835d80f94c23a06e8e1b3979c75c3ff84c"
+    },
+    {
+      "path": "evidence/docker-lara-tags.body",
+      "bytes": 43,
+      "sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7"
+    },
+    {
+      "path": "evidence/docker-mapsense-search.body",
+      "bytes": 1082,
+      "sha256": "44867d6e1aa8b81750b93bce3d29a27a8b87bec7a60cfa396f89ccd6aff1dc6c"
+    },
+    {
+      "path": "evidence/docker-topaz-search-page2.body",
+      "bytes": 11207,
+      "sha256": "53d6823ff9fe43c97ea0409d4c3851dc3bcbae624729d63a50d0ec700368ea57"
+    },
+    {
+      "path": "evidence/docker-topaz-search.body",
+      "bytes": 16327,
+      "sha256": "af2bb4b682d9bd918eed425cb19c14d2bf8c715b2d5bb93280a0965932bfe641"
+    },
+    {
+      "path": "evidence/expanded-probes-results.json",
+      "bytes": 17010,
+      "sha256": "48de9b0d0171b8de7c74529c187816b47b84c1d00afd869e09779881e28c347f"
+    },
+    {
+      "path": "evidence/final-gpu.txt",
+      "bytes": 50,
+      "sha256": "803a3a6d0a8982b21ecda0c00fdfa6fb63012be43da1f17c99903dbec07dcc42"
+    },
+    {
+      "path": "evidence/final-memory.json",
+      "bytes": 78,
+      "sha256": "bcd0ec4a69764c973a42e58867ce3b17fa368c5a4a9d6ec15496af80341cdff8"
+    },
+    {
+      "path": "evidence/final-probes-results.json",
+      "bytes": 2862,
+      "sha256": "d234ef4c56841b5a2df235209c27c4a48b4523d35665fcce84faef6d36104801"
+    },
+    {
+      "path": "evidence/ghcr-lab-package-page.body",
+      "bytes": 145139,
+      "sha256": "fe2ccd52e3091942f0485de8e6cc33c9d896773ea0a23b2e23203c201001f0da"
+    },
+    {
+      "path": "evidence/github-digmapper-readme-search.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f"
+    },
+    {
+      "path": "evidence/github-digmapper.body",
+      "bytes": 5871,
+      "sha256": "7822ee9e2383dbbe23651ff483347a0030df061b64a232a4fbe07d6a15f7da3f"
+    },
+    {
+      "path": "evidence/github-fandel-repos.body",
+      "bytes": 101055,
+      "sha256": "88f0ef7a940708ce54adc6fdbc69b44f42461ddb8876f56083e8993ff7da8f3e"
+    },
+    {
+      "path": "evidence/github-inferlink-critical-search.body",
+      "bytes": 11807,
+      "sha256": "f6241cee89f923fbbd03bf36c1fd1cf6f95c2d4d189c06267bcdb07132eb9145"
+    },
+    {
+      "path": "evidence/github-jterstriep.body",
+      "bytes": 207575,
+      "sha256": "cb231ca6e64e6b9c77be8a6bdbb34f70bf424323d495f0c8b486c5effcfc2536"
+    },
+    {
+      "path": "evidence/github-polygon-inferlink.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f"
+    },
+    {
+      "path": "evidence/github-sofia-repos.body",
+      "bytes": 82292,
+      "sha256": "2a3a57c7e4ab112a692d0e98bc69f4679bbbc3761762ce862eae69a385faf0a7"
+    },
+    {
+      "path": "evidence/github-topaz-criticalmaas.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f"
+    },
+    {
+      "path": "evidence/github-topaz-geologic.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f"
+    },
+    {
+      "path": "evidence/github-topaz-polygon.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f"
+    },
+    {
+      "path": "evidence/github-topaz-readme-search.body",
+      "bytes": 533390,
+      "sha256": "eebe373d296b1540c4cc2d8b08c6d517c124266595fb22f0907bcda2de717a0c"
+    },
+    {
+      "path": "evidence/github-usc-repos.body",
+      "bytes": 568796,
+      "sha256": "9c7195d36334c9338c4f1b7545c4b3828e2cffb0e0f84299f1e997fe08fce3b9"
+    },
+    {
+      "path": "evidence/github-weiwei-repos.body",
+      "bytes": 79764,
+      "sha256": "a4b3ae20c2bc8f5b7784ad52246f4e672d361edce875f029e049692fcbb5cf2a"
+    },
+    {
+      "path": "evidence/github-yijun-repos.body",
+      "bytes": 68289,
+      "sha256": "3062631a8364db17860300b56961d236549412e85cc03d28888626d5c3f3d11f"
+    },
+    {
+      "path": "evidence/hf-criticalmaas-models.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/hf-digmapper-models.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/hf-digmapper-spaces.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/hf-geologic-models.body",
+      "bytes": 1117,
+      "sha256": "4508acfaf6470e0ced36dd67506f450f6d09f5aafa06b34536e889a713bdd905"
+    },
+    {
+      "path": "evidence/hf-polygon-models.body",
+      "bytes": 12781,
+      "sha256": "5b99b729d4ef1aac8fd33e0b952550e8cdc02df6e63c85a5fc98e2a305c2f1a4"
+    },
+    {
+      "path": "evidence/hf-topaz-cryomodel-card.body",
+      "bytes": 1819,
+      "sha256": "a494a3ef6101bf5f3324bcea6daa02a177721015bfb8a50c962aa0365c03848e"
+    },
+    {
+      "path": "evidence/hf-topaz-models.body",
+      "bytes": 17329,
+      "sha256": "e5db1377ebe75408674993e85b3f0cf5220b47a8348137ee1dcf9ba00ff1ef04"
+    },
+    {
+      "path": "evidence/hf-topaz-spaces.body",
+      "bytes": 2778,
+      "sha256": "8ad380b27366ce958961a504b53f1f4522bcfccdeef7ede677a7bd4436af065f"
+    },
+    {
+      "path": "evidence/http-index.json",
+      "bytes": 82281,
+      "sha256": "00717665f47cf1ecbdbd180beb115d5d2b4406c2b61afa339ac89cfbe55f0a22"
+    },
+    {
+      "path": "evidence/inferlink-mapsense.body",
+      "bytes": 521709,
+      "sha256": "3e7a8ded7f314c4487e528c530910ca0c2ca0a4dbc4d4f94a9e1a80fd4678391"
+    },
+    {
+      "path": "evidence/inferlink-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e"
+    },
+    {
+      "path": "evidence/inferlink-repos.body",
+      "bytes": 27696,
+      "sha256": "82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67"
+    },
+    {
+      "path": "evidence/initial-gpu.txt",
+      "bytes": 50,
+      "sha256": "e243ada3a83cb839d910c78addc01a618be90ede318525c0b1748e664c73aa3d"
+    },
+    {
+      "path": "evidence/initial-memory.json",
+      "bytes": 78,
+      "sha256": "faaf1af41595b4fabb268261baff40c6a67b1a69a80f8b004f1deeeb5d638d12"
+    },
+    {
+      "path": "evidence/input-readiness.json",
+      "bytes": 14143,
+      "sha256": "8fb46836e9deefd790520eecd3cbb9e2b6d76551afb41fd68162e561a55bf973"
+    },
+    {
+      "path": "evidence/jterstriep-dockerfiles-tree.body",
+      "bytes": 2411,
+      "sha256": "fb109e38b05ddc128c1bfbb9d7bcaf427a9be752316a6cd107905e74dc31f8c7"
+    },
+    {
+      "path": "evidence/lab-criticalmaas-site.body",
+      "bytes": 9147,
+      "sha256": "57600f3a145fcf8e873ce7df2a107c81324d852aadebae51025d5f9a64c33305"
+    },
+    {
+      "path": "evidence/lab-criticalmaas-tree.body",
+      "bytes": 14187,
+      "sha256": "77836285c7c411acffcf22849eccdccbfab384d6580c2564dc11bffc8702a2b6"
+    },
+    {
+      "path": "evidence/lab-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e"
+    },
+    {
+      "path": "evidence/lab-publications.body",
+      "bytes": 6897,
+      "sha256": "8a254088ed5a02c7d02d3b5198f67da3288f7145bb2253fd1ea3784ad40f3e99"
+    },
+    {
+      "path": "evidence/lab-repos.body",
+      "bytes": 262342,
+      "sha256": "13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a"
+    },
+    {
+      "path": "evidence/lab-website.body",
+      "bytes": 31371,
+      "sha256": "77896785ae3af50fe362bc4b05b38e439439135994193350f71ed453f09616be"
+    },
+    {
+      "path": "evidence/legend-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/legend-tree.body",
+      "bytes": 10544,
+      "sha256": "11ba232e665f4998b6b460d8aff9c2e8cc59c2ab6519c2f2d38ac63277acf1cb"
+    },
+    {
+      "path": "evidence/paper-abs.body",
+      "bytes": 42266,
+      "sha256": "4c2d13ef3d38254082e2ba207a8c208ce57128746aa850dc7fce27f953b03baa"
+    },
+    {
+      "path": "evidence/paper-api.body",
+      "bytes": 3292,
+      "sha256": "fbf730d54fa682a10976f4e4ef443b60ed27bbd4bcdddb1f41bf0da1d6813426"
+    },
+    {
+      "path": "evidence/paper-latest-html.body",
+      "bytes": 221573,
+      "sha256": "3dbd0f350337c10332a7f2f40a147aec5a15264ed6c3e8695fa85cc292b02cfc"
+    },
+    {
+      "path": "evidence/paper-latest-html.txt",
+      "bytes": 75725,
+      "sha256": "834cf52d1a9339ae1476579192bdef9436a95a982e16c0c2ba0ba20286198fa5"
+    },
+    {
+      "path": "evidence/poly-loam-handler.body",
+      "bytes": 19113,
+      "sha256": "9964460933df61b6b2ad757f742450a8b2899957f8ab83a9b44d3976f1231777"
+    },
+    {
+      "path": "evidence/poly-loam-model.body",
+      "bytes": 2652,
+      "sha256": "9ddf54730cbc32bd9c9a90df6e4870ad7853b78662db4eea525e12d874333ed2"
+    },
+    {
+      "path": "evidence/poly-polygon-readme.body",
+      "bytes": 5596,
+      "sha256": "81b61ccd339dcf489368227d9f4e8f63856e4acd5f63ffcc3f69f3c9dbec2042"
+    },
+    {
+      "path": "evidence/poly-system-config.body",
+      "bytes": 3010,
+      "sha256": "378aa50b8ab431765c1c405029699e394f35ef0ef15b5225c2ca2eedde50f90f"
+    },
+    {
+      "path": "evidence/poly-system-main.body",
+      "bytes": 6691,
+      "sha256": "acdc69662e0378a94f9db1b2c2eb218a01b3c71bf02d31d2fa0a8b3626cca828"
+    },
+    {
+      "path": "evidence/poly-system-readme.body",
+      "bytes": 1892,
+      "sha256": "139297d42d85f57624b10de05b87b035fc1f33aa288527c908e4dbe03be003c8"
+    },
+    {
+      "path": "evidence/publication-acm.body",
+      "bytes": 5556,
+      "sha256": "dcb19b5bd7548b7863afb5652e7315f23678fe4208921e31a2be8e6197b44547"
+    },
+    {
+      "path": "evidence/publication-crossref.body",
+      "bytes": 31713,
+      "sha256": "7f10eea5f3192506a9ab3443b144b5feaabb813537e174b9dbccc109aba21f90"
+    },
+    {
+      "path": "evidence/quay-digmapper.body",
+      "bytes": 87,
+      "sha256": "9634d5c711ce51bdc5bad8e08c250aa51adea55f1fe9b0367e1ebffaa6f73e41"
+    },
+    {
+      "path": "evidence/quay-topaz.body",
+      "bytes": 115609,
+      "sha256": "34b7b443de851b6dc6e1142b729a30423935fc751bb19ae6f523ce5b03ec3745"
+    },
+    {
+      "path": "evidence/registry-results.json",
+      "bytes": 1310,
+      "sha256": "bc05ff4455dda09d46d89a9b6116b83d7e4b1db66ed25b5a66e798423a4106bf"
+    },
+    {
+      "path": "evidence/s3-layout-config-json.body",
+      "bytes": 307,
+      "sha256": "1b684d6284b6ff2efebf0bada75ede94425be86029abe330148903e02191d163"
+    },
+    {
+      "path": "evidence/s3-layout-config-yaml.body",
+      "bytes": 307,
+      "sha256": "c8db5a0b98048a1cf1676e4e731976f4dcfdbf9d0de18aada074703bbaca7ade"
+    },
+    {
+      "path": "evidence/s3-layout-weights-global.body",
+      "bytes": 327,
+      "sha256": "2e28ccf0f6971580ab9647c472744bd88a27a87589517f96039a72c27b1d6005"
+    },
+    {
+      "path": "evidence/s3-layout-weights.body",
+      "bytes": 307,
+      "sha256": "f46e0d8b770d1500b3362002848bf6019640ad61793d9fc72e2dc7d7001d9f5b"
+    },
+    {
+      "path": "evidence/scorer-contract-validation.json",
+      "bytes": 1902,
+      "sha256": "f2d55f905496095a0b6da61af7c3e7490d9a18e8c4739ef08fd393fe14ec8d97"
+    },
+    {
+      "path": "evidence/seed-probes-results.json",
+      "bytes": 27259,
+      "sha256": "a037022b390e0acd28b22a5bdf798ee86f175ded9c744d5ab1f74ebed7bddbd8"
+    },
+    {
+      "path": "evidence/source-baseline.json",
+      "bytes": 18283,
+      "sha256": "2f49086e5e1fa6557420bac96f6d9da05179f01239865e56752dd733dc2f3ce0"
+    },
+    {
+      "path": "evidence/source-preservation.json",
+      "bytes": 456,
+      "sha256": "98cdca7bfd02909cfecd39fb8a201134bd00324711d313595dd8d59bf9da8100"
+    },
+    {
+      "path": "evidence/ta1-evaluation-tree.body",
+      "bytes": 14178,
+      "sha256": "e3c6f1fcb20908024f58df2bae8d5fec5b98458507302e713056033f96941989"
+    },
+    {
+      "path": "evidence/targeted-probes-results.json",
+      "bytes": 9776,
+      "sha256": "9cc3b19cc768bc3ab8ba3d1e0560fe0c5c1e4b196d12d40cdcef9c59dd35379c"
+    },
+    {
+      "path": "evidence/topaz-container-application.tar.gz",
+      "bytes": 65602698,
+      "sha256": "3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98"
+    },
+    {
+      "path": "evidence/topaz-container-config.body",
+      "bytes": 24821,
+      "sha256": "a6e760f92fb72126d820be3aa380e4c54bad0705fe5fe4d96522e9a3f7d49912"
+    },
+    {
+      "path": "evidence/topaz-container-manifest.body",
+      "bytes": 5597,
+      "sha256": "73a765c2314324082686ec877bdd1facb2628af89a8825c65810a18a2cf2c5ac"
+    },
+    {
+      "path": "evidence/uncharted-build-workflow.body",
+      "bytes": 1686,
+      "sha256": "886a7746ff4c72658c52ba9112ebc105b47df3ae7703f7fbeeb6220cd0f74c94"
+    },
+    {
+      "path": "evidence/uncharted-deploy-template.body",
+      "bytes": 9798,
+      "sha256": "3ce2497a60b3fc0cda9f8f129bae5c9a9a952b1ae3d13dbe36910d84ffc53473"
+    },
+    {
+      "path": "evidence/uncharted-deploy-vars.body",
+      "bytes": 656,
+      "sha256": "af06f70ed4ee6eb61d84b06ee629597b18d84d4b8ac08bdbba00c4424a2bf409"
+    },
+    {
+      "path": "evidence/uncharted-metadata.body",
+      "bytes": 7129,
+      "sha256": "8fc2970c83fe634ff684de9f2c5732a2ab9f15f4e4ef8269136bce98c411dfd8"
+    },
+    {
+      "path": "evidence/uncharted-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "evidence/uncharted-segmentation-readme.body",
+      "bytes": 4389,
+      "sha256": "2b80e560bced998fb181e74ae10702bf9c907564d4bb3d8d10ac3cc6cf2fb6c6"
+    },
+    {
+      "path": "evidence/uncharted-tree.body",
+      "bytes": 85050,
+      "sha256": "14376a4b83fdc59934835d5711934decc413d76ba4c08c8101aabcf5a11300ee"
+    },
+    {
+      "path": "evidence/usc-repos-page2.body",
+      "bytes": 569594,
+      "sha256": "38cfcb1642f01597f65f4a532aa111abe8ef89b6ba0dd28f28a4044058bf6054"
+    },
+    {
+      "path": "evidence/usc-repos-page3.body",
+      "bytes": 391031,
+      "sha256": "23eeaac57e4d7ac687f9d5056e1fcf99d0b75a4ff5653648462bee95dad6f463"
+    },
+    {
+      "path": "evidence/validation.json",
+      "bytes": 589,
+      "sha256": "00914ebffc83584f88803e762cde35f1462f5d02812a8132cb210d7afaa7f1bd"
+    },
+    {
+      "path": "logs/aim-ls-remote.json",
+      "bytes": 372,
+      "sha256": "90105127d1557e10b02ecef3730f0dbb8c03302b51a728da149d9baf547f1d63"
+    },
+    {
+      "path": "logs/aim-ls-remote.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/assets-probes.json",
+      "bytes": 327,
+      "sha256": "e2df7235de473e0c18bc836dabe759466c4584148d217cbc92c722b6da819431"
+    },
+    {
+      "path": "logs/assets-probes.log",
+      "bytes": 1299,
+      "sha256": "e2095b09c7aa49554c0cc22aa6a3b87fe976593c51279ab20121f4b03b8c5611"
+    },
+    {
+      "path": "logs/author-probes.json",
+      "bytes": 327,
+      "sha256": "8c0160d708258f6219708d80e71f52f1032ebdeec4d180744ec49a84175b646f"
+    },
+    {
+      "path": "logs/author-probes.log",
+      "bytes": 1302,
+      "sha256": "bd0d2926a6d95e13cbf18b9029a02ff287206fd9a8a2e24dd50682fbee8da9b2"
+    },
+    {
+      "path": "logs/baseline.json",
+      "bytes": 294,
+      "sha256": "2c4829231c995d98c6b4ce39a4f2c0ca11aa436f86b653f763dd1e593839b74d"
+    },
+    {
+      "path": "logs/baseline.log",
+      "bytes": 111,
+      "sha256": "d6d0c03d9053f7807872d3aad5e15a21a4d6e9a91f862fa75e767b83780dcbbf"
+    },
+    {
+      "path": "logs/candidate-clone.json",
+      "bytes": 426,
+      "sha256": "af6a9247bae67266d680b170fe05be4808e97411fc4f3133e0be5e51647e9bea"
+    },
+    {
+      "path": "logs/candidate-clone.log",
+      "bytes": 44,
+      "sha256": "d6b99010e793ac68769a9f3a693f011f8e7c9a91469ff58fbf54f0c7a9cde00b"
+    },
+    {
+      "path": "logs/candidate-list.json",
+      "bytes": 334,
+      "sha256": "0e280c0d44c04aa2ecc92ac547c2aa49ff4fc547f2a52eb9c271d65766176a35"
+    },
+    {
+      "path": "logs/candidate-list.log",
+      "bytes": 320,
+      "sha256": "36637193ec890c205d5393ff4e056d9305ebe889027e6750585c3a70cd6b5f95"
+    },
+    {
+      "path": "logs/candidate-topaz-dispatch.json",
+      "bytes": 352,
+      "sha256": "87bf5c5aea8c620b33895bec2fa4af1cf27f57f1253284fb0369f7d0e0d34e64"
+    },
+    {
+      "path": "logs/candidate-topaz-dispatch.log",
+      "bytes": 367,
+      "sha256": "43261e4911eb1d9bd5da9027ce0e4bc2cba1b4e3bd8b61b79eb70ceea09e8f12"
+    },
+    {
+      "path": "logs/candidate-version.json",
+      "bytes": 314,
+      "sha256": "01c9a6efc0bcebab58da33b1a18668667073947023281f00020744a235f9710d"
+    },
+    {
+      "path": "logs/candidate-version.log",
+      "bytes": 41,
+      "sha256": "e837543d597336ec76bcb798961c8e75d0a8f3395a115403b4e424cebf0f2d12"
+    },
+    {
+      "path": "logs/container-layer.json",
+      "bytes": 309,
+      "sha256": "548b21422450d0153c3c238c495842ae92ce46b855f9b3894cb593995f1e352c"
+    },
+    {
+      "path": "logs/container-layer.log",
+      "bytes": 5704,
+      "sha256": "3123c0482354d9fb8e36a1ed2fbc19f3124f778ad36fd529f884c84b2e6712ba"
+    },
+    {
+      "path": "logs/docker-version.json",
+      "bytes": 293,
+      "sha256": "0c70776675c9ace7e04af826d87ad5eb1ce6e9eb41faaa54697e0edd692fd22d"
+    },
+    {
+      "path": "logs/docker-version.log",
+      "bytes": 1150,
+      "sha256": "9d2d4c741fea78e15b27c3c924dbb5e106339edd1cd8c8d88f6e8e75b5d20d39"
+    },
+    {
+      "path": "logs/expanded-probes.json",
+      "bytes": 329,
+      "sha256": "9f361e8507d522729c7ce7a7532c1563485fa036d2303edcb2d82368adf3b56f"
+    },
+    {
+      "path": "logs/expanded-probes.log",
+      "bytes": 2350,
+      "sha256": "af1afaf9251419ad2dbd44b6f6d809e7908631dd44174555c1b72a98310252b0"
+    },
+    {
+      "path": "logs/final-probes.json",
+      "bytes": 326,
+      "sha256": "61c40cc0b2380ab0627ca16177b6ba89d5f3dc00da5f8b28c8e1b800c0f4c45f"
+    },
+    {
+      "path": "logs/final-probes.log",
+      "bytes": 452,
+      "sha256": "b63945396902ebc2eaaf7209dbe5a16598a2974f02233a26368a5b53f3a3d869"
+    },
+    {
+      "path": "logs/finalize.json",
+      "bytes": 294,
+      "sha256": "02e7cc50dca39fef996eda210374ef08d7e2d3dc09ada81340e134fbfd398f9b"
+    },
+    {
+      "path": "logs/finalize.log",
+      "bytes": 151,
+      "sha256": "b3a52293b391992fc12c554ed04b04a573451b6a9903edd4266e39b62c6441a8"
+    },
+    {
+      "path": "logs/input-and-contract-validation-retry.json",
+      "bytes": 418,
+      "sha256": "42a38a43be4fe79dec115254cc5c56dba4c0ad7ebce960a85747ffc216b89c6f"
+    },
+    {
+      "path": "logs/input-and-contract-validation-retry.log",
+      "bytes": 559,
+      "sha256": "2fe7401a9ce730eaead61e510dc9df0d9347276836b7928d59a059525f89e3a2"
+    },
+    {
+      "path": "logs/input-and-contract-validation.json",
+      "bytes": 418,
+      "sha256": "457efdba3437f0c2b7eb4ac15135f2ce511990c2c19cbea3ef6e0bdbb0f25d01"
+    },
+    {
+      "path": "logs/input-and-contract-validation.log",
+      "bytes": 409,
+      "sha256": "67f6b7bad53b52599eee6d6bfd17c17dc1731ac8855e7c8b06232734bc5e085f"
+    },
+    {
+      "path": "logs/lara-manifest.json",
+      "bytes": 317,
+      "sha256": "3205ac27812846cab3e7341b724afaca08c2263173f34e2c69b135a7530a3173"
+    },
+    {
+      "path": "logs/lara-manifest.log",
+      "bytes": 98,
+      "sha256": "0cf9cfbbd6a5ffecf9b2f3c48c56b93bde9c1ae7aa0c47139508ac2eb0807865"
+    },
+    {
+      "path": "logs/registry-inspect.json",
+      "bytes": 302,
+      "sha256": "b89086945bb30e2745bf14931b85bc70f3de6ad1c80786321c428040113ab43f"
+    },
+    {
+      "path": "logs/registry-inspect.log",
+      "bytes": 13545,
+      "sha256": "478232e0307157f942f0d17ea6754f97c4df88d171c16b3b3307cfa9dac6c88a"
+    },
+    {
+      "path": "logs/seed-probes.json",
+      "bytes": 325,
+      "sha256": "d81914c79572b879912e3a3f2ace09f885dded01e8b87471feb743a40b202995"
+    },
+    {
+      "path": "logs/seed-probes.log",
+      "bytes": 4016,
+      "sha256": "7c6a3ad47f938e46b071a48027f0af162814c48a33b5cb23d065fe7f7ebd4de4"
+    },
+    {
+      "path": "logs/shell.txt",
+      "bytes": 504,
+      "sha256": "a364691feed1e3b8bc97bfb8657a448fca8ee65c730903aa00c967c7e799096b"
+    },
+    {
+      "path": "logs/targeted-probes.json",
+      "bytes": 329,
+      "sha256": "09f73e23bd202e06bb1323dd0f99fb0ffe707acdc947d047c5087ef293457bfc"
+    },
+    {
+      "path": "logs/targeted-probes.log",
+      "bytes": 1296,
+      "sha256": "b2dde4e87a7a598527f21d4a6bf20e19065ae3c26fd8dda30d5e08ddf5f97391"
+    },
+    {
+      "path": "logs/topaz-manifest.json",
+      "bytes": 306,
+      "sha256": "0c5024014182b9fae4b4cb83140e2d6c5f93a06be6f25e0ef46e12787ae28682"
+    },
+    {
+      "path": "logs/topaz-manifest.log",
+      "bytes": 52,
+      "sha256": "4fcb26534a8e01888e36e742665fcda8eeb1cf1a8e34f8c9d5a0c3fda9c4e2a3"
+    },
+    {
+      "path": "logs/wsl-status.json",
+      "bytes": 270,
+      "sha256": "4b1ceca817acbb9d709ab516ee793a5024f7881f08fb1aff54deb31e06c35608"
+    },
+    {
+      "path": "logs/wsl-status.log",
+      "bytes": 246,
+      "sha256": "b70f5e70c1b9b4395c11c8c75acb08c83455a49700407885da5ead4cfba4e13f"
+    },
+    {
+      "path": "metrics.json",
+      "bytes": 31077,
+      "sha256": "8e05f18c6d79db79543100e4a9c050bd13a9fb7c67744e58111d2db44588268f"
+    },
+    {
+      "path": "report.md",
+      "bytes": 13679,
+      "sha256": "517a7416fe39aa8a21a94453a938115b1baf29fff58e0367e52b997420113fd5"
+    },
+    {
+      "path": "scripts/baseline.py",
+      "bytes": 1277,
+      "sha256": "0a9e059452ab7fef19c07354361aa3374a58a5fce9a362d7a0d7185c0f8897eb"
+    },
+    {
+      "path": "scripts/expanded_config.py",
+      "bytes": 2545,
+      "sha256": "c1248873d30b35929946fd718425625079d7b8b1439f9d8652b9352bfe1badaa"
+    },
+    {
+      "path": "scripts/finalize.py",
+      "bytes": 11528,
+      "sha256": "3ac429d4586c617480d717f664f52498e0b969234afd116548ebe95ef4a6dc70"
+    },
+    {
+      "path": "scripts/inspect_container_layer.py",
+      "bytes": 2067,
+      "sha256": "59379c466084bbc98575aad99565cb29841f5070da45ea6570594459d86a5519"
+    },
+    {
+      "path": "scripts/inspect_registry.py",
+      "bytes": 2021,
+      "sha256": "554b04442542e7d38ad39cfc7b87fb24ecec8f596f22487bb8a24640cc8c1b78"
+    },
+    {
+      "path": "scripts/probe.py",
+      "bytes": 2378,
+      "sha256": "8fe67bec4272783c7127b21581ff7aa794f9e852d1b81032576886e63c1d8546"
+    },
+    {
+      "path": "scripts/run_logged.py",
+      "bytes": 963,
+      "sha256": "41ad78a74857c411d7e703da38837c0cb3c9375fc2094aff5ca44664cd02a7a1"
+    },
+    {
+      "path": "scripts/seal.py",
+      "bytes": 2547,
+      "sha256": "c50570beabb4d88c3944c9181263c43497535e265b90e5a36e5f1b49c444b205"
+    },
+    {
+      "path": "scripts/seed_config.py",
+      "bytes": 3929,
+      "sha256": "9d4eb2041af8ff9e5e3f47a477bfd66705c9156b0caee380a98792b49aaa11ca"
+    },
+    {
+      "path": "scripts/validate_inputs_and_contract.py",
+      "bytes": 6564,
+      "sha256": "07479c850656534ba196664b516ffd3b89cc143d704c1ab966b1aa27dabdaa84"
+    },
+    {
+      "path": "upstream/windows-launcher/.github/workflows/build-windows.yml",
+      "bytes": 1211,
+      "sha256": "926f3ea2296d997012534e0253edb72a31465487711183e79950adcfbda6826a"
+    },
+    {
+      "path": "upstream/windows-launcher/.github/workflows/build_containers.yml",
+      "bytes": 1768,
+      "sha256": "75e5f7e4ff5e5eab8a7b5a8713e5adf9ac8ef319e708291bccb095b0a44daa7b"
+    },
+    {
+      "path": "upstream/windows-launcher/.github/workflows/build_test.yml",
+      "bytes": 1527,
+      "sha256": "340a06d35c7a9ae36c1c4101911a0174dd2a3cd98192bfc9b961b694e5a0d5a7"
+    },
+    {
+      "path": "upstream/windows-launcher/.github/workflows/release-windows.yml",
+      "bytes": 2948,
+      "sha256": "93ff494a1289e4457989831a01d2446e22a99558c774ed5a6864d9d70d5dfd48"
+    },
+    {
+      "path": "upstream/windows-launcher/.gitignore",
+      "bytes": 3466,
+      "sha256": "598cd20819ee957a4837e0a89a3005aecdae46584574b08b62ac9d2dc81da940"
+    },
+    {
+      "path": "upstream/windows-launcher/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/chaining_result_subscriber.py",
+      "bytes": 4889,
+      "sha256": "b3a97bc66877704776bd3a6cefc684abdfeb89ff0a75cb536945d6510b8a8fde"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/deploy/build.sh",
+      "bytes": 617,
+      "sha256": "d1101a0b4ff04dcfc31c40c571ba2ba9befbf0f4736a7cc043574e4aa6452c2e"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/deploy/Dockerfile",
+      "bytes": 909,
+      "sha256": "2bb7e27e60716f1c2e89afeaf41023b4023f1998701ba9606d4d2feff21fb788"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/deploy/run.sh",
+      "bytes": 449,
+      "sha256": "67091e72037977f9df284fe81e7ccc30cca1a8fd09cdea857342e3e8e156c0d3"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/pyproject.toml",
+      "bytes": 474,
+      "sha256": "82d2e98fd4fc5c22b8769d3a4b920321af80a344322213665eacd9f69d043f05"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/request_publisher.py",
+      "bytes": 6030,
+      "sha256": "73249a4c36385f1c10f339f2798e19bcadcdfd6d6ea383d6e2da883693188ec1"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/requirements.txt",
+      "bytes": 2531,
+      "sha256": "619ec49c74af54ff39c8575f37087b83a033eaae2952b8a569098ca336aa57dc"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr/server.py",
+      "bytes": 19428,
+      "sha256": "2cc91928c2ed54217edbb4970fa2e3652c1411714941f1781c3eca1017f88500"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/deploy/build.sh",
+      "bytes": 658,
+      "sha256": "a84dd57a754e907c2161f38086e645db5401acb5cd5419458954d9145fe55082"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/deploy/Dockerfile",
+      "bytes": 942,
+      "sha256": "c97198a1268d420292b1ad196c7c9cb2e275870da0f8c5f0707971027e159d97"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/deploy/run.sh",
+      "bytes": 480,
+      "sha256": "0e4aef7618ba19261577b061bb0df84e2dd8888f2bac823e4d876d6357931ee2"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/pyproject.toml",
+      "bytes": 305,
+      "sha256": "ceca5493097d940fc1f162e59ab840f52cdb997c2bc77e8a8a75550e7a9cea30"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/requirements.txt",
+      "bytes": 2545,
+      "sha256": "28af09453989c3c1d31ccc38fc119321aff0979e7f06ec867a27062853b793f5"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/result_writer.py",
+      "bytes": 1942,
+      "sha256": "86222446560fe675689e1fe0345f0833f68ac2550c0ceb71316c03c8d065b93d"
+    },
+    {
+      "path": "upstream/windows-launcher/cdr_writer/write_result_subscriber.py",
+      "bytes": 17137,
+      "sha256": "8365d6184a644e3661e70f42f8aca0427ad5edfb05eafb646851acc6a0f31cd1"
+    },
+    {
+      "path": "upstream/windows-launcher/certs/DOIRootCA2.crt",
+      "bytes": 3576,
+      "sha256": "faa6d482045fcf56e72114abfc8f4a3a4f9e9262715748b05f74609e81064777"
+    },
+    {
+      "path": "upstream/windows-launcher/criticalmaas_launcher/__init__.py",
+      "bytes": 50,
+      "sha256": "127a5f97f45a9e1402447fe8665792502c0c87f880e7737b1374e4a4796e17db"
+    },
+    {
+      "path": "upstream/windows-launcher/criticalmaas_launcher/cli.py",
+      "bytes": 9583,
+      "sha256": "93c5f9972149e8b4a553dab8691f21f57a71edff6f53ad85c442958d101928d0"
+    },
+    {
+      "path": "upstream/windows-launcher/data/country_codes.csv",
+      "bytes": 4110,
+      "sha256": "19cc95709a1749b0ef9c46162f04dd3ce0cdf03066e39cf84105079913ffb4ab"
+    },
+    {
+      "path": "upstream/windows-launcher/data/geocoded_places_reference.json",
+      "bytes": 572,
+      "sha256": "d76004e97aab89a2f2f3996f7c182f6c53ad446fb3612bf6cdaef5255adf03c5"
+    },
+    {
+      "path": "upstream/windows-launcher/data/state_codes.csv",
+      "bytes": 1043,
+      "sha256": "88489ec0c75a5456fe7ed5bac1ae5cac0fc506fb7fa7d97281ff55e01e1d9f90"
+    },
+    {
+      "path": "upstream/windows-launcher/data/state_plane_reference.csv",
+      "bytes": 275838,
+      "sha256": "dc2bcd06e76efee894dbd79c45b72777ef55459813982bed1307be34880d81e9"
+    },
+    {
+      "path": "upstream/windows-launcher/data/USA_State_Plane_Zones_NAD27.geojson",
+      "bytes": 988624,
+      "sha256": "fa1c01a8ce07156cec3c9daa1f744caa59516bd5ec3f6af046f3abd50959e514"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/docker-compose.j2",
+      "bytes": 10129,
+      "sha256": "14650fd9cfed493a40274dce2f71ca93b07ed0a8213f2fa05bebd693c06ae65e"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/gen_compose.sh",
+      "bytes": 300,
+      "sha256": "5380c36703e936f9d3d99a26c6f37d92cdeeb6ef37056bd18fbf5d8d4dc3aa95"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/README.md",
+      "bytes": 10559,
+      "sha256": "ad87acc79ec89b6ea0f8507d9f9069c933a81af518611f4256c97f9fbe607b62"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/run_cdr.j2",
+      "bytes": 708,
+      "sha256": "d813b614c242a3d66a5623c8ccfe27e9d50a58abf1c08d42c112637b6201a6f1"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/vars_cloud_auth_example.json",
+      "bytes": 965,
+      "sha256": "5dd3e840a753ed3fd1c374075d8e4fdfc623b1685ff12eadeb9e97c41136398e"
+    },
+    {
+      "path": "upstream/windows-launcher/deploy/vars_example.json",
+      "bytes": 671,
+      "sha256": "5a38ed7916145bcb43bd6b62e032c940d8b82ef76677d751a09746e439a82c68"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/eval_utils.py",
+      "bytes": 2419,
+      "sha256": "30f52c0e9f02517356238a90af3f48bf9636d84e6234d33b67ef29256d9c07e9"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/fe_metrics_utils.py",
+      "bytes": 6249,
+      "sha256": "60d8d1e682a60bf9a6024dd440e814386fab19dd002c33b6b7abb8b64ff11e8f"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/georef_groundtruth_prepare.py",
+      "bytes": 4563,
+      "sha256": "22486081beb00920ea9f55f9e86a9aeab2b22c80a602ead1ef6bc234ba4eaa5b"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/points_extraction_calc_metrics.py",
+      "bytes": 5602,
+      "sha256": "2e3e22cd7bd1e78cd7eb9c10de63f695cbba042cfd3ecfc57e4e956ab2f3b406"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/points_extraction_groundtruth_prepare.py",
+      "bytes": 8085,
+      "sha256": "1de5f9fd460a3588fd1d694c64c20f38b0467989286f36802ad6f34c0e9f2e68"
+    },
+    {
+      "path": "upstream/windows-launcher/eval/18month_eval/README.md",
+      "bytes": 3134,
+      "sha256": "ce727884a795433b37b2eeff1ad732bb1cd804fadc0c6b79da8359c99fc435af"
+    },
+    {
+      "path": "upstream/windows-launcher/images/lara_deployment.png",
+      "bytes": 65042,
+      "sha256": "531d0c3b0333c681a219c1a6ac2af2962fa130cfbb50062b6ce54d4f1db9e5af"
+    },
+    {
+      "path": "upstream/windows-launcher/LICENSE",
+      "bytes": 1128,
+      "sha256": "ace7a472e4fc88109b5c279700d5278331e601996a5dfc9c6f02eda8e34ae0ac"
+    },
+    {
+      "path": "upstream/windows-launcher/Makefile",
+      "bytes": 3232,
+      "sha256": "bbea8278506451cbd6e20ed5eb419e826d4fdfea5215fdcaaff0df8efe496f4e"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/build.sh",
+      "bytes": 1012,
+      "sha256": "24d64ba7788fd5bd47ba80fe547224029eb93a9591ea4133e96e2a3951ad4714"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/Dockerfile",
+      "bytes": 798,
+      "sha256": "0bf5bb6d678b188317da1a60c6adbde3a686e224c3bf0811149e692c5f155444"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/run.sh",
+      "bytes": 698,
+      "sha256": "dedc722c272d88b582ec0f266b238f9b4fd4cbb15f8b423f9df324f958721b8d"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/run_eval.sh",
+      "bytes": 2057,
+      "sha256": "5715a2cc152e67b92381d3c1b2ed16a0dddb2bfa5edbd9d2c4ca1b8dd4560cc2"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/run_eval_no_clues.sh",
+      "bytes": 1933,
+      "sha256": "54e3cc45cc9e3cb23161eab659f4f1a7049698a485fe96430ef6963e7f07392f"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/deploy/run_gpu.sh",
+      "bytes": 744,
+      "sha256": "121f230322d2e066ee18d45c40c34da75172b117cb37c6a4f6aa53eacada0325"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/georeferencing_pipeline.py",
+      "bytes": 10523,
+      "sha256": "6b985916f77a0f16ec04dea2737cc631edc11203a504977aac3822d0f55638c0"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/output.py",
+      "bytes": 13672,
+      "sha256": "8afa81803eba9aef214270261074e35f7f78e582481667bc8efb9db39b412d27"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/pipeline_input_utils.py",
+      "bytes": 3121,
+      "sha256": "47e3e5fac454702afbaaee1fddc30b305a4d5b79f92cf2dbb66ef12ab1244292"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/pyproject.toml",
+      "bytes": 346,
+      "sha256": "b46d33b0f3eab256b5bab0dce27d093f15ebcd8a7fe2f9e826f0da9a61d6aa9f"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/README.md",
+      "bytes": 6674,
+      "sha256": "e3ab35ccaa9db96f72bb62955d764bbf44579fe5bf677db39fe5f361a6af9011"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/requirements.txt",
+      "bytes": 3657,
+      "sha256": "ad8f96ce08312e07e7f9e872b081a1224fa39690eec8ff2d05b4a9f6a6d71819"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/run_pipeline.py",
+      "bytes": 8173,
+      "sha256": "187f4890d421057eb57d1f8c67820b961ffd9c871c40d15e430a2beff081c41c"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/run_server.py",
+      "bytes": 8420,
+      "sha256": "32d88440a79a79a0d47e5af782def6f92d7d257a878cdc70ccf1db76362c077b"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/test/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/geo_referencing/test/test_output.py",
+      "bytes": 2227,
+      "sha256": "2fb5b7f6fe6c843970639fdccef66217f385fece3b5d78ab33503ae0e33d48b3"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/data/ground_truth.jsonl",
+      "bytes": 60851,
+      "sha256": "6ddd6b27ad16fc2ef25b889777697f83a537f0da59c1293668c8ca70eb386f19"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/deploy/build.sh",
+      "bytes": 1008,
+      "sha256": "7d2d11bd33154ae9cb14f2d2eb6f703b561fc77d2427d33d0915b7aefb01b512"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/deploy/Dockerfile",
+      "bytes": 753,
+      "sha256": "85cca2be7340b2516a1d796e7149a3b6535bbd318a4d3a9f18e1ee8e5f795653"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/deploy/run.sh",
+      "bytes": 732,
+      "sha256": "76abf47cbe2ed18725c1ee6c6342301b1fc734565cd4cd6ffa422007c4731563"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/deploy/run_gpu.sh",
+      "bytes": 776,
+      "sha256": "72116a189e0af2f9eda573d319ba2219abb58430d952d88c30cda61b523b7fc1"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/metadata_extraction_pipeline.py",
+      "bytes": 7684,
+      "sha256": "6ecf81dcc8dfee07f3c985e62d77d638f6cb99b3b194eef054630de52a6051d1"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/pyproject.toml",
+      "bytes": 355,
+      "sha256": "519242a4b2851c690fc36bcae4d4b26b942c0780243de550a3fd588eefea411a"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/README.md",
+      "bytes": 5499,
+      "sha256": "b05e1e17f671ac28a08c5204ee4a7de58484fa15d3e4950b3e8987e466f8238a"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/requirements.txt",
+      "bytes": 3670,
+      "sha256": "93053f833862cd4b49ac23715d3ea8ec4defd1db30d24a977e8971924cce042c"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/baseline_output.txt",
+      "bytes": 10269,
+      "sha256": "045238f4f995762734e895e88581d5bd4b88af1bdb8f2f98b8bb8dc0768e5485"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/extractions_v3.jsonl",
+      "bytes": 130593,
+      "sha256": "3e35e98a44a21fabc33bc142331ce3b70c2d199693f1aaac8139345d9095e783"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/extractions_v3_score.jsonl",
+      "bytes": 173807,
+      "sha256": "5b2bc492da26fdcb5adb91995fc6f1658aac5fb73dbe6c0283694d92495bc48c"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/v4_scores.jsonl",
+      "bytes": 174603,
+      "sha256": "13392c2fa13f8065c7ea6da75f4822da05f636217c3013cef946b669a3e1e3e7"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/v4_scores.txt",
+      "bytes": 641,
+      "sha256": "13a24e2deb77e6c318071c5831c8e64fc1048fe8c2dc16a9340976cdc28c3e88"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/results/v4_scores_with_preds.jsonl",
+      "bytes": 174603,
+      "sha256": "13392c2fa13f8065c7ea6da75f4822da05f636217c3013cef946b669a3e1e3e7"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/run_pipeline.py",
+      "bytes": 3888,
+      "sha256": "f98b34eae16d902eeb3d4b8b98895e87633b5d2be90e0864661fe8a75281a56e"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/run_scoring.py",
+      "bytes": 624,
+      "sha256": "d1cf6f7cf681ed44da7d18ce4492c358eccdcb341da2323d5be9ee54371896a3"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/run_server.py",
+      "bytes": 6590,
+      "sha256": "ddec27d13661811d815ac8d4079fa21cf09cb99cce5527bef814748654817d80"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/metadata_extraction/scorer.py",
+      "bytes": 8466,
+      "sha256": "6b45e92c16cd4191ff1b6b3379b76644798ca9949104a50bea5bf54c1275058c"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/build.sh",
+      "bytes": 1415,
+      "sha256": "3d4d599c2ddb8ef064d2491d7fcdf8d2343c1f16680a4ed3f04009ff424a30f2"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/Dockerfile",
+      "bytes": 886,
+      "sha256": "bc45d5c57c9c43454dd7365d2fccb5b4ca9a33f68d6dda6fc400ca259863804b"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/run.sh",
+      "bytes": 816,
+      "sha256": "f38d9b69f3b19a17e28ff3f930d9a937265d1b9378b735aff99a60a0af15f131"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/run_eval.sh",
+      "bytes": 1528,
+      "sha256": "9c1a50e91a4f719a50faea54bfd4c277be103a8c514436d1b5ccfdd440c127b4"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/run_eval_no_clues.sh",
+      "bytes": 1371,
+      "sha256": "364e559c82f54408f6ff530fdff6dbe00fc89484da784823baa1893f7a68765b"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/deploy/run_gpu.sh",
+      "bytes": 823,
+      "sha256": "061833d026a56ad17c9de7b9943888f8366296edf28339ae597862241c9f7df2"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/point_extraction_pipeline.py",
+      "bytes": 13663,
+      "sha256": "e6a06710c0bb79013b8217f87107218740dc609e5fc76ef1ab89132dc6f30e24"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/pyproject.toml",
+      "bytes": 347,
+      "sha256": "44953b1f59aa0a0b98658309ca9ee2a30af372a6d2839dbf7c31199157d1f1cb"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/README.md",
+      "bytes": 7950,
+      "sha256": "6002bbdc761eaa60bccbf97e7c793766dd9a870a0c510a4cba05df25bd73adfd"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/requirements.txt",
+      "bytes": 3728,
+      "sha256": "557c6b99bbe4d94bacbdc7be5674d77d04a162446ad81651d7a930e954596fbe"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/run_pipeline.py",
+      "bytes": 7221,
+      "sha256": "bf5be8bab0890991f27e25b070d7bcb311fab15f693b300de250f549f45bb7d6"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/point_extraction/run_server.py",
+      "bytes": 5743,
+      "sha256": "bafff8282ebf3b1680711e48ea9542917c00e300b11e7dfa0caf4b214d3fb81d"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/data/cascade_layoutlmv3_lara.yaml",
+      "bytes": 2492,
+      "sha256": "6575c5565df49c9e6baf4064f2b32a1e1aa4cc68cb2a4108c09beba8f936ac8b"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/deploy/build.sh",
+      "bytes": 977,
+      "sha256": "156bb3197be1e60f307761d9b4818fb931a84da74896d0f897cd3e73e23405e2"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/deploy/Dockerfile",
+      "bytes": 829,
+      "sha256": "563c020e358b6c6338626b44541124c9bc4701db2d2843b9ac947e0fa1190b25"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/deploy/run.sh",
+      "bytes": 607,
+      "sha256": "7528d7e6925c681393f11545c89e50a2b59044012c1915d8e299fc390e877e1d"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/deploy/run_gpu.sh",
+      "bytes": 651,
+      "sha256": "4c3ae844f759ce943a986daaf22fdbe916966a38c38a298749723bc85891600c"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/pyproject.toml",
+      "bytes": 341,
+      "sha256": "f30b956d00d937fedba1f23a4c1b3e4f56d7b05764509c2106fc348d4132caa5"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/README.md",
+      "bytes": 4500,
+      "sha256": "a5630e019f80013088285d5b09a9047c4036a899f478af209056da04c95b6606"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/requirements.txt",
+      "bytes": 3656,
+      "sha256": "5619bffa2527a4a4050a743e34527b12b1af2640e50fc9e38812231516a96c97"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/run_pipeline.py",
+      "bytes": 3454,
+      "sha256": "c3273fc8626f35fec2f9b427e654ee74c700a256984d041936f13cc09bb3b173"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/run_server.py",
+      "bytes": 5891,
+      "sha256": "e6555ede89d58ec1432cb6bc826e976b77e2c03bc14a6d7aac40af5f8c10c60e"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/segmentation/segmentation_pipeline.py",
+      "bytes": 7167,
+      "sha256": "801c838a8abce1bdfe5c9b69eda7d801ea0631975fe2ffbc2dc266474c919ac0"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/.dockerignore",
+      "bytes": 116,
+      "sha256": "853418e2a8990673f0b82213c66025fb01d171882e0344d67c5edc0a820a613a"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/.env",
+      "bytes": 360,
+      "sha256": "4d25a15a76509dc4153332f626b37da3ca2a6e956ab1d0fb9d1f879d09e60093"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/deploy/build.sh",
+      "bytes": 415,
+      "sha256": "dd4c0c50c0691f9e77a952b1ed1b700395788386751ee42a88924871625f07eb"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/deploy/Dockerfile",
+      "bytes": 638,
+      "sha256": "b5ac2a6b1188562f2ee991f39da4a77b7c8e25886feab485a7a197d28f78c6cc"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/deploy/run.sh",
+      "bytes": 587,
+      "sha256": "1b4abcc4a7e53f8740dc36e6ab68f2f1bf33e67197e0e061bc146cae7d2abb90"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/env_defaults.py",
+      "bytes": 1237,
+      "sha256": "02957ce630de5b8c9d8f1676fe42308496b1384d2a55ef3d5fd98b5417702425"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/pyproject.toml",
+      "bytes": 308,
+      "sha256": "cb1b14295ab5a4bfe794042f56dddc88e033a07ae8e0266df92805de3bdd68c3"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/README.md",
+      "bytes": 3406,
+      "sha256": "9ac007628e3502bc7267935b7f328ca846da58841d65ef64669bfa5c55d4802f"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/requirements.txt",
+      "bytes": 2565,
+      "sha256": "36e2b690fb1656b69edc5933cbf1c48c9b4478284442fa70dc2def3d9f13e3cb"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/run_pipeline.py",
+      "bytes": 3024,
+      "sha256": "01c397a31bcbcb69228edad3f60e06498804f266f57b268207049155d8369043"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/run_server.py",
+      "bytes": 5067,
+      "sha256": "b7d7b348a23ce5487a9a2285f8e67bbaf838520d86c3702434f88b82232232c3"
+    },
+    {
+      "path": "upstream/windows-launcher/pipelines/text_extraction/text_extraction_pipeline.py",
+      "bytes": 7386,
+      "sha256": "057f77f84e7a4b882bec790a8c070675f2cb148a7136d19a4d16517d7cca5f87"
+    },
+    {
+      "path": "upstream/windows-launcher/pyinstaller/criticalmaas_launcher.spec",
+      "bytes": 1762,
+      "sha256": "165d0c37ce4074a759d922d5571368efa879559ce5883f84367412cac82f521c"
+    },
+    {
+      "path": "upstream/windows-launcher/pyrightconfig.json",
+      "bytes": 211,
+      "sha256": "d4f87d7d0948f0be61f6c90f9220d421f5c28fae14990e542c97e749471cc4e7"
+    },
+    {
+      "path": "upstream/windows-launcher/README.md",
+      "bytes": 11066,
+      "sha256": "243e7adbe762904ae88f04f6dd94b94cdf513735dd3e0a2ac6673a3d901acf63"
+    },
+    {
+      "path": "upstream/windows-launcher/requirements/windows-build.txt",
+      "bytes": 84,
+      "sha256": "81311fea421cd2af657eb528f16b491fac1699d34e31c52fa9244d9deea74de5"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/area_extraction.py",
+      "bytes": 2211,
+      "sha256": "a9b10b5b1c3ce3355c33fa6ea3c5004f126ec231d05f8c42bd340fd1c5a8c231"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/cdr_responses/area_extractions.py",
+      "bytes": 1796,
+      "sha256": "f8ab98c776bf1ee7d51046018f827a40553a640dec3650b7fe12fbba0185802e"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/cdr_responses/features.py",
+      "bytes": 5614,
+      "sha256": "8e25e1e90621390ac1c5ce7f85292d2a930f8cf6c4044717ee9d9a966f5b48de"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/cdr_responses/legend_items.py",
+      "bytes": 2706,
+      "sha256": "24190793e53f11a0073bd43caf75fa32384dc6f2807c6aa45f2cdf2ddfd9d589"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/common.py",
+      "bytes": 846,
+      "sha256": "b55502b64c95a02901d86821a18232ee96a73637c1b1001ff1aa84813681566d"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/document.py",
+      "bytes": 4005,
+      "sha256": "c727b143123c4e5cacdd1bf3b9e09a9adf1d6faf405052c7e1e115f118284c70"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/events.py",
+      "bytes": 215,
+      "sha256": "ba3e649bdf1aa9ee6c4ea25c4d79e615325832a2fd5afe007f217b9f245b672f"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/feature_results.py",
+      "bytes": 1850,
+      "sha256": "a6702a13434fbe2735968ef9e8ce45bcc8d68f9231cb5e858bf00213d9f5d81b"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/features/line_features.py",
+      "bytes": 4700,
+      "sha256": "16e6daceac9d4f8f5c8c5d9409033ec33f41b8c576a49921f824fc84c205c860"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/features/point_features.py",
+      "bytes": 4969,
+      "sha256": "46ac58fba23585d984f85be738e067038e3b083eba3fc10810194f1a65957fac"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/features/polygon_features.py",
+      "bytes": 5206,
+      "sha256": "5c44962f93d4a10f9930fd9c25f822b58067325f6ca2f0f2cc2473f72818dfc2"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/georeference.py",
+      "bytes": 4926,
+      "sha256": "5d4bc8da9233d4885db82298bb566888ffd73abee9659e55b6fffa84a2213b29"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/map.py",
+      "bytes": 967,
+      "sha256": "2d3bb68e1d76df987ab9b2d1535486556c82298e766b961298476d33cfa777d8"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/map_results.py",
+      "bytes": 764,
+      "sha256": "1e9d03ef17c7b566246084adbd6ee56a19e746c26af22b8978bb1f9fdcc88ff1"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/metadata.py",
+      "bytes": 2380,
+      "sha256": "16fccc1710c2dcbd39196705103289d9db02fde3c926d0ce661aedc98e1863ad"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/mineral.py",
+      "bytes": 7112,
+      "sha256": "598fa52534bf0d6a2721b2976aaa447d3988e4e2ace70e4e1e4b856413630ee1"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/prospectivity_input.py",
+      "bytes": 2310,
+      "sha256": "cb80aefe85ed38cce96ebdbdf939c0d28b23b859cd287229a5f8814f442657a9"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/cdr_schemas/prospectivity_models.py",
+      "bytes": 2519,
+      "sha256": "ce34fd27dea3289e20da49c21b2a281681100ab6d74327af99d31e48e3e0fa4f"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/mappers/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/schema/mappers/cdr.py",
+      "bytes": 14396,
+      "sha256": "a0461ee5b1628ce07832e303cd113dd7c5a85708a31138996e32d8a023f917bc"
+    },
+    {
+      "path": "upstream/windows-launcher/scripts/build-windows.ps1",
+      "bytes": 4696,
+      "sha256": "5d718bde7f371b80c9a58fb492f7b6c59b898c04f283cc7fe4ea7729cdcb23f6"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/image_cache.py",
+      "bytes": 2367,
+      "sha256": "48e9a5aae1ff2e25f85bba688bd4d96a2340c5098be59fe806915246f923571e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/image_io.py",
+      "bytes": 2585,
+      "sha256": "5b1c5e5b972fca3c9838a88c706e96fc0d86ebd832a058e88b2c4664b5500c10"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/io.py",
+      "bytes": 18850,
+      "sha256": "56801670f227091773cb736a0bf02abf5a36bc4b44dc3f4b5c7e195d4810ffec"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/pipeline.py",
+      "bytes": 6610,
+      "sha256": "ffcfb2dba96e050928dd9086a4f1ffb6250b2854c95cbb1142ba2fab1281a9b4"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/request_client.py",
+      "bytes": 21538,
+      "sha256": "5bf7bdeb4d80ee507ca91f0709e45f147d988ef47ef47ac0df01dcd2c438ab6e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/result_subscriber.py",
+      "bytes": 8168,
+      "sha256": "389009d41c6ac159209d8b6ae82f760132d96100ed3f5572b7bb7bfd8324c63f"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/s3_data_cache.py",
+      "bytes": 5588,
+      "sha256": "a4d4d4bda61bacff3b92ad0ff980bd559098cc78749b3d214b471f7b58b88208"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/task.py",
+      "bytes": 8142,
+      "sha256": "4618e099b73fe78a5a4ad1f30f1bfcaaa6d05d45543ce4038dc11a829b7f8224"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/test/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/test/test_image_cache.py",
+      "bytes": 2626,
+      "sha256": "45901bca2274cc565541efec3cf19eef0027414febc77b63b30e579f41dc7f90"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/test/test_io.py",
+      "bytes": 10178,
+      "sha256": "edc04645d2aa514066c1408136f958e73e7ecd1059a215b9de359468b8b4d869"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/common/test/test_s3_data_cache.py",
+      "bytes": 2366,
+      "sha256": "e6d738a3f8ad4470133bcd769356fe793683e82ce21dd37600fac3d71d1ba15c"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/coordinates_extractor.py",
+      "bytes": 29608,
+      "sha256": "ad411e345f3431cdd9120f2cf4449e941cb4712a1cb48245ff4fbea217038de7"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/corner_point_extractor.py",
+      "bytes": 6650,
+      "sha256": "a9285711d2d18253e1b831efb3ba62d72d595b70ce7f25126ac807f891da1588"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/entities.py",
+      "bytes": 6342,
+      "sha256": "c38fc23a33a15c9836e4ed86e6013403d399f4052461acfe3604b9f64230b24e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/filter.py",
+      "bytes": 11044,
+      "sha256": "5dca3436427a051cd553863895ce694b90c89b8c3a072cc6d5e34241c46fc530"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/finalize_coordinates.py",
+      "bytes": 17313,
+      "sha256": "11e9224d9f7ed0faec76ad2e63d3ea1b003bb4fc6a488eadd4295b1308ce52de"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/geo_coordinates.py",
+      "bytes": 6687,
+      "sha256": "ac926f207cfe6d9ffe39dd5f5cbe8b7df02fba36ca4581d387c27612ff74b0c7"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/geo_fencing.py",
+      "bytes": 9844,
+      "sha256": "9e4caf118847a6efd56dadb689c3d2181ce7b08834e9970c62c886ae230fc059"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/geo_projection.py",
+      "bytes": 4507,
+      "sha256": "db333f294687f03bcb7dbfb74b9aae74745a094c8bc06ab964a6d9fd7c1765a5"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/georeference.py",
+      "bytes": 18495,
+      "sha256": "f338526210511330031d65744fc16c59ab78e6c9108742e031a6ed8c0160b142"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/ground_control.py",
+      "bytes": 9179,
+      "sha256": "01e0a46eedc11bde5e39b48e392d6ce9c10616b502e68f24374a27a149428dc8"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/inference.py",
+      "bytes": 8229,
+      "sha256": "78f3b6328b89bd94dbac109395377452a7a3a8af84fa980a7bd8ea3f9477022d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/outlier_filter.py",
+      "bytes": 11092,
+      "sha256": "4e274fd8ca8fd8a43b5a1f561a2b4091823d4b9ce2a61fa35308ef9370474cb9"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/point_geocoder.py",
+      "bytes": 10502,
+      "sha256": "fc38d763085116788b068f577dacaad3b305872524ec50de818e654bcba077e6"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/roi_extractor.py",
+      "bytes": 3582,
+      "sha256": "eb7ce7eae6cb0351ad0089666e7a96138f5d35e0b0619148f627034bc3872d37"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/scale_analyzer.py",
+      "bytes": 6121,
+      "sha256": "fd331846a289b42fc8bf6045d3a184263685f12f91c8a172356b9079476ee84d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/state_plane_extractor.py",
+      "bytes": 26066,
+      "sha256": "270f7ab00a69668986f307c3493334e701606d34dac342108a0fbadc5fdb684b"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/util.py",
+      "bytes": 13719,
+      "sha256": "f8146da3d75a3d4dd3596afcb745621532e7dbb324eb42f4f34e653148bbb94f"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/geo_referencing/utm_extractor.py",
+      "bytes": 19692,
+      "sha256": "8e59b6b2b32208667fa2f021af705707b3f9d9fdcbe0ef4b4d7910edcd32ce41"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/entities.py",
+      "bytes": 2784,
+      "sha256": "8b5a882dd75e433ccec783f1215668de980630ce7a4c8abdb936058252a4c3fc"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/geocoder.py",
+      "bytes": 14405,
+      "sha256": "26f51ca37de914035fc6acee05e8b6397ff738a5f31fd49b8984dc400080d6ce"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/geocoding_service.py",
+      "bytes": 12305,
+      "sha256": "2dd72d2e73aa6b2c6bd6b96220b5cd1ee2efaa4c9300ddd9c0cebcb381fa2c17"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/metadata_extraction.py",
+      "bytes": 40013,
+      "sha256": "56663bfc6c176df43cab8ba061f9eb869e56875f4e0800e76ea64587d9803ecb"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/test/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/test/test_text_filter.py",
+      "bytes": 3670,
+      "sha256": "12bc7d62b0ba14266f5bfa49ac8063f4255b84e5f1b69d68a8a8e6f294a151ea"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/text_filter.py",
+      "bytes": 5154,
+      "sha256": "70dacc802fa9a3588f0613066358b1d9696e46639a705e53f00d370688fed3dd"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/util/download_cloudfront_maps.py",
+      "bytes": 1177,
+      "sha256": "f6043924ca5e0b08bb73faa50b00c62801d8fbcc146416c0ad2b030578cfc54b"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/metadata_extraction/util/sort_metadata_jsonl.py",
+      "bytes": 597,
+      "sha256": "5a69f688f1c1872d18e7c7b114281ff1eefc4f714fd5cd3c61478a3bfaaa717e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/entities.py",
+      "bytes": 7447,
+      "sha256": "1ef706565878c8d61488633cdd47d30a94091e0db2c65ee8369f8cd3033a55e6"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/finalize_point_extractions.py",
+      "bytes": 1852,
+      "sha256": "159af3a9a0a83467518d3d72a9af28e410070237f76687a3b0e14edab9dcceb0"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/label_map.py",
+      "bytes": 3806,
+      "sha256": "cbbd734ed02595793bf377923dd08fdb1e8ae576be2196ee065c7dd2d23a3ad5"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/legend_analyzer.py",
+      "bytes": 12807,
+      "sha256": "20a5f75943fe009b41941af6b12844d55bd054a4ef63085300eee07916f98f4e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/legend_item_utils.py",
+      "bytes": 12114,
+      "sha256": "5a7f1cd70109acf010cbf7a7ada2c51d02b0937943f331070e772c31df0329f7"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/point_extractor.py",
+      "bytes": 10129,
+      "sha256": "c15358b5c2c532464e1a2f651ae0eda2f4845999d3c1800945c8d89a8c40ad8e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/point_extractor_utils.py",
+      "bytes": 15132,
+      "sha256": "d9629e4ecd9c1d8247ab9d1bfc480e8ca8978d2e80372db5e89c9280aada7cbc"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/point_orientation_extractor.py",
+      "bytes": 18480,
+      "sha256": "f7c5edc39cfff8a014aff1e6c5cb0c0ecd05576b933d210dcb65d21d91ff4c2b"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/pytorch/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/pytorch/mobilenet_rcnn.py",
+      "bytes": 2569,
+      "sha256": "af98a8b8d47dfa5adea794232336835d03f03f8c1e8739318c69795eebae4bd8"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/pytorch/utils.py",
+      "bytes": 1203,
+      "sha256": "9b13532e9d9259bc7d73455034a581bd705e56a9a48caf9fb4180a5e33abf45e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/task_config.py",
+      "bytes": 939,
+      "sha256": "9fa790588d95c37ec41a1597243ab25b06aaff1099a8021d012e03ca120b61eb"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/template_match_point_extractor.py",
+      "bytes": 20971,
+      "sha256": "51186480395cb05438414f640e86375d547b97a7bf797d54839af634b6ff7ac3"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/inclined_foliation_igneous_pt_north.png",
+      "bytes": 5551,
+      "sha256": "9c8cceb889b468fc57f5eea79ea12c00b89342e608bfdf582590c7b4d261e046"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/inclined_foliation_pt_north.png",
+      "bytes": 5553,
+      "sha256": "646bfd5c4d3da6c9d5bdbbb31c49c4210850bae20237ce8911cb2c96dc046e1e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/lineation_pt_north.png",
+      "bytes": 5842,
+      "sha256": "535c224eab47a7bed5352df58bbad5fe6ef9e885d4d7b425fab3181d2ca9bb98"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/mine.png",
+      "bytes": 9104,
+      "sha256": "d4f39f2a1eca8bdfbb6c71358e929c5cdeec4ad7706ae5248c488185106361c4"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/mine_transparent.png",
+      "bytes": 4955,
+      "sha256": "6163cdf0f014df049e4896fc8b35874cf6095492f99974ea381f4ccea5990349"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/mine_transparent_black.png",
+      "bytes": 873,
+      "sha256": "9a6c0451d96b658cb96549fbb5be4f851157c29b366927c7f5b26912d36d93cf"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/mine_tunnel_pt_north.png",
+      "bytes": 4849,
+      "sha256": "9dfcb833282f7a30c965ec21bef41a83c97bb613b715a4222a42ca4a8e495a0d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/overturned_bedding_pt_north.png",
+      "bytes": 5510,
+      "sha256": "41cf19d1411a5d9ed09da32cd464df66da1dfcfc147f3aa174c3ab1f42729b62"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/strike_dip_black_on_white_north.png",
+      "bytes": 5146,
+      "sha256": "edbe63412cc95a8da1efd1e539ac6a64209a758e6ba22c26ddc39f8fabe7fcd2"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/strike_dip_black_on_white_north2.png",
+      "bytes": 33657,
+      "sha256": "7ba6d567692dbf2150c240437556793242593e4ae09e88ed50fbe7250e807f46"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/strike_dip_black_on_white_north_synthetic.png",
+      "bytes": 4510,
+      "sha256": "ccf03646d3c91d3bd4fa07c8dafdfc5a6bc4f5d2a308141b6f4d8fafeac0f13d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/vertical_bedding_pt_north.png",
+      "bytes": 4863,
+      "sha256": "aabc6e1cbd2a703f9f01c24c1e5bdd9b4ab46159e9845f69226ce7eece33af08"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/vertical_foliation_pt_north.png",
+      "bytes": 5697,
+      "sha256": "39cc14e21c14d7e423df1e1eb43fe9d36867d29263c2b121a955e3a9b5d7f379"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/vertical_joint_pt_north.png",
+      "bytes": 5008,
+      "sha256": "cf591fa8dbb35906e83d9f0a3e88118ae1b6ead21aee3744f64986bef532977c"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/templates/vertical_joint_pt_north2.png",
+      "bytes": 5026,
+      "sha256": "e005da067fda9b5148e311379b9ab4474786133b69e6f1555b2d4b2e5de964bc"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/point_extraction/tiling.py",
+      "bytes": 16274,
+      "sha256": "eb6a66c39ed8c68d3c48c7c5a8aaecdd62494b13c4b6bd8ba5f4ee1ad8024d9d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/pyproject.toml",
+      "bytes": 1544,
+      "sha256": "1fb52f532079b1d5da4c883884033ed5532b2053b3de1c93181338dfa21a106c"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/README.md",
+      "bytes": 6390,
+      "sha256": "023e8853fe9a95b672acbe791bbfe05dea11cb5e911c3c70bc102758df7717eb"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/.dockerignore",
+      "bytes": 116,
+      "sha256": "853418e2a8990673f0b82213c66025fb01d171882e0344d67c5edc0a820a613a"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/denoise_segments.py",
+      "bytes": 4074,
+      "sha256": "d31b838a3f131fa0578c86790d8c0829298e092683260f1e1d61a89b8b1504af"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/detectron_segmenter.py",
+      "bytes": 13893,
+      "sha256": "2374111456f471b0b2da2bafc972e874de0311b4f09d875be496974dca79b3cc"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/__init__.py",
+      "bytes": 873,
+      "sha256": "f1d625eccf9164c24e614bd39ee360ca6e2fefae94c76a29f9f1d45195803e04"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/backbone.py",
+      "bytes": 7648,
+      "sha256": "c12323a16f6fb15cdffa0dda9b21be4c4e7824a09db4891bae0af286893d8a38"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/beit.py",
+      "bytes": 33662,
+      "sha256": "f666f87dbbbaad807ed8ad45f5668032197cfd8216e4a2679275faad0da08db6"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/config.py",
+      "bytes": 1043,
+      "sha256": "87ea9a84678afd1cad0e056de63e8b9affe95a17f88a14f043e584679d0d11f2"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/dataset_mapper.py",
+      "bytes": 5351,
+      "sha256": "982f24619906ac9ce40ba76e0bea33d7f8b3b4ff4d9f89ab7a6cc9b3a3b53158"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/deit.py",
+      "bytes": 18157,
+      "sha256": "b476a1a38e868cabf0d34e72a2177b092ca25896e21d087cf95a7af0fc7b2ef7"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/icdar_evaluation.py",
+      "bytes": 3978,
+      "sha256": "af47fc6956a5912ae7a1cb3afbb0a4095ef0fc825f702cd2c324de457c1600e5"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/mycheckpointer.py",
+      "bytes": 16035,
+      "sha256": "23548a49af852e008b3f7efdc8d37b3fd54faa5641525e5dd43609b3bd4aae9a"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/mytrainer.py",
+      "bytes": 32000,
+      "sha256": "e4993c33725c20571ccf413ab687ca3c1b4417cec602c431527a104b5fd7e917"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/rcnn_vl.py",
+      "bytes": 6944,
+      "sha256": "67c6f541eaf9ea93b700d1b7919bb8d355eb8efe3fc0cf0589da421f4233ad20"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/table_evaluation/__init__.py",
+      "bytes": 40,
+      "sha256": "24d0be571a9487e750cd1120e2559169d594be80960ad74173ba197f148d1f67"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/table_evaluation/data_structure.py",
+      "bytes": 23402,
+      "sha256": "17d605911f8f6f3886be0ef9d1820791bc17cd8a205f2b7f5f696f254b59190f"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/ditod/table_evaluation/evaluate.py",
+      "bytes": 16919,
+      "sha256": "2385fe907c161ccdf0fa3870d091af95651342401d65e58a4987f921ba10d5c1"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/entities.py",
+      "bytes": 1092,
+      "sha256": "4ed00d6923acc3f94c2d046913edc964bf332bf86adb550df7a18e66bfe98e5f"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/__init__.py",
+      "bytes": 198,
+      "sha256": "840317e0c0b9abd5654fb0ad09fe4426221f297a0bdd3f9f99d242e66d3757e1"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/__init__.py",
+      "bytes": 78,
+      "sha256": "26709dcd44cce8bf7f90d50d12f4616e0474934eb4b42b99893224e861894eed"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/cord.py",
+      "bytes": 10830,
+      "sha256": "3d09c18c520b071905c53209c26ca87e2864eff8182f97032787e2bdff558265"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/data_collator.py",
+      "bytes": 7038,
+      "sha256": "6afe1442d9eede6835047b4d6f64df81c6c795da75a9de88c4a5a07a7e1f4e15"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/funsd.py",
+      "bytes": 5853,
+      "sha256": "6d4c57f6d72d742782868365d244acca8927ef60911540a13870d76d054f719d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/image_utils.py",
+      "bytes": 10802,
+      "sha256": "5fe6e1f654b693e94ae1b790176922cbbe174e7251d8d18cc439bfc4bbb102ed"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/data/xfund.py",
+      "bytes": 9585,
+      "sha256": "f5fd678e0ebb7c2a1c7cd1c74b92b5c93b51d44756705170906099df26843e83"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/__init__.py",
+      "bytes": 202,
+      "sha256": "5b5444b5c98b8b5123dcb17e60948c756637d0c79b1bfa2cd6ba9f4154cf9a1f"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/layoutlmv3/__init__.py",
+      "bytes": 1333,
+      "sha256": "480b9e2ba8d75c212dfc9289d5226a11430970e660a1f89f19416f69db34ec4a"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/layoutlmv3/configuration_layoutlmv3.py",
+      "bytes": 2275,
+      "sha256": "b3c3e8b2775a0f56fa09a0f1cd141b864cb043a57864c6ea9f83252f9de5826d"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/layoutlmv3/modeling_layoutlmv3.py",
+      "bytes": 58559,
+      "sha256": "3c10f5298e71cd1a627b440f453278c8293a02f169c4f8b950c12269630ac342"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/layoutlmv3/tokenization_layoutlmv3.py",
+      "bytes": 1232,
+      "sha256": "4f251c0fcff9dc5c79a6102fe88037f1ace42618cc8e143a378680e0c8dd0b74"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/layoutlmft/models/layoutlmv3/tokenization_layoutlmv3_fast.py",
+      "bytes": 1428,
+      "sha256": "e3f9eda966ce9a394673ef4005daf5b61b5a563d1df27732fd171a050fd442cd"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/segmenter_utils.py",
+      "bytes": 5161,
+      "sha256": "e4328e92949630188a98dec325c8d769abb92494fd6cec9d6870334643ee9715"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/segmentation/text_with_segments.py",
+      "bytes": 3182,
+      "sha256": "350a187e8badc32b73b3b22b0d330e796e29408876e76e7f5ce9e5944c91faec"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/.dockerignore",
+      "bytes": 121,
+      "sha256": "057b56a59fd81e6259eb50d85c1f17fc6bb0c3aa2f090e50c6669ee71de805c3"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/entities.py",
+      "bytes": 707,
+      "sha256": "6864f567d54fa899c5f15a1f3046710555566d8a26e9bc209fb06ac7d6b53109"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/ocr/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/ocr/cloud_authenticator.py",
+      "bytes": 4371,
+      "sha256": "77d14f68a3226fd404e4208cd4e10433195123872b74a14ab0893e03979b9be3"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/ocr/google_vision_ocr.py",
+      "bytes": 13748,
+      "sha256": "c788ae89a429ee3bdc111c24dda54bbed626ddb10e192354afd29158c1f1e95e"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/test/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/test/data/test.jpg",
+      "bytes": 5117,
+      "sha256": "1ad7d76e85636d8326ea53f0febd84b9d3f1590ac54934d655e5bbaa98c5c188"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/test/test_text_extractor.py",
+      "bytes": 4813,
+      "sha256": "dfedc450d5dbe8c7ecc54e3126970f6e637c6216356e1c8c977f5f827a8fde78"
+    },
+    {
+      "path": "upstream/windows-launcher/tasks/text_extraction/text_extractor.py",
+      "bytes": 14112,
+      "sha256": "e34028622641f07dc18d17bc9d7eb4e91486cc3de276ba017e09ad591a9f9dd8"
+    },
+    {
+      "path": "upstream/windows-launcher/tests/test_launcher_cli.py",
+      "bytes": 789,
+      "sha256": "b4296f34c32e0228bd5a6e908913b1ecc037de83cd6ea050d71cda7ba8a62563"
+    },
+    {
+      "path": "upstream/windows-launcher/util/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/util/coordinate.py",
+      "bytes": 477,
+      "sha256": "88c751b73c84c3cf86271a50b58cd41b775478d961723d2ce183f39bc4e0d80a"
+    },
+    {
+      "path": "upstream/windows-launcher/util/etl/ngmdb_to_contest.py",
+      "bytes": 5017,
+      "sha256": "607c644a4f271545bf7ef560d5364b440b3cb262578a8298d2421b8e3ad55f72"
+    },
+    {
+      "path": "upstream/windows-launcher/util/etl/pixel_to_geo.py",
+      "bytes": 3419,
+      "sha256": "9d1a1a973fd6a8774fb414d1b228d771651993c19e583378dfaf0d75b23ea7da"
+    },
+    {
+      "path": "upstream/windows-launcher/util/etl/pyproject.toml",
+      "bytes": 312,
+      "sha256": "d380e36a3369bc4256b0ec6533e19bf6197033c3bd57d3be1d6b8439e9c272ce"
+    },
+    {
+      "path": "upstream/windows-launcher/util/json.py",
+      "bytes": 181,
+      "sha256": "7b76b5ab3004e17d7d5691bbe3a15c704ef15bdcfd5b08d8b1da7955bac77746"
+    },
+    {
+      "path": "upstream/windows-launcher/util/logging.py",
+      "bytes": 399,
+      "sha256": "6d2633db06a321768a672f3303ecc4fa45a2ff7fba7c63930588a6c44b82bb33"
+    },
+    {
+      "path": "upstream/windows-launcher/util/messaging/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "upstream/windows-launcher/util/messaging/receive.py",
+      "bytes": 1307,
+      "sha256": "4d69372af17afd3b0e55517b412200af563c559530c404d0e1fb78b2c0e55c9b"
+    },
+    {
+      "path": "upstream/windows-launcher/util/messaging/send.py",
+      "bytes": 1532,
+      "sha256": "0a12418fa745daac9b6225bc4335195b9efeefc7082c5144598529e3c60febfd"
+    },
+    {
+      "path": "upstream/windows-launcher/util/messaging/stub_cdr.py",
+      "bytes": 1476,
+      "sha256": "aa4410013c81768690bc63fbad343080c2eb2748188141b72edc720b74c86d58"
+    },
+    {
+      "path": "upstream/windows-launcher/util/viz/viz_georef_gcps.py",
+      "bytes": 3729,
+      "sha256": "2cbc3da4c7ae3f6021e0486a62437965eafdaef3086504e5d04048ce8c93abf9"
+    },
+    {
+      "path": "upstream/windows-launcher/util/viz/viz_point_extractions.py",
+      "bytes": 8697,
+      "sha256": "cf4522fc06dc6d260372f2a40f7b64ee1b3741c030c60dbd6a52f66fc7b6b5aa"
+    },
+    {
+      "path": "upstream/windows-launcher/util/viz/viz_segmentation_extractions.py",
+      "bytes": 2395,
+      "sha256": "57525fe4868c885a4511bebb40b50cc30ae756b4325c50e7e90a2c0fdf2c62b7"
+    }
+  ]
+}

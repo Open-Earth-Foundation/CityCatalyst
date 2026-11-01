@@ -1,0 +1,12 @@
+{"name": "poly-system-config", "status": 200, "bytes": 3010, "truncated": false, "transport_error": null}
+{"name": "poly-system-readme", "status": 200, "bytes": 1892, "truncated": false, "transport_error": null}
+{"name": "poly-system-main", "status": 200, "bytes": 6691, "truncated": false, "transport_error": null}
+{"name": "poly-polygon-readme", "status": 200, "bytes": 5596, "truncated": false, "transport_error": null}
+{"name": "poly-loam-model", "status": 200, "bytes": 2652, "truncated": false, "transport_error": null}
+{"name": "poly-loam-handler", "status": 200, "bytes": 19113, "truncated": false, "transport_error": null}
+{"name": "publication-acm", "status": 403, "bytes": 5556, "truncated": false, "transport_error": null}
+{"name": "publication-crossref", "status": 200, "bytes": 31713, "truncated": false, "transport_error": null}
+{"name": "usc-repos-page3", "status": 200, "bytes": 391031, "truncated": false, "transport_error": null}
+{"name": "uncharted-segmentation-readme", "status": 200, "bytes": 4389, "truncated": false, "transport_error": null}
+{"name": "uncharted-deploy-template", "status": 200, "bytes": 9798, "truncated": false, "transport_error": null}
+{"name": "uncharted-deploy-vars", "status": 200, "bytes": 656, "truncated": false, "transport_error": null}

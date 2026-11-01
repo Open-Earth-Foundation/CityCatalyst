@@ -1,0 +1,9 @@
+STRICT_LOAD <All keys matched successfully>
+MODEL 31061202 parameters CPU 2.5.1+cpu
+{"name": "porto-heat", "class": 0, "tile": [1024, 768, 189, 256], "tile_s": 4.234673799946904, "tiles": 8, "peak_rss_mb": 993.484375}
+CLASS_COMPLETE {"index": 0, "seconds": 59.664729200070724, "tiles": 14, "positive_pixels": 451, "peak_rss_mb": 993.484375}
+{"name": "porto-heat", "class": 1, "tile": [1024, 768, 189, 256], "tile_s": 4.781206999905407, "tiles": 8, "peak_rss_mb": 993.484375}
+CLASS_COMPLETE {"index": 1, "seconds": 67.51060979999602, "tiles": 14, "positive_pixels": 4607, "peak_rss_mb": 993.484375}
+{"name": "porto-heat", "class": 2, "tile": [1024, 768, 189, 256], "tile_s": 6.087864900007844, "tiles": 8, "peak_rss_mb": 993.484375}
+CLASS_COMPLETE {"index": 2, "seconds": 70.5058031999506, "tiles": 14, "positive_pixels": 15562, "peak_rss_mb": 993.484375}
+{"name": "porto-heat", "class": 3, "tile": [1024, 768, 189, 256], "tile_s": 5.1955914999125525, "tiles": 8, "peak_rss_mb": 993.484375}

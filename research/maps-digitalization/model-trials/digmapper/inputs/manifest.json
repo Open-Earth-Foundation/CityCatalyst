@@ -1,0 +1,419 @@
+{
+  "source_only": true,
+  "reference_values_read": false,
+  "manual_legend_crops": true,
+  "layout_predictions_used": false,
+  "layers": [
+    {
+      "id": "porto-heat",
+      "dataset": "porto",
+      "layer": "heat",
+      "page": 100,
+      "source_image": "inputs\\porto-heat\\source.png",
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image_sha256": "1888b0b92d264552d9ffbac3cadddbd0035d59d8ba9941b3d3b6b328f330a3e7",
+      "legend_bbox_source_pixels": [
+        105,
+        1040,
+        375,
+        1445
+      ],
+      "legend_image": "inputs\\porto-heat\\legend-manual.png",
+      "source_affine": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.377
+    },
+    {
+      "id": "porto-flood",
+      "dataset": "porto",
+      "layer": "flood",
+      "page": 85,
+      "source_image": "inputs\\porto-flood\\source.png",
+      "size": [
+        1155,
+        1668
+      ],
+      "source_image_sha256": "0a504315191367f624d79cafa3ac651e5bbeba7766ad6c7d2c8aadf8c1853206",
+      "legend_bbox_source_pixels": [
+        100,
+        987,
+        357,
+        1371
+      ],
+      "legend_image": "inputs\\porto-flood\\legend-manual.png",
+      "source_affine": {
+        "mx": 34.94320910867071,
+        "bx": 463724.57753983536,
+        "my": -31.527975087184213,
+        "by": 6693688.76928158,
+        "tick_fit_max_residual_m": 8.112984475912526,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.224
+    },
+    {
+      "id": "porto-landslide",
+      "dataset": "porto",
+      "layer": "landslide",
+      "page": 93,
+      "source_image": "inputs\\porto-landslide\\source.png",
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image_sha256": "5a58bcdae200d211e2df1b992d2fc41962d45facfe0f6e908d7c80fd76754cfa",
+      "legend_bbox_source_pixels": [
+        105,
+        1040,
+        375,
+        1445
+      ],
+      "legend_image": "inputs\\porto-landslide\\legend-manual.png",
+      "source_affine": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.298
+    },
+    {
+      "id": "porto-drought",
+      "dataset": "porto",
+      "layer": "drought",
+      "page": 106,
+      "source_image": "inputs\\porto-drought\\source.png",
+      "size": [
+        1218,
+        1758
+      ],
+      "source_image_sha256": "bef92eaf4059aa422e3597272c9d4d7ccaa89680505dc833d93c9940167002c2",
+      "legend_bbox_source_pixels": [
+        105,
+        1040,
+        377,
+        1445
+      ],
+      "legend_image": "inputs\\porto-drought\\legend-manual.png",
+      "source_affine": {
+        "mx": 33.11258278145683,
+        "bx": 463741.7218543049,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 6.412081521004438,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.311
+    },
+    {
+      "id": "porto-arbovirus",
+      "dataset": "porto",
+      "layer": "arbovirus",
+      "page": 111,
+      "source_image": "inputs\\porto-arbovirus\\source.png",
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image_sha256": "323450961650f5f9d0bc67b25443e5d499c76b78ef62f7b8ecc113993bb202ab",
+      "legend_bbox_source_pixels": [
+        105,
+        1040,
+        375,
+        1445
+      ],
+      "legend_image": "inputs\\porto-arbovirus\\legend-manual.png",
+      "source_affine": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.329
+    },
+    {
+      "id": "porto-storm",
+      "dataset": "porto",
+      "layer": "storm",
+      "page": 117,
+      "source_image": "inputs\\porto-storm\\source.png",
+      "size": [
+        1213,
+        1758
+      ],
+      "source_image_sha256": "4413b7b49c22ec259bd31de56751f91f218097bf3f5ff4f7cb4666839378e03f",
+      "legend_bbox_source_pixels": [
+        105,
+        1040,
+        375,
+        1445
+      ],
+      "legend_image": "inputs\\porto-storm\\legend-manual.png",
+      "source_affine": {
+        "mx": 33.273904819403754,
+        "bx": 463723.71457547834,
+        "my": -29.91452445128898,
+        "by": 6693690.166613673,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "preparation_seconds": 0.273
+    },
+    {
+      "id": "richfield-inundation-100yr",
+      "dataset": "richfield",
+      "layer": "inundation-100yr",
+      "page": 17,
+      "source_image": "inputs\\richfield-inundation-100yr\\source.png",
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image_sha256": "7ae99c1d7c3fd4b13194d20b9562afd9ac04f28d9e051c31a0f839c32452cb46",
+      "legend_bbox_source_pixels": [
+        2062,
+        36,
+        2412,
+        600
+      ],
+      "legend_image": "inputs\\richfield-inundation-100yr\\legend-manual.png",
+      "render_pixels_per_pdf_point": 2,
+      "source_georeference": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "preparation_seconds": 1.292
+    },
+    {
+      "id": "richfield-inundation-2yr",
+      "dataset": "richfield",
+      "layer": "inundation-2yr",
+      "page": 15,
+      "source_image": "inputs\\richfield-inundation-2yr\\source.png",
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image_sha256": "43d31b8283bc2049edcc98ba4071cf45ef01016fe4a8e56fab3b066eed0cf62c",
+      "legend_bbox_source_pixels": [
+        2062,
+        36,
+        2412,
+        600
+      ],
+      "legend_image": "inputs\\richfield-inundation-2yr\\legend-manual.png",
+      "render_pixels_per_pdf_point": 2,
+      "source_georeference": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "preparation_seconds": 1.081
+    },
+    {
+      "id": "richfield-inundation-10yr",
+      "dataset": "richfield",
+      "layer": "inundation-10yr",
+      "page": 16,
+      "source_image": "inputs\\richfield-inundation-10yr\\source.png",
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image_sha256": "e4829d97324d4167f7a2f50de2d31ec22595a39c0cf98280c2c335881e353597",
+      "legend_bbox_source_pixels": [
+        2062,
+        36,
+        2412,
+        600
+      ],
+      "legend_image": "inputs\\richfield-inundation-10yr\\legend-manual.png",
+      "render_pixels_per_pdf_point": 2,
+      "source_georeference": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "preparation_seconds": 0.967
+    },
+    {
+      "id": "richfield-inundation-mce100",
+      "dataset": "richfield",
+      "layer": "inundation-mce100",
+      "page": 18,
+      "source_image": "inputs\\richfield-inundation-mce100\\source.png",
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image_sha256": "6e05df8178aa3cea8e8182fbaffdb40d5db8a5981457ce5691131b60fda10a9e",
+      "legend_bbox_source_pixels": [
+        2062,
+        36,
+        2412,
+        600
+      ],
+      "legend_image": "inputs\\richfield-inundation-mce100\\legend-manual.png",
+      "render_pixels_per_pdf_point": 2,
+      "source_georeference": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "preparation_seconds": 1.008
+    },
+    {
+      "id": "richfield-prioritization-score",
+      "dataset": "richfield",
+      "layer": "prioritization-score",
+      "page": 31,
+      "source_image": "inputs\\richfield-prioritization-score\\source.png",
+      "size": [
+        2448,
+        1584
+      ],
+      "source_image_sha256": "494f2b083adeaaa9e70f9fe3e7c2ed3fdc4075e80e56b27fbbd1ef1f7d562f30",
+      "legend_bbox_source_pixels": [
+        2062,
+        36,
+        2412,
+        600
+      ],
+      "legend_image": "inputs\\richfield-prioritization-score\\legend-manual.png",
+      "render_pixels_per_pdf_point": 2,
+      "source_georeference": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "preparation_seconds": 1.185
+    }
+  ],
+  "source_pdfs": [
+    {
+      "path": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\inputs\\porto-alegre-arvc.pdf",
+      "sha256": "6a6555c7620e83cf05ee0f35fe7b737a5a42afadf53eab6fe5d029785fff82b3"
+    },
+    {
+      "path": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\inputs\\Richfield_FloodRiskPrioritization.pdf",
+      "sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758"
+    }
+  ],
+  "porto_overlay_crop_source_pixels": [
+    770,
+    1209,
+    862,
+    1269
+  ],
+  "richfield_overlay_crop_pdf_points": [
+    280.0,
+    285.0,
+    600.0,
+    465.0
+  ],
+  "richfield_overlay_pixels_per_pdf_point": 3
+}

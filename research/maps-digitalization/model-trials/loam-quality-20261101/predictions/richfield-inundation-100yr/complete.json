@@ -1,0 +1,37 @@
+{
+  "status": "succeeded",
+  "name": "richfield-inundation-100yr",
+  "seconds": 3.255729299969971,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 2.846033599926159,
+      "tiles": 6,
+      "positive_pixels": 139666,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 948.5
+    }
+  ],
+  "tiles": 6,
+  "unknown_pixels": 3737966,
+  "overlap_pixels": 0,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "config_sha256": "5156bff19034c5d68e997f68b2601e5c3684eb4adc9d20fd68849d1568e31696",
+  "strict_load": "<All keys matched successfully>",
+  "mode": 0,
+  "dtype": "float32",
+  "device": "cuda",
+  "tile_hw": [
+    1024,
+    1024
+  ],
+  "torch": "2.5.1+cu124",
+  "gpu_lock_owner": {
+    "owner": "loam-quality-27d87eeb-fdc4-4b5c-b7e5-8c73ab2d52ae",
+    "pid": 49108,
+    "directory": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101",
+    "layer": "richfield-inundation-100yr",
+    "created": 1793525176.3820188
+  }
+}

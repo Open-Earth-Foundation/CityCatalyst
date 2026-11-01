@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-30T11:57:08.092637+00:00",
+  "artifacts": {
+    "evaluation_truth.json": "19ef964a6ca2f0a88222ff2a2335498cb94d1f4b2c52a50a1dca68e023591c36",
+    "inputs\\example.json": "754e4a66588c105340c2dfe291864a137c897a6b9568baabcb3c8ecde37c8639",
+    "inputs\\example.png": "587cf272b633dedbb7ec4ccb1caad2908666de51d7364d0a263214e673d6e01c",
+    "inputs\\target.json": "3824cacb5582d33cafcba396a7ee9e4c721d1b19671a5f95659cde95eeb084ca",
+    "inputs\\target.png": "53982e79530706c73b6eb77f8ae6852612c936e0bc39ecb7b67873a7bcb4e7de",
+    "prompt.json": "bde09479244db8d761c71740df63eece0f3ea7b75ed71032c2bab224f3dce719",
+    "run.json": "1a2a37a42d5dbc81c7b7a059126aa1c089f2accd76a384e970dd77be44d190fb"
+  }
+}

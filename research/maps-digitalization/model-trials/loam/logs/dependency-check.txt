@@ -1,0 +1,2 @@
+Checked 64 packages in 6ms
+All installed packages are compatible

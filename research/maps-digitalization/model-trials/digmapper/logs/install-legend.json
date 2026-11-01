@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "uv",
+    "pip",
+    "install",
+    "--python",
+    "./.venv/Scripts/python.exe",
+    "-e",
+    "./upstream/criticalmaas-legend-detection"
+  ],
+  "cwd": ".",
+  "started_at": "2026-10-30T11:53:58.159613+00:00",
+  "timeout_s": 120,
+  "exit_code": 0,
+  "elapsed_s": 5.344,
+  "log": "logs\\install-legend.log"
+}

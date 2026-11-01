@@ -1,0 +1,32 @@
+{
+  "load_result": "<All keys matched successfully>",
+  "parameters": 31039426,
+  "epoch": 33,
+  "global_step": 31892,
+  "checkpoint_lightning_version": "2.1.0",
+  "keys": [
+    "epoch",
+    "global_step",
+    "pytorch-lightning_version",
+    "state_dict",
+    "loops",
+    "callbacks",
+    "optimizer_states",
+    "lr_schedulers"
+  ],
+  "first_kernel_shape": [
+    64,
+    6,
+    3,
+    3
+  ],
+  "output_kernel_shape": [
+    2,
+    64,
+    1,
+    1
+  ],
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79"
+}

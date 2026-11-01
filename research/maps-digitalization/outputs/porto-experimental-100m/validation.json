@@ -1,0 +1,7 @@
+{
+  "heat_cells": 21195,
+  "visible_cells": 104,
+  "grid_size_m": 100,
+  "checks": "valid geometries; sampled direct pixel means; 100m dimensions; one overlay replaced",
+  "geojson_sha256": "11817a918343b4cab962a5f1d7e6a4080c11e35807710734e097b6bf366b8d19"
+}

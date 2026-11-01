@@ -1,0 +1,27 @@
+{
+  "id": "richfield-prioritization-score",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:36:21.357192+00:00",
+  "completed_utc": "2026-10-30T12:40:40.071038+00:00",
+  "seconds": 258.70837030000985,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1584,
+    2448
+  ],
+  "model_forward_calls": 416,
+  "source_pixels": 3877632,
+  "unknown_pixels": 3460032,
+  "overlapping_positive_pixels": 2524,
+  "label_counts": {
+    "0": 3460032,
+    "1": 127728,
+    "2": 90393,
+    "3": 39515,
+    "4": 159964
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "de124e5f2d6912cdd57ad7b724e3814556f6ac674eec34ed1c2d8af72f73c62e"
+}

@@ -1,0 +1,37 @@
+{
+  "status": "succeeded",
+  "name": "richfield-inundation-2yr-72dpi-control",
+  "seconds": 1.3653129999293014,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 1.0312300000805408,
+      "tiles": 2,
+      "positive_pixels": 59787,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 940.5703125
+    }
+  ],
+  "tiles": 2,
+  "unknown_pixels": 909621,
+  "overlap_pixels": 0,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "config_sha256": "5156bff19034c5d68e997f68b2601e5c3684eb4adc9d20fd68849d1568e31696",
+  "strict_load": "<All keys matched successfully>",
+  "mode": 0,
+  "dtype": "float32",
+  "device": "cuda",
+  "tile_hw": [
+    1024,
+    1024
+  ],
+  "torch": "2.5.1+cu124",
+  "gpu_lock_owner": {
+    "owner": "loam-quality-e95ccfd1-73f0-48b7-a908-e376c86c6ef4",
+    "pid": 80600,
+    "directory": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101",
+    "layer": "richfield-inundation-2yr-72dpi-control",
+    "created": 1793525560.3584979
+  }
+}

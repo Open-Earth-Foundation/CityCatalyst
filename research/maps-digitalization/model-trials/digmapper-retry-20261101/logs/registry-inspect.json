@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "python",
+    "-X",
+    "utf8",
+    "scripts\\inspect_registry.py"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper-retry-20261101",
+  "started_at_utc": "2026-11-01T09:25:25.048120+00:00",
+  "exit_code": 0,
+  "elapsed_s": 1.874
+}

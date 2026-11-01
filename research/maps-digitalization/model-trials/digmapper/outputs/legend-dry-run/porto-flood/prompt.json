@@ -1,0 +1,91 @@
+{
+  "task": "Given a scanned map legend area, detect legend items and their descriptions coordinates",
+  "examples from porto-heat-manual-example_legend.png": [
+    {
+      "legend_item": [
+        20.0,
+        188.0,
+        46.0,
+        225.0
+      ],
+      "description": [
+        60.0,
+        188.0,
+        170.0,
+        213.0
+      ]
+    },
+    {
+      "legend_item": [
+        20.0,
+        113.0,
+        46.0,
+        151.0
+      ],
+      "description": [
+        60.0,
+        113.0,
+        170.0,
+        138.0
+      ]
+    },
+    {
+      "legend_item": [
+        20.0,
+        151.0,
+        46.0,
+        188.0
+      ],
+      "description": [
+        60.0,
+        151.0,
+        170.0,
+        176.0
+      ]
+    },
+    {
+      "legend_item": [
+        20.0,
+        38.0,
+        46.0,
+        75.0
+      ],
+      "description": [
+        60.0,
+        38.0,
+        170.0,
+        63.0
+      ]
+    },
+    {
+      "legend_item": [
+        20.0,
+        75.0,
+        46.0,
+        113.0
+      ],
+      "description": [
+        60.0,
+        75.0,
+        170.0,
+        100.0
+      ]
+    }
+  ],
+  "predictions for porto-flood_legend.png": [
+    {
+      "legend_item": [
+        "??",
+        "??",
+        "??",
+        "??"
+      ],
+      "description": [
+        "??",
+        "??",
+        "??",
+        "??"
+      ]
+    }
+  ]
+}

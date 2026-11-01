@@ -1,0 +1,67 @@
+{
+  "stock_test_step": {
+    "error_type": "AssertionError",
+    "error": "Torch not compiled with CUDA enabled",
+    "reason": "Upstream test_step hard-codes .cuda()"
+  },
+  "channels_last_max_probability_difference": 1.7136335372924805e-06,
+  "channels_last_binary_disagreements_0333": 0,
+  "upstream_stitch_agreement_cases": [
+    {
+      "source": [
+        256,
+        256
+      ],
+      "padded": [
+        256,
+        256
+      ],
+      "source_pixels_preserved": 65536
+    },
+    {
+      "source": [
+        257,
+        513
+      ],
+      "padded": [
+        448,
+        640
+      ],
+      "source_pixels_preserved": 131841
+    },
+    {
+      "source": [
+        1758,
+        1213
+      ],
+      "padded": [
+        1792,
+        1216
+      ],
+      "source_pixels_preserved": 2132454
+    },
+    {
+      "source": [
+        1668,
+        1155
+      ],
+      "padded": [
+        1792,
+        1216
+      ],
+      "source_pixels_preserved": 1926540
+    },
+    {
+      "source": [
+        1584,
+        2448
+      ],
+      "padded": [
+        1600,
+        2560
+      ],
+      "source_pixels_preserved": 3877632
+    }
+  ],
+  "passed": true
+}

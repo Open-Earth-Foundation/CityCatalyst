@@ -1,0 +1,29 @@
+--- previous/preprocess.py
++++ new/preprocess.py
+@@ -7,11 +7,15 @@
+ os.environ['OMP_NUM_THREADS']='1'
+ os.environ['OPENBLAS_NUM_THREADS']='1'
+ os.environ['MKL_NUM_THREADS']='1'
+-sys.path.insert(0,str(HERE/'upstream'))
++sys.path.insert(0,str(HERE.parent/'loam'/'upstream'))
+ 
+ class Result:
+     def __init__(self,fn,args):self.fn,self.args=fn,args
+-    def get(self,*a,**k):return [self.fn(*copy.deepcopy(arg)) for arg in self.args]
++    def get(self,*a,**k):
++        results=[]
++        for arg in self.args:
++            results.append(self.fn(*copy.deepcopy(arg)))
++        return results
+ class SerialPool:
+     def __init__(self,*a,**k):pass
+     def __enter__(self):return self
+@@ -23,7 +27,7 @@
+ 
+ def main():
+     import argparse
+-    p=argparse.ArgumentParser();p.add_argument('name');p.add_argument('--trade-off',type=int,default=6);a=p.parse_args()
++    p=argparse.ArgumentParser();p.add_argument('name');p.add_argument('--trade-off',type=int,default=0);a=p.parse_args()
+     multiprocessing.Pool=SerialPool
+     # This module is imported eagerly upstream but used only for automatic map bounds.
+     gate=types.ModuleType('area_json_generator');gate.json_generator=unavailable

@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "scope": "Synthetic scorer invariant only; not an inference or real-data score",
+  "fixture_reference": [
+    [
+      0,
+      51,
+      102,
+      153,
+      204,
+      255,
+      254,
+      255
+    ]
+  ],
+  "fixture_predictions": [
+    [
+      0,
+      2,
+      4,
+      -1,
+      6,
+      9,
+      9,
+      -1
+    ]
+  ],
+  "expected": {
+    "eligible": 6,
+    "common": 5,
+    "correct": 4,
+    "missing": 1,
+    "predicted": 6,
+    "predicted_without_reference": 1,
+    "high_reference": 3,
+    "high_true_positive": 2,
+    "high_predicted_common": 2
+  },
+  "actual": {
+    "eligible": 6,
+    "common": 5,
+    "correct": 4,
+    "missing": 1,
+    "exact_all_pct": 66.66666666666667,
+    "exact_common_pct": 80.0,
+    "missing_pct": 16.666666666666668,
+    "mae": 0.07015748031496064,
+    "bias": -0.011102362204724414,
+    "high_reference": 3,
+    "high_true_positive": 2,
+    "high_predicted_common": 2,
+    "high_recall_pct": 66.66666666666667,
+    "high_precision_common_pct": 100.0,
+    "predicted": 6,
+    "predicted_without_reference": 1,
+    "predicted_without_reference_pct": 16.666666666666668,
+    "confusion": [
+      [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0
+      ]
+    ]
+  },
+  "physical_test_block_count": 38,
+  "reference_grid_called": false,
+  "execution": "Unmodified scores() function extracted by AST to avoid an unavailable rasterio import; no GeoTIFF export or full benchmark execution claimed"
+}

@@ -1,0 +1,14 @@
+{
+  "checked_at_utc": "2026-11-01T09:32:34.680433+00:00",
+  "status": "passed",
+  "unique_layer_rows": 11,
+  "all_real_data_metrics_null": true,
+  "no_fabricated_predictions_or_overlays": true,
+  "http_bodies_match_hashes": true,
+  "downloaded_release_matches_published_digest": true,
+  "container_layer_matches_registry_digest": true,
+  "launcher_revision": "d346eb549f2d91139cc78594eee30a05ae7afb23",
+  "launcher_checkout_clean": true,
+  "existing_source_preservation": "evidence/source-preservation.json",
+  "scorer_validation": "evidence/scorer-contract-validation.json"
+}

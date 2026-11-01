@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "setup.py",
+    "build_ext",
+    "--inplace"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\upstream\\LDTR\\models\\ops",
+  "started_at": "2026-10-30T11:54:21.022001+00:00",
+  "timeout_s": 60,
+  "exit_code": 1,
+  "elapsed_s": 4.485,
+  "log": "logs\\ldtr-cpu-extension-retry.log"
+}

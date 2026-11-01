@@ -1,0 +1,4745 @@
+{
+  "porto": {
+    "porto-heat": {
+      "reference_sha256": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+      "affine": {
+        "mx": 33.273904819403796,
+        "bx": 463723.71457547834,
+        "my": -29.91452445129033,
+        "by": 6693690.166613677,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 1948863,
+            "common": 195721,
+            "correct": 166885,
+            "missing": 1753142,
+            "exact_all_pct": 8.563198131423297,
+            "exact_common_pct": 85.26678281839966,
+            "missing_pct": 89.9571698985511,
+            "mae": 0.05179791119183915,
+            "bias": -0.02903465510744102,
+            "high_reference": 347828,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 216846,
+            "predicted_without_reference": 21125,
+            "predicted_without_reference_pct": 9.741936673952944,
+            "confusion": [
+              [
+                21780,
+                7251,
+                0,
+                0,
+                0,
+                40139
+              ],
+              [
+                3944,
+                120209,
+                1136,
+                0,
+                0,
+                394945
+              ],
+              [
+                480,
+                12753,
+                24896,
+                0,
+                0,
+                973502
+              ],
+              [
+                99,
+                2824,
+                349,
+                0,
+                0,
+                344556
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 28836
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 53461,
+            "correct": 46440,
+            "missing": 260806,
+            "exact_all_pct": 14.777243554047992,
+            "exact_common_pct": 86.86706197040833,
+            "missing_pct": 82.9886688707373,
+            "mae": 0.04823134002901813,
+            "bias": -0.031178582311897986,
+            "high_reference": 61203,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 58126,
+            "predicted_without_reference": 4665,
+            "predicted_without_reference_pct": 8.025668375597839,
+            "confusion": [
+              [
+                15066,
+                392,
+                0,
+                0,
+                0,
+                3618
+              ],
+              [
+                3260,
+                29504,
+                304,
+                0,
+                0,
+                61436
+              ],
+              [
+                442,
+                1964,
+                1870,
+                0,
+                0,
+                135208
+              ],
+              [
+                48,
+                611,
+                0,
+                0,
+                0,
+                60544
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 7021
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\heat\\previous-10m.tif",
+          "sha256": "a9ae10df4b307561aef9df7f10d312b1d195030c97bcc1b7d840b766a088e4a6"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 1948863,
+            "common": 236660,
+            "correct": 198946,
+            "missing": 1712203,
+            "exact_all_pct": 10.208311205046224,
+            "exact_common_pct": 84.06405814248289,
+            "missing_pct": 87.85650915431202,
+            "mae": 0.05321420277337301,
+            "bias": -0.031887125355422,
+            "high_reference": 347828,
+            "high_true_positive": 219,
+            "high_predicted_common": 225,
+            "high_recall_pct": 0.06296215370815461,
+            "high_precision_common_pct": 97.33333333333333,
+            "predicted": 407942,
+            "predicted_without_reference": 171282,
+            "predicted_without_reference_pct": 41.986851071966115,
+            "confusion": [
+              [
+                19845,
+                9763,
+                41,
+                0,
+                0,
+                39521
+              ],
+              [
+                2175,
+                134307,
+                1902,
+                0,
+                0,
+                381850
+              ],
+              [
+                246,
+                14756,
+                44575,
+                6,
+                0,
+                952048
+              ],
+              [
+                6,
+                2803,
+                6016,
+                219,
+                0,
+                338784
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 37714
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 52296,
+            "correct": 45953,
+            "missing": 261971,
+            "exact_all_pct": 14.622279781205153,
+            "exact_common_pct": 87.87096527459079,
+            "missing_pct": 83.35937276265086,
+            "mae": 0.04372022551219647,
+            "bias": -0.025899618645650015,
+            "high_reference": 61203,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 91530,
+            "predicted_without_reference": 39234,
+            "predicted_without_reference_pct": 42.864634546050475,
+            "confusion": [
+              [
+                15389,
+                401,
+                0,
+                0,
+                0,
+                3286
+              ],
+              [
+                1996,
+                24941,
+                588,
+                0,
+                0,
+                66979
+              ],
+              [
+                200,
+                1744,
+                5623,
+                0,
+                0,
+                131917
+              ],
+              [
+                0,
+                335,
+                1079,
+                0,
+                0,
+                59789
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 6343
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\heat\\mode0-10m.tif",
+          "sha256": "8fdd4ee6107fced3468f0258a530dc4471ad758294c1aa26d5d70e033cf1e61f"
+        }
+      },
+      "test_delta_percentage_points": {
+        "exact_all_pct": -0.15496377284283902,
+        "missing_pct": 0.3707038919135641,
+        "exact_common_pct": 1.003903304182458,
+        "high_recall_pct": 0.0
+      }
+    },
+    "porto-flood": {
+      "reference_sha256": "2c561fa164ca74be08267b2ff5c7e37009d634df8e0a2d38a3f02e473d639462",
+      "affine": {
+        "mx": 34.94320910867041,
+        "bx": 463724.5775398351,
+        "my": -31.52797508718384,
+        "by": 6693688.76928158,
+        "tick_fit_max_residual_m": 8.11298447556328,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 756578,
+            "common": 112201,
+            "correct": 95155,
+            "missing": 644377,
+            "exact_all_pct": 12.577024444274088,
+            "exact_common_pct": 84.80762203545423,
+            "missing_pct": 85.1699362127897,
+            "mae": 0.06134811001094983,
+            "bias": -0.04859551829334405,
+            "high_reference": 186852,
+            "high_true_positive": 1957,
+            "high_predicted_common": 2209,
+            "high_recall_pct": 1.0473529852503585,
+            "high_precision_common_pct": 88.5921231326392,
+            "predicted": 140105,
+            "predicted_without_reference": 27904,
+            "predicted_without_reference_pct": 19.9164912030263,
+            "confusion": [
+              [
+                3800,
+                617,
+                0,
+                0,
+                0,
+                14844
+              ],
+              [
+                749,
+                78045,
+                246,
+                0,
+                0,
+                98158
+              ],
+              [
+                0,
+                11154,
+                11353,
+                252,
+                0,
+                350508
+              ],
+              [
+                0,
+                3962,
+                66,
+                1957,
+                0,
+                180504
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                363
+              ]
+            ],
+            "incorrect_present": 17046
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 23372,
+            "correct": 20597,
+            "missing": 97322,
+            "exact_all_pct": 17.065471357316852,
+            "exact_common_pct": 88.12681841519768,
+            "missing_pct": 80.63532569970339,
+            "mae": 0.05573557968954034,
+            "bias": -0.045468701360130745,
+            "high_reference": 23354,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 27953,
+            "predicted_without_reference": 4581,
+            "predicted_without_reference_pct": 16.388223088756128,
+            "confusion": [
+              [
+                3590,
+                14,
+                0,
+                0,
+                0,
+                3533
+              ],
+              [
+                749,
+                14423,
+                162,
+                0,
+                0,
+                23586
+              ],
+              [
+                0,
+                1297,
+                2584,
+                0,
+                0,
+                47402
+              ],
+              [
+                0,
+                537,
+                16,
+                0,
+                0,
+                22801
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 2775
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\flood\\previous-10m.tif",
+          "sha256": "be8179b610848a1b0e9f7a43088edbb1c5591d89bdf2a612f5517a516cf09836"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 756578,
+            "common": 123366,
+            "correct": 101634,
+            "missing": 633212,
+            "exact_all_pct": 13.433380299189244,
+            "exact_common_pct": 82.38412528573512,
+            "missing_pct": 83.69421262579668,
+            "mae": 0.07432500640498582,
+            "bias": -0.06035287610351172,
+            "high_reference": 186852,
+            "high_true_positive": 2089,
+            "high_predicted_common": 2308,
+            "high_recall_pct": 1.1179971314195192,
+            "high_precision_common_pct": 90.51126516464471,
+            "predicted": 438364,
+            "predicted_without_reference": 314998,
+            "predicted_without_reference_pct": 71.85763429478698,
+            "confusion": [
+              [
+                3443,
+                847,
+                0,
+                0,
+                0,
+                14971
+              ],
+              [
+                415,
+                84123,
+                296,
+                0,
+                0,
+                92364
+              ],
+              [
+                229,
+                11589,
+                11979,
+                219,
+                0,
+                349251
+              ],
+              [
+                286,
+                5939,
+                1912,
+                2089,
+                0,
+                176263
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                363
+              ]
+            ],
+            "incorrect_present": 21732
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 23409,
+            "correct": 20075,
+            "missing": 97285,
+            "exact_all_pct": 16.632972641556332,
+            "exact_common_pct": 85.75761459267802,
+            "missing_pct": 80.60466966046366,
+            "mae": 0.06932132570318367,
+            "bias": -0.05540450994183204,
+            "high_reference": 23354,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 82953,
+            "predicted_without_reference": 59544,
+            "predicted_without_reference_pct": 71.78040577194315,
+            "confusion": [
+              [
+                2723,
+                42,
+                0,
+                0,
+                0,
+                4372
+              ],
+              [
+                252,
+                16069,
+                145,
+                0,
+                0,
+                22454
+              ],
+              [
+                38,
+                1799,
+                1283,
+                0,
+                0,
+                48163
+              ],
+              [
+                36,
+                1020,
+                2,
+                0,
+                0,
+                22296
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 3334
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\flood\\mode0-10m.tif",
+          "sha256": "3f590b1511bd8668be9738f72a82fdf07bc1febb5e42c60c5c49da2703131c6a"
+        }
+      },
+      "prior_float_rounding_differences": {
+        "all": {
+          "mae": {
+            "recomputed": 0.06134811001094983,
+            "saved": 0.061348110010949836,
+            "delta": -6.938893903907228e-18
+          },
+          "bias": {
+            "recomputed": -0.04859551829334405,
+            "saved": -0.048595518293344055,
+            "delta": 6.938893903907228e-18
+          }
+        },
+        "test": {
+          "mae": {
+            "recomputed": 0.05573557968954034,
+            "saved": 0.05573557968954035,
+            "delta": -6.938893903907228e-18
+          },
+          "bias": {
+            "recomputed": -0.045468701360130745,
+            "saved": -0.04546870136013076,
+            "delta": 1.3877787807814457e-17
+          }
+        }
+      },
+      "prior_grid_exactly_equal": true,
+      "test_delta_percentage_points": {
+        "exact_all_pct": -0.43249871576052,
+        "missing_pct": -0.03065603923973015,
+        "exact_common_pct": -2.3692038225196512,
+        "high_recall_pct": 0.0
+      }
+    },
+    "porto-landslide": {
+      "reference_sha256": "3d023b210e50f5d964ef5e5e891b2a097bc8e620fcecb3930f05aa805e43eb66",
+      "affine": {
+        "mx": 33.273904819403796,
+        "bx": 463723.71457547834,
+        "my": -29.91452445129033,
+        "by": 6693690.166613677,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 1937914,
+            "common": 186573,
+            "correct": 158885,
+            "missing": 1751341,
+            "exact_all_pct": 8.19876423824793,
+            "exact_common_pct": 85.15969620470271,
+            "missing_pct": 90.37248298944122,
+            "mae": 0.05378553141534899,
+            "bias": -0.03513610872204673,
+            "high_reference": 274426,
+            "high_true_positive": 111,
+            "high_predicted_common": 111,
+            "high_recall_pct": 0.04044806250136649,
+            "high_precision_common_pct": 100.0,
+            "predicted": 211817,
+            "predicted_without_reference": 25244,
+            "predicted_without_reference_pct": 11.917834734700236,
+            "confusion": [
+              [
+                48951,
+                1975,
+                0,
+                0,
+                0,
+                47878
+              ],
+              [
+                7411,
+                96032,
+                209,
+                0,
+                0,
+                329145
+              ],
+              [
+                1072,
+                13302,
+                13791,
+                0,
+                0,
+                1103722
+              ],
+              [
+                335,
+                3023,
+                361,
+                111,
+                0,
+                270596
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 27688
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 55686,
+            "correct": 49351,
+            "missing": 255937,
+            "exact_all_pct": 15.836764295318382,
+            "exact_common_pct": 88.6237115253385,
+            "missing_pct": 82.13033055968269,
+            "mae": 0.04562876601959071,
+            "bias": -0.023928447501329872,
+            "high_reference": 43071,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 60930,
+            "predicted_without_reference": 5244,
+            "predicted_without_reference_pct": 8.60659773510586,
+            "confusion": [
+              [
+                18933,
+                742,
+                0,
+                0,
+                0,
+                3802
+              ],
+              [
+                2543,
+                29956,
+                48,
+                0,
+                0,
+                63984
+              ],
+              [
+                224,
+                2570,
+                462,
+                0,
+                0,
+                145288
+              ],
+              [
+                24,
+                184,
+                0,
+                0,
+                0,
+                42863
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 6335
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\landslide\\previous-10m.tif",
+          "sha256": "aa155b23f851e5042a7684d984e22cf519fc4cd0c3a43a21af64a91190f51fed"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 1937914,
+            "common": 244275,
+            "correct": 213117,
+            "missing": 1693639,
+            "exact_all_pct": 10.997237235501679,
+            "exact_common_pct": 87.24470371507522,
+            "missing_pct": 87.39495147875499,
+            "mae": 0.05497731596875536,
+            "bias": -0.03798694836157454,
+            "high_reference": 274426,
+            "high_true_positive": 504,
+            "high_predicted_common": 548,
+            "high_recall_pct": 0.18365606757377217,
+            "high_precision_common_pct": 91.97080291970804,
+            "predicted": 411507,
+            "predicted_without_reference": 167232,
+            "predicted_without_reference_pct": 40.63891987256596,
+            "confusion": [
+              [
+                48020,
+                2546,
+                24,
+                0,
+                0,
+                48214
+              ],
+              [
+                4864,
+                111389,
+                1054,
+                0,
+                0,
+                315490
+              ],
+              [
+                430,
+                16845,
+                53204,
+                44,
+                0,
+                1061364
+              ],
+              [
+                270,
+                3259,
+                1822,
+                504,
+                0,
+                268571
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 31158
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 56680,
+            "correct": 49738,
+            "missing": 254943,
+            "exact_all_pct": 15.960952817988403,
+            "exact_common_pct": 87.75229357798165,
+            "missing_pct": 81.81135538776022,
+            "mae": 0.04472254791369145,
+            "bias": -0.019422646269428037,
+            "high_reference": 43071,
+            "high_true_positive": 1,
+            "high_predicted_common": 36,
+            "high_recall_pct": 0.0023217478117526875,
+            "high_precision_common_pct": 2.7777777777777777,
+            "predicted": 97746,
+            "predicted_without_reference": 41066,
+            "predicted_without_reference_pct": 42.012972397847484,
+            "confusion": [
+              [
+                19725,
+                1139,
+                0,
+                0,
+                0,
+                2613
+              ],
+              [
+                1792,
+                25875,
+                236,
+                0,
+                0,
+                68628
+              ],
+              [
+                117,
+                2989,
+                4137,
+                35,
+                0,
+                141266
+              ],
+              [
+                24,
+                166,
+                444,
+                1,
+                0,
+                42436
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 6942
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\landslide\\mode0-10m.tif",
+          "sha256": "c497953c7af5fc7cbb2b5452ece3672b2c48e3da14c3dac39275cc2956089d21"
+        }
+      },
+      "prior_float_rounding_differences": {
+        "all": {
+          "mae": {
+            "recomputed": 0.05378553141534899,
+            "saved": 0.053785531415348975,
+            "delta": 1.3877787807814457e-17
+          },
+          "bias": {
+            "recomputed": -0.03513610872204673,
+            "saved": -0.035136108722046734,
+            "delta": 6.938893903907228e-18
+          }
+        },
+        "test": {
+          "mae": {
+            "recomputed": 0.04562876601959071,
+            "saved": 0.045628766019590726,
+            "delta": -1.3877787807814457e-17
+          },
+          "bias": {
+            "recomputed": -0.023928447501329872,
+            "saved": -0.02392844750132987,
+            "delta": -3.469446951953614e-18
+          }
+        }
+      },
+      "prior_grid_exactly_equal": true,
+      "test_delta_percentage_points": {
+        "exact_all_pct": 0.12418852267002123,
+        "missing_pct": -0.3189751719224745,
+        "exact_common_pct": -0.8714179473568606,
+        "high_recall_pct": 0.0023217478117526875
+      }
+    },
+    "porto-drought": {
+      "reference_sha256": "a715e0ec4bb1406d823e256633cbc4f6828a28c1a1cbbccba2cf3104803597e6",
+      "affine": {
+        "mx": 33.11258278145671,
+        "bx": 463741.7218543049,
+        "my": -29.91452445129033,
+        "by": 6693690.166613677,
+        "tick_fit_max_residual_m": 6.412081523798406,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 1924450,
+            "common": 228249,
+            "correct": 202886,
+            "missing": 1696201,
+            "exact_all_pct": 10.54254462313908,
+            "exact_common_pct": 88.88801265284843,
+            "missing_pct": 88.13952038244693,
+            "mae": 0.04887704141867719,
+            "bias": -0.029907041705351276,
+            "high_reference": 34121,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 256768,
+            "predicted_without_reference": 28519,
+            "predicted_without_reference_pct": 11.106913634097706,
+            "confusion": [
+              [
+                47312,
+                1938,
+                0,
+                0,
+                0,
+                32133
+              ],
+              [
+                6776,
+                140515,
+                299,
+                0,
+                0,
+                463468
+              ],
+              [
+                1315,
+                14802,
+                15059,
+                0,
+                0,
+                1166712
+              ],
+              [
+                29,
+                204,
+                0,
+                0,
+                0,
+                33888
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 25363
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 73850,
+            "correct": 66503,
+            "missing": 239602,
+            "exact_all_pct": 21.216326582698468,
+            "exact_common_pct": 90.05145565335138,
+            "missing_pct": 76.43977387287367,
+            "mae": 0.04249942690812937,
+            "bias": -0.019384238107677303,
+            "high_reference": 12261,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 79881,
+            "predicted_without_reference": 6031,
+            "predicted_without_reference_pct": 7.549980596136753,
+            "confusion": [
+              [
+                20525,
+                637,
+                0,
+                0,
+                0,
+                2289
+              ],
+              [
+                1892,
+                41994,
+                84,
+                0,
+                0,
+                64286
+              ],
+              [
+                232,
+                4381,
+                3984,
+                0,
+                0,
+                160887
+              ],
+              [
+                0,
+                121,
+                0,
+                0,
+                0,
+                12140
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 7347
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\drought\\previous-10m.tif",
+          "sha256": "d092eb0dfce645ecbf7127637ef95d34119ef4ebb0c9a481445e03b0ede8d2c8"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 1924450,
+            "common": 293710,
+            "correct": 260095,
+            "missing": 1630740,
+            "exact_all_pct": 13.515290082880822,
+            "exact_common_pct": 88.5550372816724,
+            "missing_pct": 84.73797708436176,
+            "mae": 0.0481399698722587,
+            "bias": -0.03053438002078755,
+            "high_reference": 34121,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 473348,
+            "predicted_without_reference": 179638,
+            "predicted_without_reference_pct": 37.95051420941886,
+            "confusion": [
+              [
+                44910,
+                3442,
+                0,
+                0,
+                0,
+                33031
+              ],
+              [
+                4088,
+                168571,
+                1064,
+                0,
+                0,
+                437335
+              ],
+              [
+                639,
+                23675,
+                46614,
+                0,
+                0,
+                1126960
+              ],
+              [
+                29,
+                371,
+                307,
+                0,
+                0,
+                33414
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 33615
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 72820,
+            "correct": 64131,
+            "missing": 240632,
+            "exact_all_pct": 20.45959189923816,
+            "exact_common_pct": 88.06783850590497,
+            "missing_pct": 76.7683728290137,
+            "mae": 0.04296585043046492,
+            "bias": -0.021203344672550375,
+            "high_reference": 12261,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 113921,
+            "predicted_without_reference": 41101,
+            "predicted_without_reference_pct": 36.07851054678242,
+            "confusion": [
+              [
+                19672,
+                1246,
+                0,
+                0,
+                0,
+                2533
+              ],
+              [
+                1237,
+                36805,
+                653,
+                0,
+                0,
+                69561
+              ],
+              [
+                136,
+                5271,
+                7654,
+                0,
+                0,
+                156423
+              ],
+              [
+                0,
+                51,
+                95,
+                0,
+                0,
+                12115
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 8689
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\drought\\mode0-10m.tif",
+          "sha256": "edbd057dd596218265cd4e5ddc0dd5f29e88ee70dee18827c012d126e1bdc071"
+        }
+      },
+      "prior_float_rounding_differences": {
+        "all": {
+          "bias": {
+            "recomputed": -0.029907041705351276,
+            "saved": -0.029907041705351273,
+            "delta": -3.469446951953614e-18
+          }
+        },
+        "test": {
+          "bias": {
+            "recomputed": -0.019384238107677303,
+            "saved": -0.0193842381076773,
+            "delta": -3.469446951953614e-18
+          }
+        }
+      },
+      "prior_grid_exactly_equal": true,
+      "test_delta_percentage_points": {
+        "exact_all_pct": -0.7567346834603086,
+        "missing_pct": 0.3285989561400271,
+        "exact_common_pct": -1.9836171474464095,
+        "high_recall_pct": 0.0
+      }
+    },
+    "porto-arbovirus": {
+      "reference_sha256": "c960d7e85138cdda2f3ddf2440ae010fab45a7496c50ebcb9405a10b14e5f965",
+      "affine": {
+        "mx": 33.273904819403796,
+        "bx": 463723.71457547834,
+        "my": -29.91452445129033,
+        "by": 6693690.166613677,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 1949974,
+            "common": 213357,
+            "correct": 192198,
+            "missing": 1736617,
+            "exact_all_pct": 9.856439111495845,
+            "exact_common_pct": 90.08281893727414,
+            "missing_pct": 89.05846949754202,
+            "mae": 0.047677837585365306,
+            "bias": -0.023805649538116563,
+            "high_reference": 101957,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 237051,
+            "predicted_without_reference": 23694,
+            "predicted_without_reference_pct": 9.995317463330675,
+            "confusion": [
+              [
+                20253,
+                1291,
+                0,
+                0,
+                0,
+                10554
+              ],
+              [
+                2760,
+                145710,
+                590,
+                0,
+                0,
+                361168
+              ],
+              [
+                299,
+                15245,
+                26235,
+                0,
+                0,
+                1263912
+              ],
+              [
+                0,
+                960,
+                14,
+                0,
+                0,
+                100983
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 21159
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 65574,
+            "correct": 58284,
+            "missing": 248720,
+            "exact_all_pct": 18.544420192558558,
+            "exact_common_pct": 88.88278891023882,
+            "missing_pct": 79.13609550293674,
+            "mae": 0.04663936806142438,
+            "bias": -0.0299962967846148,
+            "high_reference": 24379,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 70678,
+            "predicted_without_reference": 5104,
+            "predicted_without_reference_pct": 7.221483347010385,
+            "confusion": [
+              [
+                16259,
+                424,
+                0,
+                0,
+                0,
+                2283
+              ],
+              [
+                2680,
+                40128,
+                48,
+                0,
+                0,
+                58628
+              ],
+              [
+                294,
+                3830,
+                1897,
+                0,
+                0,
+                163444
+              ],
+              [
+                0,
+                14,
+                0,
+                0,
+                0,
+                24365
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 7290
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\arbovirus\\previous-10m.tif",
+          "sha256": "304c40446f4c4eb1e11d3f0e51a37b7a270769004688bfa099efc0d9fae71612"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 1949974,
+            "common": 276706,
+            "correct": 249008,
+            "missing": 1673268,
+            "exact_all_pct": 12.769811289791557,
+            "exact_common_pct": 89.99009779332577,
+            "missing_pct": 85.80975951474225,
+            "mae": 0.050063730622643854,
+            "bias": -0.029200719078113037,
+            "high_reference": 101957,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 449779,
+            "predicted_without_reference": 173073,
+            "predicted_without_reference_pct": 38.479564408298295,
+            "confusion": [
+              [
+                19006,
+                2042,
+                0,
+                0,
+                0,
+                11050
+              ],
+              [
+                1517,
+                165539,
+                663,
+                0,
+                0,
+                342509
+              ],
+              [
+                141,
+                21054,
+                64463,
+                0,
+                0,
+                1220033
+              ],
+              [
+                0,
+                1615,
+                666,
+                0,
+                0,
+                99676
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 27698
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 64825,
+            "correct": 57061,
+            "missing": 249469,
+            "exact_all_pct": 18.155294087701325,
+            "exact_common_pct": 88.02313922097956,
+            "missing_pct": 79.37440740198667,
+            "mae": 0.04553105726805359,
+            "bias": -0.025753133056593918,
+            "high_reference": 24379,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 104407,
+            "predicted_without_reference": 39582,
+            "predicted_without_reference_pct": 37.9112511613206,
+            "confusion": [
+              [
+                15455,
+                960,
+                0,
+                0,
+                0,
+                2551
+              ],
+              [
+                1514,
+                35790,
+                359,
+                0,
+                0,
+                63821
+              ],
+              [
+                134,
+                4427,
+                5816,
+                0,
+                0,
+                159088
+              ],
+              [
+                0,
+                72,
+                298,
+                0,
+                0,
+                24009
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "incorrect_present": 7764
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\arbovirus\\mode0-10m.tif",
+          "sha256": "dfadbf1957cbc73ef33a0eb35613d956038b5ae9130011844f83f28e749f92c4"
+        }
+      },
+      "prior_float_rounding_differences": {
+        "all": {
+          "mae": {
+            "recomputed": 0.047677837585365306,
+            "saved": 0.04767783758536531,
+            "delta": -6.938893903907228e-18
+          },
+          "bias": {
+            "recomputed": -0.023805649538116563,
+            "saved": -0.023805649538116567,
+            "delta": 3.469446951953614e-18
+          }
+        },
+        "test": {
+          "bias": {
+            "recomputed": -0.0299962967846148,
+            "saved": -0.029996296784614792,
+            "delta": -6.938893903907228e-18
+          }
+        }
+      },
+      "prior_grid_exactly_equal": true,
+      "test_delta_percentage_points": {
+        "exact_all_pct": -0.3891261048572332,
+        "missing_pct": 0.23831189904993266,
+        "exact_common_pct": -0.8596496892592569,
+        "high_recall_pct": 0.0
+      }
+    },
+    "porto-storm": {
+      "reference_sha256": "f3df031bad6a19a3418a5fdd728861974591b982277e47f1921cf22d6c525f6a",
+      "affine": {
+        "mx": 33.273904819403796,
+        "bx": 463723.71457547834,
+        "my": -29.91452445129033,
+        "by": 6693690.166613677,
+        "tick_fit_max_residual_m": 10.099382807326037,
+        "control_note": "Printed numeric labels verified for this document profile; residual is not survey accuracy."
+      },
+      "methods": {
+        "previous": {
+          "all": {
+            "eligible": 1949974,
+            "common": 219734,
+            "correct": 193285,
+            "missing": 1730240,
+            "exact_all_pct": 9.91218344449721,
+            "exact_common_pct": 87.96317365541974,
+            "missing_pct": 88.73143949611635,
+            "mae": 0.054897933499981975,
+            "bias": -0.0312676479485683,
+            "high_reference": 371496,
+            "high_true_positive": 2863,
+            "high_predicted_common": 3123,
+            "high_recall_pct": 0.7706677864633805,
+            "high_precision_common_pct": 91.67467178994556,
+            "predicted": 244590,
+            "predicted_without_reference": 24856,
+            "predicted_without_reference_pct": 10.162312441228178,
+            "confusion": [
+              [
+                25614,
+                2710,
+                0,
+                0,
+                0,
+                36686
+              ],
+              [
+                4547,
+                129323,
+                537,
+                0,
+                0,
+                282476
+              ],
+              [
+                1391,
+                11661,
+                35485,
+                260,
+                0,
+                1047788
+              ],
+              [
+                306,
+                4663,
+                374,
+                2863,
+                0,
+                362635
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                655
+              ]
+            ],
+            "incorrect_present": 26449
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 63082,
+            "correct": 54716,
+            "missing": 251212,
+            "exact_all_pct": 17.409177394414147,
+            "exact_common_pct": 86.73789670587489,
+            "missing_pct": 79.92898369042997,
+            "mae": 0.05053000631349222,
+            "bias": -0.02904514733603831,
+            "high_reference": 65342,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 68425,
+            "predicted_without_reference": 5343,
+            "predicted_without_reference_pct": 7.808549506759225,
+            "confusion": [
+              [
+                14316,
+                1265,
+                0,
+                0,
+                0,
+                2454
+              ],
+              [
+                3301,
+                37744,
+                307,
+                0,
+                0,
+                45722
+              ],
+              [
+                196,
+                2553,
+                2656,
+                0,
+                0,
+                138438
+              ],
+              [
+                27,
+                717,
+                0,
+                0,
+                0,
+                64400
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                198
+              ]
+            ],
+            "incorrect_present": 8366
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\storm\\previous-10m.tif",
+          "sha256": "edfb29ff01fc9a852fcb10e6daf3fcc78049d3205fa68ed7d586c0a3341c49fb"
+        },
+        "mode0": {
+          "all": {
+            "eligible": 1949974,
+            "common": 261879,
+            "correct": 231717,
+            "missing": 1688095,
+            "exact_all_pct": 11.883081518009984,
+            "exact_common_pct": 88.48246709358139,
+            "missing_pct": 86.57012862735606,
+            "mae": 0.05638137773130964,
+            "bias": -0.03627814618838964,
+            "high_reference": 371496,
+            "high_true_positive": 1069,
+            "high_predicted_common": 1128,
+            "high_recall_pct": 0.2877554536253419,
+            "high_precision_common_pct": 94.76950354609929,
+            "predicted": 430712,
+            "predicted_without_reference": 168833,
+            "predicted_without_reference_pct": 39.19858281171641,
+            "confusion": [
+              [
+                22943,
+                2422,
+                21,
+                0,
+                0,
+                39624
+              ],
+              [
+                2485,
+                146327,
+                722,
+                0,
+                0,
+                267349
+              ],
+              [
+                375,
+                15236,
+                61378,
+                59,
+                0,
+                1019537
+              ],
+              [
+                93,
+                5624,
+                3125,
+                1069,
+                0,
+                360930
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                655
+              ]
+            ],
+            "incorrect_present": 30162
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 64839,
+            "correct": 56976,
+            "missing": 249455,
+            "exact_all_pct": 18.128249346153602,
+            "exact_common_pct": 87.87303937445056,
+            "missing_pct": 79.36995297396705,
+            "mae": 0.048092792650675745,
+            "bias": -0.027205623668947174,
+            "high_reference": 65342,
+            "high_true_positive": 9,
+            "high_predicted_common": 9,
+            "high_recall_pct": 0.013773683082856356,
+            "high_precision_common_pct": 100.0,
+            "predicted": 104716,
+            "predicted_without_reference": 39877,
+            "predicted_without_reference_pct": 38.08109553458879,
+            "confusion": [
+              [
+                14763,
+                1124,
+                0,
+                0,
+                0,
+                2148
+              ],
+              [
+                2204,
+                35951,
+                317,
+                0,
+                0,
+                48602
+              ],
+              [
+                84,
+                3243,
+                6253,
+                0,
+                0,
+                134263
+              ],
+              [
+                24,
+                438,
+                429,
+                9,
+                0,
+                64244
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                198
+              ]
+            ],
+            "incorrect_present": 7863
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\porto\\storm\\mode0-10m.tif",
+          "sha256": "b692e235469c318475def957b229a1b3a784f8880e7294df14e6da3cfaa84031"
+        }
+      },
+      "prior_float_rounding_differences": {
+        "all": {},
+        "test": {
+          "bias": {
+            "recomputed": -0.02904514733603831,
+            "saved": -0.029045147336038312,
+            "delta": 3.469446951953614e-18
+          }
+        }
+      },
+      "prior_grid_exactly_equal": true,
+      "test_delta_percentage_points": {
+        "exact_all_pct": 0.7190719517394548,
+        "missing_pct": -0.559030716462928,
+        "exact_common_pct": 1.1351426685756678,
+        "high_recall_pct": 0.013773683082856356
+      }
+    }
+  },
+  "richfield": {
+    "richfield-inundation-100yr": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 746
+      },
+      "source_overlap_pt2_before_draw_order": 1.4551915228366852e-11,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 144,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69790,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 69790,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                69790
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 69790,
+                "predicted": 0,
+                "reference": 69790,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 69790
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 69790,
+              "predicted": 0,
+              "reference": 69790,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 40604,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                40604
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 40604,
+                "predicted": 0,
+                "reference": 40604,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 40604
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 40604,
+              "predicted": 0,
+              "reference": 40604,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "100yr": {
+                "intersection_pt2": 0.0,
+                "union_pt2": 69980.51077155907,
+                "predicted_pt2": 0.0,
+                "reference_pt2": 69980.51077155907,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0
+              }
+            },
+            "micro": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 69980.51077155907,
+              "predicted_pt2": 0.0,
+              "reference_pt2": 69980.51077155907,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 144,
+          "source_pixel_centers": {
+            "eligible_foreground": 279980,
+            "predicted_foreground": 139666,
+            "correct": 10320,
+            "missing_foreground": 269660,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 129346,
+            "confusion_with_missing_column": [
+              [
+                10320,
+                269660
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 10320,
+                "union": 409326,
+                "predicted": 139666,
+                "reference": 279980,
+                "iou": 0.02521217806833673,
+                "precision": 0.07389056749674222,
+                "recall": 0.03685977569826416,
+                "false_positive": 129346,
+                "false_negative": 269660
+              }
+            },
+            "micro": {
+              "intersection": 10320,
+              "union": 409326,
+              "predicted": 139666,
+              "reference": 279980,
+              "iou": 0.02521217806833673,
+              "precision": 0.07389056749674222,
+              "recall": 0.03685977569826416
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 20288,
+            "correct": 1561,
+            "missing_foreground": 39043,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 18727,
+            "confusion_with_missing_column": [
+              [
+                1561,
+                39043
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1561,
+                "union": 59331,
+                "predicted": 20288,
+                "reference": 40604,
+                "iou": 0.026310023427887613,
+                "precision": 0.07694203470031545,
+                "recall": 0.03844448822776081,
+                "false_positive": 18727,
+                "false_negative": 39043
+              }
+            },
+            "micro": {
+              "intersection": 1561,
+              "union": 59331,
+              "predicted": 20288,
+              "reference": 40604,
+              "iou": 0.026310023427887613,
+              "precision": 0.07694203470031545,
+              "recall": 0.03844448822776081
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "100yr": {
+                "intersection_pt2": 2602.6790804612106,
+                "union_pt2": 102294.33169109783,
+                "predicted_pt2": 34916.5,
+                "reference_pt2": 69980.51077155907,
+                "iou": 0.0254430430057515,
+                "precision": 0.0745400908012318,
+                "recall": 0.037191484482833624
+              }
+            },
+            "micro": {
+              "intersection_pt2": 2602.6790804612106,
+              "union_pt2": 102294.33169109783,
+              "predicted_pt2": 34916.5,
+              "reference_pt2": 69980.51077155907,
+              "iou": 0.0254430430057515,
+              "precision": 0.0745400908012318,
+              "recall": 0.037191484482833624
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 2.6310023427887614,
+      "same_input_resolution_comparison": false
+    },
+    "richfield-inundation-2yr": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 378
+      },
+      "source_overlap_pt2_before_draw_order": 0.0,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 144,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 30696,
+            "predicted_foreground": 1,
+            "correct": 1,
+            "missing_foreground": 30695,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                1,
+                30695
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1,
+                "union": 30696,
+                "predicted": 1,
+                "reference": 30696,
+                "iou": 3.2577534532186604e-05,
+                "precision": 1.0,
+                "recall": 3.2577534532186604e-05,
+                "false_positive": 0,
+                "false_negative": 30695
+              }
+            },
+            "micro": {
+              "intersection": 1,
+              "union": 30696,
+              "predicted": 1,
+              "reference": 30696,
+              "iou": 3.2577534532186604e-05,
+              "precision": 1.0,
+              "recall": 3.2577534532186604e-05
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 17951,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 17951,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                17951
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 17951,
+                "predicted": 0,
+                "reference": 17951,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 17951
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 17951,
+              "predicted": 0,
+              "reference": 17951,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "2yr": {
+                "intersection_pt2": 1.0,
+                "union_pt2": 30863.935591719517,
+                "predicted_pt2": 1.0,
+                "reference_pt2": 30863.935591719517,
+                "iou": 3.240027497557019e-05,
+                "precision": 1.0,
+                "recall": 3.240027497557019e-05
+              }
+            },
+            "micro": {
+              "intersection_pt2": 1.0,
+              "union_pt2": 30863.935591719517,
+              "predicted_pt2": 1.0,
+              "reference_pt2": 30863.935591719517,
+              "iou": 3.240027497557019e-05,
+              "precision": 1.0,
+              "recall": 3.240027497557019e-05
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 144,
+          "source_pixel_centers": {
+            "eligible_foreground": 123440,
+            "predicted_foreground": 220850,
+            "correct": 3546,
+            "missing_foreground": 119894,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 217304,
+            "confusion_with_missing_column": [
+              [
+                3546,
+                119894
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 3546,
+                "union": 340744,
+                "predicted": 220850,
+                "reference": 123440,
+                "iou": 0.010406639588664805,
+                "precision": 0.016056146705908988,
+                "recall": 0.02872650680492547,
+                "false_positive": 217304,
+                "false_negative": 119894
+              }
+            },
+            "micro": {
+              "intersection": 3546,
+              "union": 340744,
+              "predicted": 220850,
+              "reference": 123440,
+              "iou": 0.010406639588664805,
+              "precision": 0.016056146705908988,
+              "recall": 0.02872650680492547
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 17951,
+            "predicted_foreground": 32191,
+            "correct": 522,
+            "missing_foreground": 17429,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 31669,
+            "confusion_with_missing_column": [
+              [
+                522,
+                17429
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 522,
+                "union": 49620,
+                "predicted": 32191,
+                "reference": 17951,
+                "iou": 0.010519951632406288,
+                "precision": 0.016215712466217266,
+                "recall": 0.029079159935379646,
+                "false_positive": 31669,
+                "false_negative": 17429
+              }
+            },
+            "micro": {
+              "intersection": 522,
+              "union": 49620,
+              "predicted": 32191,
+              "reference": 17951,
+              "iou": 0.010519951632406288,
+              "precision": 0.016215712466217266,
+              "recall": 0.029079159935379646
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "2yr": {
+                "intersection_pt2": 894.6998354549582,
+                "union_pt2": 85181.7357562645,
+                "predicted_pt2": 55212.5,
+                "reference_pt2": 30863.935591719517,
+                "iou": 0.010503423386616766,
+                "precision": 0.016204660818744998,
+                "recall": 0.028988520689338052
+              }
+            },
+            "micro": {
+              "intersection_pt2": 894.6998354549582,
+              "union_pt2": 85181.7357562645,
+              "predicted_pt2": 55212.5,
+              "reference_pt2": 30863.935591719517,
+              "iou": 0.010503423386616766,
+              "precision": 0.016204660818744998,
+              "recall": 0.028988520689338052
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 1.0519951632406288,
+      "same_input_resolution_comparison": false
+    },
+    "richfield-inundation-10yr": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 577
+      },
+      "source_overlap_pt2_before_draw_order": 0.0,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 144,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 43112,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 43112,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                43112
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 43112,
+                "predicted": 0,
+                "reference": 43112,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 43112
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 43112,
+              "predicted": 0,
+              "reference": 43112,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 25124,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 25124,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                25124
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 25124,
+                "predicted": 0,
+                "reference": 25124,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 25124
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 25124,
+              "predicted": 0,
+              "reference": 25124,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "10yr": {
+                "intersection_pt2": 0.0,
+                "union_pt2": 43222.888380161654,
+                "predicted_pt2": 0.0,
+                "reference_pt2": 43222.888380161654,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0
+              }
+            },
+            "micro": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 43222.888380161654,
+              "predicted_pt2": 0.0,
+              "reference_pt2": 43222.888380161654,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 144,
+          "source_pixel_centers": {
+            "eligible_foreground": 172891,
+            "predicted_foreground": 125341,
+            "correct": 5454,
+            "missing_foreground": 167437,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 119887,
+            "confusion_with_missing_column": [
+              [
+                5454,
+                167437
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 5454,
+                "union": 292778,
+                "predicted": 125341,
+                "reference": 172891,
+                "iou": 0.018628448858862345,
+                "precision": 0.043513295729250605,
+                "recall": 0.03154588729315002,
+                "false_positive": 119887,
+                "false_negative": 167437
+              }
+            },
+            "micro": {
+              "intersection": 5454,
+              "union": 292778,
+              "predicted": 125341,
+              "reference": 172891,
+              "iou": 0.018628448858862345,
+              "precision": 0.043513295729250605,
+              "recall": 0.03154588729315002
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 25124,
+            "predicted_foreground": 18160,
+            "correct": 801,
+            "missing_foreground": 24323,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 17359,
+            "confusion_with_missing_column": [
+              [
+                801,
+                24323
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 801,
+                "union": 42483,
+                "predicted": 18160,
+                "reference": 25124,
+                "iou": 0.01885460066379493,
+                "precision": 0.044107929515418504,
+                "recall": 0.03188186594491323,
+                "false_positive": 17359,
+                "false_negative": 24323
+              }
+            },
+            "micro": {
+              "intersection": 801,
+              "union": 42483,
+              "predicted": 18160,
+              "reference": 25124,
+              "iou": 0.01885460066379493,
+              "precision": 0.044107929515418504,
+              "recall": 0.03188186594491323
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "10yr": {
+                "intersection_pt2": 1375.2771543461108,
+                "union_pt2": 73182.86122581555,
+                "predicted_pt2": 31335.25,
+                "reference_pt2": 43222.888380161654,
+                "iou": 0.018792339235036308,
+                "precision": 0.04388913936688269,
+                "recall": 0.031818261247374954
+              }
+            },
+            "micro": {
+              "intersection_pt2": 1375.2771543461108,
+              "union_pt2": 73182.86122581555,
+              "predicted_pt2": 31335.25,
+              "reference_pt2": 43222.888380161654,
+              "iou": 0.018792339235036308,
+              "precision": 0.04388913936688269,
+              "recall": 0.031818261247374954
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 1.8854600663794931,
+      "same_input_resolution_comparison": false
+    },
+    "richfield-inundation-mce100": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 746
+      },
+      "source_overlap_pt2_before_draw_order": -1.4551915228366852e-11,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 144,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 86892,
+            "predicted_foreground": 836,
+            "correct": 674,
+            "missing_foreground": 86218,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 162,
+            "confusion_with_missing_column": [
+              [
+                674,
+                86218
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 674,
+                "union": 87054,
+                "predicted": 836,
+                "reference": 86892,
+                "iou": 0.007742320858317826,
+                "precision": 0.80622009569378,
+                "recall": 0.007756755512590342,
+                "false_positive": 162,
+                "false_negative": 86218
+              }
+            },
+            "micro": {
+              "intersection": 674,
+              "union": 87054,
+              "predicted": 836,
+              "reference": 86892,
+              "iou": 0.007742320858317826,
+              "precision": 0.80622009569378,
+              "recall": 0.007756755512590342
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 50582,
+            "predicted_foreground": 483,
+            "correct": 375,
+            "missing_foreground": 50207,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 108,
+            "confusion_with_missing_column": [
+              [
+                375,
+                50207
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 375,
+                "union": 50690,
+                "predicted": 483,
+                "reference": 50582,
+                "iou": 0.007397908857762872,
+                "precision": 0.7763975155279503,
+                "recall": 0.007413704479854494,
+                "false_positive": 108,
+                "false_negative": 50207
+              }
+            },
+            "micro": {
+              "intersection": 375,
+              "union": 50690,
+              "predicted": 483,
+              "reference": 50582,
+              "iou": 0.007397908857762872,
+              "precision": 0.7763975155279503,
+              "recall": 0.007413704479854494
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "mce100": {
+                "intersection_pt2": 663.8233109425197,
+                "union_pt2": 87270.7701514138,
+                "predicted_pt2": 836.0,
+                "reference_pt2": 87098.59346235634,
+                "iou": 0.007606479349165749,
+                "precision": 0.7940470226585163,
+                "recall": 0.007621515854092655
+              }
+            },
+            "micro": {
+              "intersection_pt2": 663.8233109425197,
+              "union_pt2": 87270.7701514138,
+              "predicted_pt2": 836.0,
+              "reference_pt2": 87098.59346235634,
+              "iou": 0.007606479349165749,
+              "precision": 0.7940470226585163,
+              "recall": 0.007621515854092655
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 144,
+          "source_pixel_centers": {
+            "eligible_foreground": 348565,
+            "predicted_foreground": 147587,
+            "correct": 9302,
+            "missing_foreground": 339263,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 138285,
+            "confusion_with_missing_column": [
+              [
+                9302,
+                339263
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 9302,
+                "union": 486850,
+                "predicted": 147587,
+                "reference": 348565,
+                "iou": 0.019106500975659853,
+                "precision": 0.06302723139571914,
+                "recall": 0.02668655774389282,
+                "false_positive": 138285,
+                "false_negative": 339263
+              }
+            },
+            "micro": {
+              "intersection": 9302,
+              "union": 486850,
+              "predicted": 147587,
+              "reference": 348565,
+              "iou": 0.019106500975659853,
+              "precision": 0.06302723139571914,
+              "recall": 0.02668655774389282
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 50582,
+            "predicted_foreground": 21424,
+            "correct": 1369,
+            "missing_foreground": 49213,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 20055,
+            "confusion_with_missing_column": [
+              [
+                1369,
+                49213
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1369,
+                "union": 70637,
+                "predicted": 21424,
+                "reference": 50582,
+                "iou": 0.019380777779350766,
+                "precision": 0.06390029873039582,
+                "recall": 0.02706496382112214,
+                "false_positive": 20055,
+                "false_negative": 49213
+              }
+            },
+            "micro": {
+              "intersection": 1369,
+              "union": 70637,
+              "predicted": 21424,
+              "reference": 50582,
+              "iou": 0.019380777779350766,
+              "precision": 0.06390029873039582,
+              "recall": 0.02706496382112214
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "mce100": {
+                "intersection_pt2": 2313.8930286348636,
+                "union_pt2": 121681.45043372146,
+                "predicted_pt2": 36896.75,
+                "reference_pt2": 87098.59346235634,
+                "iou": 0.01901598822488737,
+                "precision": 0.06271265161931237,
+                "recall": 0.026566365042793933
+              }
+            },
+            "micro": {
+              "intersection_pt2": 2313.8930286348636,
+              "union_pt2": 121681.45043372146,
+              "predicted_pt2": 36896.75,
+              "reference_pt2": 87098.59346235634,
+              "iou": 0.01901598822488737,
+              "precision": 0.06271265161931237,
+              "recall": 0.026566365042793933
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 1.1982868921587893,
+      "same_input_resolution_comparison": false
+    },
+    "richfield-prioritization-score": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "fs": 474,
+        "f": 272
+      },
+      "source_overlap_pt2_before_draw_order": 0.060283629019977525,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 144,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69701,
+            "predicted_foreground": 73683,
+            "correct": 57491,
+            "missing_foreground": 12160,
+            "incorrect_class_on_source": 50,
+            "predicted_on_source_background": 16142,
+            "confusion_with_missing_column": [
+              [
+                20040,
+                15,
+                1,
+                0,
+                6466
+              ],
+              [
+                25,
+                19824,
+                0,
+                0,
+                2241
+              ],
+              [
+                0,
+                0,
+                6128,
+                2,
+                1241
+              ],
+              [
+                7,
+                0,
+                0,
+                11499,
+                2212
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 20040,
+                "union": 35230,
+                "predicted": 28748,
+                "reference": 26522,
+                "iou": 0.5688333806414987,
+                "precision": 0.6970919716154167,
+                "recall": 0.7555991252545057,
+                "false_positive": 8708,
+                "false_negative": 6482
+              },
+              "1": {
+                "intersection": 19824,
+                "union": 25308,
+                "predicted": 23042,
+                "reference": 22090,
+                "iou": 0.7833096254148886,
+                "precision": 0.8603419842027602,
+                "recall": 0.8974196468990493,
+                "false_positive": 3218,
+                "false_negative": 2266
+              },
+              "2": {
+                "intersection": 6128,
+                "union": 8853,
+                "predicted": 7610,
+                "reference": 7371,
+                "iou": 0.6921947362475996,
+                "precision": 0.8052562417871222,
+                "recall": 0.831366164699498,
+                "false_positive": 1482,
+                "false_negative": 1243
+              },
+              "3": {
+                "intersection": 11499,
+                "union": 16502,
+                "predicted": 14283,
+                "reference": 13718,
+                "iou": 0.6968246273179008,
+                "precision": 0.805082965763495,
+                "recall": 0.8382417261991544,
+                "false_positive": 2784,
+                "false_negative": 2219
+              }
+            },
+            "micro": {
+              "intersection": 57491,
+              "union": 85893,
+              "predicted": 73683,
+              "reference": 69701,
+              "iou": 0.6693327744985039,
+              "precision": 0.7802478183570158,
+              "recall": 0.8248231732686762
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 42752,
+            "correct": 33381,
+            "missing_foreground": 7189,
+            "incorrect_class_on_source": 34,
+            "predicted_on_source_background": 9337,
+            "confusion_with_missing_column": [
+              [
+                11615,
+                10,
+                1,
+                0,
+                3717
+              ],
+              [
+                15,
+                11517,
+                0,
+                1,
+                1367
+              ],
+              [
+                0,
+                1,
+                3578,
+                2,
+                756
+              ],
+              [
+                4,
+                0,
+                0,
+                6671,
+                1349
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 11615,
+                "union": 20408,
+                "predicted": 16680,
+                "reference": 15343,
+                "iou": 0.569139553116425,
+                "precision": 0.6963429256594724,
+                "recall": 0.757022746529362,
+                "false_positive": 5065,
+                "false_negative": 3728
+              },
+              "1": {
+                "intersection": 11517,
+                "union": 14759,
+                "predicted": 13376,
+                "reference": 12900,
+                "iou": 0.780337421234501,
+                "precision": 0.8610197368421053,
+                "recall": 0.8927906976744187,
+                "false_positive": 1859,
+                "false_negative": 1383
+              },
+              "2": {
+                "intersection": 3578,
+                "union": 5178,
+                "predicted": 4419,
+                "reference": 4337,
+                "iou": 0.6910003862495172,
+                "precision": 0.8096854491966509,
+                "recall": 0.8249942356467604,
+                "false_positive": 841,
+                "false_negative": 759
+              },
+              "3": {
+                "intersection": 6671,
+                "union": 9630,
+                "predicted": 8277,
+                "reference": 8024,
+                "iou": 0.6927310488058152,
+                "precision": 0.8059683460190891,
+                "recall": 0.8313808574277168,
+                "false_positive": 1606,
+                "false_negative": 1353
+              }
+            },
+            "micro": {
+              "intersection": 33381,
+              "union": 49975,
+              "predicted": 42752,
+              "reference": 40604,
+              "iou": 0.6679539769884942,
+              "precision": 0.7808055763473054,
+              "recall": 0.8221111220569403
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "0.0 - 2.4": {
+                "intersection_pt2": 20051.42767810506,
+                "union_pt2": 35307.25191570449,
+                "predicted_pt2": 28748.0,
+                "reference_pt2": 26610.679593809575,
+                "iou": 0.5679124426329619,
+                "precision": 0.6974894837242612,
+                "recall": 0.7535105447953164
+              },
+              "2.5 - 4.4": {
+                "intersection_pt2": 19828.919798619085,
+                "union_pt2": 25373.52062819804,
+                "predicted_pt2": 23042.0,
+                "reference_pt2": 22160.440426817124,
+                "iou": 0.7814808236182589,
+                "precision": 0.8605554985947004,
+                "recall": 0.8947890663140168
+              },
+              "4.5 - 6.4": {
+                "intersection_pt2": 6141.462506536701,
+                "union_pt2": 8910.490552595145,
+                "predicted_pt2": 7610.0,
+                "reference_pt2": 7441.9530591318435,
+                "iou": 0.6892395508738881,
+                "precision": 0.8070252965225625,
+                "recall": 0.8252487563060692
+              },
+              "6.5 - 10": {
+                "intersection_pt2": 11476.252178472507,
+                "union_pt2": 16574.193849707895,
+                "predicted_pt2": 14283.0,
+                "reference_pt2": 13767.446028180402,
+                "iou": 0.6924169152682358,
+                "precision": 0.8034903156530495,
+                "recall": 0.8335788754851059
+              }
+            },
+            "micro": {
+              "intersection_pt2": 57498.06216173335,
+              "union_pt2": 86165.45694620557,
+              "predicted_pt2": 73683.0,
+              "reference_pt2": 69980.51910793895,
+              "iou": 0.6672982909802275,
+              "precision": 0.7803436635551396,
+              "recall": 0.8216295462605461
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 144,
+          "source_pixel_centers": {
+            "eligible_foreground": 279970,
+            "predicted_foreground": 554310,
+            "correct": 244852,
+            "missing_foreground": 32926,
+            "incorrect_class_on_source": 2192,
+            "predicted_on_source_background": 307266,
+            "confusion_with_missing_column": [
+              [
+                85522,
+                1930,
+                1,
+                1,
+                19017
+              ],
+              [
+                3,
+                85566,
+                1,
+                0,
+                3097
+              ],
+              [
+                0,
+                64,
+                26328,
+                0,
+                3375
+              ],
+              [
+                0,
+                192,
+                0,
+                47436,
+                7437
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 85522,
+                "union": 113739,
+                "predicted": 92790,
+                "reference": 106471,
+                "iou": 0.7519144708499284,
+                "precision": 0.9216725940295291,
+                "recall": 0.8032421974058663,
+                "false_positive": 7268,
+                "false_negative": 20949
+              },
+              "1": {
+                "intersection": 85566,
+                "union": 381752,
+                "predicted": 378651,
+                "reference": 88667,
+                "iou": 0.2241402795532178,
+                "precision": 0.22597589865073642,
+                "recall": 0.9650264472689952,
+                "false_positive": 293085,
+                "false_negative": 3101
+              },
+              "2": {
+                "intersection": 26328,
+                "union": 34387,
+                "predicted": 30948,
+                "reference": 29767,
+                "iou": 0.7656381772181348,
+                "precision": 0.8507173322993409,
+                "recall": 0.8844693788423422,
+                "false_positive": 4620,
+                "false_negative": 3439
+              },
+              "3": {
+                "intersection": 47436,
+                "union": 59550,
+                "predicted": 51921,
+                "reference": 55065,
+                "iou": 0.7965743073047858,
+                "precision": 0.9136187669729011,
+                "recall": 0.8614546445110324,
+                "false_positive": 4485,
+                "false_negative": 7629
+              }
+            },
+            "micro": {
+              "intersection": 244852,
+              "union": 589428,
+              "predicted": 554310,
+              "reference": 279970,
+              "iou": 0.4154061225459259,
+              "precision": 0.4417239450848803,
+              "recall": 0.8745651319784262
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 80676,
+            "correct": 35471,
+            "missing_foreground": 4838,
+            "incorrect_class_on_source": 295,
+            "predicted_on_source_background": 44910,
+            "confusion_with_missing_column": [
+              [
+                12353,
+                273,
+                0,
+                0,
+                2717
+              ],
+              [
+                0,
+                12426,
+                0,
+                0,
+                474
+              ],
+              [
+                0,
+                6,
+                3828,
+                0,
+                503
+              ],
+              [
+                0,
+                16,
+                0,
+                6864,
+                1144
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 12353,
+                "union": 16540,
+                "predicted": 13550,
+                "reference": 15343,
+                "iou": 0.7468561064087061,
+                "precision": 0.911660516605166,
+                "recall": 0.8051228573290752,
+                "false_positive": 1197,
+                "false_negative": 2990
+              },
+              "1": {
+                "intersection": 12426,
+                "union": 55580,
+                "predicted": 55106,
+                "reference": 12900,
+                "iou": 0.22356962936308025,
+                "precision": 0.22549268682176168,
+                "recall": 0.9632558139534884,
+                "false_positive": 42680,
+                "false_negative": 474
+              },
+              "2": {
+                "intersection": 3828,
+                "union": 5022,
+                "predicted": 4513,
+                "reference": 4337,
+                "iou": 0.7622461170848268,
+                "precision": 0.8482162641258586,
+                "recall": 0.8826377680424257,
+                "false_positive": 685,
+                "false_negative": 509
+              },
+              "3": {
+                "intersection": 6864,
+                "union": 8667,
+                "predicted": 7507,
+                "reference": 8024,
+                "iou": 0.791969539633091,
+                "precision": 0.9143466098308246,
+                "recall": 0.8554336989032901,
+                "false_positive": 643,
+                "false_negative": 1160
+              }
+            },
+            "micro": {
+              "intersection": 35471,
+              "union": 85809,
+              "predicted": 80676,
+              "reference": 40604,
+              "iou": 0.4133715577620063,
+              "precision": 0.43967226932421044,
+              "recall": 0.8735838833612452
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "0.0 - 2.4": {
+                "intersection_pt2": 21337.978648454344,
+                "union_pt2": 28470.200945355227,
+                "predicted_pt2": 23197.5,
+                "reference_pt2": 26610.679593809575,
+                "iou": 0.7494846520194839,
+                "precision": 0.9198395796294576,
+                "recall": 0.8018577117969653
+              },
+              "2.5 - 4.4": {
+                "intersection_pt2": 21382.107667491866,
+                "union_pt2": 95441.08275932526,
+                "predicted_pt2": 94662.75,
+                "reference_pt2": 22160.440426817124,
+                "iou": 0.22403463004931892,
+                "precision": 0.22587667976571424,
+                "recall": 0.9648773785929196
+              },
+              "4.5 - 6.4": {
+                "intersection_pt2": 6571.405740055866,
+                "union_pt2": 8607.54731907598,
+                "predicted_pt2": 7737.0,
+                "reference_pt2": 7441.9530591318435,
+                "iou": 0.7634469491085303,
+                "precision": 0.8493480341289732,
+                "recall": 0.8830216594812097
+              },
+              "6.5 - 10": {
+                "intersection_pt2": 11822.243923667815,
+                "union_pt2": 14925.452104512595,
+                "predicted_pt2": 12980.25,
+                "reference_pt2": 13767.446028180402,
+                "iou": 0.792086151956057,
+                "precision": 0.9107870744914631,
+                "recall": 0.8587100250452423
+              }
+            },
+            "micro": {
+              "intersection_pt2": 61113.73597966989,
+              "union_pt2": 147444.28312826907,
+              "predicted_pt2": 138577.5,
+              "reference_pt2": 69980.51910793895,
+              "iou": 0.4144869823572883,
+              "precision": 0.4410076381784192,
+              "recall": 0.8732964081819283
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": -25.458241922648796,
+      "same_input_resolution_comparison": false
+    }
+  },
+  "richfield72_controls": {
+    "richfield-inundation-100yr-72dpi-control": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 746
+      },
+      "source_overlap_pt2_before_draw_order": 1.4551915228366852e-11,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 72,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69790,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 69790,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                69790
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 69790,
+                "predicted": 0,
+                "reference": 69790,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 69790
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 69790,
+              "predicted": 0,
+              "reference": 69790,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 40604,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                40604
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 40604,
+                "predicted": 0,
+                "reference": 40604,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 40604
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 40604,
+              "predicted": 0,
+              "reference": 40604,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "100yr": {
+                "intersection_pt2": 0.0,
+                "union_pt2": 69980.51077155907,
+                "predicted_pt2": 0.0,
+                "reference_pt2": 69980.51077155907,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0
+              }
+            },
+            "micro": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 69980.51077155907,
+              "predicted_pt2": 0.0,
+              "reference_pt2": 69980.51077155907,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr-72dpi-control\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69790,
+            "predicted_foreground": 49464,
+            "correct": 2444,
+            "missing_foreground": 67346,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 47020,
+            "confusion_with_missing_column": [
+              [
+                2444,
+                67346
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 2444,
+                "union": 116810,
+                "predicted": 49464,
+                "reference": 69790,
+                "iou": 0.020922866192962932,
+                "precision": 0.04940967168041404,
+                "recall": 0.035019343745522284,
+                "false_positive": 47020,
+                "false_negative": 67346
+              }
+            },
+            "micro": {
+              "intersection": 2444,
+              "union": 116810,
+              "predicted": 49464,
+              "reference": 69790,
+              "iou": 0.020922866192962932,
+              "precision": 0.04940967168041404,
+              "recall": 0.035019343745522284
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 28854,
+            "correct": 1486,
+            "missing_foreground": 39118,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 27368,
+            "confusion_with_missing_column": [
+              [
+                1486,
+                39118
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1486,
+                "union": 67972,
+                "predicted": 28854,
+                "reference": 40604,
+                "iou": 0.021861943153063026,
+                "precision": 0.051500658487558054,
+                "recall": 0.036597379568515415,
+                "false_positive": 27368,
+                "false_negative": 39118
+              }
+            },
+            "micro": {
+              "intersection": 1486,
+              "union": 67972,
+              "predicted": 28854,
+              "reference": 40604,
+              "iou": 0.021861943153063026,
+              "precision": 0.051500658487558054,
+              "recall": 0.036597379568515415
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "100yr": {
+                "intersection_pt2": 2500.836956705167,
+                "union_pt2": 116943.67381485389,
+                "predicted_pt2": 49464.0,
+                "reference_pt2": 69980.51077155907,
+                "iou": 0.021384970004144993,
+                "precision": 0.05055872870582983,
+                "recall": 0.03573619182158838
+              }
+            },
+            "micro": {
+              "intersection_pt2": 2500.836956705167,
+              "union_pt2": 116943.67381485389,
+              "predicted_pt2": 49464.0,
+              "reference_pt2": 69980.51077155907,
+              "iou": 0.021384970004144993,
+              "precision": 0.05055872870582983,
+              "recall": 0.03573619182158838
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-100yr-72dpi-control\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 2.1861943153063024,
+      "same_input_resolution_comparison": true
+    },
+    "richfield-inundation-2yr-72dpi-control": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 378
+      },
+      "source_overlap_pt2_before_draw_order": 0.0,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 72,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 30696,
+            "predicted_foreground": 1,
+            "correct": 1,
+            "missing_foreground": 30695,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                1,
+                30695
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1,
+                "union": 30696,
+                "predicted": 1,
+                "reference": 30696,
+                "iou": 3.2577534532186604e-05,
+                "precision": 1.0,
+                "recall": 3.2577534532186604e-05,
+                "false_positive": 0,
+                "false_negative": 30695
+              }
+            },
+            "micro": {
+              "intersection": 1,
+              "union": 30696,
+              "predicted": 1,
+              "reference": 30696,
+              "iou": 3.2577534532186604e-05,
+              "precision": 1.0,
+              "recall": 3.2577534532186604e-05
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 17951,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 17951,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                17951
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 17951,
+                "predicted": 0,
+                "reference": 17951,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 17951
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 17951,
+              "predicted": 0,
+              "reference": 17951,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "2yr": {
+                "intersection_pt2": 1.0,
+                "union_pt2": 30863.935591719517,
+                "predicted_pt2": 1.0,
+                "reference_pt2": 30863.935591719517,
+                "iou": 3.240027497557019e-05,
+                "precision": 1.0,
+                "recall": 3.240027497557019e-05
+              }
+            },
+            "micro": {
+              "intersection_pt2": 1.0,
+              "union_pt2": 30863.935591719517,
+              "predicted_pt2": 1.0,
+              "reference_pt2": 30863.935591719517,
+              "iou": 3.240027497557019e-05,
+              "precision": 1.0,
+              "recall": 3.240027497557019e-05
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr-72dpi-control\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 30696,
+            "predicted_foreground": 59787,
+            "correct": 497,
+            "missing_foreground": 30199,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 59290,
+            "confusion_with_missing_column": [
+              [
+                497,
+                30199
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 497,
+                "union": 89986,
+                "predicted": 59787,
+                "reference": 30696,
+                "iou": 0.0055230813682128335,
+                "precision": 0.008312843929282285,
+                "recall": 0.01619103466249674,
+                "false_positive": 59290,
+                "false_negative": 30199
+              }
+            },
+            "micro": {
+              "intersection": 497,
+              "union": 89986,
+              "predicted": 59787,
+              "reference": 30696,
+              "iou": 0.0055230813682128335,
+              "precision": 0.008312843929282285,
+              "recall": 0.01619103466249674
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 17951,
+            "predicted_foreground": 34914,
+            "correct": 320,
+            "missing_foreground": 17631,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 34594,
+            "confusion_with_missing_column": [
+              [
+                320,
+                17631
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 320,
+                "union": 52545,
+                "predicted": 34914,
+                "reference": 17951,
+                "iou": 0.006090018079741175,
+                "precision": 0.009165377785415593,
+                "recall": 0.0178263049412289,
+                "false_positive": 34594,
+                "false_negative": 17631
+              }
+            },
+            "micro": {
+              "intersection": 320,
+              "union": 52545,
+              "predicted": 34914,
+              "reference": 17951,
+              "iou": 0.006090018079741175,
+              "precision": 0.009165377785415593,
+              "recall": 0.0178263049412289
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "2yr": {
+                "intersection_pt2": 507.7237832413635,
+                "union_pt2": 90143.21180847818,
+                "predicted_pt2": 59787.0,
+                "reference_pt2": 30863.935591719517,
+                "iou": 0.005632412835700745,
+                "precision": 0.008492210400946084,
+                "recall": 0.016450390188656974
+              }
+            },
+            "micro": {
+              "intersection_pt2": 507.7237832413635,
+              "union_pt2": 90143.21180847818,
+              "predicted_pt2": 59787.0,
+              "reference_pt2": 30863.935591719517,
+              "iou": 0.005632412835700745,
+              "precision": 0.008492210400946084,
+              "recall": 0.016450390188656974
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-2yr-72dpi-control\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 0.6090018079741175,
+      "same_input_resolution_comparison": true
+    },
+    "richfield-inundation-10yr-72dpi-control": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 577
+      },
+      "source_overlap_pt2_before_draw_order": 0.0,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 72,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 43112,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 43112,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                43112
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 43112,
+                "predicted": 0,
+                "reference": 43112,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 43112
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 43112,
+              "predicted": 0,
+              "reference": 43112,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 25124,
+            "predicted_foreground": 0,
+            "correct": 0,
+            "missing_foreground": 25124,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 0,
+            "confusion_with_missing_column": [
+              [
+                0,
+                25124
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 0,
+                "union": 25124,
+                "predicted": 0,
+                "reference": 25124,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0,
+                "false_positive": 0,
+                "false_negative": 25124
+              }
+            },
+            "micro": {
+              "intersection": 0,
+              "union": 25124,
+              "predicted": 0,
+              "reference": 25124,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "10yr": {
+                "intersection_pt2": 0.0,
+                "union_pt2": 43222.888380161654,
+                "predicted_pt2": 0.0,
+                "reference_pt2": 43222.888380161654,
+                "iou": 0.0,
+                "precision": null,
+                "recall": 0.0
+              }
+            },
+            "micro": {
+              "intersection_pt2": 0.0,
+              "union_pt2": 43222.888380161654,
+              "predicted_pt2": 0.0,
+              "reference_pt2": 43222.888380161654,
+              "iou": 0.0,
+              "precision": null,
+              "recall": 0.0
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr-72dpi-control\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 43112,
+            "predicted_foreground": 48545,
+            "correct": 1254,
+            "missing_foreground": 41858,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 47291,
+            "confusion_with_missing_column": [
+              [
+                1254,
+                41858
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 1254,
+                "union": 90403,
+                "predicted": 48545,
+                "reference": 43112,
+                "iou": 0.01387122108779576,
+                "precision": 0.02583170254403131,
+                "recall": 0.029087029133419928,
+                "false_positive": 47291,
+                "false_negative": 41858
+              }
+            },
+            "micro": {
+              "intersection": 1254,
+              "union": 90403,
+              "predicted": 48545,
+              "reference": 43112,
+              "iou": 0.01387122108779576,
+              "precision": 0.02583170254403131,
+              "recall": 0.029087029133419928
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 25124,
+            "predicted_foreground": 28290,
+            "correct": 757,
+            "missing_foreground": 24367,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 27533,
+            "confusion_with_missing_column": [
+              [
+                757,
+                24367
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 757,
+                "union": 52657,
+                "predicted": 28290,
+                "reference": 25124,
+                "iou": 0.014376056364775814,
+                "precision": 0.026758571933545423,
+                "recall": 0.030130552459799394,
+                "false_positive": 27533,
+                "false_negative": 24367
+              }
+            },
+            "micro": {
+              "intersection": 757,
+              "union": 52657,
+              "predicted": 28290,
+              "reference": 25124,
+              "iou": 0.014376056364775814,
+              "precision": 0.026758571933545423,
+              "recall": 0.030130552459799394
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "10yr": {
+                "intersection_pt2": 1306.0098644567906,
+                "union_pt2": 90461.87851570491,
+                "predicted_pt2": 48545.0,
+                "reference_pt2": 43222.888380161654,
+                "iou": 0.014437129605152482,
+                "precision": 0.026903076824735618,
+                "recall": 0.030215700833547722
+              }
+            },
+            "micro": {
+              "intersection_pt2": 1306.0098644567906,
+              "union_pt2": 90461.87851570491,
+              "predicted_pt2": 48545.0,
+              "reference_pt2": 43222.888380161654,
+              "iou": 0.014437129605152482,
+              "precision": 0.026903076824735618,
+              "recall": 0.030215700833547722
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-10yr-72dpi-control\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 1.4376056364775813,
+      "same_input_resolution_comparison": true
+    },
+    "richfield-inundation-mce100-72dpi-control": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "f": 746
+      },
+      "source_overlap_pt2_before_draw_order": -1.4551915228366852e-11,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 72,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 86892,
+            "predicted_foreground": 836,
+            "correct": 674,
+            "missing_foreground": 86218,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 162,
+            "confusion_with_missing_column": [
+              [
+                674,
+                86218
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 674,
+                "union": 87054,
+                "predicted": 836,
+                "reference": 86892,
+                "iou": 0.007742320858317826,
+                "precision": 0.80622009569378,
+                "recall": 0.007756755512590342,
+                "false_positive": 162,
+                "false_negative": 86218
+              }
+            },
+            "micro": {
+              "intersection": 674,
+              "union": 87054,
+              "predicted": 836,
+              "reference": 86892,
+              "iou": 0.007742320858317826,
+              "precision": 0.80622009569378,
+              "recall": 0.007756755512590342
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 50582,
+            "predicted_foreground": 483,
+            "correct": 375,
+            "missing_foreground": 50207,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 108,
+            "confusion_with_missing_column": [
+              [
+                375,
+                50207
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 375,
+                "union": 50690,
+                "predicted": 483,
+                "reference": 50582,
+                "iou": 0.007397908857762872,
+                "precision": 0.7763975155279503,
+                "recall": 0.007413704479854494,
+                "false_positive": 108,
+                "false_negative": 50207
+              }
+            },
+            "micro": {
+              "intersection": 375,
+              "union": 50690,
+              "predicted": 483,
+              "reference": 50582,
+              "iou": 0.007397908857762872,
+              "precision": 0.7763975155279503,
+              "recall": 0.007413704479854494
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "mce100": {
+                "intersection_pt2": 663.8233109425197,
+                "union_pt2": 87270.7701514138,
+                "predicted_pt2": 836.0,
+                "reference_pt2": 87098.59346235634,
+                "iou": 0.007606479349165749,
+                "precision": 0.7940470226585163,
+                "recall": 0.007621515854092655
+              }
+            },
+            "micro": {
+              "intersection_pt2": 663.8233109425197,
+              "union_pt2": 87270.7701514138,
+              "predicted_pt2": 836.0,
+              "reference_pt2": 87098.59346235634,
+              "iou": 0.007606479349165749,
+              "precision": 0.7940470226585163,
+              "recall": 0.007621515854092655
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100-72dpi-control\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 86892,
+            "predicted_foreground": 50478,
+            "correct": 5230,
+            "missing_foreground": 81662,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 45248,
+            "confusion_with_missing_column": [
+              [
+                5230,
+                81662
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 5230,
+                "union": 132140,
+                "predicted": 50478,
+                "reference": 86892,
+                "iou": 0.039579234145603145,
+                "precision": 0.1036094932445818,
+                "recall": 0.06018966072826037,
+                "false_positive": 45248,
+                "false_negative": 81662
+              }
+            },
+            "micro": {
+              "intersection": 5230,
+              "union": 132140,
+              "predicted": 50478,
+              "reference": 86892,
+              "iou": 0.039579234145603145,
+              "precision": 0.1036094932445818,
+              "recall": 0.06018966072826037
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 50582,
+            "predicted_foreground": 29441,
+            "correct": 3023,
+            "missing_foreground": 47559,
+            "incorrect_class_on_source": 0,
+            "predicted_on_source_background": 26418,
+            "confusion_with_missing_column": [
+              [
+                3023,
+                47559
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 3023,
+                "union": 77000,
+                "predicted": 29441,
+                "reference": 50582,
+                "iou": 0.03925974025974026,
+                "precision": 0.10267993614347339,
+                "recall": 0.05976434304693369,
+                "false_positive": 26418,
+                "false_negative": 47559
+              }
+            },
+            "micro": {
+              "intersection": 3023,
+              "union": 77000,
+              "predicted": 29441,
+              "reference": 50582,
+              "iou": 0.03925974025974026,
+              "precision": 0.10267993614347339,
+              "recall": 0.05976434304693369
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "mce100": {
+                "intersection_pt2": 5244.468364075825,
+                "union_pt2": 132332.12509828055,
+                "predicted_pt2": 50478.0,
+                "reference_pt2": 87098.59346235634,
+                "iou": 0.03963110514684819,
+                "precision": 0.10389612037077192,
+                "recall": 0.06021300867898014
+              }
+            },
+            "micro": {
+              "intersection_pt2": 5244.468364075825,
+              "union_pt2": 132332.12509828055,
+              "predicted_pt2": 50478.0,
+              "reference_pt2": 87098.59346235634,
+              "iou": 0.03963110514684819,
+              "precision": 0.10389612037077192,
+              "recall": 0.06021300867898014
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-inundation-mce100-72dpi-control\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": 3.186183140197739,
+      "same_input_resolution_comparison": true
+    },
+    "richfield-prioritization-score-72dpi-control": {
+      "source_pdf_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+      "source_path_counts": {
+        "fs": 474,
+        "f": 272
+      },
+      "source_overlap_pt2_before_draw_order": 0.060283629019977525,
+      "geo": {
+        "E": [
+          7.619839217505101,
+          0.0003615789817104087,
+          473821.2024308
+        ],
+        "N": [
+          -0.0005641302487577858,
+          -7.620285794935626,
+          4972344.560234032
+        ],
+        "corner_residual_m": 0.07799141551445755,
+        "scale_m_per_point": [
+          7.619839238387624,
+          7.620285803514002
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "source_dpi": 72,
+      "methods": {
+        "previous72": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69701,
+            "predicted_foreground": 73683,
+            "correct": 57491,
+            "missing_foreground": 12160,
+            "incorrect_class_on_source": 50,
+            "predicted_on_source_background": 16142,
+            "confusion_with_missing_column": [
+              [
+                20040,
+                15,
+                1,
+                0,
+                6466
+              ],
+              [
+                25,
+                19824,
+                0,
+                0,
+                2241
+              ],
+              [
+                0,
+                0,
+                6128,
+                2,
+                1241
+              ],
+              [
+                7,
+                0,
+                0,
+                11499,
+                2212
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 20040,
+                "union": 35230,
+                "predicted": 28748,
+                "reference": 26522,
+                "iou": 0.5688333806414987,
+                "precision": 0.6970919716154167,
+                "recall": 0.7555991252545057,
+                "false_positive": 8708,
+                "false_negative": 6482
+              },
+              "1": {
+                "intersection": 19824,
+                "union": 25308,
+                "predicted": 23042,
+                "reference": 22090,
+                "iou": 0.7833096254148886,
+                "precision": 0.8603419842027602,
+                "recall": 0.8974196468990493,
+                "false_positive": 3218,
+                "false_negative": 2266
+              },
+              "2": {
+                "intersection": 6128,
+                "union": 8853,
+                "predicted": 7610,
+                "reference": 7371,
+                "iou": 0.6921947362475996,
+                "precision": 0.8052562417871222,
+                "recall": 0.831366164699498,
+                "false_positive": 1482,
+                "false_negative": 1243
+              },
+              "3": {
+                "intersection": 11499,
+                "union": 16502,
+                "predicted": 14283,
+                "reference": 13718,
+                "iou": 0.6968246273179008,
+                "precision": 0.805082965763495,
+                "recall": 0.8382417261991544,
+                "false_positive": 2784,
+                "false_negative": 2219
+              }
+            },
+            "micro": {
+              "intersection": 57491,
+              "union": 85893,
+              "predicted": 73683,
+              "reference": 69701,
+              "iou": 0.6693327744985039,
+              "precision": 0.7802478183570158,
+              "recall": 0.8248231732686762
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 42752,
+            "correct": 33381,
+            "missing_foreground": 7189,
+            "incorrect_class_on_source": 34,
+            "predicted_on_source_background": 9337,
+            "confusion_with_missing_column": [
+              [
+                11615,
+                10,
+                1,
+                0,
+                3717
+              ],
+              [
+                15,
+                11517,
+                0,
+                1,
+                1367
+              ],
+              [
+                0,
+                1,
+                3578,
+                2,
+                756
+              ],
+              [
+                4,
+                0,
+                0,
+                6671,
+                1349
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 11615,
+                "union": 20408,
+                "predicted": 16680,
+                "reference": 15343,
+                "iou": 0.569139553116425,
+                "precision": 0.6963429256594724,
+                "recall": 0.757022746529362,
+                "false_positive": 5065,
+                "false_negative": 3728
+              },
+              "1": {
+                "intersection": 11517,
+                "union": 14759,
+                "predicted": 13376,
+                "reference": 12900,
+                "iou": 0.780337421234501,
+                "precision": 0.8610197368421053,
+                "recall": 0.8927906976744187,
+                "false_positive": 1859,
+                "false_negative": 1383
+              },
+              "2": {
+                "intersection": 3578,
+                "union": 5178,
+                "predicted": 4419,
+                "reference": 4337,
+                "iou": 0.6910003862495172,
+                "precision": 0.8096854491966509,
+                "recall": 0.8249942356467604,
+                "false_positive": 841,
+                "false_negative": 759
+              },
+              "3": {
+                "intersection": 6671,
+                "union": 9630,
+                "predicted": 8277,
+                "reference": 8024,
+                "iou": 0.6927310488058152,
+                "precision": 0.8059683460190891,
+                "recall": 0.8313808574277168,
+                "false_positive": 1606,
+                "false_negative": 1353
+              }
+            },
+            "micro": {
+              "intersection": 33381,
+              "union": 49975,
+              "predicted": 42752,
+              "reference": 40604,
+              "iou": 0.6679539769884942,
+              "precision": 0.7808055763473054,
+              "recall": 0.8221111220569403
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "0.0 - 2.4": {
+                "intersection_pt2": 20051.42767810506,
+                "union_pt2": 35307.25191570449,
+                "predicted_pt2": 28748.0,
+                "reference_pt2": 26610.679593809575,
+                "iou": 0.5679124426329619,
+                "precision": 0.6974894837242612,
+                "recall": 0.7535105447953164
+              },
+              "2.5 - 4.4": {
+                "intersection_pt2": 19828.919798619085,
+                "union_pt2": 25373.52062819804,
+                "predicted_pt2": 23042.0,
+                "reference_pt2": 22160.440426817124,
+                "iou": 0.7814808236182589,
+                "precision": 0.8605554985947004,
+                "recall": 0.8947890663140168
+              },
+              "4.5 - 6.4": {
+                "intersection_pt2": 6141.462506536701,
+                "union_pt2": 8910.490552595145,
+                "predicted_pt2": 7610.0,
+                "reference_pt2": 7441.9530591318435,
+                "iou": 0.6892395508738881,
+                "precision": 0.8070252965225625,
+                "recall": 0.8252487563060692
+              },
+              "6.5 - 10": {
+                "intersection_pt2": 11476.252178472507,
+                "union_pt2": 16574.193849707895,
+                "predicted_pt2": 14283.0,
+                "reference_pt2": 13767.446028180402,
+                "iou": 0.6924169152682358,
+                "precision": 0.8034903156530495,
+                "recall": 0.8335788754851059
+              }
+            },
+            "micro": {
+              "intersection_pt2": 57498.06216173335,
+              "union_pt2": 86165.45694620557,
+              "predicted_pt2": 73683.0,
+              "reference_pt2": 69980.51910793895,
+              "iou": 0.6672982909802275,
+              "precision": 0.7803436635551396,
+              "recall": 0.8216295462605461
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score-72dpi-control\\previous72-10m.tif"
+        },
+        "mode0": {
+          "input_dpi": 72,
+          "source_pixel_centers": {
+            "eligible_foreground": 69701,
+            "predicted_foreground": 155908,
+            "correct": 56799,
+            "missing_foreground": 9592,
+            "incorrect_class_on_source": 3310,
+            "predicted_on_source_background": 95799,
+            "confusion_with_missing_column": [
+              [
+                19301,
+                2570,
+                0,
+                0,
+                4651
+              ],
+              [
+                6,
+                21476,
+                2,
+                0,
+                606
+              ],
+              [
+                0,
+                294,
+                5675,
+                1,
+                1401
+              ],
+              [
+                6,
+                431,
+                0,
+                10347,
+                2934
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 19301,
+                "union": 35135,
+                "predicted": 27914,
+                "reference": 26522,
+                "iou": 0.5493382666856411,
+                "precision": 0.6914451529698359,
+                "recall": 0.7277354648970665,
+                "false_positive": 8613,
+                "false_negative": 7221
+              },
+              "1": {
+                "intersection": 21476,
+                "union": 109093,
+                "predicted": 108479,
+                "reference": 22090,
+                "iou": 0.19685956019176298,
+                "precision": 0.19797380138091245,
+                "recall": 0.9722046174739701,
+                "false_positive": 87003,
+                "false_negative": 614
+              },
+              "2": {
+                "intersection": 5675,
+                "union": 8860,
+                "predicted": 7164,
+                "reference": 7371,
+                "iou": 0.6405191873589164,
+                "precision": 0.7921552205471803,
+                "recall": 0.7699091032424366,
+                "false_positive": 1489,
+                "false_negative": 1696
+              },
+              "3": {
+                "intersection": 10347,
+                "union": 15722,
+                "predicted": 12351,
+                "reference": 13718,
+                "iou": 0.6581223762880041,
+                "precision": 0.837745931503522,
+                "recall": 0.7542644700393644,
+                "false_positive": 2004,
+                "false_negative": 3371
+              }
+            },
+            "micro": {
+              "intersection": 56799,
+              "union": 168810,
+              "predicted": 155908,
+              "reference": 69701,
+              "iou": 0.33646703394348676,
+              "precision": 0.3643110039253919,
+              "recall": 0.8148950517209222
+            }
+          },
+          "grid10m": {
+            "eligible_foreground": 40604,
+            "predicted_foreground": 90969,
+            "correct": 33024,
+            "missing_foreground": 5680,
+            "incorrect_class_on_source": 1900,
+            "predicted_on_source_background": 56045,
+            "confusion_with_missing_column": [
+              [
+                11191,
+                1467,
+                0,
+                0,
+                2685
+              ],
+              [
+                3,
+                12531,
+                1,
+                1,
+                364
+              ],
+              [
+                0,
+                166,
+                3301,
+                1,
+                869
+              ],
+              [
+                3,
+                258,
+                0,
+                6001,
+                1762
+              ]
+            ],
+            "classes": {
+              "0": {
+                "intersection": 11191,
+                "union": 20404,
+                "predicted": 16252,
+                "reference": 15343,
+                "iou": 0.5484708880611645,
+                "precision": 0.688592173270982,
+                "recall": 0.7293879945251907,
+                "false_positive": 5061,
+                "false_negative": 4152
+              },
+              "1": {
+                "intersection": 12531,
+                "union": 63743,
+                "predicted": 63374,
+                "reference": 12900,
+                "iou": 0.19658629182812232,
+                "precision": 0.19773093066557262,
+                "recall": 0.9713953488372093,
+                "false_positive": 50843,
+                "false_negative": 369
+              },
+              "2": {
+                "intersection": 3301,
+                "union": 5210,
+                "predicted": 4174,
+                "reference": 4337,
+                "iou": 0.6335892514395394,
+                "precision": 0.7908481073310972,
+                "recall": 0.7611252017523634,
+                "false_positive": 873,
+                "false_negative": 1036
+              },
+              "3": {
+                "intersection": 6001,
+                "union": 9192,
+                "predicted": 7169,
+                "reference": 8024,
+                "iou": 0.6528503046127067,
+                "precision": 0.8370763007392942,
+                "recall": 0.7478813559322034,
+                "false_positive": 1168,
+                "false_negative": 2023
+              }
+            },
+            "micro": {
+              "intersection": 33024,
+              "union": 98549,
+              "predicted": 90969,
+              "reference": 40604,
+              "iou": 0.3351023348790957,
+              "precision": 0.3630247666787587,
+              "recall": 0.8133188848389321
+            }
+          },
+          "continuous_page_geometry": {
+            "classes": {
+              "0.0 - 2.4": {
+                "intersection_pt2": 19320.88645429425,
+                "union_pt2": 35203.79313951532,
+                "predicted_pt2": 27914.0,
+                "reference_pt2": 26610.679593809575,
+                "iou": 0.5488296780328217,
+                "precision": 0.6921575716233521,
+                "recall": 0.7260576110498455
+              },
+              "2.5 - 4.4": {
+                "intersection_pt2": 21540.371439196864,
+                "union_pt2": 109099.06898762025,
+                "predicted_pt2": 108479.0,
+                "reference_pt2": 22160.440426817124,
+                "iou": 0.19743863663622194,
+                "precision": 0.19856720138641457,
+                "recall": 0.9720191036063573
+              },
+              "4.5 - 6.4": {
+                "intersection_pt2": 5674.083289266291,
+                "union_pt2": 8931.869769865552,
+                "predicted_pt2": 7164.0,
+                "reference_pt2": 7441.9530591318435,
+                "iou": 0.6352626533371075,
+                "precision": 0.7920272598082483,
+                "recall": 0.7624454554041776
+              },
+              "6.5 - 10": {
+                "intersection_pt2": 10324.352943698173,
+                "union_pt2": 15794.093084482229,
+                "predicted_pt2": 12351.0,
+                "reference_pt2": 13767.446028180402,
+                "iou": 0.6536844431948992,
+                "precision": 0.8359123102338413,
+                "recall": 0.7499105442335051
+              }
+            },
+            "micro": {
+              "intersection_pt2": 56859.69412645558,
+              "union_pt2": 169028.82498148334,
+              "predicted_pt2": 155908.0,
+              "reference_pt2": 69980.51910793895,
+              "iou": 0.33639051879278226,
+              "precision": 0.3647002984225029,
+              "recall": 0.8125074642380743
+            }
+          },
+          "output10m": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101\\evaluation\\richfield\\richfield-prioritization-score-72dpi-control\\mode0-10m.tif"
+        }
+      },
+      "reference": "Direct PDF f/fs geometry with clipping and draw order, source fidelity only; background is known absence of this PDF layer, not independent flood truth.",
+      "same10m_micro_iou_delta_percentage_points": -33.285164210939854,
+      "same_input_resolution_comparison": true
+    }
+  },
+  "method": "LOAM mode0 canonical1024 CUDA FP32",
+  "config": {
+    "frozen_utc": "2026-11-01T09:22:45.159127+00:00",
+    "upstream_revision": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048",
+    "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+    "mode": 0,
+    "mode_evidence": "Pinned README: 0 highest accuracy, 6 highest efficiency; source enables recoloring at <=1 and step5/text matching at <=0.",
+    "channels": [
+      "v7",
+      "v4v",
+      "c0_x",
+      "c1_x",
+      "blackregion",
+      "overall_boundary_candidate",
+      "rc_v0"
+    ],
+    "preprocessing": "Unmodified upstream metadata_preprocessing; serial deep-copied Pool jobs, process-count override disabled only; source-derived manual bounds.",
+    "network": "Unmodified original LOAM, 7 channels, 2 classes; strict original checkpoint load; eval; CUDA FP32; TF32 disabled; batch 1",
+    "tiles_hw": [
+      1024,
+      1024
+    ],
+    "stride_hw": [
+      1024,
+      1024
+    ],
+    "padding": "zeros bottom/right, no shortened strips, no overlap, no resizing",
+    "interface": "Use actual upstream bitmap worker at crop_size=1024 and BasicDataset.preprocess(scale=1); same-size bilinear decoder interpolation then two-class argmax.",
+    "arbitration": "Highest float32 foreground softmax probability among accepted masks; strict > update in legend order, ties lower index; no accepted class=255 unknown",
+    "porto_resolution": "Native embedded PDF figures, unchanged",
+    "richfield_resolution_dpi": 144,
+    "richfield_control_dpi": 72,
+    "control": "Mode0 full-tile 72 DPI source inputs identical to previous mode6/strip trial; distinct from primary144DPI results.",
+    "evaluation": "Import unchanged benchmark_10m_all.py sample/reference_grid/scores/save_grid; physical3km SHA256 blocks; reference!=255; literal .2/.4/.6/.8 classes; no averaging.",
+    "richfield_reference": "Direct source PDF f/fs paths with clip/draw order, unchanged GeoPDF affine. Same-resolution source-center comparisons and 10m geospatial-center comparisons.",
+    "reference_values_used_for_prediction_or_tuning": false,
+    "retrospective_not_blind": true,
+    "resource_policy": "No process multiplication; serial layers; own exclusive gpu.lock per inference process, removed in finally. No host configuration or other-process changes.",
+    "predeclared_fallback": "If CUDA FP32 canonical tile OOM, diagnose memory; never silently shorten context/change mode. Any adaptation separately logged before scoring."
+  },
+  "contract_script_sha256": "0971db0d66b165c6de551461e2dc95af1e44ced0e151a7465e890cb257ac7a15",
+  "reference_boundaries": [
+    "Porto same-author numerical PNG derivatives, unauthenticated TIFF provenance",
+    "10m samples repeat roughly30m native raster information",
+    "Retrospective existing3km test blocks, not blind",
+    "Richfield direct source PDF f/fs fidelity, not hazard truth"
+  ],
+  "uncompleted": [],
+  "porto_macro_test": {
+    "previous": {
+      "exact_all_pct": 17.474900562725733,
+      "exact_common_pct": 88.21495553006825,
+      "missing_pct": 80.2098630327273,
+      "mae": 0.04821074783686585,
+      "bias": -0.029833568900281503,
+      "high_recall_pct": 0.0
+    },
+    "mode0": {
+      "exact_all_pct": 17.326556762307163,
+      "exact_common_pct": 87.55748175776426,
+      "missing_pct": 80.21468850264036,
+      "mae": 0.049058966579710976,
+      "bias": -0.029148146042500257,
+      "high_recall_pct": 0.002682571815768174
+    }
+  },
+  "porto_pooled_test": {
+    "previous": {
+      "eligible": 1688624,
+      "common": 335025,
+      "correct": 295891,
+      "missing": 1353599,
+      "incorrect_present": 39134,
+      "predicted": 365993,
+      "predicted_without_reference": 30968,
+      "high_reference": 229610,
+      "high_true_positive": 0,
+      "high_predicted_common": 0,
+      "exact_all_pct": 17.522610125167,
+      "missing_pct": 80.15988165512275
+    },
+    "mode0": {
+      "eligible": 1688624,
+      "common": 334869,
+      "correct": 293934,
+      "missing": 1353755,
+      "incorrect_present": 40935,
+      "predicted": 595273,
+      "predicted_without_reference": 260404,
+      "high_reference": 229610,
+      "high_true_positive": 10,
+      "high_predicted_common": 45,
+      "exact_all_pct": 17.406716948237143,
+      "missing_pct": 80.16911994618103
+    }
+  },
+  "evaluation_seconds_this_invocation": 209.92860330000985
+}

@@ -1,0 +1,52 @@
+--- previous/prepare_inputs.py
++++ new/prepare_inputs.py
+@@ -14,6 +14,7 @@
+     p.write_text(json.dumps(v,indent=2,ensure_ascii=False),encoding='utf-8')
+ 
+ def main():
++    scale=2
+     out=HERE/'inputs';out.mkdir(exist_ok=True)
+     items=[]
+     for hazard in ['heat','flood','landslide','drought','arbovirus','storm']:
+@@ -51,7 +52,7 @@
+         items.append({'name':name,'family':'porto','hazard':hazard,'page':porto.PAGES[hazard],'size':[w,h],'affine':aff,'frame':frame,'legends':swatches})
+     with pymupdf.open(richfield.PDF) as doc:
+         for pn,layer,colours in sorted(richfield.LAYERS,key=lambda x:x[0]!=17):
+-            page=doc[pn-1];pix=page.get_pixmap(matrix=pymupdf.Matrix(1,1),alpha=False)
++            page=doc[pn-1];pix=page.get_pixmap(matrix=pymupdf.Matrix(scale,scale),alpha=False)
+             rgb=np.frombuffer(pix.samples,np.uint8).reshape(pix.height,pix.width,3)
+             name='richfield-'+layer;geo=richfield.georeference(doc,page)
+             # Only sidebar legend rectangles/shapes, never in-map hazard geometry.
+@@ -66,15 +67,30 @@
+                 boxes=[r for col,r in candidates if col==c]
+                 if not boxes:raise ValueError((name,label,'source legend absent',candidates))
+                 r=max(boxes,key=lambda r:(r[2]-r[0])*(r[3]-r[1]))
++                r=[v*scale for v in r]
+                 rect=[int(np.floor(r[0])),int(np.floor(r[1])),int(np.ceil(r[2])),int(np.ceil(r[3]))]
+                 shapes.append({'label':f'bin{k:02}_poly','points':[[rect[0],rect[1]],[rect[2],rect[3]]],'shape_type':'rectangle'})
+                 Image.fromarray(rgb[rect[1]:rect[3],rect[0]:rect[2]]).save(out/f'{name}-legend-{k:02}.png')
+                 swatches.append({'index':k,'label':label,'bbox':rect,'source_fill_rgb':list(c)})
+             Image.fromarray(rgb).save(out/f'{name}.tif')
+             write(out/f'{name}.json',{'shapes':shapes,'imageHeight':pix.height,'imageWidth':pix.width})
+-            x0,y0,x1,y1=geo['page_frame']
++            x0,y0,x1,y1=[v*scale for v in geo['page_frame']]
+             write(out/f'{name}-bound.json',{'segments':[{'class_label':'map','poly_bounds':[[int(x0),int(y0)],[int(x1),int(y0)],[int(x1),int(y1)],[int(x0),int(y1)]]}]})
+-            items.append({'name':name,'family':'richfield','layer':layer,'page':pn,'size':[pix.width,pix.height],'render_pixels_per_point':1,'geo':geo,'legends':swatches})
++            items.append({'name':name,'family':'richfield','layer':layer,'page':pn,'size':[pix.width,pix.height],'render_pixels_per_point':scale,'geo':geo,'legends':swatches})
++    # Secondary control: reuse exact previous 72 DPI source/legend/bounds read-only.
++    import shutil
++    old=HERE.parent/'loam'
++    prior=json.loads((old/'input-manifest.json').read_text(encoding='utf-8'))
++    for m in prior:
++        if m['family']!='richfield':continue
++        m=dict(m);m['name']=m['name']+'-72dpi-control';m['control']=True
++        original=m['name'].removesuffix('-72dpi-control')
++        for suffix in ['.tif','.json','-bound.json']:
++            shutil.copyfile(old/'inputs'/(original+suffix),out/(m['name']+suffix))
++        items.append(m)
++    # Run priority complete maps first, then complete the remaining eight.
++    priority=['porto-heat','porto-flood','richfield-inundation-100yr']
++    items.sort(key=lambda m:priority.index(m['name']) if m['name'] in priority else 3)
+     write(HERE/'input-manifest.json',items)
+     print(json.dumps([{'name':x['name'],'size':x['size'],'legends':len(x['legends'])} for x in items]))
+ 

@@ -1,0 +1,3129 @@
+{
+  "grid_m": 10,
+  "shape": [
+    4200,
+    3800
+  ],
+  "origin": [
+    462000.0,
+    6692000.0
+  ],
+  "crs": "EPSG:31982",
+  "methods": [
+    "colour_recovery",
+    "golden_muscat",
+    "loam",
+    "jvp_resampled"
+  ],
+  "contract": "10m cell centres; reference nearest native pixel footprint; no 250m averaging; existing 3km test blocks; retrospective",
+  "reference": "Same-author numerical PNG derivatives; TIFF provenance unauthenticated. Repeated 10m samples are correlated, not new independent observations.",
+  "eligibility": "Reference pixel covering the 10m centre has data. The former 15 reference-pixel threshold is inapplicable below source resolution.",
+  "predictions": "Existing frozen source-pixel outputs sampled to 10m. JVP is an explicitly upsampled coarse baseline, not a new 10m extraction.",
+  "hazards": {
+    "flood": {
+      "source_pixel_size_m": [
+        34.94320910867071,
+        31.527975087184213
+      ],
+      "reference_sha256": "2c561fa164ca74be08267b2ff5c7e37009d634df8e0a2d38a3f02e473d639462",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 756578,
+            "common": 659812,
+            "correct": 399761,
+            "missing": 96766,
+            "exact_all_pct": 52.83804181459149,
+            "exact_common_pct": 60.5871066303735,
+            "missing_pct": 12.789956884815577,
+            "mae": 0.10197962139633092,
+            "bias": 0.008952490451706345,
+            "high_reference": 186852,
+            "high_true_positive": 122332,
+            "high_predicted_common": 201527,
+            "high_recall_pct": 65.46999764519512,
+            "high_precision_common_pct": 60.70253613659708,
+            "predicted": 964274,
+            "predicted_without_reference": 304462,
+            "predicted_without_reference_pct": 31.574220605346614,
+            "confusion": [
+              [
+                11531,
+                1194,
+                55,
+                1,
+                8,
+                6472
+              ],
+              [
+                17288,
+                106674,
+                24332,
+                2709,
+                2034,
+                24161
+              ],
+              [
+                5787,
+                54459,
+                194048,
+                57439,
+                17004,
+                44530
+              ],
+              [
+                2023,
+                9384,
+                31492,
+                87359,
+                34777,
+                21454
+              ],
+              [
+                3,
+                15,
+                0,
+                47,
+                149,
+                149
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 108288,
+            "correct": 67036,
+            "missing": 12406,
+            "exact_all_pct": 55.54211476958258,
+            "exact_common_pct": 61.905289598108745,
+            "missing_pct": 10.278887102921438,
+            "mae": 0.09674212307570595,
+            "bias": 0.005034358653971456,
+            "high_reference": 23354,
+            "high_true_positive": 15270,
+            "high_predicted_common": 25473,
+            "high_recall_pct": 65.38494476320973,
+            "high_precision_common_pct": 59.945824991167115,
+            "predicted": 161504,
+            "predicted_without_reference": 53216,
+            "predicted_without_reference_pct": 32.95026748563503,
+            "confusion": [
+              [
+                5373,
+                589,
+                15,
+                0,
+                6,
+                1154
+              ],
+              [
+                2546,
+                25150,
+                6405,
+                735,
+                536,
+                3548
+              ],
+              [
+                988,
+                10368,
+                25652,
+                7133,
+                1793,
+                5349
+              ],
+              [
+                306,
+                1317,
+                4106,
+                10861,
+                4409,
+                2355
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\flood\\colour_recovery.tif",
+          "sha256": "a37d885290da1732a260004fd72ded62ecd0367840f40a458bd0a963d33ee81a"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 756578,
+            "common": 532851,
+            "correct": 341346,
+            "missing": 223727,
+            "exact_all_pct": 45.11709301618604,
+            "exact_common_pct": 64.06030954244244,
+            "missing_pct": 29.570910071400437,
+            "mae": 0.10943291351911659,
+            "bias": -0.08547217414355404,
+            "high_reference": 186852,
+            "high_true_positive": 5674,
+            "high_predicted_common": 6882,
+            "high_recall_pct": 3.036627919422859,
+            "high_precision_common_pct": 82.44696309212438,
+            "predicted": 1105031,
+            "predicted_without_reference": 572180,
+            "predicted_without_reference_pct": 51.779542836354814,
+            "confusion": [
+              [
+                7856,
+                3027,
+                108,
+                0,
+                0,
+                8270
+              ],
+              [
+                3573,
+                122252,
+                14176,
+                18,
+                0,
+                37179
+              ],
+              [
+                11143,
+                41103,
+                208588,
+                805,
+                385,
+                111243
+              ],
+              [
+                8704,
+                21316,
+                84070,
+                2650,
+                3024,
+                66725
+              ],
+              [
+                0,
+                0,
+                53,
+                0,
+                0,
+                310
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 88389,
+            "correct": 55101,
+            "missing": 32305,
+            "exact_all_pct": 45.6534707607669,
+            "exact_common_pct": 62.3392051047076,
+            "missing_pct": 26.76603642268878,
+            "mae": 0.09834160519671321,
+            "bias": -0.08173300771473416,
+            "high_reference": 23354,
+            "high_true_positive": 18,
+            "high_predicted_common": 27,
+            "high_recall_pct": 0.07707459107647512,
+            "high_precision_common_pct": 66.66666666666667,
+            "predicted": 185521,
+            "predicted_without_reference": 97132,
+            "predicted_without_reference_pct": 52.356337018450745,
+            "confusion": [
+              [
+                4812,
+                2192,
+                0,
+                0,
+                0,
+                133
+              ],
+              [
+                704,
+                35272,
+                772,
+                0,
+                0,
+                2172
+              ],
+              [
+                1021,
+                16112,
+                14999,
+                9,
+                0,
+                19142
+              ],
+              [
+                486,
+                5887,
+                6105,
+                18,
+                0,
+                10858
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\flood\\golden_muscat.tif",
+          "sha256": "e20b58d17683107765028fe12056a686717712633fde54924ecb5a2877e5703e"
+        },
+        "loam": {
+          "all": {
+            "eligible": 756578,
+            "common": 112201,
+            "correct": 95155,
+            "missing": 644377,
+            "exact_all_pct": 12.577024444274088,
+            "exact_common_pct": 84.80762203545423,
+            "missing_pct": 85.1699362127897,
+            "mae": 0.061348110010949836,
+            "bias": -0.048595518293344055,
+            "high_reference": 186852,
+            "high_true_positive": 1957,
+            "high_predicted_common": 2209,
+            "high_recall_pct": 1.0473529852503585,
+            "high_precision_common_pct": 88.5921231326392,
+            "predicted": 140105,
+            "predicted_without_reference": 27904,
+            "predicted_without_reference_pct": 19.9164912030263,
+            "confusion": [
+              [
+                3800,
+                617,
+                0,
+                0,
+                0,
+                14844
+              ],
+              [
+                749,
+                78045,
+                246,
+                0,
+                0,
+                98158
+              ],
+              [
+                0,
+                11154,
+                11353,
+                252,
+                0,
+                350508
+              ],
+              [
+                0,
+                3962,
+                66,
+                1957,
+                0,
+                180504
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                363
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 23372,
+            "correct": 20597,
+            "missing": 97322,
+            "exact_all_pct": 17.065471357316852,
+            "exact_common_pct": 88.12681841519768,
+            "missing_pct": 80.63532569970339,
+            "mae": 0.05573557968954035,
+            "bias": -0.04546870136013076,
+            "high_reference": 23354,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 27953,
+            "predicted_without_reference": 4581,
+            "predicted_without_reference_pct": 16.388223088756128,
+            "confusion": [
+              [
+                3590,
+                14,
+                0,
+                0,
+                0,
+                3533
+              ],
+              [
+                749,
+                14423,
+                162,
+                0,
+                0,
+                23586
+              ],
+              [
+                0,
+                1297,
+                2584,
+                0,
+                0,
+                47402
+              ],
+              [
+                0,
+                537,
+                16,
+                0,
+                0,
+                22801
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\flood\\loam.tif",
+          "sha256": "be8179b610848a1b0e9f7a43088edbb1c5591d89bdf2a612f5517a516cf09836"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 756578,
+            "common": 559844,
+            "correct": 340322,
+            "missing": 196734,
+            "exact_all_pct": 44.98174675975246,
+            "exact_common_pct": 60.788719714777685,
+            "missing_pct": 26.003135169143167,
+            "mae": 0.09882111282181139,
+            "bias": -0.08423862254766469,
+            "high_reference": 186852,
+            "high_true_positive": 23074,
+            "high_predicted_common": 27724,
+            "high_recall_pct": 12.348810823539486,
+            "high_precision_common_pct": 83.22752849516664,
+            "predicted": 786875,
+            "predicted_without_reference": 227031,
+            "predicted_without_reference_pct": 28.852231930103258,
+            "confusion": [
+              [
+                8851,
+                1678,
+                6,
+                0,
+                0,
+                8726
+              ],
+              [
+                2414,
+                128568,
+                7676,
+                87,
+                0,
+                38453
+              ],
+              [
+                1808,
+                88018,
+                180742,
+                4563,
+                0,
+                98136
+              ],
+              [
+                475,
+                25640,
+                86169,
+                22161,
+                625,
+                51419
+              ],
+              [
+                0,
+                0,
+                75,
+                288,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 120694,
+            "common": 93732,
+            "correct": 58604,
+            "missing": 26962,
+            "exact_all_pct": 48.55585198932838,
+            "exact_common_pct": 62.52293773737891,
+            "missing_pct": 22.339138648151522,
+            "mae": 0.09642500598960144,
+            "bias": -0.08189581218491587,
+            "high_reference": 23354,
+            "high_true_positive": 2524,
+            "high_predicted_common": 2773,
+            "high_recall_pct": 10.8075704376124,
+            "high_precision_common_pct": 91.02055535521096,
+            "predicted": 137500,
+            "predicted_without_reference": 43768,
+            "predicted_without_reference_pct": 31.831272727272726,
+            "confusion": [
+              [
+                4877,
+                911,
+                0,
+                0,
+                0,
+                1349
+              ],
+              [
+                867,
+                31217,
+                1247,
+                9,
+                0,
+                5580
+              ],
+              [
+                30,
+                17000,
+                19986,
+                240,
+                0,
+                14027
+              ],
+              [
+                64,
+                4976,
+                9784,
+                2524,
+                0,
+                6006
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\flood\\jvp_resampled.tif",
+          "sha256": "0ce9c0f319ec06fb897bc62defbd87285b53592c09dd93d2d5ac4f3697cc0c5e"
+        }
+      }
+    },
+    "landslide": {
+      "source_pixel_size_m": [
+        33.273904819403754,
+        29.91452445128898
+      ],
+      "reference_sha256": "3d023b210e50f5d964ef5e5e891b2a097bc8e620fcecb3930f05aa805e43eb66",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 1937914,
+            "common": 1705976,
+            "correct": 1154019,
+            "missing": 231938,
+            "exact_all_pct": 59.549546574306184,
+            "exact_common_pct": 67.64567614081324,
+            "missing_pct": 11.968436163833896,
+            "mae": 0.08471912806076899,
+            "bias": 0.014404474272542418,
+            "high_reference": 274426,
+            "high_true_positive": 184948,
+            "high_predicted_common": 377066,
+            "high_recall_pct": 67.39448886038495,
+            "high_precision_common_pct": 49.04923806442373,
+            "predicted": 1874493,
+            "predicted_without_reference": 168517,
+            "predicted_without_reference_pct": 8.990004230477254,
+            "confusion": [
+              [
+                59030,
+                9816,
+                633,
+                220,
+                515,
+                28590
+              ],
+              [
+                19608,
+                261729,
+                82059,
+                4520,
+                5128,
+                59753
+              ],
+              [
+                6937,
+                141738,
+                682683,
+                148429,
+                33306,
+                118794
+              ],
+              [
+                1070,
+                9304,
+                54303,
+                150577,
+                34371,
+                24801
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 282807,
+            "correct": 201713,
+            "missing": 28816,
+            "exact_all_pct": 64.72981776056325,
+            "exact_common_pct": 71.3253208018189,
+            "missing_pct": 9.247070979998266,
+            "mae": 0.07572155646950902,
+            "bias": 0.01704752794740044,
+            "high_reference": 43071,
+            "high_true_positive": 29486,
+            "high_predicted_common": 53281,
+            "high_recall_pct": 68.45905597733974,
+            "high_precision_common_pct": 55.34055291755035,
+            "predicted": 300726,
+            "predicted_without_reference": 17919,
+            "predicted_without_reference_pct": 5.958580235829293,
+            "confusion": [
+              [
+                16387,
+                2757,
+                46,
+                0,
+                54,
+                4233
+              ],
+              [
+                3040,
+                63678,
+                18854,
+                785,
+                1126,
+                9048
+              ],
+              [
+                439,
+                17168,
+                97514,
+                18215,
+                3615,
+                11593
+              ],
+              [
+                43,
+                942,
+                8658,
+                24134,
+                5352,
+                3942
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\landslide\\colour_recovery.tif",
+          "sha256": "9e697038fe1b54c357fa8aa57b743c3b977bcae1d1be6d3fd6a33db65565fa55"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 1937914,
+            "common": 1811613,
+            "correct": 1144581,
+            "missing": 126301,
+            "exact_all_pct": 59.062528058520655,
+            "exact_common_pct": 63.180215642082494,
+            "missing_pct": 6.517368675802951,
+            "mae": 0.09716564045498394,
+            "bias": -0.04148712824766753,
+            "high_reference": 274426,
+            "high_true_positive": 16190,
+            "high_predicted_common": 30776,
+            "high_recall_pct": 5.899586773847959,
+            "high_precision_common_pct": 52.60592669612685,
+            "predicted": 2487184,
+            "predicted_without_reference": 675571,
+            "predicted_without_reference_pct": 27.16208370590998,
+            "confusion": [
+              [
+                67721,
+                9669,
+                13375,
+                487,
+                0,
+                7552
+              ],
+              [
+                15466,
+                228504,
+                142196,
+                1997,
+                51,
+                44583
+              ],
+              [
+                17920,
+                201137,
+                833017,
+                10673,
+                1378,
+                67762
+              ],
+              [
+                875,
+                27064,
+                223893,
+                15339,
+                851,
+                6404
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 294206,
+            "correct": 181754,
+            "missing": 17417,
+            "exact_all_pct": 58.324963176658976,
+            "exact_common_pct": 61.77780194829473,
+            "missing_pct": 5.589125321301701,
+            "mae": 0.09488152845499385,
+            "bias": -0.060033718941696054,
+            "high_reference": 43071,
+            "high_true_positive": 261,
+            "high_predicted_common": 327,
+            "high_recall_pct": 0.6059761788674514,
+            "high_precision_common_pct": 79.81651376146789,
+            "predicted": 344751,
+            "predicted_without_reference": 50545,
+            "predicted_without_reference_pct": 14.661306276123927,
+            "confusion": [
+              [
+                16856,
+                4577,
+                1827,
+                0,
+                0,
+                217
+              ],
+              [
+                3743,
+                67674,
+                14693,
+                0,
+                0,
+                10421
+              ],
+              [
+                381,
+                44431,
+                96963,
+                66,
+                0,
+                6703
+              ],
+              [
+                12,
+                4404,
+                38318,
+                261,
+                0,
+                76
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\landslide\\golden_muscat.tif",
+          "sha256": "1915f20e833546070ddfe987e4f3541820d355e70917c6b25981294f62baea46"
+        },
+        "loam": {
+          "all": {
+            "eligible": 1937914,
+            "common": 186573,
+            "correct": 158885,
+            "missing": 1751341,
+            "exact_all_pct": 8.19876423824793,
+            "exact_common_pct": 85.15969620470271,
+            "missing_pct": 90.37248298944122,
+            "mae": 0.053785531415348975,
+            "bias": -0.035136108722046734,
+            "high_reference": 274426,
+            "high_true_positive": 111,
+            "high_predicted_common": 111,
+            "high_recall_pct": 0.04044806250136649,
+            "high_precision_common_pct": 100.0,
+            "predicted": 211817,
+            "predicted_without_reference": 25244,
+            "predicted_without_reference_pct": 11.917834734700236,
+            "confusion": [
+              [
+                48951,
+                1975,
+                0,
+                0,
+                0,
+                47878
+              ],
+              [
+                7411,
+                96032,
+                209,
+                0,
+                0,
+                329145
+              ],
+              [
+                1072,
+                13302,
+                13791,
+                0,
+                0,
+                1103722
+              ],
+              [
+                335,
+                3023,
+                361,
+                111,
+                0,
+                270596
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 55686,
+            "correct": 49351,
+            "missing": 255937,
+            "exact_all_pct": 15.836764295318382,
+            "exact_common_pct": 88.6237115253385,
+            "missing_pct": 82.13033055968269,
+            "mae": 0.045628766019590726,
+            "bias": -0.02392844750132987,
+            "high_reference": 43071,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 60930,
+            "predicted_without_reference": 5244,
+            "predicted_without_reference_pct": 8.60659773510586,
+            "confusion": [
+              [
+                18933,
+                742,
+                0,
+                0,
+                0,
+                3802
+              ],
+              [
+                2543,
+                29956,
+                48,
+                0,
+                0,
+                63984
+              ],
+              [
+                224,
+                2570,
+                462,
+                0,
+                0,
+                145288
+              ],
+              [
+                24,
+                184,
+                0,
+                0,
+                0,
+                42863
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\landslide\\loam.tif",
+          "sha256": "aa155b23f851e5042a7684d984e22cf519fc4cd0c3a43a21af64a91190f51fed"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 1937914,
+            "common": 1682687,
+            "correct": 1242224,
+            "missing": 255227,
+            "exact_all_pct": 64.10109014125497,
+            "exact_common_pct": 73.82383057573988,
+            "missing_pct": 13.170192278914337,
+            "mae": 0.07263534781680195,
+            "bias": -0.04786880094463087,
+            "high_reference": 274426,
+            "high_true_positive": 47553,
+            "high_predicted_common": 61503,
+            "high_recall_pct": 17.328168613761086,
+            "high_precision_common_pct": 77.31817960099508,
+            "predicted": 1903750,
+            "predicted_without_reference": 221063,
+            "predicted_without_reference_pct": 11.611976362442547,
+            "confusion": [
+              [
+                61856,
+                17849,
+                523,
+                0,
+                0,
+                18576
+              ],
+              [
+                7299,
+                326376,
+                29415,
+                193,
+                0,
+                69514
+              ],
+              [
+                4392,
+                171526,
+                806647,
+                13374,
+                383,
+                135565
+              ],
+              [
+                369,
+                16237,
+                178695,
+                47345,
+                208,
+                31572
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 311623,
+            "common": 284122,
+            "correct": 207395,
+            "missing": 27501,
+            "exact_all_pct": 66.55317482984248,
+            "exact_common_pct": 72.99505142157243,
+            "missing_pct": 8.825086723380496,
+            "mae": 0.06761673079663516,
+            "bias": -0.04094259275445997,
+            "high_reference": 43071,
+            "high_true_positive": 7135,
+            "high_predicted_common": 11036,
+            "high_recall_pct": 16.565670636855426,
+            "high_precision_common_pct": 64.65204784342153,
+            "predicted": 310000,
+            "predicted_without_reference": 25878,
+            "predicted_without_reference_pct": 8.347741935483871,
+            "confusion": [
+              [
+                15875,
+                4429,
+                8,
+                0,
+                0,
+                3165
+              ],
+              [
+                1424,
+                78540,
+                4967,
+                167,
+                0,
+                11433
+              ],
+              [
+                218,
+                28332,
+                105845,
+                3734,
+                0,
+                10415
+              ],
+              [
+                23,
+                2209,
+                31216,
+                7135,
+                0,
+                2488
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\landslide\\jvp_resampled.tif",
+          "sha256": "9ef821e11444c65914449e080c005bcaec0c37e3e00826a1f76f542096e841b1"
+        }
+      }
+    },
+    "heat": {
+      "source_pixel_size_m": [
+        33.273904819403754,
+        29.91452445128898
+      ],
+      "reference_sha256": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 1948863,
+            "common": 1716902,
+            "correct": 1164777,
+            "missing": 231961,
+            "exact_all_pct": 59.76700260613496,
+            "exact_common_pct": 67.84178712588138,
+            "missing_pct": 11.902375898151897,
+            "mae": 0.08238844856956556,
+            "bias": 0.015645582731841762,
+            "high_reference": 347828,
+            "high_true_positive": 235483,
+            "high_predicted_common": 412582,
+            "high_recall_pct": 67.70099014455421,
+            "high_precision_common_pct": 57.075441972747235,
+            "predicted": 1856109,
+            "predicted_without_reference": 139207,
+            "predicted_without_reference_pct": 7.499936695528119,
+            "confusion": [
+              [
+                37016,
+                8372,
+                808,
+                236,
+                388,
+                22350
+              ],
+              [
+                33952,
+                307770,
+                85327,
+                4763,
+                5588,
+                82834
+              ],
+              [
+                5478,
+                118002,
+                621002,
+                138282,
+                27842,
+                101025
+              ],
+              [
+                506,
+                8246,
+                77841,
+                198989,
+                36494,
+                25752
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 286322,
+            "correct": 201897,
+            "missing": 27945,
+            "exact_all_pct": 64.2437799705346,
+            "exact_common_pct": 70.51396679263208,
+            "missing_pct": 8.892120394441669,
+            "mae": 0.0751588721183743,
+            "bias": 0.020258321573634937,
+            "high_reference": 61203,
+            "high_true_positive": 43146,
+            "high_predicted_common": 66290,
+            "high_recall_pct": 70.49654428704476,
+            "high_precision_common_pct": 65.08674008146025,
+            "predicted": 301380,
+            "predicted_without_reference": 15058,
+            "predicted_without_reference_pct": 4.996350122768598,
+            "confusion": [
+              [
+                12347,
+                2522,
+                70,
+                1,
+                73,
+                4063
+              ],
+              [
+                3309,
+                61887,
+                18555,
+                691,
+                947,
+                9115
+              ],
+              [
+                311,
+                15588,
+                91200,
+                17596,
+                3836,
+                10953
+              ],
+              [
+                17,
+                949,
+                13277,
+                36463,
+                6683,
+                3814
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\heat\\colour_recovery.tif",
+          "sha256": "466d108efe4d53a8d2d1811c62c7bf708239146b93a9e211c13a133573304293"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 1948863,
+            "common": 1798137,
+            "correct": 1118424,
+            "missing": 150726,
+            "exact_all_pct": 57.388538855732804,
+            "exact_common_pct": 62.199042675836154,
+            "missing_pct": 7.734048006452993,
+            "mae": 0.09437370149670964,
+            "bias": -0.034570097855304724,
+            "high_reference": 347828,
+            "high_true_positive": 5693,
+            "high_predicted_common": 13177,
+            "high_recall_pct": 1.636728497993261,
+            "high_precision_common_pct": 43.20406769370874,
+            "predicted": 2424776,
+            "predicted_without_reference": 626639,
+            "predicted_without_reference_pct": 25.843170668135944,
+            "confusion": [
+              [
+                26645,
+                19554,
+                11463,
+                39,
+                0,
+                11469
+              ],
+              [
+                11093,
+                272808,
+                151333,
+                691,
+                1037,
+                83272
+              ],
+              [
+                3982,
+                137888,
+                813343,
+                4905,
+                812,
+                50701
+              ],
+              [
+                3024,
+                34905,
+                298922,
+                5628,
+                65,
+                5284
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 294473,
+            "correct": 168571,
+            "missing": 19794,
+            "exact_all_pct": 53.63942125644754,
+            "exact_common_pct": 57.244976619248625,
+            "missing_pct": 6.298465954109085,
+            "mae": 0.10008431317219543,
+            "bias": -0.06453055158914481,
+            "high_reference": 61203,
+            "high_true_positive": 372,
+            "high_predicted_common": 1218,
+            "high_recall_pct": 0.6078133424832116,
+            "high_precision_common_pct": 30.541871921182267,
+            "predicted": 338897,
+            "predicted_without_reference": 44424,
+            "predicted_without_reference_pct": 13.108407569261457,
+            "confusion": [
+              [
+                12981,
+                4527,
+                1376,
+                0,
+                0,
+                192
+              ],
+              [
+                6731,
+                63523,
+                11628,
+                0,
+                0,
+                12622
+              ],
+              [
+                1243,
+                38927,
+                91695,
+                846,
+                0,
+                6773
+              ],
+              [
+                2440,
+                12374,
+                45810,
+                372,
+                0,
+                207
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\heat\\golden_muscat.tif",
+          "sha256": "ddebbe6223f2ffca6010d5172b3a03590994484043552f916aa1c51aecf23e4f"
+        },
+        "loam": {
+          "all": {
+            "eligible": 1948863,
+            "common": 195721,
+            "correct": 166885,
+            "missing": 1753142,
+            "exact_all_pct": 8.563198131423297,
+            "exact_common_pct": 85.26678281839966,
+            "missing_pct": 89.9571698985511,
+            "mae": 0.05179791119183915,
+            "bias": -0.02903465510744102,
+            "high_reference": 347828,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 216846,
+            "predicted_without_reference": 21125,
+            "predicted_without_reference_pct": 9.741936673952944,
+            "confusion": [
+              [
+                21780,
+                7251,
+                0,
+                0,
+                0,
+                40139
+              ],
+              [
+                3944,
+                120209,
+                1136,
+                0,
+                0,
+                394945
+              ],
+              [
+                480,
+                12753,
+                24896,
+                0,
+                0,
+                973502
+              ],
+              [
+                99,
+                2824,
+                349,
+                0,
+                0,
+                344556
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 53461,
+            "correct": 46440,
+            "missing": 260806,
+            "exact_all_pct": 14.777243554047992,
+            "exact_common_pct": 86.86706197040833,
+            "missing_pct": 82.9886688707373,
+            "mae": 0.04823134002901813,
+            "bias": -0.031178582311897986,
+            "high_reference": 61203,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 58126,
+            "predicted_without_reference": 4665,
+            "predicted_without_reference_pct": 8.025668375597839,
+            "confusion": [
+              [
+                15066,
+                392,
+                0,
+                0,
+                0,
+                3618
+              ],
+              [
+                3260,
+                29504,
+                304,
+                0,
+                0,
+                61436
+              ],
+              [
+                442,
+                1964,
+                1870,
+                0,
+                0,
+                135208
+              ],
+              [
+                48,
+                611,
+                0,
+                0,
+                0,
+                60544
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\heat\\loam.tif",
+          "sha256": "a9ae10df4b307561aef9df7f10d312b1d195030c97bcc1b7d840b766a088e4a6"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 1948863,
+            "common": 1695592,
+            "correct": 1181180,
+            "missing": 253271,
+            "exact_all_pct": 60.60867285181154,
+            "exact_common_pct": 69.66180543432618,
+            "missing_pct": 12.995833981146957,
+            "mae": 0.07286314151194372,
+            "bias": -0.048266024050578483,
+            "high_reference": 347828,
+            "high_true_positive": 39616,
+            "high_predicted_common": 54705,
+            "high_recall_pct": 11.389537357544533,
+            "high_precision_common_pct": 72.41751211041039,
+            "predicted": 1913125,
+            "predicted_without_reference": 217533,
+            "predicted_without_reference_pct": 11.370558640967005,
+            "confusion": [
+              [
+                32572,
+                18075,
+                1003,
+                106,
+                0,
+                17414
+              ],
+              [
+                5322,
+                366648,
+                38858,
+                355,
+                0,
+                109051
+              ],
+              [
+                1992,
+                149369,
+                742344,
+                14628,
+                0,
+                103298
+              ],
+              [
+                350,
+                17109,
+                267245,
+                39616,
+                0,
+                23508
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314267,
+            "common": 287235,
+            "correct": 196799,
+            "missing": 27032,
+            "exact_all_pct": 62.62159246755148,
+            "exact_common_pct": 68.514979024144,
+            "missing_pct": 8.601603095457047,
+            "mae": 0.06975129695032833,
+            "bias": -0.04578785457708433,
+            "high_reference": 61203,
+            "high_true_positive": 7707,
+            "high_predicted_common": 10625,
+            "high_recall_pct": 12.592519974511053,
+            "high_precision_common_pct": 72.53647058823529,
+            "predicted": 311250,
+            "predicted_without_reference": 24015,
+            "predicted_without_reference_pct": 7.715662650602409,
+            "confusion": [
+              [
+                11427,
+                4723,
+                2,
+                0,
+                0,
+                2924
+              ],
+              [
+                696,
+                75130,
+                6334,
+                0,
+                0,
+                12344
+              ],
+              [
+                150,
+                23887,
+                102535,
+                2918,
+                0,
+                9994
+              ],
+              [
+                23,
+                2782,
+                48921,
+                7707,
+                0,
+                1770
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\heat\\jvp_resampled.tif",
+          "sha256": "9145e05506cad77a20f4088d0b4210b69b1b5fc72fb77631fb75ae243109c485"
+        }
+      }
+    },
+    "drought": {
+      "source_pixel_size_m": [
+        33.11258278145683,
+        29.91452445128898
+      ],
+      "reference_sha256": "a715e0ec4bb1406d823e256633cbc4f6828a28c1a1cbbccba2cf3104803597e6",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 1924450,
+            "common": 1711088,
+            "correct": 1186305,
+            "missing": 213362,
+            "exact_all_pct": 61.643846293746265,
+            "exact_common_pct": 69.3304493982776,
+            "missing_pct": 11.086907947725324,
+            "mae": 0.08118934374563064,
+            "bias": 0.014606861363559568,
+            "high_reference": 34121,
+            "high_true_positive": 21081,
+            "high_predicted_common": 190464,
+            "high_recall_pct": 61.783066146947625,
+            "high_precision_common_pct": 11.068233366935484,
+            "predicted": 1860029,
+            "predicted_without_reference": 148941,
+            "predicted_without_reference_pct": 8.007455797732186,
+            "confusion": [
+              [
+                54477,
+                7525,
+                399,
+                108,
+                296,
+                18578
+              ],
+              [
+                25975,
+                384782,
+                108765,
+                6644,
+                7054,
+                77838
+              ],
+              [
+                7165,
+                192400,
+                728449,
+                126769,
+                28512,
+                114593
+              ],
+              [
+                231,
+                1961,
+                8495,
+                18597,
+                2484,
+                2353
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 285504,
+            "correct": 205028,
+            "missing": 27948,
+            "exact_all_pct": 65.40969590240292,
+            "exact_common_pct": 71.81265411342748,
+            "missing_pct": 8.916197695340914,
+            "mae": 0.07368109188205038,
+            "bias": 0.019589523795024953,
+            "high_reference": 12261,
+            "high_true_positive": 7571,
+            "high_predicted_common": 31512,
+            "high_recall_pct": 61.74863387978142,
+            "high_precision_common_pct": 24.025767961411525,
+            "predicted": 301820,
+            "predicted_without_reference": 16316,
+            "predicted_without_reference_pct": 5.405871048969584,
+            "confusion": [
+              [
+                16988,
+                2446,
+                42,
+                9,
+                94,
+                3872
+              ],
+              [
+                2207,
+                74393,
+                20561,
+                935,
+                1102,
+                9058
+              ],
+              [
+                617,
+                25929,
+                106917,
+                18515,
+                3286,
+                14220
+              ],
+              [
+                49,
+                565,
+                3278,
+                6730,
+                841,
+                798
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\drought\\colour_recovery.tif",
+          "sha256": "97ffa752b597e3035e4210f3c4f7e9502e9ddd8ad03b44c7b5e3a5d5c196bd23"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 1924450,
+            "common": 1801086,
+            "correct": 1246403,
+            "missing": 123364,
+            "exact_all_pct": 64.766712567227,
+            "exact_common_pct": 69.20285871968356,
+            "missing_pct": 6.410351009379303,
+            "mae": 0.07817325191928604,
+            "bias": -0.02471538366078187,
+            "high_reference": 34121,
+            "high_true_positive": 0,
+            "high_predicted_common": 647,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": 0.0,
+            "predicted": 2460596,
+            "predicted_without_reference": 659510,
+            "predicted_without_reference_pct": 26.802855893450204,
+            "confusion": [
+              [
+                43552,
+                17865,
+                12462,
+                0,
+                0,
+                7504
+              ],
+              [
+                12123,
+                350411,
+                203570,
+                593,
+                0,
+                44361
+              ],
+              [
+                17636,
+                258661,
+                852440,
+                54,
+                0,
+                69097
+              ],
+              [
+                1624,
+                7300,
+                22795,
+                0,
+                0,
+                2402
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 289251,
+            "correct": 184848,
+            "missing": 24201,
+            "exact_all_pct": 58.97170858696068,
+            "exact_common_pct": 63.90574276320566,
+            "missing_pct": 7.720799356839325,
+            "mae": 0.08482906448822465,
+            "bias": -0.05037357685994158,
+            "high_reference": 12261,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 335383,
+            "predicted_without_reference": 46132,
+            "predicted_without_reference_pct": 13.755020379685314,
+            "confusion": [
+              [
+                15722,
+                6439,
+                1121,
+                0,
+                0,
+                169
+              ],
+              [
+                5376,
+                80788,
+                14318,
+                0,
+                0,
+                7774
+              ],
+              [
+                2521,
+                63652,
+                88338,
+                0,
+                0,
+                14973
+              ],
+              [
+                1045,
+                5124,
+                4807,
+                0,
+                0,
+                1285
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\drought\\golden_muscat.tif",
+          "sha256": "24e0ae6a388398d6035bc4940de9a67c1abda722f675a8cb976bdd6c00f9cca6"
+        },
+        "loam": {
+          "all": {
+            "eligible": 1924450,
+            "common": 228249,
+            "correct": 202886,
+            "missing": 1696201,
+            "exact_all_pct": 10.54254462313908,
+            "exact_common_pct": 88.88801265284843,
+            "missing_pct": 88.13952038244693,
+            "mae": 0.04887704141867719,
+            "bias": -0.029907041705351273,
+            "high_reference": 34121,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 256768,
+            "predicted_without_reference": 28519,
+            "predicted_without_reference_pct": 11.106913634097706,
+            "confusion": [
+              [
+                47312,
+                1938,
+                0,
+                0,
+                0,
+                32133
+              ],
+              [
+                6776,
+                140515,
+                299,
+                0,
+                0,
+                463468
+              ],
+              [
+                1315,
+                14802,
+                15059,
+                0,
+                0,
+                1166712
+              ],
+              [
+                29,
+                204,
+                0,
+                0,
+                0,
+                33888
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 73850,
+            "correct": 66503,
+            "missing": 239602,
+            "exact_all_pct": 21.216326582698468,
+            "exact_common_pct": 90.05145565335138,
+            "missing_pct": 76.43977387287367,
+            "mae": 0.04249942690812937,
+            "bias": -0.0193842381076773,
+            "high_reference": 12261,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 79881,
+            "predicted_without_reference": 6031,
+            "predicted_without_reference_pct": 7.549980596136753,
+            "confusion": [
+              [
+                20525,
+                637,
+                0,
+                0,
+                0,
+                2289
+              ],
+              [
+                1892,
+                41994,
+                84,
+                0,
+                0,
+                64286
+              ],
+              [
+                232,
+                4381,
+                3984,
+                0,
+                0,
+                160887
+              ],
+              [
+                0,
+                121,
+                0,
+                0,
+                0,
+                12140
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\drought\\loam.tif",
+          "sha256": "d092eb0dfce645ecbf7127637ef95d34119ef4ebb0c9a481445e03b0ede8d2c8"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 1924450,
+            "common": 1699423,
+            "correct": 1335255,
+            "missing": 225027,
+            "exact_all_pct": 69.38372002390294,
+            "exact_common_pct": 78.5710797135263,
+            "missing_pct": 11.693055158616747,
+            "mae": 0.060804902605178346,
+            "bias": -0.039025345012770676,
+            "high_reference": 34121,
+            "high_true_positive": 0,
+            "high_predicted_common": 3091,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": 0.0,
+            "predicted": 1912500,
+            "predicted_without_reference": 213077,
+            "predicted_without_reference_pct": 11.141281045751635,
+            "confusion": [
+              [
+                53493,
+                16392,
+                142,
+                0,
+                0,
+                11356
+              ],
+              [
+                8068,
+                497657,
+                29754,
+                27,
+                0,
+                75552
+              ],
+              [
+                1872,
+                275579,
+                784105,
+                3064,
+                0,
+                133268
+              ],
+              [
+                39,
+                2659,
+                26572,
+                0,
+                0,
+                4851
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 313452,
+            "common": 290032,
+            "correct": 225249,
+            "missing": 23420,
+            "exact_all_pct": 71.8607633704682,
+            "exact_common_pct": 77.66349920008827,
+            "missing_pct": 7.471638400775876,
+            "mae": 0.05885117645449061,
+            "bias": -0.034243449215921436,
+            "high_reference": 12261,
+            "high_true_positive": 0,
+            "high_predicted_common": 625,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": 0.0,
+            "predicted": 316250,
+            "predicted_without_reference": 26218,
+            "predicted_without_reference_pct": 8.290276679841897,
+            "confusion": [
+              [
+                17296,
+                4558,
+                10,
+                0,
+                0,
+                1587
+              ],
+              [
+                1628,
+                94223,
+                5865,
+                27,
+                0,
+                6513
+              ],
+              [
+                58,
+                41493,
+                113730,
+                598,
+                0,
+                13605
+              ],
+              [
+                0,
+                896,
+                9650,
+                0,
+                0,
+                1715
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\drought\\jvp_resampled.tif",
+          "sha256": "62b9899cf956afa913e4d521dd00eee6ea31e05d77dd25bb785428cd0454c483"
+        }
+      }
+    },
+    "arbovirus": {
+      "source_pixel_size_m": [
+        33.273904819403754,
+        29.91452445128898
+      ],
+      "reference_sha256": "c960d7e85138cdda2f3ddf2440ae010fab45a7496c50ebcb9405a10b14e5f965",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1738259,
+            "correct": 1206883,
+            "missing": 211715,
+            "exact_all_pct": 61.89226112758426,
+            "exact_common_pct": 69.43056241906413,
+            "missing_pct": 10.85732425150284,
+            "mae": 0.08188928339117918,
+            "bias": 0.013477926572135885,
+            "high_reference": 101957,
+            "high_true_positive": 65013,
+            "high_predicted_common": 254123,
+            "high_recall_pct": 63.76511666683013,
+            "high_precision_common_pct": 25.58328053737757,
+            "predicted": 1901480,
+            "predicted_without_reference": 163221,
+            "predicted_without_reference_pct": 8.583892546858237,
+            "confusion": [
+              [
+                19521,
+                3278,
+                89,
+                0,
+                142,
+                9068
+              ],
+              [
+                20517,
+                325566,
+                90868,
+                4244,
+                4990,
+                64043
+              ],
+              [
+                6992,
+                183314,
+                805572,
+                146489,
+                33245,
+                130079
+              ],
+              [
+                585,
+                4420,
+                23414,
+                56224,
+                8789,
+                8525
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 286755,
+            "correct": 208270,
+            "missing": 27539,
+            "exact_all_pct": 66.26598026052041,
+            "exact_common_pct": 72.62994542379383,
+            "missing_pct": 8.762178088032224,
+            "mae": 0.07375058573555274,
+            "bias": 0.01532263474389027,
+            "high_reference": 24379,
+            "high_true_positive": 15673,
+            "high_predicted_common": 39515,
+            "high_recall_pct": 64.28893720004922,
+            "high_precision_common_pct": 39.66341895482728,
+            "predicted": 303270,
+            "predicted_without_reference": 16515,
+            "predicted_without_reference_pct": 5.445642496785043,
+            "confusion": [
+              [
+                13241,
+                2178,
+                2,
+                0,
+                75,
+                3470
+              ],
+              [
+                1949,
+                72260,
+                17842,
+                761,
+                822,
+                7850
+              ],
+              [
+                593,
+                23619,
+                108663,
+                18531,
+                3653,
+                14406
+              ],
+              [
+                25,
+                829,
+                6039,
+                14106,
+                1567,
+                1813
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\arbovirus\\colour_recovery.tif",
+          "sha256": "da9a4f5a0b979c682fc93dce52702bc18756e7c0a2dbeff99469a6650a765dd0"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1832580,
+            "correct": 1303611,
+            "missing": 117394,
+            "exact_all_pct": 66.8527375236798,
+            "exact_common_pct": 71.13528468061422,
+            "missing_pct": 6.02028539867711,
+            "mae": 0.07805911772078486,
+            "bias": -0.02607145186558977,
+            "high_reference": 101957,
+            "high_true_positive": 6,
+            "high_predicted_common": 487,
+            "high_recall_pct": 0.005884833802485361,
+            "high_precision_common_pct": 1.2320328542094456,
+            "predicted": 2518860,
+            "predicted_without_reference": 686280,
+            "predicted_without_reference_pct": 27.24565875038708,
+            "confusion": [
+              [
+                16630,
+                10674,
+                4330,
+                0,
+                0,
+                464
+              ],
+              [
+                7504,
+                281641,
+                186104,
+                35,
+                8,
+                34936
+              ],
+              [
+                6668,
+                216992,
+                1005334,
+                438,
+                0,
+                76259
+              ],
+              [
+                2125,
+                8376,
+                85715,
+                6,
+                0,
+                5735
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 297227,
+            "correct": 194012,
+            "missing": 17067,
+            "exact_all_pct": 61.72946349596238,
+            "exact_common_pct": 65.27401615600198,
+            "missing_pct": 5.430265929352772,
+            "mae": 0.09101301031113604,
+            "bias": -0.055205994760652334,
+            "high_reference": 24379,
+            "high_true_positive": 0,
+            "high_predicted_common": 45,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": 0.0,
+            "predicted": 346799,
+            "predicted_without_reference": 49572,
+            "predicted_without_reference_pct": 14.294158864356588,
+            "confusion": [
+              [
+                10864,
+                6236,
+                1721,
+                0,
+                0,
+                145
+              ],
+              [
+                6415,
+                75375,
+                16041,
+                0,
+                0,
+                3653
+              ],
+              [
+                5525,
+                44086,
+                107773,
+                45,
+                0,
+                12036
+              ],
+              [
+                2074,
+                4782,
+                16290,
+                0,
+                0,
+                1233
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\arbovirus\\golden_muscat.tif",
+          "sha256": "baa5c59267f923f8dc64799985009f17f5f678c9051dd96e56e40549f5c6edbe"
+        },
+        "loam": {
+          "all": {
+            "eligible": 1949974,
+            "common": 213357,
+            "correct": 192198,
+            "missing": 1736617,
+            "exact_all_pct": 9.856439111495845,
+            "exact_common_pct": 90.08281893727414,
+            "missing_pct": 89.05846949754202,
+            "mae": 0.04767783758536531,
+            "bias": -0.023805649538116567,
+            "high_reference": 101957,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 237051,
+            "predicted_without_reference": 23694,
+            "predicted_without_reference_pct": 9.995317463330675,
+            "confusion": [
+              [
+                20253,
+                1291,
+                0,
+                0,
+                0,
+                10554
+              ],
+              [
+                2760,
+                145710,
+                590,
+                0,
+                0,
+                361168
+              ],
+              [
+                299,
+                15245,
+                26235,
+                0,
+                0,
+                1263912
+              ],
+              [
+                0,
+                960,
+                14,
+                0,
+                0,
+                100983
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 65574,
+            "correct": 58284,
+            "missing": 248720,
+            "exact_all_pct": 18.544420192558558,
+            "exact_common_pct": 88.88278891023882,
+            "missing_pct": 79.13609550293674,
+            "mae": 0.04663936806142438,
+            "bias": -0.029996296784614792,
+            "high_reference": 24379,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 70678,
+            "predicted_without_reference": 5104,
+            "predicted_without_reference_pct": 7.221483347010385,
+            "confusion": [
+              [
+                16259,
+                424,
+                0,
+                0,
+                0,
+                2283
+              ],
+              [
+                2680,
+                40128,
+                48,
+                0,
+                0,
+                58628
+              ],
+              [
+                294,
+                3830,
+                1897,
+                0,
+                0,
+                163444
+              ],
+              [
+                0,
+                14,
+                0,
+                0,
+                0,
+                24365
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\arbovirus\\loam.tif",
+          "sha256": "304c40446f4c4eb1e11d3f0e51a37b7a270769004688bfa099efc0d9fae71612"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1709084,
+            "correct": 1357679,
+            "missing": 240890,
+            "exact_all_pct": 69.62549244246334,
+            "exact_common_pct": 79.43898602994352,
+            "missing_pct": 12.353498046640622,
+            "mae": 0.06180881771599455,
+            "bias": -0.0424306158235483,
+            "high_reference": 101957,
+            "high_true_positive": 6623,
+            "high_predicted_common": 13964,
+            "high_recall_pct": 6.495875712310092,
+            "high_precision_common_pct": 47.4291034087654,
+            "predicted": 1928125,
+            "predicted_without_reference": 219041,
+            "predicted_without_reference_pct": 11.360311183144246,
+            "confusion": [
+              [
+                17826,
+                6909,
+                87,
+                0,
+                0,
+                7276
+              ],
+              [
+                2129,
+                412210,
+                28402,
+                348,
+                0,
+                67139
+              ],
+              [
+                1817,
+                225147,
+                921020,
+                6993,
+                0,
+                150714
+              ],
+              [
+                0,
+                5488,
+                74085,
+                6623,
+                0,
+                15761
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 286232,
+            "correct": 217622,
+            "missing": 28062,
+            "exact_all_pct": 69.24153817762986,
+            "exact_common_pct": 76.02993376002684,
+            "missing_pct": 8.928582791908214,
+            "mae": 0.062350415928227806,
+            "bias": -0.037973433477122134,
+            "high_reference": 24379,
+            "high_true_positive": 1211,
+            "high_predicted_common": 3096,
+            "high_recall_pct": 4.967389966774683,
+            "high_precision_common_pct": 39.11498708010336,
+            "predicted": 308750,
+            "predicted_without_reference": 22518,
+            "predicted_without_reference_pct": 7.293279352226721,
+            "confusion": [
+              [
+                12147,
+                3962,
+                8,
+                0,
+                0,
+                2849
+              ],
+              [
+                1050,
+                88360,
+                4966,
+                185,
+                0,
+                6923
+              ],
+              [
+                335,
+                36036,
+                115904,
+                1700,
+                0,
+                15490
+              ],
+              [
+                0,
+                1400,
+                18968,
+                1211,
+                0,
+                2800
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\arbovirus\\jvp_resampled.tif",
+          "sha256": "edb0765f0018123a5340d8d0980ecddf4868d8fe9cfd340b771d5732c4c0ecd4"
+        }
+      }
+    },
+    "storm": {
+      "source_pixel_size_m": [
+        33.273904819403754,
+        29.91452445128898
+      ],
+      "reference_sha256": "f3df031bad6a19a3418a5fdd728861974591b982277e47f1921cf22d6c525f6a",
+      "methods": {
+        "colour_recovery": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1720713,
+            "correct": 1163583,
+            "missing": 229261,
+            "exact_all_pct": 59.671718699839076,
+            "exact_common_pct": 67.6221426815512,
+            "missing_pct": 11.757131120722635,
+            "mae": 0.08464258780000057,
+            "bias": 0.013077024868710475,
+            "high_reference": 371496,
+            "high_true_positive": 254024,
+            "high_predicted_common": 437682,
+            "high_recall_pct": 68.37866356569116,
+            "high_precision_common_pct": 58.038484561850844,
+            "predicted": 1886212,
+            "predicted_without_reference": 165499,
+            "predicted_without_reference_pct": 8.774146278361075,
+            "confusion": [
+              [
+                35816,
+                6737,
+                578,
+                184,
+                514,
+                21181
+              ],
+              [
+                18307,
+                259713,
+                74384,
+                3757,
+                5031,
+                55691
+              ],
+              [
+                6664,
+                134346,
+                665561,
+                143890,
+                30282,
+                115842
+              ],
+              [
+                1391,
+                11725,
+                67747,
+                202140,
+                51345,
+                36493
+              ],
+              [
+                6,
+                30,
+                26,
+                186,
+                353,
+                54
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 285486,
+            "correct": 200137,
+            "missing": 28808,
+            "exact_all_pct": 63.67827575454829,
+            "exact_common_pct": 70.10396306649012,
+            "missing_pct": 9.165940170668227,
+            "mae": 0.07531298058329708,
+            "bias": 0.017634393423652594,
+            "high_reference": 65342,
+            "high_true_positive": 47344,
+            "high_predicted_common": 68207,
+            "high_recall_pct": 72.45569465275014,
+            "high_precision_common_pct": 69.41223041623294,
+            "predicted": 302293,
+            "predicted_without_reference": 16807,
+            "predicted_without_reference_pct": 5.55983764096423,
+            "confusion": [
+              [
+                12249,
+                2239,
+                42,
+                0,
+                56,
+                3449
+              ],
+              [
+                2152,
+                58208,
+                18317,
+                461,
+                974,
+                6962
+              ],
+              [
+                558,
+                18848,
+                92036,
+                16181,
+                3191,
+                13029
+              ],
+              [
+                66,
+                1352,
+                11172,
+                37560,
+                9662,
+                5332
+              ],
+              [
+                6,
+                16,
+                18,
+                38,
+                84,
+                36
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\storm\\colour_recovery.tif",
+          "sha256": "8abf938701f2d87c37095c7ad8ba9311c70825d42bb8540df62a5f39519553fb"
+        },
+        "golden_muscat": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1811867,
+            "correct": 1144156,
+            "missing": 138107,
+            "exact_all_pct": 58.67544900598675,
+            "exact_common_pct": 63.14790213630471,
+            "missing_pct": 7.082504689806121,
+            "mae": 0.09824530823165487,
+            "bias": -0.04386801213516614,
+            "high_reference": 371496,
+            "high_true_positive": 27955,
+            "high_predicted_common": 49919,
+            "high_recall_pct": 7.524980080539225,
+            "high_precision_common_pct": 56.000721168292635,
+            "predicted": 2427520,
+            "predicted_without_reference": 615653,
+            "predicted_without_reference_pct": 25.36139764039019,
+            "confusion": [
+              [
+                32307,
+                12176,
+                13348,
+                312,
+                0,
+                6867
+              ],
+              [
+                7372,
+                257330,
+                116105,
+                2532,
+                0,
+                33544
+              ],
+              [
+                4447,
+                158268,
+                829972,
+                15348,
+                3772,
+                84778
+              ],
+              [
+                1995,
+                45944,
+                282029,
+                24547,
+                3408,
+                12918
+              ],
+              [
+                0,
+                24,
+                631,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 293424,
+            "correct": 173016,
+            "missing": 20870,
+            "exact_all_pct": 55.04909416024486,
+            "exact_common_pct": 58.96450188123671,
+            "missing_pct": 6.640279483540889,
+            "mae": 0.1077753946561113,
+            "bias": -0.07944341273041017,
+            "high_reference": 65342,
+            "high_true_positive": 231,
+            "high_predicted_common": 408,
+            "high_recall_pct": 0.3535245324599798,
+            "high_precision_common_pct": 56.61764705882353,
+            "predicted": 335745,
+            "predicted_without_reference": 42321,
+            "predicted_without_reference_pct": 12.60510208640486,
+            "confusion": [
+              [
+                11541,
+                5347,
+                1007,
+                0,
+                0,
+                140
+              ],
+              [
+                1811,
+                71725,
+                10700,
+                0,
+                0,
+                2838
+              ],
+              [
+                252,
+                37321,
+                89519,
+                177,
+                0,
+                16574
+              ],
+              [
+                1427,
+                15011,
+                47157,
+                231,
+                0,
+                1318
+              ],
+              [
+                0,
+                0,
+                198,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\storm\\golden_muscat.tif",
+          "sha256": "54317c25a6a0d79d992078bd6eb925b6cfc63efe83eb00c0f593cadca5c132fb"
+        },
+        "loam": {
+          "all": {
+            "eligible": 1949974,
+            "common": 219734,
+            "correct": 193285,
+            "missing": 1730240,
+            "exact_all_pct": 9.91218344449721,
+            "exact_common_pct": 87.96317365541974,
+            "missing_pct": 88.73143949611635,
+            "mae": 0.054897933499981975,
+            "bias": -0.0312676479485683,
+            "high_reference": 371496,
+            "high_true_positive": 2863,
+            "high_predicted_common": 3123,
+            "high_recall_pct": 0.7706677864633805,
+            "high_precision_common_pct": 91.67467178994556,
+            "predicted": 244590,
+            "predicted_without_reference": 24856,
+            "predicted_without_reference_pct": 10.162312441228178,
+            "confusion": [
+              [
+                25614,
+                2710,
+                0,
+                0,
+                0,
+                36686
+              ],
+              [
+                4547,
+                129323,
+                537,
+                0,
+                0,
+                282476
+              ],
+              [
+                1391,
+                11661,
+                35485,
+                260,
+                0,
+                1047788
+              ],
+              [
+                306,
+                4663,
+                374,
+                2863,
+                0,
+                362635
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                655
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 63082,
+            "correct": 54716,
+            "missing": 251212,
+            "exact_all_pct": 17.409177394414147,
+            "exact_common_pct": 86.73789670587489,
+            "missing_pct": 79.92898369042997,
+            "mae": 0.05053000631349222,
+            "bias": -0.029045147336038312,
+            "high_reference": 65342,
+            "high_true_positive": 0,
+            "high_predicted_common": 0,
+            "high_recall_pct": 0.0,
+            "high_precision_common_pct": null,
+            "predicted": 68425,
+            "predicted_without_reference": 5343,
+            "predicted_without_reference_pct": 7.808549506759225,
+            "confusion": [
+              [
+                14316,
+                1265,
+                0,
+                0,
+                0,
+                2454
+              ],
+              [
+                3301,
+                37744,
+                307,
+                0,
+                0,
+                45722
+              ],
+              [
+                196,
+                2553,
+                2656,
+                0,
+                0,
+                138438
+              ],
+              [
+                27,
+                717,
+                0,
+                0,
+                0,
+                64400
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                198
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\storm\\loam.tif",
+          "sha256": "edfb29ff01fc9a852fcb10e6daf3fcc78049d3205fa68ed7d586c0a3341c49fb"
+        },
+        "jvp_resampled": {
+          "all": {
+            "eligible": 1949974,
+            "common": 1701814,
+            "correct": 1241211,
+            "missing": 248160,
+            "exact_all_pct": 63.65269485644424,
+            "exact_common_pct": 72.93458627088506,
+            "missing_pct": 12.726323530467585,
+            "mae": 0.07443723621304174,
+            "bias": -0.04980091461275285,
+            "high_reference": 371496,
+            "high_true_positive": 89088,
+            "high_predicted_common": 106782,
+            "high_recall_pct": 23.98087731765618,
+            "high_precision_common_pct": 83.42979153789965,
+            "predicted": 1917500,
+            "predicted_without_reference": 215686,
+            "predicted_without_reference_pct": 11.248292046936115,
+            "confusion": [
+              [
+                36922,
+                14803,
+                518,
+                0,
+                0,
+                12767
+              ],
+              [
+                4877,
+                320950,
+                29416,
+                538,
+                0,
+                61102
+              ],
+              [
+                2792,
+                147795,
+                795002,
+                17156,
+                0,
+                133840
+              ],
+              [
+                702,
+                17874,
+                222999,
+                88337,
+                625,
+                40304
+              ],
+              [
+                0,
+                0,
+                382,
+                126,
+                0,
+                147
+              ]
+            ]
+          },
+          "test": {
+            "eligible": 314294,
+            "common": 287507,
+            "correct": 203140,
+            "missing": 26787,
+            "exact_all_pct": 64.63375056475783,
+            "exact_common_pct": 70.65567099235845,
+            "missing_pct": 8.522911668692371,
+            "mae": 0.0701154842132019,
+            "bias": -0.04542253117068919,
+            "high_reference": 65342,
+            "high_true_positive": 14814,
+            "high_predicted_common": 18393,
+            "high_recall_pct": 22.671482354381563,
+            "high_precision_common_pct": 80.5415103572011,
+            "predicted": 310625,
+            "predicted_without_reference": 23118,
+            "predicted_without_reference_pct": 7.442414486921529,
+            "confusion": [
+              [
+                11655,
+                3824,
+                8,
+                0,
+                0,
+                2548
+              ],
+              [
+                1219,
+                74380,
+                5469,
+                216,
+                0,
+                5790
+              ],
+              [
+                48,
+                23209,
+                102317,
+                3363,
+                0,
+                14906
+              ],
+              [
+                25,
+                4283,
+                42652,
+                14788,
+                0,
+                3396
+              ],
+              [
+                0,
+                0,
+                25,
+                26,
+                0,
+                147
+              ]
+            ]
+          },
+          "output": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\outputs\\porto-all-10m\\storm\\jvp_resampled.tif",
+          "sha256": "21a1b084b34a6f897e99ed4c5e18e6adc7ed447db6d4cb420e827fbc9788d0fc"
+        }
+      }
+    }
+  },
+  "script_sha256": "0971db0d66b165c6de551461e2dc95af1e44ced0e151a7465e890cb257ac7a15",
+  "test_macro": {
+    "colour_recovery": {
+      "exact_all_pct": 63.311610736358666,
+      "missing_pct": 9.210399071900456,
+      "mae": 0.0783945349774149,
+      "high_recall_pct": 67.13896846002916
+    },
+    "golden_muscat": {
+      "exact_all_pct": 55.561353572840225,
+      "missing_pct": 9.740828744638756,
+      "mae": 0.09615415271322908,
+      "high_recall_pct": 0.27406477414785296
+    },
+    "loam": {
+      "exact_all_pct": 17.474900562725733,
+      "missing_pct": 80.2098630327273,
+      "mae": 0.04821074783686587,
+      "high_recall_pct": 0.0
+    },
+    "jvp_resampled": {
+      "exact_all_pct": 63.9111118999297,
+      "missing_pct": 10.781493554727588,
+      "mae": 0.07085168505541421,
+      "high_recall_pct": 11.26743889502252
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "porto-heat": {
+    "crop_pixels": [
+      770,
+      1209,
+      862,
+      1269
+    ],
+    "crop_size": [
+      92,
+      60
+    ],
+    "source_pixel_coordinates_unchanged": true,
+    "model_unknown_transparent": true
+  },
+  "richfield-inundation-100yr": {
+    "crop_pixels": [
+      560,
+      570,
+      1200,
+      930
+    ],
+    "crop_size": [
+      640,
+      360
+    ],
+    "source_pixel_coordinates_unchanged": true,
+    "model_unknown_transparent": true
+  }
+}

@@ -1,0 +1,317 @@
+{
+  "status": "succeeded",
+  "page": 106,
+  "run": {
+    "id": "porto-drought",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T12:13:03.111678+00:00",
+    "completed_utc": "2026-10-30T12:19:48.213822+00:00",
+    "seconds": 405.0861767999595,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1758,
+      1218
+    ],
+    "model_forward_calls": 630,
+    "source_pixels": 2141244,
+    "unknown_pixels": 1398653,
+    "overlapping_positive_pixels": 204406,
+    "label_counts": {
+      "0": 1398653,
+      "1": 499289,
+      "2": 7825,
+      "3": 28482,
+      "4": 54052,
+      "5": 123559,
+      "6": 26600,
+      "7": 101,
+      "8": 112,
+      "9": 2301,
+      "10": 270
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "d25a5f03939a3446547ce912eac941b0a31d1a0c084906470112adcbfacafb24"
+  },
+  "metrics": {
+    "all": {
+      "eligible": 3744,
+      "common": 3488,
+      "missing": 256,
+      "correct": 2488,
+      "missing_pct": 6.837606837606837,
+      "exact_common_pct": 71.3302752293578,
+      "exact_all_pct": 66.45299145299145,
+      "bias": -0.02129157489129991,
+      "mae": 0.06784248022950048,
+      "sum_error": -74.26501322085409,
+      "sum_abs_error": 236.6345710404977,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 27,
+      "predicted_high_common_cells": 1,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": 0.0,
+      "predicted_cells": 4574,
+      "predicted_zero_reference_cells": 724,
+      "predicted_zero_reference_pct": 15.828596414516834,
+      "predicted_low_reference_cells": 362,
+      "predicted_low_reference_pct": 7.914298207258417,
+      "confusion_matrix_with_missing": [
+        [
+          76,
+          47,
+          12,
+          0,
+          0,
+          20
+        ],
+        [
+          24,
+          762,
+          363,
+          1,
+          0,
+          79
+        ],
+        [
+          26,
+          503,
+          1650,
+          0,
+          0,
+          154
+        ],
+        [
+          0,
+          8,
+          16,
+          0,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "development": {
+      "eligible": 1957,
+      "common": 1858,
+      "missing": 99,
+      "correct": 1339,
+      "missing_pct": 5.0587634133878385,
+      "exact_common_pct": 72.06673842841765,
+      "exact_all_pct": 68.42105263157895,
+      "bias": -0.015306119839228536,
+      "mae": 0.06700265623233694,
+      "sum_error": -28.43877066128662,
+      "sum_abs_error": 124.49093527968202,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 11,
+      "predicted_high_common_cells": 1,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": 0.0,
+      "predicted_cells": 2517,
+      "predicted_zero_reference_cells": 455,
+      "predicted_zero_reference_pct": 18.077075883988876,
+      "predicted_low_reference_cells": 204,
+      "predicted_low_reference_pct": 8.104886769964244,
+      "confusion_matrix_with_missing": [
+        [
+          44,
+          26,
+          5,
+          0,
+          0,
+          20
+        ],
+        [
+          16,
+          398,
+          210,
+          1,
+          0,
+          39
+        ],
+        [
+          7,
+          244,
+          897,
+          0,
+          0,
+          39
+        ],
+        [
+          0,
+          2,
+          8,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "validation": {
+      "eligible": 1214,
+      "common": 1107,
+      "missing": 107,
+      "correct": 810,
+      "missing_pct": 8.813838550247118,
+      "exact_common_pct": 73.17073170731707,
+      "exact_all_pct": 66.72158154859967,
+      "bias": -0.01915575070587051,
+      "mae": 0.06592962480328489,
+      "sum_error": -21.205416031398656,
+      "sum_abs_error": 72.98409465723637,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 5,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 1443,
+      "predicted_zero_reference_cells": 196,
+      "predicted_zero_reference_pct": 13.582813582813582,
+      "predicted_low_reference_cells": 140,
+      "predicted_low_reference_pct": 9.702009702009702,
+      "confusion_matrix_with_missing": [
+        [
+          2,
+          9,
+          7,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          206,
+          124,
+          0,
+          0,
+          27
+        ],
+        [
+          15,
+          137,
+          602,
+          0,
+          0,
+          80
+        ],
+        [
+          0,
+          0,
+          5,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    },
+    "test": {
+      "eligible": 573,
+      "common": 523,
+      "missing": 50,
+      "correct": 339,
+      "missing_pct": 8.726003490401396,
+      "exact_common_pct": 64.81835564053537,
+      "exact_all_pct": 59.16230366492147,
+      "bias": -0.04707615014946237,
+      "mae": 0.07487483958619366,
+      "sum_error": -24.62082652816882,
+      "sum_abs_error": 39.159541103579286,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 11,
+      "predicted_high_common_cells": 0,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": null,
+      "predicted_cells": 614,
+      "predicted_zero_reference_cells": 73,
+      "predicted_zero_reference_pct": 11.889250814332248,
+      "predicted_low_reference_cells": 18,
+      "predicted_low_reference_pct": 2.9315960912052117,
+      "confusion_matrix_with_missing": [
+        [
+          30,
+          12,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          158,
+          29,
+          0,
+          0,
+          13
+        ],
+        [
+          4,
+          122,
+          151,
+          0,
+          0,
+          35
+        ],
+        [
+          0,
+          6,
+          3,
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_axes": {
+        "rows": "reference classes 0,1,2,3,4",
+        "columns": "predicted classes 0,1,2,3,4,missing"
+      }
+    }
+  },
+  "municipal_source_pixels": 500478,
+  "municipal_recognized_pixels": 248367
+}

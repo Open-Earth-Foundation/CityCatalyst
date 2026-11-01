@@ -1,0 +1,54 @@
+MAP_NAME: '10639_2.tif'
+
+MAP_SEGMENT:
+    INPUT_PATH: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps/10639_2.tif'
+    BINARY_OUTPUT_PATH: '/data/weiweidu/criticalmaas_data/hackathon2/output/10639_2_expected_crop_region.tif'
+    JSON_OUTPUT_PATH: '/data/weiweidu/criticalmaas_data/hackathon2/output/10639_2_expected_crop_region.json'
+    INTERMEDIATE_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/segmentation_intermediate_res'
+    
+MAP_LEGEND_SEGMENT:
+    INPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps'
+    OUTPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/output'
+    INTERMEDIATE_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/segmentation_intermediate_res'
+    MODEL_PATH: '/data/weiweidu/layoutlmv3_20230929'
+    
+LEGEND_ITEM_SEGMENT:
+    INPUT_PATH: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps/10639_2.tif'
+    OUTPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/output'
+    PREPROCESSING_FOR_CROPPING: True
+    POSTPROCESSING_FOR_CRS: False
+    MAPKURATOR_PATH: '/data/weiweidu/ta1-feature-validation/AK_Dillingham.geojson'
+    INTERMEDIATE_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/segmentation_intermediate_res'
+    
+LEGEND_ITEM_DESCRIPTION_EXTRACT:
+    MAP_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps'
+    GPT_INPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/gpt_inputs'
+    GPT_OUTPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/gpt_output'
+    INTERMEDIATE_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/gpt_intermediate'
+    
+CROP_IMAGE_GENERATION:
+    MAP_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps'
+    PATCH_SIZES: 1000 256 1024 
+    STRIDES: 500 256 256
+    OUTPUT_DIR: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps/cropped_images'
+
+MAPKURATOR:
+    MAP_MAPKURATOR_SYSTEM_DIR: '/data/weiweidu/usc-umn-inferlink-ta1/system/mapkurator/mapkurator-system/'
+    MODEL_WEIGHT_PATH: '/data/weiweidu/mapkurator/spotter_v2/PALEJUN/weights/synthmap_pretrain/model_final.pth'
+    INPUT_DIR_PATH: '/data/weiweidu/criticalmaas_data/hackathon2/mvtzinc_maps/cropped_images/10639_2_g1000_s500/'
+    TEXT_SPOTTING_MODEL_DIR: '/data/weiweidu/usc-umn-inferlink-ta1/system/mapkurator/spotter_v2/PALEJUN/'
+    SPOTTER_CONFIG: '/data/weiweidu/usc-umn-inferlink-ta1/system/mapkurator/spotter_v2/PALEJUN/configs/PALEJUN/SynthMap/SynthMap_Polygon.yaml'
+    OUTPUT_FOLDER: '/data/weiweidu/criticalmaas_data/hackathon2/mapkurator_output/10639_2_g1000_s500/'
+    
+    
+LINE_EXTRACTION:
+    CONFIG: '/data/weiweidu/criticalmaas_data/github_test/line/configs/usgs_railroads.yaml'
+    TRAINED_MODEL_DIR: '/data/weiweidu/line_github_workspace/trained_weights'
+    PREDICT_RASTER: True
+    PREDICT_VECTOR: False
+    PREDICTION_DIR: '/data/weiweidu/criticalmaas_data/pred_thrust_fault_line_github'
+
+POLYGON_EXTRACTION:
+    INPUT_MAP_PATH: '/data/weiweidu/criticalmaas_data/validation/AK_Dillingham.tif'
+    OUTPUT_DIR: '/data/weiweidu/criticalmaas_data/github_test/polygon_outputs'
+    

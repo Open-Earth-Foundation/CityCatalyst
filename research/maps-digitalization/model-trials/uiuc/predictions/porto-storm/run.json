@@ -1,0 +1,33 @@
+{
+  "id": "porto-storm",
+  "status": "succeeded",
+  "started_utc": "2026-10-30T12:25:42.325792+00:00",
+  "completed_utc": "2026-10-30T12:31:40.047999+00:00",
+  "seconds": 357.7121315000113,
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "shape": [
+    1758,
+    1213
+  ],
+  "model_forward_calls": 540,
+  "source_pixels": 2132454,
+  "unknown_pixels": 1399893,
+  "overlapping_positive_pixels": 194560,
+  "label_counts": {
+    "0": 1399893,
+    "1": 494727,
+    "2": 3649,
+    "3": 20166,
+    "4": 42387,
+    "5": 85583,
+    "6": 75960,
+    "7": 6182,
+    "8": 191,
+    "9": 3350,
+    "10": 366
+  },
+  "device": "cpu",
+  "precision": "float32",
+  "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+  "labels_sha256": "dcbc99127da4997a7b0e61509a0a0f041be06582c3f9f9d73b2e85400fa4da1f"
+}

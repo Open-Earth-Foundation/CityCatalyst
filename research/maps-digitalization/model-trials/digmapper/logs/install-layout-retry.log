@@ -1,0 +1,40 @@
+{"argv": ["uv", "pip", "install", "--python", "../../.venv/Scripts/python.exe", "--no-build-isolation", "-e", "./tasks[segmentation]", "-e", "./pipelines/segmentation"], "cwd": "./upstream/uncharted-ta1", "started_at": "2026-10-30T11:51:34.376566+00:00", "timeout_s": 240}
+Using Python 3.11.15 environment at: C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\.venv
+  × Failed to build `cdrc @
+  │ git+https://github.com/DARPA-CRITICALMAAS/cdrc.git@main`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `poetry.core.masonry.api.prepare_metadata_for_build_wheel`
+      failed (exit code: 1)
+
+      [stderr]
+      Traceback (most recent call last):
+        File "<string>", line 8, in <module>
+        File
+      "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\digmapper\.venv\Lib\site-packages\poetry\core\__init__.py",
+      line 5, in <module>
+          from pathlib import Path
+        File
+      "C:\Users\WBW\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\pathlib\__init__.py",
+      line 8, in <module>
+          from ._abc import *
+        File
+      "C:\Users\WBW\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\pathlib\_abc.py",
+      line 15, in <module>
+          from glob import _Globber, _no_recurse_symlinks
+        File
+      "C:\Users\WBW\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\glob.py",
+      line 5, in <module>
+          import re
+        File
+      "C:\Users\WBW\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\re\__init__.py",
+      line 126, in <module>
+          from . import _compiler, _parser
+        File
+      "C:\Users\WBW\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\re\_compiler.py",
+      line 18, in <module>
+          assert _sre.MAGIC == MAGIC, "SRE module mismatch"
+                 ^^^^^^^^^^^^^^^^^^^
+      AssertionError: SRE module mismatch
+
+      hint: This usually indicates a problem with the package or the build
+      environment.

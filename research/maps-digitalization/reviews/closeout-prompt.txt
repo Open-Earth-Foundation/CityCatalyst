@@ -1,0 +1,1766 @@
+Final bounded code/evidence review: Opus previously reviewed this pipeline and raised P1 stale evidence, 5m interior blind band, shared PyMuPDF extraction, plus P2 details. Read response-to-opus.md and updated code/results. Your previous Porto schema objection was caused by OUR prompt helper summarizing the file without labelling it; disk data always had the correct schema. This prompt explicitly labels its Porto summary. Richfield file is fresh; full-run code/input/output hashes and passing test log provided. User wants a better practical solution, not a universal parser. Evaluate remaining concrete blockers and minimal fixes. Do not claim tool execution; this is code/evidence inspection. Maximum ~1000 words, prioritise final answer over long reasoning. Changes: full-mask comparison plus serialized p99.9<=0.1m vertex-to-segment distances and <=0.01% symmetric-difference area, maxima retained. Absolute maxdistance flagged degenerate spikes afterprojection (3.4m outliers) despite tinychangedarea; revised diagnosticgate explicitlydisclosednotpreregistered. Nine decimals, structure repair, no sourceclasssmoothing. NativePDFget_ocgs empty, so claims explicitlysharePyMuPDFextraction. Narrowcomponentareaand unmatchedOSMlake selectiondisclosed. Shifted0.5ptnegativecontrols failboundarygate; syntheticomittedclipcontrol; invalidselfwindingringparitytest. Source-firstRichfieldreport full-maskIoU .98-.99inundation, priority min.875likelyclassantialiasboundary, notclaimed100%accuracy; allnumbersdisclosed. Porto pure-swatchunit testfoundfilterrejectedtwodarkestrampcolours (G>=B-3). MechanicallyfixedG>=B-16 toincludeprintedmaxB-G13+3tolerance. No parametersreselected; posttestbugfixdisclosed, pre-fixmetricsretained. Allsixexperimentalstillquarantined ifcoveragefails. Same-authorreferenceNOToriginalTIFFverified. Nativeingestionnoaccuracyagainstself. Existingvaluecorrectionnoadditionalcoverage. Now assess deliverability of fiveRichfieldsourcevectors, sixnativeaggregates, sixconservativevaluecorrectedlayers, sixresearch-onlyexperiments. No demandforlargemodel/retraining; userallowedMLbutdataalreadycontainssignal. ImportantremainingriskusercanseeinREPORT andREADME. Be precise about whether issuesblockdata or onlyneedlimitations. If no blocker after statedscope, say that without claimingindependentvalidation.
+
+
+FILE richfield.py
+"""Document-specific, fail-closed Richfield GeoPDF vector recovery."""
+import json,re
+from collections import Counter
+import numpy as np
+import pymupdf,shapely
+from shapely.geometry import Polygon,LineString,shape,mapping,box
+from shapely.ops import unary_union,polygonize,transform
+from pyproj import Transformer
+from PIL import Image,ImageDraw
+from scipy.ndimage import binary_erosion
+from porto import INPUT,OUT,write_json,digest
+
+PDF=INPUT/'Richfield_FloodRiskPrioritization.pdf'
+LAYERS=[(15,'inundation-2yr',{'2yr':(190,232,255)}),(16,'inundation-10yr',{'10yr':(0,169,230)}),
+ (17,'inundation-100yr',{'100yr':(0,92,230)}),(18,'inundation-mce100',{'mce100':(0,76,115)}),
+ (31,'prioritization-score',{'0.0 - 2.4':(255,255,204),'2.5 - 4.4':(161,218,180),'4.5 - 6.4':(44,127,184),'6.5 - 10':(37,52,148)})]
+LL=Transformer.from_crs(26915,4326,always_xy=True)
+UTM=Transformer.from_crs(4326,26915,always_xy=True)
+
+def rings(items):
+    result=[];current=[]
+    for it in items:
+        if it[0]=='re':
+            r=it[1];pts=[(r.x0,r.y0),(r.x1,r.y0),(r.x1,r.y1),(r.x0,r.y1)]
+            result.append(pts if it[2]>0 else pts[::-1]);continue
+        if it[0]!='l':raise ValueError('Unsupported curved path: require explicit curve tolerance before exporting')
+        a,b=tuple(it[1]),tuple(it[2])
+        if current and current[-1]!=a:result.append(current);current=[]
+        if not current:current=[a]
+        current.append(b)
+    if current:result.append(current)
+    return [r if r[0]==r[-1] else r+[r[0]] for r in result if len(set(r))>=3]
+
+def parts(g):
+    if g.is_empty:return []
+    if g.geom_type=='Polygon':return [g]
+    return [p for c in getattr(g,'geoms',[]) for p in parts(c)]
+
+def boundary_distances(a,b):
+    """Vertex-to-segment distances in both directions, indexed rather than quadratic."""
+    def one(source,target):
+        segments=[]
+        for p in parts(target):
+            for ring in [p.exterior,*p.interiors]:
+                c=np.asarray(ring.coords);segments.append(np.stack([c[:-1],c[1:]],axis=1))
+        tree=shapely.STRtree(shapely.linestrings(np.concatenate(segments)))
+        points=shapely.points(shapely.get_coordinates(source.boundary))
+        _,distance=tree.query_nearest(points,return_distance=True,all_matches=False)
+        return distance
+    d=np.r_[one(a,b),one(b,a)]*7.62
+    return {'median_m':float(np.median(d)),'p95_m':float(np.percentile(d,95)),'p99_9_m':float(np.percentile(d,99.9)),'max_m':float(d.max()),
+      'vertices_over_0_1m':int((d>.1).sum()),'vertices_checked':len(d)}
+
+def fill_geometry(d):
+    rr=rings(d['items'])
+    polygons=[Polygon(r) for r in rr]
+    if d['even_odd'] and all(p.is_valid for p in polygons):
+        gs=polygons
+        while len(gs)>1:gs=[gs[i].symmetric_difference(gs[i+1]) if i+1<len(gs) else gs[i] for i in range(0,len(gs),2)]
+        return gs[0] if gs else Polygon()
+    # Crossing parity also handles self-intersecting or multiply-wound even-odd rings.
+    faces=polygonize(unary_union([LineString(r) for r in rr]));kept=[]
+    if not rr:return Polygon()
+    aa=np.concatenate([np.asarray(r[:-1]) for r in rr]);bb=np.concatenate([np.asarray(r[1:]) for r in rr])
+    ax,ay=aa.T;bx,by=bb.T
+    for face in faces:
+        p=face.representative_point();px,py=p.x,p.y
+        cross=(bx-ax)*(py-ay)-(px-ax)*(by-ay)
+        w=int(np.sum((ay<=py)&(py<by)&(cross>0)))-int(np.sum((by<=py)&(py<ay)&(cross<0)))
+        if (w%2!=0 if d['even_odd'] else w!=0):kept.append(face)
+    return unary_union(kept)
+
+def georeference(doc,page):
+    if page.mediabox.x0!=0 or page.mediabox.y0!=0 or page.cropbox!=page.mediabox:raise ValueError('Unsupported PDF page origin/crop')
+    vp=doc.xref_get_key(page.xref,'VP')[1]
+    if 'UTM_Zone_15N' not in vp or 'GCS_North_American_1983' not in vp or page.rotation:raise ValueError('Unsupported GeoPDF CRS or rotation')
+    def nums(k):return np.array([float(v) for v in re.search('/'+k+r'\[([^\]]+)\]',vp).group(1).split()])
+    bbox=nums('BBox');gp=nums('GPTS').reshape(-1,2);lp=nums('LPTS').reshape(-1,2)
+    x=bbox[0]+lp[:,0]*(bbox[2]-bbox[0]);y=page.mediabox.height-(bbox[1]+lp[:,1]*(bbox[3]-bbox[1]))
+    e,n=Transformer.from_crs(4269,26915,always_xy=True).transform(gp[:,1],gp[:,0]);A=np.c_[x,y,np.ones(len(x))]
+    ce=np.linalg.lstsq(A,e,rcond=None)[0];cn=np.linalg.lstsq(A,n,rcond=None)[0]
+    residual=float(np.hypot(A@ce-e,A@cn-n).max())
+    if residual>1:raise ValueError('GeoPDF corner fit exceeds 1 metre')
+    return {'E':ce.tolist(),'N':cn.tolist(),'corner_residual_m':residual,'scale_m_per_point':[float(np.hypot(ce[i],cn[i])) for i in (0,1)],'page_frame':[float(min(x)),float(min(y)),float(max(x)),float(max(y))]}
+
+def project(g,geo):
+    e,n=np.array(geo['E']),np.array(geo['N'])
+    return transform(lambda x,y,z=None:(e[0]*np.asarray(x)+e[1]*np.asarray(y)+e[2],n[0]*np.asarray(x)+n[1]*np.asarray(y)+n[2]),g)
+
+def source_shapes(page,colours,layer_predicate):
+    stack=[];cache={};found=[];counts=Counter()
+    for d in page.get_drawings(extended=True):
+        stack=[s for s in stack if s['level']<d['level']]
+        if d['type']=='clip':stack.append(d);continue
+        if d.get('fill') is None or d['type'] not in ('f','fs') or not layer_predicate(d['layer']):continue
+        c=tuple(round(v*255) for v in d['fill'])
+        if c not in colours.values():raise ValueError('Unrecognised data-layer fill')
+        if d['fill_opacity']!=1:raise ValueError('Unexpected transparent data fill')
+        g=fill_geometry(d)
+        for clip in stack:
+            if id(clip) not in cache:cache[id(clip)]=fill_geometry(clip)
+            g=g.intersection(cache[id(clip)])
+        if not g.is_empty:
+            key=next(k for k,v in colours.items() if v==c)
+            found.append((key,g,d['seqno']));counts[d['type']]+=1
+    if not found:raise ValueError('Expected map data layer absent')
+    # Draw order matters only between different classes. Same-class pieces are unioned.
+    classes={k:unary_union([g for c,g,_ in found if c==k]) for k in colours}
+    overlap=sum(g.area for g in classes.values())-unary_union(list(classes.values())).area
+    if overlap>1e-7:
+        covered=Polygon();ordered={k:[] for k in colours}
+        for k,g,_ in reversed(found):
+            ordered[k].append(g.difference(covered));covered=covered.union(g)
+        classes={k:unary_union(gs) for k,gs in ordered.items()}
+    return classes,dict(counts),float(overlap)
+
+def mask_geometry(g,w,h,scale):
+    # Pixel-centre sampling avoids Pillow's inclusive, integer-rounded polygon edges.
+    shapely.prepare(g);mask=np.zeros((h,w),bool);xs=(np.arange(w)+.5)/scale
+    for start in range(0,h,64):
+        ys=(np.arange(start,min(start+64,h))+.5)/scale
+        mask[start:start+len(ys)]=shapely.contains_xy(g,xs[None,:],ys[:,None])
+    return mask
+
+def render_check(page,classes,colours,geo):
+    # MuPDF rasterizes original path commands and clip rules independently of Shapely.
+    # Isolate data fills: the published page uses blend groups and white label halos.
+    def commands(d):
+        result=[];last=None
+        for it in d['items']:
+            if it[0]=='re':
+                r=it[1];result.append(f'{r.x0} {page.rect.height-r.y1} {r.width} {r.height} re');last=None
+            elif it[0]=='l':
+                a,b=it[1],it[2]
+                if last!=tuple(a):result.append(f'{a.x} {page.rect.height-a.y} m')
+                result.append(f'{b.x} {page.rect.height-b.y} l');last=tuple(b)
+            else:raise ValueError('Unsupported isolated-render command')
+        return '\n'.join(result)
+    ops=[];stack=[]
+    for d in page.get_drawings(extended=True):
+        stack=[c for c in stack if c['level']<d['level']]
+        if d['type']=='clip':stack.append(d);continue
+        if d.get('fill') is None or not (d['layer'].startswith('Inundation_') or d['layer']=='Prioritization Scores'):continue
+        c=tuple(round(v*255) for v in d['fill'])
+        if c not in colours.values():continue
+        ops.append('q')
+        for clip in stack:ops.extend([commands(clip),'W* n' if clip['even_odd'] else 'W n'])
+        ops.extend([' '.join(str(v/255) for v in c)+' rg',commands(d),'f*' if d['even_odd'] else 'f','Q'])
+    isolated=pymupdf.open();ip=isolated.new_page(width=page.rect.width,height=page.rect.height)
+    xref=isolated.get_new_xref();isolated.update_object(xref,'<<>>');isolated.update_stream(xref,'\n'.join(ops).encode('ascii'));ip.set_contents(xref)
+    scale=3;pix=ip.get_pixmap(matrix=pymupdf.Matrix(scale,scale),alpha=False)
+    rgb=np.frombuffer(pix.samples,np.uint8).reshape(pix.height,pix.width,3).astype(int)
+    frame=mask_geometry(box(*geo['page_frame']),pix.width,pix.height,scale)
+    result={}
+    for k,g in classes.items():
+        predicted=mask_geometry(g,pix.width,pix.height,scale)
+        visible=(np.max(abs(rgb-np.array(colours[k])),axis=2)<=2)&frame
+        # Buffer the vector, since subpixel holes can vanish in a binary raster mask.
+        interior=mask_geometry(g.buffer(-2/scale),pix.width,pix.height,scale);visible_interior=binary_erosion(visible,iterations=2)
+        result[k]={'rendered_colour_interior_pixels':int(visible_interior.sum()),
+          'rendered_colour_interior_covered_pct':100*float((visible_interior&predicted).sum())/max(int(visible_interior.sum()),1),
+          'source_interior_visible_as_exact_colour_pct':100*float((interior&visible).sum())/max(int(interior.sum()),1)}
+        # Use half-coverage antialias threshold for full-mask fidelity, without erosion.
+        colour=np.array(colours[k],float);direction=255-colour
+        alpha=np.sum((255-rgb)*direction,axis=2)/np.sum(direction**2)
+        full=(alpha>=.5)&frame
+        if len(colours)>1:
+            distance=np.sum((rgb-colour)**2,axis=2)
+            for other in colours.values():
+                if other!=colours[k]:full &= distance<=np.sum((rgb-np.array(other))**2,axis=2)
+        union=int((full|predicted).sum());mismatch=int((full^predicted).sum())
+        result[k].update(full_mask_iou=float((full&predicted).sum()/max(union,1)),
+          full_mask_mismatch_m2=float(mismatch*np.linalg.det(np.array([geo['E'][:2],geo['N'][:2]]))*(-1)/scale**2),
+          narrow_polygon_count=sum(p.buffer(-2/scale).is_empty for p in parts(g)),
+          narrow_polygon_area_fraction=sum(p.area for p in parts(g) if p.buffer(-2/scale).is_empty)/g.area)
+        if min(result[k]['rendered_colour_interior_covered_pct'],result[k]['source_interior_visible_as_exact_colour_pct'])<99.5:raise ValueError('Independent vector rasterization agreement below 99.5%: '+str(result[k]))
+    isolated.close()
+    return result
+
+def shoreline_check(doc):
+    geo=georeference(doc,doc[7]);lakes=[]
+    for d in doc[7].get_drawings():
+        if d.get('fill') and tuple(round(v*255) for v in d['fill'])==(151,219,242):
+            lakes.extend(p for p in parts(fill_geometry(d).intersection(box(*geo['page_frame']))) if p.area>=20)
+    raw=json.loads((INPUT/'osm-water-richfield.json').read_text(encoding='utf-8'))
+    osm=[shapely.make_valid(Polygon([UTM.transform(q['lon'],q['lat']) for q in el['geometry']])) for el in raw['elements'] if el['type']=='way' and len(el.get('geometry',[]))>=4]
+    errors=[];per=[];unmatched=[]
+    for p in lakes:
+        g=project(p,geo);matches=[q for q in osm if q.intersection(g).area/g.area>.3 and .5<q.area/g.area<2]
+        if not matches:unmatched.append({'area_m2':g.area,'centroid_utm':list(g.centroid.coords[0])});continue
+        q=max(matches,key=lambda q:q.intersection(g).area)
+        points=[g.exterior.interpolate(t) for t in np.arange(0,g.exterior.length,5)]
+        dist=np.array([v.distance(q.boundary) for v in points]);errors.extend(dist)
+        per.append({'samples':len(dist),'median_m':float(np.median(dist)),'p90_m':float(np.percentile(dist,90))})
+    return {'method':'GeoPDF only for fit; OSM matching checks shorelines, not surveyed ground truth. No roads checked.',
+      'candidate_lakes':len(lakes),'matched_lakes':len(per),'unmatched':unmatched,'selection_note':'Overlap and area-ratio matching conditions on agreement; only OSM ways and exterior shorelines are checked.',
+      'median_m':float(np.median(errors)),'p90_m':float(np.percentile(errors,90)),'per_lake':per}
+
+def run():
+    out=OUT/'richfield';out.mkdir(parents=True,exist_ok=True);report={'source_sha256':digest(PDF),'layers':{}}
+    with pymupdf.open(PDF) as doc:
+        for pn,name,colours in LAYERS:
+            page=doc[pn-1];geo=georeference(doc,page)
+            classes,counts,overlap=source_shapes(page,colours,lambda s:s.startswith('Inundation_') or s=='Prioritization Scores')
+            features=[];areas={};old_metrics={};rounding_error=[]
+            old=json.loads((INPUT/('richfield-flood-'+name+'.json')).read_text(encoding='utf-8'))
+            for k,g in classes.items():
+                utm=project(g,geo);areas[k]=utm.area/10000
+                ll=transform(LL.transform,utm)
+                # Projection/rounding can collapse tiny rings; record area change and cap loss.
+                precision=9
+                # Source rings already identify shells/holes; structure repair avoids costly global noding.
+                rounded=shapely.set_precision(unary_union(parts(shapely.make_valid(ll,method='structure',keep_collapsed=False))),1e-9)
+                rounded=shapely.orient_polygons(rounded)
+                rounded=transform(lambda x,y,z=None:(np.round(x,precision),np.round(y,precision)),rounded)
+                geom=mapping(rounded);check=shape(json.loads(json.dumps(geom)))
+                if not check.is_valid or check.is_empty or check.geom_type not in ('Polygon','MultiPolygon'):raise ValueError('Invalid serialized polygon')
+                rounding_error.append(abs(transform(UTM.transform,check).area-utm.area))
+                if rounding_error[-1]/utm.area>1e-4:raise ValueError('Projection/precision area change exceeds 0.01%')
+                features.append({'type':'Feature','properties':{'class':k,'source_page':pn,'coordinate_decimals':precision},'geometry':geom})
+                oldparts=[shapely.make_valid(transform(UTM.transform,shape(f['geometry']))) for f in old['features'] if len(colours)==1 or f['properties']['class']==k]
+                op=unary_union(oldparts);inter=utm.intersection(op).area
+                old_metrics[k]={'jvp_vs_source_iou':inter/utm.union(op).area,'source_area_recovered_by_jvp':inter/utm.area}
+            target=out/(name+'.geojson')
+            write_json(target,{'type':'FeatureCollection','provenance':{'method':'Source PDF vector fills with actual clip paths, draw order, embedded GeoPDF coordinates; pre-label/stroke geometry; no fitted OSM registration or imposed nesting','pdf_sha256':digest(PDF),'page':pn,'geo':geo},'features':features})
+            inverse=np.linalg.inv(np.array([geo['E'][:2],geo['N'][:2]]));offset=np.array([geo['E'][2],geo['N'][2]])
+            def pagecoords(x,y,z=None):
+                xy=inverse@np.array([np.asarray(x)-offset[0],np.asarray(y)-offset[1]])
+                return xy[0],xy[1]
+            serialized=json.loads(target.read_text(encoding='utf-8'))
+            recovered={f['properties']['class']:transform(pagecoords,transform(UTM.transform,shape(f['geometry']))) for f in serialized['features']}
+            boundary_error={k:boundary_distances(classes[k],g) for k,g in recovered.items()}
+            changed_area={k:float(classes[k].symmetric_difference(shapely.make_valid(g)).area/classes[k].area) for k,g in recovered.items()}
+            # Tiny zero-width spikes can collapse on projection; bound their area and vertex share.
+            if max(v['p99_9_m'] for v in boundary_error.values())>.1 or max(changed_area.values())>1e-4:raise ValueError('Serialized roundtrip exceeds boundary/area gates: '+str(boundary_error))
+            from shapely.affinity import translate
+            negative_shift={k:boundary_distances(classes[k],translate(g,xoff=.5)) for k,g in recovered.items()}
+            if min(v['p99_9_m'] for v in negative_shift.values())<=.1:raise ValueError('Shifted negative control was not detected')
+            report['layers'][name]={'page':pn,'source_paths':counts,'cross_class_overlap_page_pt2':overlap,'source_area_ha':areas,'rounding_area_change_m2':rounding_error,'geo':geo,'invalid_features_after_serialization':0,'render_check':render_check(page,recovered,colours,geo),'old_vs_document_geometry':old_metrics}
+            report['layers'][name].update(serialized_boundary_vertex_to_segment_m=boundary_error,serialized_symmetric_difference_area_fraction=changed_area,negative_control_shift_half_point_vertex_to_segment_m=negative_shift)
+            print(name,json.dumps(report['layers'][name]['render_check']),flush=True)
+        report['shoreline_check']=shoreline_check(doc)
+        if georeference(doc,doc[7])!=georeference(doc,doc[14]):raise ValueError('Shoreline page georeference differs')
+    report['limitation']='Source fidelity, not hazard accuracy: serialized GeoJSON inverse-projected and compared to MuPDF rasterization of isolated path/clip commands obtained from the same PyMuPDF extraction. Independent of Shapely fill interpretation, NOT independent of PyMuPDF extraction. Source interiors exclude a 2/3 PDF-point boundary band; MuPDF interiors exclude 2 raster pixels. Full-mask metrics supplement this blind band. Roundtrip gates: p99.9 vertex-to-boundary error <=0.1m and symmetric-difference area <=0.01%; maxima and outlier counts retained because tiny degenerate spikes can collapse. Shifted negative controls must fail the boundary gate. Narrow shapes can have no interior samples. Labels, strokes and blend styling omitted. No road control or survey validation.'
+    write_json(out/'validation.json',report)
+    return report
+
+if __name__=='__main__':run()
+
+
+FILE porto.py
+"""Porto ARVC profile: PDF recovery never reads reference hazard values."""
+from pathlib import Path
+import io,json,hashlib
+import numpy as np
+import pymupdf
+from PIL import Image,ImageDraw
+from pyproj import Transformer
+
+ROOT=Path(__file__).parent
+INPUT=ROOT/'inputs'
+OUT=ROOT/'outputs'
+PAGES=dict(flood=85,landslide=93,heat=100,drought=106,arbovirus=111,storm=117)
+RAMP=np.array([(253,245,239),(253,226,213),(251,194,170),(252,158,127),(251,123,90),(244,85,62),(227,46,40),(194,22,24),(157,13,19),(102,0,13)],dtype=np.float32)
+NONDATA=np.array([(226,226,226),(198,226,242),(45,104,56),(166,209,162),(128,128,128),(0,0,0),(90,90,90),(180,180,180),(255,255,255),(250,250,250)],dtype=np.float32)
+FWD=Transformer.from_crs(4326,31982,always_xy=True)
+INV=Transformer.from_crs(31982,4326,always_xy=True)
+E0,N1,CELL,NX=462000.,6692000.,250.,152
+
+def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def write_json(path,data):
+    Path(path).parent.mkdir(parents=True,exist_ok=True)
+    Path(path).write_text(json.dumps(data,ensure_ascii=False,allow_nan=False,indent=2),encoding='utf-8')
+
+def figure(page):
+    with pymupdf.open(INPUT/'porto-alegre-arvc.pdf') as doc:
+        image=max(doc[page-1].get_images(full=True),key=lambda im:im[2]*im[3])
+        return np.asarray(Image.open(io.BytesIO(doc.extract_image(image[0])['image'])).convert('RGB'))
+
+def centres(mask):
+    ids=np.flatnonzero(mask)
+    return np.array([a.mean() for a in np.split(ids,np.where(np.diff(ids)>1)[0]+1) if len(a)])
+
+def fit_ticks(rgb):
+    h,w=rgb.shape[:2];dark=rgb.max(2)<100
+    left=np.flatnonzero(dark.sum(0)>h*.55).min();bottom=np.flatnonzero(dark.sum(1)>w*.65).max()
+    xs=centres(dark[bottom+2:bottom+17,:].sum(0)>=7)
+    ys=centres((dark[:,left-14:left-2].sum(1)>=7)&(np.arange(h)>200)&(np.arange(h)<bottom-25))
+    if len(xs)!=7 or len(ys)!=7:raise ValueError('Expected seven verified labelled ticks per axis; manual control required')
+    e=np.arange(470000,500001,5000);n=np.arange(6685000,6654999,-5000)
+    mx,bx=np.polyfit(xs,e,1);my,by=np.polyfit(ys,n,1)
+    residual=max(abs(mx*xs+bx-e).max(),abs(my*ys+by-n).max())
+    if residual>25:raise ValueError('Tick-fit gate failed')
+    return {'mx':float(mx),'bx':float(bx),'my':float(my),'by':float(by),'tick_fit_max_residual_m':float(residual),'control_note':'Printed numeric labels verified for this document profile; residual is not survey accuracy.'}
+
+def map_domain(rgb,aff):
+    h,w=rgb.shape[:2];mask=Image.new('1',(w,h));draw=ImageDraw.Draw(mask)
+    boundary=json.loads((INPUT/'porto-boundary.json').read_text(encoding='utf-8'))['boundaryGeoJson']['geometry']
+    polygons=boundary['coordinates'] if boundary['type']=='MultiPolygon' else [boundary['coordinates']]
+    for poly in polygons:
+        for i,ring in enumerate(poly):
+            ll=np.array(ring);e,n=FWD.transform(ll[:,0],ll[:,1])
+            draw.polygon(list(zip((e-aff['bx'])/aff['mx'],(n-aff['by'])/aff['my'])),fill=not i)
+    yy,xx=np.nonzero(np.asarray(mask))
+    gx=np.floor((aff['mx']*xx+aff['bx']-E0)/CELL).astype(int)
+    gy=np.floor((N1-aff['my']*yy-aff['by'])/CELL).astype(int)
+    ok=(gx>=0)&(gx<NX)&(gy>=0)
+    return yy[ok],xx[ok],gy[ok]*NX+gx[ok]
+
+def classify_nearest(pixels):
+    pixels=np.asarray(pixels,dtype=np.float32)
+    d=((pixels[:,None,:]-RAMP[None,:,:])**2).sum(2)
+    dn=((pixels[:,None,:]-NONDATA[None,:,:])**2).sum(2).min(1)
+    steps=d.argmin(1);best=d.min(1)
+    valid=(best<=42**2)&(best<dn)
+    return np.where(valid,steps,-1),np.sqrt(best)
+
+def classify_blended(pixels,min_alpha):
+    """Fit a palette swatch composited with neutral map furniture; never infer through masks."""
+    pixels=np.asarray(pixels,dtype=np.float32)
+    best=np.full(len(pixels),np.inf,dtype=np.float32);labels=np.full(len(pixels),-1,dtype=np.int16)
+    for k,swatch in enumerate(RAMP):
+        for bg in (90.,128.,180.,226.,255.):
+            direction=swatch-bg
+            alpha=np.clip(((pixels-bg)*direction).sum(1)/(direction*direction).sum(),0,1)
+            error=np.sqrt(((pixels-(bg+alpha[:,None]*direction))**2).sum(1))
+            cost=error+2*(1-alpha)
+            take=(alpha>=min_alpha)&(cost<best)
+            best[take]=cost[take];labels[take]=k
+    dn=np.sqrt(((pixels[:,None,:]-NONDATA[None,:,:])**2).sum(2).min(1))
+    # Dark legend reds have blue above green (maximum 13); retain those exact swatches.
+    red=(pixels[:,0]>pixels[:,1]+2)&(pixels[:,0]>pixels[:,2]+4)&(pixels[:,1]>=pixels[:,2]-16)
+    valid=(best<=14)&(best<dn)&red
+    return np.where(valid,labels,-1),best
+
+def aggregate(ids,steps,support=3,median=False):
+    if len(ids)==0 or len(ids)!=len(steps) or support<1:raise ValueError('Invalid aggregation inputs')
+    keep=steps>=0;k=ids[keep];v=(steps[keep].astype(float)+.5)/10
+    counts=np.bincount(k,minlength=int(ids.max())+1);totals=np.bincount(ids,minlength=len(counts))
+    sums=np.bincount(k,weights=v,minlength=len(counts));good=np.flatnonzero(counts>=support)
+    means=np.divide(sums,counts,out=np.zeros(len(counts)),where=counts>0)
+    if median:
+        order=np.argsort(k);ks=k[order];vs=v[order]
+        for idx,group in zip(*np.unique(ks,return_index=True)):
+            means[idx]=np.median(vs[group:group+counts[idx]])
+    vals={int(i):float(means[i]) for i in good}
+    meta={int(i):{'recognized_pixels':int(counts[i]),'municipal_pixels':int(totals[i]),'support_fraction':float(counts[i]/totals[i]),
+                 'bin_quantization_half_width':.05,'status':'estimated_from_observed_colours'} for i in good}
+    return vals,meta
+
+def polygon_for_id(k):
+    y,x=divmod(int(k),NX);e=E0+x*CELL;n=N1-y*CELL
+    ring=[[round(z,7) for z in INV.transform(ee,nn)] for ee,nn in [(e,n),(e,n-CELL),(e+CELL,n-CELL),(e+CELL,n),(e,n)]]
+    return {'type':'Polygon','coordinates':[ring]}
+
+def export_cells(path,hazard,values,support,provenance):
+    from shapely.geometry import shape
+    features=[]
+    for k,v in sorted(values.items()):
+        if not np.isfinite(v) or not 0<=v<=1:raise ValueError('Risk value must be finite in [0,1]')
+        geom=polygon_for_id(k)
+        if not shape(geom).is_valid:raise ValueError('Final cell geometry invalid')
+        features.append({'type':'Feature','id':k,'properties':{'hazard':hazard,'value':v,'class_index':min(int(np.floor(v*5)),4),**support.get(k,{})},'geometry':geom})
+    write_json(path,{'type':'FeatureCollection','provenance':provenance,'features':features})
+
+if __name__=='__main__':
+    raise SystemExit('Use run.py; this module separates PDF recovery from benchmark reference ingestion.')
+
+
+FILE benchmark.py
+"""Reference values are isolated here; PDF recovery code has no access to them."""
+import json,hashlib
+import numpy as np
+from PIL import Image
+from pyproj import Transformer
+from porto import INPUT,E0,N1,CELL,NX
+
+def reference(hazard,min_pixels=15):
+    manifest=json.loads((INPUT/'arvc-manifest.json').read_text(encoding='utf-8'))
+    if 'EPSG:3857' not in manifest['provenance']['encoding']['format']:raise ValueError('Unsupported raster encoding CRS')
+    entry=manifest['layers']['arvc_off_risk_'+hazard+'_2050']
+    im=Image.open(INPUT/('arvc_off_risk_'+hazard+'_2050.png'))
+    transparency=im.info.get('transparency')
+    valid_alpha=transparency==255 or (isinstance(transparency,bytes) and len(transparency)==256 and transparency[:255]==bytes([255])*255 and transparency[255]==0)
+    if im.mode!='P' or not valid_alpha:raise ValueError('Unsupported indexed PNG / no-data encoding')
+    idx=np.asarray(im);y,x=np.where(idx!=255)
+    (south,west),(north,east)=entry['bounds'];proj=Transformer.from_crs(4326,3857,always_xy=True)
+    xmin,ymin=proj.transform(west,south);xmax,ymax=proj.transform(east,north)
+    e,n=Transformer.from_crs(3857,31982,always_xy=True).transform(xmin+(x+.5)*(xmax-xmin)/im.width,ymax-(y+.5)*(ymax-ymin)/im.height)
+    gx=np.floor((e-E0)/CELL).astype(int);gy=np.floor((N1-n)/CELL).astype(int)
+    assert np.all((gx>=0)&(gx<NX)&(gy>=0))
+    ids=gy*NX+gx;counts=np.bincount(ids);sums=np.bincount(ids,weights=idx[y,x]/254)
+    return {int(k):float(sums[k]/counts[k]) for k in np.flatnonzero(counts>=min_pixels)},counts
+
+def split(k):
+    y,x=divmod(int(k),NX)
+    fold=int.from_bytes(hashlib.sha256(f'{x//12}:{y//12}'.encode()).digest()[:4],'big')%5
+    return 'test' if fold==0 else 'validation' if fold==1 else 'development'
+
+def metrics(reference_values,counts,prediction,subset=None,jvp=False):
+    ref={k:v for k,v in reference_values.items() if subset is None or split(k)==subset}
+    pred={k:v for k,v in prediction.items() if subset is None or split(k)==subset}
+    common=sorted(ref.keys()&pred.keys())
+    if not common or not ref:raise ValueError('Empty comparison domain')
+    a=np.array([ref[k] for k in common]);b=np.array([pred[k] for k in common])
+    ca=np.minimum(np.floor(a*5).astype(int),4)
+    cb=np.minimum(np.rint(b*9).astype(int)//2,4) if jvp else np.minimum(np.floor(b*5).astype(int),4)
+    correct=int((ca==cb).sum());high_total=sum(v>=.6 for v in ref.values())
+    zero_reference=[k for k in pred if k>=len(counts) or counts[k]==0]
+    low_reference=[k for k in pred if k<len(counts) and 0<counts[k]<15]
+    predicted_high=int((cb>=3).sum())
+    return {'eligible':len(ref),'common':len(common),'missing':len(ref)-len(common),'missing_pct':100*(len(ref)-len(common))/len(ref),
+        'exact_common_pct':100*correct/len(common),'exact_all_pct':100*correct/len(ref),'bias':float((b-a).mean()),'mae':float(abs(b-a).mean()),
+        'high_recall_pct':100*int(((ca>=3)&(cb>=3)).sum())/high_total if high_total else None,
+        'high_precision_common_pct':100*int(((ca>=3)&(cb>=3)).sum())/predicted_high if predicted_high else None,
+        'predicted_low_reference_pct':100*len(low_reference)/max(len(pred),1),
+        'predicted_cells':len(pred),'predicted_zero_reference_cells':len(zero_reference),'predicted_zero_reference_pct':100*len(zero_reference)/max(len(pred),1)}
+
+
+FILE run.py
+"""Run the two document profiles; use --route to avoid regenerating unrelated artifacts."""
+import argparse,json,hashlib,importlib.metadata,datetime
+import numpy as np
+from PIL import features
+from porto import *
+from benchmark import reference,metrics
+
+def porto():
+    baseline=json.loads((INPUT/'arvc-poa.json').read_text(encoding='utf-8'))
+    selection=json.loads((ROOT/'SELECTION.json').read_text(encoding='utf-8'))
+    report={'selection_sha256':digest(ROOT/'SELECTION.json'),'hazards':{},'reference_warning':'Same-author indexed PNG derivatives. Original TIFF provenance was not authenticated. Native ingestion is not scored against itself.'}
+    for hazard,page in PAGES.items():
+        rgb=figure(page);aff=fit_ticks(rgb);yy,xx,ids=map_domain(rgb,aff)
+        labels,_=classify_blended(rgb[yy,xx].astype(np.float32),selection['configuration']['minimum_alpha'])
+        vals,support=aggregate(ids,labels,selection['configuration']['recognized_pixel_minimum'])
+        # A bin interval excludes classification error; explicitly avoid a confidence claim.
+        for k,v in vals.items():
+            support[k].update(value_lower=max(0,v-.05),value_upper=min(1,v+.05),interval_kind='palette quantization only, NOT confidence or classification uncertainty',release_status='research_only_failed_coverage_gate')
+        prov={'method':'PDF colour mixing experiment; failed validation coverage gate; not recommended for decisions','source_pdf_sha256':digest(INPUT/'porto-alegre-arvc.pdf'),
+          'page':page,'decoded_rgb_sha256':hashlib.sha256(rgb.tobytes()).hexdigest(),'decoder':'Pillow '+importlib.metadata.version('pillow')+'; libjpeg '+str(features.version_codec('jpg')),
+          'affine':aff,'selection_sha256':report['selection_sha256'],'cell_geometry':'250m aggregation square, not a traced risk footprint'}
+        export_cells(OUT/'porto-experimental'/(hazard+'.geojson'),hazard,vals,support,prov)
+        totals=np.bincount(ids);recognized=np.bincount(ids[labels>=0],minlength=len(totals))
+        write_json(OUT/'porto-experimental'/(hazard+'-missing.json'),{'note':'Absence means insufficient observed colour support; it does not identify source masking.',
+          'cells':[{'id':int(k),'reason':'no_accepted_colour' if recognized[k]==0 else 'insufficient_accepted_pixels','accepted_pixels':int(recognized[k]),'municipal_pixels':int(totals[k])} for k in np.flatnonzero((totals>0)&(recognized<selection['configuration']['recognized_pixel_minimum']))]})
+        raw={int(k):v for k,v in baseline['hazards'][hazard+'_risk_2050'].items()}
+        corrected={k:float(.9*v+.05) for k,v in raw.items()}
+        correction_meta={k:{'status':'existing_reconstruction_scale_corrected','value_lower':max(0,v-.05045),'value_upper':min(1,v+.05045),'interval_kind':'palette plus stored rounding only; classification/coverage uncertainty excluded'} for k,v in corrected.items()}
+        export_cells(OUT/'porto-corrected-existing'/(hazard+'.geojson'),hazard,corrected,correction_meta,{'method':'Existing JVP reconstruction migrated to printed 0.1-bin midpoint scale; NOT new source recovery','input_sha256':digest(INPUT/'arvc-poa.json'),'missing_means':'Unknown: may be source mask OR extraction omission; never assume zero risk','cell_geometry':'250m aggregation square, not a risk footprint'})
+        # Native route preserves every cell with >=1 numerical source pixel, including low-support edges.
+        native,counts=reference(hazard,min_pixels=1)
+        metadata={k:{'source_valid_pixels':int(counts[k]),'low_support':bool(counts[k]<15),'status':'aggregated_published_raster_derivative'} for k in native}
+        target=OUT/'porto-raster-source'/(hazard+'.geojson')
+        export_cells(target,hazard,native,metadata,{'method':'Numerical ingestion of published indexed PNG; value=index/254, 255=no-data, unweighted valid-pixel-centre mean in 250m cells','input_sha256':digest(INPUT/('arvc_off_risk_'+hazard+'_2050.png')),'manifest_sha256':digest(INPUT/'arvc-manifest.json'),'original_TIFF_authenticated':False,'cell_geometry':'250m aggregation square; preserve source PNG for ~29m detail; low-support edge cells flagged'})
+        loaded=json.loads(target.read_text(encoding='utf-8'));assert {int(f['id']):f['properties']['value'] for f in loaded['features']}==native
+        ref,_=reference(hazard)
+        comparisons={}
+        for part in ['validation','test',None]:
+            comparisons[part or 'all_descriptive']={'jvp':metrics(ref,counts,raw,part,jvp=True),'scale_fix_only':metrics(ref,counts,corrected,part),'experimental':metrics(ref,counts,vals,part)}
+        report['hazards'][hazard]={'comparisons':comparisons,'native_ingestion':{'cells':len(native),'low_support_cells':sum(counts[k]<15 for k in native).__int__(),'readback_values_identical':True},
+          'eligibility_sensitivity_test':{str(n):metrics(reference(hazard,n)[0],counts,vals,'test') for n in [5,30]}}
+        v=comparisons['validation'];base=v['jvp'];trial=v['experimental'];fixed=v['scale_fix_only']
+        report['hazards'][hazard]['validation_gates']={
+          'correct_all_gain_at_least_8pp':trial['exact_all_pct']-base['exact_all_pct']>=8,
+          'missing_at_most_10pct':trial['missing_pct']<=10,
+          'common_agreement_drop_at_most_1pp':trial['exact_common_pct']>=base['exact_common_pct']-1,
+          'mae_better_than_scale_fix':trial['mae']<fixed['mae'],
+          'empty_reference_increase_at_most_0_5pp':trial['predicted_zero_reference_pct']<=base['predicted_zero_reference_pct']+.5,
+          'low_reference_increase_at_most_2pp':trial['predicted_low_reference_pct']<=base['predicted_low_reference_pct']+2,
+          'high_recall_gain_at_least_10pp':trial['high_recall_pct'] is not None and base['high_recall_pct'] is not None and trial['high_recall_pct']>=base['high_recall_pct']+10,
+          'high_precision_common_at_least_70pct':trial['high_precision_common_pct'] is not None and trial['high_precision_common_pct']>=70}
+        print(hazard,'test',json.dumps(comparisons['test']),flush=True)
+    names=['jvp','scale_fix_only','experimental']
+    report['test_macro_average']={name:{key:float(np.mean([report['hazards'][h]['comparisons']['test'][name][key] for h in PAGES])) for key in ['exact_all_pct','exact_common_pct','missing_pct','mae','bias','predicted_zero_reference_pct']} for name in names}
+    write_json(OUT/'porto-benchmark.json',report)
+    write_json(OUT/'runtime.json',{'versions':{p:importlib.metadata.version(p) for p in ['numpy','scipy','pillow','shapely','pyproj','pymupdf']},'input_hashes':{p.name:digest(p) for p in INPUT.iterdir() if p.is_file()},'OpenRouter_budget_file':'../BUDGET.json'})
+    print(json.dumps(report['test_macro_average'],indent=2),flush=True)
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--route',choices=['all','porto','richfield'],default='all');args=p.parse_args()
+    manifest={'status':'running','route':args.route,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+      'pipeline_hashes':{f:digest(ROOT/f) for f in ['porto.py','benchmark.py','richfield.py','run.py']},'selection_sha256':digest(ROOT/'SELECTION.json'),
+      'input_hashes':{p.name:digest(p) for p in INPUT.iterdir() if p.is_file()}}
+    write_json(OUT/'run-manifest.json',manifest)
+    if args.route in ['all','richfield']:
+        import richfield
+        richfield.run()
+    if args.route in ['all','porto']:porto()
+    manifest.update(status='complete',finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),output_hashes={str(p.relative_to(OUT)):digest(p) for p in OUT.rglob('*') if p.is_file() and p.name!='run-manifest.json'})
+    write_json(OUT/'run-manifest.json',manifest)
+
+
+FILE test_recovery.py
+import unittest,json,tempfile
+from pathlib import Path
+import numpy as np
+import pymupdf
+from shapely.geometry import shape,Polygon
+import richfield as r
+import porto as p
+from benchmark import metrics,split,reference
+
+def path(rings,evenodd=True,**kw):
+    items=[]
+    for ring in rings:
+        for a,b in zip(ring,ring[1:]+ring[:1]):items.append(('l',pymupdf.Point(*a),pymupdf.Point(*b)))
+    return {'items':items,'even_odd':evenodd,**kw}
+
+class RecoveryChecks(unittest.TestCase):
+    def test_fill_rules_and_holes(self):
+        outer=[(0,0),(10,0),(10,10),(0,10)];inner=[(2,2),(8,2),(8,8),(2,8)]
+        self.assertAlmostEqual(r.fill_geometry(path([outer,inner])).area,64)
+        self.assertAlmostEqual(r.fill_geometry(path([outer,inner],False)).area,100)
+        self.assertAlmostEqual(r.fill_geometry(path([outer,inner[::-1]],False)).area,64)
+        self.assertAlmostEqual(r.fill_geometry(path([outer+outer])).area,0)
+        self.assertAlmostEqual(r.fill_geometry(path([outer+outer],False)).area,100)
+    def test_clipping_fill_and_stroke_and_draw_order(self):
+        clip=path([[(0,0),(8,0),(8,8),(0,8)]],False,type='clip',level=0)
+        a=path([[(0,0),(10,0),(10,10),(0,10)]],type='fs',level=1,fill=(1,0,0),fill_opacity=1,layer='data',seqno=0)
+        b=path([[(4,0),(10,0),(10,10),(4,10)]],type='f',level=1,fill=(0,0,1),fill_opacity=1,layer='data',seqno=1)
+        class Page:
+            def get_drawings(self,**kwargs):return [clip,a,b]
+        cs,counts,overlap=r.source_shapes(Page(),{'a':(255,0,0),'b':(0,0,255)},lambda s:s=='data')
+        self.assertEqual(counts,{'fs':1,'f':1});self.assertEqual(cs['a'].area,32);self.assertEqual(cs['b'].area,32);self.assertEqual(overlap,32)
+        class NoClip:
+            def get_drawings(self,**kwargs):return [a,b]
+        unclipped,_,_=r.source_shapes(NoClip(),{'a':(255,0,0),'b':(0,0,255)},lambda s:s=='data')
+        self.assertNotEqual(sum(g.area for g in unclipped.values()),64,'Omitted-clip negative control must be detected')
+    def test_curve_fails_closed(self):
+        with self.assertRaises(ValueError):r.rings([('c',)])
+    def test_support_missing_and_midpoints(self):
+        ids=np.array([0,0,0,1,1,2]);steps=np.array([0,0,-1,9,-1,-1])
+        vals,meta=p.aggregate(ids,steps,support=2)
+        self.assertEqual(set(vals),{0});self.assertAlmostEqual(vals[0],.05);self.assertEqual(meta[0]['recognized_pixels'],2)
+    def test_uint8_colour_input(self):
+        labels,_=p.classify_nearest(p.RAMP.astype(np.uint8));self.assertEqual(labels.tolist(),list(range(10)))
+        a,_=p.classify_blended(p.RAMP.astype(np.uint8),.35);b,_=p.classify_blended(p.RAMP,.35)
+        np.testing.assert_equal(a,b);self.assertEqual(a.tolist(),list(range(10)))
+    def test_missing_denominator_and_zero_reference(self):
+        m=metrics({0:.4,1:.7},np.array([20,20,0]),{0:.4,2:.5})
+        self.assertEqual(m['exact_all_pct'],50);self.assertEqual(m['exact_common_pct'],100);self.assertEqual(m['missing_pct'],50);self.assertEqual(m['predicted_zero_reference_cells'],1)
+    def test_cell_geometry_and_input_validation(self):
+        g=shape(p.polygon_for_id(21547));self.assertTrue(g.is_valid);self.assertTrue(g.exterior.is_ccw)
+        with tempfile.TemporaryDirectory() as t:
+            with self.assertRaises(ValueError):p.export_cells(Path(t)/'x.json','heat',{0:float('nan')},{},{})
+    def test_spatial_split_shared_block(self):
+        self.assertEqual(split(0),split(11+11*p.NX))
+    def test_all_delivered_geometry(self):
+        manifest=json.loads((p.OUT/'run-manifest.json').read_text(encoding='utf-8'))
+        self.assertEqual(manifest['status'],'complete');self.assertEqual(manifest['route'],'all')
+        for file,h in manifest['pipeline_hashes'].items():self.assertEqual(p.digest(p.ROOT/file),h)
+        for file,h in manifest['output_hashes'].items():self.assertEqual(p.digest(p.OUT/file),h)
+        paths=list(p.OUT.glob('*/*.geojson'));self.assertGreaterEqual(len(paths),23)
+        for file in paths:
+            data=json.loads(file.read_text(encoding='utf-8'))
+            for f in data['features']:self.assertTrue(shape(f['geometry']).is_valid,file.name)
+    def test_exported_and_missing_disjoint(self):
+        for hazard in p.PAGES:
+            exported=json.loads((p.OUT/'porto-experimental'/(hazard+'.geojson')).read_text(encoding='utf-8'))
+            missing=json.loads((p.OUT/'porto-experimental'/(hazard+'-missing.json')).read_text(encoding='utf-8'))
+            e={f['id'] for f in exported['features']};m={f['id'] for f in missing['cells']}
+            self.assertFalse(e&m)
+            rgb=p.figure(p.PAGES[hazard]);_,_,ids=p.map_domain(rgb,p.fit_ticks(rgb))
+            self.assertEqual(e|m,set(map(int,ids)))
+    def test_actual_geopdf_scale_and_corner_fit(self):
+        with pymupdf.open(r.PDF) as doc:
+            gs=[r.georeference(doc,doc[pn-1]) for pn,_,_ in r.LAYERS]
+        for g in gs:
+            self.assertLess(g['corner_residual_m'],.2)
+            self.assertLess(max(abs(s-7.62) for s in g['scale_m_per_point']),.001)
+            self.assertEqual(g,gs[0])
+
+if __name__=='__main__':unittest.main(verbosity=2)
+
+
+FILE outputs/richfield/validation.json
+{
+  "source_sha256": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758",
+  "layers": {
+    "inundation-2yr": {
+      "page": 15,
+      "source_paths": {
+        "f": 378
+      },
+      "cross_class_overlap_page_pt2": 0.0,
+      "source_area_ha": {
+        "2yr": 179.21252948833794
+      },
+      "rounding_area_change_m2": [
+        0.007224973989650607
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "2yr": {
+          "rendered_colour_interior_pixels": 178212,
+          "rendered_colour_interior_covered_pct": 99.99775548223464,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9801823790395747,
+          "full_mask_mismatch_m2": 35936.001395675084,
+          "narrow_polygon_count": 1863,
+          "narrow_polygon_area_fraction": 0.030174359741980912
+        }
+      },
+      "old_vs_document_geometry": {
+        "2yr": {
+          "jvp_vs_source_iou": 0.28954507676515445,
+          "source_area_recovered_by_jvp": 0.34602675845189357
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "2yr": {
+          "median_m": 2.2294950212199835e-05,
+          "p95_m": 5.2207396040420934e-05,
+          "p99_9_m": 6.505024630893195e-05,
+          "max_m": 0.0001767881636141995,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 204885
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "2yr": 2.1573577393300354e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "2yr": {
+          "median_m": 1.204921443395107,
+          "p95_m": 3.8099834053444424,
+          "p99_9_m": 3.810038254833676,
+          "max_m": 3.8100396181746023,
+          "vertices_over_0_1m": 180844,
+          "vertices_checked": 204885
+        }
+      }
+    },
+    "inundation-10yr": {
+      "page": 16,
+      "source_paths": {
+        "f": 577
+      },
+      "cross_class_overlap_page_pt2": 0.0,
+      "source_area_ha": {
+        "10yr": 250.9752243158405
+      },
+      "rounding_area_change_m2": [
+        0.03223609970882535
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "10yr": {
+          "rendered_colour_interior_pixels": 260281,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99962895212369,
+          "full_mask_iou": 0.9884040553843794,
+          "full_mask_mismatch_m2": 29258.48587601194,
+          "narrow_polygon_count": 1602,
+          "narrow_polygon_area_fraction": 0.028792855762205437
+        }
+      },
+      "old_vs_document_geometry": {
+        "10yr": {
+          "jvp_vs_source_iou": 0.33228636136966566,
+          "source_area_recovered_by_jvp": 0.4079406381493111
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "10yr": {
+          "median_m": 2.21888509928018e-05,
+          "p95_m": 5.160942419395933e-05,
+          "p99_9_m": 6.479249603235313e-05,
+          "max_m": 7.209005560813468e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 174438
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "10yr": 1.657527217148354e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "10yr": {
+          "median_m": 1.7837355882783918,
+          "p95_m": 3.810007456938361,
+          "p99_9_m": 3.8100388928272384,
+          "max_m": 3.810039655990022,
+          "vertices_over_0_1m": 160083,
+          "vertices_checked": 174438
+        }
+      }
+    },
+    "inundation-100yr": {
+      "page": 17,
+      "source_paths": {
+        "f": 746
+      },
+      "cross_class_overlap_page_pt2": 1.4551915228366852e-11,
+      "source_area_ha": {
+        "100yr": 406.34430152270124
+      },
+      "rounding_area_change_m2": [
+        0.07327220495790243
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "100yr": {
+          "rendered_colour_interior_pixels": 428441,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99932686525638,
+          "full_mask_iou": 0.9897215021811975,
+          "full_mask_mismatch_m2": 41955.44292209606,
+          "narrow_polygon_count": 1625,
+          "narrow_polygon_area_fraction": 0.016626314615798287
+        }
+      },
+      "old_vs_document_geometry": {
+        "100yr": {
+          "jvp_vs_source_iou": 0.39189527338829155,
+          "source_area_recovered_by_jvp": 0.4919357572238947
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "100yr": {
+          "median_m": 2.2176964607751872e-05,
+          "p95_m": 5.146944012311853e-05,
+          "p99_9_m": 6.481518367321745e-05,
+          "max_m": 3.407529266819383,
+          "vertices_over_0_1m": 1,
+          "vertices_checked": 241561
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "100yr": 1.5301801397084548e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "100yr": {
+          "median_m": 1.9424816475268376,
+          "p95_m": 3.8100091868400776,
+          "p99_9_m": 3.8100388707534987,
+          "max_m": 3.810039654571625,
+          "vertices_over_0_1m": 222170,
+          "vertices_checked": 241561
+        }
+      }
+    },
+    "inundation-mce100": {
+      "page": 18,
+      "source_paths": {
+        "f": 746
+      },
+      "cross_class_overlap_page_pt2": -1.4551915228366852e-11,
+      "source_area_ha": {
+        "mce100": 505.7410518137156
+      },
+      "rounding_area_change_m2": [
+        0.00017221085727214813
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "mce100": {
+          "rendered_colour_interior_pixels": 544513,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.85914008711536,
+          "full_mask_iou": 0.9909293190889671,
+          "full_mask_mismatch_m2": 46052.27611531934,
+          "narrow_polygon_count": 1497,
+          "narrow_polygon_area_fraction": 0.009758104814257337
+        }
+      },
+      "old_vs_document_geometry": {
+        "mce100": {
+          "jvp_vs_source_iou": 0.4249822180134332,
+          "source_area_recovered_by_jvp": 0.519225418328057
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "mce100": {
+          "median_m": 2.2157730561206045e-05,
+          "p95_m": 5.130608745623329e-05,
+          "p99_9_m": 6.478834570385717e-05,
+          "max_m": 0.4483277412146681,
+          "vertices_over_0_1m": 3,
+          "vertices_checked": 259690
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "mce100": 1.3346727484457885e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "mce100": {
+          "median_m": 2.092316997374488,
+          "p95_m": 3.8100109584755892,
+          "p99_9_m": 3.8100388457200767,
+          "max_m": 3.81003968768316,
+          "vertices_over_0_1m": 239022,
+          "vertices_checked": 259690
+        }
+      }
+    },
+    "prioritization-score": {
+      "page": 31,
+      "source_paths": {
+        "fs": 474,
+        "f": 272
+      },
+      "cross_class_overlap_page_pt2": 0.06028362900542561,
+      "source_area_ha": {
+        "0.0 - 2.4": 154.51584867520555,
+        "2.5 - 4.4": 128.67537815013242,
+        "4.5 - 6.4": 43.21196265127066,
+        "6.5 - 10": 79.94116045155761
+      },
+      "rounding_area_change_m2": [
+        0.011244705179706216,
+        0.017792029539123178,
+        0.024353999411687255,
+        0.022957718931138515
+      ],
+      "geo": {
+        "E": [
+          7.619839217505011,
+          0.000361578981483035,
+          473821.20243080024
+        ],
+        "N": [
+          -0.0005641302493018645,
+          -7.620285794939264,
+          4972344.5602340335
+        ],
+        "corner_residual_m": 0.07799141539945154,
+        "scale_m_per_point": [
+          7.619839238387534,
+          7.62028580351764
+        ],
+        "page_frame": [
+          36.0,
+          18.0,
+          1029.6,
+          774.0
+        ]
+      },
+      "invalid_features_after_serialization": 0,
+      "render_check": {
+        "0.0 - 2.4": {
+          "rendered_colour_interior_pixels": 155994,
+          "rendered_colour_interior_covered_pct": 99.9993589497032,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9698578376966769,
+          "full_mask_mismatch_m2": 47658.750863528156,
+          "narrow_polygon_count": 946,
+          "narrow_polygon_area_fraction": 0.03603233130812175
+        },
+        "2.5 - 4.4": {
+          "rendered_colour_interior_pixels": 159414,
+          "rendered_colour_interior_covered_pct": 99.99937270252299,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9277993036837376,
+          "full_mask_mismatch_m2": 99543.36903660158,
+          "narrow_polygon_count": 272,
+          "narrow_polygon_area_fraction": 0.0046602858457819455
+        },
+        "4.5 - 6.4": {
+          "rendered_colour_interior_pixels": 41657,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 99.99771752031407,
+          "full_mask_iou": 0.8752159070817522,
+          "full_mask_mismatch_m2": 59194.40086271434,
+          "narrow_polygon_count": 189,
+          "narrow_polygon_area_fraction": 0.00801943287000972
+        },
+        "6.5 - 10": {
+          "rendered_colour_interior_pixels": 74246,
+          "rendered_colour_interior_covered_pct": 100.0,
+          "source_interior_visible_as_exact_colour_pct": 100.0,
+          "full_mask_iou": 0.9355695058580512,
+          "full_mask_mismatch_m2": 51516.870941555746,
+          "narrow_polygon_count": 242,
+          "narrow_polygon_area_fraction": 0.0036785065916304116
+        }
+      },
+      "old_vs_document_geometry": {
+        "0.0 - 2.4": {
+          "jvp_vs_source_iou": 0.08380796147065284,
+          "source_area_recovered_by_jvp": 0.08780600274431348
+        },
+        "2.5 - 4.4": {
+          "jvp_vs_source_iou": 0.6191251972067149,
+          "source_area_recovered_by_jvp": 0.6884861480585919
+        },
+        "4.5 - 6.4": {
+          "jvp_vs_source_iou": 0.4549488018075253,
+          "source_area_recovered_by_jvp": 0.562512611019404
+        },
+        "6.5 - 10": {
+          "jvp_vs_source_iou": 0.42867323636662186,
+          "source_area_recovered_by_jvp": 0.5171071462512242
+        }
+      },
+      "serialized_boundary_vertex_to_segment_m": {
+        "0.0 - 2.4": {
+          "median_m": 2.235204317893364e-05,
+          "p95_m": 5.150835063438506e-05,
+          "p99_9_m": 6.470077164299523e-05,
+          "max_m": 0.00016381228819674026,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 106635
+        },
+        "2.5 - 4.4": {
+          "median_m": 2.2034888706538376e-05,
+          "p95_m": 5.143243956026241e-05,
+          "p99_9_m": 6.47006839331616e-05,
+          "max_m": 6.725115830581484e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 47370
+        },
+        "4.5 - 6.4": {
+          "median_m": 2.1995903517944966e-05,
+          "p95_m": 5.1073350147210357e-05,
+          "p99_9_m": 6.434042076122592e-05,
+          "max_m": 1.7040370251111479,
+          "vertices_over_0_1m": 1,
+          "vertices_checked": 30978
+        },
+        "6.5 - 10": {
+          "median_m": 2.2024367523860782e-05,
+          "p95_m": 5.1034362039686987e-05,
+          "p99_9_m": 6.459839637621488e-05,
+          "max_m": 6.76871309828315e-05,
+          "vertices_over_0_1m": 0,
+          "vertices_checked": 56798
+        }
+      },
+      "serialized_symmetric_difference_area_fraction": {
+        "0.0 - 2.4": 1.9298462640635887e-06,
+        "2.5 - 4.4": 9.003386565732973e-07,
+        "4.5 - 6.4": 1.6885825096430617e-06,
+        "6.5 - 10": 1.667660859833335e-06
+      },
+      "negative_control_shift_half_point_vertex_to_segment_m": {
+        "0.0 - 2.4": {
+          "median_m": 1.704069181326616,
+          "p95_m": 3.8100053746963463,
+          "p99_9_m": 3.810038841789569,
+          "max_m": 3.8100396286674285,
+          "vertices_over_0_1m": 97506,
+          "vertices_checked": 106635
+        },
+        "2.5 - 4.4": {
+          "median_m": 2.0446608556285817,
+          "p95_m": 3.8100075269360567,
+          "p99_9_m": 3.8100386238162156,
+          "max_m": 3.8100395693644833,
+          "vertices_over_0_1m": 43621,
+          "vertices_checked": 47370
+        },
+        "4.5 - 6.4": {
+          "median_m": 2.1550180960312333,
+          "p95_m": 3.8100130603850593,
+          "p99_9_m": 3.81003897758482,
+          "max_m": 4.819470869555162,
+          "vertices_over_0_1m": 28599,
+          "vertices_checked": 30978
+        },
+        "6.5 - 10": {
+          "median_m": 2.155161130521374,
+          "p95_m": 3.8100136552786945,
+          "p99_9_m": 3.8100389532742365,
+          "max_m": 3.810039626233768,
+          "vertices_over_0_1m": 52628,
+          "vertices_checked": 56798
+        }
+      }
+    }
+  },
+  "shoreline_check": {
+    "method": "GeoPDF only for fit; OSM matching checks shorelines, not surveyed ground truth. No roads checked.",
+    "candidate_lakes": 24,
+    "matched_lakes": 12,
+    "unmatched": [
+      {
+        "area_m2": 23348.04778775673,
+        "centroid_utm": [
+          475720.8238188161,
+          4966527.717435436
+        ]
+      },
+      {
+        "area_m2": 21441.226519726104,
+        "centroid_utm": [
+          480681.7905502708,
+          4972166.62396494
+        ]
+      },
+      {
+        "area_m2": 99532.34400604421,
+        "centroid_utm": [
+          476965.64953353663,
+          4970323.181706534
+        ]
+      },
+      {
+        "area_m2": 225320.12816050876,
+        "centroid_utm": [
+          479286.23667366605,
+          4970408.330847328
+        ]
+      },
+      {
+        "area_m2": 31577.085878075184,
+        "centroid_utm": [
+          479221.6566936951,
+          4967065.871639593
+        ]
+      },
+      {
+        "area_m2": 43666.319082035036,
+        "centroid_utm": [
+          480153.59700992226,
+          4971485.662820455
+        ]
+      },
+      {
+        "area_m2": 2582.1725625524773,
+        "centroid_utm": [
+          474251.96557933145,
+          4966462.780456718
+        ]
+      },
+      {
+        "area_m2": 467798.2996382835,
+        "centroid_utm": [
+          476789.18152617477,
+          4969262.614575536
+        ]
+      },
+      {
+        "area_m2": 444019.1924513431,
+        "centroid_utm": [
+          480976.3361918359,
+          4971113.395704952
+        ]
+      },
+      {
+        "area_m2": 23763.81872912286,
+        "centroid_utm": [
+          474219.4932065636,
+          4968398.850012735
+        ]
+      },
+      {
+        "area_m2": 5059.814820895559,
+        "centroid_utm": [
+          479045.9602021056,
+          4970946.312328058
+        ]
+      },
+      {
+        "area_m2": 3843.6378235994225,
+        "centroid_utm": [
+          479113.36557950644,
+          4970891.991284544
+        ]
+      }
+    ],
+    "selection_note": "Overlap and area-ratio matching conditions on agreement; only OSM ways and exterior shorelines are checked.",
+    "median_m": 3.4881270100498343,
+    "p90_m": 11.538949165185064,
+    "per_lake": [
+      {
+        "samples": 294,
+        "median_m": 4.859682155168038,
+        "p90_m": 9.973183846787132
+      },
+      {
+        "samples": 402,
+        "median_m": 4.33189784904625,
+        "p90_m": 20.315632825229848
+      },
+      {
+        "samples": 215,
+        "median_m": 3.2511380855859495,
+        "p90_m": 7.649891332988964
+      },
+      {
+        "samples": 69,
+        "median_m": 5.494471175846099,
+        "p90_m": 15.717357536983577
+      },
+      {
+        "samples": 168,
+        "median_m": 1.7698617257018796,
+        "p90_m": 4.884456492107034
+      },
+      {
+        "samples": 110,
+        "median_m": 1.6000226445738925,
+        "p90_m": 4.958136001488311
+      },
+      {
+        "samples": 125,
+        "median_m": 3.23486566278914,
+        "p90_m": 8.51570485740696
+      },
+      {
+        "samples": 141,
+        "median_m": 2.38871747280263,
+        "p90_m": 5.984634657150383
+      },
+      {
+        "samples": 124,
+        "median_m": 1.9397399671203934,
+        "p90_m": 3.5945569543112272
+      },
+      {
+        "samples": 77,
+        "median_m": 4.1219447199345876,
+        "p90_m": 9.983857584652387
+      },
+      {
+        "samples": 48,
+        "median_m": 3.064546967105591,
+        "p90_m": 8.131235468388226
+      },
+      {
+        "samples": 184,
+        "median_m": 11.445342461386659,
+        "p90_m": 38.86869316697829
+      }
+    ]
+  },
+  "limitation": "Source fidelity, not hazard accuracy: serialized GeoJSON inverse-projected and compared to MuPDF rasterization of isolated path/clip commands obtained from the same PyMuPDF extraction. Independent of Shapely fill interpretation, NOT independent of PyMuPDF extraction. Source interiors exclude a 2/3 PDF-point boundary band; MuPDF interiors exclude 2 raster pixels. Full-mask metrics supplement this blind band. Roundtrip gates: p99.9 vertex-to-boundary error <=0.1m and symmetric-difference area <=0.01%; maxima and outlier counts retained because tiny degenerate spikes can collapse. Shifted negative controls must fail the boundary gate. Narrow shapes can have no interior samples. Labels, strokes and blend styling omitted. No road control or survey validation."
+}
+
+DERIVED SUMMARY OF outputs/porto-benchmark.json
+{
+  "test_macro_average": {
+    "jvp": {
+      "exact_all_pct": 63.21799690599193,
+      "exact_common_pct": 74.3964743874422,
+      "missing_pct": 15.483894841485602,
+      "mae": 0.06880992020046581,
+      "bias": -0.06410276050909736,
+      "predicted_zero_reference_pct": 0.07575757575757576
+    },
+    "scale_fix_only": {
+      "exact_all_pct": 63.21799690599193,
+      "exact_common_pct": 74.3964743874422,
+      "missing_pct": 15.483894841485602,
+      "mae": 0.059418299726158495,
+      "bias": -0.05141327750710412,
+      "predicted_zero_reference_pct": 0.07575757575757576
+    },
+    "experimental": {
+      "exact_all_pct": 79.21798341211671,
+      "exact_common_pct": 79.91966833827821,
+      "missing_pct": 0.8729244455652095,
+      "mae": 0.04612281630778783,
+      "bias": -0.002287958340607216,
+      "predicted_zero_reference_pct": 1.8028846153846152
+    }
+  },
+  "test_per_hazard": {
+    "flood": {
+      "jvp": {
+        "eligible": 283,
+        "common": 207,
+        "missing": 76,
+        "missing_pct": 26.85512367491166,
+        "exact_common_pct": 59.90338164251208,
+        "exact_all_pct": 43.81625441696113,
+        "bias": -0.11259993946904621,
+        "mae": 0.11437190753892075,
+        "high_recall_pct": 11.627906976744185,
+        "high_precision_common_pct": 100.0,
+        "predicted_low_reference_pct": 5.454545454545454,
+        "predicted_cells": 220,
+        "predicted_zero_reference_cells": 1,
+        "predicted_zero_reference_pct": 0.45454545454545453
+      },
+      "scale_fix_only": {
+        "eligible": 283,
+        "common": 207,
+        "missing": 76,
+        "missing_pct": 26.85512367491166,
+        "exact_common_pct": 59.90338164251208,
+        "exact_all_pct": 43.81625441696113,
+        "bias": -0.09572892497629257,
+        "mae": 0.09862716895808733,
+        "high_recall_pct": 11.627906976744185,
+        "high_precision_common_pct": 100.0,
+        "predicted_low_reference_pct": 5.454545454545454,
+        "predicted_cells": 220,
+        "predicted_zero_reference_cells": 1,
+        "predicted_zero_reference_pct": 0.45454545454545453
+      },
+      "experimental": {
+        "eligible": 283,
+        "common": 281,
+        "missing": 2,
+        "missing_pct": 0.7067137809187279,
+        "exact_common_pct": 68.68327402135232,
+        "exact_all_pct": 68.19787985865725,
+        "bias": -0.047196330148201994,
+        "mae": 0.07179578114335217,
+        "high_recall_pct": 53.48837209302326,
+        "high_precision_common_pct": 76.66666666666667,
+        "predicted_low_reference_pct": 21.634615384615383,
+        "predicted_cells": 416,
+        "predicted_zero_reference_cells": 45,
+        "predicted_zero_reference_pct": 10.817307692307692
+      }
+    },
+    "landslide": {
+      "jvp": {
+        "eligible": 574,
+        "common": 496,
+        "missing": 78,
+        "missing_pct": 13.588850174216027,
+        "exact_common_pct": 76.61290322580645,
+        "exact_all_pct": 66.2020905923345,
+        "bias": -0.054777107053662594,
+        "mae": 0.061851149282077446,
+        "high_recall_pct": 19.672131147540984,
+        "high_precision_common_pct": 66.66666666666667,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 496,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "scale_fix_only": {
+        "eligible": 574,
+        "common": 496,
+        "missing": 78,
+        "missing_pct": 13.588850174216027,
+        "exact_common_pct": 76.61290322580645,
+        "exact_all_pct": 66.2020905923345,
+        "bias": -0.0432107764085013,
+        "mae": 0.05438366803870537,
+        "high_recall_pct": 19.672131147540984,
+        "high_precision_common_pct": 66.66666666666667,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 496,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "experimental": {
+        "eligible": 574,
+        "common": 568,
+        "missing": 6,
+        "missing_pct": 1.0452961672473868,
+        "exact_common_pct": 83.45070422535211,
+        "exact_all_pct": 82.57839721254355,
+        "bias": 0.004668682113393569,
+        "mae": 0.04160994430632254,
+        "high_recall_pct": 85.24590163934427,
+        "high_precision_common_pct": 66.66666666666667,
+        "predicted_low_reference_pct": 4.377104377104377,
+        "predicted_cells": 594,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      }
+    },
+    "heat": {
+      "jvp": {
+        "eligible": 574,
+        "common": 497,
+        "missing": 77,
+        "missing_pct": 13.414634146341463,
+        "exact_common_pct": 75.25150905432595,
+        "exact_all_pct": 65.15679442508711,
+        "bias": -0.05580477192361111,
+        "mae": 0.05973680522765871,
+        "high_recall_pct": 14.814814814814815,
+        "high_precision_common_pct": 70.58823529411765,
+        "predicted_low_reference_pct": 0.20080321285140562,
+        "predicted_cells": 498,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "scale_fix_only": {
+        "eligible": 574,
+        "common": 497,
+        "missing": 77,
+        "missing_pct": 13.414634146341463,
+        "exact_common_pct": 75.25150905432595,
+        "exact_all_pct": 65.15679442508711,
+        "bias": -0.045571773935683534,
+        "mae": 0.052694894241480085,
+        "high_recall_pct": 14.814814814814815,
+        "high_precision_common_pct": 70.58823529411765,
+        "predicted_low_reference_pct": 0.20080321285140562,
+        "predicted_cells": 498,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "experimental": {
+        "eligible": 574,
+        "common": 569,
+        "missing": 5,
+        "missing_pct": 0.8710801393728222,
+        "exact_common_pct": 83.12829525483303,
+        "exact_all_pct": 82.40418118466899,
+        "bias": 0.011276502529613338,
+        "mae": 0.03830968615381222,
+        "high_recall_pct": 91.35802469135803,
+        "high_precision_common_pct": 69.1588785046729,
+        "predicted_low_reference_pct": 4.369747899159663,
+        "predicted_cells": 595,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      }
+    },
+    "drought": {
+      "jvp": {
+        "eligible": 573,
+        "common": 506,
+        "missing": 67,
+        "missing_pct": 11.69284467713787,
+        "exact_common_pct": 81.81818181818181,
+        "exact_all_pct": 72.25130890052355,
+        "bias": -0.05029973134965323,
+        "mae": 0.05396197534382769,
+        "high_recall_pct": 0.0,
+        "high_precision_common_pct": 0.0,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 506,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "scale_fix_only": {
+        "eligible": 573,
+        "common": 506,
+        "missing": 67,
+        "missing_pct": 11.69284467713787,
+        "exact_common_pct": 81.81818181818181,
+        "exact_all_pct": 72.25130890052355,
+        "bias": -0.0354023005196137,
+        "mae": 0.044576481106114466,
+        "high_recall_pct": 0.0,
+        "high_precision_common_pct": 0.0,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 506,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "experimental": {
+        "eligible": 573,
+        "common": 569,
+        "missing": 4,
+        "missing_pct": 0.6980802792321117,
+        "exact_common_pct": 81.72231985940246,
+        "exact_all_pct": 81.15183246073299,
+        "bias": 0.009091089826986677,
+        "mae": 0.04246321340231903,
+        "high_recall_pct": 90.9090909090909,
+        "high_precision_common_pct": 45.45454545454545,
+        "predicted_low_reference_pct": 6.260296540362439,
+        "predicted_cells": 607,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      }
+    },
+    "arbovirus": {
+      "jvp": {
+        "eligible": 574,
+        "common": 494,
+        "missing": 80,
+        "missing_pct": 13.937282229965156,
+        "exact_common_pct": 79.35222672064778,
+        "exact_all_pct": 68.29268292682927,
+        "bias": -0.054679019957016906,
+        "mae": 0.059822351939198805,
+        "high_recall_pct": 7.6923076923076925,
+        "high_precision_common_pct": 40.0,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 494,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "scale_fix_only": {
+        "eligible": 574,
+        "common": 494,
+        "missing": 80,
+        "missing_pct": 13.937282229965156,
+        "exact_common_pct": 79.35222672064778,
+        "exact_all_pct": 68.29268292682927,
+        "bias": -0.04156080133353512,
+        "mae": 0.05047408899769205,
+        "high_recall_pct": 7.6923076923076925,
+        "high_precision_common_pct": 40.0,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 494,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "experimental": {
+        "eligible": 574,
+        "common": 568,
+        "missing": 6,
+        "missing_pct": 1.0452961672473868,
+        "exact_common_pct": 81.51408450704226,
+        "exact_all_pct": 80.66202090592334,
+        "bias": 0.003380846928762154,
+        "mae": 0.040740417561183934,
+        "high_recall_pct": 84.61538461538461,
+        "high_precision_common_pct": 56.41025641025641,
+        "predicted_low_reference_pct": 5.804311774461028,
+        "predicted_cells": 603,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      }
+    },
+    "storm": {
+      "jvp": {
+        "eligible": 574,
+        "common": 497,
+        "missing": 77,
+        "missing_pct": 13.414634146341463,
+        "exact_common_pct": 73.44064386317908,
+        "exact_all_pct": 63.58885017421603,
+        "bias": -0.056455993301594114,
+        "mae": 0.06311533187111139,
+        "high_recall_pct": 27.77777777777778,
+        "high_precision_common_pct": 83.33333333333333,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 497,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "scale_fix_only": {
+        "eligible": 574,
+        "common": 497,
+        "missing": 77,
+        "missing_pct": 13.414634146341463,
+        "exact_common_pct": 73.44064386317908,
+        "exact_all_pct": 63.58885017421603,
+        "bias": -0.04700508786899854,
+        "mae": 0.055753497014871624,
+        "high_recall_pct": 27.77777777777778,
+        "high_precision_common_pct": 83.33333333333333,
+        "predicted_low_reference_pct": 0.0,
+        "predicted_cells": 497,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      },
+      "experimental": {
+        "eligible": 574,
+        "common": 569,
+        "missing": 5,
+        "missing_pct": 0.8710801393728222,
+        "exact_common_pct": 81.01933216168717,
+        "exact_all_pct": 80.31358885017421,
+        "bias": 0.005051458705802952,
+        "mae": 0.04181785527973703,
+        "high_recall_pct": 92.22222222222223,
+        "high_precision_common_pct": 72.17391304347827,
+        "predicted_low_reference_pct": 5.638474295190713,
+        "predicted_cells": 603,
+        "predicted_zero_reference_cells": 0,
+        "predicted_zero_reference_pct": 0.0
+      }
+    }
+  },
+  "reference_warning": "Same-author indexed PNG derivatives. Original TIFF provenance was not authenticated. Native ingestion is not scored against itself."
+}
+
+FILE outputs/run-manifest.json
+{
+  "status": "complete",
+  "route": "all",
+  "started_utc": "2026-10-28T12:41:43.249397+00:00",
+  "pipeline_hashes": {
+    "porto.py": "f5467d8b9bdb229b9306a5d65214eb1662126fc663a84666a2370924502148ff",
+    "benchmark.py": "f09653d00c68714447f2106fa32737969f416e2a31000b8eab95985c2bc10f26",
+    "richfield.py": "74f7ab8ed3c66ba0d39491880b6f26dcd510a3e44d1acb60a2f316289f291646",
+    "run.py": "fba731c4a4a8cc2a5960f7eac28844647f6f9f8e681c7cc54a1c53835bf4ad35"
+  },
+  "selection_sha256": "f34c15bdb13df58d9f485d2c32fdaed688c0bf8b5dbcc6a943610dfcc9ab72fe",
+  "input_hashes": {
+    "arvc-manifest.json": "6f2336eb529a192c15a85f6e05c2bd05e2ce9381c8a8be031e910ce67d8e0c08",
+    "arvc-poa.json": "78b8f994e592e916ebd5b0a1aea9800f032a4e066069ac531db3753c05b78644",
+    "arvc_off_risk_arbovirus_2050.png": "c960d7e85138cdda2f3ddf2440ae010fab45a7496c50ebcb9405a10b14e5f965",
+    "arvc_off_risk_drought_2050.png": "a715e0ec4bb1406d823e256633cbc4f6828a28c1a1cbbccba2cf3104803597e6",
+    "arvc_off_risk_flood_2050.png": "2c561fa164ca74be08267b2ff5c7e37009d634df8e0a2d38a3f02e473d639462",
+    "arvc_off_risk_heat_2050.png": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+    "arvc_off_risk_landslide_2050.png": "3d023b210e50f5d964ef5e5e891b2a097bc8e620fcecb3930f05aa805e43eb66",
+    "arvc_off_risk_storm_2050.png": "f3df031bad6a19a3418a5fdd728861974591b982277e47f1921cf22d6c525f6a",
+    "audit-results.json": "3a8307dc1a4cecbfc1d5568749eb5d559295eec83687f22947ddbdbda108dbc8",
+    "osm-water-richfield.json": "20ec415815575585f6b1fcb209e97f1bae170e4a16028e9bab35f64bcd001da2",
+    "porto-alegre-arvc.pdf": "6a6555c7620e83cf05ee0f35fe7b737a5a42afadf53eab6fe5d029785fff82b3",
+    "porto-boundary.json": "eae75c3fac11ba77bdf07aafa0a092b8463ea2bd57fe8d98b10f6ef33556db0a",
+    "richfield-boundary.json": "a95c8bd8016937e9b06433b3e3188ff0d549b5d009890d61b3b9cd472a6e4dea",
+    "richfield-flood-inundation-100yr.json": "6342cabf98d964ca5873caba9fc13252770b544b2366aeb437d6cbe8216b2f29",
+    "richfield-flood-inundation-10yr.json": "053010be988c335ebdd7b821428e33264b783dcdd13fd08a81e41324a0c19ac7",
+    "richfield-flood-inundation-2yr.json": "fb90bd05a123b85e384233933b449036ae9b2fc6b5b9fb265bf7dc40b5f737da",
+    "richfield-flood-inundation-mce100.json": "6ab6a8c5147a7c6f079d7dafcc1ac811ccc0dcf47387b34828df0a4bcb9f9ffd",
+    "richfield-flood-prioritization-score.json": "f2b3ba49c7cd3d1398e4a502da72caffccf75da4e114ff32f611a2709284c51d",
+    "richfield-registration-audit.json": "0d8a30e7a3629a6203ad5b58ae64ea59fcc31b10c2277f56d515f8be2b319b23",
+    "Richfield_FloodRiskPrioritization.pdf": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758"
+  },
+  "finished_utc": "2026-10-28T12:46:00.108143+00:00",
+  "output_hashes": {
+    "porto-benchmark.json": "31aad7149f44c7feaa4160464c33313ee2390530d196efedc13e5014c4fbc2d4",
+    "runtime.json": "e54a2e99a3374783eb10ed3014ba0125e98fae36ad99b8050e0832ef14b0a27f",
+    "porto-corrected-existing\\arbovirus.geojson": "aaf7361a36a5b75a9d3e919f8c94698a8411bdfa1ef3fc32200e7266f6c99c07",
+    "porto-corrected-existing\\drought.geojson": "f635603b6945d2552da6c8b99746ebf287667aef5b2fe1814c48fd3f13a74fd0",
+    "porto-corrected-existing\\flood.geojson": "c1fac4005813b8c5c56e0b75ab3f87ff5862416241c53a736e6f536ce1fda807",
+    "porto-corrected-existing\\heat.geojson": "706e80d8ce0e0a0f44322330d424e95e13636665d54d1bf6f5588649b305a4f3",
+    "porto-corrected-existing\\landslide.geojson": "2cf1c16a198d908f448aaeb00723a8b512881233b598c59c237190145a6822aa",
+    "porto-corrected-existing\\storm.geojson": "0f68bc2bd5534609975f4817790c40e4be664403c42b2627c38da2f48193887a",
+    "porto-experimental\\arbovirus-missing.json": "81a614923a75b13f2ae2514039fafa648aeeaff17ae44220665517b552001d37",
+    "porto-experimental\\arbovirus.geojson": "34da315bb95e12746aa7e984bd88fa50670af441606c757820aae7b4f5a3f209",
+    "porto-experimental\\drought-missing.json": "79d72cf8fd5fc48dbfe2454ea9dcd6ea905b1e82f8374597f9ded671408bc908",
+    "porto-experimental\\drought.geojson": "c013d42de63a9f4620e0136903830ca2f931e6d3024d819de1ebddd8c4a9031a",
+    "porto-experimental\\flood-missing.json": "10c24901cfffd805b21fee45354de5ed336315c1527ea8d5ceea99d5216f993b",
+    "porto-experimental\\flood.geojson": "4a88dbcc9dadfee6972cd1c13c954f70348a2aefd3791654f9981dcda017a984",
+    "porto-experimental\\heat-missing.json": "13ee26d617ae641cd18bac9455c08a73c7296a258fa62fbbd9968ffbda806672",
+    "porto-experimental\\heat.geojson": "5b653d384e56f97ccca5f3164155c7c2bd0faa44b3e8d85bd57cb23a5b6bb2bc",
+    "porto-experimental\\landslide-missing.json": "dc2d720c3d532ba2d8d78f8e76f492e07f6644bbdcb63779c6500000a3a0cf14",
+    "porto-experimental\\landslide.geojson": "a9670619bcc54871c53218991d0aead3ee24567a6056b039785564edeecc656e",
+    "porto-experimental\\storm-missing.json": "d989413f3a4986ea2d1e25eaf1e4b18df00a1e2d6f89d0564f22b90793e12144",
+    "porto-experimental\\storm.geojson": "aa3b621f1f35083d7e12804b2858335fc5625d273db10aa27955d8412381b302",
+    "porto-raster-source\\arbovirus.geojson": "a65f051ce100dc10c7d66bfa38ad35ea9b7a34b1d4ce0686cae0f70529d1da74",
+    "porto-raster-source\\drought.geojson": "37eede101dbfcd629f0309a9a283672d96d8d06e55137df86bf2f26ec1f2f100",
+    "porto-raster-source\\flood.geojson": "504e3d0c85c4a7437da4aa1e03951ecc8b8f5cf78fa69f3839bb03785ccea0c9",
+    "porto-raster-source\\heat.geojson": "3517d36c9d5a64ea1b0b7fda06bc059e285dda6d1eaa55d25891a3a9e0c77019",
+    "porto-raster-source\\landslide.geojson": "3275625db274523c895d19607057fd55630bcc098791323baabc056b7fad032d",
+    "porto-raster-source\\storm.geojson": "7dfc4eaf5b63b9bab39eef65fe4a73d1f7bf11476a8bbe6f4bb51f4e52157b56",
+    "richfield\\inundation-100yr.geojson": "f2b04dd159a9690a33ae5dadae099553445ab3a70f4d5faad8244669af69d9ed",
+    "richfield\\inundation-10yr.geojson": "3fd094eb608b8d55002f76cbc69d445ca4c7ed4338694004e0df4115235202dc",
+    "richfield\\inundation-2yr.geojson": "a6a55fd770d221cb50002cc0613f990681920e9eeaf793ba6d83ce2e70743ce3",
+    "richfield\\inundation-mce100.geojson": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+    "richfield\\prioritization-score.geojson": "b4130ed899972ce60a4c489a916f9f03b50ca4c008771fa4701ce7e3befe8a43",
+    "richfield\\validation.json": "ec2d88f4ea315994509be828d891e6e624dcf4253d99837b0ffe1a50b0061f8b",
+    "visuals\\porto-source-fragment.png": "c51fe769ebdc4cd7be8c18c993f9697c7a6dce04cfa9574048e92d843a2b63d3",
+    "visuals\\richfield-source-fragment.png": "7962072aacfc9b817584dff25d61a5fe5783791190e1057dddea9fc1e8ecc503"
+  }
+}
+
+FILE tests.txt
+test_actual_geopdf_scale_and_corner_fit (__main__.RecoveryChecks.test_actual_geopdf_scale_and_corner_fit) ... ok
+test_all_delivered_geometry (__main__.RecoveryChecks.test_all_delivered_geometry) ... ok
+test_cell_geometry_and_input_validation (__main__.RecoveryChecks.test_cell_geometry_and_input_validation) ... ok
+test_clipping_fill_and_stroke_and_draw_order (__main__.RecoveryChecks.test_clipping_fill_and_stroke_and_draw_order) ... ok
+test_curve_fails_closed (__main__.RecoveryChecks.test_curve_fails_closed) ... ok
+test_exported_and_missing_disjoint (__main__.RecoveryChecks.test_exported_and_missing_disjoint) ... ok
+test_fill_rules_and_holes (__main__.RecoveryChecks.test_fill_rules_and_holes) ... ok
+test_missing_denominator_and_zero_reference (__main__.RecoveryChecks.test_missing_denominator_and_zero_reference) ... ok
+test_spatial_split_shared_block (__main__.RecoveryChecks.test_spatial_split_shared_block) ... ok
+test_support_missing_and_midpoints (__main__.RecoveryChecks.test_support_missing_and_midpoints) ... ok
+test_uint8_colour_input (__main__.RecoveryChecks.test_uint8_colour_input) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 3.225s
+
+OK
+
+
+FILE reviews/response-to-opus.md
+# Response to Opus implementation review
+
+The complete review is `opus-validation.md`. It was a code-and-evidence review via OpenRouter, not an independent tool-executed rerun.
+
+## Evidence provenance
+
+- Richfield evidence in that prompt was indeed stale while the new run was in progress. It is superseded by the completed full-run manifest and regenerated validation file.
+- The Porto schema discrepancy was introduced by the consultation helper: it summarized the full file into `test_per_hazard` to reduce prompt size but retained the original filename heading. The actual disk file was not hand-edited and retained `hazards`, selection hash and sensitivity results. This was a misleading review-input label, not evidence of fabricated numbers. The next review explicitly distinguishes summaries.
+- A full-run manifest now records pipeline code, selection, input and output hashes plus start/end times. Tests reject incomplete runs and changed pipeline artifacts.
+
+## Richfield changes
+
+- Added full-mask IoU and mismatch area, without eroding the mask.
+- The interior check now uses actual vector buffering: binary erosion alone missed subpixel holes and caused misleading failures.
+- Added a serialized-output roundtrip boundary check and a half-point translation negative control. Added an omitted-clip synthetic negative control.
+- Increased storage precision from 7 to 9 decimals after low precision collapsed narrow shapes. Decimal precision is not a geographic-accuracy claim.
+- An absolute maximum boundary-distance gate still flagged a few collapsed degenerate spikes. The revised gate bounds **99.9th-percentile vertex-to-segment distance to 0.1 m and symmetric-difference area to 0.01%**, retains maximum distance and outlier counts, and requires the shifted negative control to fail. This is a documented diagnostic amendment, not an unchanged preregistered threshold.
+- Full-mask comparison is at 216 dpi; interior comparison excludes a 2/3-point boundary strip. Narrow-component counts and area shares are reported, rather than hidden behind the interior percentage. Narrow shapes are not automatically dropped from export.
+- Claims now explicitly say the independent rasterizer shares PyMuPDF path extraction. The original PDF has no exposed OCGs in `get_ocgs()`, so OCG-only original-page rendering was not used. No renderer-independent extraction claim is made.
+- Unexpected page origins/crops fail closed. Final JSON coordinates are explicitly rounded, valid, non-empty polygons. Shapely is pinned.
+- Invalid even-odd rings now use crossing parity, not `make_valid` parity assumptions. Added doubly-wound and nonzero-winding tests.
+- Shoreline results include candidate/matched/unmatched counts, selection conditions, per-lake errors and the page-8 georeference consistency check. No road control was added; OSM remains unsurveyed, conditional matching evidence.
+
+## Porto changes and retained limits
+
+- Missing-cell ledgers now use the selected support threshold, with an exported/missing partition test.
+- Validation gates are reported per hazard. The method remains jointly quarantined even where individual gates pass.
+- Added uint8 input checks for the blended classifier, a reference CRS check and both supported palette transparency encodings.
+- The saved validation-stage table and selection file predate the test call in the tool history. They were not committed into Git because this is an isolated artifact project, so no immutable preregistration claim is made.
+- No buffer was added after inspecting results. No reference mask was used to “repair” experimental predictions.
+- The native route is the benchmark data itself; numerical readback equality only checks ingestion. It is not source accuracy.
+- Quantization intervals remain explicitly uncalibrated and exclude classification and field-reconstruction uncertainty.
+
+## Consultation failures and cost
+
+Native Opus supplied the useful design/GeoPDF discovery. Two subsequent native tasks hit rate limits. The first paid OpenRouter review spent its output budget on reasoning and returned no final review; that cost remains in `BUDGET.json`. The second returned the actionable review addressed here. No LLM output supplies map geometry or risk values.
+
+
+FILE REPORT.md
+# A better recovery route for JVP's two examples
+
+## What was achieved
+
+**Richfield has a substantially better source reconstruction:** five valid vector layers extracted directly from the PDF, including fill-and-stroke paths, with placement from the document's embedded GeoPDF coordinates. This avoids both pixel tracing and fitting placement to an approximate city boundary.
+
+**Porto has a better source-data route and a promising but rejected PDF trial.** Six numerical-source layers are ingested from the published indexed raster derivatives. Six scale-corrected existing layers retain the original coverage. A separate colour-mixing trial improves class recovery but fails coverage/precision gates, so all six trial layers remain research-only.
+
+No generative model supplies geometry or hazard values. Local ML was not added: the important Richfield information was already in the file, while Porto's failure is ambiguous colour mixing and unsupported coverage. A larger model would not make an unknown masked pixel an observation.
+
+## Richfield: what the checks actually show
+
+The PDF stores NAD83 / UTM 15N registration. Its corner fit is about 0.1 m internally and its scale is about 7.620 m per PDF point, matching the printed scale. Those are consistency checks on the document, **not surveyed accuracy**. All data pages and the shoreline-check page share the registration.
+
+| Layer | Source paths | Render interior covered | Full-mask IoU | Roundtrip boundary p99.9, m | Roundtrip maximum, m |
+|---|---:|---:|---:|---:|---:|
+| inundation-2yr | 378 | 99.998% | 0.9802 | 0.00007 | 0.000 |
+| inundation-10yr | 577 | 100.000% | 0.9884 | 0.00006 | 0.000 |
+| inundation-100yr | 746 | 100.000% | 0.9897 | 0.00006 | 3.408 |
+| inundation-mce100 | 746 | 100.000% | 0.9909 | 0.00006 | 0.448 |
+| prioritization-score | 746 | 99.999% | 0.8752 | 0.00006 | 1.704 |
+
+All five final GeoJSONs have zero invalid features after serialization. The worst symmetric-difference area change caused by projection/topology handling/serialization is **0.000216%**. Storage uses nine decimals to avoid unnecessary feature collapse; this does not imply sub-millimetre map accuracy.
+
+The render comparison uses a different fill interpreter: MuPDF renders isolated path/clip commands while Shapely interprets the exported geometry. Both start from PyMuPDF extraction, so they share that potential failure mode. Full-mask IoU includes raster boundary differences; the interior percentages exclude a 2/3-point boundary strip. Up to **3.60% of a class's area** is in narrow components with no surviving interior, so the interior percentage alone cannot validate them. Full-mask, area and boundary checks supplement it.
+
+The boundary gate checks 99.9% of vertices within 0.1 m and symmetric-difference area below 0.01%; maxima remain visible in the table. A few degenerate spikes can collapse during topology handling. A half-point shift must fail the boundary gate; an omitted-clip fixture must fail the expected-area check. These are diagnostic validation gates, not a preregistered accuracy experiment.
+
+The independent placement check matches **12 of 24 candidate lakes** to OSM: pooled median shoreline distance **3.5 m**, p90 **11.5 m**. Nothing was fitted to OSM. Matching nevertheless conditions on overlap and approximate area, includes OSM ways/exterior shorelines only, and is not a survey check. Per-lake errors and unmatched candidates are in `outputs/richfield/validation.json`.
+
+JVP-versus-source overlap is recorded per layer/class in that file. It measures the old output's disagreement with the source document; direct extraction matching its own source is not “100% hazard accuracy.” The archived report itself may still have modelling or source-data errors.
+
+## Porto: same held-out blocks, same denominators
+
+The six deterministic configurations were compared on validation blocks. The selected trial (`blend35_8`) was frozen before the test call: grey-colour compositing, alpha at least 0.35, at least eight accepted source pixels, mean bin-midpoint aggregation. It was selected for its lower false coverage and MAE among blending trials, **not because it passed all gates**. Its validation coverage failure already prevented release.
+
+**Post-test correction:** an exact-legend-swatch test then found the red-pixel filter rejected the two darkest swatches. The filter was corrected to include the printed ramp's maximum blue-minus-green difference plus the existing three-channel tolerance. No configuration reselection occurred, but the test blocks had already been observed before this bug fix. Results below are the fixed rerun; pre-fix results remain in `experiments/porto-before-swatch-bugfix.json`. Do not describe the final numbers as a pristine one-shot test.
+
+| Hazard | Eligible test cells | Correct and present / all | Correct / common | Missing | Emitted where reference empty |
+|---|---:|---:|---:|---:|---:|
+| flood | 283 | 43.8% → 68.2% | 59.9% → 68.7% | 26.9% → 0.7% | 0.5% → 10.8% |
+| landslide | 574 | 66.2% → 82.6% | 76.6% → 83.5% | 13.6% → 1.0% | 0.0% → 0.0% |
+| heat | 574 | 65.2% → 82.4% | 75.3% → 83.1% | 13.4% → 0.9% | 0.0% → 0.0% |
+| drought | 573 | 72.3% → 81.2% | 81.8% → 81.7% | 11.7% → 0.7% | 0.0% → 0.0% |
+| arbovirus | 574 | 68.3% → 80.7% | 79.4% → 81.5% | 13.9% → 1.0% | 0.0% → 0.0% |
+| storm | 574 | 63.6% → 80.3% | 73.4% → 81.0% | 13.4% → 0.9% | 0.0% → 0.0% |
+
+Equal-hazard test averages:
+
+- Correct-and-present: **63.22% → 79.22%**.
+- Correct class among common cells: **74.40% → 79.92%**. Much of the larger first improvement comes from coverage.
+- Missing eligible cells: **15.48% → 0.87%**.
+- Numeric MAE: original **0.0688**, scale fix alone **0.0594**, experimental **0.0461**.
+
+**The flood problem blocks an unqualified success claim:** 45 of 416 experimental test outputs (10.82%) fall in cells with zero reference pixels, compared with 1 of 220 original outputs (0.45%). Empty-reference disagreement is not proof that every such PDF pixel is false, but it fails the declared coverage gate. Do not mask these outputs with the reference and call that improved PDF extraction.
+
+Other gates also matter: extra output in cells with only 1–14 reference pixels and high-risk precision. For example, test high-risk precision among common cells is 45.5% for drought and 56.4% for arbovirus. Per-hazard validation gate results are included in `outputs/porto-benchmark.json`. Every experimental layer remains quarantined because the method was selected jointly.
+
+For continuity with the previous audit, the **all-cell descriptive** correct-and-present average is 59.29% original versus 75.63% experimental. Do not compare the old all-cell 59.3% to the new test-only 79.2%; those use different subsets.
+
+## Which Porto output to use
+
+1. **Numerical-source route:** ingest the published indexed PNGs directly (`index / 254`, 255 = no-data), retain all cells with at least one source pixel and flag cells below 15. The six source rasters and manifest are preserved for finer detail. Exact readback tests validate ingestion only. The original TIFFs have not been independently authenticated.
+2. **Existing-PDF fallback:** apply `0.9 * v + 0.05` to repair the numeric bin-centre scale. Intended classes and missing counts remain unchanged; bias/MAE improve. Missing means unknown, not source-masked or zero risk.
+3. **Experimental PDF recovery:** useful for research and visually inspecting candidate missing regions. It is not an approved substitute for the source data. Palette intervals exclude classification error and are not confidence intervals.
+
+## Reproducibility and review
+
+- Two specific document profiles; unexpected path/CRS/page assumptions fail closed. This is not a general-purpose PDF model.
+- The primary benchmark requires at least 15 valid reference pixels per 250 m cell. Sensitivities at 5 and 30 are supplied. Missing cells count as failures in the correct-and-present metric, never as zero-valued observations.
+- Spatial split: shared 3 km blocks across hazards, deterministic hash folds. Validation/test were separated for configuration choice, but the maps had already been audited. There is no buffer between blocks, no pristine blind-test claim, no independent original-TIFF reference, and no statistical confidence interval.
+- Native Opus supplied the design and discovered GeoPDF registration. Two native follow-ups were rate-limited. OpenRouter Opus then reviewed the implementation; the first call returned no final review after hitting its token limit, and the next review produced concrete fixes. The review was given source code/evidence, not a tool-enabled independent rerun. See `reviews/` and its response log.
+- Final full run: 2026-10-28T12:41:43.249397+00:00 to 2026-10-28T12:46:00.108143+00:00. `outputs/run-manifest.json` ties code, selection, inputs and outputs to hashes. See `README.md` for commands.
+- OpenRouter spend currently recorded: **$0.562172 / $10**. `BUDGET.json` is authoritative if a later review is added. No key or credential is included in the artifacts.
+
+Not checked: surveyed controls, an independent road alignment check, original Porto TIFF authentication, other reports, or downstream production integration. The principal remaining risk is interpreting reconstructed source maps as independently validated hazard data.

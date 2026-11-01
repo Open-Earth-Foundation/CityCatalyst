@@ -1,0 +1,62 @@
+{
+  "python": "3.11.15 (main, Mar 24 2026, 22:57:51) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "collected_utc": "2026-10-30T12:42:39.061827+00:00",
+  "upstream_commit": "8176ace4f1d5af56baa8d3bd8481c7ed8cccf048",
+  "upstream_status": "",
+  "versions": {
+    "torch": "2.5.1+cpu",
+    "torchvision": "0.20.1+cpu",
+    "numpy": "1.26.4",
+    "opencv-python-headless": "4.6.0.66",
+    "scipy": "1.17.1",
+    "pillow": "13.0.0",
+    "pymupdf": "1.26.7",
+    "shapely": "2.2.0",
+    "pyproj": "3.7.2",
+    "rasterio": "1.4.4"
+  },
+  "sha256": {
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\checkpoint_epoch14.pth": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\frozen-settings.json": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\input-manifest.json": "1bed5ab6ed560021b98fdaa965338b2db41d970b1b569c4b0c8dd4b37880ff9a",
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\inputs\\porto-alegre-arvc.pdf": "6a6555c7620e83cf05ee0f35fe7b737a5a42afadf53eab6fe5d029785fff82b3",
+    "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\inputs\\Richfield_FloodRiskPrioritization.pdf": "f4ce5c2381a2bcd055ad0828fba8f9a6341e97736081e96d8339c5df218ba758"
+  },
+  "readonly_helpers_sha256": {
+    "porto.py": "f5467d8b9bdb229b9306a5d65214eb1662126fc663a84666a2370924502148ff",
+    "richfield.py": "74f7ab8ed3c66ba0d39491880b6f26dcd510a3e44d1acb60a2f316289f291646",
+    "benchmark.py": "f09653d00c68714447f2106fa32737969f416e2a31000b8eab95985c2bc10f26",
+    "make_fine_overlay.py": "7b9d76143cf32551c1f6dc8df23728c26eeafb9e7af85a4d1f9306457794a972",
+    "make_visuals.py": "fe48644bca1643b82843a5d864004b9c8ae372b56e2cf44a1c39bbb365f3d9bc"
+  },
+  "fixed_municipal_domain_sha256": "eae75c3fac11ba77bdf07aafa0a092b8463ea2bd57fe8d98b10f6ef33556db0a",
+  "evaluation_reference_sha256": {
+    "inputs/arvc-manifest.json": "6f2336eb529a192c15a85f6e05c2bd05e2ce9381c8a8be031e910ce67d8e0c08",
+    "inputs/arvc_off_risk_arbovirus_2050.png": "c960d7e85138cdda2f3ddf2440ae010fab45a7496c50ebcb9405a10b14e5f965",
+    "inputs/arvc_off_risk_drought_2050.png": "a715e0ec4bb1406d823e256633cbc4f6828a28c1a1cbbccba2cf3104803597e6",
+    "inputs/arvc_off_risk_flood_2050.png": "2c561fa164ca74be08267b2ff5c7e37009d634df8e0a2d38a3f02e473d639462",
+    "inputs/arvc_off_risk_heat_2050.png": "45edc8f3f3f813969c5f8f979fd2780fbe6ca0d906691ae6e424a1125c35e65b",
+    "inputs/arvc_off_risk_landslide_2050.png": "3d023b210e50f5d964ef5e5e891b2a097bc8e620fcecb3930f05aa805e43eb66",
+    "inputs/arvc_off_risk_storm_2050.png": "f3df031bad6a19a3418a5fdd728861974591b982277e47f1921cf22d6c525f6a",
+    "outputs/richfield/inundation-100yr.geojson": "f2b04dd159a9690a33ae5dadae099553445ab3a70f4d5faad8244669af69d9ed",
+    "outputs/richfield/inundation-10yr.geojson": "3fd094eb608b8d55002f76cbc69d445ca4c7ed4338694004e0df4115235202dc",
+    "outputs/richfield/inundation-2yr.geojson": "a6a55fd770d221cb50002cc0613f990681920e9eeaf793ba6d83ce2e70743ce3",
+    "outputs/richfield/inundation-mce100.geojson": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+    "outputs/richfield/prioritization-score.geojson": "b4130ed899972ce60a4c489a916f9f03b50ca4c008771fa4701ce7e3befe8a43",
+    "outputs/richfield/validation.json": "ec2d88f4ea315994509be828d891e6e624dcf4253d99837b0ffe1a50b0061f8b"
+  },
+  "adapters_sha256": {
+    "build_report.py": "b4878d40778fd20852d1d56e042cdc040b7cd169b676d1f1365076769a9fb0bb",
+    "canonical_tile_probe.py": "4266d182119221f12c530d6f2b538e3ecc0c64309aced74c45813b3a3ada4c98",
+    "collect_provenance.py": "c68c08a317922eedd06c1a96160dd9fb68ad8d84cbfdaa8764abc0b5ad83795a",
+    "evaluate.py": "7c3e73d3db0e968688ea7a79ebdbe7376310092334594c336a95c4550b8f27aa",
+    "infer.py": "469fe48e550ce3cb28007912eb705ee6e934986d77dd21991e12c3c4879eb3a9",
+    "make_artifacts.py": "84a1c2b1eabdc6b61afc2100a29330f3aba81f0f675ea4c4b3878197ff2169e4",
+    "plot_results.py": "90c7cd9430c057acf6b245d2598c1031c74f9c5ada22e044ccf4672ef702ae8e",
+    "prepare_inputs.py": "76d3fa06d5dde638b8de53b179ebd544164b54206ca8994e8eef8de9d9e0727f",
+    "preprocess.py": "e4a65d59b6170e96a80a710dabb28587ab82d633c6dd79dc62db52a9f3b08ced",
+    "run_trials.py": "57e0e776f2278dea3ba8ce264f211e47b47738e1c4fe9880b73fa54983df2980",
+    "validate_artifacts.py": "d31f7a5450b582877a9211b864d5416c22cc6f7fb2dc4fbaacdb2da771955a1f"
+  }
+}

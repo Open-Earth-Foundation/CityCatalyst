@@ -1,0 +1,85 @@
+{
+  "status": "succeeded",
+  "page": 18,
+  "run": {
+    "id": "richfield-inundation-mce100",
+    "status": "succeeded",
+    "started_utc": "2026-10-30T12:35:14.908660+00:00",
+    "completed_utc": "2026-10-30T12:36:21.175276+00:00",
+    "seconds": 66.26532840006985,
+    "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+    "shape": [
+      1584,
+      2448
+    ],
+    "model_forward_calls": 104,
+    "source_pixels": 3877632,
+    "unknown_pixels": 3577484,
+    "overlapping_positive_pixels": 0,
+    "label_counts": {
+      "0": 3577484,
+      "1": 300148
+    },
+    "device": "cpu",
+    "precision": "float32",
+    "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+    "labels_sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"
+  },
+  "classes": {
+    "mce100": {
+      "true_positive_pixels": 147119,
+      "false_positive_pixels": 152360,
+      "false_negative_pixels": 201479,
+      "predicted_pixels": 299479,
+      "reference_pixels": 348598,
+      "union_pixels": 500958,
+      "iou": 0.29367531809053854,
+      "precision": 0.49124980382597777,
+      "recall": 0.4220305337380019,
+      "edge_errors": {
+        "status": "succeeded",
+        "predicted_edge_pixels": 45577,
+        "reference_edge_pixels": 64299,
+        "mean_symmetric_m": 43.76202255020472,
+        "median_m": 21.55279153577678,
+        "p95_m": 162.00412132837894,
+        "max_m": 583.5975792085278,
+        "prediction_to_reference_mean_m": 36.426032083529904,
+        "reference_to_prediction_mean_m": 48.96198580779251,
+        "tolerance_2_pixels_m": 7.62028580351764,
+        "symmetric_within_2_pixels_pct": 28.760602861407403
+      }
+    }
+  },
+  "foreground_union": {
+    "true_positive_pixels": 147119,
+    "false_positive_pixels": 152360,
+    "false_negative_pixels": 201479,
+    "predicted_pixels": 299479,
+    "reference_pixels": 348598,
+    "union_pixels": 500958,
+    "iou": 0.29367531809053854,
+    "precision": 0.49124980382597777,
+    "recall": 0.4220305337380019,
+    "edge_errors": {
+      "status": "succeeded",
+      "predicted_edge_pixels": 45577,
+      "reference_edge_pixels": 64299,
+      "mean_symmetric_m": 43.76202255020472,
+      "median_m": 21.55279153577678,
+      "p95_m": 162.00412132837894,
+      "max_m": 583.5975792085278,
+      "prediction_to_reference_mean_m": 36.426032083529904,
+      "reference_to_prediction_mean_m": 48.96198580779251,
+      "tolerance_2_pixels_m": 7.62028580351764,
+      "symmetric_within_2_pixels_pct": 28.760602861407403
+    }
+  },
+  "macro_class_iou": 0.29367531809053854,
+  "evaluated_pixels": 3004344,
+  "unknown_frame_pixels": 2704865,
+  "source_vector_sha256": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+  "source_path_counts": {
+    "f": 746
+  }
+}

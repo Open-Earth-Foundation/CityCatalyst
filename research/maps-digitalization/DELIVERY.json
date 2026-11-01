@@ -1,0 +1,12 @@
+[
+  {
+    "file": "recovered-maps-and-code.zip",
+    "bytes": 10923407,
+    "sha256": "7ca2cecde05d19cede562f425d0221e3c9b565d0199d38fe102acf7adb7dc47f"
+  },
+  {
+    "file": "full-reproduction.zip",
+    "bytes": 80160207,
+    "sha256": "275345a73f0aabbff4c944e915cf1ec3742ebfad51313882ac6a06238d13dbd2"
+  }
+]

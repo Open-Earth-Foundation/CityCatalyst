@@ -1,0 +1,22 @@
+{
+  "status": "succeeded",
+  "name": "richfield-inundation-100yr",
+  "seconds_this_invocation": 20.533494799979962,
+  "class_seconds_total": 20.301230099983513,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 20.301230099983513,
+      "tiles": 8,
+      "positive_pixels": 0,
+      "peak_rss_mb": 976.9453125,
+      "torch_threads": 4
+    }
+  ],
+  "overlap_pixels": 0,
+  "unknown_pixels": 969408,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "settings_sha256": "bdd13e279228ee918c7a53c05e32cfeb1eff67b57c44bae2483855b0c41b733b",
+  "model": "unmodified upstream LOAM, 7 channels, 2 classes, CPU float32",
+  "tiles": 8
+}

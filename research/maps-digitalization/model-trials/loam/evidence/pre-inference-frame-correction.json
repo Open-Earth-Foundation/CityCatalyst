@@ -1,0 +1,18 @@
+{
+  "stage": "source-only preparation before network inference",
+  "initial_heat_frame_xyxy": [
+    112,
+    1441,
+    1136,
+    1442
+  ],
+  "corrected_heat_frame_xyxy": [
+    112,
+    142,
+    1136,
+    1442
+  ],
+  "cause": "gray top border failed initial dark-horizontal-row detection",
+  "correction": "follow vertical border and require map-frame area greater than half the figure",
+  "invalid_preprocessing": "regenerated before the first real network smoke test; no reference data involved"
+}

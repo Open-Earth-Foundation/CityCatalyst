@@ -1,0 +1,13 @@
+EVALUATE porto-heat
+EVALUATE porto-flood
+Traceback (most recent call last):
+  File "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py", line 134, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py", line 122, in main
+    result[group][m['name']]=score_porto(m) if m['family']=='porto' else score_richfield(m)
+                             ^^^^^^^^^^^^^^
+  File "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\evaluate.py", line 51, in score_porto
+    if method=='previous':assert scores[s]==oldbench[s],(hazard,s,'previous oracle mismatch')
+                                 ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('flood', 'all', 'previous oracle mismatch')

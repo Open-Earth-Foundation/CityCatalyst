@@ -1,0 +1,114 @@
+{
+  "preparation": [
+    {
+      "layer": "porto-heat",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-heat\\record.json",
+      "elapsed_s": 0.203
+    },
+    {
+      "layer": "porto-flood",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-flood\\record.json",
+      "elapsed_s": 0.094
+    },
+    {
+      "layer": "porto-landslide",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-landslide\\record.json",
+      "elapsed_s": 0.078
+    },
+    {
+      "layer": "porto-drought",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-drought\\record.json",
+      "elapsed_s": 0.094
+    },
+    {
+      "layer": "porto-arbovirus",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-arbovirus\\record.json",
+      "elapsed_s": 0.094
+    },
+    {
+      "layer": "porto-storm",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\porto-storm\\record.json",
+      "elapsed_s": 0.094
+    },
+    {
+      "layer": "richfield-inundation-100yr",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\richfield-inundation-100yr\\record.json",
+      "elapsed_s": 0.14
+    },
+    {
+      "layer": "richfield-inundation-2yr",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\richfield-inundation-2yr\\record.json",
+      "elapsed_s": 0.203
+    },
+    {
+      "layer": "richfield-inundation-10yr",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\richfield-inundation-10yr\\record.json",
+      "elapsed_s": 0.141
+    },
+    {
+      "layer": "richfield-inundation-mce100",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\richfield-inundation-mce100\\record.json",
+      "elapsed_s": 0.141
+    },
+    {
+      "layer": "richfield-prioritization-score",
+      "status": "succeeded",
+      "scope": "source preparation only",
+      "manual_crop": true,
+      "record": "outputs\\legend-prepared\\richfield-prioritization-score\\record.json",
+      "elapsed_s": 0.14
+    }
+  ],
+  "dry_runs": [
+    {
+      "layer": "porto-flood",
+      "status": "dry_run",
+      "example_count": 5,
+      "model_requested": "gpt-4o",
+      "model_called": false,
+      "predictions_produced": false,
+      "elapsed_s": 0.125
+    },
+    {
+      "layer": "richfield-inundation-100yr",
+      "status": "dry_run",
+      "example_count": 5,
+      "model_requested": "gpt-4o",
+      "model_called": false,
+      "predictions_produced": false,
+      "elapsed_s": 0.14
+    }
+  ],
+  "paid_api_calls": 0,
+  "pretrained_inference_completed": false
+}

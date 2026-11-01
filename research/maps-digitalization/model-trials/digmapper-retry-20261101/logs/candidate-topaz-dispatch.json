@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "criticalmaas_launcher.cli",
+    "pipeline",
+    "topaz"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper-retry-20261101",
+  "started_at_utc": "2026-11-01T09:26:53.716694+00:00",
+  "exit_code": 2,
+  "elapsed_s": 0.106
+}

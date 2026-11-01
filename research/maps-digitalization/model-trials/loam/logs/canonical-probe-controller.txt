@@ -1,0 +1,2 @@
+{"command": ["C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam\\.venv\\Scripts\\python.exe", "-X", "utf8", "canonical_tile_probe.py", "porto-heat"], "exit_code": 1, "seconds": 9.278331600013189, "peak_rss_mb": 2662.046875, "stop_reason": "own subprocess RSS exceeded 2300 MiB", "log": "logs\\canonical_tile_probe-porto-heat-run.txt"}
+Probe ended before producing a result; see runner and log

@@ -1,0 +1,101 @@
+[
+  {
+    "name": "ldtr-thrust-config",
+    "url": "https://drive.google.com/uc?export=download&id=1p7nlIqAiCZonahATYPCDQIFyZM-lyKlL",
+    "status": 200,
+    "final_url": "https://drive.usercontent.google.com/download?id=1p7nlIqAiCZonahATYPCDQIFyZM-lyKlL&export=download",
+    "content_type": "application/octet-stream",
+    "file": "evidence\\ldtr-thrust-config.txt",
+    "bytes": 2256,
+    "sha256": "a9bcf1c83661be1b5625bc5d647f6888effed5401b0baf3a6a0cd5dfdf1f7736",
+    "elapsed_s": 1.656
+  },
+  {
+    "name": "ldtr-thrust-weights",
+    "url": "https://drive.google.com/uc?export=download&id=1Bjes7tXUZRDCCQrlXqPs2tgWDO5q9hpL",
+    "status": 200,
+    "final_url": "https://drive.usercontent.google.com/download?id=1Bjes7tXUZRDCCQrlXqPs2tgWDO5q9hpL&export=download",
+    "content_type": "text/html; charset=utf-8",
+    "file": "evidence/ldtr-thrust-weights.html",
+    "bytes": 2474,
+    "sha256": "fcd4d0a32bc2c5678920e31598efd6440ebe0319444eb9410cc904892b9a359a",
+    "elapsed_s": 0.625,
+    "checkpoint_downloaded": false
+  },
+  {
+    "name": "s3-global-weights",
+    "url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "file": "evidence\\s3-global-weights.txt",
+    "bytes": 327,
+    "sha256": "19da9fb966314041a035e634dffc5fe084647f465f3cf72417e325ac9543bee3",
+    "elapsed_s": 0.5
+  },
+  {
+    "name": "layout-issue5-comments",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues/5/comments",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues/5/comments",
+    "content_type": "application/json; charset=utf-8",
+    "file": "evidence\\layout-issue5-comments.txt",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.375
+  },
+  {
+    "name": "layout-issue7-comments",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues/7/comments",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/issues/7/comments",
+    "content_type": "application/json; charset=utf-8",
+    "file": "evidence\\layout-issue7-comments.txt",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.375
+  },
+  {
+    "name": "aim-metadata",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+    "content_type": "application/json; charset=utf-8",
+    "file": "evidence\\aim-metadata.txt",
+    "bytes": 7109,
+    "sha256": "559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f",
+    "elapsed_s": 0.406
+  },
+  {
+    "name": "topaz-github-search",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+    "content_type": "application/json; charset=utf-8",
+    "file": "evidence\\topaz-github-search.txt",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.453
+  },
+  {
+    "name": "maplocator-readme",
+    "url": "https://raw.githubusercontent.com/knowledge-computing/MapLocator/main/README.md",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/knowledge-computing/MapLocator/main/README.md",
+    "content_type": "text/plain; charset=utf-8",
+    "file": "evidence\\maplocator-readme.txt",
+    "bytes": 266,
+    "sha256": "0de36cf4b2d2512c4c1a52dcc2679d991e9de350b7a5020b75838f2937396ee7",
+    "elapsed_s": 0.375
+  },
+  {
+    "name": "point-generator-readme",
+    "url": "https://raw.githubusercontent.com/knowledge-computing/criticalmaas-TA1-synthmap-points/main/README.md",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/knowledge-computing/criticalmaas-TA1-synthmap-points/main/README.md",
+    "content_type": "text/plain; charset=utf-8",
+    "file": "evidence\\point-generator-readme.txt",
+    "bytes": 927,
+    "sha256": "e012a94c42a9d78356deb5be1ec727227b0ab17b92a20a6825598f4a80fbc598",
+    "elapsed_s": 0.438
+  }
+]

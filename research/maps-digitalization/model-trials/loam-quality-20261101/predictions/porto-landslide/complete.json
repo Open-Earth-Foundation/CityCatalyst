@@ -1,0 +1,118 @@
+{
+  "status": "succeeded",
+  "name": "porto-landslide",
+  "seconds": 18.633397400029935,
+  "classes": [
+    {
+      "index": 0,
+      "seconds": 2.42772719997447,
+      "tiles": 4,
+      "positive_pixels": 712,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 1,
+      "seconds": 1.56891120004002,
+      "tiles": 4,
+      "positive_pixels": 8396,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 2,
+      "seconds": 1.5693245999282226,
+      "tiles": 4,
+      "positive_pixels": 29071,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 3,
+      "seconds": 1.575398899964057,
+      "tiles": 4,
+      "positive_pixels": 3259,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 4,
+      "seconds": 1.5805610000388697,
+      "tiles": 4,
+      "positive_pixels": 5812,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 5,
+      "seconds": 1.531574499909766,
+      "tiles": 4,
+      "positive_pixels": 1209,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 6,
+      "seconds": 1.5405371999368072,
+      "tiles": 4,
+      "positive_pixels": 532,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 7,
+      "seconds": 1.5465752000454813,
+      "tiles": 4,
+      "positive_pixels": 633,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 8,
+      "seconds": 2.597597499960102,
+      "tiles": 4,
+      "positive_pixels": 546,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    },
+    {
+      "index": 9,
+      "seconds": 1.7491202000528574,
+      "tiles": 4,
+      "positive_pixels": 114,
+      "peak_cuda_allocated_mib": 2092.9482421875,
+      "peak_cuda_reserved_mib": 2686.0,
+      "peak_rss_mib": 943.421875
+    }
+  ],
+  "tiles": 40,
+  "unknown_pixels": 2084071,
+  "overlap_pixels": 1901,
+  "checkpoint_sha256": "3ad85414a951ece88bf9a14daaf74b5b98ea6333695b45e410ce519262b32f73",
+  "config_sha256": "5156bff19034c5d68e997f68b2601e5c3684eb4adc9d20fd68849d1568e31696",
+  "strict_load": "<All keys matched successfully>",
+  "mode": 0,
+  "dtype": "float32",
+  "device": "cuda",
+  "tile_hw": [
+    1024,
+    1024
+  ],
+  "torch": "2.5.1+cu124",
+  "gpu_lock_owner": {
+    "owner": "loam-quality-6bf0ae23-cd4d-4076-8745-ebfd8aa309c6",
+    "pid": 83600,
+    "directory": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\loam-quality-20261101",
+    "layer": "porto-landslide",
+    "created": 1793525224.8117673
+  }
+}

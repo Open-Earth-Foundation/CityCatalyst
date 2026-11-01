@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "python",
+    "-X",
+    "utf8",
+    "scripts\\probe.py",
+    "configs\\author-probes.json"
+  ],
+  "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper-retry-20261101",
+  "started_at_utc": "2026-11-01T09:24:31.971543+00:00",
+  "exit_code": 0,
+  "elapsed_s": 3.594
+}

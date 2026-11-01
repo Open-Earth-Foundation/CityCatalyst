@@ -1,0 +1,1926 @@
+{
+  "ordinary_http_requests": 100,
+  "statuses": {
+    "200": 87,
+    "403": 2,
+    "404": 8,
+    "401": 3
+  },
+  "results": [
+    {
+      "name": "poly-system-config",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/config.yaml",
+      "checked_at_utc": "2026-11-01T09:25:22.677541+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/config.yaml",
+      "headers": {
+        "Content-Length": "3010",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"b18f1efc71d9ff1689e56293556a54733199dac4e3f77dc2a09047880c93e684\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-system-config.body",
+      "bytes": 3010,
+      "sha256": "378aa50b8ab431765c1c405029699e394f35ef0ef15b5225c2ca2eedde50f90f",
+      "elapsed_s": 0.372
+    },
+    {
+      "name": "poly-system-readme",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/README.md",
+      "checked_at_utc": "2026-11-01T09:25:22.677970+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/README.md",
+      "headers": {
+        "Content-Length": "1892",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"f04d7c73b9077bcebfcfb99ce4ca7cc1f762387274d3fbe61be192813f1fc9dd\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-system-readme.body",
+      "bytes": 1892,
+      "sha256": "139297d42d85f57624b10de05b87b035fc1f33aa288527c908e4dbe03be003c8",
+      "elapsed_s": 0.366
+    },
+    {
+      "name": "poly-system-main",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/main.py",
+      "checked_at_utc": "2026-11-01T09:25:22.678292+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/system/main.py",
+      "headers": {
+        "Content-Length": "6691",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"04c4142dd083570a8e30ec5f013aff75b251fb3ba5116deb454ee0562a163771\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-system-main.body",
+      "bytes": 6691,
+      "sha256": "acdc69662e0378a94f9db1b2c2eb218a01b3c71bf02d31d2fa0a8b3626cca828",
+      "elapsed_s": 0.363
+    },
+    {
+      "name": "poly-polygon-readme",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/README.md",
+      "checked_at_utc": "2026-11-01T09:25:22.678721+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/README.md",
+      "headers": {
+        "Content-Length": "5596",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"db2124fe0a49b9e37d6d372b278080f18a9bb78ebaa5da7826f202b1737772f4\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-polygon-readme.body",
+      "bytes": 5596,
+      "sha256": "81b61ccd339dcf489368227d9f4e8f63856e4acd5f63ffcc3f69f3c9dbec2042",
+      "elapsed_s": 0.361
+    },
+    {
+      "name": "poly-loam-model",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/LOAM/loam_model.py",
+      "checked_at_utc": "2026-11-01T09:25:23.039765+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/LOAM/loam_model.py",
+      "headers": {
+        "Content-Length": "2652",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"1c1b8ec3cba78881ed750bc3f034ef0845e140e7c8ec8e7e38aa12fe0038977e\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-loam-model.body",
+      "bytes": 2652,
+      "sha256": "9ddf54730cbc32bd9c9a90df6e4870ad7853b78662db4eea525e12d874333ed2",
+      "elapsed_s": 0.3
+    },
+    {
+      "name": "poly-loam-handler",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/loam_handler.py",
+      "checked_at_utc": "2026-11-01T09:25:23.041057+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/67bb6ab710fa88b630dc403e46abf85bcbbf99e8/polygon/loam_handler.py",
+      "headers": {
+        "Content-Length": "19113",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"909085317d053ac71709ca1bda3f6a24482864c0206d1209c930c0a52cc52bdf\""
+      },
+      "truncated": false,
+      "file": "evidence/poly-loam-handler.body",
+      "bytes": 19113,
+      "sha256": "9964460933df61b6b2ad757f742450a8b2899957f8ab83a9b44d3976f1231777",
+      "elapsed_s": 0.309
+    },
+    {
+      "name": "publication-acm",
+      "url": "https://dl.acm.org/doi/10.1145/3748636.3764602",
+      "checked_at_utc": "2026-11-01T09:25:23.043894+00:00",
+      "method": "GET",
+      "status": 403,
+      "final_url": "https://dl.acm.org/doi/10.1145/3748636.3764602",
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Content-Length": "5556"
+      },
+      "truncated": false,
+      "file": "evidence/publication-acm.body",
+      "bytes": 5556,
+      "sha256": "dcb19b5bd7548b7863afb5652e7315f23678fe4208921e31a2be8e6197b44547",
+      "elapsed_s": 0.129
+    },
+    {
+      "name": "publication-crossref",
+      "url": "https://api.crossref.org/works/10.1145/3748636.3764602",
+      "checked_at_utc": "2026-11-01T09:25:23.049370+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.crossref.org/works/10.1145/3748636.3764602",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "truncated": false,
+      "file": "evidence/publication-crossref.body",
+      "bytes": 31713,
+      "sha256": "7f10eea5f3192506a9ab3443b144b5feaabb813537e174b9dbccc109aba21f90",
+      "elapsed_s": 0.577
+    },
+    {
+      "name": "usc-repos-page3",
+      "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=3",
+      "checked_at_utc": "2026-11-01T09:25:23.172991+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=3",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"23eeaac57e4d7ac687f9d5056e1fcf99d0b75a4ff5653648462bee95dad6f463\"",
+        "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=2>; rel=\"prev\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"first\"",
+        "X-RateLimit-Remaining": "26",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/usc-repos-page3.body",
+      "bytes": 391031,
+      "sha256": "23eeaac57e4d7ac687f9d5056e1fcf99d0b75a4ff5653648462bee95dad6f463",
+      "elapsed_s": 1.818
+    },
+    {
+      "name": "uncharted-segmentation-readme",
+      "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/pipelines/segmentation/README.md",
+      "checked_at_utc": "2026-11-01T09:25:23.339880+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/pipelines/segmentation/README.md",
+      "headers": {
+        "Content-Length": "4389",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"5211d8a101a1699fc374392020981e3df55393911db605d63de327be9de914e0\""
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-segmentation-readme.body",
+      "bytes": 4389,
+      "sha256": "2b80e560bced998fb181e74ae10702bf9c907564d4bb3d8d10ac3cc6cf2fb6c6",
+      "elapsed_s": 0.319
+    },
+    {
+      "name": "uncharted-deploy-template",
+      "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/docker-compose.j2",
+      "checked_at_utc": "2026-11-01T09:25:23.350479+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/docker-compose.j2",
+      "headers": {
+        "Content-Length": "9798",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"b7407df10510e17b15bad8aed806eb6f3dca4dbbe4747910a06551cd7126017e\""
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-deploy-template.body",
+      "bytes": 9798,
+      "sha256": "3ce2497a60b3fc0cda9f8f129bae5c9a9a952b1ae3d13dbe36910d84ffc53473",
+      "elapsed_s": 0.295
+    },
+    {
+      "name": "uncharted-deploy-vars",
+      "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/vars_example.json",
+      "checked_at_utc": "2026-11-01T09:25:23.626363+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9/deploy/vars_example.json",
+      "headers": {
+        "Content-Length": "656",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"62a8b3110f9a4b66342e4aba7c3a720dc0de6f433e59b4143d52ffc7eb7ce893\""
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-deploy-vars.body",
+      "bytes": 656,
+      "sha256": "af06f70ed4ee6eb61d84b06ee629597b18d84d4b8ac08bdbba00c4424a2bf409",
+      "elapsed_s": 0.306
+    },
+    {
+      "name": "author-poly-tree",
+      "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:24:32.053075+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"ecc625c5a0b3312202b14f9c999006178c05fbf5ab78411fc4f64bfaac5d212d\"",
+        "Last-Modified": "Fri, 15 Mar 2024 21:51:42 GMT",
+        "X-RateLimit-Remaining": "31",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/author-poly-tree.body",
+      "bytes": 252674,
+      "sha256": "ecc625c5a0b3312202b14f9c999006178c05fbf5ab78411fc4f64bfaac5d212d",
+      "elapsed_s": 0.648
+    },
+    {
+      "name": "author-poly-readme",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:24:32.053366+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/poly_itemseg_update/HEAD/README.md",
+      "headers": {
+        "Content-Length": "0",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"aae1d56222a9cafc63743594c537cd2e698c0090a4e3f7d75bd425ddd0a66100\""
+      },
+      "truncated": false,
+      "file": "evidence/author-poly-readme.body",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_s": 0.403
+    },
+    {
+      "name": "author-poly-releases",
+      "url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/releases",
+      "checked_at_utc": "2026-11-01T09:24:32.053721+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/Fandel-Lin/poly_itemseg_update/releases",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "30",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/author-poly-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.377
+    },
+    {
+      "name": "author-dovetail-tree",
+      "url": "https://api.github.com/repos/Fandel-Lin/DOVETAIL/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:24:32.054135+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/Fandel-Lin/DOVETAIL/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"1c45de1d04dbe91704b87b6fc8877f3eff3662c928a42a2a538e0cdc54cd83b2\"",
+        "Last-Modified": "Thu, 31 Oct 2024 15:39:28 GMT",
+        "X-RateLimit-Remaining": "29",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "630"
+      },
+      "truncated": false,
+      "file": "evidence/author-dovetail-tree.body",
+      "bytes": 630,
+      "sha256": "1c45de1d04dbe91704b87b6fc8877f3eff3662c928a42a2a538e0cdc54cd83b2",
+      "elapsed_s": 0.419
+    },
+    {
+      "name": "author-dovetail-readme",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/DOVETAIL/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:24:32.430270+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/DOVETAIL/HEAD/README.md",
+      "headers": {
+        "Content-Length": "184",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"7487dd92d82f909b36cbedd7d399eda2772d0d1d28d854127a8b5fc531a3bd21\""
+      },
+      "truncated": false,
+      "file": "evidence/author-dovetail-readme.body",
+      "bytes": 184,
+      "sha256": "81a65385ad5e0132102128aa354bc21a0c3aea793aabe227c9f43287b7152980",
+      "elapsed_s": 0.35
+    },
+    {
+      "name": "author-polydetr-readme",
+      "url": "https://raw.githubusercontent.com/WeiweiDuan/PolyDETR/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:24:32.456719+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://raw.githubusercontent.com/WeiweiDuan/PolyDETR/HEAD/README.md",
+      "headers": {
+        "Content-Length": "14",
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      "truncated": false,
+      "file": "evidence/author-polydetr-readme.body",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+      "elapsed_s": 0.326
+    },
+    {
+      "name": "author-spolydetr-readme",
+      "url": "https://raw.githubusercontent.com/WeiweiDuan/S-PolyDETR/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:24:32.472821+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/WeiweiDuan/S-PolyDETR/HEAD/README.md",
+      "headers": {
+        "Content-Length": "971",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"d987c33d49bb70a3cbb26a0f75a4f90afca1e1b2fdc887d86a88449aec0e1b89\""
+      },
+      "truncated": false,
+      "file": "evidence/author-spolydetr-readme.body",
+      "bytes": 971,
+      "sha256": "e1ea35f99475931f7454a48b4636be65fbe0148f5b2d121d5aef69157dac568c",
+      "elapsed_s": 0.337
+    },
+    {
+      "name": "author-glyph-readme",
+      "url": "https://raw.githubusercontent.com/Fandel-Lin/GLYPH/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:24:32.701272+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/Fandel-Lin/GLYPH/HEAD/README.md",
+      "headers": {
+        "Content-Length": "1531",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"44adc3802f76780e7623a51b7f50129f5cccec6c562f5bdbf9b48a9cc383efbb\""
+      },
+      "truncated": false,
+      "file": "evidence/author-glyph-readme.body",
+      "bytes": 1531,
+      "sha256": "83558cdac6e18a21dc43ccc6389b8f059a77a2a8ce6509708e56c1710ff8f062",
+      "elapsed_s": 0.353
+    },
+    {
+      "name": "usc-repos-page2",
+      "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=2",
+      "checked_at_utc": "2026-11-01T09:24:32.779937+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100&page=2",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"38cfcb1642f01597f65f4a532aa111abe8ef89b6ba0dd28f28a4044058bf6054\"",
+        "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"prev\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"next\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"last\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=1>; rel=\"first\"",
+        "X-RateLimit-Remaining": "28",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/usc-repos-page2.body",
+      "bytes": 569594,
+      "sha256": "38cfcb1642f01597f65f4a532aa111abe8ef89b6ba0dd28f28a4044058bf6054",
+      "elapsed_s": 2.772
+    },
+    {
+      "name": "jterstriep-dockerfiles-tree",
+      "url": "https://api.github.com/repos/jterstriep/dockerfiles/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:24:32.783099+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/jterstriep/dockerfiles/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"fb109e38b05ddc128c1bfbb9d7bcaf427a9be752316a6cd107905e74dc31f8c7\"",
+        "Last-Modified": "Wed, 04 Feb 2015 23:20:46 GMT",
+        "X-RateLimit-Remaining": "27",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "2411"
+      },
+      "truncated": false,
+      "file": "evidence/jterstriep-dockerfiles-tree.body",
+      "bytes": 2411,
+      "sha256": "fb109e38b05ddc128c1bfbb9d7bcaf427a9be752316a6cd107905e74dc31f8c7",
+      "elapsed_s": 0.335
+    },
+    {
+      "name": "candidate-launcher",
+      "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/cli.py",
+      "checked_at_utc": "2026-11-01T09:24:32.809890+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/cli.py",
+      "headers": {
+        "Content-Length": "9329",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"bcb0a79ea533357897fcc1ac45ece9d66cac66bf101c853370bdd26583924631\""
+      },
+      "truncated": false,
+      "file": "evidence/candidate-launcher.body",
+      "bytes": 9329,
+      "sha256": "0b95f8f15de8f24d4e80efca7eebb18680e6298239daf6467fd111611af7ed00",
+      "elapsed_s": 0.309
+    },
+    {
+      "name": "candidate-launcher-main",
+      "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/__main__.py",
+      "checked_at_utc": "2026-11-01T09:24:33.054307+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/d346eb549f2d91139cc78594eee30a05ae7afb23/criticalmaas_launcher/__main__.py",
+      "headers": {
+        "Content-Length": "14",
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      "truncated": false,
+      "file": "evidence/candidate-launcher-main.body",
+      "bytes": 14,
+      "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+      "elapsed_s": 0.285
+    },
+    {
+      "name": "candidate-metadata",
+      "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1",
+      "checked_at_utc": "2026-11-01T09:23:29.708086+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"4a9c120a130aa7b6d1e927aeded7893f2737c1d49c0bc2ea34d84a7bf7088084\"",
+        "Last-Modified": "Tue, 22 Sep 2026 03:18:16 GMT",
+        "X-RateLimit-Remaining": "49",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "5868"
+      },
+      "truncated": false,
+      "file": "evidence/candidate-metadata.body",
+      "bytes": 5868,
+      "sha256": "4a9c120a130aa7b6d1e927aeded7893f2737c1d49c0bc2ea34d84a7bf7088084",
+      "elapsed_s": 0.409
+    },
+    {
+      "name": "candidate-tree",
+      "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:29.708545+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"33f572ca4d72b5b4ad67e7dfd8bc052477e79b17dae2630584cfbbc0487a97cb\"",
+        "Last-Modified": "Tue, 22 Sep 2026 03:18:16 GMT",
+        "X-RateLimit-Remaining": "48",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/candidate-tree.body",
+      "bytes": 87832,
+      "sha256": "33f572ca4d72b5b4ad67e7dfd8bc052477e79b17dae2630584cfbbc0487a97cb",
+      "elapsed_s": 0.482
+    },
+    {
+      "name": "candidate-releases",
+      "url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/releases",
+      "checked_at_utc": "2026-11-01T09:23:29.708838+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/cxp114/criticalmaas-uncharted-ta1/releases",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"42f6642a2b660d97aa71728f26b191b191f74a0fa68e4270d4edf84d932b5f8a\"",
+        "X-RateLimit-Remaining": "47",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "4175"
+      },
+      "truncated": false,
+      "file": "evidence/candidate-releases.body",
+      "bytes": 4175,
+      "sha256": "42f6642a2b660d97aa71728f26b191b191f74a0fa68e4270d4edf84d932b5f8a",
+      "elapsed_s": 0.49
+    },
+    {
+      "name": "candidate-readme",
+      "url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/HEAD/README.md",
+      "checked_at_utc": "2026-11-01T09:23:29.709102+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/cxp114/criticalmaas-uncharted-ta1/HEAD/README.md",
+      "headers": {
+        "Content-Length": "10726",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"a7a2c6fc8e974d9ba7f44e2089329ac46476050d65badd2a1bf125ab5f883898\""
+      },
+      "truncated": false,
+      "file": "evidence/candidate-readme.body",
+      "bytes": 10726,
+      "sha256": "6ae7c32db6d54dae713c8c56c95dd38bba3b2e0cbac343bb9f086df36c7c6b46",
+      "elapsed_s": 0.487
+    },
+    {
+      "name": "uncharted-tree",
+      "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:30.116695+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"14376a4b83fdc59934835d5711934decc413d76ba4c08c8101aabcf5a11300ee\"",
+        "Last-Modified": "Tue, 22 Sep 2026 21:25:22 GMT",
+        "X-RateLimit-Remaining": "46",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-tree.body",
+      "bytes": 85050,
+      "sha256": "14376a4b83fdc59934835d5711934decc413d76ba4c08c8101aabcf5a11300ee",
+      "elapsed_s": 0.441
+    },
+    {
+      "name": "lab-website",
+      "url": "https://knowledge-computing.github.io/",
+      "checked_at_utc": "2026-11-01T09:23:30.190851+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://knowledge-computing.github.io/",
+      "headers": {
+        "Content-Length": "31371",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Fri, 25 Sep 2026 14:07:47 GMT",
+        "ETag": "\"6ab68033-7a8b\""
+      },
+      "truncated": false,
+      "file": "evidence/lab-website.body",
+      "bytes": 31371,
+      "sha256": "77896785ae3af50fe362bc4b05b38e439439135994193350f71ed453f09616be",
+      "elapsed_s": 0.301
+    },
+    {
+      "name": "lab-criticalmaas-site",
+      "url": "https://knowledge-computing.github.io/criticalmaas-web/",
+      "checked_at_utc": "2026-11-01T09:23:30.195821+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://knowledge-computing.github.io/criticalmaas-web/",
+      "headers": {
+        "Content-Length": "9147",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Mon, 15 Jan 2024 04:59:43 GMT",
+        "ETag": "\"65a4bbbf-23bb\""
+      },
+      "truncated": false,
+      "file": "evidence/lab-criticalmaas-site.body",
+      "bytes": 9147,
+      "sha256": "57600f3a145fcf8e873ce7df2a107c81324d852aadebae51025d5f9a64c33305",
+      "elapsed_s": 0.297
+    },
+    {
+      "name": "lab-criticalmaas-tree",
+      "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-web/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:30.199043+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-web/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"77836285c7c411acffcf22849eccdccbfab384d6580c2564dc11bffc8702a2b6\"",
+        "Last-Modified": "Tue, 26 Sep 2023 02:09:32 GMT",
+        "X-RateLimit-Remaining": "45",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "14187"
+      },
+      "truncated": false,
+      "file": "evidence/lab-criticalmaas-tree.body",
+      "bytes": 14187,
+      "sha256": "77836285c7c411acffcf22849eccdccbfab384d6580c2564dc11bffc8702a2b6",
+      "elapsed_s": 0.44
+    },
+    {
+      "name": "lab-packages",
+      "url": "https://api.github.com/orgs/knowledge-computing/packages?package_type=container",
+      "checked_at_utc": "2026-11-01T09:23:30.492249+00:00",
+      "method": "GET",
+      "status": 401,
+      "final_url": "https://api.github.com/orgs/knowledge-computing/packages?package_type=container",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "44",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "120"
+      },
+      "truncated": false,
+      "file": "evidence/lab-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+      "elapsed_s": 0.245
+    },
+    {
+      "name": "inferlink-packages",
+      "url": "https://api.github.com/orgs/InferLink/packages?package_type=container",
+      "checked_at_utc": "2026-11-01T09:23:30.492357+00:00",
+      "method": "GET",
+      "status": 401,
+      "final_url": "https://api.github.com/orgs/InferLink/packages?package_type=container",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "43",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "120"
+      },
+      "truncated": false,
+      "file": "evidence/inferlink-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+      "elapsed_s": 0.238
+    },
+    {
+      "name": "darpa-packages",
+      "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/packages?package_type=container",
+      "checked_at_utc": "2026-11-01T09:23:30.557428+00:00",
+      "method": "GET",
+      "status": 401,
+      "final_url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/packages?package_type=container",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "42",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "120"
+      },
+      "truncated": false,
+      "file": "evidence/darpa-packages.body",
+      "bytes": 120,
+      "sha256": "b7dbd173f33b19650f61b1c528737e2037cf768d90076fdfce5d32541765e29e",
+      "elapsed_s": 0.255
+    },
+    {
+      "name": "ta1-evaluation-tree",
+      "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/TA1-Evaluation/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:30.639182+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/TA1-Evaluation/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"e3c6f1fcb20908024f58df2bae8d5fec5b98458507302e713056033f96941989\"",
+        "Last-Modified": "Sun, 12 Jan 2025 20:19:26 GMT",
+        "X-RateLimit-Remaining": "41",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "14178"
+      },
+      "truncated": false,
+      "file": "evidence/ta1-evaluation-tree.body",
+      "bytes": 14178,
+      "sha256": "e3c6f1fcb20908024f58df2bae8d5fec5b98458507302e713056033f96941989",
+      "elapsed_s": 0.486
+    },
+    {
+      "name": "cdr-examples-tree",
+      "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/cdr_client_examples/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:30.730483+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/cdr_client_examples/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"429489abf89690d0c82531a9d31ec91f91469691a93b4f9947321d5ec9455857\"",
+        "Last-Modified": "Tue, 13 Aug 2024 16:39:24 GMT",
+        "X-RateLimit-Remaining": "40",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "9763"
+      },
+      "truncated": false,
+      "file": "evidence/cdr-examples-tree.body",
+      "bytes": 9763,
+      "sha256": "429489abf89690d0c82531a9d31ec91f91469691a93b4f9947321d5ec9455857",
+      "elapsed_s": 0.444
+    },
+    {
+      "name": "docker-topaz-search-page2",
+      "url": "https://hub.docker.com/v2/search/repositories/?page=2&page_size=100&query=topaz",
+      "checked_at_utc": "2026-11-01T09:23:30.737739+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/search/repositories/?page=2&page_size=100&query=topaz",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-ratelimit-reset": "1793525071",
+        "x-ratelimit-remaining": "178"
+      },
+      "truncated": false,
+      "file": "evidence/docker-topaz-search-page2.body",
+      "bytes": 11207,
+      "sha256": "53d6823ff9fe43c97ea0409d4c3851dc3bcbae624729d63a50d0ec700368ea57",
+      "elapsed_s": 0.255
+    },
+    {
+      "name": "docker-jterstriep-topaz",
+      "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/",
+      "checked_at_utc": "2026-11-01T09:23:30.812410+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "704",
+        "x-ratelimit-reset": "1793525071",
+        "x-ratelimit-remaining": "177"
+      },
+      "truncated": false,
+      "file": "evidence/docker-jterstriep-topaz.body",
+      "bytes": 704,
+      "sha256": "fefeee3da6ad64d8e0b8ef304a7e750fb3090d84ad1d2db2e1672f50b84993ac",
+      "elapsed_s": 0.234
+    },
+    {
+      "name": "docker-mapsense-search",
+      "url": "https://hub.docker.com/v2/search/repositories/?query=mapsense&page_size=100",
+      "checked_at_utc": "2026-11-01T09:23:30.992872+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/search/repositories/?query=mapsense&page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-ratelimit-reset": "1793525071",
+        "x-ratelimit-remaining": "176"
+      },
+      "truncated": false,
+      "file": "evidence/docker-mapsense-search.body",
+      "bytes": 1082,
+      "sha256": "44867d6e1aa8b81750b93bce3d29a27a8b87bec7a60cfa396f89ccd6aff1dc6c",
+      "elapsed_s": 0.207
+    },
+    {
+      "name": "ghcr-lab-package-page",
+      "url": "https://github.com/orgs/knowledge-computing/packages?repo_name=CriticalMAAS_AIM",
+      "checked_at_utc": "2026-11-01T09:23:31.046845+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://github.com/orgs/knowledge-computing/packages?repo_name=CriticalMAAS_AIM",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "ETag": "W/\"174b5ac2dea6c745872fb92ff389b59f\""
+      },
+      "truncated": false,
+      "file": "evidence/ghcr-lab-package-page.body",
+      "bytes": 145139,
+      "sha256": "fe2ccd52e3091942f0485de8e6cc33c9d896773ea0a23b2e23203c201001f0da",
+      "elapsed_s": 0.542
+    },
+    {
+      "name": "legend-releases",
+      "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/releases",
+      "checked_at_utc": "2026-11-01T09:23:31.125106+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/releases",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "39",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/legend-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.326
+    },
+    {
+      "name": "legend-tree",
+      "url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/git/trees/HEAD?recursive=1",
+      "checked_at_utc": "2026-11-01T09:23:31.174791+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/criticalmaas-legend-detection/git/trees/HEAD?recursive=1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"11ba232e665f4998b6b460d8aff9c2e8cc59c2ab6519c2f2d38ac63277acf1cb\"",
+        "Last-Modified": "Tue, 13 Oct 2026 15:00:55 GMT",
+        "X-RateLimit-Remaining": "38",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "10544"
+      },
+      "truncated": false,
+      "file": "evidence/legend-tree.body",
+      "bytes": 10544,
+      "sha256": "11ba232e665f4998b6b460d8aff9c2e8cc59c2ab6519c2f2d38ac63277acf1cb",
+      "elapsed_s": 0.366
+    },
+    {
+      "name": "hf-polygon-models",
+      "url": "https://huggingface.co/api/models?search=polygon&limit=100",
+      "checked_at_utc": "2026-11-01T09:23:31.200053+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/models?search=polygon&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "12781",
+        "ETag": "W/\"31ed-I+LvlEff1DmrkxfETTtfgOf47Oc\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-polygon-models.body",
+      "bytes": 12781,
+      "sha256": "5b99b729d4ef1aac8fd33e0b952550e8cdc02df6e63c85a5fc98e2a305c2f1a4",
+      "elapsed_s": 0.217
+    },
+    {
+      "name": "hf-geologic-models",
+      "url": "https://huggingface.co/api/models?search=geologic&limit=100",
+      "checked_at_utc": "2026-11-01T09:23:31.416838+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/models?search=geologic&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "1117",
+        "ETag": "W/\"45d-whu0OnywDkGPuS18gCI2iEu3zdI\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-geologic-models.body",
+      "bytes": 1117,
+      "sha256": "4508acfaf6470e0ced36dd67506f450f6d09f5aafa06b34536e889a713bdd905",
+      "elapsed_s": 0.188
+    },
+    {
+      "name": "hf-topaz-cryomodel-card",
+      "url": "https://huggingface.co/scitomo/topaz-v0.2.4-unet-l2-2d/raw/main/README.md",
+      "checked_at_utc": "2026-11-01T09:23:31.451423+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/scitomo/topaz-v0.2.4-unet-l2-2d/raw/main/README.md",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1819",
+        "ETag": "\"80acde1d48cdf66648f524f26dd2fa2eb3041ae3\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-topaz-cryomodel-card.body",
+      "bytes": 1819,
+      "sha256": "a494a3ef6101bf5f3324bcea6daa02a177721015bfb8a50c962aa0365c03848e",
+      "elapsed_s": 0.227
+    },
+    {
+      "name": "acm-pdf",
+      "url": "https://dl.acm.org/doi/pdf/10.1145/3748636.3764602",
+      "checked_at_utc": "2026-11-01T09:26:54.419242+00:00",
+      "method": "GET",
+      "status": 403,
+      "final_url": "https://dl.acm.org/doi/pdf/10.1145/3748636.3764602",
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Content-Length": "5568"
+      },
+      "truncated": false,
+      "file": "evidence/acm-pdf.body",
+      "bytes": 5568,
+      "sha256": "653e763318f822cb126f93d24a62b2d489c6764ffb99a30da4bcc3ee0bc92ad0",
+      "elapsed_s": 0.171
+    },
+    {
+      "name": "github-topaz-readme-search",
+      "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon+in%3Areadme&per_page=100",
+      "checked_at_utc": "2026-11-01T09:26:54.420273+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=TOPAZ+polygon+in%3Areadme&per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "8",
+        "X-RateLimit-Reset": "1793525275"
+      },
+      "truncated": false,
+      "file": "evidence/github-topaz-readme-search.body",
+      "bytes": 533390,
+      "sha256": "eebe373d296b1540c4cc2d8b08c6d517c124266595fb22f0907bcda2de717a0c",
+      "elapsed_s": 2.753
+    },
+    {
+      "name": "github-digmapper-readme-search",
+      "url": "https://api.github.com/search/repositories?q=DIGMAPPER+in%3Areadme&per_page=100",
+      "checked_at_utc": "2026-11-01T09:26:54.420897+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=DIGMAPPER+in%3Areadme&per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "9",
+        "X-RateLimit-Reset": "1793525275",
+        "Content-Length": "55"
+      },
+      "truncated": false,
+      "file": "evidence/github-digmapper-readme-search.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "elapsed_s": 0.426
+    },
+    {
+      "name": "github-inferlink-critical-search",
+      "url": "https://api.github.com/search/repositories?q=Inferlink+CriticalMAAS+in%3Areadme&per_page=100",
+      "checked_at_utc": "2026-11-01T09:26:54.421400+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=Inferlink+CriticalMAAS+in%3Areadme&per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "7",
+        "X-RateLimit-Reset": "1793525275",
+        "Content-Length": "11807"
+      },
+      "truncated": false,
+      "file": "evidence/github-inferlink-critical-search.body",
+      "bytes": 11807,
+      "sha256": "f6241cee89f923fbbd03bf36c1fd1cf6f95c2d4d189c06267bcdb07132eb9145",
+      "elapsed_s": 0.704
+    },
+    {
+      "name": "paper-abs",
+      "url": "https://arxiv.org/abs/2506.16006",
+      "checked_at_utc": "2026-11-01T09:22:24.344910+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://arxiv.org/abs/2506.16006",
+      "headers": {
+        "Content-Length": "42266",
+        "last-modified": "Mon, 24 Aug 2026 19:26:55 GMT",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "truncated": false,
+      "file": "evidence/paper-abs.body",
+      "bytes": 42266,
+      "sha256": "4c2d13ef3d38254082e2ba207a8c208ce57128746aa850dc7fce27f953b03baa",
+      "elapsed_s": 0.302
+    },
+    {
+      "name": "paper-latest-html",
+      "url": "https://arxiv.org/html/2506.16006",
+      "checked_at_utc": "2026-11-01T09:22:24.345374+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://arxiv.org/html/2506.16006",
+      "headers": {
+        "Content-Length": "221573",
+        "last-modified": "Mon, 24 Aug 2026 19:26:54 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "link": "<https://arxiv.org/html/2506.16006>; rel='canonical'",
+        "etag": "\"CMPfksD/uZYDEAE=\""
+      },
+      "truncated": false,
+      "file": "evidence/paper-latest-html.body",
+      "bytes": 221573,
+      "sha256": "3dbd0f350337c10332a7f2f40a147aec5a15264ed6c3e8695fa85cc292b02cfc",
+      "elapsed_s": 0.446
+    },
+    {
+      "name": "paper-api",
+      "url": "https://export.arxiv.org/api/query?id_list=2506.16006",
+      "checked_at_utc": "2026-11-01T09:22:24.345693+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://export.arxiv.org/api/query?id_list=2506.16006",
+      "headers": {
+        "Content-Length": "3292",
+        "content-type": "application/atom+xml; charset=utf-8"
+      },
+      "truncated": false,
+      "file": "evidence/paper-api.body",
+      "bytes": 3292,
+      "sha256": "fbf730d54fa682a10976f4e4ef443b60ed27bbd4bcdddb1f41bf0da1d6813426",
+      "elapsed_s": 0.417
+    },
+    {
+      "name": "aim-metadata",
+      "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+      "checked_at_utc": "2026-11-01T09:22:24.345862+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f\"",
+        "Last-Modified": "Wed, 23 Aug 2023 04:08:21 GMT",
+        "X-RateLimit-Remaining": "59",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "7109"
+      },
+      "truncated": false,
+      "file": "evidence/aim-metadata.body",
+      "bytes": 7109,
+      "sha256": "559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f",
+      "elapsed_s": 0.445
+    },
+    {
+      "name": "aim-contents",
+      "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/contents",
+      "checked_at_utc": "2026-11-01T09:22:24.647162+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/contents",
+      "headers": {
+        "Content-Length": "132",
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "58",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/aim-contents.body",
+      "bytes": 132,
+      "sha256": "b228a6778d38c40279891f510870a11ead8a6f191c4a0b4442d012876e0ef0e6",
+      "elapsed_s": 0.343
+    },
+    {
+      "name": "aim-releases",
+      "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/releases",
+      "checked_at_utc": "2026-11-01T09:22:24.762668+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/releases",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "57",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/aim-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.358
+    },
+    {
+      "name": "aim-branches",
+      "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/branches",
+      "checked_at_utc": "2026-11-01T09:22:24.791121+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/branches",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "56",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/aim-branches.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.324
+    },
+    {
+      "name": "aim-deployments",
+      "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/deployments",
+      "checked_at_utc": "2026-11-01T09:22:24.791396+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/deployments",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "55",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/aim-deployments.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.295
+    },
+    {
+      "name": "lab-repos",
+      "url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:22:24.990011+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a\"",
+        "X-RateLimit-Remaining": "54",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/lab-repos.body",
+      "bytes": 262342,
+      "sha256": "13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a",
+      "elapsed_s": 1.541
+    },
+    {
+      "name": "inferlink-repos",
+      "url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:22:25.086490+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67\"",
+        "X-RateLimit-Remaining": "53",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/inferlink-repos.body",
+      "bytes": 27696,
+      "sha256": "82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67",
+      "elapsed_s": 0.554
+    },
+    {
+      "name": "criticalmaas-repos",
+      "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:22:25.115158+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624\"",
+        "X-RateLimit-Remaining": "52",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/criticalmaas-repos.body",
+      "bytes": 241020,
+      "sha256": "3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624",
+      "elapsed_s": 1.526
+    },
+    {
+      "name": "github-digmapper",
+      "url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+      "checked_at_utc": "2026-11-01T09:22:25.120727+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "9",
+        "X-RateLimit-Reset": "1793525005",
+        "Content-Length": "5871"
+      },
+      "truncated": false,
+      "file": "evidence/github-digmapper.body",
+      "bytes": 5871,
+      "sha256": "7822ee9e2383dbbe23651ff483347a0030df061b64a232a4fbe07d6a15f7da3f",
+      "elapsed_s": 0.401
+    },
+    {
+      "name": "github-topaz-geologic",
+      "url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+      "checked_at_utc": "2026-11-01T09:22:25.521575+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "8",
+        "X-RateLimit-Reset": "1793525005",
+        "Content-Length": "55"
+      },
+      "truncated": false,
+      "file": "evidence/github-topaz-geologic.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "elapsed_s": 0.326
+    },
+    {
+      "name": "github-topaz-polygon",
+      "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon",
+      "checked_at_utc": "2026-11-01T09:22:25.640400+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=TOPAZ+polygon",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "7",
+        "X-RateLimit-Reset": "1793525005",
+        "Content-Length": "55"
+      },
+      "truncated": false,
+      "file": "evidence/github-topaz-polygon.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "elapsed_s": 0.317
+    },
+    {
+      "name": "github-topaz-criticalmaas",
+      "url": "https://api.github.com/search/repositories?q=TOPAZ+CriticalMAAS",
+      "checked_at_utc": "2026-11-01T09:22:25.847617+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=TOPAZ+CriticalMAAS",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "6",
+        "X-RateLimit-Reset": "1793525005",
+        "Content-Length": "55"
+      },
+      "truncated": false,
+      "file": "evidence/github-topaz-criticalmaas.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "elapsed_s": 0.334
+    },
+    {
+      "name": "github-polygon-inferlink",
+      "url": "https://api.github.com/search/repositories?q=polygon+org%3AInferLink",
+      "checked_at_utc": "2026-11-01T09:22:25.957083+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=polygon+org%3AInferLink",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-RateLimit-Remaining": "5",
+        "X-RateLimit-Reset": "1793525005",
+        "Content-Length": "55"
+      },
+      "truncated": false,
+      "file": "evidence/github-polygon-inferlink.body",
+      "bytes": 55,
+      "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "elapsed_s": 0.353
+    },
+    {
+      "name": "author-project",
+      "url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+      "checked_at_utc": "2026-11-01T09:22:26.181228+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+      "headers": {
+        "Content-Length": "15860",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Thu, 15 Oct 2026 17:35:07 GMT",
+        "ETag": "\"6ad10ecb-3df4\""
+      },
+      "truncated": false,
+      "file": "evidence/author-project.body",
+      "bytes": 15860,
+      "sha256": "182d822d5ec721d62f46387809902eee272400bdcd13a4c64f885780a796edec",
+      "elapsed_s": 0.327
+    },
+    {
+      "name": "inferlink-mapsense",
+      "url": "https://www.inferlink.com/mapsense",
+      "checked_at_utc": "2026-11-01T09:22:26.309781+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://www.inferlink.com/mapsense",
+      "headers": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "ETag": "W/\"4dd0f84503675acb02da5302a1de8508\"",
+        "Link": "<https://static.parastorage.com/>; rel=preconnect; crossorigin, <https://static.parastorage.com/>; rel=preconnect, <https://static.wixstatic.com/>; rel=preconnect; crossorigin, <https://static.wixstatic.com/>; rel=preconnect, <https://siteassets.parastorage.com>; rel=preconnect; crossorigin"
+      },
+      "truncated": false,
+      "file": "evidence/inferlink-mapsense.body",
+      "bytes": 521709,
+      "sha256": "3e7a8ded7f314c4487e528c530910ca0c2ca0a4dbc4d4f94a9e1a80fd4678391",
+      "elapsed_s": 0.299
+    },
+    {
+      "name": "hf-digmapper-models",
+      "url": "https://huggingface.co/api/models?search=digmapper&limit=100",
+      "checked_at_utc": "2026-11-01T09:22:26.508672+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/models?search=digmapper&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-digmapper-models.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.218
+    },
+    {
+      "name": "hf-topaz-models",
+      "url": "https://huggingface.co/api/models?search=topaz&limit=100",
+      "checked_at_utc": "2026-11-01T09:22:26.530715+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/models?search=topaz&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "17329",
+        "ETag": "W/\"43b1-fNBMtv6hYpOgxk0Ckkka6w1rFik\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-topaz-models.body",
+      "bytes": 17329,
+      "sha256": "e5db1377ebe75408674993e85b3f0cf5220b47a8348137ee1dcf9ba00ff1ef04",
+      "elapsed_s": 0.223
+    },
+    {
+      "name": "hf-criticalmaas-models",
+      "url": "https://huggingface.co/api/models?search=criticalmaas&limit=100",
+      "checked_at_utc": "2026-11-01T09:22:26.609097+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/models?search=criticalmaas&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-criticalmaas-models.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.195
+    },
+    {
+      "name": "hf-digmapper-spaces",
+      "url": "https://huggingface.co/api/spaces?search=digmapper&limit=100",
+      "checked_at_utc": "2026-11-01T09:22:26.640868+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/spaces?search=digmapper&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-digmapper-spaces.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.211
+    },
+    {
+      "name": "hf-topaz-spaces",
+      "url": "https://huggingface.co/api/spaces?search=topaz&limit=100",
+      "checked_at_utc": "2026-11-01T09:22:26.726203+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/spaces?search=topaz&limit=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2778",
+        "ETag": "W/\"ada-5h1Rdaf6ZoxZLG0xAxSDwzhUrmQ\""
+      },
+      "truncated": false,
+      "file": "evidence/hf-topaz-spaces.body",
+      "bytes": 2778,
+      "sha256": "8ad380b27366ce958961a504b53f1f4522bcfccdeef7ede677a7bd4436af065f",
+      "elapsed_s": 0.196
+    },
+    {
+      "name": "docker-digmapper-search",
+      "url": "https://hub.docker.com/v2/search/repositories/?query=digmapper&page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:26.753609+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/search/repositories/?query=digmapper&page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "49",
+        "x-ratelimit-reset": "1793525007",
+        "x-ratelimit-remaining": "180"
+      },
+      "truncated": false,
+      "file": "evidence/docker-digmapper-search.body",
+      "bytes": 49,
+      "sha256": "4605ecc2be9b52faa3bdf4ea25f755535bd7312693f057abbc675cda4f5eb1d8",
+      "elapsed_s": 0.272
+    },
+    {
+      "name": "docker-topaz-search",
+      "url": "https://hub.docker.com/v2/search/repositories/?query=topaz&page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:26.804303+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/search/repositories/?query=topaz&page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-ratelimit-reset": "1793525007",
+        "x-ratelimit-remaining": "179"
+      },
+      "truncated": false,
+      "file": "evidence/docker-topaz-search.body",
+      "bytes": 16327,
+      "sha256": "af2bb4b682d9bd918eed425cb19c14d2bf8c715b2d5bb93280a0965932bfe641",
+      "elapsed_s": 0.242
+    },
+    {
+      "name": "docker-criticalmaas-search",
+      "url": "https://hub.docker.com/v2/search/repositories/?query=criticalmaas&page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:26.851583+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/search/repositories/?query=criticalmaas&page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "983",
+        "x-ratelimit-reset": "1793525007",
+        "x-ratelimit-remaining": "178"
+      },
+      "truncated": false,
+      "file": "evidence/docker-criticalmaas-search.body",
+      "bytes": 983,
+      "sha256": "f0e3964cc565bd52c3083895d825bdb04649280e696ccd31d291c938408d1198",
+      "elapsed_s": 0.214
+    },
+    {
+      "name": "docker-inferlink",
+      "url": "https://hub.docker.com/v2/repositories/inferlink/?page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:26.922584+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/inferlink/?page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-ratelimit-reset": "1793525007",
+        "x-ratelimit-remaining": "177"
+      },
+      "truncated": false,
+      "file": "evidence/docker-inferlink.body",
+      "bytes": 1551,
+      "sha256": "b55baa334de188bc4eb2e42ff0dd4632281c844d802bf41657c81b8759b5a73b",
+      "elapsed_s": 0.245
+    },
+    {
+      "name": "docker-knowledge-computing",
+      "url": "https://hub.docker.com/v2/repositories/knowledgecomputing/?page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:27.025809+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/knowledgecomputing/?page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "604",
+        "x-ratelimit-reset": "1793525007",
+        "x-ratelimit-remaining": "176"
+      },
+      "truncated": false,
+      "file": "evidence/docker-knowledge-computing.body",
+      "bytes": 604,
+      "sha256": "8bbc2bdb4c440c82340dd269a94e59835d80f94c23a06e8e1b3979c75c3ff84c",
+      "elapsed_s": 0.243
+    },
+    {
+      "name": "quay-digmapper",
+      "url": "https://quay.io/api/v1/find/repositories?query=digmapper",
+      "checked_at_utc": "2026-11-01T09:22:27.046698+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://quay.io/api/v1/find/repositories?query=digmapper",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "87"
+      },
+      "truncated": false,
+      "file": "evidence/quay-digmapper.body",
+      "bytes": 87,
+      "sha256": "9634d5c711ce51bdc5bad8e08c250aa51adea55f1fe9b0367e1ebffaa6f73e41",
+      "elapsed_s": 0.442
+    },
+    {
+      "name": "quay-topaz",
+      "url": "https://quay.io/api/v1/find/repositories?query=topaz",
+      "checked_at_utc": "2026-11-01T09:22:27.065805+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://quay.io/api/v1/find/repositories?query=topaz",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "115609"
+      },
+      "truncated": false,
+      "file": "evidence/quay-topaz.body",
+      "bytes": 115609,
+      "sha256": "34b7b443de851b6dc6e1142b729a30423935fc751bb19ae6f523ce5b03ec3745",
+      "elapsed_s": 0.815
+    },
+    {
+      "name": "uncharted-metadata",
+      "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1",
+      "checked_at_utc": "2026-11-01T09:22:27.167731+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"8fc2970c83fe634ff684de9f2c5732a2ab9f15f4e4ef8269136bce98c411dfd8\"",
+        "Last-Modified": "Tue, 22 Sep 2026 21:25:22 GMT",
+        "X-RateLimit-Remaining": "51",
+        "X-RateLimit-Reset": "1793528544",
+        "Content-Length": "7129"
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-metadata.body",
+      "bytes": 7129,
+      "sha256": "8fc2970c83fe634ff684de9f2c5732a2ab9f15f4e4ef8269136bce98c411dfd8",
+      "elapsed_s": 0.345
+    },
+    {
+      "name": "uncharted-releases",
+      "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+      "checked_at_utc": "2026-11-01T09:22:27.268454+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2",
+        "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+        "X-RateLimit-Remaining": "50",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-releases.body",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "elapsed_s": 0.337
+    },
+    {
+      "name": "uncharted-build-workflow",
+      "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/.github/workflows/build_containers.yml",
+      "checked_at_utc": "2026-11-01T09:22:27.488969+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/.github/workflows/build_containers.yml",
+      "headers": {
+        "Content-Length": "1686",
+        "Content-Type": "text/plain; charset=utf-8",
+        "ETag": "\"dbfe5383d495bf61137037795f0fc3ce5dece12ce6c78963facb848e8a4bcaf2\""
+      },
+      "truncated": false,
+      "file": "evidence/uncharted-build-workflow.body",
+      "bytes": 1686,
+      "sha256": "886a7746ff4c72658c52ba9112ebc105b47df3ae7703f7fbeeb6220cd0f74c94",
+      "elapsed_s": 0.338
+    },
+    {
+      "name": "docker-lara-tags",
+      "url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=100",
+      "checked_at_utc": "2026-11-01T09:22:27.513233+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "43",
+        "x-ratelimit-reset": "1793525008",
+        "x-ratelimit-remaining": "175"
+      },
+      "truncated": false,
+      "file": "evidence/docker-lara-tags.body",
+      "bytes": 43,
+      "sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "elapsed_s": 0.216
+    },
+    {
+      "name": "s3-layout-config-yaml",
+      "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml",
+      "checked_at_utc": "2026-11-01T09:22:27.605704+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml",
+      "headers": {
+        "Content-Type": "application/xml"
+      },
+      "truncated": false,
+      "file": "evidence/s3-layout-config-yaml.body",
+      "bytes": 307,
+      "sha256": "c8db5a0b98048a1cf1676e4e731976f4dcfdbf9d0de18aada074703bbaca7ade",
+      "elapsed_s": 0.498
+    },
+    {
+      "name": "s3-layout-config-json",
+      "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json",
+      "checked_at_utc": "2026-11-01T09:22:27.729392+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json",
+      "headers": {
+        "Content-Type": "application/xml"
+      },
+      "truncated": false,
+      "file": "evidence/s3-layout-config-json.body",
+      "bytes": 307,
+      "sha256": "1b684d6284b6ff2efebf0bada75ede94425be86029abe330148903e02191d163",
+      "elapsed_s": 0.445
+    },
+    {
+      "name": "s3-layout-weights",
+      "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+      "range": "bytes=0-4095",
+      "checked_at_utc": "2026-11-01T09:22:27.826857+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+      "headers": {
+        "Content-Type": "application/xml"
+      },
+      "truncated": false,
+      "file": "evidence/s3-layout-weights.body",
+      "bytes": 307,
+      "sha256": "f46e0d8b770d1500b3362002848bf6019640ad61793d9fc72e2dc7d7001d9f5b",
+      "elapsed_s": 0.409
+    },
+    {
+      "name": "s3-layout-weights-global",
+      "url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+      "range": "bytes=0-4095",
+      "checked_at_utc": "2026-11-01T09:22:27.880546+00:00",
+      "method": "GET",
+      "status": 404,
+      "final_url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+      "headers": {
+        "Content-Type": "application/xml"
+      },
+      "truncated": false,
+      "file": "evidence/s3-layout-weights-global.body",
+      "bytes": 327,
+      "sha256": "2e28ccf0f6971580ab9647c472744bd88a27a87589517f96039a72c27b1d6005",
+      "elapsed_s": 0.438
+    },
+    {
+      "name": "docker-jterstriep-tags",
+      "url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/tags/?page_size=100",
+      "checked_at_utc": "2026-11-01T09:23:58.489079+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/jterstriep/topaz/tags/?page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "864",
+        "x-ratelimit-reset": "1793525099",
+        "x-ratelimit-remaining": "177"
+      },
+      "truncated": false,
+      "file": "evidence/docker-jterstriep-tags.body",
+      "bytes": 864,
+      "sha256": "1c1a0735f673311e7b010357a5d7df0beaa2ece8aa0af1fefe2b8e46f29b6f83",
+      "elapsed_s": 0.318
+    },
+    {
+      "name": "docker-jterstriep-repos",
+      "url": "https://hub.docker.com/v2/repositories/jterstriep/?page_size=100",
+      "checked_at_utc": "2026-11-01T09:23:58.489662+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/jterstriep/?page_size=100",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-ratelimit-reset": "1793525099",
+        "x-ratelimit-remaining": "176"
+      },
+      "truncated": false,
+      "file": "evidence/docker-jterstriep-repos.body",
+      "bytes": 12170,
+      "sha256": "ca4e46014b8c48fe311fb8d371d327e05443369b6d4c099b6d25251b3ad16394",
+      "elapsed_s": 0.294
+    },
+    {
+      "name": "github-jterstriep",
+      "url": "https://api.github.com/users/jterstriep/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:58.490345+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/users/jterstriep/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"cb231ca6e64e6b9c77be8a6bdbb34f70bf424323d495f0c8b486c5effcfc2536\"",
+        "X-RateLimit-Remaining": "37",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-jterstriep.body",
+      "bytes": 207575,
+      "sha256": "cb231ca6e64e6b9c77be8a6bdbb34f70bf424323d495f0c8b486c5effcfc2536",
+      "elapsed_s": 1.192
+    },
+    {
+      "name": "lab-publications",
+      "url": "https://knowledge-computing.github.io/publications.html",
+      "checked_at_utc": "2026-11-01T09:23:58.490617+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://knowledge-computing.github.io/publications.html",
+      "headers": {
+        "Content-Length": "6897",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Fri, 25 Sep 2026 14:07:47 GMT",
+        "ETag": "\"6ab68033-1af1\""
+      },
+      "truncated": false,
+      "file": "evidence/lab-publications.body",
+      "bytes": 6897,
+      "sha256": "8a254088ed5a02c7d02d3b5198f67da3288f7145bb2253fd1ea3784ad40f3e99",
+      "elapsed_s": 0.296
+    },
+    {
+      "name": "author-weiwei",
+      "url": "https://weiweiduan.github.io/",
+      "checked_at_utc": "2026-11-01T09:23:58.783448+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://weiweiduan.github.io/",
+      "headers": {
+        "Content-Length": "5161",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Thu, 01 Dec 2022 17:40:09 GMT",
+        "ETag": "\"6388e6f9-1429\""
+      },
+      "truncated": false,
+      "file": "evidence/author-weiwei.body",
+      "bytes": 5161,
+      "sha256": "08707d9411e270acc80e40a7fda6d8d41e5d1e0b645b5dd9922389a6db30e319",
+      "elapsed_s": 0.276
+    },
+    {
+      "name": "author-fandel",
+      "url": "https://fandel-lin.github.io/",
+      "checked_at_utc": "2026-11-01T09:23:58.786377+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://fandel-lin.github.io/",
+      "headers": {
+        "Content-Length": "47614",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Sat, 17 Oct 2026 09:57:31 GMT",
+        "ETag": "\"6ad3468b-b9fe\""
+      },
+      "truncated": false,
+      "file": "evidence/author-fandel.body",
+      "bytes": 47614,
+      "sha256": "c562d41efc43cb5d09ef9133457f063038794b5d51c9198f48594b2d91944d2a",
+      "elapsed_s": 0.306
+    },
+    {
+      "name": "github-weiwei-repos",
+      "url": "https://api.github.com/users/weiweiduan/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:58.806905+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/users/weiweiduan/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"a4b3ae20c2bc8f5b7784ad52246f4e672d361edce875f029e049692fcbb5cf2a\"",
+        "X-RateLimit-Remaining": "36",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-weiwei-repos.body",
+      "bytes": 79764,
+      "sha256": "a4b3ae20c2bc8f5b7784ad52246f4e672d361edce875f029e049692fcbb5cf2a",
+      "elapsed_s": 0.644
+    },
+    {
+      "name": "github-fandel-repos",
+      "url": "https://api.github.com/users/fandel-lin/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:59.059273+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/users/fandel-lin/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"88f0ef7a940708ce54adc6fdbc69b44f42461ddb8876f56083e8993ff7da8f3e\"",
+        "X-RateLimit-Remaining": "35",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-fandel-repos.body",
+      "bytes": 101055,
+      "sha256": "88f0ef7a940708ce54adc6fdbc69b44f42461ddb8876f56083e8993ff7da8f3e",
+      "elapsed_s": 0.875
+    },
+    {
+      "name": "github-yijun-repos",
+      "url": "https://api.github.com/users/linyijun/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:59.092654+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/users/linyijun/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"3062631a8364db17860300b56961d236549412e85cc03d28888626d5c3f3d11f\"",
+        "X-RateLimit-Remaining": "34",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-yijun-repos.body",
+      "bytes": 68289,
+      "sha256": "3062631a8364db17860300b56961d236549412e85cc03d28888626d5c3f3d11f",
+      "elapsed_s": 0.632
+    },
+    {
+      "name": "github-sofia-repos",
+      "url": "https://api.github.com/users/sofiakirsanova/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:59.450507+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/users/sofiakirsanova/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"2a3a57c7e4ab112a692d0e98bc69f4679bbbc3761762ce862eae69a385faf0a7\"",
+        "X-RateLimit-Remaining": "33",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-sofia-repos.body",
+      "bytes": 82292,
+      "sha256": "2a3a57c7e4ab112a692d0e98bc69f4679bbbc3761762ce862eae69a385faf0a7",
+      "elapsed_s": 0.735
+    },
+    {
+      "name": "github-usc-repos",
+      "url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100",
+      "checked_at_utc": "2026-11-01T09:23:59.682838+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://api.github.com/orgs/usc-isi-i2/repos?per_page=100",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "ETag": "W/\"9c7195d36334c9338c4f1b7545c4b3828e2cffb0e0f84299f1e997fe08fce3b9\"",
+        "Link": "<https://api.github.com/organizations/1073160/repos?per_page=100&page=2>; rel=\"next\", <https://api.github.com/organizations/1073160/repos?per_page=100&page=3>; rel=\"last\"",
+        "X-RateLimit-Remaining": "32",
+        "X-RateLimit-Reset": "1793528544"
+      },
+      "truncated": false,
+      "file": "evidence/github-usc-repos.body",
+      "bytes": 568796,
+      "sha256": "9c7195d36334c9338c4f1b7545c4b3828e2cffb0e0f84299f1e997fe08fce3b9",
+      "elapsed_s": 2.103
+    },
+    {
+      "name": "candidate-release-zip",
+      "url": "https://github.com/cxp114/criticalmaas-uncharted-ta1/releases/download/v0.1.0/criticalmaas-windows-v0.1.0-onedir.zip",
+      "checked_at_utc": "2026-11-01T09:23:59.724945+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/1380761764/ef04ac55-26ec-4b7c-9d54-6a511f6ee10b?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-01T10%3A04%3A56Z&rscd=attachment%3B+filename%3Dcriticalmaas-windows-v0.1.0-onedir.zip&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-01T09%3A04%3A46Z&ske=2026-11-01T10%3A04%3A56Z&sks=b&skv=2018-11-09&sig=MM0O%2FLGgvzcQsGsHz2S5EVZJLwLlJdT9s2Iwk%2F4%2FhKk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MzUyNTM0MCwibmJmIjoxNzkzNTI1MDQwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1xoN_xS0Ojnj2n_kOsL5o_Njqy3hQ-meP1orpdhmBo4&response-content-disposition=attachment%3B%20filename%3Dcriticalmaas-windows-v0.1.0-onedir.zip&response-content-type=application%2Foctet-stream",
+      "headers": {
+        "Content-Length": "7480718",
+        "Last-Modified": "Wed, 23 Sep 2026 03:31:22 GMT",
+        "ETag": "\"0x8DF192323B8D4F9\"",
+        "Content-Type": "application/octet-stream"
+      },
+      "truncated": false,
+      "file": "evidence/candidate-release-zip.body",
+      "bytes": 7480718,
+      "sha256": "94c02406b4c908d073336f7e86997e1115bd0c88d74bd6c3cf31543b19762382",
+      "elapsed_s": 0.964
+    }
+  ],
+  "container_registry_results": [
+    {
+      "name": "registry-auth",
+      "url": "https://auth.docker.io/token?service=registry.docker.io&scope=repository%3Ajterstriep%2Ftopaz%3Apull",
+      "checked_at_utc": "2026-11-01T09:25:25.107823+00:00",
+      "status": 200,
+      "bytes": 5495,
+      "sha256": "4cff2f6443554ad90f0d9d5b0a83f643b250384b3ebba317c5ed70fcb8a25b28",
+      "body_not_retained": "Anonymous registry authentication response; token kept in memory only",
+      "elapsed_s": 0.241
+    },
+    {
+      "name": "topaz-container-manifest",
+      "url": "https://registry-1.docker.io/v2/jterstriep/topaz/manifests/0.2.5",
+      "checked_at_utc": "2026-11-01T09:25:25.349143+00:00",
+      "status": 200,
+      "bytes": 5597,
+      "sha256": "73a765c2314324082686ec877bdd1facb2628af89a8825c65810a18a2cf2c5ac",
+      "file": "evidence/topaz-container-manifest.body",
+      "elapsed_s": 0.541
+    },
+    {
+      "name": "topaz-container-config",
+      "url": "https://registry-1.docker.io/v2/jterstriep/topaz/blobs/sha256:a6e760f92fb72126d820be3aa380e4c54bad0705fe5fe4d96522e9a3f7d49912",
+      "checked_at_utc": "2026-11-01T09:25:25.890882+00:00",
+      "status": 200,
+      "bytes": 24821,
+      "sha256": "a6e760f92fb72126d820be3aa380e4c54bad0705fe5fe4d96522e9a3f7d49912",
+      "file": "evidence/topaz-container-config.body",
+      "elapsed_s": 1.021
+    }
+  ],
+  "container_layer_results": [
+    {
+      "url": "https://registry-1.docker.io/v2/jterstriep/topaz/blobs/sha256:3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98",
+      "status": 200,
+      "bytes": 65602698,
+      "sha256": "3e6a918752ba84608894d0b36aba553d857833c6298b4106514f6123c6148b98",
+      "file": "evidence/topaz-container-application.tar.gz",
+      "checked_at_utc": "2026-11-01T09:26:19.642875+00:00",
+      "elapsed_s": 3.045
+    }
+  ],
+  "note": "Registry authentication responses were not retained; their status and hashes are recorded. All ordinary response bodies are complete, not truncated."
+}

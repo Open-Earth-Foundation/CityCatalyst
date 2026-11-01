@@ -1,0 +1,576 @@
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TELLNTSB2P"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'G-TELLNTSB2P');
+		</script>
+		<title>Fandel Lin's Homepage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="shortcut icon" type="image/png" href="favicon.png"/>
+		
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<section id="header">
+				<header>
+					<span class="image avatar"><img src="images/photo.jpg" alt="" /></span>
+					<h1 id="logo"><a href="#">Fandel Lin</a></h1>
+					<!-- p style="margin-top:0.3em;color:#ffffff;font-style:normal;font-family:'cwTeXFangSong',serif;font-weight:300;font-size:120%;"> </p>
+					<p style="style=clear:both;"></p -->
+					<!--p>From Tainan, Taiwan</p-->
+					<p>CS, NYCU, Hsinchu City, Taiwan</p>
+					<p style="margin-top:0"><a href = "#">fandellin (at) nycu (dot) edu (dot) tw</a></p>
+				</header>
+				<br>
+				<nav id="nav">
+					<ul>
+						<li><a href="#about" class="active">ABOUT</a></li>
+						<li><a href="#education">EDUCATION</a></li>
+						<li><a href="#publication">PUBLICATION</a></li>
+						<li><a href="#award">AWARD</a></li>
+						<li><a href="#misc">MISC</a></li>
+					</ul>
+				</nav>
+				<footer>
+					<ul class="icons">
+						<li><a href="https://drive.google.com/file/d/12sIDDvURURHaqtOYMJxtTuYW0fb3hUOv/view" class="ai ai-cv ai-2x" class="icon"><span class="label"></span></a></li>
+						<li><a href="https://scholar.google.com/citations?user=7_xQZkEAAAAJ" class="ai ai-google-scholar ai-2x" class="icon"><span class="label"></span></a></li>
+						<li><a href="https://dblp.org/pers/hd/l/Lin:Fandel" class="ai ai-dblp ai-2x" class="icon"><span class="label"></span></a></li>
+						
+						<li><a href="https://saki-group.github.io/" class="fa fa-paper-plane fa-2x" class="icon" style="font-size: 1.6em;"><span class="label"></span></a></li>
+						<!--li><a href="https://github.com/Fandel-Lin" class="fa fa-github fa-lg" class="icon"><span class="label"></span></a></li-->
+						<!--li><a href="https://figshare.com/authors/Fandel_Lin/8731077" class="ai ai-figshare ai-lg" class="icon"><span class="label"></span></a></li-->
+						<li><a href="https://www.linkedin.com/in/fandel-lin-095512289" class="fa fa-linkedin-square fa-2x" class="icon"><span class="label"></span></a></li>
+						<!--li><a href="https://twitter.com/fandel_lin" class="fab fa-twitter fa-2x" class="icon"><span class="label"></span></a></li-->
+						
+						<!--li><a href="https://dl.acm.org/profile/99659322659" class="ai ai-acm ai-2x" class="icon"><span class="label"></span></a></li-->
+						<!--li><a href="https://ieeexplore.ieee.org/author/37088461851" class="ai ai-ieee ai-2x" class="icon"><span class="label"></span></a></li-->
+						<!--li><a href="https://orcid.org/0000-0001-7024-2476" class="ai ai-orcid ai-2x" class="icon"><span class="label"></span></a></li-->
+						<!--br><br-->
+						<!-- li><a href="https://www.facebook.com/fandel.lin" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="mailto: q36084028@mail.ncku.edu.tw" class="icon solid fa-envelope"><span class="label">Email</span></a></li -->
+					</ul>
+				</footer>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- One -->
+							<section id="about">
+								<div class="container">
+									<header class="major">
+										<h2>Fandel Lin</h2>
+									</header>
+									
+									<b>Fandel Lin</b> is a tenure-track Assistant Professor in the Department of Computer Science at <a href="https://www.cs.nycu.edu.tw/">National Yang Ming Chiao Tung University (NYCU)</a>, Taiwan.
+									<br><br>
+									He received his Ph.D. degree in Computer Science from the <a href="https://www.cs.usc.edu/">University of Southern California (USC)</a>, where he conducts research with <a href="https://usc-isi-i2.github.io/knoblock/">Prof. Craig A. Knoblock</a> at the Center on Knowledge Graphs, <a href="https://www.isi.edu/">USC Information Sciences Institute (ISI)</a>. 
+									He received his M.S. degree in Computer and Communication Engineering (CCE) and B.S. degree in Electrical Engineering (EE) from the <a href="https://www.ncku.edu.tw/index.php?Lang=en">National Cheng Kung University (NCKU)</a>, Taiwan, where he worked with <a href="https://hphsieh.github.io/nckuee/index.html">Prof. Hsun-Ping Hsieh</a> at the Urban Science and Computing Lab. 
+									<br><br>
+									His research interests lie in spatial artificial intelligence (spatial AI), with a particular focus on applying machine learning and combinatorial optimization techniques to address data-intensive challenges, such as historical map understanding and urban computing. His work has been recognized with the best short paper award at ACM SIGSPATIAL'25 and the best paper finalist at ACM SIGSPATIAL'21. 
+									<br><br>
+									
+									Here are links to the <a href="https://drive.google.com/file/d/12sIDDvURURHaqtOYMJxtTuYW0fb3hUOv/view">CV</a>, <a href="https://scholar.google.com/citations?user=7_xQZkEAAAAJ">google scholar</a>, <a href="https://dblp.org/pers/hd/l/Lin:Fandel">dblp</a>, and <a href="https://saki-group.github.io/">lab</a>. 
+									<br>
+									Here are his <a href="https://usc-isi-i2.github.io/papers/lin26-thesis.pdf">Ph.D. dissertation</a> and <a href="https://usc-isi-i2.github.io/slides/lin26-thesis-slides.pdf">defense presentation</a>.
+									<br><br>
+									
+									
+									<i class="fas fa-kiwi-bird"></i> News.
+									<br>
+									<div id="news">
+										<p>
+											>> [<i>Aug 2026</i>] Led by <a href="https://zekun-li.github.io/">Zekun Lin</a> (<a href="https://knowledge-computing.github.io/">Knowledge Computing Lab</a>), our work on historical map georeferencing is accepted at the application track of <a href="https://sigspatial2026.sigspatial.org/">the 34th ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'26)</a>.
+										</p>
+										<p>
+											>> [<i>Aug 2026</i>] Our work on semantic fusion for extracting polygonal features from historical maps is accepted at the research track of <a href="https://sigspatial2026.sigspatial.org/">the 34th ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'26)</a>.
+										</p>
+										<p>
+											>> [<i>Jun 2026</i>] I will join the Department of Computer Science, <a href="https://www.cs.nycu.edu.tw/">National Yang Ming Chiao Tung University (NYCU)</a>, Hsinchu City, Taiwan, as a tenure-track Assistant Professor starting in Fall 2026. NYCU students interested in working with me are welcome to see <a href="https://saki-group.github.io/join.html">this page</a>.
+										</p>
+										<p>
+											>> [<i>Apr 2026</i>] I delivered <a href="https://gis.rchss.sinica.edu.tw/speech_20260421/">a talk</a> about historical map understanding at <a href="https://gis.rchss.sinica.edu.tw/">the Center for GIS, RCHSS, Academia Sinica</a>, Taiwan.
+										</p>
+										<p>
+											>> [<i>Apr 2026</i>] I <a id="myBtn4"><i>passed</i><img id="phd_defense" src="images/phd_defense.jpg" alt="" /></a> my Ph.D. dissertation defense on April 8th, 2026. I am grateful to my committee members and <a href="https://usc-isi-i2.github.io/slides/lin26-thesis-slides.pdf#page=47">all my research collaborators</a> for their invaluable support! <i>(Dissertation Committee: <a href="https://usc-isi-i2.github.io/knoblock/">Prof. Craig A. Knoblock</a> [chair], <a href="https://viterbi.usc.edu/directory/faculty/Shahabi/Cyrus">Prof. Cyrus Shahabi</a>, <a href="https://viterbi.usc.edu/directory/faculty/Gil/Yolanda">Prof. Yolanda Gil</a>, <a href="https://yaoyichi.github.io/">Prof. Yao-Yi Chiang</a>, and <a href="https://viterbi.usc.edu/directory/faculty/Wilson/John">Prof. John P. Wilson</a>)</i>
+										</p>
+										<p>
+											>> [<i>Feb 2026</i>] I served as a research track program committee member for <a href="https://ecmlpkdd.org/2026/">the European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (ECML-PKDD'26)</a>.
+										</p>
+										<p>
+											>> [<i>Nov 2025</i>] Our work - Exploiting Polygon Metadata to Colorize Draft Maps is recognized with the <a href="https://www.sigspatial.org/people/award-recipients/#:~:text=Exploiting%20Polygon%20Metadata%20to%20Colorize%20Draft%20Maps%20(06S)"><b><i>Best Short Paper Award</i></b></a> at <a href="https://sigspatial2025.sigspatial.org">ACM SIGSPATIAL'25</a>!
+										</p>
+										<p>
+											>> [<i>Oct 2025</i>] Led by <a href="https://linyijun.github.io/">Yijun Lin</a> and <a href="https://jina-kim.github.io/">Jina Kim</a> (<a href="https://knowledge-computing.github.io/">Knowledge Computing Lab</a>), we (team '<i>Lin2KimChi</i>') got <a href="https://sigspatial2025.sigspatial.org/giscup/finalResults.html">the 7th place</a> for <a href="https://sigspatial2025.sigspatial.org/giscup/index.html">the 14th SIGSPATIAL Cup competition (GISCUP 2025)</a> hold by NYU and LY Corporation, co-located with ACM SIGSPATIAL conference! Very proud of the team!
+										</p>
+										<p>
+											>> [<i>Oct 2025</i>] I passed my Ph.D. thesis proposal.
+										</p>
+										<p>
+											>> [<i>Sep 2025</i>] I served as the session chair for Recommender System III at <a href="https://ecmlpkdd.org/2025/program/">the European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (ECML-PKDD'25)</a>.
+										</p>
+										<p>
+											>> [<i>Aug 2025</i>] Our works on historical map recoloring and draft map colorization are both accepted at the short paper track of <a href="https://sigspatial2025.sigspatial.org/">the 33rd ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'25)</a>.
+										</p>
+										<p>
+											>> [<i>Jul 2025</i>] In collaboration with <a href="https://www.inferlink.com/">Inferlink Corporation</a> and <a href="https://knowledge-computing.github.io/">Knowledge Computing Lab</a>, our work (lead by Inferlink Corporation) on the <a href="https://www.darpa.mil/research/programs/critical-mineral-assessments-with-ai-support">CriticalMAAS</a> project - DIGMAPPER: A Modular System for Automated Geologic Map Digitization is accepted as a full paper at the industrial track of <a href="https://sigspatial2025.sigspatial.org/">the 33rd ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'25)</a>!
+										</p>
+										<p>
+											>> [<i>Apr 2025</i>] I served as a research track program committee member for <a href="https://ecmlpkdd.org/2025/">the European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (ECML-PKDD'25)</a>.
+										</p>
+										<p>
+											>> [<i>Feb 2025</i>] I passed my Ph.D. qualifying examination.
+										</p>
+										<p>
+											>> [<i>Oct 2024</i>] We entered the finalist (top 5) for <a href="https://sigspatial2024.sigspatial.org/giscup/index.html">the 13th SIGSPATIAL Cup competition (GISCUP 2024)</a> hold by ORNL and NYU, co-located with ACM SIGSPATIAL conference! The contest targets optimal minimum deployment of electric vehicles charging station network, within the state of Georgia.
+										</p>
+										<!--div id="more-news" style="display: none;"-->
+										<p>
+											>> [<i>Aug 2024</i>] Our work on uncertainty-bounded scheduling (centralized route planning) is accepted at <a href="https://sigspatial2024.sigspatial.org/">the 32nd ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'24)</a>.
+										</p>
+										<p>
+											>> [<i>Mar 2024</i>] Our work on cross-region inference (spatial-temporal data mining) is accepted at <a href="https://www.dasfaa2024.org/">the 29th International Conference on Database Systems for Advanced Applications (DASFAA'24)</a>.
+										</p>
+										<p>
+											>> [<i>Nov 2023</i>] I served as a best-poster award selection committee member at <a href="https://sigspatial2023.sigspatial.org/">the 31st ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'23)</a>.
+										</p>
+										<p>
+											>> [<i>Sep 2023</i>] Our works on polygonal feature extraction (automated map understanding) and indirect resource cooperation (distributed route planning) are both accepted as full papers at <a href="https://sigspatial2023.sigspatial.org/">the 31st ACM International Conference on Advances in Geographic Information Systems (ACM SIGSPATIAL'23)</a>.
+										</p>
+										<p>
+											>> [<i>Apr 2023</i>] Our work on teaching-belief understanding (educational text mining) is accepted at <a href="https://iaied.org/archive/conferences/AIED2023/index.html">the 24th International Conference on Artificial Intelligence in Education (AIED'23)</a>.
+										</p>
+										<p>
+											>> [<i>Dec 2022</i>] In collaboration with <a href="https://knowledge-computing.github.io/">Knowledge Computing Lab</a> (led by <a href="https://yaoyichi.github.io/">Prof. Yao-Yi Chiang</a>) from UMN, we (team '<i>ISI-UMN</i>') secured the <a href="https://criticalminerals.darpa.mil/Results">1<sup>st</sup> Place for Map Feature Extraction Challenge</a> under <a href="https://www.darpa.mil/news-events/2022-08-15">AI for Critical Mineral Assessment Competition</a> hold by DARPA, USGS, MITRE, and NASA's JPL. Very proud of the team! (press release from <a href="https://www.darpa.mil/news-events/2022-12-16">DARPA</a> and <a href="https://www.isi.edu/news/53660/usc-wins-darpa-map-feature-extraction-challenge/">ISI</a>)
+										</p>
+										<p>
+											>> [<i>Jan 2022</i>] I received a <a href="https://gra103.aca.ntu.edu.tw/tsff/">national scholarship in Taiwan</a>, which is a 4-year fellowship covering full tuition and stipend.
+										</p>
+										<p>
+											>> [<i>Dec 2021</i>] I was selected as the <a id="myBtn3"><i>representative for award recipients</i> <img id="tsc_award_pre" src="images/tsc_award.jpg" alt="" /></a> of TSC Thesis Award at <a href="https://www.president.gov.tw/NEWS/26448">the Office of the President (press release)</a>.
+										</p>
+										<p>
+											>> [<i>Nov 2021</i>] Our work - Conntrans is recognized with the <a href="https://sigspatial2021.sigspatial.org/accepted-papers/#:~:text=Conntrans"><b><i>Best Paper Candidate</i></b></a> at ACM SIGSPATIAL'21.
+										</p>
+										<!--/div-->
+										<!--p id="toggle-news" class="toggle-link">Expand</p-->
+									</div>
+									<br>
+									
+								</div>
+							</section>
+							
+							
+							<div id="myResearch" class="research">
+								<div class="research-content">
+									<img src="images/research_interest.png" alt="" />
+								</div>
+							</div>
+							
+							<div id="myTSCAward" class="research">
+								<div class="research-content">
+									<img src="images/tsc_award.jpg" alt="" />
+								</div>
+							</div>
+							
+							<div id="myDefensePic" class="research">
+								<div class="research-content">
+									<img src="images/phd_defense.jpg" alt="" />
+								</div>
+							</div>
+							
+							
+						<!-- Two -->
+							<section id="education">
+								<div class="container">
+									<h3>Education</h3>
+									
+									<b>Ph.D., Computer Science</b>, University of Southern California, Los Angeles, CA, USA 
+									<br>
+									Aug 2022 - May 2026
+									<br><br>
+									
+									<b>M.S., Computer and Communication Engineering</b>, National Cheng Kung University, Tainan, Taiwan 
+									<br>
+									Sep 2019 - Jun 2021
+									<br><br>
+									
+									<b>B.S., Electrical Engineering</b>, National Cheng Kung University, Tainan, Taiwan 
+									<br>
+									Sep 2015 - Jun 2019
+									<br>
+									
+									<br>
+								</div>
+							</section>
+							
+							
+							
+						<!-- Three -->
+							<section id="publication">
+								<div class="container">
+									<h3>Publication</h3>
+									<h4>Journal Article</h4>
+									<ol class="reversed-journal">
+										<li>
+											Pei-Xuan Li, Cheng-Ru Chou, Wei-Yun Liang, <b>Fandel Lin</b>, and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3795517">Enhancing POI Recommendation through Global Graph Disentanglement with POI Weighted Module</a>" <i>ACM Transactions on Intelligent Systems and Technology (<b>TIST</b>)</i>. 2026.
+										</li>
+										<li>
+											Bo-Yan Zeng, Yen-An Chen, Shih-Hung Yang, <b>Fandel Lin</b>, Donna Hsu, Hsun-Ping Hsieh. "<a href="https://www.mdpi.com/2673-4591/120/1/41">Predicting Origin-Destination Traffic with Advanced Spatio-Temporal Networks</a>" <i>Engineering Proceedings</i>. 2026.
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Han Zhang, T. K. Satish Kumar, and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3787460">An Integrated Approach to Multi-Agent Scheduling with Bounded Objectives in an Urban Setting</a>" <i>ACM Transactions on Spatial Algorithms and Systems (<b>TSAS</b>)</i>. 2026.
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3569937">Exploiting Network Structure in Multi-Criteria Distributed and Competitive Stationary-Resource Searching</a>" <i>ACM Transactions on Spatial Algorithms and Systems (<b>TSAS</b>)</i>. 2023.
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://www.mdpi.com/2076-3417/12/6/3127">Multicriteria Route Planning for In-Operation Mass Transit under Urban Data</a>" <i>Applied Sciences</i>. 2022.
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3526025">A Grid-Based Two-Stage Parallel Matching Framework for Bi-Objective Euclidean Traveling Salesman Problem</a>" <i>ACM Transactions on Spatial Algorithms and Systems (<b>TSAS</b>)</i>. 2022.
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3510034">Traveling Transporter Problem: Arranging New Circular Route in Public Transportation System Based on Heterogeneous Non-Monotonic Urban Data</a>" <i>ACM Transactions on Intelligent Systems and Technology (<b>TIST</b>)</i>. 2022.
+										</li>
+										<li>
+											Hsun-Ping Hsieh, <b>Fandel Lin</b>, Nai-Yu Chen, and Tzu-Hsin Yang. "<a href="https://dl.acm.org/doi/10.1145/3490687">A Decision Framework to Recommend Cruising Locations for Taxi Drivers under the Constraint of Booking Information</a>" <i>ACM Transactions on Management Information Systems (<b>TMIS</b>)</i>. 2022.
+										</li>
+										<li>
+											Hsun-Ping Hsieh, <b>Fandel Lin</b>, Jiawei Jiang, Tzu-Ying Kuo, and Yu-En Chang. "<a href="https://www.mdpi.com/2076-3417/11/15/6748">Inferring Long-Term Demand of Newly Established Stations for Expansion Areas in Bike Sharing System</a>" <i>Applied Sciences</i>. 2021.
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3451393">A Joint Passenger Flow Inference and Path Recommender System for Deploying New Routes and Stations of Mass Transit Transportation</a>" <i>ACM Transactions on Knowledge Discovery from Data (<b>TKDD</b>)</i>. 2021.
+										</li>
+										<li>
+											Hsun-Ping Hsieh and <b>Fandel Lin</b>. "<a href="https://www.tandfonline.com/doi/abs/10.1080/12265934.2021.1894474">Recommending taxi routes with an advance reservation- a multi-criteria route planner</a>" <i>International Journal of Urban Sciences (<b>RJUS</b>)</i>. 2021.
+										</li>
+										<li>
+											Hsun-Ping Hsieh, <b>Fandel Lin</b>, Cheng-Te Li, Ian En-Hsu Yen, and Hsin-Yu Chen. "<a href="https://link.springer.com/article/10.1007%2Fs10115-018-1311-x">Temporal Popularity Prediction of Locations for Geographical Placement of Retail Stores</a>" <i>Knowledge and Information Systems (<b>KAIS</b>)</i>. 2019.
+										</li>
+										
+									</ol>
+									
+									
+									<h4><a id="myBtn">Conference Paper*</a></h4>
+									<ol class="reversed-conference">
+										<li>
+											<b>Fandel Lin</b>, Zekun Li, Yao-Yi Chiang, and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3841645.3842960">Cross-domain Polygon Extraction from Historical Maps via Legend-guided Semantic Fusion</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'26</b>)</i>, Riverside, CA, 2026. <i>(full paper, 58/248 = 23.4%)</i>
+										</li>
+										<li>
+											<a href="https://zekun-li.github.io/">Zekun Li</a>, <b>Fandel Lin</b>, Yijun Lin, Yao-Yi Chiang, and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3841645.3843321">An Ensemble Approach to Text-Based Georeferencing of Historical Maps</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'26</b>)</i>, Riverside, CA, 2026. <i>(short paper, application track, 60/111 = 54.1%)</i>
+										</li>
+										<li>
+											<a href="https://linyijun.github.io/">Yijun Lin</a>, <b>Fandel Lin</b>, Jina Kim, and Yao-Yi Chiang. "<a href="https://dl.acm.org/doi/10.1145/3748636.3771315">MoVER: Modeling User Heterogeneity with Enriched Trajectory Representations for Human Mobility Prediction</a>" <i>ACM SIGSPATIAL Cup Competition (GISCUP @ <b>ACM SIGSPATIAL'25</b>)</i>, Minneapolis, MN, 2025. <i>(oral, short paper, GISCUP track, 12/122 = 9.8%)</i>
+										</li>
+										<li>
+											<a href="https://scholar.google.com/citations?user=Xvb4mJAAAAAJ&hl=en">Weiwei Duan</a>, Yao-Yi Chiang, Theresa Chen, Michael P. Gerlek, Leeje Jang, Sofia Kirsanova, Craig A. Knoblock, <b>Fandel Lin</b>, Yijun Lin, Zekun Li, and Steven N. Minton. "<a href="https://dl.acm.org/doi/10.1145/3748636.3764602">DIGMAPPER: A Modular System for Automated Geologic Map Digitization</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'25</b>)</i>, Minneapolis, MN, 2025. <i>(full paper, industrial track)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Craig A. Knoblock, Binh Vu, Basel Shbita, and Yao-Yi Chiang. "<a href="https://dl.acm.org/doi/10.1145/3748636.3763210">Exploiting Polygon Metadata to Colorize Draft Maps</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'25</b>)</i>, Minneapolis, MN, 2025. <i>(oral, short paper track, 22/76 = 28.9%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Craig A. Knoblock, Binh Vu, and Yao-Yi Chiang. "<a href="https://dl.acm.org/doi/10.1145/3748636.3763209">Exploiting Polygon Metadata to Recolor Historical Maps</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'25</b>)</i>, Minneapolis, MN, 2025. <i>(oral, short paper track, 22/76 = 28.9%)</i>
+										</li>
+										<li>
+											Binh Vu, Craig A. Knoblock, and <b>Fandel Lin</b>. "<a href="https://doi.org/10.1007/978-3-032-09527-5_13">A Domain-Independent Approach for Semantic Table Interpretation</a>" <i>International Semantic Web Conference (<b>ISWC'25</b>)</i>, Nara, Japan, 2025. <i>(full paper, 34/171 = 19.9%)</i>
+										</li>
+										<li>
+											Teng-Yuan Tsou, Pei-Xuan Li, <b>Fandel Lin</b>, and Hsun-Ping Hsieh. "<a href="https://link.springer.com/chapter/10.1007/978-981-96-8298-0_3">FOG: Feature-Oriented Graph Neural Networks for Tabular Data</a>" <i>Pacific-Asia Conference on Knowledge Discovery and Data Mining (<b>PAKDD'25</b>)</i>, Sydney, Australia, 2025. <i>(full paper, special session on DSFA, 244/696 = 35.1%)</i>
+										</li>
+										<li>
+											Basel Shbita, Binh Vu, <b>Fandel Lin</b>, and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3701716.3718325">Embedding Spatial and Semantic Contexts for Geo-Entity Typing in Smart City Applications</a>" <i>International Smart City Workshop – Responsible Web and AI for Smart Cities (WebAndTheCity @ <b>WWW'25</b>)</i>, Sydney, Australia, 2025. <i>(workshop paper)</i>
+										</li>
+										<li>
+											Binh Vu, Craig A. Knoblock, and <b>Fandel Lin</b>. "<a href="https://ceur-ws.org/Vol-3889/paper6.pdf">Results of GRAMS+ at SemTab 2024</a>" <i>Semantic Web Challenge on Tabular Data to Knowledge Graph Matching (SemTab @ <b>ISWC'24</b>)</i>, Baltimore, MD, 2024. <i>(oral, short paper, SemTab challenge accuracy track)</i>
+										</li>
+										<li>
+											<a href="https://binh-vu.github.io/">Binh Vu</a>, Craig A. Knoblock, Basel Shbita, and <b>Fandel Lin</b>. "<a href="https://link.springer.com/chapter/10.1007/978-3-031-77850-6_7">Exploiting Distant Supervision to Learn Semantic Descriptions of Tables with Overlapping Data</a>" <i>International Semantic Web Conference (<b>ISWC'24</b>)</i>, Baltimore, MD, 2024. <i>(full paper, 26/111 = 23.4%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Craig A. Knoblock, and Binh Vu. "<a href="https://dl.acm.org/doi/10.1145/3678717.3700829">A Hierarchical Voronoi Approach to Deploying New Charging Stations in an Existing Network</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'24</b>)</i>, Atlanta, GA, 2024. <i>(oral, short paper, GISCUP track)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Han Zhang, T. K. Satish Kumar, and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3678717.3691224">An Integrated Approach to Multi-Agent Scheduling with Bounded Objectives</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'24</b>)</i>, Atlanta, GA, 2024. <i>(oral, short paper, 79/136 = 58.1%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://link.springer.com/chapter/10.1007/978-981-97-5552-3_14">A Hierarchy-Aware Approach to Cross-Region Spatial-Temporal Inference of Unarchived Event in Urban Mobility Infrastructure</a>" <i>International Conference on Database Systems for Advanced Applications (<b>DASFAA'24</b>)</i>, Gifu, Japan, 2024. <i>(short paper, 239/971 = 24.6%)</i>
+										</li>
+										<li>
+											<a href="https://shbita.com/">Basel Shbita</a>, Namrata Sharma, Binh Vu, <b>Fandel Lin</b>, and Craig A. Knoblock. "<a href="https://usc-isi-i2.github.io/papers/shbita24-geold_ewsc.pdf">Constructing a Knowledge Graph of Historical Mining Data</a>" <i>International Workshop on Geospatial Linked Data (GeoLD @ <b>ESWC'24</b>)</i>, Hersonissos, Greece, 2024. <i>(workshop paper)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Craig A. Knoblock, Basel Shbita, Binh Vu, Zekun Li, and Yao-Yi Chiang. "<a href="https://dl.acm.org/doi/10.1145/3589132.3625659">Exploiting Polygon Metadata to Understand Raster Maps - Accurate Polygonal Feature Extraction</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'23</b>)</i>, Hamburg, Germany, 2023. <i>(full paper, 38/189 = 20.1%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Craig A. Knoblock. "<a href="https://dl.acm.org/doi/10.1145/3589132.3625571">Indirect Cooperation in Distributed Stationary-Resource Searching with Predefined Destinations</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'23</b>)</i>, Hamburg, Germany, 2023. <i>(full paper, 38/189 = 20.1%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Ding-Ying Guo, and Jer-Yann Lin. "<a href="https://link.springer.com/chapter/10.1007/978-3-031-36272-9_65">A Machine-Learning Approach to Recognizing Teaching Beliefs in Narrative Stories of Outstanding Professors</a>" <i>International Conference on Artificial Intelligence in Education (<b>AIED'23</b>)</i>, Tokyo, Japan, 2023. <i>(oral, short paper, 67/251 = 26.7%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3474717.3483926">Conntrans: A Two-Stage Concentric Annealing Approach for Multi-Criteria Distributed Competitive Stationary Resource Searching</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'21</b>)</i>, Beijing, China, 2021. <i>(full paper, 34/152 = 22.4%)</i> <i><b>(Invited to TSAS Best Papers Special Issue of the ACM SIGSPATIAL 2021)</b></i>
+										</li>
+										<li>
+											I-Ying Wu, <b>Fandel Lin</b>, and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3474717.3484259">Dual-Attention Multi-Scale Graph Convolutional Networks for Highway Accident Delay Time Prediction</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'21</b>)</i>, Beijing, China, 2021. <i>(full paper, 34/152 = 22.4%)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://ieeexplore.ieee.org/abstract/document/9338323">A Goal-Prioritized Algorithm for Additional Route Deployment on Existing Mass Transportation System</a>" <i>IEEE International Conference on Data Mining (<b>ICDM'20</b>)</i>, Sorrento, Italy, 2020. <i>(oral, short paper, 183/930 = 19.7%)</i>
+										</li>
+										<li>
+											Jie-Yu Fang, <b>Fandel Lin</b>, and Hsun-Ping Hsieh. "<a href="https://link.springer.com/chapter/10.1007%2F978-3-030-67667-4_19">A Multi-Criteria System for Recommending Taxi Routes with an Advance Reservation</a>" <i>European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (<b>ECML-PKDD'20</b>)</i>, Ghent, Belgium, 2020. <i>(full paper, ADS track, 65/236 = 27.5%)</i> <!--[<a href="https://slideslive.com/38932365">video</a>]-->
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Hsun-Ping Hsieh, and Jie-Yu Fang. "<a href="https://link.springer.com/chapter/10.1007%2F978-3-030-67667-4_17">A Route-Affecting Region Based Approach for Feature Extraction in Transportation Route Planning</a>" <i>European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases (<b>ECML-PKDD'20</b>)</i>, Ghent, Belgium, 2020. <i>(full paper, ADS track, 65/236 = 27.5%)</i> <!--[<a href="https://slideslive.com/38932273">video</a>]-->
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Jie-Yu Fang, and Hsun-Ping Hsieh. "<a href="https://ieeexplore.ieee.org/document/9185869">A Gaussian-Prioritized Approach for Deploying Additional Route on Existing Mass Transportation with Neural-Network-Based Passenger Flow Inference</a>" <i>IEEE Congress on Evolutionary Computation (<b>IEEE CEC'20</b>)</i>, Glasgow, United Kingdom, 2020. <i>(full paper)</i>
+										</li>
+										<li>
+											Sheng-Ting Chien, <b>Fandel Lin</b>, Chiunghui Tsai, and Hsun-Ping Hsieh. "<a href="https://ieeexplore.ieee.org/document/9162255">An Efficient Method for Recommending Branch Locations to Reduce the Transportation Distance between Stations and Urban Events</a>" <i>IEEE International Workshop on Mobile Data Management, Mining, and Computing on Social Network (MobiSocial @ <b>IEEE MDM'20</b>)</i>, Versailles, France, 2020. <i>(workshop paper)</i>
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Jie-Yu Fang, and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3366424.3383548">Customizing Your Own Route with QQIP. A Quantitative and Qualitative Itinerary Planner for New Transportation Routes</a>" <i>ACM International Conference on World Wide Web (<b>WWW'20</b>)</i>, Taipei, Taiwan, 2020. <i>(demo paper)</i> <!--[<a href="https://youtu.be/OSWIBtN8Dro">video</a>]-->
+										</li>
+										<li>
+											<b>Fandel Lin</b>, Shiuan-Tyng Lin, Jie-Yu Fang, and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3366424.3382717">Traffic Light Control with Real-Time Vehicle License Plate Recognition</a>" <i>ACM International Conference on World Wide Web (<b>WWW'20</b>)</i>, Taipei, Taiwan, 2020. <i>(poster paper)</i> <!--[<a href="https://youtu.be/4yhiU2Q88VI">video</a>]-->
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3366424.3382709">A Convolutional Approach for Estimating Popularity of New Branch Stores</a>" <i>ACM International Conference on World Wide Web (<b>WWW'20</b>)</i>, Taipei, Taiwan, 2020. <i>(poster paper)</i> <!--[<a href="https://youtu.be/UYLnqfH4Sq4">video</a>]-->
+										</li>
+										<li>
+											<b>Fandel Lin</b> and Hsun-Ping Hsieh. "<a href="https://dl.acm.org/doi/10.1145/3274895.3282801">An Intelligent and Interactive Route Planning Maker for Deploying New Transportation Services</a>" <i>ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems (<b>ACM SIGSPATIAL'18</b>)</i>, Seattle, WA, 2018. <i>(SRC paper)</i>
+										</li>
+										
+									</ol>
+									
+									
+									<h4>Tutorial</h4>
+									<ol class="reversed-tutorial">
+										<li>
+											Hsun-Ping Hsieh and <b>Fandel Lin</b>. "<a href="https://link.springer.com/book/10.1007/978-3-030-73200-4?page=4#toc">AI Governance: Advanced Urban Computing on Informatics Forecasting and Route Planning</a>" <i>International Conference on Database Systems for Advanced Applications (<b>DASFAA’21</b>)</i>, Taipei, Taiwan. April 2021.
+										</li>
+									</ol>
+									
+									<h4>Thesis</h4>
+									<ol class="reversed-thesis">
+										<li>
+											<b>Fandel Lin</b>. "<a href="https://doi.org/10.25549/usctheses-oUC11399NVQG">Learning to Interpret Historical Maps by Exploiting Polygon Metadata</a>" PhD Dissertation, <i>University of Southern California</i>, May 2026.
+										</li>
+										<li>
+											<b>Fandel Lin</b>. "<a href="https://thesis.lib.ncku.edu.tw/thesis/detail/ebf691453f722024b60f817ff3bff365/">An Inference-then-Planning Framework for Multi-Criteria Competitive and Cooperative Route Planning Built on Heterogeneous Urban Data: A Case Study on Transportation</a>" Master Thesis, <i>National Cheng Kung University</i>, June 2021.
+										</li>
+									</ol>
+									
+								</div>
+							
+							<div id="myModal" class="modal">
+								<!-- Modal content -->
+								<div class="modal-content">
+									<div class="modal-header">
+										<span class="close">&times;</span>
+										<h4>Conference Paper</h4>
+									</div>
+									<div class="modal-body">
+										This includes all peer-reviewed, archival conference papers. Please refer to the <a href="https://drive.google.com/file/d/12sIDDvURURHaqtOYMJxtTuYW0fb3hUOv/view">CV</a> for detail categorical list (e.g., in conference proceedings, workshop proceedings, or companion proceedings).
+									</div>
+								</div>
+							</div>
+							
+							
+							</section>
+						<!-- Four -->
+							<section id="award">
+								<div class="container">
+									<h3>Award</h3>
+									<h4>International</h4>
+										<ol class="award-container_1">
+											<li>
+												<a href="https://www.sigspatial.org/people/award-recipients/#:~:text=Exploiting%20Polygon%20Metadata%20to%20Colorize%20Draft%20Maps%20(06S)">Best Short Paper Award</a>, ACM SIGSPATIAL, 2025.
+											</li>
+											<li>
+												<a href="https://sigspatial2025.sigspatial.org/giscup/finalResults.html">7<sup>th</sup> Place, ACM SIGSPATIAL Cup Competition (GISCUP)</a>, ACM SIGSPATIAL, 2025.
+											</li>
+											<li>
+												<a href="https://sigspatial2024.sigspatial.org/giscup/index.html">Finalist (Top 5), ACM SIGSPATIAL Cup Competition (GISCUP)</a>, ACM SIGSPATIAL, 2024.
+											</li>
+											<li>
+												<a href="https://iaied.org/archive/conferences/AIED2023/conference_scholarship.html">AIED 2023 Conference Scholarship (Conference Grant)</a>, AIED, 2023.
+											</li>
+											<li>
+												<a href="https://criticalminerals.darpa.mil/Results">1<sup>st</sup> Place, Map Feature Extraction Challenge</a>, AI for Critical Mineral Assessment Competition, Defense Advanced Research Projects Agency (DARPA), 2022.
+											</li>
+											<li>
+												<a href="https://sigspatial2021.sigspatial.org/accepted-papers/#:~:text=Conntrans">Best Paper Finalist</a>, ACM SIGSPATIAL, 2021. <b><i>(one of the 5 best papers)</i></b>
+											</li>
+											<li>
+												<a href="https://cis.ieee.org/conferences/travel-grants/wcci-2020-travel-grant-announcement">IEEE CIS Conference Grant for Young Professionals and Graduate Students</a>, IEEE CEC, 2020.
+											</li>
+											<li>
+												<a href="https://src.acm.org/grand-finalists/2019">2<sup>nd</sup> Place, ACM Student Research Competition Grand Finals</a>, ACM Award Banquet, 2019.
+											</li>
+											<li>
+												<a href="https://www.sigspatial.org/people/award-recipients/#:~:text=%E2%80%9CAn%20Intelligent%20and%20Interactive%20Route%20Planning%20Maker%20for%20Deploying%20New%20Transportation%20Services%E2%80%9D">1<sup>st</sup> Place, ACM SIGSPATIAL Student Research Competition</a>, ACM SIGSPATIAL, 2018.
+											</li>
+											<li>
+												<a href="https://src.acm.org/winners/2019">ACM Student Research Competition Travel Award</a>, ACM SIGSPATIAL, 2018.
+											</li>
+										</ol>
+									<br>
+									<h4>Domestic</h4>
+										<ol class="award-container_2">
+											<li>
+												<a href="https://sigspatial2025.sigspatial.org/travel-grants/">NSF Travel Grant</a>, ACM SIGSPATIAL, USA, 2025.
+											</li>
+											<li>
+												<a href="https://sigspatial2024.sigspatial.org/travel-grants/">NSF Travel Grant</a>, ACM SIGSPATIAL, USA, 2024.
+											</li>
+											<li>
+												<a href="https://sigspatial2023.sigspatial.org/travel-grants/">NSF Travel Grant</a>, ACM SIGSPATIAL, USA, 2023.
+											</li>
+											<li>
+												<a href="http://www.its-taiwan.org.tw/ch/e-1.asp?c_no=1441">ITS Paper Award</a>, Intelligent Transportation Society of Taiwan (ITS), Taiwan, 2022.
+											</li>
+											<li>
+												<a href="https://www.2022tgis.tw/%E9%87%91%E5%9C%96%E7%8D%8E/">Best Master Thesis Award</a>, Taiwan Geographic Information Society (TGIS), Taiwan, 2022.
+											</li>
+											<li>
+												<a href="http://www.iicm.org.tw/award/paper2021.pdf">Best Master Thesis Award</a>, Taiwan Institute of Information and Computing Machinery (IICM), Taiwan, 2022.
+											</li>
+											<li>
+												<a href="https://gra103.aca.ntu.edu.tw/tsff/110file/110-111%EF%A6%8E-%E8%87%BA%E7%81%A3%E9%87%8D%E9%BB%9E%EF%A6%B4%E5%9F%9F%E7%8D%8E%E5%AD%B8%EF%A4%8A%E8%A9%A6%E8%BE%A6%E8%A8%88%E7%95%AB%E5%85%AC%E5%91%8A%EF%A4%BF%E5%8F%96%E6%A6%9C%E5%96%AE.pdf">Pilot Project on Scholarships for Taiwanese Studying in the Focused Fields at Top Foreign University</a>, Ministry of Education, Taiwan, 2022. <b><i>(4-year fellowship: full tuition + $22,800 USD per year)</i></b>
+											</li>
+											<li>
+												<a href="http://www.orstw.org.tw/files/2021%E5%B9%B4%E5%8F%B0%E7%81%A3%E4%BD%9C%E6%A5%AD%E7%A0%94%E7%A9%B6%E5%AD%B8%E6%9C%83%E7%A2%A9%E5%8D%9A%E5%A3%AB%E8%AB%96%E6%96%87%E7%AB%B6%E8%B3%BD%E5%BE%97%E7%8D%8E%E5%90%8D%E5%96%AE.pdf">Best Master Thesis Award</a>, Operations Research Society of Taiwan (ORSTW), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="http://www.ciee.org.tw/download/110%E5%B9%B4%E5%BA%A6%E3%80%8C%E9%9D%92%E5%B9%B4%E8%AB%96%E6%96%87%E7%8D%8E%E3%80%8D%E5%BE%97%E7%8D%8E%E4%BA%BA%E5%90%8D%E5%96%AE.pdf">Master Thesis Award (3<sup>rd</sup> Place)</a>, The Chinese Institute of Electrical Engineering (CIEE), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://ewh.ieee.org/r10/tainan/download/2021/2021%20Annual%20Award%20List.pdf">Best Master Thesis Award</a>, IEEE Tainan Section, Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://www.wic.org.tw/download/109award.pdf">Best Master Thesis Award</a>, Taiwan Association for Web Intelligence Consortium (WIC), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://www.taai.org.tw/award/winner">Best Master Thesis Award</a>, Taiwanese Association for Artificial Intelligence (TAAI), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="http://www.its-taiwan.org.tw/ch/e-1.asp?c_no=1412">ITS Paper Award</a>, Intelligent Transportation Society of Taiwan (ITS), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://www.tisa-tw.org.tw/awards_detail/36.htm">Best Master Thesis Award</a>, Taiwan Information Storage Association (TISA), Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://thesis.topco-global.com/TopcoTRC/PDF/2021_Recipients.pdf">Advanced Paper Award (Best Master Thesis), TSC Thesis Award</a>, Taiwan Management Institute, Taiwan, 2021. <b><i>(top 4/936, 1<sup>st</sup> Place in AI-Information Track)</i></b>
+											</li>
+											<li>
+												<a href="http://www.phitauphi.org.tw/place2/frame.asp?id=8">Honorary Member of the Phi Tau Phi Scholastic Honor Society</a>, Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://www.freeway.gov.tw/Publish.aspx?cnid=193&p=19372">2<sup>nd</sup> Place, Competition of Application for Electronic Toll Collection in Traffic Management</a>, Freeway Bureau, Ministry of Transportation and Communications, Taiwan, 2020.
+											</li>
+											<li>
+												<a href="https://tbrain.trendmicro.com.tw/Competitions/Details/9">5<sup>th</sup> Place, AI CUP Artificial Intelligence Analysis and Classification of Thesis</a>, Ministry of Education, Taiwan, 2019.
+											</li>
+											<li>
+												<a href="https://www.tainan.gov.tw/News_Content.aspx?n=13370&s=7436493">2<sup>nd</sup> Place, Big Data Analytics for Smart Cities</a>, Tainan City Government, Taiwan, 2019.
+											</li>
+											<li>
+												<a href="https://wsts.most.gov.tw/STSWeb/Award/AwardMultiQuery.aspx">College Student Research Creativity Award</a>, Ministry of Science and Technology, Taiwan, 2019. <b><i>(top 200/3123 = 6.4%)</i></b>
+											</li>
+											<li>
+												<a href="https://cpe.cse.nsysu.edu.tw/cpe/scoreboard/2019-05-28">6<sup>th</sup> Place (Top 0.26%), Collegiate Programming Examination</a>, ACM-ICPC Taiwan Council, 2019.
+											</li>
+											<li>
+												<a href="http://tcat2019.twisc.ncku.edu.tw/award-1">Distinguished Honor Award, T-CAT Information Security Contest</a>, Ministry of Science and Technology, Taiwan, 2019. <b><i>(top 7/248 = 2.8%)</i></b>
+											</li>
+											<li>
+												<a href="http://www.cie.org.tw/News/NewsDetail?cn_id=448">Outstanding Engineering Student Fellowship</a>, Chinese Institute of Engineers, Taiwan, 2019. <b><i>(Award to 10 engineering seniors in Taiwan)</i></b>
+											</li>
+											<li>
+												<a href="http://140.127.218.70/welcome">3<sup>rd</sup> Place, Open Source Software Competition</a>, Ministry of Education, Taiwan, 2018.
+											</li>
+											<li>
+												<a href="http://scc.cilab.csie.ncu.edu.tw/ach-list.php?theme=10">Silver Medal, Creative Software Applications Contest</a>, Ministry of Education, Taiwan, 2018.
+											</li>
+											<li>
+												<a href="http://www.esri.tw/index.php?option=com_content&view=article&id=498:story-map&catid=121:story-map&Itemid=153">Champion, StoryMap Programming Contest</a>, Esri, Taiwan, 2015.
+											</li>
+											<li>
+												<a href="https://drive.google.com/file/d/1fuxMZ9uxmabJRhxhX9z_Swb8mEUbcmDP/view">Third Prize, Geography Olympiad Research Contest</a>, Taiwan, 2013.
+											</li>
+										</ol>
+									<br>
+									<h4>University</h4>
+										<ol class="award-container_3">
+											<li>
+												<a href="#">Viterbi School Doctoral Fellowship Top Off</a>, University of Southern California, Los Angeles, CA, USA, 2022-2025.
+											</li>
+											<li>
+												<a href="http://eecs.ncku.edu.tw/p/406-1020-223159,r2615.php?Lang=zh-tw">2<sup>nd</sup> Place, College of Electrical Engineering and Computer Science (EECS) Research Competition</a>, National Cheng Kung University, Tainan, Taiwan, 2021.
+											</li>
+											<li>
+												<a href="https://www.ee.ncku.edu.tw/upload/announcement/uploads_announce/honor/20190114091142/107%E5%AD%B8%E5%B9%B4%E9%9B%BB%E6%A9%9F%E5%B7%A5%E7%A8%8B%E5%AD%B8%E7%B3%BB%E7%95%A2%E6%A5%AD%E5%B0%88%E9%A1%8C%E5%AF%A6%E4%BD%9C%E6%88%90%E6%9E%9C%E7%AB%B6%E8%B3%BD%E7%8D%B2%E7%8D%8E%E5%90%8D%E5%96%AE_1080114.pdf">2<sup>nd</sup> Place, Undergraduate Research Competition</a>, National Cheng Kung University, Tainan, Taiwan, 2019.
+											</li>
+											<li>
+												<a href="https://www.youtube.com/watch?v=LQGpub6P-0Y&index=14&list=PLaDzWgOj0-mlVy8XZvEXyLrr4rwu0QH1h&fbclid=IwAR3XbYBKu5_XsIdqJNqiARWhtZyhPPTKt-HDq8gSHgdXYtlfs39rmYRtLto">Best Course Project, Web Programming Course</a>, National Cheng Kung University, Tainan, Taiwan, 2017.
+											</li>
+										</ol>
+								</div>
+							</section>
+							
+							
+							
+							
+							<section id="misc">
+								<div class="container">
+									<h3>Miscellaneous</h3>
+									
+									Please refer to the <a href="https://drive.google.com/file/d/12sIDDvURURHaqtOYMJxtTuYW0fb3hUOv/view">CV</a> for miscellaneous information including invited talks, teaching experiences, working experiences, grant projects, services, skills, etc.
+								</div>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="container">
+							<ul class="copyright">
+								<li>© Fandel Lin  <br>|  Original Design: <a href="http://html5up.net">HTML5 UP</a> ('<a href="https://html5up.net/read-only">Read Only</a>' @ajlkn)  <br>|  Last Update: 10/17/2026</li>
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+	</body>
+</html>

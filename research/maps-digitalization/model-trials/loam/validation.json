@@ -1,0 +1,167 @@
+{
+  "status": "passed",
+  "completed_layers": 11,
+  "checks": [
+    {
+      "layer": "porto-heat",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1213
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 26569,
+      "unknown_pixels": 2105885,
+      "valid_export_features": 563
+    },
+    {
+      "layer": "porto-flood",
+      "status": "passed",
+      "full_shape_hw": [
+        1668,
+        1155
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 17099,
+      "unknown_pixels": 1909441,
+      "valid_export_features": 378
+    },
+    {
+      "layer": "porto-landslide",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1213
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 26056,
+      "unknown_pixels": 2106398,
+      "valid_export_features": 530
+    },
+    {
+      "layer": "porto-drought",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1218
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 30614,
+      "unknown_pixels": 2110630,
+      "valid_export_features": 654
+    },
+    {
+      "layer": "porto-arbovirus",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1213
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 28600,
+      "unknown_pixels": 2103854,
+      "valid_export_features": 606
+    },
+    {
+      "layer": "porto-storm",
+      "status": "passed",
+      "full_shape_hw": [
+        1758,
+        1213
+      ],
+      "legend_masks": 10,
+      "predicted_pixels": 29346,
+      "unknown_pixels": 2103108,
+      "valid_export_features": 646
+    },
+    {
+      "layer": "richfield-inundation-100yr",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 1,
+      "predicted_pixels": 0,
+      "unknown_pixels": 969408,
+      "valid_export_features": 0
+    },
+    {
+      "layer": "richfield-inundation-2yr",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 1,
+      "predicted_pixels": 1,
+      "unknown_pixels": 969407,
+      "valid_export_features": 1
+    },
+    {
+      "layer": "richfield-inundation-10yr",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 1,
+      "predicted_pixels": 0,
+      "unknown_pixels": 969408,
+      "valid_export_features": 0
+    },
+    {
+      "layer": "richfield-inundation-mce100",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 1,
+      "predicted_pixels": 836,
+      "unknown_pixels": 968572,
+      "valid_export_features": 40
+    },
+    {
+      "layer": "richfield-prioritization-score",
+      "status": "passed",
+      "full_shape_hw": [
+        792,
+        1224
+      ],
+      "legend_masks": 4,
+      "predicted_pixels": 73683,
+      "unknown_pixels": 895725,
+      "valid_export_features": 156
+    }
+  ],
+  "alignment": {
+    "porto_heat": {
+      "source_crop_xyxy": [
+        770,
+        1209,
+        862,
+        1269
+      ],
+      "source_resolution": "native embedded figure",
+      "display_scale": "same for both layers",
+      "numeric_reference_used": false,
+      "predicted_pixels_in_crop": 0,
+      "crop_pixels": 5520
+    },
+    "richfield": {
+      "source_crop_points": [
+        280,
+        285,
+        600,
+        465
+      ],
+      "source_render_pixels_per_point": 3,
+      "model_native_pixels_per_point": 1,
+      "model_enlargement": "nearest neighbor 3x",
+      "numeric_reference_used": false,
+      "predicted_display_pixels": 0
+    }
+  },
+  "scope": "artifact/schema/count/provenance/spatial checks; accuracy is separately reported in metrics.json"
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/knowledge-computing/LDTR.git",
+    "./upstream/LDTR"
+  ],
+  "cwd": ".",
+  "started_at": "2026-10-30T11:52:24.162657+00:00",
+  "timeout_s": 90,
+  "exit_code": 0,
+  "elapsed_s": 1.219,
+  "log": "logs\\clone-ldtr.log"
+}

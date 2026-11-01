@@ -1,0 +1,707 @@
+[
+  {
+    "name": "paper-abs",
+    "url": "https://arxiv.org/abs/2506.16006",
+    "checked_at_utc": "2026-11-01T09:22:24.344910+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://arxiv.org/abs/2506.16006",
+    "headers": {
+      "Content-Length": "42266",
+      "last-modified": "Mon, 24 Aug 2026 19:26:55 GMT",
+      "content-type": "text/html; charset=utf-8"
+    },
+    "truncated": false,
+    "file": "evidence/paper-abs.body",
+    "bytes": 42266,
+    "sha256": "4c2d13ef3d38254082e2ba207a8c208ce57128746aa850dc7fce27f953b03baa",
+    "elapsed_s": 0.302
+  },
+  {
+    "name": "paper-latest-html",
+    "url": "https://arxiv.org/html/2506.16006",
+    "checked_at_utc": "2026-11-01T09:22:24.345374+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://arxiv.org/html/2506.16006",
+    "headers": {
+      "Content-Length": "221573",
+      "last-modified": "Mon, 24 Aug 2026 19:26:54 GMT",
+      "content-type": "text/html; charset=utf-8",
+      "link": "<https://arxiv.org/html/2506.16006>; rel='canonical'",
+      "etag": "\"CMPfksD/uZYDEAE=\""
+    },
+    "truncated": false,
+    "file": "evidence/paper-latest-html.body",
+    "bytes": 221573,
+    "sha256": "3dbd0f350337c10332a7f2f40a147aec5a15264ed6c3e8695fa85cc292b02cfc",
+    "elapsed_s": 0.446
+  },
+  {
+    "name": "paper-api",
+    "url": "https://export.arxiv.org/api/query?id_list=2506.16006",
+    "checked_at_utc": "2026-11-01T09:22:24.345693+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://export.arxiv.org/api/query?id_list=2506.16006",
+    "headers": {
+      "Content-Length": "3292",
+      "content-type": "application/atom+xml; charset=utf-8"
+    },
+    "truncated": false,
+    "file": "evidence/paper-api.body",
+    "bytes": 3292,
+    "sha256": "fbf730d54fa682a10976f4e4ef443b60ed27bbd4bcdddb1f41bf0da1d6813426",
+    "elapsed_s": 0.417
+  },
+  {
+    "name": "aim-metadata",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+    "checked_at_utc": "2026-11-01T09:22:24.345862+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f\"",
+      "Last-Modified": "Wed, 23 Aug 2023 04:08:21 GMT",
+      "X-RateLimit-Remaining": "59",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "7109"
+    },
+    "truncated": false,
+    "file": "evidence/aim-metadata.body",
+    "bytes": 7109,
+    "sha256": "559056a92b810b8e79f2c199ca5aaee933a3f30b0b8652d254534f22e019298f",
+    "elapsed_s": 0.445
+  },
+  {
+    "name": "aim-contents",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/contents",
+    "checked_at_utc": "2026-11-01T09:22:24.647162+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/contents",
+    "headers": {
+      "Content-Length": "132",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "58",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/aim-contents.body",
+    "bytes": 132,
+    "sha256": "b228a6778d38c40279891f510870a11ead8a6f191c4a0b4442d012876e0ef0e6",
+    "elapsed_s": 0.343
+  },
+  {
+    "name": "aim-releases",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/releases",
+    "checked_at_utc": "2026-11-01T09:22:24.762668+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/releases",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "57",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/aim-releases.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.358
+  },
+  {
+    "name": "aim-branches",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/branches",
+    "checked_at_utc": "2026-11-01T09:22:24.791121+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/branches",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "56",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/aim-branches.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.324
+  },
+  {
+    "name": "aim-deployments",
+    "url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/deployments",
+    "checked_at_utc": "2026-11-01T09:22:24.791396+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/knowledge-computing/CriticalMAAS_AIM/deployments",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "55",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/aim-deployments.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.295
+  },
+  {
+    "name": "lab-repos",
+    "url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:22:24.990011+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/knowledge-computing/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a\"",
+      "X-RateLimit-Remaining": "54",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/lab-repos.body",
+    "bytes": 262342,
+    "sha256": "13374af7d4ba4e21e1acfc224f786b71324393d969a5684d0c6a8aff29743f5a",
+    "elapsed_s": 1.541
+  },
+  {
+    "name": "inferlink-repos",
+    "url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:22:25.086490+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/InferLink/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67\"",
+      "X-RateLimit-Remaining": "53",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/inferlink-repos.body",
+    "bytes": 27696,
+    "sha256": "82bb19c2df92c553a80c6e7f6bd3c1e303518fcdbf402e1beb1c6c89d268bb67",
+    "elapsed_s": 0.554
+  },
+  {
+    "name": "criticalmaas-repos",
+    "url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+    "checked_at_utc": "2026-11-01T09:22:25.115158+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/orgs/DARPA-CRITICALMAAS/repos?per_page=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624\"",
+      "X-RateLimit-Remaining": "52",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/criticalmaas-repos.body",
+    "bytes": 241020,
+    "sha256": "3d8cd4e2b924a0619b4bc2dfde30e1a989f30e1afa3441d3b14dab0341d00624",
+    "elapsed_s": 1.526
+  },
+  {
+    "name": "github-digmapper",
+    "url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+    "checked_at_utc": "2026-11-01T09:22:25.120727+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=DIGMAPPER",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "9",
+      "X-RateLimit-Reset": "1793525005",
+      "Content-Length": "5871"
+    },
+    "truncated": false,
+    "file": "evidence/github-digmapper.body",
+    "bytes": 5871,
+    "sha256": "7822ee9e2383dbbe23651ff483347a0030df061b64a232a4fbe07d6a15f7da3f",
+    "elapsed_s": 0.401
+  },
+  {
+    "name": "github-topaz-geologic",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+    "checked_at_utc": "2026-11-01T09:22:25.521575+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=TOPAZ+geologic",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "8",
+      "X-RateLimit-Reset": "1793525005",
+      "Content-Length": "55"
+    },
+    "truncated": false,
+    "file": "evidence/github-topaz-geologic.body",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.326
+  },
+  {
+    "name": "github-topaz-polygon",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+polygon",
+    "checked_at_utc": "2026-11-01T09:22:25.640400+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=TOPAZ+polygon",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "7",
+      "X-RateLimit-Reset": "1793525005",
+      "Content-Length": "55"
+    },
+    "truncated": false,
+    "file": "evidence/github-topaz-polygon.body",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.317
+  },
+  {
+    "name": "github-topaz-criticalmaas",
+    "url": "https://api.github.com/search/repositories?q=TOPAZ+CriticalMAAS",
+    "checked_at_utc": "2026-11-01T09:22:25.847617+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=TOPAZ+CriticalMAAS",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "6",
+      "X-RateLimit-Reset": "1793525005",
+      "Content-Length": "55"
+    },
+    "truncated": false,
+    "file": "evidence/github-topaz-criticalmaas.body",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.334
+  },
+  {
+    "name": "github-polygon-inferlink",
+    "url": "https://api.github.com/search/repositories?q=polygon+org%3AInferLink",
+    "checked_at_utc": "2026-11-01T09:22:25.957083+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/search/repositories?q=polygon+org%3AInferLink",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-RateLimit-Remaining": "5",
+      "X-RateLimit-Reset": "1793525005",
+      "Content-Length": "55"
+    },
+    "truncated": false,
+    "file": "evidence/github-polygon-inferlink.body",
+    "bytes": 55,
+    "sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+    "elapsed_s": 0.353
+  },
+  {
+    "name": "author-project",
+    "url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+    "checked_at_utc": "2026-11-01T09:22:26.181228+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://sofiakirsanova.github.io/projects/criticalmaas/",
+    "headers": {
+      "Content-Length": "15860",
+      "Content-Type": "text/html; charset=utf-8",
+      "Last-Modified": "Thu, 15 Oct 2026 17:35:07 GMT",
+      "ETag": "\"6ad10ecb-3df4\""
+    },
+    "truncated": false,
+    "file": "evidence/author-project.body",
+    "bytes": 15860,
+    "sha256": "182d822d5ec721d62f46387809902eee272400bdcd13a4c64f885780a796edec",
+    "elapsed_s": 0.327
+  },
+  {
+    "name": "inferlink-mapsense",
+    "url": "https://www.inferlink.com/mapsense",
+    "checked_at_utc": "2026-11-01T09:22:26.309781+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://www.inferlink.com/mapsense",
+    "headers": {
+      "Content-Type": "text/html; charset=UTF-8",
+      "ETag": "W/\"4dd0f84503675acb02da5302a1de8508\"",
+      "Link": "<https://static.parastorage.com/>; rel=preconnect; crossorigin, <https://static.parastorage.com/>; rel=preconnect, <https://static.wixstatic.com/>; rel=preconnect; crossorigin, <https://static.wixstatic.com/>; rel=preconnect, <https://siteassets.parastorage.com>; rel=preconnect; crossorigin"
+    },
+    "truncated": false,
+    "file": "evidence/inferlink-mapsense.body",
+    "bytes": 521709,
+    "sha256": "3e7a8ded7f314c4487e528c530910ca0c2ca0a4dbc4d4f94a9e1a80fd4678391",
+    "elapsed_s": 0.299
+  },
+  {
+    "name": "hf-digmapper-models",
+    "url": "https://huggingface.co/api/models?search=digmapper&limit=100",
+    "checked_at_utc": "2026-11-01T09:22:26.508672+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=digmapper&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-digmapper-models.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.218
+  },
+  {
+    "name": "hf-topaz-models",
+    "url": "https://huggingface.co/api/models?search=topaz&limit=100",
+    "checked_at_utc": "2026-11-01T09:22:26.530715+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=topaz&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "17329",
+      "ETag": "W/\"43b1-fNBMtv6hYpOgxk0Ckkka6w1rFik\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-topaz-models.body",
+    "bytes": 17329,
+    "sha256": "e5db1377ebe75408674993e85b3f0cf5220b47a8348137ee1dcf9ba00ff1ef04",
+    "elapsed_s": 0.223
+  },
+  {
+    "name": "hf-criticalmaas-models",
+    "url": "https://huggingface.co/api/models?search=criticalmaas&limit=100",
+    "checked_at_utc": "2026-11-01T09:22:26.609097+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/models?search=criticalmaas&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-criticalmaas-models.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.195
+  },
+  {
+    "name": "hf-digmapper-spaces",
+    "url": "https://huggingface.co/api/spaces?search=digmapper&limit=100",
+    "checked_at_utc": "2026-11-01T09:22:26.640868+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/spaces?search=digmapper&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-digmapper-spaces.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.211
+  },
+  {
+    "name": "hf-topaz-spaces",
+    "url": "https://huggingface.co/api/spaces?search=topaz&limit=100",
+    "checked_at_utc": "2026-11-01T09:22:26.726203+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/spaces?search=topaz&limit=100",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2778",
+      "ETag": "W/\"ada-5h1Rdaf6ZoxZLG0xAxSDwzhUrmQ\""
+    },
+    "truncated": false,
+    "file": "evidence/hf-topaz-spaces.body",
+    "bytes": 2778,
+    "sha256": "8ad380b27366ce958961a504b53f1f4522bcfccdeef7ede677a7bd4436af065f",
+    "elapsed_s": 0.196
+  },
+  {
+    "name": "docker-digmapper-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=digmapper&page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:26.753609+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/search/repositories/?query=digmapper&page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "49",
+      "x-ratelimit-reset": "1793525007",
+      "x-ratelimit-remaining": "180"
+    },
+    "truncated": false,
+    "file": "evidence/docker-digmapper-search.body",
+    "bytes": 49,
+    "sha256": "4605ecc2be9b52faa3bdf4ea25f755535bd7312693f057abbc675cda4f5eb1d8",
+    "elapsed_s": 0.272
+  },
+  {
+    "name": "docker-topaz-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=topaz&page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:26.804303+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/search/repositories/?query=topaz&page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-ratelimit-reset": "1793525007",
+      "x-ratelimit-remaining": "179"
+    },
+    "truncated": false,
+    "file": "evidence/docker-topaz-search.body",
+    "bytes": 16327,
+    "sha256": "af2bb4b682d9bd918eed425cb19c14d2bf8c715b2d5bb93280a0965932bfe641",
+    "elapsed_s": 0.242
+  },
+  {
+    "name": "docker-criticalmaas-search",
+    "url": "https://hub.docker.com/v2/search/repositories/?query=criticalmaas&page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:26.851583+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/search/repositories/?query=criticalmaas&page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "983",
+      "x-ratelimit-reset": "1793525007",
+      "x-ratelimit-remaining": "178"
+    },
+    "truncated": false,
+    "file": "evidence/docker-criticalmaas-search.body",
+    "bytes": 983,
+    "sha256": "f0e3964cc565bd52c3083895d825bdb04649280e696ccd31d291c938408d1198",
+    "elapsed_s": 0.214
+  },
+  {
+    "name": "docker-inferlink",
+    "url": "https://hub.docker.com/v2/repositories/inferlink/?page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:26.922584+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/repositories/inferlink/?page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "x-ratelimit-reset": "1793525007",
+      "x-ratelimit-remaining": "177"
+    },
+    "truncated": false,
+    "file": "evidence/docker-inferlink.body",
+    "bytes": 1551,
+    "sha256": "b55baa334de188bc4eb2e42ff0dd4632281c844d802bf41657c81b8759b5a73b",
+    "elapsed_s": 0.245
+  },
+  {
+    "name": "docker-knowledge-computing",
+    "url": "https://hub.docker.com/v2/repositories/knowledgecomputing/?page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:27.025809+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://hub.docker.com/v2/repositories/knowledgecomputing/?page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "604",
+      "x-ratelimit-reset": "1793525007",
+      "x-ratelimit-remaining": "176"
+    },
+    "truncated": false,
+    "file": "evidence/docker-knowledge-computing.body",
+    "bytes": 604,
+    "sha256": "8bbc2bdb4c440c82340dd269a94e59835d80f94c23a06e8e1b3979c75c3ff84c",
+    "elapsed_s": 0.243
+  },
+  {
+    "name": "quay-digmapper",
+    "url": "https://quay.io/api/v1/find/repositories?query=digmapper",
+    "checked_at_utc": "2026-11-01T09:22:27.046698+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://quay.io/api/v1/find/repositories?query=digmapper",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "87"
+    },
+    "truncated": false,
+    "file": "evidence/quay-digmapper.body",
+    "bytes": 87,
+    "sha256": "9634d5c711ce51bdc5bad8e08c250aa51adea55f1fe9b0367e1ebffaa6f73e41",
+    "elapsed_s": 0.442
+  },
+  {
+    "name": "quay-topaz",
+    "url": "https://quay.io/api/v1/find/repositories?query=topaz",
+    "checked_at_utc": "2026-11-01T09:22:27.065805+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://quay.io/api/v1/find/repositories?query=topaz",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "115609"
+    },
+    "truncated": false,
+    "file": "evidence/quay-topaz.body",
+    "bytes": 115609,
+    "sha256": "34b7b443de851b6dc6e1142b729a30423935fc751bb19ae6f523ce5b03ec3745",
+    "elapsed_s": 0.815
+  },
+  {
+    "name": "uncharted-metadata",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1",
+    "checked_at_utc": "2026-11-01T09:22:27.167731+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "ETag": "W/\"8fc2970c83fe634ff684de9f2c5732a2ab9f15f4e4ef8269136bce98c411dfd8\"",
+      "Last-Modified": "Tue, 22 Sep 2026 21:25:22 GMT",
+      "X-RateLimit-Remaining": "51",
+      "X-RateLimit-Reset": "1793528544",
+      "Content-Length": "7129"
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-metadata.body",
+    "bytes": 7129,
+    "sha256": "8fc2970c83fe634ff684de9f2c5732a2ab9f15f4e4ef8269136bce98c411dfd8",
+    "elapsed_s": 0.345
+  },
+  {
+    "name": "uncharted-releases",
+    "url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+    "checked_at_utc": "2026-11-01T09:22:27.268454+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/DARPA-CRITICALMAAS/uncharted-ta1/releases",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Length": "2",
+      "ETag": "\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"",
+      "X-RateLimit-Remaining": "50",
+      "X-RateLimit-Reset": "1793528544"
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-releases.body",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "elapsed_s": 0.337
+  },
+  {
+    "name": "uncharted-build-workflow",
+    "url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/.github/workflows/build_containers.yml",
+    "checked_at_utc": "2026-11-01T09:22:27.488969+00:00",
+    "method": "GET",
+    "status": 200,
+    "final_url": "https://raw.githubusercontent.com/DARPA-CRITICALMAAS/uncharted-ta1/main/.github/workflows/build_containers.yml",
+    "headers": {
+      "Content-Length": "1686",
+      "Content-Type": "text/plain; charset=utf-8",
+      "ETag": "\"dbfe5383d495bf61137037795f0fc3ce5dece12ce6c78963facb848e8a4bcaf2\""
+    },
+    "truncated": false,
+    "file": "evidence/uncharted-build-workflow.body",
+    "bytes": 1686,
+    "sha256": "886a7746ff4c72658c52ba9112ebc105b47df3ae7703f7fbeeb6220cd0f74c94",
+    "elapsed_s": 0.338
+  },
+  {
+    "name": "docker-lara-tags",
+    "url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=100",
+    "checked_at_utc": "2026-11-01T09:22:27.513233+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://hub.docker.com/v2/repositories/uncharted/lara-segmentation/tags/?page_size=100",
+    "headers": {
+      "Content-Type": "application/json",
+      "Content-Length": "43",
+      "x-ratelimit-reset": "1793525008",
+      "x-ratelimit-remaining": "175"
+    },
+    "truncated": false,
+    "file": "evidence/docker-lara-tags.body",
+    "bytes": 43,
+    "sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+    "elapsed_s": 0.216
+  },
+  {
+    "name": "s3-layout-config-yaml",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml",
+    "checked_at_utc": "2026-11-01T09:22:27.605704+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.yaml",
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "truncated": false,
+    "file": "evidence/s3-layout-config-yaml.body",
+    "bytes": 307,
+    "sha256": "c8db5a0b98048a1cf1676e4e731976f4dcfdbf9d0de18aada074703bbaca7ade",
+    "elapsed_s": 0.498
+  },
+  {
+    "name": "s3-layout-config-json",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json",
+    "checked_at_utc": "2026-11-01T09:22:27.729392+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/config.json",
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "truncated": false,
+    "file": "evidence/s3-layout-config-json.body",
+    "bytes": 307,
+    "sha256": "1b684d6284b6ff2efebf0bada75ede94425be86029abe330148903e02191d163",
+    "elapsed_s": 0.445
+  },
+  {
+    "name": "s3-layout-weights",
+    "url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "range": "bytes=0-4095",
+    "checked_at_utc": "2026-11-01T09:22:27.826857+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://pantera-file-test.s3.ca-central-1.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "truncated": false,
+    "file": "evidence/s3-layout-weights.body",
+    "bytes": 307,
+    "sha256": "f46e0d8b770d1500b3362002848bf6019640ad61793d9fc72e2dc7d7001d9f5b",
+    "elapsed_s": 0.409
+  },
+  {
+    "name": "s3-layout-weights-global",
+    "url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "range": "bytes=0-4095",
+    "checked_at_utc": "2026-11-01T09:22:27.880546+00:00",
+    "method": "GET",
+    "status": 404,
+    "final_url": "https://pantera-file-test.s3.amazonaws.com/lara/segmentation/layoutlmv3_20240925/model_final.pth",
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "truncated": false,
+    "file": "evidence/s3-layout-weights-global.body",
+    "bytes": 327,
+    "sha256": "2e28ccf0f6971580ab9647c472744bd88a27a87589517f96039a72c27b1d6005",
+    "elapsed_s": 0.438
+  }
+]

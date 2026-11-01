@@ -1,0 +1,116 @@
+{
+  "passed": true,
+  "layers_checked": 11,
+  "checks": [
+    {
+      "id": "porto-heat",
+      "mask_shape_verified": [
+        1758,
+        1213
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "porto-flood",
+      "mask_shape_verified": [
+        1668,
+        1155
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "porto-landslide",
+      "mask_shape_verified": [
+        1758,
+        1213
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "porto-drought",
+      "mask_shape_verified": [
+        1758,
+        1218
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "porto-arbovirus",
+      "mask_shape_verified": [
+        1758,
+        1213
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "porto-storm",
+      "mask_shape_verified": [
+        1758,
+        1213
+      ],
+      "raw_legend_masks": 10,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "independent_pixel_mean_checks": 26
+    },
+    {
+      "id": "richfield-inundation-100yr",
+      "mask_shape_verified": [
+        1584,
+        2448
+      ],
+      "raw_legend_masks": 1,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "confusion_counts_verified": true
+    },
+    {
+      "id": "richfield-inundation-2yr",
+      "mask_shape_verified": [
+        1584,
+        2448
+      ],
+      "raw_legend_masks": 1,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "confusion_counts_verified": true
+    },
+    {
+      "id": "richfield-inundation-10yr",
+      "mask_shape_verified": [
+        1584,
+        2448
+      ],
+      "raw_legend_masks": 1,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "confusion_counts_verified": true
+    },
+    {
+      "id": "richfield-inundation-mce100",
+      "mask_shape_verified": [
+        1584,
+        2448
+      ],
+      "raw_legend_masks": 1,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "confusion_counts_verified": true
+    },
+    {
+      "id": "richfield-prioritization-score",
+      "mask_shape_verified": [
+        1584,
+        2448
+      ],
+      "raw_legend_masks": 4,
+      "geotiff_pixels_and_pixel_center_registration_verified": true,
+      "confusion_counts_verified": true
+    }
+  ]
+}

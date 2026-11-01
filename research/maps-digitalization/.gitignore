@@ -1,0 +1,14 @@
+!logs/
+!logs/**
+!*.log
+.venv/
+__pycache__/
+*.pyc
+.env*
+upstream/
+cache/
+tmp/
+intermediate/
+bitmaps/
+*.pth
+*.ckpt

@@ -1,0 +1,54 @@
+{"argv": ["C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper\\.venv\\Scripts\\python.exe", "-X", "utf8", "-m", "pip", "freeze"], "cwd": "C:\\Users\\WBW\\Documents\\geo-map-recovery-20261028\\model-trials\\digmapper", "started_at": "2026-10-30T11:57:09.159968+00:00", "timeout_s": 30}
+annotated-types==0.8.0
+anyio==4.15.1
+boto3==1.43.122
+botocore==1.43.122
+certifi==2026.10.23
+charset-normalizer==3.5.2
+colorama==0.4.6
+-e git+https://github.com/knowledge-computing/criticalmaas-legend-detection.git@a12e9603c3ea0ee8d4eb8fc53a326e37be53c930#egg=criticalmaas_legend_icl
+Cython==3.3.0
+distro==1.9.0
+filelock==4.2.4
+fsspec==2026.9.0
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==0.36.2
+idna==3.20
+Jinja2==3.1.6
+jiter==0.18.0
+jmespath==1.1.0
+-e git+https://github.com/DARPA-CRITICALMAAS/uncharted-ta1.git@7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9#egg=lara_map_segmentation&subdirectory=pipelines\segmentation
+-e git+https://github.com/DARPA-CRITICALMAAS/uncharted-ta1.git@7a50dc0cecde38b6c5db9c8f7d01b3e628bcf8b9#egg=lara_tasks&subdirectory=tasks
+MarkupSafe==3.0.4
+mpmath==1.3.0
+networkx==3.6.1
+numpy==1.26.4
+openai==2.54.0
+opencv-python==4.11.0.86
+packaging==26.3
+pillow==12.3.0
+poetry-core==2.5.0
+pydantic==2.14.2
+pydantic_core==2.50.2
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+regex==2026.9.29
+requests==2.34.2
+s3transfer==0.19.3
+safetensors==0.8.0
+scipy==1.17.1
+shapely==2.2.0
+six==1.17.0
+sniffio==1.3.1
+sympy==1.14.0
+timm==0.9.16
+tokenizers==0.21.4
+torch==2.0.1
+torchvision==0.15.2
+tqdm==4.70.1
+transformers==4.49.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+urllib3==2.8.0

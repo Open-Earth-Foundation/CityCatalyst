@@ -1,0 +1,44 @@
+{
+  "baseline": {
+    "exact_all_pct": 55.11665157001908,
+    "missing_pct": 24.43260349386482,
+    "mae": 0.07533458932836068,
+    "predicted_zero_reference_pct": 0.09980039920159679
+  },
+  "nearest15": {
+    "exact_all_pct": 54.46009039734569,
+    "missing_pct": 24.654347317575112,
+    "mae": 0.0679818128504912,
+    "predicted_zero_reference_pct": 0.05128205128205129
+  },
+  "nearest3": {
+    "exact_all_pct": 63.452508979568556,
+    "missing_pct": 5.014683999793531,
+    "mae": 0.08015963110347325,
+    "predicted_zero_reference_pct": 2.5804673858485736
+  },
+  "blend35_3": {
+    "exact_all_pct": 73.48899432522286,
+    "missing_pct": 0.5859878359754892,
+    "mae": 0.05795538180007668,
+    "predicted_zero_reference_pct": 5.13353191858361
+  },
+  "blend35_8": {
+    "exact_all_pct": 73.04858885032894,
+    "missing_pct": 1.689297122546555,
+    "mae": 0.05753020743458862,
+    "predicted_zero_reference_pct": 1.9587736018741513
+  },
+  "blend55_3": {
+    "exact_all_pct": 69.98770769359591,
+    "missing_pct": 0.9261227262399467,
+    "mae": 0.06664575251422421,
+    "predicted_zero_reference_pct": 4.958766859706382
+  },
+  "blend35_median3": {
+    "exact_all_pct": 74.97324693232657,
+    "missing_pct": 0.5859878359754892,
+    "mae": 0.06467542911952064,
+    "predicted_zero_reference_pct": 5.13353191858361
+  }
+}

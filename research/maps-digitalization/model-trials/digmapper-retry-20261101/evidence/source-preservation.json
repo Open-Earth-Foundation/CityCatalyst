@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-11-01T09:32:34.448833+00:00",
+  "files_checked": 102,
+  "all_unchanged": true,
+  "changed": [],
+  "scope": "All shared inputs; porto.py/richfield.py; 10 m script and existing benchmark; protocol; prior three reports/metrics; prior DIGMAPPER evidence and prepared input images.",
+  "previous_trial_checkouts_modified": false,
+  "gpu_used": false,
+  "gpu_lock_acquired": false,
+  "gpu_lock_path_exists_at_check": false
+}

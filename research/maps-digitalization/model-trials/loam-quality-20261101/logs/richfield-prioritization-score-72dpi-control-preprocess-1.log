@@ -1,0 +1,81 @@
+Parameter Settings: False True True True
+========================================== Setting of Metadata Preprocessing for Polygon Extraction ==========================================
+*Preprocessing output directory => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-prioritization-score-72dpi-control/"
+*Intput map tif for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-prioritization-score-72dpi-control.tif"
+*Intput map json for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-prioritization-score-72dpi-control.json"
+*Intput bound geojson for polygon extraction => "C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\inputs\richfield-prioritization-score-72dpi-control-bound.json"
+*Output for polygon extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-prioritization-score-72dpi-control/intermediate7_2/Output"
+ - Output for intermediate basemap => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-prioritization-score-72dpi-control/intermediate7"
+ - Output for intermediate extraction => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-prioritization-score-72dpi-control/intermediate7_2/(Map_Name)"
+ - Output for cropped map => "C:/Users/WBW/Documents/geo-map-recovery-20261028/model-trials/loam-quality-20261101/intermediate/richfield-prioritization-score-72dpi-control/intermediate6/cropped_map_mask" (Supporting point, line, polygon)
+
+*Adjustable (Set to "True" is highly recommended due to time complexity)
+ - Multiprocessing => True
+ - Simple preprocessing => True
+
+*Multiprocessing with 1 processes...
+==============================================================================================================================================
+
+=== Specify maps with polygon features ===
+As the format for gpkg is not determined, please provide json file in competition format to indicate the map key of a map at this stage.
+Will update to read the gpkg file once the format is determined...
+Total number of maps to extract:  1
+Title of maps:  ['richfield-prioritization-score-72dpi-control']
+Number of keys:  [4]
+
+=== Preparing basemaps with different representations / Checking area segmentation ===
+Working on map: richfield-prioritization-score-72dpi-control
+time check... segmentation_reading and representation_preprocessing:  0:00:01.510121
+
+=== Extract boundaries from the maps ===
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time checkpoint _vt0: 0:00:00.097492
+Working on map: richfield-prioritization-score-72dpi-control.tif
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time check... worker_boundary_extraction:  0:00:00.204451
+
+=== Extract auxiliary information from the maps ===
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time checkpoint _v0: 0:00:00.068385
+time checkpoint _v1: 0:00:00.109336
+time checkpoint _v2: 0:00:00.109336
+time check... worker_auxiliary_info:  0:00:00.110631
+
+=== Apply recoloring (color-set matching) for the maps ===
+Applying recoloring...
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time checkpoint _v0: 0:00:00.057005
+Add ocean color...
+total # of colors: 31
+total # of keys: 7
+processing _v0 >>> _v1 (finding the closest color)... : 0:00:00.762419
+Applying recoloring...
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time check... worker_recoloring:  0:00:02.635063
+
+=== Apply general metadata preprocessing for polygon extraction from the maps ===
+Working on map: richfield-prioritization-score-72dpi-control.tif
+time checkpoint _v0: 0:00:00.067110
+time checkpoint _v1: 0:00:00.650880
+processing _v0 >>> _v2 (legend 4/4)... : 0:00:00.690942
+time checkpoint _v2: 0:00:00.690942
+looping... (round: 1/1)... (legend: 0-4 /4)
+processing _v2 >>> _v3 (iteration 1/4)... (legend 4/4)... : 0:00:00.735838
+processing _v2 >>> _v3 (iteration 2/4)... (legend 4/4)... : 0:00:00.780933
+processing _v2 >>> _v3 (iteration 3/4)... (legend 4/4)... : 0:00:00.824319
+processing _v2 >>> _v3 (iteration 4/4)... (legend 4/4)... : 0:00:00.874965
+time checkpoint _v3: 0:00:00.874965
+processing _v3 >>> _v4 (iteration 1/2)... (legend 4/4)... : 0:00:00.980118
+processing _v3 >>> _v4 (iteration 2/2)... (legend 4/4)... : 0:00:01.553453
+ - dynamic update (4 / 4)
+time checkpoint _v4: 0:00:01.553453
+processing _v4 >>> _v5 (iteration 1/1)... (legend 4/4)... : 0:00:01.929518
+time checkpoint _v5: 0:00:01.931515
+no text-pattern matching with connected-component analysis is needed...
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:368: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+C:\Users\WBW\Documents\geo-map-recovery-20261028\model-trials\loam-quality-20261101\.venv\Lib\site-packages\rasterio\__init__.py:378: NotGeoreferencedWarning: The given matrix is equal to Affine.identity or its flipped counterpart. GDAL may ignore this matrix and save no geotransform without raising an error. This behavior is somewhat driver-specific.
+  dataset = writer(
+time checkpoint _v7: 0:00:02.060203
+time check... worker_main_component:  0:00:02.062516
+PREPROCESS_SUCCESS 6.564796200022101

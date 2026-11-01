@@ -1,0 +1,2739 @@
+{
+  "method": "UIUC Golden-Muscat public Darpa_Unet_Release UNet(6,2)",
+  "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+  "created_utc": "2026-10-30T12:41:31.044376+00:00",
+  "evaluation_contract": {
+    "porto": "250m grid, >=15 reference pixels, >=3 predicted pixels, literal .2-wide classes; missing unsuccessful",
+    "richfield": "source fill fidelity only, full GeoPDF frame at 2 px/point; recovered f and fs vectors, no independent hazard truth",
+    "reference_provenance": "same-author numeric PNG derivatives; not authenticated original TIFFs",
+    "blind_test": false,
+    "references_used_for_training_or_inference": false
+  },
+  "model_provenance": {
+    "model_revision": "7f6f6450108e43df83a1db2a51b6c7b893c65f11",
+    "pipeline_revision": "9d90bc78e86c5c33b539e47cb1c79c134573c287",
+    "checkpoint_url": "https://media.githubusercontent.com/media/xiyuez2/Darpa_Unet_Release/7f6f6450108e43df83a1db2a51b6c7b893c65f11/jaccard_index_value%3D0.9229.ckpt",
+    "checkpoint_sha256": "453a711c315ff456965d8bb383c07dd5b0038a3d50615b8dfe5bc55f48160973",
+    "device": "cpu",
+    "precision": "float32",
+    "cpu_threads": 4,
+    "batch_size": 1
+  },
+  "pipeline_scope": "CPU-adapted pretrained segmentation core with unchanged upstream UNet; not the stock CUDA CLI or automatic end-to-end georeferencing/legend/export pipeline. Public checkpoint identity is pinned; equivalence to golden_muscat-0.3.ckpt is unverified.",
+  "source_aids": {
+    "legend_crops": "manually located source swatch interiors",
+    "georeference": "reused source tick/GeoPDF transforms; not predicted by model",
+    "layout": "known document map frame for evaluation; whole input figure/page inferred"
+  },
+  "layers": {
+    "porto-heat": {
+      "status": "succeeded",
+      "page": 100,
+      "run": {
+        "id": "porto-heat",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T11:54:40.000988+00:00",
+        "completed_utc": "2026-10-30T12:00:52.058342+00:00",
+        "seconds": 372.03557519998867,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1758,
+          1213
+        ],
+        "model_forward_calls": 540,
+        "source_pixels": 2132454,
+        "unknown_pixels": 1397746,
+        "overlapping_positive_pixels": 199297,
+        "label_counts": {
+          "0": 1397746,
+          "1": 495379,
+          "2": 4905,
+          "3": 27971,
+          "4": 40494,
+          "5": 82575,
+          "6": 78927,
+          "7": 1279,
+          "8": 191,
+          "9": 2621,
+          "10": 366
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "2d936c9f694e9856129ee9e2771be232332aa1cbb96dbf83a62980d1b401e952"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 3809,
+          "common": 3515,
+          "missing": 294,
+          "correct": 2306,
+          "missing_pct": 7.71856130217905,
+          "exact_common_pct": 65.6045519203414,
+          "exact_all_pct": 60.54082436334996,
+          "bias": -0.025457198932345236,
+          "mae": 0.08251596956314522,
+          "sum_error": -89.4820542471935,
+          "sum_abs_error": 290.04363301445545,
+          "high_true_positive_cells": 4,
+          "high_reference_cells": 469,
+          "predicted_high_common_cells": 16,
+          "high_recall_pct": 0.8528784648187633,
+          "high_precision_common_pct": 25.0,
+          "predicted_cells": 4537,
+          "predicted_zero_reference_cells": 642,
+          "predicted_zero_reference_pct": 14.15031959444567,
+          "predicted_low_reference_cells": 380,
+          "predicted_low_reference_pct": 8.375578576151643,
+          "confusion_matrix_with_missing": [
+            [
+              46,
+              49,
+              12,
+              0,
+              0,
+              28
+            ],
+            [
+              33,
+              612,
+              326,
+              1,
+              1,
+              171
+            ],
+            [
+              5,
+              309,
+              1644,
+              8,
+              2,
+              93
+            ],
+            [
+              1,
+              37,
+              425,
+              4,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1997,
+          "common": 1866,
+          "missing": 131,
+          "correct": 1203,
+          "missing_pct": 6.559839759639459,
+          "exact_common_pct": 64.46945337620579,
+          "exact_all_pct": 60.24036054081122,
+          "bias": -0.01962337015253035,
+          "mae": 0.08541060118820491,
+          "sum_error": -36.61720870462163,
+          "sum_abs_error": 159.37618181719037,
+          "high_true_positive_cells": 2,
+          "high_reference_cells": 257,
+          "predicted_high_common_cells": 11,
+          "high_recall_pct": 0.7782101167315175,
+          "high_precision_common_pct": 18.181818181818183,
+          "predicted_cells": 2471,
+          "predicted_zero_reference_cells": 387,
+          "predicted_zero_reference_pct": 15.66167543504654,
+          "predicted_low_reference_cells": 218,
+          "predicted_low_reference_pct": 8.822339133953864,
+          "confusion_matrix_with_missing": [
+            [
+              13,
+              30,
+              9,
+              0,
+              0,
+              27
+            ],
+            [
+              6,
+              335,
+              204,
+              1,
+              1,
+              85
+            ],
+            [
+              1,
+              151,
+              853,
+              5,
+              2,
+              17
+            ],
+            [
+              0,
+              22,
+              231,
+              2,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 1238,
+          "common": 1121,
+          "missing": 117,
+          "correct": 786,
+          "missing_pct": 9.450726978998384,
+          "exact_common_pct": 70.11596788581623,
+          "exact_all_pct": 63.48949919224556,
+          "bias": -0.01950611936355252,
+          "mae": 0.07537154845873585,
+          "sum_error": -21.866359806542373,
+          "sum_abs_error": 84.49150582224289,
+          "high_true_positive_cells": 2,
+          "high_reference_cells": 131,
+          "predicted_high_common_cells": 4,
+          "high_recall_pct": 1.5267175572519085,
+          "high_precision_common_pct": 50.0,
+          "predicted_cells": 1453,
+          "predicted_zero_reference_cells": 190,
+          "predicted_zero_reference_pct": 13.076393668272539,
+          "predicted_low_reference_cells": 142,
+          "predicted_low_reference_pct": 9.772883688919476,
+          "confusion_matrix_with_missing": [
+            [
+              13,
+              9,
+              3,
+              0,
+              0,
+              1
+            ],
+            [
+              12,
+              151,
+              103,
+              0,
+              0,
+              55
+            ],
+            [
+              3,
+              74,
+              620,
+              2,
+              0,
+              61
+            ],
+            [
+              0,
+              1,
+              128,
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 574,
+          "common": 528,
+          "missing": 46,
+          "correct": 317,
+          "missing_pct": 8.013937282229966,
+          "exact_common_pct": 60.03787878787879,
+          "exact_all_pct": 55.22648083623693,
+          "bias": -0.05870925328793464,
+          "mae": 0.08745444199814813,
+          "sum_error": -30.998485736029487,
+          "sum_abs_error": 46.17594537502221,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 81,
+          "predicted_high_common_cells": 1,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": 0.0,
+          "predicted_cells": 613,
+          "predicted_zero_reference_cells": 65,
+          "predicted_zero_reference_pct": 10.603588907014682,
+          "predicted_low_reference_cells": 20,
+          "predicted_low_reference_pct": 3.2626427406199023,
+          "confusion_matrix_with_missing": [
+            [
+              20,
+              10,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              15,
+              126,
+              19,
+              0,
+              0,
+              31
+            ],
+            [
+              1,
+              84,
+              171,
+              1,
+              0,
+              15
+            ],
+            [
+              1,
+              14,
+              66,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 498062,
+      "municipal_recognized_pixels": 243577
+    },
+    "porto-flood": {
+      "status": "succeeded",
+      "page": 85,
+      "run": {
+        "id": "porto-flood",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:00:52.286972+00:00",
+        "completed_utc": "2026-10-30T12:06:57.932111+00:00",
+        "seconds": 365.6292766999686,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1668,
+          1155
+        ],
+        "model_forward_calls": 540,
+        "source_pixels": 1926540,
+        "unknown_pixels": 1350725,
+        "overlapping_positive_pixels": 51847,
+        "label_counts": {
+          "0": 1350725,
+          "1": 484358,
+          "2": 6811,
+          "3": 22817,
+          "4": 10054,
+          "5": 29205,
+          "6": 19312,
+          "7": 296,
+          "8": 254,
+          "9": 2663,
+          "10": 45
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "5cc026b857780967592a8453bdf638c34c4482793b2ef65b783ecc9e52cb64ea"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 1805,
+          "common": 1379,
+          "missing": 426,
+          "correct": 814,
+          "missing_pct": 23.601108033240997,
+          "exact_common_pct": 59.028281363306746,
+          "exact_all_pct": 45.096952908587255,
+          "bias": -0.10593468887599139,
+          "mae": 0.12304301695865709,
+          "sum_error": -146.08393595999212,
+          "sum_abs_error": 169.67632038598813,
+          "high_true_positive_cells": 14,
+          "high_reference_cells": 371,
+          "predicted_high_common_cells": 18,
+          "high_recall_pct": 3.7735849056603774,
+          "high_precision_common_pct": 77.77777777777777,
+          "predicted_cells": 2596,
+          "predicted_zero_reference_cells": 883,
+          "predicted_zero_reference_pct": 34.01386748844376,
+          "predicted_low_reference_cells": 334,
+          "predicted_low_reference_pct": 12.865947611710324,
+          "confusion_matrix_with_missing": [
+            [
+              21,
+              9,
+              0,
+              0,
+              0,
+              20
+            ],
+            [
+              17,
+              292,
+              20,
+              0,
+              0,
+              78
+            ],
+            [
+              47,
+              212,
+              492,
+              3,
+              1,
+              222
+            ],
+            [
+              26,
+              62,
+              163,
+              9,
+              5,
+              106
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1008,
+          "common": 816,
+          "missing": 192,
+          "correct": 483,
+          "missing_pct": 19.047619047619047,
+          "exact_common_pct": 59.19117647058823,
+          "exact_all_pct": 47.916666666666664,
+          "bias": -0.10425110690701539,
+          "mae": 0.12332988591935501,
+          "sum_error": -85.06890323612456,
+          "sum_abs_error": 100.63718691019369,
+          "high_true_positive_cells": 9,
+          "high_reference_cells": 197,
+          "predicted_high_common_cells": 9,
+          "high_recall_pct": 4.568527918781726,
+          "high_precision_common_pct": 100.0,
+          "predicted_cells": 1558,
+          "predicted_zero_reference_cells": 546,
+          "predicted_zero_reference_pct": 35.04492939666239,
+          "predicted_low_reference_cells": 196,
+          "predicted_low_reference_pct": 12.58023106546855,
+          "confusion_matrix_with_missing": [
+            [
+              10,
+              2,
+              0,
+              0,
+              0,
+              19
+            ],
+            [
+              14,
+              169,
+              16,
+              0,
+              0,
+              57
+            ],
+            [
+              30,
+              115,
+              299,
+              0,
+              0,
+              80
+            ],
+            [
+              18,
+              31,
+              103,
+              5,
+              4,
+              36
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 514,
+          "common": 341,
+          "missing": 173,
+          "correct": 207,
+          "missing_pct": 33.65758754863813,
+          "exact_common_pct": 60.70381231671554,
+          "exact_all_pct": 40.27237354085603,
+          "bias": -0.1115414086414258,
+          "mae": 0.12947662682209377,
+          "sum_error": -38.0356203467262,
+          "sum_abs_error": 44.15152974633397,
+          "high_true_positive_cells": 5,
+          "high_reference_cells": 131,
+          "predicted_high_common_cells": 9,
+          "high_recall_pct": 3.816793893129771,
+          "high_precision_common_pct": 55.55555555555556,
+          "predicted_cells": 621,
+          "predicted_zero_reference_cells": 187,
+          "predicted_zero_reference_pct": 30.112721417069242,
+          "predicted_low_reference_cells": 93,
+          "predicted_low_reference_pct": 14.97584541062802,
+          "confusion_matrix_with_missing": [
+            [
+              0,
+              2,
+              0,
+              0,
+              0,
+              1
+            ],
+            [
+              2,
+              46,
+              4,
+              0,
+              0,
+              20
+            ],
+            [
+              15,
+              33,
+              157,
+              3,
+              1,
+              99
+            ],
+            [
+              4,
+              18,
+              51,
+              4,
+              1,
+              53
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 283,
+          "common": 222,
+          "missing": 61,
+          "correct": 124,
+          "missing_pct": 21.554770318021202,
+          "exact_common_pct": 55.85585585585586,
+          "exact_all_pct": 43.81625441696113,
+          "bias": -0.10351086656369982,
+          "mae": 0.11210632310567782,
+          "sum_error": -22.979412377141358,
+          "sum_abs_error": 24.887603729460476,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 43,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 417,
+          "predicted_zero_reference_cells": 150,
+          "predicted_zero_reference_pct": 35.97122302158273,
+          "predicted_low_reference_cells": 45,
+          "predicted_low_reference_pct": 10.79136690647482,
+          "confusion_matrix_with_missing": [
+            [
+              11,
+              5,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              77,
+              0,
+              0,
+              0,
+              1
+            ],
+            [
+              2,
+              64,
+              36,
+              0,
+              0,
+              43
+            ],
+            [
+              4,
+              13,
+              9,
+              0,
+              0,
+              17
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 450053,
+      "municipal_recognized_pixels": 100361
+    },
+    "porto-landslide": {
+      "status": "succeeded",
+      "page": 93,
+      "run": {
+        "id": "porto-landslide",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:06:58.149222+00:00",
+        "completed_utc": "2026-10-30T12:13:02.906289+00:00",
+        "seconds": 364.74212419998366,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1758,
+          1213
+        ],
+        "model_forward_calls": 540,
+        "source_pixels": 2132454,
+        "unknown_pixels": 1390297,
+        "overlapping_positive_pixels": 201422,
+        "label_counts": {
+          "0": 1390297,
+          "1": 500285,
+          "2": 8870,
+          "3": 17859,
+          "4": 48473,
+          "5": 92109,
+          "6": 66653,
+          "7": 4580,
+          "8": 191,
+          "9": 2771,
+          "10": 366
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "4e4de1295a437d45a235b7b3abfe88e6dbe6e73d3c83ea45201a28f16c897a61"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 3806,
+          "common": 3531,
+          "missing": 275,
+          "correct": 2255,
+          "missing_pct": 7.22543352601156,
+          "exact_common_pct": 63.862928348909655,
+          "exact_all_pct": 59.2485549132948,
+          "bias": -0.03947107425179765,
+          "mae": 0.08638429667886892,
+          "sum_error": -139.3723631830975,
+          "sum_abs_error": 305.0229515730862,
+          "high_true_positive_cells": 26,
+          "high_reference_cells": 405,
+          "predicted_high_common_cells": 61,
+          "high_recall_pct": 6.419753086419753,
+          "high_precision_common_pct": 42.622950819672134,
+          "predicted_cells": 4605,
+          "predicted_zero_reference_cells": 689,
+          "predicted_zero_reference_pct": 14.96199782844734,
+          "predicted_low_reference_cells": 385,
+          "predicted_low_reference_pct": 8.360477741585234,
+          "confusion_matrix_with_missing": [
+            [
+              115,
+              33,
+              12,
+              0,
+              0,
+              21
+            ],
+            [
+              51,
+              471,
+              287,
+              4,
+              0,
+              107
+            ],
+            [
+              25,
+              460,
+              1643,
+              30,
+              1,
+              141
+            ],
+            [
+              0,
+              25,
+              348,
+              26,
+              0,
+              6
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1994,
+          "common": 1870,
+          "missing": 124,
+          "correct": 1213,
+          "missing_pct": 6.218655967903711,
+          "exact_common_pct": 64.8663101604278,
+          "exact_all_pct": 60.83249749247743,
+          "bias": -0.03485178367992523,
+          "mae": 0.08593498103241194,
+          "sum_error": -65.17283548146018,
+          "sum_abs_error": 160.69841453061034,
+          "high_true_positive_cells": 11,
+          "high_reference_cells": 203,
+          "predicted_high_common_cells": 24,
+          "high_recall_pct": 5.41871921182266,
+          "high_precision_common_pct": 45.833333333333336,
+          "predicted_cells": 2481,
+          "predicted_zero_reference_cells": 400,
+          "predicted_zero_reference_pct": 16.12253123740427,
+          "predicted_low_reference_cells": 211,
+          "predicted_low_reference_pct": 8.504635227730754,
+          "confusion_matrix_with_missing": [
+            [
+              60,
+              11,
+              3,
+              0,
+              0,
+              21
+            ],
+            [
+              24,
+              247,
+              185,
+              3,
+              0,
+              51
+            ],
+            [
+              14,
+              218,
+              895,
+              9,
+              1,
+              49
+            ],
+            [
+              0,
+              15,
+              174,
+              11,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 1238,
+          "common": 1128,
+          "missing": 110,
+          "correct": 703,
+          "missing_pct": 8.88529886914378,
+          "exact_common_pct": 62.322695035460995,
+          "exact_all_pct": 56.78513731825525,
+          "bias": -0.039251376994089676,
+          "mae": 0.08815728726151106,
+          "sum_error": -44.27555324933316,
+          "sum_abs_error": 99.44142003098447,
+          "high_true_positive_cells": 15,
+          "high_reference_cells": 141,
+          "predicted_high_common_cells": 37,
+          "high_recall_pct": 10.638297872340425,
+          "high_precision_common_pct": 40.54054054054054,
+          "predicted_cells": 1504,
+          "predicted_zero_reference_cells": 223,
+          "predicted_zero_reference_pct": 14.827127659574469,
+          "predicted_low_reference_cells": 153,
+          "predicted_low_reference_pct": 10.172872340425531,
+          "confusion_matrix_with_missing": [
+            [
+              25,
+              12,
+              9,
+              0,
+              0,
+              0
+            ],
+            [
+              20,
+              97,
+              77,
+              1,
+              0,
+              28
+            ],
+            [
+              11,
+              151,
+              566,
+              21,
+              0,
+              79
+            ],
+            [
+              0,
+              6,
+              117,
+              15,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 574,
+          "common": 533,
+          "missing": 41,
+          "correct": 339,
+          "missing_pct": 7.142857142857143,
+          "exact_common_pct": 63.60225140712946,
+          "exact_all_pct": 59.059233449477354,
+          "bias": -0.05614254118631171,
+          "mae": 0.08420847469322965,
+          "sum_error": -29.923974452304144,
+          "sum_abs_error": 44.8831170114914,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 61,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 620,
+          "predicted_zero_reference_cells": 66,
+          "predicted_zero_reference_pct": 10.64516129032258,
+          "predicted_low_reference_cells": 21,
+          "predicted_low_reference_pct": 3.3870967741935485,
+          "confusion_matrix_with_missing": [
+            [
+              30,
+              10,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              7,
+              127,
+              25,
+              0,
+              0,
+              28
+            ],
+            [
+              0,
+              91,
+              182,
+              0,
+              0,
+              13
+            ],
+            [
+              0,
+              4,
+              57,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 498062,
+      "municipal_recognized_pixels": 249840
+    },
+    "porto-drought": {
+      "status": "succeeded",
+      "page": 106,
+      "run": {
+        "id": "porto-drought",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:13:03.111678+00:00",
+        "completed_utc": "2026-10-30T12:19:48.213822+00:00",
+        "seconds": 405.0861767999595,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1758,
+          1218
+        ],
+        "model_forward_calls": 630,
+        "source_pixels": 2141244,
+        "unknown_pixels": 1398653,
+        "overlapping_positive_pixels": 204406,
+        "label_counts": {
+          "0": 1398653,
+          "1": 499289,
+          "2": 7825,
+          "3": 28482,
+          "4": 54052,
+          "5": 123559,
+          "6": 26600,
+          "7": 101,
+          "8": 112,
+          "9": 2301,
+          "10": 270
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "d25a5f03939a3446547ce912eac941b0a31d1a0c084906470112adcbfacafb24"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 3744,
+          "common": 3488,
+          "missing": 256,
+          "correct": 2488,
+          "missing_pct": 6.837606837606837,
+          "exact_common_pct": 71.3302752293578,
+          "exact_all_pct": 66.45299145299145,
+          "bias": -0.02129157489129991,
+          "mae": 0.06784248022950048,
+          "sum_error": -74.26501322085409,
+          "sum_abs_error": 236.6345710404977,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 27,
+          "predicted_high_common_cells": 1,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": 0.0,
+          "predicted_cells": 4574,
+          "predicted_zero_reference_cells": 724,
+          "predicted_zero_reference_pct": 15.828596414516834,
+          "predicted_low_reference_cells": 362,
+          "predicted_low_reference_pct": 7.914298207258417,
+          "confusion_matrix_with_missing": [
+            [
+              76,
+              47,
+              12,
+              0,
+              0,
+              20
+            ],
+            [
+              24,
+              762,
+              363,
+              1,
+              0,
+              79
+            ],
+            [
+              26,
+              503,
+              1650,
+              0,
+              0,
+              154
+            ],
+            [
+              0,
+              8,
+              16,
+              0,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1957,
+          "common": 1858,
+          "missing": 99,
+          "correct": 1339,
+          "missing_pct": 5.0587634133878385,
+          "exact_common_pct": 72.06673842841765,
+          "exact_all_pct": 68.42105263157895,
+          "bias": -0.015306119839228536,
+          "mae": 0.06700265623233694,
+          "sum_error": -28.43877066128662,
+          "sum_abs_error": 124.49093527968202,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 11,
+          "predicted_high_common_cells": 1,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": 0.0,
+          "predicted_cells": 2517,
+          "predicted_zero_reference_cells": 455,
+          "predicted_zero_reference_pct": 18.077075883988876,
+          "predicted_low_reference_cells": 204,
+          "predicted_low_reference_pct": 8.104886769964244,
+          "confusion_matrix_with_missing": [
+            [
+              44,
+              26,
+              5,
+              0,
+              0,
+              20
+            ],
+            [
+              16,
+              398,
+              210,
+              1,
+              0,
+              39
+            ],
+            [
+              7,
+              244,
+              897,
+              0,
+              0,
+              39
+            ],
+            [
+              0,
+              2,
+              8,
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 1214,
+          "common": 1107,
+          "missing": 107,
+          "correct": 810,
+          "missing_pct": 8.813838550247118,
+          "exact_common_pct": 73.17073170731707,
+          "exact_all_pct": 66.72158154859967,
+          "bias": -0.01915575070587051,
+          "mae": 0.06592962480328489,
+          "sum_error": -21.205416031398656,
+          "sum_abs_error": 72.98409465723637,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 5,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 1443,
+          "predicted_zero_reference_cells": 196,
+          "predicted_zero_reference_pct": 13.582813582813582,
+          "predicted_low_reference_cells": 140,
+          "predicted_low_reference_pct": 9.702009702009702,
+          "confusion_matrix_with_missing": [
+            [
+              2,
+              9,
+              7,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              206,
+              124,
+              0,
+              0,
+              27
+            ],
+            [
+              15,
+              137,
+              602,
+              0,
+              0,
+              80
+            ],
+            [
+              0,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 573,
+          "common": 523,
+          "missing": 50,
+          "correct": 339,
+          "missing_pct": 8.726003490401396,
+          "exact_common_pct": 64.81835564053537,
+          "exact_all_pct": 59.16230366492147,
+          "bias": -0.04707615014946237,
+          "mae": 0.07487483958619366,
+          "sum_error": -24.62082652816882,
+          "sum_abs_error": 39.159541103579286,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 11,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 614,
+          "predicted_zero_reference_cells": 73,
+          "predicted_zero_reference_pct": 11.889250814332248,
+          "predicted_low_reference_cells": 18,
+          "predicted_low_reference_pct": 2.9315960912052117,
+          "confusion_matrix_with_missing": [
+            [
+              30,
+              12,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              8,
+              158,
+              29,
+              0,
+              0,
+              13
+            ],
+            [
+              4,
+              122,
+              151,
+              0,
+              0,
+              35
+            ],
+            [
+              0,
+              6,
+              3,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 500478,
+      "municipal_recognized_pixels": 248367
+    },
+    "porto-arbovirus": {
+      "status": "succeeded",
+      "page": 111,
+      "run": {
+        "id": "porto-arbovirus",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:19:48.424599+00:00",
+        "completed_utc": "2026-10-30T12:25:42.106277+00:00",
+        "seconds": 353.6708472999744,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1758,
+          1213
+        ],
+        "model_forward_calls": 540,
+        "source_pixels": 2132454,
+        "unknown_pixels": 1391125,
+        "overlapping_positive_pixels": 198529,
+        "label_counts": {
+          "0": 1391125,
+          "1": 489926,
+          "2": 4007,
+          "3": 30450,
+          "4": 41016,
+          "5": 117359,
+          "6": 55594,
+          "7": 76,
+          "8": 191,
+          "9": 2344,
+          "10": 366
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "6c63a83cc3f8641afa024861ff9e625913dc1a8e0a61d860854beb030a7b3bc7"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 3809,
+          "common": 3554,
+          "missing": 255,
+          "correct": 2556,
+          "missing_pct": 6.694670517196115,
+          "exact_common_pct": 71.9189645469893,
+          "exact_all_pct": 67.1042268311893,
+          "bias": -0.024392827995360026,
+          "mae": 0.06976310752739634,
+          "sum_error": -86.69211069550953,
+          "sum_abs_error": 247.93808415236657,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 136,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 4644,
+          "predicted_zero_reference_cells": 691,
+          "predicted_zero_reference_pct": 14.879414298018949,
+          "predicted_low_reference_cells": 399,
+          "predicted_low_reference_pct": 8.591731266149871,
+          "confusion_matrix_with_missing": [
+            [
+              22,
+              32,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              22,
+              582,
+              361,
+              0,
+              0,
+              68
+            ],
+            [
+              11,
+              444,
+              1952,
+              0,
+              0,
+              178
+            ],
+            [
+              1,
+              9,
+              117,
+              0,
+              0,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1997,
+          "common": 1886,
+          "missing": 111,
+          "correct": 1342,
+          "missing_pct": 5.558337506259389,
+          "exact_common_pct": 71.1558854718982,
+          "exact_all_pct": 67.2008012018027,
+          "bias": -0.018550520383275534,
+          "mae": 0.07120586712580304,
+          "sum_error": -34.98628144285766,
+          "sum_abs_error": 134.29426539926453,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 63,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 2539,
+          "predicted_zero_reference_cells": 422,
+          "predicted_zero_reference_pct": 16.62071681764474,
+          "predicted_low_reference_cells": 231,
+          "predicted_low_reference_pct": 9.09807010634108,
+          "confusion_matrix_with_missing": [
+            [
+              6,
+              10,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              9,
+              315,
+              249,
+              0,
+              0,
+              45
+            ],
+            [
+              3,
+              213,
+              1021,
+              0,
+              0,
+              63
+            ],
+            [
+              0,
+              0,
+              60,
+              0,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 1238,
+          "common": 1136,
+          "missing": 102,
+          "correct": 867,
+          "missing_pct": 8.239095315024233,
+          "exact_common_pct": 76.32042253521126,
+          "exact_all_pct": 70.03231017770598,
+          "bias": -0.020744679368841987,
+          "mae": 0.061744752027940275,
+          "sum_error": -23.565955763004496,
+          "sum_abs_error": 70.14203830374015,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 47,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 1483,
+          "predicted_zero_reference_cells": 200,
+          "predicted_zero_reference_pct": 13.486176668914363,
+          "predicted_low_reference_cells": 147,
+          "predicted_low_reference_pct": 9.912339851652057,
+          "confusion_matrix_with_missing": [
+            [
+              0,
+              5,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              131,
+              83,
+              0,
+              0,
+              15
+            ],
+            [
+              0,
+              137,
+              736,
+              0,
+              0,
+              83
+            ],
+            [
+              0,
+              2,
+              41,
+              0,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 574,
+          "common": 532,
+          "missing": 42,
+          "correct": 347,
+          "missing_pct": 7.317073170731708,
+          "exact_common_pct": 65.22556390977444,
+          "exact_all_pct": 60.45296167247387,
+          "bias": -0.05289449904069055,
+          "mae": 0.08177026400256,
+          "sum_error": -28.139873489647375,
+          "sum_abs_error": 43.501780449361924,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 26,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 622,
+          "predicted_zero_reference_cells": 69,
+          "predicted_zero_reference_pct": 11.093247588424438,
+          "predicted_low_reference_cells": 21,
+          "predicted_low_reference_pct": 3.3762057877813505,
+          "confusion_matrix_with_missing": [
+            [
+              16,
+              17,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              13,
+              136,
+              29,
+              0,
+              0,
+              8
+            ],
+            [
+              8,
+              94,
+              195,
+              0,
+              0,
+              32
+            ],
+            [
+              1,
+              7,
+              16,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 498062,
+      "municipal_recognized_pixels": 253011
+    },
+    "porto-storm": {
+      "status": "succeeded",
+      "page": 117,
+      "run": {
+        "id": "porto-storm",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:25:42.325792+00:00",
+        "completed_utc": "2026-10-30T12:31:40.047999+00:00",
+        "seconds": 357.7121315000113,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1758,
+          1213
+        ],
+        "model_forward_calls": 540,
+        "source_pixels": 2132454,
+        "unknown_pixels": 1399893,
+        "overlapping_positive_pixels": 194560,
+        "label_counts": {
+          "0": 1399893,
+          "1": 494727,
+          "2": 3649,
+          "3": 20166,
+          "4": 42387,
+          "5": 85583,
+          "6": 75960,
+          "7": 6182,
+          "8": 191,
+          "9": 3350,
+          "10": 366
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "dcbc99127da4997a7b0e61509a0a0f041be06582c3f9f9d73b2e85400fa4da1f"
+      },
+      "metrics": {
+        "all": {
+          "eligible": 3809,
+          "common": 3509,
+          "missing": 300,
+          "correct": 2253,
+          "missing_pct": 7.876082961407193,
+          "exact_common_pct": 64.20632658877173,
+          "exact_all_pct": 59.149383040168026,
+          "bias": -0.04101132024310217,
+          "mae": 0.08857232158989499,
+          "sum_error": -143.9087227330455,
+          "sum_abs_error": 310.80027645894154,
+          "high_true_positive_cells": 44,
+          "high_reference_cells": 589,
+          "predicted_high_common_cells": 90,
+          "high_recall_pct": 7.470288624787776,
+          "high_precision_common_pct": 48.888888888888886,
+          "predicted_cells": 4522,
+          "predicted_zero_reference_cells": 642,
+          "predicted_zero_reference_pct": 14.197257850508624,
+          "predicted_low_reference_cells": 371,
+          "predicted_low_reference_pct": 8.204334365325078,
+          "confusion_matrix_with_missing": [
+            [
+              43,
+              36,
+              14,
+              0,
+              0,
+              20
+            ],
+            [
+              35,
+              510,
+              227,
+              5,
+              0,
+              65
+            ],
+            [
+              7,
+              357,
+              1657,
+              36,
+              5,
+              203
+            ],
+            [
+              1,
+              61,
+              471,
+              43,
+              1,
+              12
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "development": {
+          "eligible": 1997,
+          "common": 1858,
+          "missing": 139,
+          "correct": 1254,
+          "missing_pct": 6.9604406609914875,
+          "exact_common_pct": 67.491926803014,
+          "exact_all_pct": 62.7941912869304,
+          "bias": -0.029127986333935818,
+          "mae": 0.08434851929704675,
+          "sum_error": -54.11979860845275,
+          "sum_abs_error": 156.71954885391284,
+          "high_true_positive_cells": 27,
+          "high_reference_cells": 305,
+          "predicted_high_common_cells": 50,
+          "high_recall_pct": 8.852459016393443,
+          "high_precision_common_pct": 54.0,
+          "predicted_cells": 2451,
+          "predicted_zero_reference_cells": 384,
+          "predicted_zero_reference_pct": 15.667074663402692,
+          "predicted_low_reference_cells": 209,
+          "predicted_low_reference_pct": 8.527131782945736,
+          "confusion_matrix_with_missing": [
+            [
+              15,
+              12,
+              4,
+              0,
+              0,
+              20
+            ],
+            [
+              8,
+              289,
+              155,
+              3,
+              0,
+              45
+            ],
+            [
+              1,
+              128,
+              924,
+              15,
+              5,
+              68
+            ],
+            [
+              0,
+              39,
+              233,
+              26,
+              1,
+              6
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "validation": {
+          "eligible": 1238,
+          "common": 1124,
+          "missing": 114,
+          "correct": 695,
+          "missing_pct": 9.208400646203554,
+          "exact_common_pct": 61.83274021352313,
+          "exact_all_pct": 56.1389337641357,
+          "bias": -0.04484565943410347,
+          "mae": 0.09123508992906859,
+          "sum_error": -50.4065212039323,
+          "sum_abs_error": 102.5482410802731,
+          "high_true_positive_cells": 17,
+          "high_reference_cells": 194,
+          "predicted_high_common_cells": 40,
+          "high_recall_pct": 8.762886597938145,
+          "high_precision_common_pct": 42.5,
+          "predicted_cells": 1463,
+          "predicted_zero_reference_cells": 192,
+          "predicted_zero_reference_pct": 13.123718386876282,
+          "predicted_low_reference_cells": 147,
+          "predicted_low_reference_pct": 10.047846889952153,
+          "confusion_matrix_with_missing": [
+            [
+              13,
+              11,
+              10,
+              0,
+              0,
+              0
+            ],
+            [
+              18,
+              102,
+              55,
+              2,
+              0,
+              18
+            ],
+            [
+              6,
+              133,
+              563,
+              21,
+              0,
+              92
+            ],
+            [
+              0,
+              6,
+              167,
+              17,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        },
+        "test": {
+          "eligible": 574,
+          "common": 527,
+          "missing": 47,
+          "correct": 304,
+          "missing_pct": 8.18815331010453,
+          "exact_common_pct": 57.685009487666036,
+          "exact_all_pct": 52.961672473867594,
+          "bias": -0.0747294173067561,
+          "mae": 0.09778460441130105,
+          "sum_error": -39.38240292066046,
+          "sum_abs_error": 51.532486524755655,
+          "high_true_positive_cells": 0,
+          "high_reference_cells": 90,
+          "predicted_high_common_cells": 0,
+          "high_recall_pct": 0.0,
+          "high_precision_common_pct": null,
+          "predicted_cells": 608,
+          "predicted_zero_reference_cells": 66,
+          "predicted_zero_reference_pct": 10.855263157894736,
+          "predicted_low_reference_cells": 15,
+          "predicted_low_reference_pct": 2.4671052631578947,
+          "confusion_matrix_with_missing": [
+            [
+              15,
+              13,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              9,
+              119,
+              17,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              96,
+              170,
+              0,
+              0,
+              43
+            ],
+            [
+              1,
+              16,
+              71,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_axes": {
+            "rows": "reference classes 0,1,2,3,4",
+            "columns": "predicted classes 0,1,2,3,4,missing"
+          }
+        }
+      },
+      "municipal_source_pixels": 498062,
+      "municipal_recognized_pixels": 243819
+    },
+    "richfield-inundation-100yr": {
+      "status": "succeeded",
+      "page": 17,
+      "run": {
+        "id": "richfield-inundation-100yr",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:31:40.292689+00:00",
+        "completed_utc": "2026-10-30T12:32:47.407708+00:00",
+        "seconds": 67.1137643000111,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1584,
+          2448
+        ],
+        "model_forward_calls": 104,
+        "source_pixels": 3877632,
+        "unknown_pixels": 3869598,
+        "overlapping_positive_pixels": 0,
+        "label_counts": {
+          "0": 3869598,
+          "1": 8034
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "eed84e23db8f9cc6cf99b6f582593252c8b427364632410420394f958f1aa3d2"
+      },
+      "classes": {
+        "100yr": {
+          "true_positive_pixels": 4776,
+          "false_positive_pixels": 2435,
+          "false_negative_pixels": 275235,
+          "predicted_pixels": 7211,
+          "reference_pixels": 280011,
+          "union_pixels": 282446,
+          "iou": 0.016909426934706102,
+          "precision": 0.6623214533351823,
+          "recall": 0.017056472781426444,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 1597,
+            "reference_edge_pixels": 56372,
+            "mean_symmetric_m": 625.8597770503691,
+            "median_m": 640.8224561493591,
+            "p95_m": 1202.332706727125,
+            "max_m": 1519.7003317106964,
+            "prediction_to_reference_mean_m": 45.44505520428574,
+            "reference_to_prediction_mean_m": 642.3027329644434,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 1.7043592264831202
+          }
+        }
+      },
+      "foreground_union": {
+        "true_positive_pixels": 4776,
+        "false_positive_pixels": 2435,
+        "false_negative_pixels": 275235,
+        "predicted_pixels": 7211,
+        "reference_pixels": 280011,
+        "union_pixels": 282446,
+        "iou": 0.016909426934706102,
+        "precision": 0.6623214533351823,
+        "recall": 0.017056472781426444,
+        "edge_errors": {
+          "status": "succeeded",
+          "predicted_edge_pixels": 1597,
+          "reference_edge_pixels": 56372,
+          "mean_symmetric_m": 625.8597770503691,
+          "median_m": 640.8224561493591,
+          "p95_m": 1202.332706727125,
+          "max_m": 1519.7003317106964,
+          "prediction_to_reference_mean_m": 45.44505520428574,
+          "reference_to_prediction_mean_m": 642.3027329644434,
+          "tolerance_2_pixels_m": 7.62028580351764,
+          "symmetric_within_2_pixels_pct": 1.7043592264831202
+        }
+      },
+      "macro_class_iou": 0.016909426934706102,
+      "evaluated_pixels": 3004344,
+      "unknown_frame_pixels": 2997133,
+      "source_vector_sha256": "f2b04dd159a9690a33ae5dadae099553445ab3a70f4d5faad8244669af69d9ed",
+      "source_path_counts": {
+        "f": 746
+      }
+    },
+    "richfield-inundation-2yr": {
+      "status": "succeeded",
+      "page": 15,
+      "run": {
+        "id": "richfield-inundation-2yr",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:32:47.584978+00:00",
+        "completed_utc": "2026-10-30T12:34:05.482596+00:00",
+        "seconds": 77.89503000001423,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1584,
+          2448
+        ],
+        "model_forward_calls": 104,
+        "source_pixels": 3877632,
+        "unknown_pixels": 3150615,
+        "overlapping_positive_pixels": 0,
+        "label_counts": {
+          "0": 3150615,
+          "1": 727017
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "ec6cca66b486a386f3881b933b7477cccd1b26fec14ac1758cda09affbb9738d"
+      },
+      "classes": {
+        "2yr": {
+          "true_positive_pixels": 109425,
+          "false_positive_pixels": 555616,
+          "false_negative_pixels": 14049,
+          "predicted_pixels": 665041,
+          "reference_pixels": 123474,
+          "union_pixels": 679090,
+          "iou": 0.16113475386178563,
+          "precision": 0.16453872768746589,
+          "recall": 0.8862189610768259,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 39928,
+            "reference_edge_pixels": 26729,
+            "mean_symmetric_m": 96.80164420822331,
+            "median_m": 80.73126568775176,
+            "p95_m": 243.9635416967004,
+            "max_m": 841.6391571220175,
+            "prediction_to_reference_mean_m": 92.84009785463624,
+            "reference_to_prediction_mean_m": 102.719434728109,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 7.297058073420646
+          }
+        }
+      },
+      "foreground_union": {
+        "true_positive_pixels": 109425,
+        "false_positive_pixels": 555616,
+        "false_negative_pixels": 14049,
+        "predicted_pixels": 665041,
+        "reference_pixels": 123474,
+        "union_pixels": 679090,
+        "iou": 0.16113475386178563,
+        "precision": 0.16453872768746589,
+        "recall": 0.8862189610768259,
+        "edge_errors": {
+          "status": "succeeded",
+          "predicted_edge_pixels": 39928,
+          "reference_edge_pixels": 26729,
+          "mean_symmetric_m": 96.80164420822331,
+          "median_m": 80.73126568775176,
+          "p95_m": 243.9635416967004,
+          "max_m": 841.6391571220175,
+          "prediction_to_reference_mean_m": 92.84009785463624,
+          "reference_to_prediction_mean_m": 102.719434728109,
+          "tolerance_2_pixels_m": 7.62028580351764,
+          "symmetric_within_2_pixels_pct": 7.297058073420646
+        }
+      },
+      "macro_class_iou": 0.16113475386178563,
+      "evaluated_pixels": 3004344,
+      "unknown_frame_pixels": 2339303,
+      "source_vector_sha256": "a6a55fd770d221cb50002cc0613f990681920e9eeaf793ba6d83ce2e70743ce3",
+      "source_path_counts": {
+        "f": 378
+      }
+    },
+    "richfield-inundation-10yr": {
+      "status": "succeeded",
+      "page": 16,
+      "run": {
+        "id": "richfield-inundation-10yr",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:34:05.703320+00:00",
+        "completed_utc": "2026-10-30T12:35:14.729358+00:00",
+        "seconds": 69.0229616999859,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1584,
+          2448
+        ],
+        "model_forward_calls": 104,
+        "source_pixels": 3877632,
+        "unknown_pixels": 3823809,
+        "overlapping_positive_pixels": 0,
+        "label_counts": {
+          "0": 3823809,
+          "1": 53823
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "4ca1bcd7dfe7d67fc148ef9aebdcaee07bc6652f6f0226c34e8e4819b6fd2ac3"
+      },
+      "classes": {
+        "10yr": {
+          "true_positive_pixels": 45039,
+          "false_positive_pixels": 8049,
+          "false_negative_pixels": 127867,
+          "predicted_pixels": 53088,
+          "reference_pixels": 172906,
+          "union_pixels": 180955,
+          "iou": 0.24889613439805477,
+          "precision": 0.8483838155515371,
+          "recall": 0.26048257434675487,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 5761,
+            "reference_edge_pixels": 34530,
+            "mean_symmetric_m": 235.66979007543287,
+            "median_m": 140.96789492455923,
+            "p95_m": 763.4810991382049,
+            "max_m": 1159.0327422159717,
+            "prediction_to_reference_mean_m": 23.75938440054905,
+            "reference_to_prediction_mean_m": 271.02501298574293,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 12.213645727333649
+          }
+        }
+      },
+      "foreground_union": {
+        "true_positive_pixels": 45039,
+        "false_positive_pixels": 8049,
+        "false_negative_pixels": 127867,
+        "predicted_pixels": 53088,
+        "reference_pixels": 172906,
+        "union_pixels": 180955,
+        "iou": 0.24889613439805477,
+        "precision": 0.8483838155515371,
+        "recall": 0.26048257434675487,
+        "edge_errors": {
+          "status": "succeeded",
+          "predicted_edge_pixels": 5761,
+          "reference_edge_pixels": 34530,
+          "mean_symmetric_m": 235.66979007543287,
+          "median_m": 140.96789492455923,
+          "p95_m": 763.4810991382049,
+          "max_m": 1159.0327422159717,
+          "prediction_to_reference_mean_m": 23.75938440054905,
+          "reference_to_prediction_mean_m": 271.02501298574293,
+          "tolerance_2_pixels_m": 7.62028580351764,
+          "symmetric_within_2_pixels_pct": 12.213645727333649
+        }
+      },
+      "macro_class_iou": 0.24889613439805477,
+      "evaluated_pixels": 3004344,
+      "unknown_frame_pixels": 2951256,
+      "source_vector_sha256": "3fd094eb608b8d55002f76cbc69d445ca4c7ed4338694004e0df4115235202dc",
+      "source_path_counts": {
+        "f": 577
+      }
+    },
+    "richfield-inundation-mce100": {
+      "status": "succeeded",
+      "page": 18,
+      "run": {
+        "id": "richfield-inundation-mce100",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:35:14.908660+00:00",
+        "completed_utc": "2026-10-30T12:36:21.175276+00:00",
+        "seconds": 66.26532840006985,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1584,
+          2448
+        ],
+        "model_forward_calls": 104,
+        "source_pixels": 3877632,
+        "unknown_pixels": 3577484,
+        "overlapping_positive_pixels": 0,
+        "label_counts": {
+          "0": 3577484,
+          "1": 300148
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "2598c80cf705803ff2c6e0adbcdb4ff7fca4184b268b67f9f9c25d4654f63742"
+      },
+      "classes": {
+        "mce100": {
+          "true_positive_pixels": 147119,
+          "false_positive_pixels": 152360,
+          "false_negative_pixels": 201479,
+          "predicted_pixels": 299479,
+          "reference_pixels": 348598,
+          "union_pixels": 500958,
+          "iou": 0.29367531809053854,
+          "precision": 0.49124980382597777,
+          "recall": 0.4220305337380019,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 45577,
+            "reference_edge_pixels": 64299,
+            "mean_symmetric_m": 43.76202255020472,
+            "median_m": 21.55279153577678,
+            "p95_m": 162.00412132837894,
+            "max_m": 583.5975792085278,
+            "prediction_to_reference_mean_m": 36.426032083529904,
+            "reference_to_prediction_mean_m": 48.96198580779251,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 28.760602861407403
+          }
+        }
+      },
+      "foreground_union": {
+        "true_positive_pixels": 147119,
+        "false_positive_pixels": 152360,
+        "false_negative_pixels": 201479,
+        "predicted_pixels": 299479,
+        "reference_pixels": 348598,
+        "union_pixels": 500958,
+        "iou": 0.29367531809053854,
+        "precision": 0.49124980382597777,
+        "recall": 0.4220305337380019,
+        "edge_errors": {
+          "status": "succeeded",
+          "predicted_edge_pixels": 45577,
+          "reference_edge_pixels": 64299,
+          "mean_symmetric_m": 43.76202255020472,
+          "median_m": 21.55279153577678,
+          "p95_m": 162.00412132837894,
+          "max_m": 583.5975792085278,
+          "prediction_to_reference_mean_m": 36.426032083529904,
+          "reference_to_prediction_mean_m": 48.96198580779251,
+          "tolerance_2_pixels_m": 7.62028580351764,
+          "symmetric_within_2_pixels_pct": 28.760602861407403
+        }
+      },
+      "macro_class_iou": 0.29367531809053854,
+      "evaluated_pixels": 3004344,
+      "unknown_frame_pixels": 2704865,
+      "source_vector_sha256": "56eca10fab09d242d4fb58295c6d1b43d495f4aa30f46fced16d2aa82c4ad00d",
+      "source_path_counts": {
+        "f": 746
+      }
+    },
+    "richfield-prioritization-score": {
+      "status": "succeeded",
+      "page": 31,
+      "run": {
+        "id": "richfield-prioritization-score",
+        "status": "succeeded",
+        "started_utc": "2026-10-30T12:36:21.357192+00:00",
+        "completed_utc": "2026-10-30T12:40:40.071038+00:00",
+        "seconds": 258.70837030000985,
+        "config_sha256": "afa1535eda43de931fa92f67f38bb02c3be1029aa0674482cd4458d63b72da79",
+        "shape": [
+          1584,
+          2448
+        ],
+        "model_forward_calls": 416,
+        "source_pixels": 3877632,
+        "unknown_pixels": 3460032,
+        "overlapping_positive_pixels": 2524,
+        "label_counts": {
+          "0": 3460032,
+          "1": 127728,
+          "2": 90393,
+          "3": 39515,
+          "4": 159964
+        },
+        "device": "cpu",
+        "precision": "float32",
+        "source_pixel_coverage_check": "all pixels exactly once after overlap discard",
+        "labels_sha256": "de124e5f2d6912cdd57ad7b724e3814556f6ac674eec34ed1c2d8af72f73c62e"
+      },
+      "classes": {
+        "0.0 - 2.4": {
+          "true_positive_pixels": 86221,
+          "false_positive_pixels": 40385,
+          "false_negative_pixels": 20272,
+          "predicted_pixels": 126606,
+          "reference_pixels": 106493,
+          "union_pixels": 146878,
+          "iou": 0.5870246054548673,
+          "precision": 0.6810182771748574,
+          "recall": 0.8096400702393585,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 12670,
+            "reference_edge_pixels": 26059,
+            "mean_symmetric_m": 76.70791673342873,
+            "median_m": 13.737417894396254,
+            "p95_m": 395.00101706339046,
+            "max_m": 892.1804336073469,
+            "prediction_to_reference_mean_m": 17.82123423194241,
+            "reference_to_prediction_mean_m": 105.3388798284758,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 40.60006713315603
+          }
+        },
+        "2.5 - 4.4": {
+          "true_positive_pixels": 80123,
+          "false_positive_pixels": 9127,
+          "false_negative_pixels": 8557,
+          "predicted_pixels": 89250,
+          "reference_pixels": 88680,
+          "union_pixels": 97807,
+          "iou": 0.8191949451470754,
+          "precision": 0.8977366946778711,
+          "recall": 0.9035069914298601,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 5958,
+            "reference_edge_pixels": 10870,
+            "mean_symmetric_m": 38.88095119818776,
+            "median_m": 5.388197883944195,
+            "p95_m": 252.74899938501633,
+            "max_m": 800.9918137979458,
+            "prediction_to_reference_mean_m": 6.663703278155005,
+            "reference_to_prediction_mean_m": 56.53967825500057,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 61.39172807226052
+          }
+        },
+        "4.5 - 6.4": {
+          "true_positive_pixels": 27263,
+          "false_positive_pixels": 11137,
+          "false_negative_pixels": 2510,
+          "predicted_pixels": 38400,
+          "reference_pixels": 29773,
+          "union_pixels": 40910,
+          "iou": 0.6664140796871181,
+          "precision": 0.7099739583333333,
+          "recall": 0.9156954287441642,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 4088,
+            "reference_edge_pixels": 6758,
+            "mean_symmetric_m": 23.292679993352927,
+            "median_m": 7.62028580351764,
+            "p95_m": 110.49252535240915,
+            "max_m": 783.5326049583136,
+            "prediction_to_reference_mean_m": 8.881822319230976,
+            "reference_to_prediction_mean_m": 32.009990761599525,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 51.33689839572193
+          }
+        },
+        "6.5 - 10": {
+          "true_positive_pixels": 49505,
+          "false_positive_pixels": 107279,
+          "false_negative_pixels": 5582,
+          "predicted_pixels": 156784,
+          "reference_pixels": 55087,
+          "union_pixels": 162366,
+          "iou": 0.3048975770789451,
+          "precision": 0.3157528829472395,
+          "recall": 0.8986693775300888,
+          "edge_errors": {
+            "status": "succeeded",
+            "predicted_edge_pixels": 11476,
+            "reference_edge_pixels": 12736,
+            "mean_symmetric_m": 60.00446661608884,
+            "median_m": 35.94330151220813,
+            "p95_m": 190.2344425281427,
+            "max_m": 783.1473304116683,
+            "prediction_to_reference_mean_m": 76.09526349361663,
+            "reference_to_prediction_mean_m": 45.50556704271347,
+            "tolerance_2_pixels_m": 7.62028580351764,
+            "symmetric_within_2_pixels_pct": 20.915248637039486
+          }
+        }
+      },
+      "foreground_union": {
+        "true_positive_pixels": 245679,
+        "false_positive_pixels": 165361,
+        "false_negative_pixels": 34354,
+        "predicted_pixels": 411040,
+        "reference_pixels": 280033,
+        "union_pixels": 445394,
+        "iou": 0.551599258184888,
+        "precision": 0.5977009536784741,
+        "recall": 0.8773216013826942,
+        "edge_errors": {
+          "status": "succeeded",
+          "predicted_edge_pixels": 33188,
+          "reference_edge_pixels": 56372,
+          "mean_symmetric_m": 32.72294210586655,
+          "median_m": 11.43042870527646,
+          "p95_m": 133.56474440886836,
+          "max_m": 529.0463766879978,
+          "prediction_to_reference_mean_m": 20.565107319599154,
+          "reference_to_prediction_mean_m": 39.88064842969119,
+          "tolerance_2_pixels_m": 7.62028580351764,
+          "symmetric_within_2_pixels_pct": 41.60562751228227
+        }
+      },
+      "macro_class_iou": 0.5943828018420014,
+      "evaluated_pixels": 3004344,
+      "unknown_frame_pixels": 2593304,
+      "source_vector_sha256": "b4130ed899972ce60a4c489a916f9f03b50ca4c008771fa4701ce7e3befe8a43",
+      "source_path_counts": {
+        "fs": 474,
+        "f": 272
+      }
+    }
+  },
+  "porto_pooled": {
+    "all": {
+      "eligible": 20782,
+      "common": 18976,
+      "missing": 1806,
+      "correct": 12672,
+      "sum_error": -679.8042000396922,
+      "sum_abs_error": 1560.1158366253355,
+      "high_true_positive_cells": 88,
+      "high_reference_cells": 1997,
+      "predicted_high_common_cells": 186,
+      "predicted_cells": 25478,
+      "predicted_zero_reference_cells": 4271,
+      "predicted_low_reference_cells": 2231,
+      "exact_common_pct": 66.77908937605396,
+      "exact_all_pct": 60.975844480800696,
+      "missing_pct": 8.690212684053508,
+      "bias": -0.03582442032249643,
+      "mae": 0.08221521061474155,
+      "high_recall_pct": 4.406609914872308,
+      "high_precision_common_pct": 47.31182795698925,
+      "predicted_zero_reference_pct": 16.763482219954472,
+      "predicted_low_reference_pct": 8.756574299395558,
+      "confusion_matrix_with_missing": [
+        [
+          323,
+          206,
+          51,
+          0,
+          0,
+          109
+        ],
+        [
+          182,
+          3229,
+          1584,
+          11,
+          1,
+          568
+        ],
+        [
+          121,
+          2285,
+          9038,
+          77,
+          9,
+          991
+        ],
+        [
+          29,
+          202,
+          1540,
+          82,
+          6,
+          138
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "development": {
+      "eligible": 10950,
+      "common": 10154,
+      "missing": 796,
+      "correct": 6834,
+      "sum_error": -304.4037981348034,
+      "sum_abs_error": 836.2165327908538,
+      "high_true_positive_cells": 49,
+      "high_reference_cells": 1036,
+      "predicted_high_common_cells": 95,
+      "predicted_cells": 14017,
+      "predicted_zero_reference_cells": 2594,
+      "predicted_low_reference_cells": 1269,
+      "exact_common_pct": 67.303525704156,
+      "exact_all_pct": 62.41095890410959,
+      "missing_pct": 7.269406392694064,
+      "bias": -0.029978707714674358,
+      "mae": 0.08235341075348175,
+      "high_recall_pct": 4.72972972972973,
+      "high_precision_common_pct": 51.578947368421055,
+      "predicted_zero_reference_pct": 18.506099736034816,
+      "predicted_low_reference_pct": 9.053292430619962,
+      "confusion_matrix_with_missing": [
+        [
+          148,
+          91,
+          21,
+          0,
+          0,
+          107
+        ],
+        [
+          77,
+          1753,
+          1019,
+          8,
+          1,
+          322
+        ],
+        [
+          56,
+          1069,
+          4889,
+          29,
+          8,
+          316
+        ],
+        [
+          18,
+          109,
+          809,
+          44,
+          5,
+          51
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "validation": {
+      "eligible": 6680,
+      "common": 5957,
+      "missing": 723,
+      "correct": 4068,
+      "sum_error": -199.35542640093718,
+      "sum_abs_error": 473.758829640811,
+      "high_true_positive_cells": 39,
+      "high_reference_cells": 649,
+      "predicted_high_common_cells": 90,
+      "predicted_cells": 7967,
+      "predicted_zero_reference_cells": 1188,
+      "predicted_low_reference_cells": 822,
+      "exact_common_pct": 68.2894074198422,
+      "exact_all_pct": 60.89820359281437,
+      "missing_pct": 10.823353293413174,
+      "bias": -0.033465742219395196,
+      "mae": 0.07952976827947138,
+      "high_recall_pct": 6.00924499229584,
+      "high_precision_common_pct": 43.333333333333336,
+      "predicted_zero_reference_pct": 14.91150997866198,
+      "predicted_low_reference_pct": 10.317559934730765,
+      "confusion_matrix_with_missing": [
+        [
+          53,
+          48,
+          30,
+          0,
+          0,
+          2
+        ],
+        [
+          52,
+          733,
+          446,
+          3,
+          0,
+          163
+        ],
+        [
+          50,
+          665,
+          3244,
+          47,
+          1,
+          494
+        ],
+        [
+          4,
+          33,
+          509,
+          38,
+          1,
+          64
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "test": {
+      "eligible": 3152,
+      "common": 2865,
+      "missing": 287,
+      "correct": 1770,
+      "sum_error": -176.04497550395163,
+      "sum_abs_error": 250.14047419367094,
+      "high_true_positive_cells": 0,
+      "high_reference_cells": 312,
+      "predicted_high_common_cells": 1,
+      "predicted_cells": 3494,
+      "predicted_zero_reference_cells": 489,
+      "predicted_low_reference_cells": 140,
+      "exact_common_pct": 61.78010471204188,
+      "exact_all_pct": 56.15482233502538,
+      "missing_pct": 9.105329949238579,
+      "bias": -0.06144676282860441,
+      "mae": 0.08730906603618532,
+      "high_recall_pct": 0.0,
+      "high_precision_common_pct": 0.0,
+      "predicted_zero_reference_pct": 13.995420721236405,
+      "predicted_low_reference_pct": 4.0068689181453925,
+      "confusion_matrix_with_missing": [
+        [
+          122,
+          67,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          53,
+          743,
+          119,
+          0,
+          0,
+          83
+        ],
+        [
+          15,
+          551,
+          905,
+          1,
+          0,
+          181
+        ],
+        [
+          7,
+          60,
+          222,
+          0,
+          0,
+          23
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "runtime": {
+    "dependency_installation_tool_reported_seconds": 34.012,
+    "dependency_installation_phases": [
+      {
+        "log": "install.log",
+        "phase": "Resolved",
+        "seconds": 1.51
+      },
+      {
+        "log": "install.log",
+        "phase": "Prepared",
+        "seconds": 25.09
+      },
+      {
+        "log": "install.log",
+        "phase": "Installed",
+        "seconds": 4.63
+      },
+      {
+        "log": "install-lightning.log",
+        "phase": "Resolved",
+        "seconds": 2.23
+      },
+      {
+        "log": "install-lightning.log",
+        "phase": "Prepared",
+        "seconds": 0.435
+      },
+      {
+        "log": "install-lightning.log",
+        "phase": "Installed",
+        "seconds": 0.117
+      }
+    ],
+    "dependency_installation_timing_note": "Sum of uv-reported resolution, preparation/download, and installation phases; not a combined stopwatch measurement.",
+    "inference_seconds_total": 2757.881586399977,
+    "evaluation_seconds": 19.340409999946132,
+    "model_forward_calls": 4162
+  },
+  "scope": {
+    "succeeded": 11,
+    "failed": 0,
+    "not attempted": 0
+  }
+}

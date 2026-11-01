@@ -1,0 +1,19 @@
+{
+  "inspected": [
+    "porto-heat-focus-comparison.png",
+    "richfield-inundation-100yr-focus-comparison.png",
+    "richfield-prioritization-score-focus-comparison.png",
+    "quality-comparison.png",
+    "porto-flood-focus-mask-comparison.png",
+    "richfield-inundation-100yr-focus-mask-comparison.png"
+  ],
+  "method": "Viewed generated PNGs directly at final source-aligned pixels",
+  "findings": [
+    "Source and prediction crops align; panel labels are readable",
+    "Gray in mask-only panels distinguishes missing predictions",
+    "New inundation masks are sparse/noisy and miss source filled polygons",
+    "New prioritization adds substantial source-background predictions"
+  ],
+  "limitations": "PNG visual inspection; no claim of browser interaction testing",
+  "timestamp": "2026-11-01T10:35:22.5362025+01:00"
+}

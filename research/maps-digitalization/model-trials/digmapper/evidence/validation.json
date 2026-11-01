@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "required_layers": 11,
+  "failed_startups": 3,
+  "remaining_not_attempted": 8,
+  "source_pdf_hashes_unchanged": true,
+  "offline_bundles_verified": 14,
+  "accuracy_values_all_null": true,
+  "no_fabricated_predictions": true
+}

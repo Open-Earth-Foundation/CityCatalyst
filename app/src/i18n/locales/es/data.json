@@ -1304,5 +1304,7 @@
   "source-page-placeholder": "p. ej. p. 42, Tabla 3",
   "source-url": "URL de origen",
   "source-url-placeholder": "https://",
-  "source-url-invalid": "Ingrese una URL válida que comience con http:// o https://"
+  "source-url-invalid": "Ingrese una URL válida que comience con http:// o https://",
+  "railway-outside-fuel-type": "Tipo de combustible",
+  "aviation-outside-fuel-type": "Tipo de combustible"
 }

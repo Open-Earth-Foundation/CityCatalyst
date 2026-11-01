@@ -8,7 +8,11 @@ import {
   formatNumber,
   toKebabCase,
 } from "@/util/helpers";
-import { InventoryTypeEnum, SECTORS } from "@/util/constants";
+import {
+  FILE_IMPORT_SOURCE_TYPE,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
@@ -112,7 +116,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         </Table.Cell>
       ))}
       <Table.Cell>
-        {item.datasource_name ? (
+        {item.datasource_name &&
+        item.datasource_source_type === FILE_IMPORT_SOURCE_TYPE ? (
+          <BodyMedium color="content.secondary" textTransform={"uppercase"}>
+            {item.datasource_name}
+          </BodyMedium>
+        ) : item.datasource_name ? (
           <BodyMedium
             color="content.link"
             textDecoration={"underline"}

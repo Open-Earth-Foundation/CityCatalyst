@@ -18,6 +18,7 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import type {
   conceptNoteCustomTemplateRequest,
   conceptNoteFunderCreateRequest,
@@ -469,6 +470,8 @@ export interface ActivityDataByScope {
   percentage: number | null;
   datasource_id: string;
   datasource_name: string;
+  /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
+  datasource_source_type: string | null;
   activities?: ActivityValue[];
 }
 
@@ -1023,6 +1026,8 @@ export interface ImportStatusResponse {
    */
   mappingConfiguration?: {
     extractionProgress?: { current: number; total?: number };
+    /** Totals and dropped-row counts from PDF extraction; drives the review warning. */
+    extractionSummary?: ExtractionSummary;
     [key: string]: unknown;
   } | null;
   rowCount: number;

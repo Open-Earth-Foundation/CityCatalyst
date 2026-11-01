@@ -878,7 +878,7 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
     ),
     description: l(
       "Upgrade, expand and maintain drainage networks and stormwater assets, including detention basins and permeable surfaces in flood-prone neighbourhoods.",
-      "Ampliar, expandir e manter redes de drenagem e ativos de águas pluviais, incluindo bacias de detenção e superfícies permeáveis em bairros sujeitos a alagamentos.",
+      "Ampliar e manter redes de drenagem e ativos de águas pluviais, incluindo bacias de detenção e superfícies permeáveis em bairros sujeitos a alagamentos.",
     ),
     sector: "geohydrological_disasters",
     kind: "direct",
@@ -966,7 +966,7 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
         stage: l("Selected", "Selecionado"),
       },
       {
-        name: "Urban drainage proposal",
+        name: "Proposta de drenagem urbana",
         city: "Fortaleza, CE",
         channel: l(
           "Federal transfers and public investment programmes",
@@ -980,7 +980,7 @@ export const ADAPTATION_ACTIONS: AdaptationAction[] = [
         stage: l("Selected", "Selecionado"),
       },
       {
-        name: "Urban drainage proposal",
+        name: "Proposta de drenagem urbana",
         city: "Camaçari, BA",
         channel: l(
           "Federal transfers and public investment programmes",

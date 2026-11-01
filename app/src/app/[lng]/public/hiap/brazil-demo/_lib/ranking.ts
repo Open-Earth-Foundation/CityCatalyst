@@ -250,11 +250,11 @@ export function rankAdaptation(
  * Narrative explanation. The product labels this "AI-assisted"; in the demo it
  * is a template, and the label says so.
  */
-export function explainRanking(
+function narrativeParts(
   scored: ScoredAction,
   city: CityFixture,
   lng: string,
-): string {
+): { lead: string; rest: string; hazardNote: string } {
   const top = scored.cells[0];
   const cell = RISK_CELL_BY_KEY[top.cell];
   const reading = city.risk[top.cell]!;
@@ -268,26 +268,107 @@ export function explainRanking(
       : lng === "pt"
         ? "exposição"
         : "exposure";
-  const idx = (
+  const n2 = (v: number) =>
+    new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(v);
+  const idx = n2(
     top.adjustedVulnerability >= top.adjustedExposure
       ? reading.vulnerability
-      : reading.exposure
-  ).toFixed(2);
+      : reading.exposure,
+  );
   const lead =
     lng === "pt"
-      ? `Em ${city.name}, esta ação é creditada na célula de risco “${cellName}” (${sector}) pelo componente de ${driver}, onde o índice municipal do AdaptaBrasil é ${idx}.`
-      : `In ${city.name}, this action is credited in the “${cellName}” risk cell (${sector}) on the ${driver} component, where the city's AdaptaBrasil index is ${idx}.`;
+      ? `Em ${city.name}, esta ação é creditada na ameaça “${cellName}” (${sector}) pelo componente de ${driver}, onde o índice municipal do AdaptaBrasil é ${idx}.`
+      : `In ${city.name}, this action is credited on the “${cellName}” hazard (${sector}) through its ${driver} component, where the city's AdaptaBrasil index is ${idx}.`;
   const rest =
     lng === "pt"
-      ? ` O impacto normalizado no município é ${scored.impact.toFixed(2)}; a viabilidade (${scored.feasibility.toFixed(2)}) e o alinhamento (${scored.alignment.toFixed(2)}) completam a pontuação final de ${scored.final.toFixed(2)}, posição ${scored.rank}.`
-      : ` Its normalised Impact in the municipality is ${scored.impact.toFixed(2)}; Feasibility (${scored.feasibility.toFixed(2)}) and Alignment (${scored.alignment.toFixed(2)}) complete a final score of ${scored.final.toFixed(2)}, rank ${scored.rank}.`;
+      ? ` O impacto normalizado no município é ${n2(scored.impact)}; a viabilidade (${n2(scored.feasibility)}) e o alinhamento (${n2(scored.alignment)}) completam a pontuação final de ${n2(scored.final)}, posição ${scored.rank}.`
+      : ` Its normalised Impact in the municipality is ${n2(scored.impact)}; Feasibility (${n2(scored.feasibility)}) and Alignment (${n2(scored.alignment)}) complete a final score of ${n2(scored.final)}, rank ${scored.rank}.`;
   const hazardNote =
     reading.hazard === 0
       ? lng === "pt"
-        ? " A ameaça climática é nula nesta célula; o resultado é exibido apenas para contexto."
-        : " The climate hazard is absent in this cell; the result is shown for context only."
+        ? " O fator climático está ausente para esta ameaça; o resultado é exibido apenas para contexto."
+        : " The climate driver is absent for this hazard; the result is shown for context only."
       : "";
+  return { lead, rest, hazardNote };
+}
+
+/**
+ * Narrative explanation. The product labels this "AI-assisted"; in the demo it
+ * is a template, and the label says so.
+ */
+export function explainRanking(
+  scored: ScoredAction,
+  city: CityFixture,
+  lng: string,
+): string {
+  const { lead, rest, hazardNote } = narrativeParts(scored, city, lng);
   return lead + rest + hazardNote;
+}
+
+/**
+ * The one-sentence "why" for the proposal screens: the hazard, the component
+ * the action works on, and the city's level there in words — no indices,
+ * no scores (review feedback, Oct 2026). The figures stay in `explainRanking`.
+ */
+export function explainRankingShort(
+  scored: ScoredAction,
+  city: CityFixture,
+  lng: string,
+): string {
+  const top = scored.cells[0];
+  const cell = RISK_CELL_BY_KEY[top.cell];
+  const reading = city.risk[top.cell]!;
+  const sector = pick(SECTOR_LABEL[cell.sector], lng);
+  const hazard = pick(cell.label, lng);
+  const onVulnerability = top.adjustedVulnerability >= top.adjustedExposure;
+  const value = onVulnerability ? reading.vulnerability : reading.exposure;
+  const level =
+    value >= 0.7
+      ? lng === "pt"
+        ? "alta"
+        : "high"
+      : value >= 0.4
+        ? lng === "pt"
+          ? "média"
+          : "medium"
+        : lng === "pt"
+          ? "baixa"
+          : "low";
+  const component = onVulnerability
+    ? lng === "pt"
+      ? "a vulnerabilidade"
+      : "vulnerability"
+    : lng === "pt"
+      ? "a exposição"
+      : "exposure";
+  const lead =
+    lng === "pt"
+      ? `Em ${city.name}, esta ação atua sobre a ameaça “${hazard}” (${sector}) porque reduz ${component}, que o AdaptaBrasil classifica como ${level} no município.`
+      : `In ${city.name}, this action works on the “${hazard}” hazard (${sector}) because it reduces ${component}, which AdaptaBrasil rates ${level} for the city.`;
+  const hazardNote =
+    reading.hazard === 0
+      ? lng === "pt"
+        ? " O fator climático está ausente para esta ameaça; o resultado é exibido apenas para contexto."
+        : " The climate hazard itself is absent here; the result is shown for context only."
+      : "";
+  return lead + hazardNote;
+}
+
+export type PriorityBand = "high" | "medium" | "low";
+
+/**
+ * Qualitative priority from the position in the ranking, by thirds — the
+ * interim rule behind the High / Medium / Low tags on the proposal screens
+ * while the band rule is open with C40 and I Care (decision C1).
+ */
+export function priorityBand(rank: number, total: number): PriorityBand {
+  if (total <= 0) return "low";
+  if (rank <= Math.ceil(total / 3)) return "high";
+  if (rank <= Math.ceil((2 * total) / 3)) return "medium";
+  return "low";
 }
 
 /** The ranked list in the shape the MEED results components consume. */
@@ -312,9 +393,9 @@ export function toRankedResults(
       fallbacks: s.fallbacks,
     },
     explanations: {
-      en: explainRanking(s, ranking.city, "en"),
-      pt: explainRanking(s, ranking.city, "pt"),
-      [lng]: explainRanking(s, ranking.city, lng),
+      en: explainRankingShort(s, ranking.city, "en"),
+      pt: explainRankingShort(s, ranking.city, "pt"),
+      [lng]: explainRankingShort(s, ranking.city, lng),
     },
   }));
 }

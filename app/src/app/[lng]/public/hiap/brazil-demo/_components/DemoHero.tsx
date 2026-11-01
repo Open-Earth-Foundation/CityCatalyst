@@ -19,6 +19,7 @@ import type { CityFixture, DemoTrack } from "../_lib/types";
 import { demoHome } from "../_lib/hrefs";
 import { useDemoT } from "../_lib/useDemoT";
 import { ScreenTag } from "./ScreenTag";
+import { CitySwitcher } from "./CitySwitcher";
 
 /**
  * The city band at the top of the module home, after `GHGIHomePage/Hero`
@@ -54,14 +55,16 @@ export function DemoHero({
 }) {
   const { t } = useDemoT(lng);
   return (
-    <Box bg="content.alternative" w="full" pt="64px" pb="64px" px={8}>
+    <Box bg="content.alternative" w="full" pt="64px" pb="64px">
+      {/* Same column as the tabs and the content below: 1090px, padded. */}
       <Box
         display="flex"
         flexDirection="column"
         gap="24px"
         mx="auto"
-        maxW="full"
-        w="1090px"
+        w="full"
+        maxW="1090px"
+        px="l"
       >
         <HStack
           justifyContent="space-between"
@@ -96,7 +99,10 @@ export function DemoHero({
               </Text>
             </BreadcrumbCurrentLink>
           </BreadcrumbRoot>
-          <ScreenTag id={screenId} title={t("screen-tag-title")} />
+          <HStack gap="s" flexShrink={0}>
+            <ScreenTag id={screenId} title={t("screen-tag-title")} />
+            <CitySwitcher lng={lng} city={city.slug} track={track} />
+          </HStack>
         </HStack>
 
         <HStack
@@ -124,6 +130,7 @@ export function DemoHero({
             <Box display="flex" alignItems="center" gap={4}>
               <CircleFlag countryCode="br" width={32} />
               <Heading
+                as="h1"
                 fontSize="display.md"
                 color="base.light"
                 fontWeight="semibold"

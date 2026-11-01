@@ -220,4 +220,163 @@ describe("HIAP-MEED native input capabilities", () => {
 
     await expect(buildMeedOutputPlanContext("p1")).resolves.toBeNull();
   });
+
+  it("pages the ranked list and reports the total", async () => {
+    findRanking.mockResolvedValue({
+      id: "r1",
+      status: "completed",
+      created: new Date("2026-10-01T00:00:00Z"),
+    });
+    findRanked.mockResolvedValue(
+      Array.from({ length: 60 }, (_, index) => ({
+        rank: index + 1,
+        actionId: `t${index + 1}`,
+        explanations: { en: `E${index + 1}` },
+      })),
+    );
+    findRemoved.mockResolvedValue([]);
+
+    const first = await buildMeedRankingContext("r1", "en");
+    const second = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: 25,
+    });
+    const last = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: 50,
+    });
+
+    expect(first).toMatchObject({
+      truncated: true,
+      counts: { ranked: 60, total: 60, returned: 25, offset: 0 },
+    });
+    expect(second).toMatchObject({
+      truncated: false,
+      counts: { total: 60, returned: 35, offset: 25 },
+    });
+    expect((second!.ranked_actions as { rank: number }[])[0].rank).toBe(26);
+    expect(last).toMatchObject({
+      truncated: false,
+      counts: { returned: 10, offset: 50 },
+    });
+  });
+
+  it("selects chapters by key, localizes them and lists every key", async () => {
+    const chapters = [
+      {
+        key: "legal_mandate_delivery",
+        title: { en: "Legal", pt: "Legal PT" },
+        markdown: { en: "legal en", pt: "legal pt" },
+      },
+      {
+        key: "financing_precedents_pathway",
+        title: { en: "Finance" },
+        markdown: { en: "finance en" },
+      },
+      { key: "city_fit", title: { en: "Fit" }, markdown: { en: "fit en" } },
+    ];
+    findReport.mockResolvedValue({
+      actionId: "t1",
+      languages: ["en", "pt"],
+      chapters,
+    });
+
+    const result = await buildMeedOutputPlanContext("p1", "pt", {
+      chapters: [
+        "legal_mandate_delivery",
+        "financing_precedents_pathway",
+        "snapshot",
+      ],
+    });
+
+    expect(result).toMatchObject({
+      truncated: false,
+      chapter_keys: [
+        "legal_mandate_delivery",
+        "financing_precedents_pathway",
+        "city_fit",
+      ],
+      missing_chapters: ["snapshot"],
+      chapters: [
+        {
+          key: "legal_mandate_delivery",
+          title: "Legal PT",
+          markdown: "legal pt",
+        },
+        { key: "financing_precedents_pathway", markdown: "finance en" },
+      ],
+    });
+  });
+
+  it("returns a too-large plan as keys, and a small selection of it in full", async () => {
+    const chapters = [
+      { key: "city_fit", markdown: { en: "x".repeat(50 * 1024) } },
+      { key: "legal_mandate_delivery", markdown: { en: "short legal" } },
+    ];
+    findReport.mockResolvedValue({
+      actionId: "t1",
+      languages: ["en"],
+      chapters,
+    });
+
+    const whole = await buildMeedOutputPlanContext("p1", "en");
+    const legal = await buildMeedOutputPlanContext("p1", "en", {
+      chapters: ["legal_mandate_delivery"],
+    });
+
+    expect(whole).toMatchObject({
+      truncated: true,
+      chapters: null,
+      chapter_keys: ["city_fit", "legal_mandate_delivery"],
+    });
+    expect(legal).toMatchObject({
+      truncated: false,
+      chapters: [{ key: "legal_mandate_delivery", markdown: "short legal" }],
+    });
+  });
+
+  it("trims a ranked page that would exceed the tool size bound", async () => {
+    findRanking.mockResolvedValue({
+      id: "r1",
+      status: "completed",
+      created: new Date("2026-10-01T00:00:00Z"),
+    });
+    // 50 rows with a long explanation in three languages: about 150 KB untrimmed.
+    const long = "x".repeat(1000);
+    findRanked.mockResolvedValue(
+      Array.from({ length: 50 }, (_, index) => ({
+        rank: index + 1,
+        actionId: `t${index + 1}`,
+        explanations: { en: long, pt: long, es: long },
+      })),
+    );
+    findRemoved.mockResolvedValue(
+      Array.from({ length: 25 }, (_, index) => ({
+        actionId: `r${index}`,
+        actionName: "Removed",
+        removalReason: "y".repeat(2000),
+      })),
+    );
+
+    const page = await buildMeedRankingContext("r1", "en", { limit: 50 });
+    const bytes = Buffer.byteLength(JSON.stringify(page), "utf8");
+
+    expect(bytes).toBeLessThan(64 * 1024);
+    const returned = (page!.ranked_actions as unknown[]).length;
+    expect(returned).toBeGreaterThan(0);
+    expect(returned).toBeLessThan(50);
+    expect(page).toMatchObject({
+      truncated: true,
+      counts: { total: 50, offset: 0, returned },
+    });
+
+    // The next page starts exactly where the trimmed one ended.
+    const next = await buildMeedRankingContext("r1", "en", {
+      limit: 50,
+      offset: returned,
+    });
+    expect((next!.ranked_actions as { rank: number }[])[0].rank).toBe(
+      returned + 1,
+    );
+  });
 });

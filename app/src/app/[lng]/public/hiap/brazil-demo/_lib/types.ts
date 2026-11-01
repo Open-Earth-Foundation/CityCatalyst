@@ -292,4 +292,9 @@ export interface DemoTrackState {
   generatedAt: string | null;
   /** Visited wizard steps, for the stepper and pre-flight list. */
   visited: { preferences?: boolean; preflight?: boolean };
+  /**
+   * The city's own order of the ranked actions (proposal screens): empty
+   * means "the suggested order". Ids not in the ranking are ignored.
+   */
+  cityOrder?: string[];
 }

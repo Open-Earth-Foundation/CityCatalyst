@@ -63,7 +63,7 @@ type NativeInputCatalogKeyset = {
  * when the request omits it, the row omits it, or both are equal. The SQL
  * candidate filter and the in-memory check use this one list and rule.
  */
-const CANDIDATE_SCOPE_FIELDS = ["userId", ...AUTHORIZED_SCOPE_FIELDS] as const;
+const CANDIDATE_SCOPE_FIELDS = AUTHORIZED_SCOPE_FIELDS;
 
 type CandidateScopeField = (typeof CANDIDATE_SCOPE_FIELDS)[number];
 
@@ -226,8 +226,8 @@ function isSafePermissionMiss(error: unknown): boolean {
 }
 
 /**
- * Inventory-owned rows (for example HIAP-MEED) carry no userId; permission
- * checks in authorizeCatalogScope still apply to them.
+ * In-memory twin of the SQL candidate filter. Rows are scoped, never owned by
+ * the creator: authorizeCatalogScope decides access from city and project.
  */
 export function requestMatchesEntry(
   request: NativeInputDiscoveryRequest,
@@ -278,19 +278,92 @@ async function checkPermission(
   }
 }
 
+async function checkCityProjectAccess(
+  session: AppSession,
+  cityId: string,
+  projectId: string,
+): Promise<boolean> {
+  try {
+    // Never pass inventoryId here: it would open the public-inventory path,
+    // and HIAP-MEED data must not be readable that way.
+    await PermissionService.checkAccess(
+      session,
+      { cityId, projectId },
+      { includeResource: false },
+    );
+    return true;
+  } catch (error) {
+    if (isSafePermissionMiss(error)) return false;
+    throw error;
+  }
+}
+
+type RowCityProject = { cityId: string; projectId: string };
+
 /**
- * Check every populated catalog scope dimension without returning a
- * reason-bearing denial value to the discovery caller.
+ * Resolve the city and project a row belongs to from the database and fail
+ * closed when the row, the request and the database disagree.
  */
-export async function authorizeCatalogScope(
+async function resolveRowCityProject(
+  request: NativeInputDiscoveryRequest,
+  entry: CatalogEntry,
+): Promise<RowCityProject | null> {
+  let cityId = entry.cityId ?? undefined;
+
+  if (entry.inventoryId) {
+    const inventory = await db.models.Inventory.findByPk(entry.inventoryId, {
+      attributes: ["inventoryId", "cityId"],
+    });
+    if (!inventory?.cityId) return null;
+    if (cityId && cityId !== inventory.cityId) return null;
+    cityId = inventory.cityId;
+  }
+  if (!cityId) return null;
+  if (request.cityId && request.cityId !== cityId) return null;
+
+  if (request.inventoryId && !entry.inventoryId) {
+    // A city-level row may serve any year of the same city and project.
+    const requested = await db.models.Inventory.findByPk(request.inventoryId, {
+      attributes: ["inventoryId", "cityId"],
+    });
+    if (requested?.cityId !== cityId) return null;
+  }
+
+  const city = await db.models.City.findByPk(cityId, {
+    attributes: ["cityId", "projectId"],
+    include: [
+      {
+        model: db.models.Project,
+        as: "project",
+        attributes: ["projectId", "organizationId"],
+      },
+    ],
+  });
+  if (!city?.projectId) return null;
+  if (entry.projectId && entry.projectId !== city.projectId) return null;
+  if (request.projectId && request.projectId !== city.projectId) return null;
+  const organizationId = city.project?.organizationId;
+  if (entry.organizationId && entry.organizationId !== organizationId) {
+    return null;
+  }
+  if (request.organizationId && request.organizationId !== organizationId) {
+    return null;
+  }
+  return { cityId, projectId: city.projectId };
+}
+
+/**
+ * Rows without a city or inventory (project- or organization-level) keep the
+ * per-dimension checks. Fail closed: a row that names neither a project nor an
+ * organization (for example a userId-only row) has nothing to authorize
+ * against and is never readable.
+ */
+async function authorizeCoarseScope(
   session: AppSession,
   request: NativeInputDiscoveryRequest,
   entry: CatalogEntry,
 ): Promise<boolean> {
-  if (!session.user?.id) return false;
-  if (entry.userId && entry.userId !== session.user.id) return false;
-  if (!requestMatchesEntry(request, entry)) return false;
-
+  if (!entry.projectId && !entry.organizationId) return false;
   for (const field of AUTHORIZED_SCOPE_FIELDS) {
     const entryValue = entry[field];
     const requestValue = request[field];
@@ -305,8 +378,31 @@ export async function authorizeCatalogScope(
       return false;
     }
   }
-
   return true;
+}
+
+/**
+ * Authorize a catalog row at city and project, without a reason-bearing
+ * denial value. A user passes when they are an organization admin, a project
+ * admin of the row's project or a collaborator of the row's city, and then
+ * every inventory and year of that city and project is readable. The creator
+ * of the row has no special right. Public inventories grant nothing here.
+ */
+export async function authorizeCatalogScope(
+  session: AppSession,
+  request: NativeInputDiscoveryRequest,
+  entry: CatalogEntry,
+): Promise<boolean> {
+  if (!session.user?.id) return false;
+  if (!requestMatchesEntry(request, entry)) return false;
+
+  if (!entry.cityId && !entry.inventoryId) {
+    return authorizeCoarseScope(session, request, entry);
+  }
+
+  const scope = await resolveRowCityProject(request, entry);
+  if (!scope) return false;
+  return checkCityProjectAccess(session, scope.cityId, scope.projectId);
 }
 
 function matchesDiscoveryFilters(

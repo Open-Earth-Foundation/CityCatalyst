@@ -262,6 +262,7 @@ describe("Results API", () => {
               "Commercial and institutional buildings and facilities",
             datasource_id: null,
             datasource_name: null,
+            datasource_source_type: null,
             percentage: 76, // 950/1250 ≈ 76%
             scopes: {
               "1": "950",
@@ -292,6 +293,7 @@ describe("Results API", () => {
             activityTitle: "Residential buildings",
             datasource_id: "814d43fd-42bf-49f9-a10f-2c5486cf0344",
             datasource_name: "Test DataSource 1",
+            datasource_source_type: null,
             percentage: 24, // 300/1250 ≈ 24%
             scopes: {
               "1": "300",

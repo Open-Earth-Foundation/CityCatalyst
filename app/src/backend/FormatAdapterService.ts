@@ -242,6 +242,7 @@ export default class FormatAdapterService {
 
     const scopeIdx = this.col(h, ["scope"]);
     const sourceIdx = this.col(h, [
+      "activity data - source",
       "data source name",
       "data source id",
       "data source",
@@ -328,6 +329,7 @@ export default class FormatAdapterService {
       const resolvedSector =
         sector || (gpcRefNo ? this.sectorFromGpcRef(gpcRefNo) : null);
 
+      const dataSource = this.strVal(get(sourceIdx));
       rows.push({
         year: targetYear ?? null,
         sector: resolvedSector,
@@ -340,7 +342,9 @@ export default class FormatAdapterService {
         ch4: this.numVal(get(ch4Idx)),
         n2o: this.numVal(get(n2oIdx)),
         gpcRefNo,
-        source: this.strVal(get(sourceIdx)),
+        source: dataSource,
+        // The import cites activityDataSource; `source` is only shown on review
+        activityDataSource: dataSource,
         activityAmount: this.numVal(get(actValIdx)),
         activityUnit: this.strVal(get(actUnitIdx)),
         activityType,

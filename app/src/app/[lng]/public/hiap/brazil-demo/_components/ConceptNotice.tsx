@@ -12,14 +12,18 @@ import { LuChevronUp, LuLightbulb, LuX } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
+import { usePathname } from "next/navigation";
 import { useDemoT } from "../_lib/useDemoT";
+import { isPreviousPath } from "../_lib/hrefs";
 
 const KEY = "hiap-br-demo:notice-collapsed";
 const EVENT = "hiap-br-demo:notice-changed";
 
 function readCollapsed(): boolean {
   try {
-    return window.sessionStorage.getItem(KEY) === "1";
+    // Collapsed to its pill unless the reader opened it this session, so it
+    // never sits over checkboxes or buttons on arrival.
+    return window.sessionStorage.getItem(KEY) !== "0";
   } catch {
     return false;
   }
@@ -48,16 +52,22 @@ function writeCollapsed(value: boolean) {
  * or the working group still has to settle. Keeping them out of the screen
  * itself lets the layout read the way the product would, while every screen
  * still tells the reviewer that it is a concept and what may move it.
- * Dismissing collapses it to a pill for the rest of the session.
+ * It starts as a pill; opening it keeps it open for the session, and
+ * dismissing collapses it again.
  */
 export function ConceptNotice({
   lng,
-  points,
+  points: screenPoints,
 }: {
   lng: string;
   points: string[];
 }) {
   const { t } = useDemoT(lng);
+  // The archived adaptation screens say what they are, first.
+  const pathname = usePathname() ?? "";
+  const points = isPreviousPath(pathname)
+    ? [t("previous-notice"), ...screenPoints]
+    : screenPoints;
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => true);
   if (points.length === 0) return null;
 
@@ -66,7 +76,7 @@ export function ConceptNotice({
       position="fixed"
       left={{ base: "16px", md: "24px" }}
       bottom={{ base: "16px", md: "24px" }}
-      zIndex={1200}
+      zIndex={900}
       maxW={{ base: "calc(100vw - 32px)", md: "400px" }}
       css={{ "@media print": { display: "none" } }}
     >

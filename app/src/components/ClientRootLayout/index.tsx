@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import { usePathname } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
 import NoAccess from "@/components/NoAccess";
 import { Roles } from "@/util/types";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { trackPageView } from "@/lib/analytics";
 
 export function ClientRootLayout({
   lng,
@@ -22,10 +21,6 @@ export function ClientRootLayout({
   const isAuthPage = pathname.includes("auth");
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
-  // Track page views when pathname changes
-  useEffect(() => {
-    trackPageView(pathname);
-  }, [pathname]);
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery(undefined, {
       skip: isPublic || isAuthPage || !EnterpriseMode || isInvitePage,

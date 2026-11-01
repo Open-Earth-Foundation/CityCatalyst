@@ -556,7 +556,13 @@ export default class UserService {
   private static async findAllProjectForAdminAndOwner(organizationId: string) {
     return await Project.findAll({
       where: { organizationId },
-      attributes: ["projectId", "name", "description", "cityCountLimit"],
+      attributes: [
+        "projectId",
+        "name",
+        "organizationId",
+        "description",
+        "cityCountLimit",
+      ],
       include: [
         {
           model: db.models.ProjectAdmin,

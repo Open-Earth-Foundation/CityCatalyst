@@ -97,3 +97,30 @@ describe("resolveGpcRefFromLabels", () => {
     ).toBe("II.2.1");
   });
 });
+
+describe("resolveGpcRefNo for PDF extraction rows (CC-1008)", () => {
+  it("puts scope 2 and scope 3 of Auckland Table A-1 on their own references", () => {
+    const sector = "Stationary Energy";
+    const subsector = "Commercial And Institutional Buildings And Facilities";
+    expect(resolveGpcRefNo(sector, subsector, undefined, "1")).toBe("I.2.1");
+    expect(resolveGpcRefNo(sector, subsector, undefined, "2")).toBe("I.2.2");
+    expect(resolveGpcRefNo(sector, subsector, undefined, "3")).toBe("I.2.3");
+    expect(resolveGpcRefNo("Transportation", "Aviation", undefined, "3")).toBe(
+      "II.4.3",
+    );
+  });
+
+  it("puts energy generation supplied to the grid on I.4.4, not I.4.1", () => {
+    expect(
+      resolveGpcRefNo(
+        "Stationary Energy",
+        "Energy Industries",
+        "Energy generation supplied to the grid",
+        "1",
+      ),
+    ).toBe("I.4.4");
+    expect(
+      resolveGpcRefNo("Stationary Energy", "Energy Industries", undefined, "1"),
+    ).toBe("I.4.1");
+  });
+});

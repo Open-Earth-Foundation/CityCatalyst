@@ -106,7 +106,7 @@ export default function InventoryCalculationTab({
               {formatPercent(totalProgress)}% <Trans t={t}>completed</Trans>
             </Heading>
           </Box>
-          <Box display="flex" gap={4} mt={2}>
+          <Box display="flex" flexWrap="wrap" gap={4} mt={2}>
             <Badge>
               <Icon as={CircleIcon} boxSize={6} color="interactive.connected" />
               {formatPercent(thirdPartyProgress)}%{" "}

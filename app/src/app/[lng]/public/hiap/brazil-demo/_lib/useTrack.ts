@@ -40,6 +40,7 @@ export interface TrackData {
   setPreferences: ReturnType<typeof useDemoState>["setPreferences"];
   markVisited: ReturnType<typeof useDemoState>["markVisited"];
   markGenerated: ReturnType<typeof useDemoState>["markGenerated"];
+  setCityOrder: ReturnType<typeof useDemoState>["setCityOrder"];
   reset: ReturnType<typeof useDemoState>["reset"];
 }
 
@@ -49,8 +50,15 @@ export function useTrack(
   track: DemoTrack,
 ): TrackData {
   const city = cityFromSlug(citySlug);
-  const { state, isReady, setPreferences, markVisited, markGenerated, reset } =
-    useDemoState(city.slug, track);
+  const {
+    state,
+    isReady,
+    setPreferences,
+    markVisited,
+    markGenerated,
+    setCityOrder,
+    reset,
+  } = useDemoState(city.slug, track);
 
   const adaptation = useMemo(
     () =>
@@ -101,6 +109,7 @@ export function useTrack(
     setPreferences,
     markVisited,
     markGenerated,
+    setCityOrder,
     reset,
   };
 }

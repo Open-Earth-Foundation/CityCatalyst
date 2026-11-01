@@ -198,6 +198,13 @@ export const getSubSectorByReferenceNumber = (referenceNumber: string) => {
 
 export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";
 
+/**
+ * DataSource.sourceType for sources created from an imported file's data
+ * source column (e.g. "MEED-CL-2022"). They are not in the Global API catalogue,
+ * so they have no details to show in the source drawer.
+ */
+export const FILE_IMPORT_SOURCE_TYPE = "file_import";
+
 export const DEFAULT_ORGANIZATION_ID = "5a84ebff-33ee-457e-ab52-512b5731978b";
 
 export enum StageNames {

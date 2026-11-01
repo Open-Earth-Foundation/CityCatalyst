@@ -23,7 +23,7 @@ import {
   getPdfOcrConfig,
   getPdfOcrRetryDelayMs,
 } from "@/backend/pdf-ocr-config";
-import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
+import { extractInventoryFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
 import {
@@ -681,7 +681,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const rows = await extractInventoryRowsFromDocument(markdown, {
+    const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
@@ -701,6 +701,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       mappingConfiguration: {
         ...(importedFile.mappingConfiguration || {}),
         rows,
+        extractionSummary: summary,
         extractionProgress: undefined,
       },
       rowCount: rows.length,

@@ -512,12 +512,8 @@ const JNDrawer = ({
   const navigateToCity = useCitySwitchNavigation(lng);
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
-  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
-    undefined,
-    {
-      skip: !isOpen,
-    },
-  );
+  // Load orgs with the page so the drawer can show the org select immediately.
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery();
   const organizations = useMemo(
     () =>
       rawOrganizations &&
@@ -540,6 +536,14 @@ const JNDrawer = ({
 
   const activeOrganizationId =
     organization?.organizationId ?? resolvedOrganizationId;
+
+  const filteredProjectsData = useMemo(
+    () =>
+      (projectsData ?? []).filter(
+        (project) => project.organizationId === resolvedOrganizationId,
+      ),
+    [projectsData, resolvedOrganizationId],
+  );
 
   // Fetch the active organization directly so the name doesn't depend on the
   // organizations list having loaded (or containing a stale stored id).
@@ -831,7 +835,7 @@ const JNDrawer = ({
               >
                 <ProjectFilterSection
                   t={t}
-                  projectsData={projectsData}
+                  projectsData={filteredProjectsData}
                   lng={lng}
                   currentCityId={currentCityId}
                   organizationId={resolvedOrganizationId}

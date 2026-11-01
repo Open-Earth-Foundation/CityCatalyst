@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Link } from "@chakra-ui/react";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/client";

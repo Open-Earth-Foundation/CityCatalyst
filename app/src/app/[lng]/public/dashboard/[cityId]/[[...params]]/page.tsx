@@ -2,6 +2,7 @@ import { PublicDashboardService } from "@/backend/PublicDashboardService";
 import { PublicDashboardShell } from "@/components/PublicDashboard/PublicDashboardShell";
 import MissingCityDashboard from "@/components/missing-city-dashboard";
 import type { CityWithProjectDataResponse } from "@/util/types";
+import { connection } from "next/server";
 
 interface PublicDashboardPageProps {
   params: Promise<{ lng: string; cityId: string; params?: string[] }>;
@@ -10,6 +11,10 @@ interface PublicDashboardPageProps {
 export default async function PublicDashboardPage({
   params,
 }: PublicDashboardPageProps) {
+  // DB access below isn't cacheable (per-city, always fresh) and the
+  // Sequelize/pg driver reads Date.now() internally, which Next.js
+  // rejects during prerendering - defer this whole segment to request time.
+  await connection();
   const { lng, cityId, params: routeParams } = await params;
   const yearParam = routeParams?.[0]; // First catch-all segment is the year
   const year = yearParam ? parseInt(yearParam) : undefined;

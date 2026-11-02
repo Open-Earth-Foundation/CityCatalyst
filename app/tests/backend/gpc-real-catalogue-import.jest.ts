@@ -8,10 +8,15 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
 import ActivityService from "@/backend/ActivityService";
+import {
+  listNotationKeyCandidateGroups,
+  saveInventoryNotationKeys,
+} from "@/backend/agentic/ghgi/stationary-energy/notation-keys";
 import ECRFImportService, {
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
 import type { ParsedFileData } from "@/backend/FileParserService";
+import ImportMappingService from "@/backend/ImportMappingService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import {
@@ -22,6 +27,7 @@ import { db } from "@/models";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { User } from "@/models/User";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
@@ -241,6 +247,56 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       where: { referenceNumber: "III.1.3" },
     });
     expect(imported!.subCategoryId).toBe(subCategory!.subcategoryId);
+  });
+
+  it("does not list III.x.3 as a notation key row to complete", async () => {
+    const inventory = await newInventory();
+    const wasteRefs = async () => {
+      const groups = await listNotationKeyCandidateGroups({
+        inventory,
+        sectorReferenceNumbers: ["III"],
+      });
+      return groups.III.map(({ subCategory }) => subCategory.referenceNumber);
+    };
+    const empty = await wasteRefs();
+    expect(empty).toHaveLength(8);
+    expect(empty.filter(isImportedWasteRef)).toEqual([]);
+
+    const subCategory = await db.models.SubCategory.findOne({
+      where: { referenceNumber: "III.1.3" },
+    });
+    await saveInventoryNotationKeys({
+      inventoryId: inventory.inventoryId,
+      notationKeys: [
+        {
+          subCategoryId: subCategory!.subcategoryId,
+          unavailableReason: "no-occurrance",
+          unavailableExplanation: "None received",
+        },
+      ],
+      userId: user.userId,
+    });
+    expect(await wasteRefs()).toContain("III.1.3");
+  });
+
+  it("keeps required import rows at 8 and accepts a III.x.3 file row", async () => {
+    const inventory = await newInventory();
+    const required = await ImportMappingService.getRequiredGPCRows(inventory);
+    const waste = required.filter((row) =>
+      row.gpcReferenceNumber.startsWith("III."),
+    );
+    expect(waste).toHaveLength(8);
+
+    const preview = await ImportMappingService.createMappingPreview(
+      inventory,
+      parsedFile(),
+      { gpcRefNo: 0, totalCO2e: 1 },
+    );
+    const row = preview.comparisons.find(
+      ({ ecrfRow }) => ecrfRow?.gpcRefNo === "III.4.3",
+    );
+    expect(row!.status).toBe("mapped");
+    expect(row!.mappingIssues).toBeUndefined();
   });
 
   it("keeps required units the same and ignores stored III.x.3", async () => {

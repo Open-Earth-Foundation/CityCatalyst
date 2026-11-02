@@ -353,6 +353,7 @@
   "import-row-issue-invalid-row": "A linha não pôde ser lida.",
   "import-row-issue-outside-inventory-type": "Apenas uma parte do GPC BASIC+. É importado, mas não conta para a conclusão do GPC BASIC.",
   "import-row-issue-omitted-from-total": "Importado e mostrado no detalhe, mas fora dos totais BASIC e BASIC+. Confira se o resíduo vem mesmo de fora da cidade.",
+  "import-row-issue-reported-apart-from-total": "Importado e mostrado no detalhe, mas fora dos totais BASIC e BASIC+.",
   "import-rows-skipped-unknown-notation_one": "{{count}} linha de notação-chave desconhecida.",
   "import-rows-skipped-unknown-notation_other": "{{count}} linhas de chave de notação desconhecida.",
   "import-rows-skipped-empty_one": "{{count}} linha vazia.",

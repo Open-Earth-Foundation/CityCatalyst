@@ -47,6 +47,59 @@ describe("correctWasteDirection", () => {
     expect(correctWasteDirection("III.4.2", [label])).toBe("III.4.2");
   });
 
+  it.each([
+    [
+      "III.1.2",
+      "Waste generated in the city, shipped outside the city and disposed in a regional landfill",
+    ],
+    [
+      "III.1.2",
+      "Waste generated in the city, exported outside the city and treated in a regional plant",
+    ],
+    [
+      "III.3.2",
+      "Waste produced in the municipality and sent outside city limits, incinerated in neighbouring plant",
+    ],
+  ])("keeps real %s rows: %s", (ref, label) => {
+    expect(correctWasteDirection(ref, [label])).toBe(ref);
+  });
+
+  it("does not mix the sub-sector name with a row label", () => {
+    expect(
+      correctWasteDirection("III.1.2", [
+        "Disposal of solid waste generated in the city",
+        OUTSIDE_IN[0],
+      ]),
+    ).toBe("III.1.3");
+    expect(
+      correctWasteDirection("III.1.3", [
+        "Disposal of solid waste generated in the city",
+        "Landfill outside",
+      ]),
+    ).toBe("III.1.3");
+  });
+
+  it("does not read treatment outside as treatment inside", () => {
+    expect(
+      correctWasteDirection("III.1.2", [
+        "Waste generated outside the city and treated outside",
+      ]),
+    ).toBe("III.1.2");
+  });
+
+  it("maps III.x.3 on an explicit scope 3 row to III.x.2", () => {
+    expect(correctWasteDirection("III.1.3", [], "3")).toBe("III.1.2");
+    expect(correctWasteDirection("III.1.3", [], "Scope 3")).toBe("III.1.2");
+    expect(correctWasteDirection("III.1.3", [], "1")).toBe("III.1.3");
+    expect(correctWasteDirection("III.1.3", [], null)).toBe("III.1.3");
+  });
+
+  it("lets a stated direction win over the scope", () => {
+    expect(correctWasteDirection("III.1.3", [OUTSIDE_IN[0]], "3")).toBe(
+      "III.1.3",
+    );
+  });
+
   it("leaves a row without a direction and other sectors alone", () => {
     expect(correctWasteDirection("III.1.3", ["Landfill"])).toBe("III.1.3");
     expect(correctWasteDirection("III.1.2", [null, undefined])).toBe("III.1.2");
@@ -123,7 +176,7 @@ describe("import reconciliation sum", () => {
 });
 
 describe("import review", () => {
-  it("shows III.x.3 and VI.1 as not counted, and no other row", async () => {
+  it("shows III.x.3, VI.1 and I.4.4 as not counted, and no other row", async () => {
     const base = {
       sectorId: "s",
       subsectorId: "ss",
@@ -137,11 +190,12 @@ describe("import review", () => {
           { ...base, gpcRefNo: "III.1.1", rowIndex: 0 },
           { ...base, gpcRefNo: "III.4.3", rowIndex: 1 },
           { ...base, gpcRefNo: "VI.1", rowIndex: 2 },
+          { ...base, gpcRefNo: "I.4.4", rowIndex: 3 },
         ],
         errors: [],
         warnings: [],
-        rowCount: 3,
-        validRowCount: 3,
+        rowCount: 4,
+        validRowCount: 4,
       } as never,
       undefined,
     );
@@ -150,7 +204,8 @@ describe("import review", () => {
       preview.rows.map((row) => [row.gpcRefNo, row.status, row.issue]),
     ).toEqual([
       ["III.4.3", "not-counted", "omitted-from-total"],
-      ["VI.1", "not-counted", "omitted-from-total"],
+      ["VI.1", "not-counted", "reported-apart-from-total"],
+      ["I.4.4", "not-counted", "reported-apart-from-total"],
     ]);
   });
 });

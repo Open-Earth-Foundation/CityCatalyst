@@ -187,27 +187,38 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
+// "outside" must directly follow the verb: "generated in the city, shipped outside
+// and treated in a regional plant" is III.x.2, and a false match leaves the total.
 const GENERATED_OUTSIDE_TREATED_INSIDE =
-  /\b(generated|produced|originating)\b.*\boutside\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\b(within|inside|in)\b|\bimported waste/i;
+  /\b(generated|produced|originating)\s+(from\s+)?outside\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\b(within|inside|in\s+(the\s+)?(city|municipality|town))\b|\bimported waste/i;
 const GENERATED_INSIDE_TREATED_OUTSIDE =
-  /\b(generated|produced|originating)\b.*\b(within|inside|in)\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\boutside\b|\bexported waste/i;
+  /\b(generated|produced|originating)\s+(within|inside|in)\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\boutside\b|\bexported waste/i;
 
 /**
  * Corrects a waste reference when a row's label states the direction. III.x.2 is
  * generated inside and treated outside; III.x.3 is generated outside and treated
  * inside, and leaves BASIC totals, so a wrong .3 drops an amount from the total.
  * Scope cannot separate them: .3 is scope 1 like .1. Rows with no direction in
- * their label keep their reference.
+ * their label keep their reference, except III.x.3 on an explicit scope 3 row:
+ * that is the pre-2025 mislabel of III.x.2.
+ * Labels are read one by one: the sub-sector name itself says "generated in the
+ * city", so joining them would mix two statements.
  */
 export function correctWasteDirection(
   gpcRefNo: string,
   labels: (string | null | undefined)[],
+  scopeLabel?: string | null,
 ): string {
-  const match = gpcRefNo.match(/^(III\.[1-4])\.[123]$/);
+  const match = gpcRefNo.match(/^(III\.[1-4])\.([123])$/);
   if (!match) return gpcRefNo;
-  const label = labels.filter(Boolean).join(" ");
-  if (GENERATED_OUTSIDE_TREATED_INSIDE.test(label)) return `${match[1]}.3`;
-  if (GENERATED_INSIDE_TREATED_OUTSIDE.test(label)) return `${match[1]}.2`;
+  for (const label of labels) {
+    if (!label) continue;
+    if (GENERATED_INSIDE_TREATED_OUTSIDE.test(label)) return `${match[1]}.2`;
+    if (GENERATED_OUTSIDE_TREATED_INSIDE.test(label)) return `${match[1]}.3`;
+  }
+  if (match[2] === "3" && scopeFromLabel(scopeLabel) === 3) {
+    return `${match[1]}.2`;
+  }
   return gpcRefNo;
 }
 
@@ -258,5 +269,8 @@ export function resolveGpcRefFromLabels(input: {
       );
     }
   }
-  return resolved && correctWasteDirection(resolved, [rawSubsector, fuel]);
+  return (
+    resolved &&
+    correctWasteDirection(resolved, [rawSubsector, fuel], scopeLabel)
+  );
 }

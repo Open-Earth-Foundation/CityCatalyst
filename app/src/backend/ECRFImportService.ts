@@ -186,6 +186,15 @@ export default class ECRFImportService {
         : undefined;
       if (gpcRefNo === "") gpcRefNo = undefined;
 
+      // A file reference is trusted, except III.x.3 on an explicit scope 3 row.
+      if (gpcRefNo && scopeHeader) {
+        gpcRefNo = correctWasteDirection(
+          gpcRefNo,
+          [],
+          row[scopeHeader]?.toString(),
+        );
+      }
+
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
         const rawSector = hasSectorColumn
           ? row[headers[detectedColumns.sector!]]?.toString().trim()
@@ -737,11 +746,11 @@ export default class ECRFImportService {
       const copiedRef = row.gpcRefNo?.trim();
       const gpcRefNo =
         (copiedRef &&
-          correctWasteDirection(copiedRef, [
-            row.subsector,
-            row.category,
-            row.activityType,
-          ])) ||
+          correctWasteDirection(
+            copiedRef,
+            [row.subsector, row.category, row.activityType],
+            row.scope,
+          )) ||
         resolveGpcRefFromLabels({
           sector: row.sector,
           subsector: row.subsector,

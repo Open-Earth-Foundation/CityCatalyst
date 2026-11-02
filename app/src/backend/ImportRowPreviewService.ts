@@ -1,4 +1,7 @@
-import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
+import {
+  isImportedWasteRef,
+  isOmittedFromTotalRef,
+} from "@/util/GHGI/reported-totals";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
@@ -49,11 +52,13 @@ export async function previewImportRows(
   );
   for (const row of importedRows) {
     // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
-    const issue = isOmittedFromTotalRef(row.gpcRefNo)
+    const issue = isImportedWasteRef(row.gpcRefNo)
       ? "omitted-from-total"
-      : outsideReferences.has(row.gpcRefNo)
-        ? "outside-inventory-type"
-        : null;
+      : isOmittedFromTotalRef(row.gpcRefNo)
+        ? "reported-apart-from-total"
+        : outsideReferences.has(row.gpcRefNo)
+          ? "outside-inventory-type"
+          : null;
     if (issue) {
       outcomes.push({
         rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,

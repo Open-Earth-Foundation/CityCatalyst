@@ -981,7 +981,8 @@ export type ImportRowIssue =
   | "no-value-or-notation-key"
   | "invalid-row"
   | "outside-inventory-type"
-  | "omitted-from-total";
+  | "omitted-from-total"
+  | "reported-apart-from-total";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */

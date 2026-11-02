@@ -106,6 +106,10 @@ module.exports = {
             SELECT 1 FROM "DataSourceI18n" ds
             WHERE ds.subcategory_id = sc.subcategory_id
           )
+          AND NOT EXISTS (
+            SELECT 1 FROM "ActivityData" ad
+            WHERE ad.subcategory_id = sc.subcategory_id
+          )
         `,
         { replacements: { ids }, transaction },
       );

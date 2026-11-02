@@ -292,6 +292,7 @@
   "import-row-issue-invalid-row": "The row couldn't be read.",
   "import-row-issue-outside-inventory-type": "Only part of GPC BASIC+. It's imported, but doesn't count toward GPC BASIC completion.",
   "import-row-issue-omitted-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals. Check that the waste really comes from outside the city.",
+  "import-row-issue-reported-apart-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals.",
   "not-specified": "Not specified",
   "upload-failed": "Upload failed",
   "failed-to-upload-file": "Failed to upload file",

@@ -26,7 +26,7 @@ export type {
   GhgiAdaptedPayload,
   GhgiIngestPluginDeps,
 } from "./plugins/GhgiIngestPlugin";
-export type { IngestPlugin } from "./plugin";
+export type { IngestMatchResult, IngestPlugin } from "./plugin";
 export type { IngestStore } from "./store";
 export {
   INGEST_ERROR_CODES,

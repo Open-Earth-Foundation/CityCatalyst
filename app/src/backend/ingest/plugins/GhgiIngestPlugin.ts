@@ -8,6 +8,7 @@ import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   buildBulkInventoryImportResult,
   classifyBulkInventoryFile,
+  fileTypeOf,
   type BulkInventoryAcceptedKind,
 } from "@/backend/InventoryFileAutoImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
@@ -41,14 +42,6 @@ export interface GhgiIngestPluginDeps {
     year: number;
   }) => Promise<string | null>;
   cities?: MatchableCity[];
-}
-
-function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
-  const ext = filename.split(".").pop()?.toLowerCase();
-  if (ext === "xlsx" || ext === "csv" || ext === "pdf") {
-    return ext;
-  }
-  return "unknown";
 }
 
 function toFile(buffer: Buffer, originalFileName: string): File {
@@ -109,20 +102,14 @@ export class GhgiIngestPlugin implements IngestPlugin {
 
   async detect(
     ctx: IngestPluginContext,
-    coarse: CoarseFileKind,
+    _coarse: CoarseFileKind,
   ): Promise<void> {
-    if (coarse === "pdf" || coarse === "md" || coarse === "zip") {
-      throw new IngestItemError(
-        "unknown_format",
-        `GHGI bulk path does not accept ${coarse}`,
-      );
-    }
     const buffer = ctx.item.buffer;
     if (!buffer) {
       throw new IngestItemError("validation_failed", "Empty file");
     }
     const fileType = fileTypeOf(ctx.item.originalFileName);
-    if (fileType === "pdf" || fileType === "unknown") {
+    if (fileType === "unknown") {
       throw new IngestItemError("unknown_format", `not_ecrf:${fileType}`);
     }
     const validate =

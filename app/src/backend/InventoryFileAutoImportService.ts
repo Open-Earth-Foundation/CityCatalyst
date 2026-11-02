@@ -40,7 +40,7 @@ function extensionOf(filename: string): string {
   return i >= 0 ? filename.slice(i + 1).toLowerCase() : "";
 }
 
-function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
+export function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
   const ext = extensionOf(filename);
   if (ext === "xlsx" || ext === "csv" || ext === "pdf") return ext;
   return "unknown";

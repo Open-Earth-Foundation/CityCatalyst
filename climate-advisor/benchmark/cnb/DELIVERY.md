@@ -26,6 +26,8 @@ requires `CNB_BENCHMARK_AWS_ACCESS_KEY_ID`, `CNB_BENCHMARK_AWS_SECRET_ACCESS_KEY
 upload/read/delete in that bucket; do not reuse production-wide credentials.
 Manually run only a reviewed trusted revision. Missing provider credentials are
 reported as unavailable. Missing PDF credentials still allow the Markdown path to run.
+The pinned original PDFs are kept out of git, so the PDF job reports unavailable
+in CI; run the PDF path locally after placing them (see `fixtures/README.md`).
 
 For the local PDF command, export `MISTRAL_API_KEY`, `AWS_ACCESS_KEY_ID`,
 `AWS_SECRET_ACCESS_KEY`, `AWS_FILE_UPLOAD_S3_BUCKET_ID` and optionally

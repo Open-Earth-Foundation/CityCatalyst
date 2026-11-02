@@ -103,6 +103,12 @@ jobs:
             echo 'status=3' >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # Original PDFs are kept out of git; see benchmark/cnb/fixtures/README.md.
+          if [[ "$INPUT" == pdf ]] && ! compgen -G 'benchmark/cnb/fixtures/*/source.pdf' > /dev/null; then
+            printf '%s\n' '# CNB live benchmark' '' 'PDF evaluation unavailable: the pinned original PDFs are not in the repository.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
+            echo 'status=3' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           manifest=baseline.json
           if [[ "$INPUT" == pdf ]]; then manifest=baseline-pdf.json; fi
           status=0

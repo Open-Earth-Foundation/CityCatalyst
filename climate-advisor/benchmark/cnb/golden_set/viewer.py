@@ -104,17 +104,20 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR, *, rebui
                 **{key: _read_json(out / rel) for key, rel in ARTEFACTS[stage].items()},
             }
         original = loaded.fixture.source.original_pdf
+        pdf_ref = None
         if original:
-            pdf_dir = run_dir / "pdf"
-            pdf_dir.mkdir(exist_ok=True)
-            target = pdf_dir / f"{fid}.pdf"
-            if not target.exists():
+            target = run_dir / "pdf" / f"{fid}.pdf"
+            # PDFs are kept out of git; without a local copy the run has no PDF link.
+            if not target.exists() and (loaded.directory / original.path).is_file():
+                target.parent.mkdir(exist_ok=True)
                 shutil.copyfile(loaded.directory / original.path, target)
-            if hashlib.sha256(target.read_bytes()).hexdigest() != original.sha256:
-                raise ValueError(f"Snapshot PDF digest mismatch: {fid}")
+            if target.exists():
+                if hashlib.sha256(target.read_bytes()).hexdigest() != original.sha256:
+                    raise ValueError(f"Snapshot PDF digest mismatch: {fid}")
+                pdf_ref = f"runs/{run_dir.name}/pdf/{fid}.pdf"
         fixtures.append(
             {
-                "pdf": f"runs/{run_dir.name}/pdf/{fid}.pdf" if original else None,
+                "pdf": pdf_ref,
                 "golden": loaded.fixture.model_dump(mode="json"),
                 "units": [{"anchor": u.anchor, "text": u.text} for u in loaded.units],
                 "drafting_input": loaded.drafting_input.model_dump(mode="json")
@@ -233,6 +236,9 @@ def _preserve_snapshot_pdfs(run_dir: Path, destination: Path, fixtures_dir: Path
             source = (fixtures_dir / fid / original["path"]).resolve()
             if not source.is_relative_to(fixtures_dir.resolve()):
                 raise ValueError("Snapshot PDF escapes fixture directory")
+        if not source.is_file():
+            # PDFs are kept out of git; the link works once the pinned file is placed.
+            continue
         data = source.read_bytes()
         if hashlib.sha256(data).hexdigest() != original["sha256"]:
             raise ValueError("Historical snapshot PDF bytes are unavailable or changed")

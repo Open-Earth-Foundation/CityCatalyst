@@ -1,2 +1,5 @@
-# PDFs copied for reviewer bundles already live in the fixtures.
+# Original PDFs are kept out of git; fixtures pin them by SHA-256 in golden.json.
+cnb/fixtures/*/source.pdf
+# Copies made for the viewer and reviewer bundles.
 cnb/results/pdf/
+cnb/results/runs/*/pdf/

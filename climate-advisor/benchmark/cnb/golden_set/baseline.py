@@ -21,14 +21,18 @@ def content_digest(value: Any) -> str:
 
 
 def artifact_digest(directory: Path) -> str:
-    """Bind an approved run to all its reports, raw outputs, snapshot and PDFs."""
+    """Bind an approved run to all its reports, raw outputs and snapshot.
+
+    Local PDF copies under ``pdf/`` are kept out of git, so they are excluded;
+    the fixture's ``original_pdf_sha256`` fingerprint already pins their bytes.
+    """
     return content_digest(
         {
             path.relative_to(directory).as_posix(): hashlib.sha256(
                 path.read_bytes()
             ).hexdigest()
             for path in sorted(directory.rglob("*"))
-            if path.is_file()
+            if path.is_file() and path.relative_to(directory).parts[0] != "pdf"
         }
     )
 

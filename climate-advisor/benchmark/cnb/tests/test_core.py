@@ -630,15 +630,19 @@ def test_inexact_extraction_fact_reference_withholds_metrics(judged_case):
     assert judgment.claims[0].evidence[0].quote == "konieczność adaptacji do zmian klimatu"
 
 
-def test_pdf_fixtures_pin_their_original_pdf(fixtures):
+def test_pdf_fixtures_pin_their_original_pdf(fixtures, tmp_path):
     for loaded in fixtures.values():
         source = loaded.fixture.source
         if source.source_format == "pdf":
             assert source.original_pdf is not None, loaded.fixture.fixture_id
-            assert (loaded.directory / source.original_pdf.path).exists()
     richfield = fixtures["richfield-flood-risk"]
+    # PDFs are kept out of git: a missing copy is not a fixture problem.
+    missing = replace(richfield, directory=tmp_path)
+    assert not [p for p in fixture_problems(missing) if "original PDF" in p]
+    (tmp_path / "source.pdf").write_bytes(b"%PDF-1.7\nnot the pinned bytes")
     broken = replace(
         richfield,
+        directory=tmp_path,
         fixture=richfield.fixture.model_copy(
             update={
                 "source": richfield.fixture.source.model_copy(

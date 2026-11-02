@@ -238,7 +238,7 @@ def test_missing_or_changed_pinned_pdf_never_falls_back_to_origin_url(conversion
     with pytest.raises(ValueError, match="Pinned PDF digest"):
         pdf.load_pdf_conversion(loaded, output)
     path.unlink()
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ValueError, match="not available locally"):
         pdf.load_pdf_conversion(loaded, output)
 
 

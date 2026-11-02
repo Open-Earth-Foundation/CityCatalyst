@@ -85,7 +85,8 @@ def pinned_pdf_path(loaded: LoadedFixture) -> Path | None:
     """Return the verified local PDF, or None for a fixture with no original PDF.
 
     A declared but absent or changed PDF is an error, never a remote download.
-    This preserves redacted checked-in PDF bytes even when an origin URL exists.
+    This preserves redacted local PDF bytes even when an origin URL exists. PDFs
+    are kept out of git, so place the pinned file in the fixture folder first.
     """
     original = loaded.fixture.source.original_pdf
     if original is None:
@@ -94,6 +95,8 @@ def pinned_pdf_path(loaded: LoadedFixture) -> Path | None:
     path = (directory / original.path).resolve()
     if not path.is_relative_to(directory):
         raise ValueError("Pinned PDF must stay inside its fixture directory")
+    if not path.is_file():
+        raise ValueError(f"Pinned PDF is not available locally: {original.path}")
     payload = path.read_bytes()
     if hashlib.sha256(payload).hexdigest() != original.sha256:
         raise ValueError("Pinned PDF digest mismatch")

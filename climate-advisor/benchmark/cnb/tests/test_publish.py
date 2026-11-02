@@ -123,3 +123,10 @@ def test_unknown_candidate_is_a_usage_error(tmp_path, capsys):
         publish.main(["--results-dir", str(tmp_path), "--candidate", "missing-run"])
     assert exit_info.value.code == 2
     assert "Unknown candidate run: missing-run" in capsys.readouterr().err
+
+def test_local_pdf_copies_do_not_change_the_baseline_digest(review_runs):
+    baseline, _, _ = review_runs
+    digest = artifact_digest(baseline)
+    (baseline / "pdf").mkdir(exist_ok=True)
+    (baseline / "pdf" / "fixture.pdf").write_bytes(b"%PDF-1.7\nlocal copy")
+    assert artifact_digest(baseline) == digest

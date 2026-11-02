@@ -62,8 +62,9 @@ Or serve it and open http://127.0.0.1:8765:
 python -m http.server 8765 --directory benchmark/cnb/results
 ```
 
-The "Open original PDF" buttons need the PDFs copied next to the site once
-(they are kept out of git; the originals are in `fixtures/`):
+The "Open original PDF" buttons need the PDFs copied next to the site once.
+They are kept out of git: place each pinned `source.pdf` in its fixture folder
+first (see `fixtures/README.md`), then run:
 
 ```bash
 uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results
@@ -93,6 +94,7 @@ uv run pytest benchmark/cnb/tests -q
 uv run python -m benchmark.cnb.scripts.evaluate --parallel --label my-change
 
 # Fresh pinned PDF -> production visual_context conversion -> extraction.
+# Needs the pinned source.pdf files placed locally (they are not in git).
 uv run python -m benchmark.cnb.scripts.evaluate --input-path pdf --baseline-manifest benchmark/cnb/baseline-pdf.json
 
 # Judge-only calibration; unapproved cases are reported without model calls.

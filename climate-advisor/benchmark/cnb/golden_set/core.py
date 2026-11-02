@@ -220,10 +220,10 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
     fixture = loaded.fixture
     original = fixture.source.original_pdf
     if original is not None:
+        # PDFs are kept out of git: a missing local copy only makes the PDF
+        # input path unavailable, but a present copy must match its pin.
         pdf = loaded.directory / original.path
-        if not pdf.exists():
-            problems.append(f"original PDF missing: {original.path}")
-        elif hashlib.sha256(pdf.read_bytes()).hexdigest() != original.sha256:
+        if pdf.exists() and hashlib.sha256(pdf.read_bytes()).hexdigest() != original.sha256:
             problems.append(f"original PDF digest mismatch: {original.path}")
     writing, template = fixture.chapter_writing, loaded.drafting_input
     if writing is None or template is None:

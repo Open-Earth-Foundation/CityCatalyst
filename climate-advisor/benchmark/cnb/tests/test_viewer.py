@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+import shutil
 from pathlib import Path
 
 import pytest
@@ -183,33 +185,63 @@ def test_viewer_assets_reference_the_run_index():
     assert "comparePage" in script
 
 
-def test_pdf_snapshot_remains_per_run_when_republishing(tmp_path):
-    run = make_run(tmp_path, "pdf-snapshot", "2026-10-01", extraction=STAGE_OK)
+def _fixtures_without_pdfs(tmp_path: Path) -> Path:
+    """Copy the fixtures without their original PDFs, which are kept out of git."""
+    root = tmp_path / "fixtures"
+    shutil.copytree(publish.FIXTURES_DIR, root, ignore=shutil.ignore_patterns("*.pdf"))
+    return root
+
+
+@pytest.fixture
+def pdf_fixtures(tmp_path):
+    """Fixtures with a stand-in Richfield PDF pinned by its own digest."""
+    root = _fixtures_without_pdfs(tmp_path)
+    payload = b"%PDF-1.7\nstand-in Richfield PDF"
+    (root / "richfield-flood-risk" / "source.pdf").write_bytes(payload)
+    golden = root / "richfield-flood-risk" / "golden.json"
+    data = json.loads(golden.read_text(encoding="utf-8"))
+    data["source"]["original_pdf"]["sha256"] = hashlib.sha256(payload).hexdigest()
+    golden.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    return root
+
+
+def _richfield_run(tmp_path: Path, run_id: str) -> Path:
+    run = make_run(tmp_path, run_id, "2026-10-01", extraction=STAGE_OK)
     report = json.loads((run / "report.json").read_text(encoding="utf-8"))
     report["fixtures"][0]["fixture_id"] = "richfield-flood-risk"
     (run / "report.json").write_text(json.dumps(report), encoding="utf-8")
-    publish.publish_run(run, tmp_path)
+    return run
+
+
+def test_missing_original_pdf_publishes_without_a_pdf_link(tmp_path):
+    fixtures_dir = _fixtures_without_pdfs(tmp_path)
+    run = _richfield_run(tmp_path, "no-pdf")
+    publish.publish_run(run, tmp_path, fixtures_dir=fixtures_dir)
+    assert read_viewer(run / "viewer.js")["fixtures"][0]["pdf"] is None
+    assert not (run / "pdf").exists()
+
+
+def test_pdf_snapshot_remains_per_run_when_republishing(tmp_path, pdf_fixtures):
+    run = _richfield_run(tmp_path, "pdf-snapshot")
+    publish.publish_run(run, tmp_path, fixtures_dir=pdf_fixtures)
     pdf = run / "pdf" / "richfield-flood-risk.pdf"
     original = pdf.read_bytes()
     assert read_viewer(run / "viewer.js")["fixtures"][0]["pdf"] == "runs/pdf-snapshot/pdf/richfield-flood-risk.pdf"
-    publish.publish_viewer(tmp_path)
+    publish.publish_viewer(tmp_path, fixtures_dir=pdf_fixtures)
     assert pdf.read_bytes() == original
 
 
-def test_legacy_pdf_snapshot_uses_only_matching_historical_bytes(tmp_path):
-    run = make_run(tmp_path, "legacy", "2026-10-01", extraction=STAGE_OK)
-    report = json.loads((run / "report.json").read_text(encoding="utf-8"))
-    report["fixtures"][0]["fixture_id"] = "richfield-flood-risk"
-    (run / "report.json").write_text(json.dumps(report), encoding="utf-8")
-    publish.publish_run(run, tmp_path)
+def test_legacy_pdf_snapshot_uses_only_matching_historical_bytes(tmp_path, pdf_fixtures):
+    run = _richfield_run(tmp_path, "legacy")
+    publish.publish_run(run, tmp_path, fixtures_dir=pdf_fixtures)
     payload = read_viewer(run / "viewer.js")
     payload["fixtures"][0]["pdf"] = "pdf/richfield-flood-risk.pdf"
     publish.write_run_viewer(run, payload)
     before = (run / "viewer.js").read_bytes()
-    publish.publish_viewer(tmp_path)
+    publish.publish_viewer(tmp_path, fixtures_dir=pdf_fixtures)
     assert (tmp_path / "pdf" / "richfield-flood-risk.pdf").read_bytes() == (run / "pdf" / "richfield-flood-risk.pdf").read_bytes()
     assert (run / "viewer.js").read_bytes() == before
     (tmp_path / "pdf" / "richfield-flood-risk.pdf").write_bytes(b"different historical PDF")
     with pytest.raises(ValueError, match="Historical snapshot PDF"):
-        publish.publish_viewer(tmp_path)
+        publish.publish_viewer(tmp_path, fixtures_dir=pdf_fixtures)
     assert (tmp_path / "pdf" / "richfield-flood-risk.pdf").read_bytes() == b"different historical PDF"

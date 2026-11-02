@@ -38,14 +38,16 @@ Each directory has:
   contract. Richfield's certifying engineer, licence number, and private email
   correspondents are redacted; the Kraków plan is an official document and
   contains no personal data.
-- `source.pdf` (PDF fixtures only): the document `source.md` was produced from,
-  pinned by `source.original_pdf` (path, SHA-256, URL, notes) and verified by
-  `fixture_problems`. The `--input-path pdf` run converts these pinned bytes with
-  the production CNB `visual_context` converter; the default path uses fixed
-  Markdown. Both judge against the independent approved source reference.
-  The Richfield copy is truly redacted (text and
-  signature removed, not covered) to match `source.md`; the Kraków copy is the
-  unmodified public annex.
+- `source.pdf` (PDF fixtures only, **not in git**): the document `source.md` was
+  produced from, pinned by `source.original_pdf` (path, SHA-256, URL, notes).
+  Place the file in the fixture folder to use it; `fixture_problems` rejects a
+  copy whose SHA-256 differs, and a missing copy only makes the PDF path
+  unavailable. The `--input-path pdf` run converts these pinned bytes with the
+  production CNB `visual_context` converter; the default path uses fixed
+  Markdown. Both judge against the independent approved source reference. The
+  Kraków copy is the unmodified public annex at its `url`. The Richfield copy is
+  truly redacted (text and signature removed, not covered) to match `source.md`,
+  so it cannot be re-downloaded; get it from the benchmark maintainers.
 - `golden.json`: expectations for every stage (see below).
 - `drafting_input.json`: funder, opportunity, application template, and
   authoritative city context. Every template field is owned by at least one

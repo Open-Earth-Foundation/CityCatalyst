@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=0/0 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/74ae3744-0977-485b-9874-4f30a1b722be) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `900b4c1f-1fff-5445-942a-cb3c705c41b3`; draft: `a41d444a-0f26-4a1b-a717-f01f2461c3d7`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -44,8 +44,8 @@ I’m searching the connected sources for SEEG data and will continue once the d
 
 I found SEEG data for two rows and opened a confirmation card:
 
-- Scope 1 Residential Buildings — fuel combustion  
-- Scope 1 Commercial & Institutional Buildings — fuel combustion  
+- Scope 1 Residential Buildings — fuel combustion
+- Scope 1 Commercial & Institutional Buildings — fuel combustion
 
 Confirm the card to stage these two SEEG selections.
 
@@ -57,8 +57,8 @@ Confirm the card to stage these two SEEG selections.
 
 I staged the SEEG selections for:
 
-- Scope 1 Residential Buildings — fuel combustion  
-- Scope 1 Commercial & Institutional Buildings — fuel combustion  
+- Scope 1 Residential Buildings — fuel combustion
+- Scope 1 Commercial & Institutional Buildings — fuel combustion
 
 They are ready to save in Clima.
 
@@ -74,7 +74,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/22de6acf-3a6d-4e96-b056-41e3659560c7) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `e2d405fc-97a0-5aa3-a74a-4ee161b053a3`; draft: `7871c586-c0e0-4714-bc90-eb433d8bbbf7`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -114,8 +114,8 @@ I found two applicable SEEG city-level sources for 2022—Scope 1 residential an
 
 Staged the SEEG sources for:
 
-- Scope 1 commercial and institutional fuel combustion  
-- Scope 1 residential fuel combustion  
+- Scope 1 commercial and institutional fuel combustion
+- Scope 1 residential fuel combustion
 
 They are ready to save in the Clima review draft.
 
@@ -131,7 +131,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/19f89de2-f859-4341-929a-72289782dd5e) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `089840af-1c3f-56d6-b120-27842c2068d6`; draft: `d3de4394-6c55-4692-863e-128691fd7781`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -185,4 +185,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_draft_generation_background · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/5ca5adb1c92e41c68237815b0c044900) — request `None`, draft `d3de4394-6c55-4692-863e-128691fd7781`, prompt `None`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/1235542d3a2048dcb6a26f69cc13e376) — request `cc-1793495736337-ypjh1j1vf`, draft `d3de4394-6c55-4692-863e-128691fd7781`, prompt `stationary_energy_review`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/79ded6005a784fcfa6d54a8638a3ae4f) — request `cc-1793495759494-b4g6shic7`, draft `d3de4394-6c55-4692-863e-128691fd7781`, prompt `stationary_energy_review`.
-

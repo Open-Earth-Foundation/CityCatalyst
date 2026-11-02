@@ -1,0 +1,11 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\WBW\.t3\worktrees\CityCatalyst\cc-962-rescan-20261101\climate-advisor\service
+configfile: pytest.ini
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 12 items
+
+tests\test_stationary_energy_draft_auth_contract.py ...                  [ 25%]
+tests\test_conversation_observability.py .........                       [100%]
+
+================= 12 passed, 27 warnings in 61.24s (0:01:01) ==================

@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:55:19.156Z — 2026-11-01T10:55:54.521Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/b1bcfedf-0a67-4981-8a9d-66d8aeca76e9) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -20,10 +20,10 @@ Mam małą tabelę dla naszego miasta. Czy możesz dodać te dane do inwentaryza
 Mogę pomóc przygotować dane, ale nie mogę bezpośrednio zapisać ich do inwentaryzacji z tego czatu.
 
 Dla 2024 r. dane do wprowadzenia to:
-- **Budynki mieszkalne — Scope 1:** 1 200 tCO₂e  
-- **Transport drogowy — Scope 1:** 800 tCO₂e  
+- **Budynki mieszkalne — Scope 1:** 1 200 tCO₂e
+- **Transport drogowy — Scope 1:** 800 tCO₂e
 
-**Suma:** 2 000 tCO₂e.  
+**Suma:** 2 000 tCO₂e.
 Sumy nie należy zwykle dodawać jako osobnej kategorii emisji, aby nie doszło do podwójnego liczenia — powinna wynikać z dwóch pozycji źródłowych.
 
 W CityCatalyst wybierz inwentaryzację miasta za **2024**, a następnie dodaj lub zaktualizuj te dwie pozycje w odpowiednich sektorach. Jeśli podasz, w jakim układzie importu pracujesz, mogę przygotować tabelę w wymaganym formacie.

@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:56:41.185Z — 2026-11-01T10:57:18.851Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/b1ef567f-acbc-4535-b3f8-51bf78cbcf7f) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,7 +13,7 @@ Przełożona pyta, jak zmieniły się emisje naszego miasta między inwentaryzac
 
 Porównałem inwentaryzacje Brzegu Nadziei za 2023 i 2024 (obie: GPC Basic+ z wartościami GWP AR6).
 
-**Łączne emisje wzrosły z 1,50 mln tCO₂e w 2023 r. do 1,80 mln tCO₂e w 2024 r.**  
+**Łączne emisje wzrosły z 1,50 mln tCO₂e w 2023 r. do 1,80 mln tCO₂e w 2024 r.**
 To wzrost o **300 tys. tCO₂e**, czyli **20%**.
 
 | Sektor | 2023 | 2024 | Zmiana |

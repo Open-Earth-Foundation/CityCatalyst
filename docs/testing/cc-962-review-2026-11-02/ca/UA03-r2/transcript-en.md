@@ -12,10 +12,10 @@ I have our previous inventory in Excel and would like to use it in CityCatalyst.
 
 Yes — it is best to prepare the spreadsheet for import rather than retyping data manually. The general process in CityCatalyst looks like this:
 
-1. **Create or open an inventory** for the correct city and base year.  
-2. Go to the relevant emission sector (e.g. stationary energy, transport, waste) and select the **add/import data** option, if available.  
-3. **Map the Excel columns** to the required CityCatalyst fields — these usually include the year, sector/subsector, activity (e.g. fuel or energy consumption), unit, emission factor, and data source.  
-4. If the platform provides an **import template**, download it and transfer the data from your existing file into that layout. This is the safest way to avoid unit and classification errors.  
+1. **Create or open an inventory** for the correct city and base year.
+2. Go to the relevant emission sector (e.g. stationary energy, transport, waste) and select the **add/import data** option, if available.
+3. **Map the Excel columns** to the required CityCatalyst fields — these usually include the year, sector/subsector, activity (e.g. fuel or energy consumption), unit, emission factor, and data source.
+4. If the platform provides an **import template**, download it and transfer the data from your existing file into that layout. This is the safest way to avoid unit and classification errors.
 5. After importing, check the values, assignment to sectors, data years, and emission factors applied. Then fill in sources and assumptions for auditability.
 
 Before importing, it is also worth:

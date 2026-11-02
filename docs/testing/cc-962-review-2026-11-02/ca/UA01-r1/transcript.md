@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:45:00.261Z — 2026-11-01T10:45:33.186Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/78a04d80-85c8-474c-af4b-aa1bef74ea9d) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -15,10 +15,10 @@ Dzień dobry! Mogę przeprowadzić Cię przez przygotowanie inwentaryzacji krok 
 
 Na początek warto przygotować:
 
-1. **Granice inwentaryzacji** — obszar administracyjny miasta oraz rok raportowy 2025.  
-2. **Metodologię i zakres** — zwykle inwentaryzację miejską prowadzi się zgodnie z GPC, obejmując sektory takie jak energia stacjonarna, transport, odpady oraz — zależnie od dostępności danych — procesy przemysłowe i rolnictwo.  
-3. **Dane źródłowe za 2025 r.** — np. zużycie energii elektrycznej, gazu i paliw, ciepło sieciowe, ruch i paliwa transportowe, odpady oraz ścieki. Warto od razu zapisać źródło, jednostkę, okres oraz poziom agregacji każdego zbioru.  
-4. **Współczynniki emisji** — dla energii, paliw, odpadów i innych źródeł, wraz z rokiem i źródłem współczynnika.  
+1. **Granice inwentaryzacji** — obszar administracyjny miasta oraz rok raportowy 2025.
+2. **Metodologię i zakres** — zwykle inwentaryzację miejską prowadzi się zgodnie z GPC, obejmując sektory takie jak energia stacjonarna, transport, odpady oraz — zależnie od dostępności danych — procesy przemysłowe i rolnictwo.
+3. **Dane źródłowe za 2025 r.** — np. zużycie energii elektrycznej, gazu i paliw, ciepło sieciowe, ruch i paliwa transportowe, odpady oraz ścieki. Warto od razu zapisać źródło, jednostkę, okres oraz poziom agregacji każdego zbioru.
+4. **Współczynniki emisji** — dla energii, paliw, odpadów i innych źródeł, wraz z rokiem i źródłem współczynnika.
 5. **Kontrolę jakości** — sprawdzenie kompletności sektorów, spójności jednostek i ewentualnego podwójnego liczenia.
 
 W CityCatalyst zacznij od utworzenia inwentaryzacji dla miasta i roku **2025**, a następnie dodawaj dane sektorami. Jeśli rok 2025 jeszcze trwa albo dane nie są pełne, możesz prowadzić ją jako inwentaryzację roboczą i później uzupełnić dane roczne.
@@ -35,10 +35,10 @@ Co powinnam wybrać w ustawieniach i gdzie potem sprawdzę, czy rok 2025 rzeczyw
 
 Przy tworzeniu inwentaryzacji wybierz przede wszystkim:
 
-- **Miasto / obszar**: właściwą jednostkę administracyjną, dla której liczysz emisje.  
-- **Rok inwentaryzacji**: **2025**.  
-- **Typ inwentaryzacji**: wybierz wariant odpowiadający miejskiej inwentaryzacji emisji, a nie np. planowi działań.  
-- **Metodykę / GWP**: stosuj jedną metodykę konsekwentnie w całej inwentaryzacji; jeśli organizacja ma ustalony standard, wybierz ten sam co w poprzednich latach, aby wyniki były porównywalne.  
+- **Miasto / obszar**: właściwą jednostkę administracyjną, dla której liczysz emisje.
+- **Rok inwentaryzacji**: **2025**.
+- **Typ inwentaryzacji**: wybierz wariant odpowiadający miejskiej inwentaryzacji emisji, a nie np. planowi działań.
+- **Metodykę / GWP**: stosuj jedną metodykę konsekwentnie w całej inwentaryzacji; jeśli organizacja ma ustalony standard, wybierz ten sam co w poprzednich latach, aby wyniki były porównywalne.
 - **Zakres sektorów**: na start uwzględnij co najmniej energię stacjonarną, transport i odpady; kolejne sektory dodaj zależnie od danych.
 
 Po zapisaniu sprawdzisz dostępność roku 2025 na liście inwentaryzacji: odszukaj swoje miasto i potwierdź, że widnieje przy nim rok **2025**. Po otwarciu tej pozycji sprawdź też status uzupełnienia sektorów — wtedy będzie wiadomo, czy sama inwentaryzacja istnieje i które dane są już wprowadzone.

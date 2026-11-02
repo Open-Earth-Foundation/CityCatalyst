@@ -12,11 +12,11 @@ Wynik: **0/3** zaliczonych prób. GE=5, UW-kontrakt=0, PV=0. DA=0/0 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/ffbe8557-cbcf-4945-863a-32dde7d46488) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `2484f3b8-191e-5e49-9714-757ff5f05dfc`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/e654cac3-303c-4b9f-9b3c-624878264f1b) · readback (local execution artifact; not distributed).
 
 Znaczniki na głównym filmie:
 
@@ -62,11 +62,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/f58ecc8b-41b9-4804-b6b5-b83fa151c6b6) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `a69b4625-214f-572e-972f-43d333b9e77f`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/22057e9f-06fc-4736-b2b1-d2b8e1a11394) · readback (local execution artifact; not distributed).
 
 Znaczniki na głównym filmie:
 
@@ -107,11 +107,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/c2ff86fe-5b76-40ab-b737-d722d7aa30d6) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `8a62eb4b-ea0a-5a20-af22-f4001b828db3`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/084da330-fe93-497a-8517-bb903eaee9d1) · readback (local execution artifact; not distributed).
 
 Znaczniki na głównym filmie:
 
@@ -152,4 +152,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 - [climate_advisor_message_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/be66f4a747c84ef18629bc744595e7a5) — request `cc-1793493569943-lblovpi6p`, draft `None`, prompt `chat`.
 - [climate_advisor_message_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/ea49f364510d4578ac09070d23377316) — request `cc-1793493582160-2ugph749s`, draft `None`, prompt `chat`.
-

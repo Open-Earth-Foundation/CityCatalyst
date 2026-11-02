@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:55:09.630Z — 2026-11-01T10:55:42.689Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/bedb53c6-14c8-4083-89f9-1499bf4e24d6) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -19,8 +19,8 @@ Mam małą tabelę dla naszego miasta. Czy możesz dodać te dane do inwentaryza
 
 Nie mogę bezpośrednio dodać danych do inwentaryzacji z poziomu czatu, ale możesz wprowadzić je w inwentaryzacji za 2024 r. jako:
 
-- **Budynki mieszkalne — Scope 1:** 1 200 tCO₂e  
-- **Transport drogowy — Scope 1:** 800 tCO₂e  
+- **Budynki mieszkalne — Scope 1:** 1 200 tCO₂e
+- **Transport drogowy — Scope 1:** 800 tCO₂e
 
 Łączna wartość wynosi **2 000 tCO₂e**. Wiersz „Suma” potraktuj jako kontrolę, a nie jako dodatkową pozycję emisyjną, aby nie podwoić emisji.
 

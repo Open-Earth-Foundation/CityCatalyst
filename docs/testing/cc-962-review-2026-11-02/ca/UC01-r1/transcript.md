@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:10:08.285Z — 2026-11-01T11:11:16.662Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/bb0044d6-7978-4890-aa44-798e72718196) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -62,24 +62,24 @@ Co powinnam teraz sprawdzić, zanim zdecyduję się użyć tych danych?
 
 Przed zaakceptowaniem propozycji sprawdź przede wszystkim:
 
-1. **Dopasowanie roku i geografii**  
+1. **Dopasowanie roku i geografii**
    Wszystkie dostępne dane są krajowe i starsze niż inwentarz 2022: SEEG pochodzi z 2015 r., a EPE z 2014 r. Oceń, czy możesz je zastosować jako przybliżenie dla São Paulo, czy masz nowsze dane miejskie lub od dostawców energii.
 
-2. **Zakres i przypisanie do właściwego wiersza GPC**  
-   - SEEG obejmuje spalanie paliw w **Scope 1**.  
-   - EPE obejmuje energię elektryczną w **Scope 2** oraz straty przesyłu i dystrybucji w **Scope 3**.  
+2. **Zakres i przypisanie do właściwego wiersza GPC**
+   - SEEG obejmuje spalanie paliw w **Scope 1**.
+   - EPE obejmuje energię elektryczną w **Scope 2** oraz straty przesyłu i dystrybucji w **Scope 3**.
    Upewnij się, że nie przypisujesz tych samych emisji do więcej niż jednego sektora lub zakresu.
 
-3. **Metodę i jednostki**  
+3. **Metodę i jednostki**
    W panelu źródła sprawdź aktywność, jednostkę i emisje CO₂e. Dla propozycji EPE aktywność jest raportowana w MWh; propozycje SEEG dotyczą całkowitego zużycia paliw, lecz w dostępnych rekordach brak jednostki aktywności — występują za to emisje według gazów.
 
-4. **Kompletność podsektorów**  
+4. **Kompletność podsektorów**
    Źródła pokrywają mieszkalnictwo, budynki komercyjne, przemysł, rolnictwo i część sektora energii. Nadal są luki m.in. dla energii elektrycznej i strat w sektorze energii oraz dla „źródeł niesprecyzowanych”.
 
-5. **Oznaczenia „NO” dla emisji ulotnych**  
+5. **Oznaczenia „NO” dla emisji ulotnych**
    Dla emisji z węgla oraz systemów ropy i gazu dostępne są propozycje **NO** („nie występuje”), oparte na braku wykrytych instalacji w granicach miasta. Potwierdź to lokalną wiedzą lub rejestrami infrastruktury, zanim ustawisz oznaczenie.
 
-6. **Plausibility check**  
+6. **Plausibility check**
    Porównaj wielkości emisji z wcześniejszymi inwentarzami São Paulo, danymi o zużyciu energii oraz liczbą ludności. Duże odchylenia mogą wynikać z użycia danych krajowych zamiast miejskich.
 
 Najbezpieczniej zacząć od przejrzenia każdego proponowanego wiersza w panelu po prawej, szczególnie danych krajowych SEEG i EPE, a następnie zaakceptować tylko te, które są metodologicznie uzasadnione.

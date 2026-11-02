@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:56:32.512Z — 2026-11-01T10:57:09.052Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/93aeda0e-8a02-4a98-90f3-71e23f2ca2fb) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -33,7 +33,7 @@ O ile to się zmieniło w tonach i w procentach względem 2023 roku?
 
 Emisje wzrosły o **300 000 tCO₂e** — z **1 500 000 tCO₂e w 2023 r.** do **1 800 000 tCO₂e w 2024 r.**
 
-To oznacza wzrost o **20% względem 2023 r.**  
+To oznacza wzrost o **20% względem 2023 r.**
 \[
 \frac{1{,}800{,}000 - 1{,}500{,}000}{1{,}500{,}000} \times 100\% = 20\%
 \]

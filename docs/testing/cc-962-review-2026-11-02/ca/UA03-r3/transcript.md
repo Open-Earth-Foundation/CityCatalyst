@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:53:33.382Z — 2026-11-01T10:54:14.018Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/39fcc5ce-7a45-4af4-a103-cc58596b1e8a) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,7 +13,7 @@ Mam naszą wcześniejszą inwentaryzację w Excelu i chciałabym wykorzystać j�
 
 Możesz uniknąć ręcznego przepisywania, przygotowując plik Excel do importu danych do inwentaryzacji.
 
-1. **Utwórz lub otwórz właściwą inwentaryzację** w CityCatalyst — dla miasta i roku, którego dotyczy arkusz.  
+1. **Utwórz lub otwórz właściwą inwentaryzację** w CityCatalyst — dla miasta i roku, którego dotyczy arkusz.
 2. **Sprawdź dostępny szablon importu** w sekcji danych/źródeł danych. Najbezpieczniej przenieść dane do struktury tego szablonu, zamiast importować dowolny układ istniejącego pliku.
 3. W Excelu uporządkuj dane tak, aby dla każdej pozycji były jasne m.in.:
    - sektor i podsektor,

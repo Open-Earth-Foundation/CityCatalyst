@@ -32,7 +32,7 @@ By how much did this change in tonnes and as a percentage relative to 2023?
 
 Emissions increased by **300 000 tCO₂e** — from **1 500 000 tCO₂e in 2023** to **1 800 000 tCO₂e in 2024**.
 
-This means an increase of **20% relative to 2023**.  
+This means an increase of **20% relative to 2023**.
 \[
 \frac{1{,}800{,}000 - 1{,}500{,}000}{1{,}500{,}000} \times 100\% = 20\%
 \]

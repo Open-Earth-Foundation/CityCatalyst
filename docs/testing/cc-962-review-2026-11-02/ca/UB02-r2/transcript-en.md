@@ -12,7 +12,7 @@ My supervisor is asking how our city's emissions changed between the 2023 and 20
 
 I compared the inventories for Brzeg Nadziei for 2023 and 2024 (both: GPC Basic+ with AR6 GWP values).
 
-**Total emissions increased from 1,50 million tCO₂e in 2023 to 1,80 million tCO₂e in 2024.**  
+**Total emissions increased from 1,50 million tCO₂e in 2023 to 1,80 million tCO₂e in 2024.**
 This is an increase of **300 thousand tCO₂e**, or **20%**.
 
 | Sector | 2023 | 2024 | Change |

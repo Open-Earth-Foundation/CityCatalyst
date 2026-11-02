@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:02:17.420Z — 2026-11-01T11:03:07.721Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/101a1e55-cb1a-4aba-8759-4f987683ce94) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -23,10 +23,10 @@ Spójrzmy na propozycję SEEG dla budynków mieszkalnych, zakres 1 (I.1.1). Ską
 
 Dla **budynków mieszkalnych, zakres 1 (I.1.1)** proponowane jest źródło **SEEG – Sistema de Estimativa de Emissão de Gases do Efeito Estufa**.
 
-- **Zasięg danych:** poziom krajowy (Brazylia)  
-- **Rok źródła:** 2015  
-- **Proponowana wartość:** **1,117,504,701 kgCO₂e** (ok. **1,11 MtCO₂e**, 100-letni współczynnik GWP)  
-- **Dane wejściowe:** całkowite zużycie paliw w budynkach mieszkalnych; źródło nie podaje ilości aktywności ani jednostki zużycia paliwa.  
+- **Zasięg danych:** poziom krajowy (Brazylia)
+- **Rok źródła:** 2015
+- **Proponowana wartość:** **1,117,504,701 kgCO₂e** (ok. **1,11 MtCO₂e**, 100-letni współczynnik GWP)
+- **Dane wejściowe:** całkowite zużycie paliw w budynkach mieszkalnych; źródło nie podaje ilości aktywności ani jednostki zużycia paliwa.
 
 Wartość pochodzi bezpośrednio z podłączonego zbioru SEEG, bez modelowego szacowania w tym przepływie.
 

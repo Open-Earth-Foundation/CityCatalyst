@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=3, PV=9. DA=0/0 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/415c3515-f313-4390-891d-059f6eacfccf) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `93ae1525-7bcb-5977-a05f-77096295925b`; draft: `dc741958-93c0-4481-af65-37896219bcd1`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -35,7 +35,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/22761914-52a0-45ae-9b7c-16003fd1c75e) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `b3420ec8-808f-5c29-9204-697c9ca597ed`; draft: `bb9bd5e8-13e5-4c7a-9053-8b760bb477f6`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -58,7 +58,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/01ec0a75-4fbf-4e92-a60e-7a8183311de4) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `9faa321c-526c-5200-8706-461d9f0b14fb`; draft: `10918a43-b8d2-4dad-961e-41abc481429e`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -78,4 +78,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_draft_generation_background · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/91bf99a7347940f58554392c74a355ee) — request `None`, draft `10918a43-b8d2-4dad-961e-41abc481429e`, prompt `None`.
 - [stationary_energy_review_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/97cfc81d2c304822a8f9e0fe92e38dbf) — request `cc-1793494584538-sdrvf8jx3`, draft `10918a43-b8d2-4dad-961e-41abc481429e`, prompt `None`.
 - [stationary_energy_save_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/9af0ca80dc364b91a4956d8a3badfb7a) — request `cc-1793494588449-1iiljuflj`, draft `10918a43-b8d2-4dad-961e-41abc481429e`, prompt `None`.
-

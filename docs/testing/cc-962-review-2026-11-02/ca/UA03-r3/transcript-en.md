@@ -12,7 +12,7 @@ I have our previous inventory in Excel and would like to use it in CityCatalyst.
 
 You can avoid manual retyping by preparing an Excel file to import data into the inventory.
 
-1. **Create or open the correct inventory** in CityCatalyst — for the city and year to which the spreadsheet relates.  
+1. **Create or open the correct inventory** in CityCatalyst — for the city and year to which the spreadsheet relates.
 2. **Check the available import template** in the data/data sources section. The safest approach is to transfer the data into that template's structure rather than importing an arbitrary layout of an existing file.
 3. In Excel, organize the data so that, for each entry, the following are clear, among other things:
    - sector and subsector,

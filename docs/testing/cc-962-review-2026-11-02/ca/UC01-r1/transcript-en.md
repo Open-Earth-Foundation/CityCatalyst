@@ -61,24 +61,24 @@ What should I check now before deciding to use these data?
 
 Before accepting the proposals, check the following in particular:
 
-1. **Year and geographic fit**  
+1. **Year and geographic fit**
    All available data are national and older than the 2022 inventory: SEEG is from 2015, and EPE from 2014. Assess whether you can use them as a proxy for São Paulo or whether you have newer city data or data from energy suppliers.
 
-2. **Scope and assignment to the correct GPC row**  
-   - SEEG covers fuel combustion in **Scope 1**.  
-   - EPE covers electricity in **Scope 2** and transmission and distribution losses in **Scope 3**.  
+2. **Scope and assignment to the correct GPC row**
+   - SEEG covers fuel combustion in **Scope 1**.
+   - EPE covers electricity in **Scope 2** and transmission and distribution losses in **Scope 3**.
    Make sure you do not assign the same emissions to more than one sector or scope.
 
-3. **Method and units**  
+3. **Method and units**
    In the source panel, check the activity, unit and CO₂e emissions. For EPE proposals, activity is reported in MWh; SEEG proposals concern total fuel consumption, but the available records lack an activity unit — they do, however, contain emissions by gas.
 
-4. **Subsector completeness**  
+4. **Subsector completeness**
    The sources cover housing, commercial buildings, industry, agriculture and part of the energy sector. Gaps remain, including electricity and losses in the energy sector and “unspecified sources”.
 
-5. **“NO” designations for fugitive emissions**  
+5. **“NO” designations for fugitive emissions**
    For emissions from coal and oil and gas systems, **NO** (“not occurring”) proposals are available, based on no facilities having been detected within the city boundary. Confirm this using local knowledge or infrastructure registers before setting the designation.
 
-6. **Plausibility check**  
+6. **Plausibility check**
    Compare emissions magnitudes with previous São Paulo inventories, energy consumption data and population. Large deviations may result from using national rather than city data.
 
 The safest approach is to begin by reviewing each proposed row in the panel on the right, particularly the national SEEG and EPE data, and then accept only those that are methodologically justified.

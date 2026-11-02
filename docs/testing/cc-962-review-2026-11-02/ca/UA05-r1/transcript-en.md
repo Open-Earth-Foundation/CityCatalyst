@@ -18,8 +18,8 @@ I have a small table for our city. Can you add these data to the inventory for 2
 
 I cannot directly add data to the inventory from the chat, but you can enter them in the inventory for 2024 as:
 
-- **Residential buildings — Scope 1:** 1 200 tCO₂e  
-- **Road transport — Scope 1:** 800 tCO₂e  
+- **Residential buildings — Scope 1:** 1 200 tCO₂e
+- **Road transport — Scope 1:** 800 tCO₂e
 
 The total value is **2 000 tCO₂e**. Treat the “Total” row as a check, rather than as an additional emission entry, to avoid doubling the emissions.
 

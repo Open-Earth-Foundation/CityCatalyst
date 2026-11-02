@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:52:12.534Z — 2026-11-01T10:52:36.692Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/9f1b8f1a-3e4f-493d-99a8-e7b47cd77d72) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -27,10 +27,10 @@ Nie chcę stracić tego, co już wprowadzono. Jak bezpiecznie otworzyć ten rok 
 
 Bezpiecznie otwórz istniejącą inwentaryzację — samo jej wyświetlenie nie usuwa ani nie nadpisuje danych.
 
-1. Przejdź do listy **Inwentaryzacje** i znajdź swoje miasto oraz rok **2024**.  
-2. Przed wejściem sprawdź nazwę, typ inwentaryzacji i zastosowany współczynnik GWP, jeśli są widoczne. To pomaga upewnić się, że wybierasz właściwą wersję.  
-3. Otwórz inwentaryzację i najpierw przejrzyj ekran podsumowania/statusu: powinny być tam widoczne sektory z uzupełnionymi danymi oraz elementy nadal wymagające pracy.  
-4. Otwieraj sektory pojedynczo, aby zobaczyć wprowadzone źródła danych, lata pokrycia i wyniki emisji. Nie zapisuj zmian, jeśli chcesz tylko sprawdzić zawartość.  
+1. Przejdź do listy **Inwentaryzacje** i znajdź swoje miasto oraz rok **2024**.
+2. Przed wejściem sprawdź nazwę, typ inwentaryzacji i zastosowany współczynnik GWP, jeśli są widoczne. To pomaga upewnić się, że wybierasz właściwą wersję.
+3. Otwórz inwentaryzację i najpierw przejrzyj ekran podsumowania/statusu: powinny być tam widoczne sektory z uzupełnionymi danymi oraz elementy nadal wymagające pracy.
+4. Otwieraj sektory pojedynczo, aby zobaczyć wprowadzone źródła danych, lata pokrycia i wyniki emisji. Nie zapisuj zmian, jeśli chcesz tylko sprawdzić zawartość.
 5. Dopiero po potwierdzeniu, że to właściwy rok i zakres, kontynuuj uzupełnianie braków.
 
 Jeśli dla miasta i roku 2024 widzisz więcej niż jedną pozycję, porównaj ich nazwę, typ i GWP przed rozpoczęciem edycji.

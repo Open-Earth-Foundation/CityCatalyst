@@ -14,10 +14,10 @@ Good morning! I can guide you through preparing the inventory step by step, but 
 
 To start with, it is worth preparing:
 
-1. **Inventory boundaries** — the city's administrative area and the reporting year 2025.  
-2. **Methodology and scope** — a city inventory is usually conducted in accordance with GPC, covering sectors such as stationary energy, transport, waste, and — depending on data availability — industrial processes and agriculture.  
-3. **Source data for 2025** — e.g. electricity, gas and fuel consumption, district heating, traffic and transport fuels, waste and wastewater. It is worth recording the source, unit, period, and level of aggregation of each dataset right away.  
-4. **Emission factors** — for energy, fuels, waste, and other sources, together with the year and source of the factor.  
+1. **Inventory boundaries** — the city's administrative area and the reporting year 2025.
+2. **Methodology and scope** — a city inventory is usually conducted in accordance with GPC, covering sectors such as stationary energy, transport, waste, and — depending on data availability — industrial processes and agriculture.
+3. **Source data for 2025** — e.g. electricity, gas and fuel consumption, district heating, traffic and transport fuels, waste and wastewater. It is worth recording the source, unit, period, and level of aggregation of each dataset right away.
+4. **Emission factors** — for energy, fuels, waste, and other sources, together with the year and source of the factor.
 5. **Quality control** — checking sector completeness, unit consistency, and possible double counting.
 
 In CityCatalyst, start by creating an inventory for the city and the year **2025**, then add data sector by sector. If 2025 is still underway or the data are incomplete, you can maintain it as a draft inventory and fill in the annual data later.
@@ -34,10 +34,10 @@ What should I select in the settings, and where can I then check whether 2025 is
 
 When creating the inventory, select primarily:
 
-- **City / area**: the correct administrative unit for which you are calculating emissions.  
-- **Inventory year**: **2025**.  
-- **Inventory type**: choose the option corresponding to a city emissions inventory, rather than, for example, an action plan.  
-- **Methodology / GWP**: apply one methodology consistently throughout the inventory; if the organization has an established standard, select the same one as in previous years so the results are comparable.  
+- **City / area**: the correct administrative unit for which you are calculating emissions.
+- **Inventory year**: **2025**.
+- **Inventory type**: choose the option corresponding to a city emissions inventory, rather than, for example, an action plan.
+- **Methodology / GWP**: apply one methodology consistently throughout the inventory; if the organization has an established standard, select the same one as in previous years so the results are comparable.
 - **Sector coverage**: initially include at least stationary energy, transport, and waste; add other sectors depending on the data.
 
 After saving, you can check the availability of 2025 in the inventory list: find your city and confirm that the year **2025** appears next to it. After opening that entry, also check the sector completion status — this will tell you whether the inventory itself exists and which data have already been entered.

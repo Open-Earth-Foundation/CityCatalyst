@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:00:40.860Z — 2026-11-01T11:01:30.207Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/dc70b5d3-12ea-4c6f-8540-703f151312c8) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -71,8 +71,8 @@ Jeżeli po sprawdzeniu potwierdzisz, że dane procesy **nie występują** w gran
 
 ## 2. AFOLU — rolnictwo, leśnictwo i użytkowanie gruntów
 W GPC trzy wymagane grupy AFOLU to:
-1. **Hodowla zwierząt**  
-2. **Grunty** — w tym zmiany użytkowania gruntów, lasy, grunty uprawne, łąki, tereny podmokłe i zieleń/drzewa miejskie, jeśli są istotne  
+1. **Hodowla zwierząt**
+2. **Grunty** — w tym zmiany użytkowania gruntów, lasy, grunty uprawne, łąki, tereny podmokłe i zieleń/drzewa miejskie, jeśli są istotne
 3. **Pozostałe źródła i emisje nie-CO₂ z gruntów** — np. nawożenie i gospodarowanie glebami, zależnie od lokalnej aktywności
 
 **Dane do zebrania**

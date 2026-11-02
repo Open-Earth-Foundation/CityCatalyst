@@ -59,25 +59,25 @@ What should I check now before deciding to use these data?
 
 Before accepting the proposals, check the following in particular:
 
-1. **Year and geographic fit**  
+1. **Year and geographic fit**
    The inventory concerns São Paulo in **2022**, whereas the available data are national and older: SEEG from 2015 and EPE from 2014. Assess whether they are sufficient as a proxy or whether you have newer city/regional data.
 
-2. **Correct scope and subsector**  
+2. **Correct scope and subsector**
    Make sure the source goes into the correct GPC row:
    - SEEG: fuel combustion in scope 1,
    - EPE: grid energy consumption in scope 2 and transmission and distribution losses in scope 3.
 
-3. **Activity and emissions values**  
+3. **Activity and emissions values**
    Check units, fuel or electricity consumption, and CO₂e emissions. For SEEG rows, the proposals contain gas emissions, but not always the quantity of fuel consumed; EPE contains electricity consumption in MWh and associated emissions.
 
-4. **Emission factors and methodology**  
+4. **Emission factors and methodology**
    For EPE proposals, the electricity emission factor is associated with BRGOV; World Bank is indicated for transmission and distribution losses. Check whether these correspond to the methodology and GWP used in the inventory (AR5).
 
-5. **Completeness and possible double counting**  
+5. **Completeness and possible double counting**
    Check whether the categories overlap with other inventory data and whether the separation between scopes 1, 2 and 3 is maintained.
 
-6. **“NO” designations for fugitive emissions**  
+6. **“NO” designations for fugitive emissions**
    Global Energy Monitor and OGIM indicate an absence of relevant facilities within the city boundary. Verify this against local registers before setting “NO”.
 
-7. **Data gaps**  
+7. **Data gaps**
    There are still no sources for some energy industry items and the “unspecified sources” category. Decide whether to leave them empty or mark them with the appropriate notation key after confirming the scope.

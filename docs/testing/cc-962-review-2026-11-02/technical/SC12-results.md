@@ -12,11 +12,11 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=0/3 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/e42260de-6420-4b06-978f-2525304a2965) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `2dd086f8-7f84-54d0-8704-9c82144cd6bd`; draft: `245f3075-17d2-4a9b-9bbe-d315b9dba9c0`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/f39b2892-00ae-466d-b45a-1520f6a39e6e) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -50,11 +50,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/c913f595-416e-4cf9-8d88-7f1962eaf344) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `45cf52f1-d644-54e3-91a3-99ca50f396c0`; draft: `f262d347-b76b-406c-9368-890a6221f688`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/5006263f-1982-4080-9fee-1a31bff6dc1f) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -88,11 +88,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/fc2235ff-5cd6-4060-b0fe-9a60d6f0749d) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `5510edc1-d6e6-5b8f-8507-6ed86fac88ef`; draft: `1a1c9856-1560-40c7-9823-9574b6e5101e`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/36f45c45-ec4e-4df9-b830-3449fe20ad5a) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -123,4 +123,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_draft_generation_background · RUNNING](https://mlflow-dev.openearth.dev/#/experiments/4/runs/73051f6d6dd24584af6c48f02e189c8a) — request `None`, draft `1a1c9856-1560-40c7-9823-9574b6e5101e`, prompt `None`.
 - [stationary_energy_draft_generation · RUNNING](https://mlflow-dev.openearth.dev/#/experiments/4/runs/18c52f2bbb4c4fd28d23c5c9008581b3) — request `None`, draft `1a1c9856-1560-40c7-9823-9574b6e5101e`, prompt `None`.
 - [stationary_energy_draft_generation · RUNNING](https://mlflow-dev.openearth.dev/#/experiments/4/runs/d00b77d598734ed5bcab989325ba417b) — request `None`, draft `1a1c9856-1560-40c7-9823-9574b6e5101e`, prompt `None`.
-

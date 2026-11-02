@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=6/6 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/516dbed8-b701-4c94-ae16-889ea196cc24) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `a2e55f8d-a04f-5f09-a293-b6dcd255e213`; draft: `27b6873e-3967-4ee2-ae98-78aca304b56e`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -31,14 +31,14 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 Dla **I.1.1 — budynki mieszkalne, spalanie paliw (Scope 1)** źródła **nie są zgodne w całości**:
 
-- **SS07-A:** 500 tCO₂e łącznie  
-  - Activity A: 100 tCO₂e  
+- **SS07-A:** 500 tCO₂e łącznie
+  - Activity A: 100 tCO₂e
   - Activity B: 400 tCO₂e
-- **SS07-B:** 1 000 tCO₂e łącznie  
-  - Activity A: 100 tCO₂e  
+- **SS07-B:** 1 000 tCO₂e łącznie
+  - Activity A: 100 tCO₂e
   - Activity B: 900 tCO₂e
 
-**Różnica:** 500 tCO₂e  
+**Różnica:** 500 tCO₂e
 **Różnica względem SS07-A:** **+100%**
 
 Zgadzają się dla *Activity A*, ale różnią się dla *Activity B*. Nie wybrałem żadnego źródła.
@@ -53,7 +53,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/2c4f611c-eb3c-4c6c-b6e1-c5add5380a02) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `a2c140f8-e193-5617-bd52-4cea3f04174f`; draft: `9b58a087-98c3-44b0-93c7-3b406d29ba59`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -92,7 +92,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/7e7ae283-030d-4b87-ae4f-34beec533412) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `1c3bea5a-fcfc-59e5-9726-247e7e7428ad`; draft: `38639faf-3b73-42a5-8629-611167e76d8d`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -128,4 +128,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_draft_start_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/1815baba58474ce1b3e3f52e7ad1f422) — request `cc-1793494104895-mthbanvg0`, draft `38639faf-3b73-42a5-8629-611167e76d8d`, prompt `None`.
 - [stationary_energy_draft_generation_background · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/46956114758a4fd7b137d41176ab4463) — request `None`, draft `38639faf-3b73-42a5-8629-611167e76d8d`, prompt `None`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/3571cc96604f474ea4ed3ad1e0ac76f0) — request `cc-1793494119502-ezdtljpm1`, draft `38639faf-3b73-42a5-8629-611167e76d8d`, prompt `stationary_energy_review`.
-

@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:54:30.206Z — 2026-11-01T10:55:11.858Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/dc780ecc-d2ac-4f1a-a2cd-df638d5000cf) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -67,7 +67,7 @@ Przed zatwierdzeniem porównaj odczyt z PDF, zwłaszcza:
 - **sektor** — np. budynki, transport, odpady;
 - **łączną emisję** i sumy sektorowe — czy zgadzają się z tabelami w raporcie.
 
-Jeśli odczyt systemu nie odpowiada raportowi, nie zatwierdzaj go automatycznie: popraw rok, jednostkę lub przypisanie sektora ręcznie, a jako źródło zachowaj numer strony/tabeli z PDF.  
+Jeśli odczyt systemu nie odpowiada raportowi, nie zatwierdzaj go automatycznie: popraw rok, jednostkę lub przypisanie sektora ręcznie, a jako źródło zachowaj numer strony/tabeli z PDF.
 
 Nazwy przycisków mogą się nieznacznie różnić zależnie od widoku i uprawnień. Jeśli opiszesz, co widzisz po wejściu do inwentaryzacji — albo wkleisz zrzut ekranu bez danych wrażliwych — wskażę następny krok.
 

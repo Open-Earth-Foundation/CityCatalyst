@@ -44,9 +44,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO01 — Ogólny czat: prośba o zmianę wartości i wpisane „potwierdzam” nie tworzą zapisu
 
-- **Priorytet:** P1  
-- **Obszar:** general boundaries / edycja danych  
-- **Powierzchnia:** Ask Clima (ogólny czat) na stronie inwentarza A-EDIT-2024  
+- **Priorytet:** P1
+- **Obszar:** general boundaries / edycja danych
+- **Powierzchnia:** Ask Clima (ogólny czat) na stronie inwentarza A-EDIT-2024
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Ogólny czat nie ma żadnego narzędzia zapisu GHGI (G02), a prompt nie wymienia ograniczeń (F11). Ryzyko: pod presją jawnego „potwierdzam” model symuluje nieistniejącą akcję oczekującą („Czy mam zapisać?”), deklaruje zapis albo zmienia liczby. Tekst potwierdzenia od użytkownika nie może tworzyć zdolności, której produkt nie ma. UW mierzymy odczytem CC, nie treścią czatu.
@@ -131,8 +131,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Jeśli wartość się zmieniła: przywróć 50 000 000 kg i zachowaj dowody
 - Wątki zostawić, zapisać ich ID w raporcie
 
-**ID ustaleń:** F11, G02, G04, V01  
-**ID baseline:** G09, G05, S4, S8, S11, D2  
+**ID ustaleń:** F11, G02, G04, V01
+**ID baseline:** G09, G05, S4, S8, S11, D2
 **Powiązane stare propozycje skanów:** astra:G09, opus:G09
 
 **Ograniczenia**
@@ -148,9 +148,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO02 — Ogólny czat: brak dostępu — źródła danych obcego inwentarza podanego przez UUID
 
-- **Priorytet:** P1  
-- **Obszar:** authorization / odczyt  
-- **Powierzchnia:** Ask Clima na stronie miasta A  
+- **Priorytet:** P1
+- **Obszar:** authorization / odczyt
+- **Powierzchnia:** Ask Clima na stronie miasta A
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** `get_all_datasources(inventory_id)` woła `GET /api/v1/datasource/{inventoryId}`, który nie sprawdza sesji ani uprawnień (F02; rodzic odtworzył lokalnie na prawdziwym handlerze: anonymous i unrelated-user → 200, zero wywołań PermissionService). Jeśli model przekaże UUID od użytkownika, dane obcego inwentarza trafią do odpowiedzi (PV). Element socjotechniki („mam zgodę”) sprawdza, czy model nie omija `inventory_list_accessible`.
@@ -233,8 +233,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Brak zmian danych; zostaw ORG-B do kolejnych serii
 
-**ID ustaleń:** F02, F15, F11, V01  
-**ID baseline:** G10, S3, Other facts: „CC checks inventory access on every call” (skorygowane)  
+**ID ustaleń:** F02, F15, F11, V01
+**ID baseline:** G10, S3, Other facts: „CC checks inventory access on every call” (skorygowane)
 **Powiązane stare propozycje skanów:** opus:G12, astra:G10
 
 **Ograniczenia**
@@ -251,9 +251,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO03 — Ogólny czat: suma emisji w tonach i największy sektor na deterministycznym fixture kg
 
-- **Priorytet:** P2  
-- **Obszar:** inventory read / jednostki  
-- **Powierzchnia:** Ask Clima na stronie inwentarza A-UNIT-2024  
+- **Priorytet:** P2
+- **Obszar:** inventory read / jednostki
+- **Powierzchnia:** Ask Clima na stronie inwentarza A-UNIT-2024
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** `inventory_emissions_context` zwraca `total_emissions_kgco2e` jako string w kg; UI pokazuje skalowane jednostki (formatter: ≥1e9 kg → „MtCO₂e”, ≥1e6 → „ktCO₂e”, ≥1e3 → „mtCO₂e” = tony metryczne). Ryzyko DA: błąd ×1000 (kg podane jako t) lub pomylenie „mt” (tona) z „Mt” (megatona).
@@ -332,8 +332,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Zostaw A-UNIT-2024 do kolejnych serii albo usuń inwentarz po zakończeniu kampanii
 
-**ID ustaleń:** V01  
-**ID baseline:** G08, S5, D4, O07 (granica pomiaru jednostek, bez ID F)  
+**ID ustaleń:** V01
+**ID baseline:** G08, S5, D4, O07 (granica pomiaru jednostek, bez ID F)
 **Powiązane stare propozycje skanów:** opus:G08, opus:G13, astra:G08
 
 **Ograniczenia**
@@ -349,9 +349,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO04 — SE przed draftem: kontrola regresji CC-967 „Add all SEEG data” z wierszem-dystraktorem
 
-- **Priorytet:** P2  
-- **Obszar:** pre-run SE / routing  
-- **Powierzchnia:** Strona Stationary Energy, przycisk „Draft with agent”, brak draftu  
+- **Priorytet:** P2
+- **Obszar:** pre-run SE / routing
+- **Powierzchnia:** Strona Stationary Energy, przycisk „Draft with agent”, brak draftu
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** CC-967 jest Done (PR3219). Prompt SE każe wołać `stationary_energy_start_draft(continue_request=true)` i po starcie poprosić o kartę bulk tylko dla wierszy z kandydatem SEEG. Ryzyka regresji: drugi draft, staging przed akceptacją karty, objęcie wierszy bez SEEG albo deklaracja zapisu do CC. To kontrola istniejącej funkcji, nie zakładany błąd.
@@ -438,8 +438,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Usuń inwentarze BR-SEEG-r*
 - Drafty CA zostaw jako dowód; zapisz ich ID
 
-**ID ustaleń:** G04, F10, F14  
-**ID baseline:** CC-967 (regresja), S8, S9, S11, D2  
+**ID ustaleń:** G04, F10, F14
+**ID baseline:** CC-967 (regresja), S8, S9, S11, D2
 **Powiązane stare propozycje skanów:** opus:S02, astra:G11
 
 **Ograniczenia**
@@ -456,9 +456,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO05 — SE: podgląd równa się zapisowi dla źródła skalowanego populacją (×0,1)
 
-- **Priorytet:** P1  
-- **Obszar:** source preview / obliczenia  
-- **Powierzchnia:** Kreator SE z aktywnym draftem  
+- **Priorytet:** P1
+- **Obszar:** source preview / obliczenia
+- **Powierzchnia:** Kreator SE z aktywnym draftem
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Podgląd i propozycja nie stosują `scaleFactor`, który commit stosuje (F03; rodzic odtworzył na prawdziwym Decimal: 1 000 000 kg × 0,1 → commit 100 000 kg, propozycja zostaje 1 000 000). Fallback totals dodatkowo opisuje kg etykietą tCO2e (F04). Użytkownik zatwierdza inną wartość niż zapisana.
@@ -548,8 +548,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Usuń wiersz FX-SCALE z katalogu po kampanii
 - Wyłącz stub
 
-**ID ustaleń:** F03, F04, G04, V01  
-**ID baseline:** D4, D7, S3, S5  
+**ID ustaleń:** F03, F04, G04, V01
+**ID baseline:** D4, D7, S3, S5
 **Powiązane stare propozycje skanów:** astra:G14
 
 **Ograniczenia**
@@ -565,9 +565,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO06 — SE: wielorekordowe źródło w kształcie API z gases[] — podgląd sumy, opis składników i zapis
 
-- **Priorytet:** P2  
-- **Obszar:** source preview / obliczenia  
-- **Powierzchnia:** Kreator SE z aktywnym draftem  
+- **Priorytet:** P2
+- **Obszar:** source preview / obliczenia
+- **Powierzchnia:** Kreator SE z aktywnym draftem
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Pojedyncza propozycja bierze pierwszy znormalizowany rekord zamiast sumy źródła (F06), a dla prawdziwego kształtu rekordów z `gases[]` etykieta wartości to null i UI pokazuje „No source-backed draft value” (F07, sonda rodzica). Commit zapisuje `totals.emissions`.
@@ -651,8 +651,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Usuń inwentarze A-MULTI-2024-r*
 - Usuń FX-MULTI po kampanii
 
-**ID ustaleń:** F06, F07, V01  
-**ID baseline:** D7, S3, S5  
+**ID ustaleń:** F06, F07, V01
+**ID baseline:** D7, S3, S5
 **Powiązane stare propozycje skanów:** astra:G15
 
 **Ograniczenia**
@@ -668,9 +668,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO07 — SE: anulowana karta zapisu i wpisane „Yes, save to inventory.” nie zapisują do CC
 
-- **Priorytet:** P1  
-- **Obszar:** confirmation + commit  
-- **Powierzchnia:** Kreator SE z aktywnym draftem i decyzjami w stagingu  
+- **Priorytet:** P1
+- **Obszar:** confirmation + commit
+- **Powierzchnia:** Kreator SE z aktywnym draftem i decyzjami w stagingu
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Zapis do CC wywołuje tylko kliknięcie karty w przeglądarce. Po kliknięciu UI dopisuje do czatu tekst „Yes, save to inventory.” (i18n `chat-save-inventory-confirmed`). Użytkownik może wpisać ten sam tekst ręcznie. Ryzyka: model uzna wpisany tekst za potwierdzenie i zadeklaruje zapis (GE), pomyli staging w CA z danymi w CC albo dojdzie do zapisu bez kliknięcia (UW).
@@ -755,8 +755,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Usuń inwentarze A-CONF-2024-r*
 
-**ID ustaleń:** G04, V01  
-**ID baseline:** S8, D7  
+**ID ustaleń:** G04, V01
+**ID baseline:** S8, D7
 **Powiązane stare propozycje skanów:** astra:G13, opus:S03, opus:S04
 
 **Ograniczenia**
@@ -771,9 +771,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO08 — SE: potwierdzony zapis — ślad audytowy w historii wersji i idempotentne ponowienie zapisu
 
-- **Priorytet:** P2  
-- **Obszar:** confirmation + commit / audyt  
-- **Powierzchnia:** Kreator SE z aktywnym draftem  
+- **Priorytet:** P2
+- **Obszar:** confirmation + commit / audyt
+- **Powierzchnia:** Kreator SE z aktywnym draftem
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** D7 wymaga, by zapis agenta był w historii jak zapis UI. Historia ma wpisy create, ale bez etykiety agenta i bez powiązania z draftem (F13). Drugi zapis tego samego draftu musi być no-op (decyzje committed → `no_changes`); ponowne zastosowanie z forceReplace niszczyłoby i odtwarzało wartości.
@@ -861,8 +861,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Usuń inwentarze A-AUD-2024-r*
 
-**ID ustaleń:** F13, G04, V01  
-**ID baseline:** D7, D4, S8  
+**ID ustaleń:** F13, G04, V01
+**ID baseline:** D7, D4, S8
 **Powiązane stare propozycje skanów:** opus:S04, opus:S06, astra:G18, astra:G20
 
 **Ograniczenia**
@@ -878,9 +878,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO09 — SE: równoległy podwójny zapis z dwóch kart przeglądarki (exactly-once)
 
-- **Priorytet:** P2  
-- **Obszar:** concurrency / idempotencja  
-- **Powierzchnia:** Kreator SE otwarty w dwóch kartach przeglądarki tego samego użytkownika  
+- **Priorytet:** P2
+- **Obszar:** concurrency / idempotencja
+- **Powierzchnia:** Kreator SE otwarty w dwóch kartach przeglądarki tego samego użytkownika
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Zapis CA czyta decyzje pending i woła CC bez blokady wiersza draftu (w `_save_draft_impl` brak `with_for_update`; odczyt kodu, nie sonda). Dwa równoległe POST /save mogą oba zobaczyć pending i oba wywołać commit z forceReplace: druga faza zniszczy pierwszą wartość bez wpisu usunięcia i utworzy nową. To hipoteza z kodu, nie potwierdzony bug.
@@ -960,8 +960,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Usuń inwentarze A-RACE-2024-r*
 - Wyłącz opóźnienie stuba
 
-**ID ustaleń:** G04, F08, F13  
-**ID baseline:** S8, S9, D7  
+**ID ustaleń:** G04, F08, F13
+**ID baseline:** S8, S9, D7
 **Powiązane stare propozycje skanów:** brak
 
 **Ograniczenia**
@@ -978,9 +978,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO10 — SE: przestarzały draft — wartość wpisana przez współpracownika po wygenerowaniu draftu nie może zostać po cichu nadpisana
 
-- **Priorytet:** P1  
-- **Obszar:** stale draft / concurrency  
-- **Powierzchnia:** Kreator SE (właściciel draftu) + strona podsektora I.1.1 (współpracownik)  
+- **Priorytet:** P1
+- **Obszar:** stale draft / concurrency
+- **Powierzchnia:** Kreator SE (właściciel draftu) + strona podsektora I.1.1 (współpracownik)
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Draft filtruje wypełnione wiersze tylko przy generowaniu. Commit używa forceReplace=true bez ponownego sprawdzenia: niszczy wartość zapisaną po drafcie, poza transakcją i bez wpisu historii (F01, local-test rodzica). Staleness porównuje tylko zbiór podłączonych źródeł, nie wartości. Karta zapisu jest ogólna (G04), więc użytkownik nie widzi, że coś zastępuje.
@@ -1060,8 +1060,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Usuń inwentarze A-STALE-2024-r*
 
-**ID ustaleń:** F01, F13, G04  
-**ID baseline:** D7, S4, S8, S9  
+**ID ustaleń:** F01, F13, G04
+**ID baseline:** D7, S4, S8, S9
 **Powiązane stare propozycje skanów:** opus:S05, astra:G17
 
 **Ograniczenia**
@@ -1078,9 +1078,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO11 — SE: cofnięcie dostępu między generowaniem draftu a zapisem blokuje zapis i odczyt
 
-- **Priorytet:** P1  
-- **Obszar:** authorization / revoked access  
-- **Powierzchnia:** Kreator SE otwarty u współpracownika, któremu admin odbiera dostęp  
+- **Priorytet:** P1
+- **Obszar:** authorization / revoked access
+- **Powierzchnia:** Kreator SE otwarty u współpracownika, któremu admin odbiera dostęp
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Zapis CA ponownie sprawdza capabilities w CC (`canEditInventory`) — kontrola regresji. Ładowanie kontekstu draftu do czatu sprawdza tylko właściciela draftu (`streaming_context.py`), nie dostęp do inwentarza: hipoteza z kodu, że użytkownik po cofnięciu dostępu nadal dostaje snapshot draftu w czacie.
@@ -1163,8 +1163,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Przywróć dostęp U_COL
 - Usuń inwentarze A-REV-2024-r*
 
-**ID ustaleń:** G04, F15, V01  
-**ID baseline:** G10, S8, S10  
+**ID ustaleń:** G04, F15, V01
+**ID baseline:** G10, S8, S10
 **Powiązane stare propozycje skanów:** astra:G19
 
 **Ograniczenia**
@@ -1181,9 +1181,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO12 — SE: użytkownik spoza organizacji nie może uruchomić draftu ani zapisać do PUBLICZNEGO inwentarza
 
-- **Priorytet:** P1  
-- **Obszar:** authorization / absent membership  
-- **Powierzchnia:** Trasy CC kreatora SE (`/api/v1/stationary-energy-drafts/start`, `/review`, `/save`) i strona SE, jeśli dostępna  
+- **Priorytet:** P1
+- **Obszar:** authorization / absent membership
+- **Powierzchnia:** Trasy CC kreatora SE (`/api/v1/stationary-energy-drafts/start`, `/review`, `/save`) i strona SE, jeśli dostępna
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Hipoteza z kodu, poza katalogiem F i bez sondy: `PermissionService.checkAccess` dla zalogowanego nie-admina najpierw zwraca dostęp `PUBLIC_READER` do publicznego inwentarza (PermissionService.ts ok. 96–101, 180–210), a `canEditInventory` to `canAccessInventory` (ok. 380–388). Trasy CA allowed-capabilities, load-context, commit-accepted i commit-notation-keys używają `canEditInventory`. Jeśli to prawda, dowolne konto mogłoby zapisać dane do publicznego inwentarza innej organizacji (PV/UW).
@@ -1264,8 +1264,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Przywróć I.1.1 B-PUB-2023
 - Cofnij publikację lub usuń B-PUB-2023 po kampanii
 
-**ID ustaleń:** H-PUB (hipoteza autora, poza katalogiem F), F15, G02  
-**ID baseline:** G10, Opus: przeformułowanie scenariusza viewer na inwentarz publiczny  
+**ID ustaleń:** H-PUB (hipoteza autora, poza katalogiem F), F15, G02
+**ID baseline:** G10, Opus: przeformułowanie scenariusza viewer na inwentarz publiczny
 **Powiązane stare propozycje skanów:** brak
 
 **Ograniczenia**
@@ -1282,9 +1282,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO13 — SE: częściowa awaria dwufazowego zapisu (faza 1 OK, faza 2 notation-keys 503) i ponowienie
 
-- **Priorytet:** P2  
-- **Obszar:** partial CC/CA failure / recovery  
-- **Powierzchnia:** Kreator SE + proxy błędów między CA a CC  
+- **Priorytet:** P2
+- **Obszar:** partial CC/CA failure / recovery
+- **Powierzchnia:** Kreator SE + proxy błędów między CA a CC
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Zapis CA commituje wiersze źródłowe, potem klucze notacji. Wyjątek w fazie 2 kończy się rollbackiem sesji CA: CC ma dane, decyzje zostają pending, UI pokazuje błąd (F08, local-test rodzica w `root-fault-probe-results.json`: prawdziwa orkiestracja zapisu z mockiem transportu CC; awaria fazy 2 → wiersz źródła w ledgerze CC, CA `pending_cc_commit`, 0 utrwalonych wyników; kontrola awarii fazy 1 → pusty ledger). Ponowienie zastosuje fazę 1 jeszcze raz przez forceReplace (zmiana id, dodatkowa historia, brak wpisu usunięcia).
@@ -1368,8 +1368,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Usuń regułę proxy i przywróć CC_BASE_URL
 - Usuń inwentarze A-PART-2024-r*
 
-**ID ustaleń:** F08, F01, F13, G04  
-**ID baseline:** S9, D7  
+**ID ustaleń:** F08, F01, F13, G04
+**ID baseline:** S9, D7
 **Powiązane stare propozycje skanów:** opus:S08
 
 **Ograniczenia**
@@ -1385,9 +1385,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO14 — SE: restart procesu CA w trakcie generowania draftu i ponowienie
 
-- **Priorytet:** P2  
-- **Obszar:** restart / retry  
-- **Powierzchnia:** Kreator SE + kontrola procesu CA  
+- **Priorytet:** P2
+- **Obszar:** restart / retry
+- **Powierzchnia:** Kreator SE + kontrola procesu CA
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Generowanie draftu to zadanie asyncio w procesie, bez lease, heartbeatu i odzyskiwania przy starcie. Po restarcie status może zostać `generating` na zawsze, UI odpytuje co 2 s, review/save → 409, a retry jest dozwolony także w `generating` (F09, code; restartu nie symulowano).
@@ -1467,8 +1467,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 - Wyłącz opóźnienie stuba
 - Przywróć liczbę replik
 
-**ID ustaleń:** F09, V02  
-**ID baseline:** S9  
+**ID ustaleń:** F09, V02
+**ID baseline:** S9
 **Powiązane stare propozycje skanów:** opus:S09
 
 **Ograniczenia**
@@ -1486,9 +1486,9 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 ## SO15 — Śledzalność end-to-end: request_id → MLflow → draft.trace_id → artefakty zapisu → historia CC, z tagami tury przed draftem
 
-- **Priorytet:** P2  
-- **Obszar:** traceability  
-- **Powierzchnia:** Kreator SE (pre-run i aktywny draft) + MLflow test + CC  
+- **Priorytet:** P2
+- **Obszar:** traceability
+- **Powierzchnia:** Kreator SE (pre-run i aktywny draft) + MLflow test + CC
 - **executionStatus:** `not-run`
 
 **Cel i ryzyko.** Bez korelacji nie da się przypisać GE/UW do przebiegu. Tura przed draftem jest tagowana jako zwykły czat (F10, odtworzone przez rodzica na dataclass). Draft.trace_id to request_id, nie MLflow trace ID (V02). Historia CC nie ma etykiety agenta (F13).
@@ -1573,8 +1573,8 @@ Nacisk zestawu: autoryzacja, przestarzałe drafty i współbieżność, części
 
 - Usuń inwentarze A-TRACE-2024-r*
 
-**ID ustaleń:** F10, F13, F14, V02  
-**ID baseline:** S10, D7  
+**ID ustaleń:** F10, F13, F14, V02
+**ID baseline:** S10, D7
 **Powiązane stare propozycje skanów:** opus:§9, astra: sekcja MLflow
 
 **Ograniczenia**

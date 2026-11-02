@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:55:49.033Z — 2026-11-01T10:56:25.422Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/1eb3622a-96a3-4491-a1c5-b231c788fc17) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -40,25 +40,25 @@ Tak — potraktuj **2 000 tCO₂e wyłącznie jako sumę kontrolną**, nie jako 
 
 Po zapisaniu danych sprawdź w inwentaryzacji za **2024 r.**:
 
-1. **Właściwy rok i inwentaryzację**  
+1. **Właściwy rok i inwentaryzację**
    Upewnij się, że w nagłówku widnieje rok bazowy/sprawozdawczy **2024** oraz właściwe miasto i nazwa inwentaryzacji.
 
-2. **Dwa rekordy źródłowe**  
+2. **Dwa rekordy źródłowe**
    Powinny występować dokładnie:
    - Budynki mieszkalne, Scope 1 — **1 200 tCO₂e**
    - Transport drogowy, Scope 1 — **800 tCO₂e**
 
-3. **Brak osobnego wpisu „Suma”**  
+3. **Brak osobnego wpisu „Suma”**
    Nie dodawaj kategorii „Suma” ani źródła emisji o wartości 2 000 tCO₂e. To najważniejsze zabezpieczenie przed podwójnym liczeniem.
 
-4. **Kontrolę sumy sektorowej/całkowitej**  
+4. **Kontrolę sumy sektorowej/całkowitej**
    Łączna wartość dla tych dwóch pozycji powinna wynosić **2 000 tCO₂e**:
    \[
    1\,200 + 800 = 2\,000\ \text{tCO₂e}
    \]
    Jeśli widzisz **4 000 tCO₂e**, prawdopodobnie dodano zarówno dwa wiersze szczegółowe, jak i wiersz sumaryczny.
 
-5. **Zakres i klasyfikację**  
+5. **Zakres i klasyfikację**
    Zweryfikuj, że oba wpisy mają **Scope 1** oraz że każda pozycja została przypisana do właściwego sektora/kategorii. Nie wpisuj tych samych emisji ponownie w Scope 2, Scope 3 ani w innej nakładającej się kategorii.
 
 Dobrą praktyką jest zachowanie tabeli źródłowej i krótkiej notatki: „Wartość 2 000 tCO₂e jest wyłącznie sumą kontrolną pozycji Budynki mieszkalne i Transport drogowy.”

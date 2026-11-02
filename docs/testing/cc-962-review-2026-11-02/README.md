@@ -64,3 +64,5 @@ Stationary Energy source candidates previously used catalogue coverage and start
 - An earlier reload/recovery lacked draft context and is archived separately; it does not establish a reproducible product defect.
 
 [Linear CC-962](https://linear.app/openearth/issue/CC-962/agentic-flow-review-and-backtest-the-ghgi-journey) · [CC-953 ingestion spine](https://linear.app/openearth/issue/CC-953) · [CC-960 import rules](https://linear.app/openearth/issue/CC-960).
+
+Anonymous media access was checked with HTTP GET byte ranges: **143/143 video attachments readable**, without a GitHub session. [Readback evidence](media-availability.json).

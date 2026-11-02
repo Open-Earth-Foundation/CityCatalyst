@@ -12,7 +12,7 @@ I am preparing a short briefing for my supervisor. What are the emissions in our
 
 In the inventory for 2024, total emissions are **1 800 000 tCO₂e**.
 
-The **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of total emissions.  
+The **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of total emissions.
 For comparison: transport accounts for 33,3%, and waste for 16,7%.
 
 ## Turn 2
@@ -23,7 +23,7 @@ Can you give the size of that sector and turn this into two sentences for the no
 
 **Climate Advisor**
 
-The stationary energy sector emitted **900 000 tCO₂e**, which represents **50%** of total emissions in the inventory for 2024.  
+The stationary energy sector emitted **900 000 tCO₂e**, which represents **50%** of total emissions in the inventory for 2024.
 
 Total emissions were **1 800 000 tCO₂e**, and stationary energy was the largest emissions sector.
 
@@ -35,6 +35,6 @@ Can I write that this is a complete picture of the city's emissions?
 
 **Climate Advisor**
 
-Not quite. The inventory includes data for stationary energy, transport and waste, but the **IPPU** and **AFOLU** sectors have no data filled in.  
+Not quite. The inventory includes data for stationary energy, transport and waste, but the **IPPU** and **AFOLU** sectors have no data filled in.
 
 You can write: “The results presented cover the emissions included in the inventory for 2024; they do not yet constitute a complete picture of the city's emissions, because data for the IPPU and AFOLU sectors are missing.”

@@ -70,8 +70,8 @@ If, after checking, you confirm that the processes in question **do not occur** 
 
 ## 2. AFOLU — agriculture, forestry and other land use
 In GPC, the three required AFOLU groups are:
-1. **Livestock**  
-2. **Land** — including land-use changes, forests, cropland, meadows, wetlands and urban greenery/trees, if relevant  
+1. **Livestock**
+2. **Land** — including land-use changes, forests, cropland, meadows, wetlands and urban greenery/trees, if relevant
 3. **Other sources and non-CO₂ emissions from land** — e.g. fertilization and soil management, depending on local activity
 
 **Data to collect**

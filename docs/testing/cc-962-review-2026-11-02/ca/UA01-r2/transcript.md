@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:47:56.772Z — 2026-11-01T10:48:28.160Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/7eaca87a-845e-4d63-82f9-c61f0152649c) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -40,18 +40,18 @@ Co powinnam wybrać w ustawieniach i gdzie potem sprawdzę, czy rok 2025 rzeczyw
 
 W ustawieniach nowej inwentaryzacji wybierz przede wszystkim:
 
-- **Rok inwentaryzacji:** 2025  
-- **Miasto i granice:** granice administracyjne miasta, o ile Wasze raportowanie nie wymaga innego zakresu.  
-- **Metodologię / standard:** najczęściej podejście zgodne z **GPC** dla inwentaryzacji miejskich, jeśli nie obowiązuje Was inny standard.  
-- **GWP:** wybierz zestaw współczynników wymagany przez Wasz program raportowania lub stosowany w poprzednich inwentaryzacjach, aby zachować porównywalność między latami.  
+- **Rok inwentaryzacji:** 2025
+- **Miasto i granice:** granice administracyjne miasta, o ile Wasze raportowanie nie wymaga innego zakresu.
+- **Metodologię / standard:** najczęściej podejście zgodne z **GPC** dla inwentaryzacji miejskich, jeśli nie obowiązuje Was inny standard.
+- **GWP:** wybierz zestaw współczynników wymagany przez Wasz program raportowania lub stosowany w poprzednich inwentaryzacjach, aby zachować porównywalność między latami.
 - **Gazy i sektory:** pozostaw pełny zakres, chyba że macie uzgodniony ograniczony zakres raportowania.
 
 Czy rok 2025 jest „dostępny” warto sprawdzić na dwóch poziomach:
 
-1. **W formularzu tworzenia inwentaryzacji**  
+1. **W formularzu tworzenia inwentaryzacji**
    Jeśli rok 2025 można wybrać z listy, możesz założyć dla niego inwentaryzację w CityCatalyst.
 
-2. **W danych źródłowych po utworzeniu inwentaryzacji**  
+2. **W danych źródłowych po utworzeniu inwentaryzacji**
    Wejdź do sekcji danych źródłowych i sprawdź dla każdego sektora:
    - **rok lub okres pokrycia danych**,
    - czy dane dotyczą pełnego okresu od stycznia do grudnia 2025,

@@ -14,23 +14,23 @@ Yes — a PDF report can be a good source for filling in the inventory, provided
 
 Suggested way to work in CityCatalyst:
 
-1. **Establish the report's scope**  
+1. **Establish the report's scope**
    Check the inventory year, geographical area, GWP factor used, and reporting method (e.g. GPC), if provided.
 
-2. **Prepare data from the PDF**  
+2. **Prepare data from the PDF**
    List or transfer to a table the values by sector and fuel/source, e.g.:
    - stationary energy: residential, commercial and institutional buildings, industry;
    - transport: fuels, energy consumption, or emissions;
    - waste: solid waste and wastewater;
    - possibly agriculture, industrial processes, and other sources.
 
-3. **Retain sources and assumptions**  
+3. **Retain sources and assumptions**
    For each value, record the report page, unit, data year, activity source, and emission factors. This makes verification and subsequent updates easier.
 
-4. **Enter data sector by sector in CityCatalyst**  
+4. **Enter data sector by sector in CityCatalyst**
    It is best to start with sectors with complete data and mark missing entries as needing completion — they should not be replaced with guessed values.
 
-5. **Check the consistency of the result**  
+5. **Check the consistency of the result**
    Compare the total in CityCatalyst with the total emissions given in the report. Differences often result from a different emission scope, units, base year, or emission factors.
 
 If you share the contents of the key tables or describe which sectors the PDF covers, I will help break it down into specific inventory fields and indicate which sector to start with.

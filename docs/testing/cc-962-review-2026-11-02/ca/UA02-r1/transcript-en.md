@@ -26,10 +26,10 @@ Open the existing inventory for 2024 — simply viewing it does not delete or ov
 
 Safe procedure:
 
-1. Go to the inventory list and select your city and the year **2024**.  
-2. If you see more than one entry, compare their name, inventory type, and GWP used before opening one of them.  
-3. Open the inventory and check the progress summary: which sectors are completed and which still require data.  
-4. Review the data sector by sector. Until you save changes, you are not modifying existing entries.  
+1. Go to the inventory list and select your city and the year **2024**.
+2. If you see more than one entry, compare their name, inventory type, and GWP used before opening one of them.
+3. Open the inventory and check the progress summary: which sectors are completed and which still require data.
+4. Review the data sector by sector. Until you save changes, you are not modifying existing entries.
 5. Before editing a specific field, note or copy the current value if you want a simple point of reference.
 
 Do not create a new inventory just to check the contents of an existing one — this risks creating two parallel versions for the same year.

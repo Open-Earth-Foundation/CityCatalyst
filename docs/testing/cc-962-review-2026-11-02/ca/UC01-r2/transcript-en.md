@@ -10,7 +10,7 @@ I am completing São Paulo's inventory for 2022. Where can I get stationary ener
 
 **Climate Advisor**
 
-Stationary energy data usually come from electricity and gas operators, fuel suppliers, building registers, and city or national energy consumption statistics.  
+Stationary energy data usually come from electricity and gas operators, fuel suppliers, building registers, and city or national energy consumption statistics.
 
 In CityCatalyst, I can search the data sources connected to this inventory and prepare proposals for empty rows — you will see each value for verification before it is saved. Shall I start preparing the proposals?
 
@@ -61,25 +61,25 @@ What should I check now before deciding to use these data?
 
 Before selecting data, check the following in particular:
 
-1. **Year and geographic fit**  
+1. **Year and geographic fit**
    The proposals concern national data from **2014–2019**, while the inventory is for **2022**. These are not data directly for São Paulo, so it is worth assessing whether you accept this time gap and national scale.
 
-2. **Scope and GPC classification**  
+2. **Scope and GPC classification**
    Make sure the source goes into the correct row:
    - SEEG: on-site fuel combustion — **Scope 1**;
    - EPE: purchased electricity — **Scope 2**;
    - EPE: energy transmission and distribution losses — **Scope 3**.
 
-3. **Activity and emissions values**  
+3. **Activity and emissions values**
    For EPE data, you can compare electricity consumption in MWh and the resulting emissions. For SEEG proposals, primarily gas emissions are available, without fuel consumption values — check whether this is sufficient for your documentation.
 
-4. **Emission factors and GWP**  
+4. **Emission factors and GWP**
    EPE uses an electricity emission factor associated with BRGOV; the proposals are converted to CO₂e over a 100-year horizon. Check consistency with the inventory's adopted **AR5**.
 
-5. **Risk of double counting**  
+5. **Risk of double counting**
    Verify that fuel emissions from SEEG sources do not overlap with data you plan to add from local fuel, gas or energy suppliers.
 
-6. **Rows marked “NO”**  
+6. **Rows marked “NO”**
    For fugitive emissions from coal and oil and gas, the sources indicate an absence of facilities within the city boundary. Confirm this using local knowledge before applying the “not occurring” designation.
 
 After this check, you can accept a single proposal or ask to apply recommendations to several rows — I will show a confirmation before such a bulk action.

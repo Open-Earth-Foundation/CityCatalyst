@@ -19,10 +19,10 @@ I have a small table for our city. Can you add these data to the inventory for 2
 I can help prepare the data, but I cannot save them directly to the inventory from this chat.
 
 For 2024, the data to enter are:
-- **Residential buildings — Scope 1:** 1 200 tCO₂e  
-- **Road transport — Scope 1:** 800 tCO₂e  
+- **Residential buildings — Scope 1:** 1 200 tCO₂e
+- **Road transport — Scope 1:** 800 tCO₂e
 
-**Total:** 2 000 tCO₂e.  
+**Total:** 2 000 tCO₂e.
 The total should usually not be added as a separate emission category, to avoid double counting — it should follow from the two source entries.
 
 In CityCatalyst, select the city's inventory for **2024**, then add or update these two entries in the appropriate sectors. If you specify the import layout you are working with, I can prepare a table in the required format.

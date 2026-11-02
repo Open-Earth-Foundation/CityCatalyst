@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:47:56.726Z — 2026-11-01T10:50:23.898Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/01032ff5-573d-4895-9d0d-8cee204b51f8) · Pełny dowód JSON (local execution artifact; not distributed)
 
 Uwaga techniczna: The recorder initially checked only persisted decisions and missed one valid active staged selection. It cancelled the valid card. This was a harness issue, not a product defect. Original recording and all turns are retained.
 
@@ -45,10 +45,10 @@ Co dokładnie zostało zapisane i co nadal wymaga mojej decyzji?
 
 ## Clima 4
 
-**Nic nie zostało jeszcze zapisane do inwentarza** — wyświetlono jedynie kartę potwierdzenia zapisu.  
+**Nic nie zostało jeszcze zapisane do inwentarza** — wyświetlono jedynie kartę potwierdzenia zapisu.
 
 W wersji roboczej jest przygotowany jeden wybór do zapisu:
-- **Budynki mieszkalne, zakres 1 (I.1.1)** — źródło **SEEG**.  
+- **Budynki mieszkalne, zakres 1 (I.1.1)** — źródło **SEEG**.
   Propozycja obejmuje emisje ze spalania paliw w granicach miasta.
 
 **Nadal wymaga decyzji 14 pozycji:**

@@ -11,4 +11,3 @@ Utworzono i odczytano ponownie wszystkie pięć ticketów. Sprint 129: 10–24 l
 Reguły: [Daily Workflow & Label Playbook](https://app.notion.com/p/395eb557728b81719337ff9e5962a7d8). Gotowość jest etykietą ready-for-estimation, która uruchamia estimator AI; nie jest osobnym statusem. Każdy ticket ma opis wpływu, kroki odtworzenia, oczekiwany/rzeczywisty wynik, acceptance criteria i Definition of Ready.
 
 Są to bugi backendu/integracji z testów CC-962. Ich utworzenie nie oznacza naprawienia usterek ani zakończenia właściwej ewaluacji pytań CA.
-

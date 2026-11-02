@@ -1,0 +1,100 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "checkedAt": "2026-10-31T23:35:35.754081+00:00",
+  "python": "3.12.13",
+  "sourceSha256": "05e424f53cb91ce4d0b6c616f4e820a8f99d9ba2b8519ae47fa248c97ea711c8",
+  "findings": [
+    {
+      "case": "scaled",
+      "status": "ready",
+      "proposedValue": {
+        "row": {
+          "emissions_value": "1000000",
+          "emissions_unit": "tCO2e",
+          "scale_factor": "0.1",
+          "issue": null
+        },
+        "datasource_id": "fixture-source"
+      }
+    },
+    {
+      "case": "empty",
+      "status": "gap",
+      "proposedValue": null
+    },
+    {
+      "case": "multi",
+      "status": "ready",
+      "proposedValue": {
+        "row": {
+          "emissions_value_100yr": "100000",
+          "emissions_unit": "kgCO2e"
+        },
+        "datasource_id": "fixture-source"
+      }
+    },
+    {
+      "case": "gasMulti",
+      "status": "ready",
+      "proposedValue": {
+        "row": {
+          "methodology_name": "direct-measure",
+          "emissions_geometry": null,
+          "activity_name": "Synthetic activity",
+          "activity_units": "kg",
+          "activity_subcategory_type": null,
+          "gases": [
+            {
+              "gas_name": "CO2",
+              "emissions_value": 100000,
+              "emissionfactor_value": 1,
+              "emissionfactor_source": "Synthetic fixture",
+              "activity_value": 100000,
+              "gwp": 1,
+              "emissions_value_100yr": 100000,
+              "emissions_value_20yr": 100000
+            }
+          ]
+        },
+        "datasource_id": "fixture-source"
+      }
+    },
+    {
+      "case": "different-multi-row-totals",
+      "status": "needs_review",
+      "actualTotalsKg": [
+        500000,
+        1000000
+      ],
+      "expectedStatus": "conflict"
+    },
+    {
+      "case": "pre-run-se-telemetry",
+      "metadataWithoutRunId": {
+        "workflow": "climate_advisor_conversation",
+        "workflow_name": null,
+        "interaction": "chat",
+        "trace_category": "normal_conversation",
+        "prompt_name": "chat",
+        "ca_agentic_flow": false,
+        "context_mode": "general",
+        "stationary_energy_draft_run_id": null,
+        "concept_note_run_id": null
+      },
+      "activeRunControl": {
+        "workflow": "stationary_energy_context_chat",
+        "workflow_name": null,
+        "interaction": "chat",
+        "trace_category": "ca_agentic_context_chat",
+        "prompt_name": "stationary_energy_review",
+        "ca_agentic_flow": true,
+        "context_mode": "stationary_energy_draft",
+        "stationary_energy_draft_run_id": "fixture-run",
+        "concept_note_run_id": null
+      },
+      "boundary": "Telemetry dataclass probe; agent pre-run SE prompt selection separately verified in code. No deployed MLflow request."
+    }
+  ],
+  "multiRowExpectedCommittedTotalKg": "500000",
+  "boundary": "Real pinned builder and taxonomy fixture, real TS-normalized synthetic rows; no database, model or live calls."
+}

@@ -39,25 +39,25 @@ Yes — treat **2 000 tCO₂e solely as a control total**, not as a third record
 
 After saving the data, check the following in the inventory for **2024**:
 
-1. **The correct year and inventory**  
+1. **The correct year and inventory**
    Make sure the heading shows the base/reporting year **2024** and the correct city and inventory name.
 
-2. **Two source records**  
+2. **Two source records**
    There should be exactly:
    - Residential buildings, Scope 1 — **1 200 tCO₂e**
    - Road transport, Scope 1 — **800 tCO₂e**
 
-3. **No separate “Total” entry**  
+3. **No separate “Total” entry**
    Do not add a “Total” category or an emission source with a value of 2 000 tCO₂e. This is the most important safeguard against double counting.
 
-4. **A check of the sector/overall total**  
+4. **A check of the sector/overall total**
    The total value for these two entries should be **2 000 tCO₂e**:
    \[
    1\,200 + 800 = 2\,000\ \text{tCO₂e}
    \]
    If you see **4 000 tCO₂e**, both the two detailed rows and the summary row were probably added.
 
-5. **Scope and classification**  
+5. **Scope and classification**
    Verify that both entries have **Scope 1** and that each entry has been assigned to the correct sector/category. Do not enter the same emissions again in Scope 2, Scope 3, or another overlapping category.
 
 It is good practice to retain the source table and a short note: “The value 2 000 tCO₂e is solely a control total for the Residential buildings and Road transport entries.”

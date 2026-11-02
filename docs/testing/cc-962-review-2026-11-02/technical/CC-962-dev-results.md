@@ -42,7 +42,7 @@ Model `gpt-6.1-terra` dostał predefiniowane kontrakty, wejścia fixture, rzeczy
 
 Wynik: **GE=16/84**, nierozstrzygnięte grounding=0; jakość odpowiedzi PASS=59, FAIL=25, INSUFFICIENT_EVIDENCE=0. LLM może się mylić: 0 rozbieżności z wcześniejszą oceną pozostawiono jawnie w porównaniu, bez automatycznego nadpisywania dowodów backendu.
 
-Walidacja obejmuje 84 unikalne answer_id, 45 trial summaries, zgodność schematu, cytaty dosłownie obecne w odpowiedziach, referencje JSON, sumy wyników i hashe wejść. Pierwsza próba sędziego zakończyła się przed oceną próbek i nie weszła do wyniku; kompletne oceny pochodzą z kolejnego uruchomienia tego samego modelu. Pełne oceny (local execution artifact; not distributed) · Opis sędziego (local execution artifact; not distributed) · Walidacja (local execution artifact; not distributed) · Porównanie (local execution artifact; not distributed).
+Walidacja obejmuje 84 unikalne answer_id, 45 trial summaries, zgodność schematu, cytaty dosłownie obecne w odpowiedziach, referencje JSON, sumy wyników i hashe wejść. Pierwsza próba sędziego zakończyła się przed oceną próbek i nie weszła do wyniku; kompletne oceny pochodzą z kolejnego uruchomienia tego samego modelu. Pełne oceny (local execution artifact; not distributed) · [Opis sędziego](llm-judge-terra61/terra61-judgments.md) · Walidacja (local execution artifact; not distributed) · Porównanie (local execution artifact; not distributed).
 
 ## Wynik każdego scenariusza
 
@@ -78,7 +78,7 @@ W tej sesji dane były przeważnie syntetyczne, z jednoznacznymi oracle, opisane
 
 ## MLflow — zweryfikowane na wdrożeniu
 
-**Połączenie, zapis oraz odczyt artefaktów działają.** [Eksperyment dev](https://mlflow-dev.openearth.dev/#/experiments/4) zawiera ślady wszystkich 45 zaakceptowanych prób. Zarchiwizowano 288 runów razem z przygotowaniem i odczytano 441 istniejących plików artefaktów. Pełny odczyt MLflow (local execution artifact; not distributed).
+**Połączenie, zapis oraz odczyt artefaktów działają.** [Eksperyment dev](https://mlflow-dev.openearth.dev/#/experiments/4) zawiera ślady wszystkich 45 zaakceptowanych prób. Zarchiwizowano 288 runów razem z przygotowaniem i odczytano 441 istniejących plików artefaktów. [Pełny odczyt MLflow](mlflow-evidence-final.json).
 
 W zaakceptowanych próbach są 84 odpowiedzi i 58 obserwacji narzędzi. Powiązane runy: FINISHED174, RUNNING41, FAILED6. Główne runy wiadomości zakończyły się; pomocnicze i background mają niezamknięte cykle życia. Kontrolowane restarty wyjaśniają część RUNNING, nie wszystkie automatycznie. FINISHED/ok=1 nie jest dowodem prawidłowych danych lub bezpiecznego zapisu. Pre-run SE błędnie ma prompt_name=chat / ca_agentic_flow=false w 3/3; po starcie draftu tagi właściwe.
 
@@ -139,6 +139,3 @@ Wykonano 15 mieszanych scenariuszy rozmów, regresji i kontroli backendu, z nagr
 **Do wykonania · V03 / granice.** Równoległe saves, polityka retencji snapshotu po revoke, normalna wspólna ścieżka UI awarii SC11 i restartu SC12 oraz UI publish dla fixture publicznej nie zostały osobno zweryfikowane.
 
 **Odłożone przez użytkownika.** Trzynaście wybranych usterek ma tickety CC-1203–CC-1215. Nie przeprowadzono ani nie rozesłano przeglądu Product/Engineering. To pozostawia część kryteriów CC-962 otwartą.
-
-
-

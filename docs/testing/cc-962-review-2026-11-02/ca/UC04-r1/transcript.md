@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:04:46.320Z — 2026-11-01T11:11:04.676Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/c8a2c9aa-b6ba-4551-b0d6-22aa40e2f755) · Pełny dowód JSON (local execution artifact; not distributed)
 
 Przerwanie dostępności: apiRequestContext.get: Timeout 30000ms exceeded.
 

@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:51:42.324Z — 2026-11-01T10:52:06.518Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/d86cc3af-2a37-4628-a76e-d6510232c38c) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -27,10 +27,10 @@ Otwórz istniejącą inwentaryzację za 2024 r. — samo jej przeglądanie nie u
 
 Bezpieczna procedura:
 
-1. Wejdź na listę inwentaryzacji i wybierz swoje miasto oraz rok **2024**.  
-2. Jeśli widzisz więcej niż jedną pozycję, porównaj ich nazwę, typ inwentaryzacji i zastosowany GWP, zanim wejdziesz do jednej z nich.  
-3. Otwórz inwentaryzację i sprawdź podsumowanie postępu: które sektory są uzupełnione, a które nadal wymagają danych.  
-4. Przejrzyj dane sektor po sektorze. Dopóki nie zapiszesz zmian, nie modyfikujesz istniejących wpisów.  
+1. Wejdź na listę inwentaryzacji i wybierz swoje miasto oraz rok **2024**.
+2. Jeśli widzisz więcej niż jedną pozycję, porównaj ich nazwę, typ inwentaryzacji i zastosowany GWP, zanim wejdziesz do jednej z nich.
+3. Otwórz inwentaryzację i sprawdź podsumowanie postępu: które sektory są uzupełnione, a które nadal wymagają danych.
+4. Przejrzyj dane sektor po sektorze. Dopóki nie zapiszesz zmian, nie modyfikujesz istniejących wpisów.
 5. Przed edycją konkretnego pola zanotuj lub skopiuj obecną wartość, jeśli chcesz mieć prosty punkt odniesienia.
 
 Nie twórz nowej inwentaryzacji tylko po to, aby sprawdzić zawartość istniejącej — grozi to powstaniem dwóch równoległych wersji za ten sam rok.

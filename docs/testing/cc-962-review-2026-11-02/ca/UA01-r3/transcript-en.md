@@ -12,13 +12,13 @@ Good morning, I am starting to work with CityCatalyst. I would like to prepare o
 
 Good morning! To prepare the city's emissions inventory for **2025**, start with:
 
-1. **Creating a new inventory** in CityCatalyst  
+1. **Creating a new inventory** in CityCatalyst
    Select the city, reporting year **2025**, inventory type, and the GWP factor used.
 
-2. **Establishing boundaries and methodology**  
+2. **Establishing boundaries and methodology**
    Define the city's administrative boundaries, the sectors to include, and a method consistent with GPC, if required.
 
-3. **Collecting activity data**  
+3. **Collecting activity data**
    These usually include, among other things:
    - electricity and fuel consumption in buildings,
    - road and public transport,
@@ -26,13 +26,13 @@ Good morning! To prepare the city's emissions inventory for **2025**, start with
    - industry, if it falls within the inventory scope,
    - local renewable energy sources.
 
-4. **Adding data sources and emission factors**  
+4. **Adding data sources and emission factors**
    For each data item, it is worth recording the source, data year, units, coverage, and the emission factor applied.
 
-5. **Checking completeness and results**  
+5. **Checking completeness and results**
    After entering the data, verify missing sectors, total emissions, and the largest emission sources.
 
-I cannot directly create the inventory on your behalf from within this conversation, but I can guide you step by step through configuration and help prepare a list of the data needed.  
+I cannot directly create the inventory on your behalf from within this conversation, but I can guide you step by step through configuration and help prepare a list of the data needed.
 
 To start: have you already selected a city in CityCatalyst, and do you have access to data for 2025, e.g. from energy, transport, and waste management operators?
 

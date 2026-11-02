@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:59:33.619Z — 2026-11-01T11:00:15.003Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/6ecbfbbd-e15a-4b98-aeeb-18c192defedd) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -49,7 +49,7 @@ Tak.
 = 18\ \text{t CO₂e/mieszkańca/rok}
 \]
 
-**Wynik: 18 t CO₂e na mieszkańca rocznie**  
+**Wynik: 18 t CO₂e na mieszkańca rocznie**
 czyli **18 000 kg CO₂e/mieszkańca/rok**.
 
 Do obliczenia wykorzystano całkowite emisje z inwentaryzacji miasta za 2024 r. (GPC Basic+, współczynniki GWP AR6) oraz podaną przez Ciebie liczbę 100 tys. mieszkańców.
@@ -71,7 +71,7 @@ Przy tej samej liczbie ludności — **100 000 mieszkańców**:
 = 15\ \text{t CO₂e/mieszkańca/rok}
 \]
 
-**Wskaźnik za 2023 r.: 15 t CO₂e/mieszkańca/rok**  
+**Wskaźnik za 2023 r.: 15 t CO₂e/mieszkańca/rok**
 czyli **15 000 kg CO₂e/mieszkańca/rok**.
 
 Dla porównania, w 2024 r. wskaźnik wyniósł **18 t CO₂e/mieszkańca/rok**, więc przy stałej liczbie mieszkańców wzrósł o **3 t CO₂e/osobę**, czyli **20%**.

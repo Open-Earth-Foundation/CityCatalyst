@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:56:01.234Z — 2026-11-01T10:56:34.734Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/74cf9702-261f-419a-a66b-6877a1bf08f0) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,7 +13,7 @@ Przygotowuję krótką informację dla przełożonej. Ile wynoszą emisje w nasz
 
 W inwentaryzacji za 2024 r. łączne emisje wynoszą **1 800 000 tCO₂e**.
 
-Największy udział ma sektor **energii stacjonarnej**: **900 000 tCO₂e**, czyli **50%** wszystkich emisji.  
+Największy udział ma sektor **energii stacjonarnej**: **900 000 tCO₂e**, czyli **50%** wszystkich emisji.
 Dla porównania: transport odpowiada za 33,3%, a odpady za 16,7%.
 
 Czas do końca odpowiedzi (wraz z UI): 11.5 s.
@@ -38,7 +38,7 @@ Czy mogę napisać, że to pełny obraz emisji miasta?
 
 Nie wprost. Bezpieczniej napisać, że jest to **obraz emisji ujętych w inwentaryzacji za 2024 r.** — ponieważ sektory IPPU i AFOLU nie mają w niej wypełnionych danych.
 
-Proponowane sformułowanie:  
+Proponowane sformułowanie:
 „Inwentaryzacja za 2024 r. przedstawia emisje ujęte dla sektorów energii stacjonarnej, transportu i odpadów, o łącznej wartości 1,8 mln tCO₂e.”
 
 Czas do końca odpowiedzi (wraz z UI): 7.2 s.

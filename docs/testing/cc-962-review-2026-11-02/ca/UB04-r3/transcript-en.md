@@ -48,7 +48,7 @@ Yes.
 = 18\ \text{t CO₂e/resident/year}
 \]
 
-**Result: 18 t CO₂e per resident per year**  
+**Result: 18 t CO₂e per resident per year**
 that is **18 000 kg CO₂e/resident/year**.
 
 The calculation used total emissions from the city's inventory for 2024 (GPC Basic+, AR6 GWP factors) and the number of 100 thousand residents you provided.
@@ -70,7 +70,7 @@ With the same population — **100 000 residents**:
 = 15\ \text{t CO₂e/resident/year}
 \]
 
-**Indicator for 2023: 15 t CO₂e/resident/year**  
+**Indicator for 2023: 15 t CO₂e/resident/year**
 that is **15 000 kg CO₂e/resident/year**.
 
 For comparison, in 2024 the indicator was **18 t CO₂e/resident/year**, so with a constant number of residents it increased by **3 t CO₂e/person**, or **20%**.

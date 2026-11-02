@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:51:42.294Z — 2026-11-01T10:52:11.533Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/a2038649-e983-4d9e-ad36-c64cef42cb2b) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,13 +13,13 @@ Dzień dobry, zaczynam pracę z CityCatalyst. Chciałabym przygotować inwentary
 
 Dzień dobry! Aby przygotować inwentaryzację emisji miasta za **2025 r.**, zacznij od:
 
-1. **Utworzenia nowej inwentaryzacji** w CityCatalyst  
+1. **Utworzenia nowej inwentaryzacji** w CityCatalyst
    Wybierz miasto, rok raportowania **2025**, typ inwentaryzacji oraz stosowany współczynnik GWP.
 
-2. **Ustalenia granic i metodologii**  
+2. **Ustalenia granic i metodologii**
    Określ granice administracyjne miasta, sektory do uwzględnienia oraz metodę zgodną z GPC, jeśli jest wymagana.
 
-3. **Zebrania danych aktywności**  
+3. **Zebrania danych aktywności**
    Zwykle obejmują one m.in.:
    - zużycie energii elektrycznej i paliw w budynkach,
    - transport drogowy i publiczny,
@@ -27,13 +27,13 @@ Dzień dobry! Aby przygotować inwentaryzację emisji miasta za **2025 r.**, zac
    - przemysł, jeśli mieści się w zakresie inwentaryzacji,
    - lokalne źródła energii odnawialnej.
 
-4. **Dodania źródeł danych i współczynników emisji**  
+4. **Dodania źródeł danych i współczynników emisji**
    Dla każdej danej warto zapisać źródło, rok danych, jednostki, zasięg oraz zastosowany współczynnik emisji.
 
-5. **Sprawdzenia kompletności i wyników**  
+5. **Sprawdzenia kompletności i wyników**
    Po wprowadzeniu danych zweryfikuj brakujące sektory, całkowite emisje oraz największe źródła emisji.
 
-Nie mogę bezpośrednio utworzyć inwentaryzacji w Twoim imieniu z poziomu tej rozmowy, ale mogę przeprowadzić Cię krok po kroku przez konfigurację i pomóc przygotować listę potrzebnych danych.  
+Nie mogę bezpośrednio utworzyć inwentaryzacji w Twoim imieniu z poziomu tej rozmowy, ale mogę przeprowadzić Cię krok po kroku przez konfigurację i pomóc przygotować listę potrzebnych danych.
 
 Na początek: czy masz już w CityCatalyst wybrane miasto oraz dostęp do danych za 2025 r., np. od operatorów energii, transportu i gospodarki odpadami?
 

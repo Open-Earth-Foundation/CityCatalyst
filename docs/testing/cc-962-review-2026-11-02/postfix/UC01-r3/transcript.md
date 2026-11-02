@@ -10,11 +10,11 @@ I am completing São Paulo’s inventory for 2022. Where can I get stationary en
 
 For São Paulo’s 2022 Stationary Energy inventory, common data sources include:
 
-- **SEEG** for Brazilian energy and emissions estimates  
-- **Electricity utility data** (electricity sales/consumption by customer class)  
-- **Natural gas distributor data** (gas consumption by sector)  
-- **Fuel sales statistics** and local energy-balance datasets  
-- **Municipal, state, or national energy agencies** for sector-specific activity data  
+- **SEEG** for Brazilian energy and emissions estimates
+- **Electricity utility data** (electricity sales/consumption by customer class)
+- **Natural gas distributor data** (gas consumption by sector)
+- **Fuel sales statistics** and local energy-balance datasets
+- **Municipal, state, or national energy agencies** for sector-specific activity data
 
 To see which connected sources are available for this inventory and generate row-level, source-backed proposals, I can start the Stationary Energy review run.
 
@@ -73,4 +73,3 @@ Check these points before accepting a source:
 - **Value completeness and units:** EPE electricity rows include activity in **MWh** and emissions; SEEG’s fuel-combustion proposals provide emissions but do not include activity quantities or units in this draft.
 - **Notation-key evidence:** Global Energy Monitor and OGIM are city-level 2022 evidence for **NO (not occurring)** in the coal- and oil/gas-fugitive rows, respectively—based on no facilities being found inside the city boundary.
 - **Gaps:** Do not substitute a poorly matched source for categories with no applicable candidate. This draft has no applicable source for some Energy Industries, grid-generation, and Non-Specified Sources rows.
-

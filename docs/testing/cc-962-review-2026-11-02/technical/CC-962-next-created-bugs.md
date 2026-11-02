@@ -12,4 +12,3 @@ Sprint 129 (10–24 listopada 2026), projekt CityCatalyst Improvements. Wszystki
 - [CC-1215 — Explain Stationary Energy save, cancel, retry and access-denial outcomes clearly](https://linear.app/openearth/issue/CC-1215/explain-stationary-energy-save-cancel-retry-and-access-denial-outcomes) · response-outcomes-group
 
 Pytania o restart procesu, F10, Mt/mt i pochodzenie autora nie zostały automatycznie zamienione w kolejne tickety.
-

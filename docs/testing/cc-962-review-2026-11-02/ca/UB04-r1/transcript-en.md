@@ -14,7 +14,7 @@ For the inventory **Brzeg Nadziei (test), 2024**, total emissions are **1 800 00
 
 To calculate emissions per resident, I still lack the **number of residents in 2024**. The formula is as follows:
 
-**per capita emissions = 1 800 000 t CO₂e ÷ number of residents**  
+**per capita emissions = 1 800 000 t CO₂e ÷ number of residents**
 Result: **t CO₂e/resident/year**.
 
 I am using:

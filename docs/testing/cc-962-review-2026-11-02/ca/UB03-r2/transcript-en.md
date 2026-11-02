@@ -12,8 +12,8 @@ In the results for 2024, I want to understand stationary energy better. How much
 
 For the inventory for 2024, stationary energy totals **900 000 tCO₂e** (50% of the city's total emissions).
 
-- **Scope 1:** **600 000 tCO₂e** — 66,7% of stationary energy emissions  
-- **Scope 2:** **300 000 tCO₂e** — 33,3% of stationary energy emissions  
+- **Scope 1:** **600 000 tCO₂e** — 66,7% of stationary energy emissions
+- **Scope 2:** **300 000 tCO₂e** — 33,3% of stationary energy emissions
 
 The visible emissions in both scopes primarily concern residential buildings.
 

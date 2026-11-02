@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:52:18.251Z — 2026-11-01T10:52:43.221Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/0143bc9b-b041-4292-b31f-14cbf191aa58) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -27,10 +27,10 @@ Nie chcę stracić tego, co już wprowadzono. Jak bezpiecznie otworzyć ten rok 
 
 Aby nie utracić danych:
 
-1. Przejdź do listy inwentaryzacji i **wyszukaj miasto oraz rok 2024**.  
-2. Otwórz istniejącą pozycję — **nie wybieraj opcji utworzenia nowej inwentaryzacji**.  
-3. Przed edycją potwierdź, że to właściwy rekord: sprawdź **nazwę inwentaryzacji, typ i użyty zestaw GWP**.  
-4. W widoku inwentaryzacji sprawdź status sektorów: które są już uzupełnione, które mają braki, oraz dostępne źródła danych.  
+1. Przejdź do listy inwentaryzacji i **wyszukaj miasto oraz rok 2024**.
+2. Otwórz istniejącą pozycję — **nie wybieraj opcji utworzenia nowej inwentaryzacji**.
+3. Przed edycją potwierdź, że to właściwy rekord: sprawdź **nazwę inwentaryzacji, typ i użyty zestaw GWP**.
+4. W widoku inwentaryzacji sprawdź status sektorów: które są już uzupełnione, które mają braki, oraz dostępne źródła danych.
 5. Dopiero potem kontynuuj od brakujących lub wymagających korekty sekcji.
 
 Samo otwarcie istniejącej inwentaryzacji nie powinno usuwać wcześniej wprowadzonych danych. Jeśli widzisz więcej niż jedną pozycję dla 2024 r., nie edytuj ich w ciemno — porównaj najpierw typ, GWP i nazwę.

@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=3, UW-kontrakt=0, PV=0. DA=3/6 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/46aef48f-9765-4274-8764-c6835f6ad674) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `97a6c51d-9a75-5507-82b7-ad2df0b9e2ab`; draft: `8f461023-6796-40cf-a600-9a09bf69ed0f`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -31,7 +31,7 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 Dla **I.1.1 — budynki mieszkalne, spalanie paliw w granicach miasta (Scope 1)** źródło **SS05-empty-records** jest oznaczone jako mające zgodność z miastem i rokiem 2024, ale nie zawiera żadnych szczegółowych rekordów ani wartości emisji do zastosowania.
 
-**Wartość:** brak — nie ma dostępnej wartości aktywności ani emisji.  
+**Wartość:** brak — nie ma dostępnej wartości aktywności ani emisji.
 Brak szczegółowych rekordów **nie oznacza zerowych emisji**; oznacza wyłącznie, że z tego źródła nie można obecnie oszacować ani potwierdzić emisji dla tego wiersza. Nic nie zmieniłem.
 
 [MLflow run](https://mlflow-dev.openearth.dev/#/experiments/4/runs/43171219b1a2490faf51b5f087a68c4e) · request `cc-1793493751917-xqt6zrvu1` · model `openai/gpt-5.6-terra`.
@@ -44,7 +44,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/e9c14f93-f9c6-4402-a98b-e44e7feb200b) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `0366331f-3f56-56d2-8a5b-1a2d34eade37`; draft: `ae326f3f-8f82-469e-adab-07c462e83967`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -75,7 +75,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/1b1b188a-408c-4d57-a589-5f2fb4187a44) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `23fcfbf7-ae04-524f-b46d-f5ac6e2d42f5`; draft: `4c2a4b97-d124-492c-bcaf-9765f523a031`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -103,4 +103,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_draft_start_request · RUNNING](https://mlflow-dev.openearth.dev/#/experiments/4/runs/b0a2ffe422304fdc86f8f745b697acce) — request `cc-1793493888262-2edxfy7ih`, draft `4c2a4b97-d124-492c-bcaf-9765f523a031`, prompt `None`.
 - [stationary_energy_draft_generation_background · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/6302195c94144073a0f67fffc2f9f066) — request `None`, draft `4c2a4b97-d124-492c-bcaf-9765f523a031`, prompt `None`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/f0a50fd280d34632ab1f5ab12b918d9b) — request `cc-1793493914908-eazfsbv4x`, draft `4c2a4b97-d124-492c-bcaf-9765f523a031`, prompt `stationary_energy_review`.
-

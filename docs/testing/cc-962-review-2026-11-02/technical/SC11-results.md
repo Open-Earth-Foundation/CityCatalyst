@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=3, UW-kontrakt=3, PV=0. DA=0/9 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/e849129e-2b68-4f97-9efc-e7dfae724cd5) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `8bba830d-08bf-5f0e-8840-cbdb6012fade`; draft: `61975963-2b3f-406e-8833-15e9742d8c9f`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -62,7 +62,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/0588cedb-c483-4cf7-87c8-b3fa1f010e7e) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `4bef5ced-fab2-5b28-9bea-7ce252824b22`; draft: `875eef37-8647-4e6c-bb58-5ec55023cf16`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -112,7 +112,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: API isolation + shared dev UI observer. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: API isolation + shared dev UI observer. [Nagranie MP4](https://github.com/user-attachments/assets/140bd5ea-3923-4807-87f0-74a431371c31) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `55280389-efb1-5525-b8d6-431004880512`; draft: `0e9a7591-bced-41e9-94d9-b6e00e57e270`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -161,4 +161,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/c47ccf2a014648aeb13b01ada0ff8cdb) — request `cc-1793494650278-p5900btas`, draft `0e9a7591-bced-41e9-94d9-b6e00e57e270`, prompt `stationary_energy_review`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/19be9c96db80455b9402e531a9f32db8) — request `cc-1793494663155-ik3gneo9t`, draft `0e9a7591-bced-41e9-94d9-b6e00e57e270`, prompt `stationary_energy_review`.
 - [stationary_energy_save_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/ad1647e16e7f4569ba358e467a3f5c9d) — request `cc962-SC11-r3-1793494677878`, draft `0e9a7591-bced-41e9-94d9-b6e00e57e270`, prompt `None`.
-

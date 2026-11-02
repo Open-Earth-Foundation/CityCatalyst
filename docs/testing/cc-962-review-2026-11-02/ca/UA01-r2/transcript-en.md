@@ -39,18 +39,18 @@ What should I select in the settings, and where can I then check whether 2025 is
 
 In the new inventory settings, select primarily:
 
-- **Inventory year:** 2025  
-- **City and boundaries:** the city's administrative boundaries, unless your reporting requires a different scope.  
-- **Methodology / standard:** most often an approach consistent with **GPC** for city inventories, unless you are subject to a different standard.  
-- **GWP:** select the set of factors required by your reporting program or used in previous inventories to maintain comparability between years.  
+- **Inventory year:** 2025
+- **City and boundaries:** the city's administrative boundaries, unless your reporting requires a different scope.
+- **Methodology / standard:** most often an approach consistent with **GPC** for city inventories, unless you are subject to a different standard.
+- **GWP:** select the set of factors required by your reporting program or used in previous inventories to maintain comparability between years.
 - **Gases and sectors:** retain full coverage unless you have an agreed limited reporting scope.
 
 It is worth checking whether 2025 is “available” at two levels:
 
-1. **In the inventory creation form**  
+1. **In the inventory creation form**
    If 2025 can be selected from the list, you can create an inventory for it in CityCatalyst.
 
-2. **In the source data after creating the inventory**  
+2. **In the source data after creating the inventory**
    Go to the source data section and check for each sector:
    - **the year or period covered by the data**,
    - whether the data cover the full period from January to December 2025,

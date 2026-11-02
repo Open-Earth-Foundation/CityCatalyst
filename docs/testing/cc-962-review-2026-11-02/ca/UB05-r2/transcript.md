@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:00:21.875Z — 2026-11-01T11:01:17.057Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/26fa62cc-260e-4531-aa9c-c9f95f10aafb) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -44,7 +44,7 @@ W raportowaniu zgodnym z GPC należy rozróżniać m.in.:
 - **„ujęto gdzie indziej” (IE)** — emisje są wykazane w innej kategorii,
 - **wartość 0** — można podać dopiero, gdy dane lub obliczenia potwierdzają brak emisji.
 
-Przed przekazaniem wyników warto więc dla każdej z tych pięciu pozycji ustalić, czy źródło rzeczywiście nie występuje, czy wymaga oszacowania. W GPC kategorie IPPU i AFOLU są elementem poziomu raportowania **BASIC+**, jeśli są istotne dla miasta.  
+Przed przekazaniem wyników warto więc dla każdej z tych pięciu pozycji ustalić, czy źródło rzeczywiście nie występuje, czy wymaga oszacowania. W GPC kategorie IPPU i AFOLU są elementem poziomu raportowania **BASIC+**, jeśli są istotne dla miasta.
 Źródło: wewnętrzna baza wiedzy klimatycznej (GPC).
 
 Czas do końca odpowiedzi (wraz z UI): 12.7 s.

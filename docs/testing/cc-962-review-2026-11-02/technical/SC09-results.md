@@ -12,7 +12,7 @@ Wynik: **2/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=0/0 (0/0 oznacza
 
 ## Próba 1 · PASS
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/7dafbf2b-1e64-4ce2-b6fe-9228fbf84d08) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `36c2fbb5-110d-54d5-b8fb-846e8560ad1c`; draft: `e3dee42e-066a-4986-a62d-ecde6f0fba90`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -61,7 +61,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · PASS
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/46ab89bc-ffbc-49ec-aa59-c8e82c0ed55a) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `8eba76ee-db3d-5603-b03b-3e4f66c97696`; draft: `e329c853-f673-4cad-aae4-a0571c449143`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -110,7 +110,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/5ea45590-f61e-4fa4-a2d1-7a1321676f32) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `65bbf1df-19e4-5ff5-b019-2c35e4eedbab`; draft: `6419ad4e-6a88-4267-9e5e-431f4987d8b9`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -156,4 +156,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/6c862be3c197409585e07367eea95c7b) — request `cc-1793494452473-azixl076c`, draft `6419ad4e-6a88-4267-9e5e-431f4987d8b9`, prompt `stationary_energy_review`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/5d0b81c9db7c4ee2a9c6bbf8b3999399) — request `cc-1793494468210-8gly774je`, draft `6419ad4e-6a88-4267-9e5e-431f4987d8b9`, prompt `stationary_energy_review`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/24d9a549888a44c9ab2a6c34f196ea05) — request `cc-1793494484080-g7f09aras`, draft `6419ad4e-6a88-4267-9e5e-431f4987d8b9`, prompt `stationary_energy_review`.
-

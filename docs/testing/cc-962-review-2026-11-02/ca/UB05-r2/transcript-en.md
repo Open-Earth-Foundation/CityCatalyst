@@ -43,7 +43,7 @@ In GPC-compliant reporting, a distinction should be made between, among other th
 - **“included elsewhere” (IE)** — emissions are reported in another category,
 - **a value of 0** — this can only be given when data or calculations confirm the absence of emissions.
 
-Before passing on the results, it is therefore worth determining for each of these five items whether the source really does not occur or requires an estimate. In GPC, the IPPU and AFOLU categories are part of the **BASIC+** reporting level if they are relevant to the city.  
+Before passing on the results, it is therefore worth determining for each of these five items whether the source really does not occur or requires an estimate. In GPC, the IPPU and AFOLU categories are part of the **BASIC+** reporting level if they are relevant to the city.
 Source: internal climate knowledge base (GPC).
 
 ## Turn 3

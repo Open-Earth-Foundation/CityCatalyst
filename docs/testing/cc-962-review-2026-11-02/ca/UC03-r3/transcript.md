@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:03:39.327Z — 2026-11-01T11:04:59.901Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/9fd0c646-c703-4654-983b-7305ec8ab475) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -43,7 +43,7 @@ Co dokładnie zostało zapisane i co nadal wymaga mojej decyzji?
 
 **Zapisano do inwentarza:**
 - **Budynki mieszkalne — Zakres 1 (I.1.1), spalanie paliw w granicach miasta**
-- Źródło: **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**  
+- Źródło: **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**
   Wartość obejmuje emisje CO₂, CH₄ i N₂O z krajowego źródła SEEG.
 
 **Nadal czeka na Twoją decyzję — 14 propozycji ze źródłami:**

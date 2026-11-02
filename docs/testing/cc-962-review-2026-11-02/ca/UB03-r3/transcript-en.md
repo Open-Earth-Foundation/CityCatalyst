@@ -12,8 +12,8 @@ In the results for 2024, I want to understand stationary energy better. How much
 
 In the inventory for 2024, stationary energy totals **900 000 tCO₂e** (50% of the city's total emissions):
 
-- **Scope 1:** **600 000 tCO₂e** — **66,7%** of stationary energy emissions  
-- **Scope 2:** **300 000 tCO₂e** — **33,3%** of stationary energy emissions  
+- **Scope 1:** **600 000 tCO₂e** — **66,7%** of stationary energy emissions
+- **Scope 2:** **300 000 tCO₂e** — **33,3%** of stationary energy emissions
 
 Both values primarily concern residential buildings.
 
@@ -27,7 +27,7 @@ How can I explain the difference between these scopes to my supervisor in plain 
 
 Most simply:
 
-- **Scope 1** means emissions generated **on site**, for example when gas, coal or heating oil is burned in buildings for heating and hot water.  
+- **Scope 1** means emissions generated **on site**, for example when gas, coal or heating oil is burned in buildings for heating and hot water.
 - **Scope 2** means emissions associated with **energy purchased from outside** — mainly electricity (and sometimes also purchased heat or cooling). The emissions physically occur at the energy producer, but we attribute them to the consumer who uses that energy.
 
 You can tell your supervisor:

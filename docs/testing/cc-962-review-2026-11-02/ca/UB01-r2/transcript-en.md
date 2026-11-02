@@ -12,7 +12,7 @@ I am preparing a short briefing for my supervisor. What are the emissions in our
 
 In the inventory for 2024 for Brzeg Nadziei, total emissions are **1 800 000 tCO₂e**.
 
-The **stationary energy** sector has the largest share: **900 000 tCO₂e (50%)**.  
+The **stationary energy** sector has the largest share: **900 000 tCO₂e (50%)**.
 The next sectors are transport: 600 000 tCO₂e (33,3%) and waste: 300 000 tCO₂e (16,7%).
 
 ## Turn 2

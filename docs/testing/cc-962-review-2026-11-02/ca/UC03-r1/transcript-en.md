@@ -40,10 +40,10 @@ What exactly has been saved, and what still requires my decision?
 
 **Climate Advisor**
 
-**Nothing has been saved to the inventory yet** — only the save confirmation card has been displayed.  
+**Nothing has been saved to the inventory yet** — only the save confirmation card has been displayed.
 
 One selection is prepared for saving in the draft:
-- **Residential buildings, scope 1 (I.1.1)** — source **SEEG**.  
+- **Residential buildings, scope 1 (I.1.1)** — source **SEEG**.
   The proposal includes emissions from fuel combustion within the city boundary.
 
 **14 items still require a decision:**

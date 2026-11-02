@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:52:49.476Z — 2026-11-01T10:53:32.260Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/79002607-eb3b-47dc-ad5a-c577d3bc3577) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,10 +13,10 @@ Mam naszą wcześniejszą inwentaryzację w Excelu i chciałabym wykorzystać j�
 
 Tak — najlepiej przygotować arkusz do importu, zamiast przepisywać dane ręcznie. Ogólny proces w CityCatalyst wygląda tak:
 
-1. **Utwórz lub otwórz inwentaryzację** dla właściwego miasta i roku bazowego.  
-2. Przejdź do odpowiedniego sektora emisji (np. energia stacjonarna, transport, odpady) i wybierz opcję **dodania/importu danych**, jeśli jest dostępna.  
-3. **Dopasuj kolumny z Excela** do wymaganych pól CityCatalyst — zwykle są to m.in. rok, sektor/podsektor, aktywność (np. zużycie paliwa lub energii), jednostka, współczynnik emisji oraz źródło danych.  
-4. Jeśli platforma udostępnia **szablon importu**, pobierz go i przenieś dane z dotychczasowego pliku do tego układu. To najbezpieczniejszy sposób, by uniknąć błędów jednostek i klasyfikacji.  
+1. **Utwórz lub otwórz inwentaryzację** dla właściwego miasta i roku bazowego.
+2. Przejdź do odpowiedniego sektora emisji (np. energia stacjonarna, transport, odpady) i wybierz opcję **dodania/importu danych**, jeśli jest dostępna.
+3. **Dopasuj kolumny z Excela** do wymaganych pól CityCatalyst — zwykle są to m.in. rok, sektor/podsektor, aktywność (np. zużycie paliwa lub energii), jednostka, współczynnik emisji oraz źródło danych.
+4. Jeśli platforma udostępnia **szablon importu**, pobierz go i przenieś dane z dotychczasowego pliku do tego układu. To najbezpieczniejszy sposób, by uniknąć błędów jednostek i klasyfikacji.
 5. Po imporcie sprawdź wartości, przypisanie do sektorów, lata danych i zastosowane współczynniki emisji. Następnie uzupełnij źródła oraz założenia dla audytowalności.
 
 Przed importem warto też:

@@ -334,7 +334,7 @@ Dziewięć lokalnych testów wykonało realny eksport/readback MLflow SQLite/art
 
 Granica dowodu: Lokalny eksport nie dowodzi działania konkretnego dev/test/prod ani poprawnego tagowania pre-run (F10).
 
-Dowód rodzica: [root-auth-observability-pytest.log](root-auth-observability-pytest.log).
+Dowód rodzica: [root-auth-observability-pytest.log](root-auth-observability-pytest.txt).
 - [docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md:1](baseline-10-scenarios-2026-10-26.md) — Dokument definiuje scenariusze..
 - [climate-advisor/k8s/deployment-test.yml:30](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9/climate-advisor/k8s/deployment-test.yml#L30) — MLFLOW_ENABLED=true w repo..
 - [climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py:130](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9/climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py#L130) — Draft.trace_id=request ID..

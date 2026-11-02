@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:58:44.210Z — 2026-11-01T10:59:26.813Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/9438fd34-8312-4903-ac04-325ec87bdf22) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -15,7 +15,7 @@ Dla inwentaryzacji **Brzeg Nadziei (test), 2024** całkowite emisje wynoszą **1
 
 Aby obliczyć emisje na mieszkańca, brakuje mi jeszcze **liczby mieszkańców w 2024 r.**. Wzór jest następujący:
 
-**emisje per capita = 1 800 000 t CO₂e ÷ liczba mieszkańców**  
+**emisje per capita = 1 800 000 t CO₂e ÷ liczba mieszkańców**
 Wynik: **t CO₂e/mieszkańca/rok**.
 
 Korzystam z:

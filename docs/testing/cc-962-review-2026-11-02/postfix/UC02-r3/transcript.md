@@ -45,4 +45,3 @@ Key points to explain to your team:
 - **Activity-data limitation:** SEEG supplies emissions by gas but no fuel-consumption quantity or unit for this proposal, so the inventory can document the emissions estimate but not independently reproduce it from fuel activity data here.
 - **Boundary/classification check:** confirm that fuels used as industrial feedstock or emissions from industrial processes are not included; those belong in IPPU rather than Stationary Energy.
 - **Disaggregation limitation:** this row is an all-residential, all-fuel aggregate, so it does not show results by fuel type or building subtype.
-

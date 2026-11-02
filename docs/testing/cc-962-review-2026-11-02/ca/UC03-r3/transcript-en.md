@@ -42,7 +42,7 @@ What exactly has been saved, and what still requires my decision?
 
 **Saved to the inventory:**
 - **Residential buildings — Scope 1 (I.1.1), fuel combustion within the city boundary**
-- Source: **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**  
+- Source: **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**
   The value includes CO₂, CH₄ and N₂O emissions from the national SEEG source.
 
 **Still awaiting your decision — 14 proposals with sources:**

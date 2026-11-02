@@ -67,4 +67,3 @@ Before applying a source, check these points:
   - **Global Energy Monitor / OGIM:** Scope 1 fugitive coal and oil-and-gas rows, respectively, as **NO—not occurring**.
 - **Method and units:** SEEG provides direct emissions totals for fuel combustion; activity values are not provided for those proposals. EPE provides electricity activity in **MWh** plus associated emissions. Check that this supports your chosen reporting method and that you do not duplicate data already reported elsewhere.
 - **Boundary and completeness:** The NO notation is appropriate only if you accept the evidence that no relevant facilities occur inside the city boundary. Rows with no applicable source should remain unfilled or receive an appropriate notation key after review—not be estimated from unrelated sources.
-

@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:52:42.800Z — 2026-11-01T10:53:26.630Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/12be3270-5d75-4fe8-9a81-11f1dec0a0da) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 

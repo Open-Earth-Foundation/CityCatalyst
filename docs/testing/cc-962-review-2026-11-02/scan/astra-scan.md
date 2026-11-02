@@ -591,4 +591,3 @@ Lista oddziela potwierdzone usterki od planowanego zakresu i brakującej weryfik
 - **Zakres A08–A09:** brak agentic start/status/mapping/confirm importu, diagnozy konkretnego joba i odrzuconych wierszy, produkcyjnego podłączenia IngestRunner/resume Decide, wspólnego pending-action/preflight/confirm/result oraz jednego rejestru generującego i ograniczającego tools.
 
 - **Zakres A10:** niewykonane 20 scenariuszy live; niezmierzone GE/UW/PV/TS/DA/ST; brak golden CC-950 i parity schema–values–history; brak rzeczywistej próby uprawnień i readbacku wdrożonego MLflow. Bieżąca reprodukcja starej halucynacji G03 jest niepotwierdzona.
-

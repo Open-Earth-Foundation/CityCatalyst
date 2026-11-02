@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:12:56.037Z — 2026-11-01T11:13:55.457Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/18167d37-3bbf-45eb-86de-74a626fe38c7) · Pełny dowód JSON (local execution artifact; not distributed)
 
 Przed rozpoczęciem rozmowy wystąpił timeout nawigacji. Pierwotne nagranie i szczegóły zachowano w UC04-r3-initial-availability.
 

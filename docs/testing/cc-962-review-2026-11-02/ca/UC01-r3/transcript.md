@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T11:11:24.417Z — 2026-11-01T11:12:23.740Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/1df35530-687f-4981-9872-2bde9170b4d2) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -60,27 +60,27 @@ Co powinnam teraz sprawdzić, zanim zdecyduję się użyć tych danych?
 
 Przed zaakceptowaniem propozycji sprawdź przede wszystkim:
 
-1. **Dopasowanie roku i geografii**  
+1. **Dopasowanie roku i geografii**
    Inwentarz dotyczy São Paulo w **2022 r.**, natomiast dostępne dane są krajowe i starsze: SEEG z 2015 r. oraz EPE z 2014 r. Oceń, czy są wystarczające jako przybliżenie, czy masz nowsze dane miejskie/regionalne.
 
-2. **Właściwy zakres i podsektor**  
+2. **Właściwy zakres i podsektor**
    Upewnij się, że źródło trafia do właściwego wiersza GPC:
    - SEEG: spalanie paliw w zakresie 1,
    - EPE: zużycie energii z sieci w zakresie 2 oraz straty przesyłu i dystrybucji w zakresie 3.
 
-3. **Wartości aktywności i emisji**  
+3. **Wartości aktywności i emisji**
    Sprawdź jednostki, zużycie paliw lub energii elektrycznej oraz emisje CO₂e. Dla wierszy SEEG propozycje zawierają emisje gazów, ale nie zawsze ilość zużytego paliwa; EPE zawiera zużycie energii elektrycznej w MWh i powiązane emisje.
 
-4. **Czynniki emisji i metodykę**  
+4. **Czynniki emisji i metodykę**
    Dla propozycji EPE czynnik emisji energii elektrycznej jest powiązany z BRGOV; dla strat przesyłu i dystrybucji wskazano World Bank. Sprawdź, czy odpowiadają one metodyce i GWP używanym w inwentarzu (AR5).
 
-5. **Kompletność i możliwe podwójne liczenie**  
+5. **Kompletność i możliwe podwójne liczenie**
    Sprawdź, czy kategorie nie nakładają się na inne dane w inwentarzu i czy rozdział między zakresami 1, 2 i 3 jest zachowany.
 
-6. **Oznaczenia „NO” dla emisji ulotnych**  
+6. **Oznaczenia „NO” dla emisji ulotnych**
    Global Energy Monitor i OGIM wskazują brak odpowiednich instalacji w granicach miasta. Zweryfikuj to z lokalnymi rejestrami, zanim ustawisz „NO”.
 
-7. **Braki danych**  
+7. **Braki danych**
    Nadal nie ma źródeł dla części energetyki oraz kategorii „źródła nieokreślone”. Zdecyduj, czy pozostawić je puste, czy oznaczyć właściwym kluczem notacyjnym po potwierdzeniu zakresu.
 
 Czas do końca odpowiedzi (wraz z UI): 10.6 s.

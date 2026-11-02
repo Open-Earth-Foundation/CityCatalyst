@@ -12,11 +12,11 @@ Wynik: **0/3** zaliczonych prób. GE=3, UW-kontrakt=0, PV=0. DA=5/12 (0/0 oznacz
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/4c7ebb72-dfaa-47b2-ad70-257ad8d066a3) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `dc29d3c4-fcf2-5ee0-a57c-f7490d050b0b`; draft: `0954f37b-7715-437f-9a8d-cf7276a616b5`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/8e35c963-9cdd-44be-a1d6-103803450e9b) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -70,11 +70,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/1f1a6e5d-372c-4575-8ac0-8fe95a005a7c) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `33069aca-1bac-5d4c-9c8e-c017a25e4e6b`; draft: `c978f907-2e07-468a-b611-e9662881bc30`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/96850b6e-ada3-4083-a94e-23a5eb705c2a) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -94,7 +94,7 @@ Dla **I.1.1 — budynki mieszkalne, Scope 1** źródło **SS03-country-populatio
 
 Współczynnik skalowania ludności wynosi **0,1**, więc:
 
-**1 000 000 tCO₂e × 0,1 = 100 000 tCO₂e**  
+**1 000 000 tCO₂e × 0,1 = 100 000 tCO₂e**
 czyli **100 ktCO₂e**.
 
 To jest liczba wynikająca z danych źródłowych i współczynnika skalowania. W panelu skróconym widnieje natomiast **1 ktCO₂e**, co nie zgadza się z tym przeliczeniem — przed zapisaniem warto tę rozbieżność wyjaśnić.
@@ -131,11 +131,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/5a4a71e0-5d95-45f3-b956-8399283ef36c) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `102c1229-3b41-5861-96a2-719d84774b43`; draft: `c47bdecc-55f0-486d-9c81-c9aaa053cdb6`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/39cd6160-bf1a-408d-bf69-d9cd24c0c745) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -188,4 +188,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_review_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/4f7dcc139cdf4eba83b0ab397acf75d9) — request `cc-1793493920390-6m639xnpv`, draft `c47bdecc-55f0-486d-9c81-c9aaa053cdb6`, prompt `None`.
 - [stationary_energy_save_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/205914bcf8304fe9ac34d76829611703) — request `cc-1793493930996-lfmdigtl9`, draft `c47bdecc-55f0-486d-9c81-c9aaa053cdb6`, prompt `None`.
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/acacc560c25a45c184fc090b2321b8df) — request `cc-1793493944141-5kcc9f1ci`, draft `c47bdecc-55f0-486d-9c81-c9aaa053cdb6`, prompt `stationary_energy_review`.
-

@@ -12,7 +12,7 @@ I am preparing a short briefing for my supervisor. What are the emissions in our
 
 In the inventory for 2024, total emissions are **1 800 000 tCO₂e**.
 
-The **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of all emissions.  
+The **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of all emissions.
 For comparison: transport accounts for 33,3%, and waste for 16,7%.
 
 ## Turn 2
@@ -37,5 +37,5 @@ Can I write that this is a complete picture of the city's emissions?
 
 Not directly. It is safer to write that this is a **picture of the emissions included in the inventory for 2024** — because the IPPU and AFOLU sectors have no data filled in.
 
-Suggested wording:  
+Suggested wording:
 “The inventory for 2024 presents emissions recorded for the stationary energy, transport and waste sectors, with a total of 1,8 million tCO₂e.”

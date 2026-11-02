@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:57:58.529Z — 2026-11-01T10:58:37.591Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/c5b83e50-a67f-4d4f-b66b-aed571c17bf8) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -13,8 +13,8 @@ W wynikach za 2024 rok chcę lepiej zrozumieć energię stacjonarną. Ile przypa
 
 Dla inwentaryzacji za 2024 r. energia stacjonarna wynosi łącznie **900 000 tCO₂e** (50% całkowitych emisji miasta).
 
-- **Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej  
-- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej  
+- **Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej
+- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej
 
 Widoczne emisje w obu zakresach dotyczą przede wszystkim budynków mieszkalnych.
 

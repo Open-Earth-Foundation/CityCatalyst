@@ -68,4 +68,3 @@ Also review the data type:
 - The fugitive-emissions sources provide a notation key and explanation—not an emissions value.
 
 The draft proposals are source-specific and mapped to their intended Stationary Energy category, so avoid applying a source across categories it does not cover.
-

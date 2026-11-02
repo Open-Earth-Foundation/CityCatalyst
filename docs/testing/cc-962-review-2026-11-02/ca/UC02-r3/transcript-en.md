@@ -22,7 +22,7 @@ Let's look at the SEEG proposal for residential buildings, scope 1 (I.1.1). Wher
 
 For **residential buildings — scope 1 (I.1.1)**, the proposed source is **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**.
 
-- **Data coverage:** national for Brazil  
+- **Data coverage:** national for Brazil
 - **Data year:** **2015**
 - **Proposed value:** **1,117,504,701 kgCO₂e** (approx. **1.12 MtCO₂e**, 100-year horizon)
 

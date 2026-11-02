@@ -12,11 +12,11 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=9/12 (0/0 oznacz
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/4d929b95-f8a5-4e84-ae6f-61c80f4c3d7f) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `8e20b525-069a-5469-a857-68a614efcd00`; draft: `5876dafa-3dc7-4578-b824-8f25cbfa7c70`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/5aa5625e-00a9-4adc-8621-8607a34775f8) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -66,11 +66,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/3f547f65-21af-463c-b815-df21fe0d4ca9) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `48840959-54bf-5757-a02d-42b25c14fabb`; draft: `bce10b17-010a-4c79-aa5a-5a6f2f5d7a8b`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/75caaf1e-d061-4439-b1e5-e919008ec4c5) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -88,7 +88,7 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 Dla **I.1.1 — Scope 1, budynki mieszkalne** źródło **SS06-gas-records** obejmuje obie aktywności:
 
-- **CO₂:** 100 000 + 372 000 = **472 000 kg CO₂e**  
+- **CO₂:** 100 000 + 372 000 = **472 000 kg CO₂e**
 - **CH₄:** **1 000 kg CH₄**, co przy GWP100 = 28 wnosi **28 000 kg CO₂e**
 - **Łącznie w horyzoncie 100 lat:** **500 000 kg CO₂e** (500 tCO₂e)
 
@@ -115,11 +115,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/d1eb2a94-743d-4f89-96c9-7e83168cc929) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `a34864b1-a1a1-5280-8df9-70716abffd15`; draft: `2686df2b-f466-428b-b52a-e6cc8fdc3e80`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/8e9e935c-141e-450a-bed4-0d9e63b8129a) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -137,7 +137,7 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 Dla **SS06-gas-records** w wierszu **I.1.1 (budynki mieszkalne, Scope 1)** pełne dane źródłowe obejmują dwie aktywności:
 
-- CO₂: 100 000 kg + 372 000 kg  
+- CO₂: 100 000 kg + 372 000 kg
 - CH₄: **1 000 kg**, co przy GWP100 = 28 wnosi **28 000 kg CO₂e**
 
 Łączna emisja w horyzoncie 100 lat wynosi więc **500 000 kg CO₂e** (500 t CO₂e).
@@ -162,4 +162,3 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 - [stationary_energy_context_chat_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/21de5e560afc4f3eaa767e823733bfe5) — request `cc-1793494037204-zf0to1qu5`, draft `2686df2b-f466-428b-b52a-e6cc8fdc3e80`, prompt `stationary_energy_review`.
 - [stationary_energy_review_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/c1bbeb88437f404d981ee3f1d000c4f1) — request `cc-1793494057198-t5ighm29m`, draft `2686df2b-f466-428b-b52a-e6cc8fdc3e80`, prompt `None`.
 - [stationary_energy_save_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/70a3e02af0e04aa2a2396dd245051570) — request `cc-1793494061249-36xhqf6df`, draft `2686df2b-f466-428b-b52a-e6cc8fdc3e80`, prompt `None`.
-

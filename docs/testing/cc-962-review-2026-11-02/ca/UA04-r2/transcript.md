@@ -3,7 +3,7 @@
 Dev: https://citycatalyst.openearth.dev. Konto: zwykły współpracownik miasta. Stan: completed.
 Przebieg: 2026-11-01T10:54:21.478Z — 2026-11-01T10:55:02.195Z.
 
-[Nagranie](MEDIA_PENDING) · Pełny dowód JSON (local execution artifact; not distributed)
+[Nagranie](https://github.com/user-attachments/assets/c563fe6d-4b64-4348-b84b-2515295fdc09) · Pełny dowód JSON (local execution artifact; not distributed)
 
 ## Użytkownik 1
 
@@ -15,23 +15,23 @@ Tak — raport PDF może być dobrym źródłem do uzupełnienia inwentaryzacji,
 
 Proponowany sposób pracy w CityCatalyst:
 
-1. **Ustal zakres raportu**  
+1. **Ustal zakres raportu**
    Sprawdź rok inwentaryzacji, obszar geograficzny, użyty współczynnik GWP oraz metodę raportowania (np. GPC), jeśli została podana.
 
-2. **Przygotuj dane z PDF**  
+2. **Przygotuj dane z PDF**
    Wypisz lub przenieś do tabeli wartości według sektorów i paliw/źródeł, np.:
    - energia stacjonarna: budynki mieszkalne, komercyjne i instytucjonalne, przemysł;
    - transport: paliwa, zużycie energii lub emisje;
    - odpady: odpady stałe i ścieki;
    - ewentualnie rolnictwo, procesy przemysłowe i inne źródła.
 
-3. **Zachowaj źródła i założenia**  
+3. **Zachowaj źródła i założenia**
    Dla każdej wartości zapisz stronę raportu, jednostkę, rok danych, źródło aktywności oraz współczynniki emisji. To ułatwia weryfikację i późniejszą aktualizację.
 
-4. **Wprowadź dane sektorami w CityCatalyst**  
+4. **Wprowadź dane sektorami w CityCatalyst**
    Najlepiej zacząć od sektorów z kompletnymi danymi, a brakujące pozycje oznaczać jako wymagające uzupełnienia — nie należy zastępować ich zgadywanymi wartościami.
 
-5. **Sprawdź spójność wyniku**  
+5. **Sprawdź spójność wyniku**
    Porównaj sumę w CityCatalyst z całkowitą emisją podaną w raporcie. Różnice często wynikają z innego zakresu emisji, jednostek, roku bazowego albo współczynników emisji.
 
 Jeśli prześlesz treść kluczowych tabel lub opiszesz, jakie sektory obejmuje PDF, pomogę rozpisać go na konkretne pola inwentaryzacji i wskazać, od którego sektora zacząć.

@@ -26,10 +26,10 @@ I do not want to lose what has already been entered. How can I safely open that 
 
 To avoid losing data:
 
-1. Go to the inventory list and **search for the city and the year 2024**.  
-2. Open the existing entry — **do not select the option to create a new inventory**.  
-3. Before editing, confirm it is the correct record: check **the inventory name, type, and GWP set used**.  
-4. In the inventory view, check sector status: which are already completed, which have gaps, and the available data sources.  
+1. Go to the inventory list and **search for the city and the year 2024**.
+2. Open the existing entry — **do not select the option to create a new inventory**.
+3. Before editing, confirm it is the correct record: check **the inventory name, type, and GWP set used**.
+4. In the inventory view, check sector status: which are already completed, which have gaps, and the available data sources.
 5. Only then continue with the missing sections or those requiring corrections.
 
 Simply opening the existing inventory should not delete previously entered data. If you see more than one entry for 2024, do not edit them blindly — compare the type, GWP, and name first.

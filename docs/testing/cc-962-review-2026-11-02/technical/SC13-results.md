@@ -12,7 +12,7 @@ Wynik: **0/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=6. DA=3/3 (0/0 oznacza
 
 ## Próba 1 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/264efa75-8ee7-4b64-aa16-66bacdf29ea3) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `bc687567-570e-5ec3-ac2e-8153368842e7`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -41,7 +41,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/cc7cd0e3-187c-434e-a645-183e79831b18) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `429fb1b8-2c20-5e1b-8fcf-d8a7dc4daed7`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -58,7 +58,7 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 **Odpowiedź:**
 
-Nie mogę znaleźć wskazanej inwentaryzacji wśród dostępnych Ci inwentaryzacji, więc nie mogę wyświetlić jej źródeł danych ani emisji.  
+Nie mogę znaleźć wskazanej inwentaryzacji wśród dostępnych Ci inwentaryzacji, więc nie mogę wyświetlić jej źródeł danych ani emisji.
 
 Nie wprowadzono żadnych zmian w danych.
 
@@ -70,7 +70,7 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · FAIL
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/81819a50-5ec8-4c41-accd-baf2bd4abcca) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `136be6a5-1b09-560c-89d9-f55f111ae948`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
@@ -87,7 +87,7 @@ Prompty i odpowiedzi z rzeczywistych artefaktów MLflow:
 
 **Odpowiedź:**
 
-Nie mogę znaleźć wskazanej inwentaryzacji wśród Twoich dostępnych zasobów, więc nie mogę wyświetlić jej źródeł danych ani emisji.  
+Nie mogę znaleźć wskazanej inwentaryzacji wśród Twoich dostępnych zasobów, więc nie mogę wyświetlić jej źródeł danych ani emisji.
 
 Nie wprowadzono żadnych zmian. Masz dostęp do jednej inwentaryzacji: **CC962 SC13 r3 city A, 2024**.
 
@@ -96,4 +96,3 @@ Nie wprowadzono żadnych zmian. Masz dostęp do jednej inwentaryzacji: **CC962 S
 Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu):
 
 - [climate_advisor_message_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/e4997f92ce8a4f9c8b77ccf7b2f0aab7) — request `cc-1793497356442-dnmeuh6wx`, draft `None`, prompt `chat`.
-

@@ -12,11 +12,11 @@ Wynik: **3/3** zaliczonych prób. GE=0, UW-kontrakt=0, PV=0. DA=9/9 (0/0 oznacza
 
 ## Próba 1 · PASS
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/f1b06232-5ced-4771-9002-1bfe8fe37011) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `2d2a3172-2af6-5074-9636-16914fbddef8`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/6d682eba-e6e9-49d0-a298-6b0047c377c5) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -52,11 +52,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 2 · PASS
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/0138fa40-8f16-431d-9817-9fc70033bbfe) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `129df186-0b44-503c-979f-b41761c610ae`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/2fadecd5-b34b-4a78-afc2-8d284f8c5378) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -91,11 +91,11 @@ Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu
 
 ## Próba 3 · PASS
 
-Zakres: dev browser + real APIs/DB. [Nagranie MP4](MEDIA_PENDING) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
+Zakres: dev browser + real APIs/DB. [Nagranie MP4](https://github.com/user-attachments/assets/a9d70dfe-e30c-4483-8a8b-a50209e0b6f7) · Execution JSON (local execution artifact; not distributed) · Kadr z filmu (local execution artifact; not distributed).
 
 Inventory: `9ab3e3d0-2fdb-522b-b8f1-a52f0afe797a`; draft: `brak`. Fixture zostały po zabezpieczeniu odczytów usunięte; stan z próby jest w archiwach.
 
-[Nagranie uzupełniające: UI/Results lub stan po retry](MEDIA_PENDING) · readback (local execution artifact; not distributed).
+[Nagranie uzupełniające: UI/Results lub stan po retry](https://github.com/user-attachments/assets/c0475dea-cdb9-4219-a65f-473530212edd) · readback (local execution artifact; not distributed).
 
 | Asercja | Oczekiwane | Rzeczywiste | Wynik |
 |---|---|---|---|
@@ -116,8 +116,8 @@ Dla bieżącej inwentaryzacji za **2024 r.**:
 - **Łączne emisje:** **1 250 tCO2e**
 - **To samo w kilogramach:** **1 250 000 kgCO2e**
 
-**Największy sektor:** Energia stacjonarna  
-- Emisje: **750 tCO2e** (**750 000 kgCO2e**)  
+**Największy sektor:** Energia stacjonarna
+- Emisje: **750 tCO2e** (**750 000 kgCO2e**)
 - Udział w całkowitych emisjach: **60%**
 
 Przeliczenie kontrolne: **1 tCO2e = 1 000 kgCO2e**.
@@ -127,4 +127,3 @@ Przeliczenie kontrolne: **1 tCO2e = 1 000 kgCO2e**.
 Powiązane runy (FINISHED oznacza zakończenie runu, a nie poprawność produktu):
 
 - [climate_advisor_message_request · FINISHED](https://mlflow-dev.openearth.dev/#/experiments/4/runs/e3e513d95bea4c1bbd1c59c215a19bf1) — request `cc-1793493699483-io28z9iuf`, draft `None`, prompt `chat`.
-

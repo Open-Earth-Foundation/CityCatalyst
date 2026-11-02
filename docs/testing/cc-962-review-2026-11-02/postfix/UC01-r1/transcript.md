@@ -53,4 +53,3 @@ Check these points before accepting each proposal:
 - **Completeness:** Some Energy Industries and Non-Specified Sources rows have no applicable source-backed value. Leave those unfilled or apply an eligible notation key only when it is defensible.
 
 The currently focused proposal is a 2022, city-level **SEEG** estimate for **Scope 1 residential fuel combustion**, so it meets the year and geographic-match checks; it provides emissions by gas rather than a fuel-activity quantity.
-

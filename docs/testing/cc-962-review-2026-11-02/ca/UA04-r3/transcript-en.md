@@ -66,7 +66,7 @@ Before confirming, compare the extraction with the PDF, especially:
 - **sector** — e.g. buildings, transport, waste;
 - **total emissions** and sector totals — whether they match the tables in the report.
 
-If the system's extraction does not match the report, do not confirm it automatically: correct the year, unit, or sector assignment manually, and retain the PDF page/table number as the source.  
+If the system's extraction does not match the report, do not confirm it automatically: correct the year, unit, or sector assignment manually, and retain the PDF page/table number as the source.
 
 Button names may differ slightly depending on the view and permissions. If you describe what you see after opening the inventory — or paste a screenshot without sensitive data — I will indicate the next step.
 

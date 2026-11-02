@@ -27,12 +27,12 @@ The denominator is **six complete conversations  / 21 scripted user messages**, 
 
 | Run | Year/geography regression | Answer quality | Requested goal | Flow quality | Evidence |
 |---|---|---|---|---|---|
-| UC01-r2 | Pass | Pass | Pass | Pass | [Video](MEDIA_PENDING) (92.4s) · [Full answers](UC01-r2/transcript.md) |
-| UC01-r3 | Pass | Pass | Pass | Pass | [Video](MEDIA_PENDING) (82.8s) · [Full answers](UC01-r3/transcript.md) |
-| UC01-r4 | Pass | Pass | Pass | Partial: duplicate draft | [Video](MEDIA_PENDING) (91.0s) · [Full answers](UC01-r4/transcript.md) |
-| UC02-r1 | Pass | Pass | Pass | Pass | [Video](MEDIA_PENDING) (69.9s) · [Full answers](UC02-r1/transcript.md) |
-| UC02-r2 | Pass | Partial: short Mt display | Pass | Pass | [Video](MEDIA_PENDING) (70.2s) · [Full answers](UC02-r2/transcript.md) |
-| UC02-r3 | Pass | Partial: short Mt display | Pass | Pass | [Video](MEDIA_PENDING) (77.7s) · [Full answers](UC02-r3/transcript.md) |
+| UC01-r2 | Pass | Pass | Pass | Pass | [Video](https://github.com/user-attachments/assets/4c7fa2b4-4ac4-47a1-ac9d-d244ad185176) (92.4s) · [Full answers](UC01-r2/transcript.md) |
+| UC01-r3 | Pass | Pass | Pass | Pass | [Video](https://github.com/user-attachments/assets/a66de374-6742-4bb8-ac13-e64a96b2ae52) (82.8s) · [Full answers](UC01-r3/transcript.md) |
+| UC01-r4 | Pass | Pass | Pass | Partial: duplicate draft | [Video](https://github.com/user-attachments/assets/63fb98fa-7805-4d31-abf8-ba45f58ca67c) (91.0s) · [Full answers](UC01-r4/transcript.md) |
+| UC02-r1 | Pass | Pass | Pass | Pass | [Video](https://github.com/user-attachments/assets/9c43835d-8d53-41ca-bd8a-e5b4696b886f) (69.9s) · [Full answers](UC02-r1/transcript.md) |
+| UC02-r2 | Pass | Partial: short Mt display | Pass | Pass | [Video](https://github.com/user-attachments/assets/48ce80c6-626f-45b1-bf96-39e214f9676e) (70.2s) · [Full answers](UC02-r2/transcript.md) |
+| UC02-r3 | Pass | Partial: short Mt display | Pass | Pass | [Video](https://github.com/user-attachments/assets/2e0b0c89-b7ab-43cc-b060-bf1f75b25226) (77.7s) · [Full answers](UC02-r3/transcript.md) |
 
 - **Provenance:**6 pass / 6. UC01: 3/3; UC02: 3/3. The successful SEEG residential candidate and the spoken explanation identify2022/city.
 - **Complete-answer quality:**4 pass, 2 partial / 6. The partials are UC02-r2/r3, which repeat the existing truncated1.11Mt display.
@@ -44,7 +44,7 @@ Example from UC02-r1, verbatim:
 
 > For **Residential Buildings, Scope 1 — fuel combustion (I.1.1)**, the proposal uses **SEEG (Sistema de Estimativa de Emissão de Gases do Efeito Estufa)**, a city-level source for **2022**, matching the inventory year.
 >
-> **Proposed emissions:** **1,117,504,701 kgCO₂e** (about **1.12 MtCO₂e**, 100-year GWP).  
+> **Proposed emissions:** **1,117,504,701 kgCO₂e** (about **1.12 MtCO₂e**, 100-year GWP).
 > It combines reported CO₂, CH₄, and N₂O emissions. The source does not provide a fuel-activity quantity or activity unit for this proposal.
 
 [Independent Terra judgment](postfix-judgment.md) · [Structured judgment](postfix-judgment.json) · [Frozen evidence packet](judge-packet.json). Historical 1 November runs and metrics have not been rewritten as post-fix passes.
@@ -59,9 +59,9 @@ Example from UC02-r1, verbatim:
 
 ## Recorder interruption and recovery
 
-The first UC01 recording pressed Enter during the automatic draft-ready summary. Its next question was filled but not sent, and the recorder timed out. The corrected recorder waits for the actual submit button. The original incomplete recording is retained: [Initial video](MEDIA_PENDING) (recorder `ok:false`).
+The first UC01 recording pressed Enter during the automatic draft-ready summary. Its next question was filled but not sent, and the recorder timed out. The corrected recorder waits for the actual submit button. The original incomplete recording is retained: [Initial video](https://github.com/user-attachments/assets/d05d904e-0760-4bf2-b2fc-5bf95cba6377) (recorder `ok:false`).
 
-A separately recorded reload/recovery submitted a coverage question before the draft context finished loading: the request used a new thread with no draft-run ID. CA asked to start a draft. The next question carried the original thread and correct run ID and obtained correct guidance. The exact timing/context sequence is retained in [Recovery video](MEDIA_PENDING) and [Execution evidence](UC01-r1/execution.json). This mixed recovery is **excluded from the six complete-run counts**, not silently promoted to a pass. UC01-r4 is the independent full replacement. The recovery alone does not establish a reproducible product fault; it also does not rule one out. No videos were spliced to imply an uninterrupted success.
+A separately recorded reload/recovery submitted a coverage question before the draft context finished loading: the request used a new thread with no draft-run ID. CA asked to start a draft. The next question carried the original thread and correct run ID and obtained correct guidance. The exact timing/context sequence is retained in [Recovery video](https://github.com/user-attachments/assets/dbf5f9e0-6a59-4e16-8346-e618a656e647) and [Execution evidence](UC01-r1/execution.json). This mixed recovery is **excluded from the six complete-run counts**, not silently promoted to a pass. UC01-r4 is the independent full replacement. The recovery alone does not establish a reproducible product fault; it also does not rule one out. No videos were spliced to imply an uninterrupted success.
 
 ## Cleanup
 

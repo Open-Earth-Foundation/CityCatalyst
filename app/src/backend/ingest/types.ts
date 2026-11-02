@@ -155,3 +155,10 @@ export class IngestItemError extends Error {
     this.name = "IngestItemError";
   }
 }
+
+export function ingestItemErrorStatus(error: IngestItemError): 400 | 409 {
+  if (error.code === "stale_review_draft" || error.code === "review_locked") {
+    return 409;
+  }
+  return 400;
+}

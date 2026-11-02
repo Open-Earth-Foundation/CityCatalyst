@@ -39,10 +39,7 @@
  *         description: stale_review_draft or review_locked
  */
 
-import {
-  httpErrorFromIngest,
-  loadIngestReviewContext,
-} from "@/backend/ingest/http";
+import { loadIngestReviewContext } from "@/backend/ingest/http";
 import { createIngestPlugin } from "@/backend/ingest/registry";
 import { apiHandler } from "@/util/api";
 import { approveIngestReviewDraftRequest } from "@/util/validation";
@@ -54,29 +51,22 @@ export const POST = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
   const body = approveIngestReviewDraftRequest.parse(await req.json());
-  try {
-    const { runner, job } = await loadIngestReviewContext(
-      params.itemId,
-      session,
-    );
-    const item = await runner.confirmReview(
-      params.itemId,
-      createIngestPlugin(job.moduleId),
-      {
-        userId: session.user.id,
-        reviewDraftVersion: body.reviewDraftVersion,
-        targetBinding: body.targetBinding,
-      },
-    );
-    return NextResponse.json({
-      data: {
-        itemId: item.id,
-        status: item.status,
-        result: item.result,
-        reviewDraftVersion: item.reviewDraftVersion,
-      },
-    });
-  } catch (error) {
-    httpErrorFromIngest(error);
-  }
+  const { runner, job } = await loadIngestReviewContext(params.itemId, session);
+  const item = await runner.confirmReview(
+    params.itemId,
+    createIngestPlugin(job.moduleId),
+    {
+      userId: session.user.id,
+      reviewDraftVersion: body.reviewDraftVersion,
+      targetBinding: body.targetBinding,
+    },
+  );
+  return NextResponse.json({
+    data: {
+      itemId: item.id,
+      status: item.status,
+      result: item.result,
+      reviewDraftVersion: item.reviewDraftVersion,
+    },
+  });
 });

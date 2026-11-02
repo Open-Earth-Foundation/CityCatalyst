@@ -3,18 +3,6 @@ import type { AppSession } from "@/lib/auth";
 import { assertCanAccessIngestItem } from "./access";
 import { IngestRunner } from "./IngestRunner";
 import { SequelizeIngestStore } from "./IngestStoreService";
-import { IngestItemError } from "./types";
-
-export function httpErrorFromIngest(error: unknown): never {
-  if (error instanceof IngestItemError) {
-    const status =
-      error.code === "stale_review_draft" || error.code === "review_locked"
-        ? 409
-        : 400;
-    throw createHttpError(status, error.message, { code: error.code });
-  }
-  throw error;
-}
 
 export async function loadIngestReviewContext(
   itemId: string,

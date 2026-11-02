@@ -1,0 +1,710 @@
+{
+  "model": "gpt-6.1-terra",
+  "group": "onboarding",
+  "method": "independent evidence-based conversation judgment",
+  "trials": [
+    {
+      "key": "UA01-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Po próbie istnieją tylko lata 2023 i 2024, bez 2025; współpracownik nie ma uprawnienia utworzenia roku. Porady pomagają przygotować ustawienia, ale nie uruchomiono inwentaryzacji.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Uczciwie mówi, że nie utworzy roku przez czat, i podaje dobre kroki przygotowawcze. Poleca jednak utworzenie bez wskazania, że collaborator potrzebuje administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Ścieżka przez administratora z uprawnieniami do utworzenia roku."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Wskazuje rok, typ, GWP i kontrolę listy oraz kompletności, ale nie wyjaśnia wymaganej ludności ani ograniczenia roli i praktycznej ścieżki.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Wymagana ludność i pomoc administratora w utworzeniu inwentaryzacji."
+          ]
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Uczciwe ograniczenie czatu i użyteczne wskazówki; pominięto uprawnienia i część konfiguracji."
+    },
+    {
+      "key": "UA01-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Po próbie istnieją tylko lata 2023 i 2024, bez 2025; współpracownik nie ma uprawnienia utworzenia roku. Porady pomagają przygotować ustawienia, ale nie uruchomiono inwentaryzacji.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Rozróżnia poradę i utworzenie przez czat; przygotowanie danych jest przydatne, lecz polecenie utworzenia nie uwzględnia roli.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Administrator potrzebny do utworzenia inwentaryzacji."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Omawia rok i GWP oraz dostępność danych, ale wybór roku w formularzu nie potwierdza zapisu. Pomija typ i ludność oraz ograniczenie roli.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Weryfikacja zapisanej pozycji na liście, typ, ludność oraz ścieżka przez administratora."
+          ]
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Uczciwe ograniczenie czatu i użyteczne wskazówki; pominięto uprawnienia i część konfiguracji."
+    },
+    {
+      "key": "UA01-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Po próbie istnieją tylko lata 2023 i 2024, bez 2025; współpracownik nie ma uprawnienia utworzenia roku. Porady pomagają przygotować ustawienia, ale nie uruchomiono inwentaryzacji.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Uczciwie odmawia utworzenia w czacie i podaje sensowne przygotowanie; nie uwzględnia konieczności udziału administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Administrator potrzebny do utworzenia roku."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Wskazuje rok, typ, GWP i kontrolę listy, ale pomija ludność i ograniczenie roli. Wyszukiwanie lub filtr roku pozostaje niezweryfikowane.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Ludność i utworzenie przez uprawnionego administratora."
+          ]
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Uczciwe ograniczenie czatu i użyteczne wskazówki; pominięto uprawnienia i część konfiguracji."
+    },
+    {
+      "key": "UA02-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację 73886df4-7f89-5306-9a65-7acaeb0278ce, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Bezpiecznie zaleca kontynuację istniejącej pozycji i porównanie ustawień, nie deklaruje zmiany stanu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Podaje kolejność sprawdzenia roku, sektorów i danych bez zapisywania zmian; nie proponuje importu ani nadpisania.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Bezpieczna rada kontynuacji; właściwa istniejąca inwentaryzacja była otwarta, a niezależny odczyt potwierdza zachowanie danych. Nie twierdzimy, że dokonano dalszej edycji."
+    },
+    {
+      "key": "UA02-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację c63eed27-bdc0-524d-9926-0b74a43903f0, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Zaleca istniejącą inwentaryzację i kontrolę miasta, roku, typu i GWP.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Wyjaśnia przegląd bez zapisu i porównanie ustawień, a także unikanie edycji w ciemno.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Bezpieczna rada kontynuacji; właściwa istniejąca inwentaryzacja była otwarta, a niezależny odczyt potwierdza zachowanie danych. Nie twierdzimy, że dokonano dalszej edycji."
+    },
+    {
+      "key": "UA02-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację e6cfec20-af2b-5166-af48-b79f9aad5cb5, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Radzi użyć istniejącej pozycji i zweryfikować jej typ oraz GWP, zamiast tworzyć duplikat.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Proponuje otwarcie roku, weryfikację ustawień i sektorów oraz ostrożność przed edycją.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Bezpieczna rada kontynuacji; właściwa istniejąca inwentaryzacja była otwarta, a niezależny odczyt potwierdza zachowanie danych. Nie twierdzimy, że dokonano dalszej edycji."
+    },
+    {
+      "key": "UA03-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Przydatnie proponuje kontrolę roku, jednostek i kategorii oraz nie udaje, że zna zawartość pliku; nie wskazuje rzeczywistej ścieżki importu i ograniczenia uprawnień.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Import inwentaryzacji przez administratora, z przeglądem i potwierdzeniem."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Kontrole roku, jednostek, sektorów i granic są przydatne. Warunkowe wskazanie załącznika nie odpowiada konkretnie, że w tym czacie nie ma załączników, a końcowa obietnica zakłada ich przesłanie.",
+          "materialErrors": [
+            {
+              "claim": "Po przesłaniu pliku mogę przygotować krótką listę",
+              "reason": "Odpowiedź zakłada możliwość przesłania pliku w tej rozmowie, choć jej interfejs nie obsługuje załączników.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "Zamrożone verifiedUiCapabilities.generalChatAttachments=false: nagrany ogólny czat ma tylko pole tekstowe i wysyłanie/zatrzymywanie."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Czat nie przyjmuje plików; można wkleić fragment lub poprosić administratora o import."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Rzeczowa lista kontroli jednostek, obliczeń, klasyfikacji i braków; bez twierdzenia, że plik już odczytano.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA03-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Omawia przygotowanie i kontrolę danych, ale wskazuje hipotetyczny import w sektorze bez ustalonej ścieżki oraz nie wspomina o roli administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Ścieżka importu inwentaryzacji dostępna administratorowi i jej potwierdzenie."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Podaje wartościowe kontrole; warunkuje załącznik, lecz nie informuje, że aktualny czat nie obsługuje plików, ani jak obejść ograniczenie uprawnień.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Brak załączników w tym czacie i ścieżka administratora."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Lista kontroli jest dobra i nie zakłada zawartości Excela, ale końcowa sugestia przesłania pliku w czacie nie ma pokrycia.",
+          "materialErrors": [
+            {
+              "claim": "Jeśli prześlesz plik, mogę pomóc przygotować listę konkretnych kontroli",
+              "reason": "W kontekście pytania o przesłanie tutaj obiecuje analizę pliku przez czat bez dostępnego załącznika.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "Zamrożone verifiedUiCapabilities.generalChatAttachments=false: nagrany ogólny czat ma tylko pole tekstowe i wysyłanie/zatrzymywanie."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA03-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Przygotowanie pliku i kontroli jest przydatne. Szablon w sekcji źródeł i podana ścieżka nie są potwierdzone; pominięto, że import inwentaryzacji wymaga administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Rzeczywista ścieżka importu inwentaryzacji i rola administratora."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Omawia rok, jednostki i mapowanie; warunkowe załączanie nie odpowiada wprost, że ten czat go nie obsługuje. Szczegóły podglądu importu nie zostały sprawdzone, lecz brak nagrania nie dowodzi, że nie istnieje.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Brak załączników w czacie i konieczność administratora przy imporcie."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Użyteczna lista jakości; istnienie opisanego podglądu mapowania pozostaje niezweryfikowane, więc nie można go uznać za sprawdzoną instrukcję.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA04-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Przydatnie wyjaśnia ocenę raportu bez udawania, że go przeczytał, ale nie wskazuje dostępnej administratorowi ścieżki importu; proponuje przesłanie PDF w rozmowie bez załączników.",
+          "materialErrors": [
+            {
+              "claim": "Jeśli prześlesz PDF albo wkleisz spis treści i tabelę emisji",
+              "reason": "Przesłanie PDF do tego czatu nie jest dostępne; wklejenie tekstu pozostaje możliwe.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "Zamrożone verifiedUiCapabilities.generalChatAttachments=false: nagrany ogólny czat ma tylko pole tekstowe i wysyłanie/zatrzymywanie."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Ograniczenie roli dla importu inwentaryzacji, sprawdzona ścieżka PDF i informacja o braku załączników w czacie."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Dane miasta, roku, typu i GWP potwierdza wynik narzędzia; kontrole są trafne. Dokładne przyciski i podgląd dla PDF pozostają niezweryfikowane, a roli wymaganej do importu nie wyjaśniono. Dodatkowo proponuje przesłanie zrzutu w czacie bez załączników.",
+          "materialErrors": [
+            {
+              "claim": "prześlij zrzut ekranu",
+              "reason": "Proponuje przesłanie obrazu w czacie, który według orakla nie obsługuje załączników.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "reference.verifiedUiCapabilities.generalChatAttachments=false; zapis wejścia czatu obejmuje pole tekstowe i wysyłanie/zatrzymywanie."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Ograniczenie roli i sprawdzona ścieżka importu PDF."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Dobrze opisuje weryfikację odczytu i unikanie zgadywania jednostek, lecz sugeruje przesłanie zrzutu do czatu, który nie ma załączników.",
+          "materialErrors": [
+            {
+              "claim": "przesłać zrzut jej fragmentu",
+              "reason": "Czat tekstowy nie ma funkcji załącznika.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "Zamrożone verifiedUiCapabilities.generalChatAttachments=false: nagrany ogólny czat ma tylko pole tekstowe i wysyłanie/zatrzymywanie."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA04-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Nie twierdzi, że widział PDF; podaje rozsądne kroki sektorowe, lecz pomija ścieżkę importu i uprawnienia administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Ograniczenie roli dla importu inwentaryzacji i sprawdzona ścieżka dla pliku PDF."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Wyjaśnia kontrole roku, granic i jednostek, ale proponuje warunkowe szukanie przycisków w sektorze zamiast wskazać dostęp do kreatora i wymaganego administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Rzeczywista ścieżka i ograniczenie uprawnień współpracownika."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Właściwie zaleca porównanie tabel, rok, jednostki, sumy i wstrzymanie niejasnych danych; nie twierdzi, że import już nastąpił.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA04-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "blocked",
+      "goalReason": "Nie wybrano ani nie przesłano rzeczywistego pliku; values przed i po są puste, brak potwierdzonego importu i odczytu zapisanych danych. Import inwentaryzacji wymaga administratora organizacji lub projektu, a konto jest city collaborator; samo doradztwo nie realizuje celu.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Wyjaśnia przygotowanie materiału i nie przypisuje zawartości nieprzesłanemu PDF, ale pomija import oraz wymagany udział administratora.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Ograniczenie roli dla importu inwentaryzacji i sprawdzona ścieżka PDF."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Kontrole porównawcze są sensowne; położenie przycisku PDF i możliwość korekty w podglądzie nie zostały potwierdzone, ale nie dowodzi to ich braku. Pominięto ograniczenie roli oraz zasugerowano wklejenie obrazu do czatu bez załączników.",
+          "materialErrors": [
+            {
+              "claim": "wkleisz zrzut ekranu bez danych wrażliwych",
+              "reason": "Czat jest tekstowy i według orakla nie przyjmuje załączników; wklejenie samego opisu lub tekstu jest inną możliwością.",
+              "kind": "unsupported_capability",
+              "origin": "model",
+              "evidence": "reference.verifiedUiCapabilities.generalChatAttachments=false; nagrany interfejs ogólnego czatu ma pole tekstowe, bez załącznika."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Ograniczenie roli i sprawdzona ścieżka PDF."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Kontrole roku i jednostek są dobre. Możliwość zapisu roboczego i podglądu dla tej ścieżki jest niezweryfikowana, nie wykazano też jej braku.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Kontrole jakości są użyteczne, ale odpowiedź nie prowadzi jasno przez dostępną rolę i rzeczywistą ścieżkę importu."
+    },
+    {
+      "key": "UA05-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Inwentaryzacja 2024 ma pustą listę wartości zarówno przed, jak i po; brak dowodu wprowadzenia obu pozycji. Porada pomaga uniknąć podwójnej sumy.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Poprawnie odczytuje obie wartości, kategorie i Scope 1 oraz sumę kontrolną; uczciwie odróżnia tekst w czacie od zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Poprawnie proponuje kontrolę roku, dwóch wartości i unikanie sumy jako trzeciego wpisu. Usunięcie lub wyłączenie błędnego rekordu to ogólna sugestia; jej dokładna dostępność w UI pozostaje niezweryfikowana.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Podaje użyteczne szczegóły, lecz zapewnia o wystarczalności danych bez sprawdzenia formularza. Wykonalność wpisu i wymagane pola pozostają niezweryfikowane, nie są dowiedzioną nieistniejącą funkcją.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Sprawdzenie faktycznej ścieżki wpisu i wymaganych pól przed zapewnieniem, że tabela wystarcza."
+          ]
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential",
+          "provided": true,
+          "quote": "**Budynki mieszkalne — Scope 1:** 1 200 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1200000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "road",
+          "provided": true,
+          "quote": "**Transport drogowy — Scope 1:** 800 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 800000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "table_total",
+          "provided": true,
+          "quote": "**2 000 tCO₂e**",
+          "turn": 1,
+          "observedCanonical": 2000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Residential buildings Scope 1 maps to I.1.1",
+          "verdict": "correct",
+          "quote": "**Budynki mieszkalne — Scope 1:** 1 200 tCO₂e",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "Road transport Scope 1 maps to II.1.1",
+          "verdict": "correct",
+          "quote": "**Transport drogowy — Scope 1:** 800 tCO₂e",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "The summary is not a third emissions row",
+          "verdict": "correct",
+          "quote": "Wiersz „Suma” potraktuj jako kontrolę, a nie jako dodatkową pozycję emisyjną",
+          "turn": 1,
+          "reason": "Suma jest kontrolna i nie stanowi trzeciego wpisu emisji."
+        }
+      ],
+      "summary": "Wartości, kategorie i suma kontrolna są poprawne; zapewnienie o wystarczalności danych nie zostało zweryfikowane, a zapis nie nastąpił."
+    },
+    {
+      "key": "UA05-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Inwentaryzacja 2024 ma pustą listę wartości zarówno przed, jak i po; brak dowodu wprowadzenia obu pozycji. Porada pomaga uniknąć podwójnej sumy.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Poprawnie odczytuje obie wartości, kategorie i Scope 1 oraz sumę kontrolną; uczciwie odróżnia tekst w czacie od zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Wskazuje kontrolę obu pozycji, sumy i roku; wyraźnie warunkuje sumę całkowitą brakiem innych pozycji.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Podaje użyteczne szczegóły, lecz zapewnia o wystarczalności danych bez sprawdzenia formularza. Wykonalność wpisu i wymagane pola pozostają niezweryfikowane, nie są dowiedzioną nieistniejącą funkcją.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Sprawdzenie faktycznej ścieżki wpisu i wymaganych pól przed zapewnieniem, że tabela wystarcza."
+          ]
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential",
+          "provided": true,
+          "quote": "**Budynki mieszkalne — Scope 1:** 1 200 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1200000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "road",
+          "provided": true,
+          "quote": "**Transport drogowy — Scope 1:** 800 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 800000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "table_total",
+          "provided": true,
+          "quote": "**Suma:** 2 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 2000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Residential buildings Scope 1 maps to I.1.1",
+          "verdict": "correct",
+          "quote": "**Budynki mieszkalne — Scope 1:** 1 200 tCO₂e",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "Road transport Scope 1 maps to II.1.1",
+          "verdict": "correct",
+          "quote": "**Transport drogowy — Scope 1:** 800 tCO₂e",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "The summary is not a third emissions row",
+          "verdict": "correct",
+          "quote": "Sumy nie należy zwykle dodawać jako osobnej kategorii emisji",
+          "turn": 1,
+          "reason": "Suma jest kontrolna i nie stanowi trzeciego wpisu emisji."
+        }
+      ],
+      "summary": "Wartości, kategorie i suma kontrolna są poprawne; zapewnienie o wystarczalności danych nie zostało zweryfikowane, a zapis nie nastąpił."
+    },
+    {
+      "key": "UA05-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "assisted",
+      "goalReason": "Inwentaryzacja 2024 ma pustą listę wartości zarówno przed, jak i po; brak dowodu wprowadzenia obu pozycji. Porada pomaga uniknąć podwójnej sumy.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Poprawnie odczytuje oba wyniki i sumę, prosi o miasto i uczciwie oddziela tekst w czacie od zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Podaje sprawdzalny zestaw kontroli roku, dwóch pozycji, sumy i podwójnego liczenia.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Pyta o źródła, zakres, metodę i szczegóły klasyfikacji, bez zgadywania paliw ani twierdzenia o zapisie.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential",
+          "provided": true,
+          "quote": "**Budynki mieszkalne** — Scope 1: **1 200 tCO₂e**",
+          "turn": 1,
+          "observedCanonical": 1200000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "road",
+          "provided": true,
+          "quote": "**Transport drogowy** — Scope 1: **800 tCO₂e**",
+          "turn": 1,
+          "observedCanonical": 800000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        },
+        {
+          "key": "table_total",
+          "provided": true,
+          "quote": "**Łącznie**: **2 000 tCO₂e**",
+          "turn": 1,
+          "observedCanonical": 2000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Wartość odpowiedzi w tCO₂e przeliczono na kgCO₂e mnożąc przez 1000; zgadza się z zamrożoną tabelą."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Residential buildings Scope 1 maps to I.1.1",
+          "verdict": "correct",
+          "quote": "**Budynki mieszkalne** — Scope 1: **1 200 tCO₂e**",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "Road transport Scope 1 maps to II.1.1",
+          "verdict": "correct",
+          "quote": "**Transport drogowy** — Scope 1: **800 tCO₂e**",
+          "turn": 1,
+          "reason": "Jednoznaczny opis kategorii i Scope 1 odpowiada zamrożonemu mapowaniu; użytkowniczka nie prosiła o kod GPC."
+        },
+        {
+          "target": "The summary is not a third emissions row",
+          "verdict": "correct",
+          "quote": "Wiersz „Suma” potraktuj jako kontrolę wyniku, a nie osobną pozycję emisyjną",
+          "turn": 1,
+          "reason": "Suma jest kontrolna i nie stanowi trzeciego wpisu emisji."
+        }
+      ],
+      "summary": "Poprawnie odczytuje obie kategorie, Scope 1, wartości i sumę kontrolną; wskazuje potrzebne szczegóły. Zapis obu wartości nie nastąpił."
+    }
+  ]
+}

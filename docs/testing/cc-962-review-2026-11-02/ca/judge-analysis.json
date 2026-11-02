@@ -1,0 +1,1264 @@
+{
+  "model": "gpt-6.1-terra",
+  "group": "analysis",
+  "method": "independent evidence-based conversation judgment",
+  "trials": [
+    {
+      "key": "UB01-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są poprawne dwa zdania liczbowe i oddzielne ostrzeżenie o IPPU/AFOLU, ale żaden gotowy dwuzdaniowy tekst nie łączy liczb, udziału i ograniczenia; użytkownik musi je zredagować razem.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Kwoty, największy sektor i udziały odpowiadają zapisom; nie nazwano miasta w odpowiedzi.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Nazwa miasta"
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Dwa zdania zawierają poprawną sumę, wartość sektora i jego udział w zapisanej sumie.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Prawidłowo ostrzega o niewypełnionych IPPU i AFOLU. Podaje również możliwy do użycia tekst o ograniczeniu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg."
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg."
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "Poprawne liczby i sektor; ograniczenie przekazano osobno od gotowego tekstu liczbowego."
+    },
+    {
+      "key": "UB01-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "assisted",
+      "goalReason": "Są poprawne dwa zdania liczbowe i oddzielne ostrzeżenie o IPPU/AFOLU, ale żaden gotowy dwuzdaniowy tekst nie łączy liczb, udziału i ograniczenia; użytkownik musi je zredagować razem.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Kwoty, największy sektor i udziały odpowiadają zapisom; podano rok i miasto.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Dwa zdania zawierają poprawną sumę, wartość sektora i jego udział w zapisanej sumie.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Prawidłowo ostrzega o niewypełnionych IPPU i AFOLU. Podaje również możliwy do użycia tekst o ograniczeniu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg."
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg."
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "Poprawne liczby i sektor; ograniczenie przekazano osobno od gotowego tekstu liczbowego."
+    },
+    {
+      "key": "UB01-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są poprawne dwa zdania liczbowe i oddzielne ostrzeżenie o IPPU/AFOLU, ale żaden gotowy dwuzdaniowy tekst nie łączy liczb, udziału i ograniczenia; użytkownik musi je zredagować razem.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Kwoty, największy sektor i udziały odpowiadają zapisom; nie nazwano miasta w odpowiedzi.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Nazwa miasta"
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Dwa zdania zawierają poprawną sumę, wartość sektora i jego udział w zapisanej sumie.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Prawidłowo ostrzega o niewypełnionych IPPU i AFOLU. Zaproponowany cytat nie zawiera jednak jawnego zastrzeżenia o lukach, mimo że znajduje się ono poza cytatem.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg."
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg."
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "Poprawne liczby i sektor; ograniczenie przekazano osobno od gotowego tekstu liczbowego."
+    },
+    {
+      "key": "UB02-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Oba lata dotyczą tego samego miasta; wartości, różnica, udziały sektorów i informacja o brakach IPPU/AFOLU zgadzają się z danymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Poprawnie liczy 300 000 t i 20% względem 2023 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wyraźnie oddziela wzrost emisji od jego przyczyny oraz wskazuje dane do sprawdzenia. Gotowy cytat mówi o całkowitych emisjach miasta bez przypomnienia luk IPPU/AFOLU, choć wcześniej je wskazano.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg."
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg."
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg."
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "na podstawie samych emisji nie można jednoznacznie stwierdzić, że mieszkańcy zużyli więcej energii.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "Porównanie liczbowe i rozróżnienie przyczyny są poprawne; r1 ma zbyt ogólny gotowy cytat."
+    },
+    {
+      "key": "UB02-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Oba lata dotyczą tego samego miasta; wartości, różnica, udziały sektorów i informacja o brakach IPPU/AFOLU zgadzają się z danymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Poprawnie liczy 300 000 t i 20% względem 2023 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Wyraźnie oddziela wzrost emisji od jego przyczyny oraz wskazuje dane do sprawdzenia. Ograniczenia braków są wskazane w tej lub wcześniejszej odpowiedzi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg."
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg."
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg."
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "Nie wprost.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "Poprawne porównanie lat i ostrożna interpretacja."
+    },
+    {
+      "key": "UB02-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Oba lata dotyczą tego samego miasta; wartości, różnica, udziały sektorów i informacja o brakach IPPU/AFOLU zgadzają się z danymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Poprawnie liczy 300 000 t i 20% względem 2023 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Wyraźnie oddziela wzrost emisji od jego przyczyny oraz wskazuje dane do sprawdzenia. Ograniczenia braków są wskazane w tej lub wcześniejszej odpowiedzi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg."
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg."
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg."
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "Nie wprost.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "Poprawne porównanie lat i ostrożna interpretacja."
+    },
+    {
+      "key": "UB03-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są obie kwoty i zastrzeżenie, lecz odpowiedź myląco sugeruje wypełnienie energii mimo 9% w UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wartości zakresów, rok i suma zapisanej energii są poprawne; odpowiedź łączy je z budynkami mieszkalnymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Wyjaśnia bezpośrednie emisje i emisje energii sieciowej; przykłady paliw są przedstawione jako przykłady, nie potwierdzone lokalne źródła.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Suma 900 tys. t i ostrzeżenie o brakach są poprawne, lecz występuje mylące twierdzenie o wypełnieniu sektora.",
+          "materialErrors": [
+            {
+              "claim": "energia stacjonarna jest wypełniona, a brakujące sektory wskazano gdzie indziej",
+              "reason": "To sugeruje, że braków w energii nie ma lub dotyczą tylko innych sektorów; widok 2024 podaje Stationary energy 9% completed. Samo zastrzeżenie o możliwych brakach nie usuwa tego mylącego sformułowania.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.ui final: Stationary energy, 9% completed; before.values: tylko I.1.1 i I.1.2 w sektorze."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg."
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg."
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e**\n- **Zakres 2:** **300 000 tCO₂e**\n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e**\n- **Zakres 2:** **300 000 tCO₂e**\n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie można jednak na tej podstawie jednoznacznie stwierdzić, że nie brakuje żadnych danych źródłowych w tym sektorze.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Liczby i suma prawidłowe; mylący opis kompletności."
+    },
+    {
+      "key": "UB03-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Są wartości, wyjaśnienie zakresów i ostrzeżenie, że suma zapisów nie oznacza kompletności; dokładny procent pozostaje sporny między narzędziem a UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wartości zakresów, rok i suma zapisanej energii są poprawne; odpowiedź łączy je z budynkami mieszkalnymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Wyjaśnia bezpośrednie emisje i emisje energii sieciowej; przykłady paliw są przedstawione jako przykłady, nie potwierdzone lokalne źródła.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Suma 900 tys. t i ostrzeżenie o brakach są poprawne, lecz przywołany procent statusu nie zgadza się z widokiem sektora, a dokładny mianownik nie ma niezależnego potwierdzenia.",
+          "materialErrors": [
+            {
+              "claim": "2 z 21 wymaganych pozycji danych",
+              "reason": "Dokładny mianownik nie ma niezależnego potwierdzenia w pokazanym widoku; wynik statusu narzędzia 10% różni się od 9% w UI. Nie da się tu ustalić, czy powodem jest zaokrąglenie czy różnica zakresu.",
+              "kind": "other",
+              "origin": "upstream_payload",
+              "evidence": "inventory_status_overview: 2/21, 10%; evidence.ui final: Stationary energy 9% completed; scenariusz zabrania wywodzić procent wyłącznie z czterech zapisanych wierszy."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg."
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg."
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej  \n\nWidoczne emisje w obu zakresach dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej  \n\nWidoczne emisje w obu zakresach dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie oznacza to jednak, że sektor jest kompletny.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Liczby i suma prawidłowe; konflikt procentu statusu z UI."
+    },
+    {
+      "key": "UB03-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są obie kwoty i zastrzeżenie, lecz odpowiedź bez podstaw przypisuje całą pozycję zakresu 2 elektryczności.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wartości zakresów, rok i suma zapisanej energii są poprawne; odpowiedź łączy je z budynkami mieszkalnymi.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Wyjaśnia bezpośrednie emisje i emisje energii sieciowej; bez dowodu zawęża całe 300 tys. t do elektryczności.",
+          "materialErrors": [
+            {
+              "claim": "jedna trzecia z zakupionej energii elektrycznej",
+              "reason": "Przypisanie całej pozycji zakresu 2 wyłącznie elektryczności nie wynika ze zsumowanej pozycji I.1.2; zakres 2 może obejmować również ciepło/chłód.",
+              "kind": "other",
+              "origin": "model",
+              "evidence": "Frozen reference I.1.2: 300 000 000 kg, brak wyszczególnienia nośnika; inventory_emissions_context zwraca podsektor i zakres, bez nośnika."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Suma 900 tys. t i ostrzeżenie o brakach są poprawne, lecz przywołany procent statusu nie zgadza się z widokiem sektora, a dokładny mianownik nie ma niezależnego potwierdzenia.",
+          "materialErrors": [
+            {
+              "claim": "2 z 21 wymaganych pozycji danych",
+              "reason": "Dokładny mianownik nie ma niezależnego potwierdzenia w pokazanym widoku; wynik statusu narzędzia 10% różni się od 9% w UI. Nie da się tu ustalić, czy powodem jest zaokrąglenie czy różnica zakresu.",
+              "kind": "other",
+              "origin": "upstream_payload",
+              "evidence": "inventory_status_overview: 2/21, 10%; evidence.ui final: Stationary energy 9% completed; scenariusz zabrania wywodzić procent wyłącznie z czterech zapisanych wierszy."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg."
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg."
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — **66,7%** emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — **33,3%** emisji energii stacjonarnej  \n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — **66,7%** emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — **33,3%** emisji energii stacjonarnej  \n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie oznacza to jednak, że sektor jest kompletny.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Liczby i suma prawidłowe; nieuprawnione zawężenie nośnika energii i konflikt procentu statusu z UI."
+    },
+    {
+      "key": "UB04-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Poprawnie prosi o mianownik, którego nie otrzymał w wyniku narzędzia; jednak niesłusznie stwierdza, że nie ma go w danych produktu.",
+          "materialErrors": [
+            {
+              "claim": "nie jest dostępna w danych inwentaryzacyjnych",
+              "reason": "Brak populacji w zwróconym kontekście emisji nie dowodzi braku danych w produkcie; niezależny stan i widok zawierają 100 000 mieszkańców.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.before.population: 100000 w 2024; evidence.ui final: 100K Total Population; wywołania z tury 1 nie zwracają odczytu populacji."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Gotowy wskaźnik bez liczby ludności nie został podany; prośba o mianownik jest uzasadniona."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo dzieli 1 800 000 t przez podane przez użytkownika 100 000 osób i podaje jednostkę dla 2024 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Daje 15 t/os. dla 2023 r. przy tym samym założeniu, odróżnia zapisane dane od pełnego bilansu i podaje zastrzeżenie o lukach.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca rocznie",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji."
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca/rok",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podana przez Ciebie liczba",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "18 i 15 t/os. są poprawne; pierwsza odpowiedź błędnie twierdzi, że populacji nie ma w danych produktu."
+    },
+    {
+      "key": "UB04-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Poprawnie prosi o mianownik, którego nie otrzymał w wyniku narzędzia; wyjaśnia wzór i nie udaje odczytu populacji.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Gotowy wskaźnik bez liczby ludności nie został podany; prośba o mianownik jest uzasadniona."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo dzieli 1 800 000 t przez podane przez użytkownika 100 000 osób i podaje jednostkę dla 2024 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Daje 15 t/os. dla 2023 r. przy tym samym założeniu, odróżnia zapisane dane od pełnego bilansu i podaje zastrzeżenie o lukach.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji."
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podanej przez Ciebie populacji",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "18 i 15 t/os. są poprawne; populację przypisano użytkownikowi."
+    },
+    {
+      "key": "UB04-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Poprawnie prosi o mianownik, którego nie otrzymał w wyniku narzędzia; jednak niesłusznie stwierdza, że nie ma go w danych produktu.",
+          "materialErrors": [
+            {
+              "claim": "tej wartości nie ma obecnie w danych inwentaryzacji",
+              "reason": "Brak populacji w wyniku narzędzia nie dowodzi jej braku w produkcie; dane i widok pokazują 100 000.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.before.population: 100000 w 2024; evidence.ui final: 100K Total Population; kontekst emisji nie zwraca populacji."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Gotowy wskaźnik bez liczby ludności nie został podany; prośba o mianownik jest uzasadniona."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo dzieli 1 800 000 t przez podane przez użytkownika 100 000 osób i podaje jednostkę dla 2024 r.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Daje 15 t/os. dla 2023 r. przy tym samym założeniu, odróżnia zapisane dane od pełnego bilansu i podaje zastrzeżenie o lukach.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca rocznie",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji."
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca/rok",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podaną przez Ciebie liczbę",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "18 i 15 t/os. są poprawne; pierwsza odpowiedź błędnie twierdzi, że populacji nie ma w danych produktu."
+    },
+    {
+      "key": "UB05-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Rozpoznano rzeczywiste luki według dostępnego poziomu, 0% IPPU/AFOLU i listę zadań; stan before/after jest identyczny. Dokładne liczby pozycji są z narzędzia i nie są niezależnie potwierdzone rozwinięciem sektorów; procenty sektorowe różnią się od UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Rozpoznaje luki, w tym 0% IPPU/AFOLU widoczne w UI, lecz podaje dokładny status sektora sprzeczny z widokiem.",
+          "materialErrors": [
+            {
+              "claim": "19 z 21",
+              "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+              "kind": "other",
+              "origin": "upstream_payload",
+              "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo odróżnia puste pola od zera i wskazuje potrzebę uzasadnionych oznaczeń; liczby 2 i 3 pochodzą z narzędzia, a nie z niezależnie pokazanego rozwinięcia sektorów.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Przekazuje konkretne dane i potencjalne źródła oraz kieruje do sektorów. Zalecenie weryfikacji możliwości zmiany oznaczeń jest warunkowe; szczegółowa ścieżka nie została tu zaobserwowana.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Luki i lista działań są użyteczne; status narzędzia i UI różnią się w energii i odpadach."
+    },
+    {
+      "key": "UB05-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Rozpoznano rzeczywiste luki według dostępnego poziomu, 0% IPPU/AFOLU i listę zadań; stan before/after jest identyczny. Ryzykowna wskazówka NO na podstawie braku dowodów wymaga korekty przed użyciem.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Rozpoznaje luki, w tym 0% IPPU/AFOLU widoczne w UI, lecz podaje dokładny status sektora sprzeczny z widokiem.",
+          "materialErrors": [
+            {
+              "claim": "19 z 21",
+              "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+              "kind": "other",
+              "origin": "upstream_payload",
+              "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo odróżnia puste pola od zera i wskazuje potrzebę uzasadnionych oznaczeń; liczby 2 i 3 pochodzą z narzędzia, a nie z niezależnie pokazanego rozwinięcia sektorów.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Przekazuje konkretne dane i potencjalne źródła oraz kieruje do sektorów. Sugeruje jednak rozważenie NO w oparciu o brak danych wskazujących na działalność.",
+          "materialErrors": [
+            {
+              "claim": "ani danych wskazujących na użycie odpowiednich produktów",
+              "reason": "Brak danych wskazujących na użycie nie jest potwierdzeniem niewystępowania; proponowanie NO na tej podstawie może ukryć lukę.",
+              "kind": "other",
+              "origin": "model",
+              "evidence": "Frozen reference: brak danych nie jest zerem; w tej próbie brak obserwacji potwierdzających niewystępowanie użytkowania produktów."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Luki i lista działań są użyteczne; status narzędzia i UI różnią się w energii i odpadach. Wskazówka NO wymaga silniejszej podstawy."
+    },
+    {
+      "key": "UB05-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Rozpoznano rzeczywiste luki według dostępnego poziomu, 0% IPPU/AFOLU i listę zadań; stan before/after jest identyczny. Dokładne liczby pozycji są z narzędzia i nie są niezależnie potwierdzone rozwinięciem sektorów; procenty sektorowe różnią się od UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Rozpoznaje luki, w tym 0% IPPU/AFOLU widoczne w UI, lecz podaje dokładny status sektora sprzeczny z widokiem.",
+          "materialErrors": [
+            {
+              "claim": "19 z 21",
+              "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+              "kind": "other",
+              "origin": "upstream_payload",
+              "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Prawidłowo odróżnia puste pola od zera i wskazuje potrzebę uzasadnionych oznaczeń; liczby 2 i 3 pochodzą z narzędzia, a nie z niezależnie pokazanego rozwinięcia sektorów.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Przekazuje konkretne dane i potencjalne źródła oraz kieruje do sektorów. Zalecenie weryfikacji możliwości zmiany oznaczeń jest warunkowe; szczegółowa ścieżka nie została tu zaobserwowana.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Luki i lista działań są użyteczne; status narzędzia i UI różnią się w energii i odpadach."
+    }
+  ]
+}

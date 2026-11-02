@@ -1,0 +1,129 @@
+{
+  "frozenAt": "2026-11-01T10:47:55.733Z",
+  "beforeRemainingExecutions": true,
+  "canonicalUnit": "kgCO2e",
+  "toleranceRelative": 0.001,
+  "repetitions": 3,
+  "reference": {
+    "year2023": {
+      "totalKg": 1500000000,
+      "rows": [
+        [
+          "I.1.1",
+          500000000
+        ],
+        [
+          "I.1.2",
+          250000000
+        ],
+        [
+          "II.1.1",
+          500000000
+        ],
+        [
+          "III.1.1",
+          250000000
+        ]
+      ]
+    },
+    "year2024": {
+      "totalKg": 1800000000,
+      "rows": [
+        [
+          "I.1.1",
+          600000000
+        ],
+        [
+          "I.1.2",
+          300000000
+        ],
+        [
+          "II.1.1",
+          600000000
+        ],
+        [
+          "III.1.1",
+          300000000
+        ]
+      ],
+      "sectorKg": {
+        "I": 900000000,
+        "II": 600000000,
+        "III": 300000000
+      }
+    },
+    "population": 100000,
+    "deltaKg": 300000000,
+    "deltaPercent": 20,
+    "perCapitaTonnes": {
+      "2023": 15,
+      "2024": 18
+    },
+    "missingDataIsNotZero": true
+  },
+  "table": {
+    "year": 2024,
+    "rows": [
+      {
+        "gpc": "I.1.1",
+        "scope": 1,
+        "kg": 1200000
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": 1,
+        "kg": 800000
+      }
+    ],
+    "totalKg": 2000000
+  },
+  "source": {
+    "provider": "SEEG",
+    "city": "São Paulo",
+    "locode": "BR SAO",
+    "dataYear": 2022,
+    "inventoryYear": 2022,
+    "inventoryGwp": "AR5",
+    "geography": "city",
+    "catalogCoverage": "Brazil",
+    "catalogYearRange": [
+      2015,
+      2022
+    ],
+    "note": "Catalog coverage/year range must not be mislabeled as actual queried dataset geography/year.",
+    "rows": [
+      {
+        "ref": "I.2.1",
+        "datasourceId": "54e965a4-3bd0-4f6a-a425-e843bb955712",
+        "kg": 77630727,
+        "url": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/BR SAO/2022/I.2.1",
+        "httpStatus": 200
+      },
+      {
+        "ref": "I.1.1",
+        "datasourceId": "45196fcf-eb15-4037-b763-33e4d33f04d6",
+        "kg": 1117504701,
+        "url": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/BR SAO/2022/I.1.1",
+        "httpStatus": 200
+      }
+    ]
+  },
+  "access": {
+    "foreignCity": "Jeziorna (prywatny test)",
+    "year": 2024,
+    "ownRole": "city collaborator",
+    "foreignMembership": false
+  },
+  "fileBoundary": "No Excel/PDF file is attached in the chat. These cases evaluate honest import guidance and real visible UI affordances. No claim of an actual completed import without evidence.",
+  "successModel": "Separate truthful response, numeric accuracy, actual goal achieved/assisted/blocked. Read-only ground truth is never counted as a product action.",
+  "verifiedUiCapabilities": {
+    "generalChatAttachments": false,
+    "generalChatAttachmentEvidence": "app/src/components/ChatBot/ChatInput.tsx contains Textarea and Send/Stop only; same deployed web SHA, recorded chat has text input only.",
+    "generalChatWrites": false,
+    "generalChatCreateInventory": false,
+    "inventoryCreateAndImportRole": "org/project admin; these users are collaborators",
+    "inventoryCreateRoleEvidence": "app/src/components/GHGIHomePage/HomePage.tsx:314 hides add-new-inventory-button from COLLABORATOR; PermissionService.canCreateInventory enforces ORG_ADMIN or PROJECT_ADMIN.",
+    "stationaryEnergyPreviewAndConfirmedSave": true
+  },
+  "capabilityEvidenceAddedAt": "2026-11-01T10:56:05.539Z"
+}

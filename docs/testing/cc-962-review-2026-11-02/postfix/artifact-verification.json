@@ -1,0 +1,90 @@
+[
+  {
+    "id": "UC01-r2",
+    "name": "UC01-r2",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 92.36,
+    "sizeBytes": 6396255,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r2\\UC01-r2.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r2\\UC01-r2-verified-frame.png",
+    "sha256": "08bc85ebc386761915a6a468310d8435d08b6565d3590a6eed9a7bc4ee403c2c"
+  },
+  {
+    "id": "UC01-r3",
+    "name": "UC01-r3",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 82.8,
+    "sizeBytes": 6512617,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r3\\UC01-r3.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r3\\UC01-r3-verified-frame.png",
+    "sha256": "95b10de129f761874d1f1b02729d28287e7d96ae29596bd6f22eb8737867b882"
+  },
+  {
+    "id": "UC01-r4",
+    "name": "UC01-r4",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 90.96,
+    "sizeBytes": 7260061,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r4\\UC01-r4.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r4\\UC01-r4-verified-frame.png",
+    "sha256": "80969c9d1a7a1adefbf70d197e2cd0004484b1ee62650dfde3a9ce8a7279cee7"
+  },
+  {
+    "id": "UC02-r1",
+    "name": "UC02-r1",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 69.88,
+    "sizeBytes": 5277968,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r1\\UC02-r1.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r1\\UC02-r1-verified-frame.png",
+    "sha256": "ebea89b2a2207b82723f2dc849855d5d12199b795631a69b7ead69746ca29a6e"
+  },
+  {
+    "id": "UC02-r2",
+    "name": "UC02-r2",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 70.24,
+    "sizeBytes": 4150555,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r2\\UC02-r2.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r2\\UC02-r2-verified-frame.png",
+    "sha256": "be09fb509427a329747b7a8fb6f46bdd60a06c8d6f44e25730a446879871f429"
+  },
+  {
+    "id": "UC02-r3",
+    "name": "UC02-r3",
+    "primary": true,
+    "ok": true,
+    "durationSeconds": 77.72,
+    "sizeBytes": 5476461,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r3\\UC02-r3.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC02-r3\\UC02-r3-verified-frame.png",
+    "sha256": "fc0fb15456ffaa1b54834b4047b880e936dc633a8527db35bb6f4ded5e76dd2f"
+  },
+  {
+    "id": "UC01-r1",
+    "name": "UC01-r1",
+    "primary": false,
+    "ok": false,
+    "durationSeconds": 129.2,
+    "sizeBytes": 5316516,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r1\\UC01-r1.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r1\\UC01-r1-verified-frame.png",
+    "sha256": "6faa8620850533c2a4043a8f724e3d8b7dc558bdc9fb2dae70788c4503bd2a28"
+  },
+  {
+    "id": "UC01-r1",
+    "name": "UC01-r1-continuation",
+    "primary": false,
+    "ok": true,
+    "durationSeconds": 38.72,
+    "sizeBytes": 1737798,
+    "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r1\\UC01-r1-continuation.mp4",
+    "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\UC01-r1\\UC01-r1-continuation-verified-frame.png",
+    "sha256": "b4dc8d3d1a1cc1f3fffebacd40148709c1857c61c47cb8f9bb7030a569d78ef5"
+  }
+]

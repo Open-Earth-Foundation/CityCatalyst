@@ -25,14 +25,27 @@ export const CCRA_MAX_PDF_BYTES = 20 * 1024 * 1024;
 const MAX_SOURCE_AGE_YEARS = 10;
 
 export interface CcraIngestPluginOptions {
-  /** OCR needs a URL and the item holds bytes (document pool: CC-955). */
-  resolveDocumentUrl: (ctx: IngestPluginContext) => Promise<string> | string;
+  /** Overrides the default `data:` URL built from the item bytes. */
+  resolveDocumentUrl?: (ctx: IngestPluginContext) => Promise<string> | string;
   ocr?: (documentUrl: string) => Promise<MistralOcrResult>;
   llm?: () => LLMClient;
   now?: () => Date;
 }
 
-function failItem(prefix: string, err: unknown): never {
+function missingBytes(): IngestItemError {
+  return new IngestItemError(
+    "validation_failed",
+    "File bytes are missing, so the size limit cannot be checked",
+  );
+}
+
+function pdfDataUrl({ item }: IngestPluginContext): string {
+  if (!item.buffer) throw missingBytes();
+  return `data:application/pdf;base64,${item.buffer.toString("base64")}`;
+}
+
+/** Prefixes keep a provider outage apart from a rejected document. */
+function failItem(prefix: "ocr_failed" | "llm_failed", err: unknown): never {
   if (err instanceof IngestItemError) throw err;
   const detail = err instanceof Error ? err.message : String(err);
   throw new IngestItemError("validation_failed", `${prefix}: ${detail}`);
@@ -70,7 +83,7 @@ export class CcraIngestPlugin implements IngestPlugin {
   readonly moduleId = "ccra" as const;
   readonly allowedExtensions = ["pdf"] as const;
 
-  constructor(private readonly options: CcraIngestPluginOptions) {}
+  constructor(private readonly options: CcraIngestPluginOptions = {}) {}
 
   detect(ctx: IngestPluginContext, coarse: CoarseFileKind): void {
     if (coarse !== "pdf") {
@@ -80,12 +93,7 @@ export class CcraIngestPlugin implements IngestPlugin {
       );
     }
     const { buffer } = ctx.item;
-    if (!buffer) {
-      throw new IngestItemError(
-        "validation_failed",
-        "File bytes are missing, so the size limit cannot be checked",
-      );
-    }
+    if (!buffer) throw missingBytes();
     if (buffer.length > CCRA_MAX_PDF_BYTES) {
       throw new IngestItemError("file_too_large");
     }
@@ -96,10 +104,11 @@ export class CcraIngestPlugin implements IngestPlugin {
 
   async parse(ctx: IngestPluginContext): Promise<MistralOcrResult> {
     const ocr = this.options.ocr ?? ((url) => convertPdfUrlToMarkdown(url));
+    const resolveUrl = this.options.resolveDocumentUrl ?? pdfDataUrl;
     try {
-      return await ocr(await this.options.resolveDocumentUrl(ctx));
+      return await ocr(await resolveUrl(ctx));
     } catch (err) {
-      failItem("OCR failed", err);
+      failItem("ocr_failed", err);
     }
   }
 
@@ -128,7 +137,7 @@ export class CcraIngestPlugin implements IngestPlugin {
         dropped: [...extracted.dropped, ...dropped],
       };
     } catch (err) {
-      failItem("Extraction failed", err);
+      failItem("llm_failed", err);
     }
   }
 
@@ -159,6 +168,14 @@ export class CcraIngestPlugin implements IngestPlugin {
       },
       warnings: this.buildWarnings(bundle),
     };
+  }
+
+  serializeReviewDraft(adapted: unknown): unknown {
+    return JSON.parse(JSON.stringify(adapted));
+  }
+
+  hydrateReviewDraft(draft: unknown): CrvaDraftBundle {
+    return JSON.parse(JSON.stringify(draft)) as CrvaDraftBundle;
   }
 
   async commit(): Promise<never> {

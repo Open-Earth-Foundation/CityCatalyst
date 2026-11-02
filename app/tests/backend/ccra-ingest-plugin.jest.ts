@@ -11,6 +11,8 @@ import {
 } from "@/backend/ingest/plugins/ccra/verify-quotes";
 import { splitOcrPages } from "@/backend/ingest/plugins/ccra/extract-crva-fields";
 import type { CrvaDraftBundle } from "@/backend/ingest/plugins/ccra/draft-schema";
+import type { IngestPluginContext } from "@/backend/ingest/plugin";
+import type { IngestItemRecord } from "@/backend/ingest/types";
 import type { LLMClient } from "@/backend/llm";
 import type { MistralOcrResult } from "@/backend/MistralOcrService";
 
@@ -104,14 +106,13 @@ async function runPlugin(
   {
     now = new Date("2026-10-30"),
     ocr = ocrResult(),
-    dryRun = true,
+    dryRun = false,
   }: { now?: Date; ocr?: MistralOcrResult; dryRun?: boolean } = {},
 ) {
   const store = new MemoryIngestStore();
   const runner = new IngestRunner(store);
   const urls: string[] = [];
   const plugin = new CcraIngestPlugin({
-    resolveDocumentUrl: () => "https://example.org/crva.pdf",
     ocr: async (url) => {
       urls.push(url);
       return ocr;
@@ -142,7 +143,7 @@ describe("CcraIngestPlugin", () => {
     const { llm } = fakeLlm(valuesReply([HAZARD]));
     const { finished, item, review, urls } = await runPlugin(llm);
 
-    expect(urls).toEqual(["https://example.org/crva.pdf"]);
+    expect(urls).toHaveLength(1);
     expect(finished.status).toBe("awaiting_review");
     expect(finished.awaitingReviewCount).toBe(1);
     expect(item.status).toBe("awaiting_review");
@@ -159,7 +160,7 @@ describe("CcraIngestPlugin", () => {
   });
 
   it("commit always throws", async () => {
-    const plugin = new CcraIngestPlugin({ resolveDocumentUrl: () => "x" });
+    const plugin = new CcraIngestPlugin();
     await expect(plugin.commit()).rejects.toMatchObject({
       code: "commit_failed",
     });
@@ -253,9 +254,79 @@ describe("CcraIngestPlugin", () => {
     expect(calls.join()).not.toContain("img-0.jpeg");
   });
 
-  it("stops at review without commit when dryRun is false", async () => {
+  it("sends the item bytes to OCR as a data URL by default", async () => {
+    const { urls } = await runPlugin(fakeLlm(valuesReply([])).llm);
+
+    expect(urls).toEqual([
+      `data:application/pdf;base64,${PDF.toString("base64")}`,
+    ]);
+  });
+
+  it("uses resolveDocumentUrl when it is set", async () => {
+    const urls: string[] = [];
+    const plugin = new CcraIngestPlugin({
+      resolveDocumentUrl: () => "https://example.org/crva.pdf",
+      ocr: async (url) => {
+        urls.push(url);
+        return ocrResult();
+      },
+    });
+    const item = { buffer: PDF } as IngestItemRecord;
+
+    await plugin.parse({ item } as IngestPluginContext);
+
+    expect(urls).toEqual(["https://example.org/crva.pdf"]);
+  });
+
+  it("fails parse when the item has no bytes", async () => {
+    const plugin = new CcraIngestPlugin({ ocr: async () => ocrResult() });
+    const item = { buffer: null } as IngestItemRecord;
+
+    await expect(
+      plugin.parse({ item } as IngestPluginContext),
+    ).rejects.toMatchObject({ code: "validation_failed" });
+  });
+
+  it("marks a provider failure in errorLog and keeps the code", async () => {
+    const down = new Error("service down");
+    const ocrPlugin = new CcraIngestPlugin({
+      ocr: async () => {
+        throw down;
+      },
+    });
+    const llmPlugin = new CcraIngestPlugin({
+      llm: () => {
+        throw down;
+      },
+    });
+    const item = { buffer: PDF, originalFileName: "f.pdf" } as IngestItemRecord;
+    const ctx = { item } as IngestPluginContext;
+
+    await expect(ocrPlugin.parse(ctx)).rejects.toMatchObject({
+      code: "validation_failed",
+      message: "ocr_failed: service down",
+    });
+    await expect(llmPlugin.adapt(ctx, ocrResult())).rejects.toMatchObject({
+      code: "validation_failed",
+      message: "llm_failed: service down",
+    });
+  });
+
+  it("round-trips the bundle through a review draft", async () => {
+    const { review } = await runPlugin(fakeLlm(valuesReply([HAZARD])).llm);
+    const plugin = new CcraIngestPlugin();
+    const bundle = review!.bundle;
+
+    const draft = plugin.serializeReviewDraft(bundle);
+
+    expect(draft).toEqual(bundle);
+    expect(draft).not.toBe(bundle);
+    expect(plugin.hydrateReviewDraft(draft)).toEqual(bundle);
+  });
+
+  it("stops at review without commit when dryRun is true", async () => {
     const { llm } = fakeLlm(valuesReply([HAZARD]));
-    const { finished, item } = await runPlugin(llm, PDF, { dryRun: false });
+    const { finished, item } = await runPlugin(llm, PDF, { dryRun: true });
 
     expect(finished.status).toBe("awaiting_review");
     expect(item.status).toBe("awaiting_review");
@@ -396,7 +467,7 @@ describe("CcraIngestPlugin", () => {
   });
 
   it("fails when the bytes are missing, so the size limit cannot be checked", () => {
-    const plugin = new CcraIngestPlugin({ resolveDocumentUrl: () => "x" });
+    const plugin = new CcraIngestPlugin();
     const ctx = { item: { buffer: null } } as never;
 
     expect(() => plugin.detect(ctx, "pdf")).toThrow("size limit");
@@ -410,10 +481,7 @@ describe("CcraIngestPlugin", () => {
       scope: { cityId: CITY_ID },
       files: [{ name: "notes.csv", buffer: Buffer.from("a,b\n") }],
     });
-    await runner.run(
-      job.id,
-      new CcraIngestPlugin({ resolveDocumentUrl: () => "x" }),
-    );
+    await runner.run(job.id, new CcraIngestPlugin());
     const [item] = await store.listItems(job.id);
 
     expect(item.errorCode).toBe("unsupported_extension");

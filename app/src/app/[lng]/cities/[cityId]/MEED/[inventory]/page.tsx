@@ -21,6 +21,10 @@ import { MeedRankingSummary } from "../components/MeedRankingSummary";
 import { MeedRankingConfig } from "../components/MeedRankingConfig";
 import { MeedCardGridSkeleton } from "../components/MeedSkeletons";
 import { meedContextVisual } from "../components/meedContextVisuals";
+import {
+  countByOwnership,
+  legalStandingByAction,
+} from "./regulations/legalStanding";
 import { getMeedPath } from "../steps";
 import { stepHref } from "../navigation";
 import { useMeedSectionStates } from "../meedStatus";
@@ -149,6 +153,10 @@ export default function MEEDInventoryPage(props: {
     includeEmissions: emissionsRetrieved || emissionsEmpty,
   });
   const ranked = useMemo(() => ranking?.result.ranked_actions ?? [], [ranking]);
+  const legalCounts = useMemo(() => {
+    const standings = legalStandingByAction(ranked, lng);
+    return standings.size ? countByOwnership(standings.values()) : null;
+  }, [ranked, lng]);
   const backing = useMemo(() => policyBacking(ranked), [ranked]);
   const weights = useMemo(
     () => readRankingWeights(ranking?.result ?? null),
@@ -172,6 +180,7 @@ export default function MEEDInventoryPage(props: {
       indicatorCount: context.indicatorCount,
       finance: context.finance,
       legalFunnel: funnel,
+      legalCounts,
       nationalPolicy: context.policy?.national ?? null,
     }),
     [
@@ -186,6 +195,7 @@ export default function MEEDInventoryPage(props: {
       states,
       context,
       funnel,
+      legalCounts,
     ],
   );
 
@@ -201,13 +211,22 @@ export default function MEEDInventoryPage(props: {
         showEmissions: emissionsRetrieved,
         keyIndicators: context.keyIndicators,
         funnel,
+        legalCounts,
         finance: context.finance,
         policy: context.policy,
         t: tResults,
         tContext,
         sectorLabelFor,
       }),
-    [context, emissionsRetrieved, funnel, tResults, tContext, sectorLabelFor],
+    [
+      context,
+      emissionsRetrieved,
+      funnel,
+      legalCounts,
+      tResults,
+      tContext,
+      sectorLabelFor,
+    ],
   );
 
   // ── Ranking summary ─────────────────────────────────────────────────────
@@ -432,7 +451,7 @@ export default function MEEDInventoryPage(props: {
         {isReady && ranking && insights && (
           <MeedRankingSummary
             insights={insights}
-            funnel={funnel}
+            legalCounts={legalCounts}
             backing={backing}
             nationalPolicy={context.policy?.national ?? null}
             inputs={summaryInputs}

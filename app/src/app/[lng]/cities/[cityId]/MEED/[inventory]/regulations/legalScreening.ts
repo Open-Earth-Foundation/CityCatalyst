@@ -1,47 +1,56 @@
 /**
  * Legal screening, derived from a prioritization result.
  *
- * Legal hard filters run inside the prioritizer, so their output only exists on
- * a ranking. There are two populations and they live in different places:
+ * Legal checks run inside the prioritizer, so their output only exists on a
+ * ranking. Two populations, in two places:
  *
- * - **blocked** — actions the filter removed. These are on `removed_actions`,
- *   which the backend builds specifically for display.
- * - **flagged** — actions that were *kept* despite having no legal assessment.
- *   Because they were kept they never appear in `removed_actions`; the only
- *   record is `metadata.hard_filter_evidence_by_action_id`.
- *
- * `removed_actions` is newer than the prototype, which had to reconstruct both
- * populations from the evidence map. That path is kept as a fallback so an
- * older stored ranking still renders.
+ * - **ranked actions**, grouped by whether the municipality can act on its own
+ *   authority (`ownership_category`, read through `legalStanding.ts`). Since
+ *   the hard filter was turned off every assessed action is kept and scored,
+ *   so this is where "blocked" now lives.
+ * - **excluded before scoring** — whatever the backend did remove, on
+ *   `removed_actions`. Empty on current rankings; still rendered when an older
+ *   stored ranking carries them.
  */
 
-import type {
-  MeedHardFilterEvidence,
-  MeedPrioritizeCityResult,
-} from "@/util/types/meed";
+import type { MeedPrioritizeCityResult } from "@/util/types/meed";
 import type { MeedActionIndex } from "../results/components/actionCatalog";
 import { resolveLocalizedText } from "../../localizedText";
+import {
+  legalStandingByAction,
+  type MeedLegalCategory,
+  type MeedLegalStanding,
+} from "./legalStanding";
 
 export interface LegalScreenedAction {
   actionId: string;
   actionName: string;
   sector?: string | null;
+  /** Position in the ranking; absent for an action removed before scoring. */
+  rank?: number;
+  /** Why the backend removed it (excluded actions only). */
   reasons?: string[];
+  standing?: MeedLegalStanding;
 }
 
 export interface LegalScreening {
-  /** Actions that passed and went on to be ranked. */
+  /** Actions that were scored and ranked. */
   includedCount: number;
-  blocked: LegalScreenedAction[];
-  flagged: LegalScreenedAction[];
-  /** True when the ranking carried no screening information at all. */
+  /** Ranked actions by municipal authority, in display order. */
+  groups: Record<MeedLegalCategory, LegalScreenedAction[]>;
+  excludedBeforeScoring: LegalScreenedAction[];
+  /** True when the ranking carried no legal information at all. */
   isEmpty: boolean;
+}
+
+function emptyGroups(): Record<MeedLegalCategory, LegalScreenedAction[]> {
+  return { blocked: [], conditional: [], enabled: [], not_assessed: [] };
 }
 
 const EMPTY: LegalScreening = {
   includedCount: 0,
-  blocked: [],
-  flagged: [],
+  groups: emptyGroups(),
+  excludedBeforeScoring: [],
   isEmpty: true,
 };
 
@@ -57,14 +66,6 @@ function sectorOf(index: MeedActionIndex, actionId: string): string | null {
   return index.get(actionId)?.sectorTag ?? null;
 }
 
-/** Evidence entries, tolerating the map being absent on older rankings. */
-function evidenceEntries(
-  result: MeedPrioritizeCityResult,
-): [string, MeedHardFilterEvidence][] {
-  const map = result.metadata?.hard_filter_evidence_by_action_id;
-  return map && typeof map === "object" ? Object.entries(map) : [];
-}
-
 export function deriveLegalScreening(
   result: MeedPrioritizeCityResult | null | undefined,
   index: MeedActionIndex,
@@ -73,60 +74,46 @@ export function deriveLegalScreening(
 ): LegalScreening {
   if (!result) return EMPTY;
 
-  const evidence = evidenceEntries(result);
+  const ranked = result.ranked_actions ?? [];
+  const standings = legalStandingByAction(ranked, language);
+  const groups = emptyGroups();
+  for (const action of ranked) {
+    const standing = standings.get(action.action_id);
+    if (!standing) continue;
+    groups[standing.ownership].push({
+      actionId: action.action_id,
+      actionName: nameOf(index, action.action_id),
+      sector: sectorOf(index, action.action_id),
+      rank: action.rank,
+      standing,
+    });
+  }
 
-  // Blocked — prefer removed_actions, fall back to the evidence map.
   const removed = result.removed_actions ?? [];
-  const blocked: LegalScreenedAction[] = removed.length
-    ? removed
-        .filter((r) => r.removal_source === "legal_hard_filter")
-        .map((r) => ({
-          actionId: r.action_id,
-          actionName: nameOf(index, r.action_id, r.action_name),
-          sector: sectorOf(index, r.action_id),
-          reasons: [
-            r.removal_reason,
-            resolveLocalizedText(r.legal?.legalJustification, language),
-          ]
-            .filter((v): v is string => typeof v === "string" && v.length > 0)
-            .slice(0, 2),
-        }))
-    : evidence
-        .filter(([, e]) => e?.legal_verdict_category === "blocked")
-        .map(([actionId, e]) => ({
-          actionId,
-          actionName: nameOf(index, actionId),
-          sector: sectorOf(index, actionId),
-          reasons: e?.discard_reason ? [e.discard_reason] : [],
-        }));
-
-  // Flagged — kept, but with no legal assessment behind them. Only the evidence
-  // map knows about these.
-  const blockedIds = new Set(blocked.map((a) => a.actionId));
-  const flagged: LegalScreenedAction[] = evidence
-    .filter(
-      ([actionId, e]) =>
-        !blockedIds.has(actionId) && e?.legal_assessment_present === false,
-    )
-    .map(([actionId]) => ({
-      actionId,
-      actionName: nameOf(index, actionId),
-      sector: sectorOf(index, actionId),
-    }));
+  const excludedBeforeScoring: LegalScreenedAction[] = removed.map((r) => ({
+    actionId: r.action_id,
+    actionName: nameOf(index, r.action_id, r.action_name),
+    sector: sectorOf(index, r.action_id),
+    reasons: [
+      r.removal_reason,
+      resolveLocalizedText(r.legal?.legalJustification, language),
+    ]
+      .filter((v): v is string => typeof v === "string" && v.length > 0)
+      .slice(0, 2),
+  }));
 
   const includedCount =
     result.metadata?.counts?.valid_actions ??
-    result.ranked_actions?.length ??
+    ranked.length ??
     result.ranked_action_ids?.length ??
     0;
 
   return {
     includedCount,
-    blocked,
-    flagged,
-    // Screening ran but cleared everything is a real, different answer from
-    // "this ranking carried no screening data" — the screen must not show an
-    // all-clear card for the latter.
-    isEmpty: evidence.length === 0 && removed.length === 0,
+    groups,
+    excludedBeforeScoring,
+    // "Every action is enabled" is a real answer; "this ranking carried no
+    // legal data" is a different one, and must not show as an all-clear.
+    isEmpty: standings.size === 0 && removed.length === 0,
   };
 }

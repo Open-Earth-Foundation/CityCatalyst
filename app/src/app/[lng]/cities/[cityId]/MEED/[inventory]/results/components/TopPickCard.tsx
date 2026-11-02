@@ -15,6 +15,12 @@ import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import type { MeedScoreWeights } from "./rankingFacts";
 import { FOCUS_RING } from "../../../focusRing";
+import { MEED_TONE_FG } from "../../../components/meedTones";
+import {
+  LEGAL_CATEGORY_TONE,
+  legalCategoryLabelKey,
+  type MeedLegalStanding,
+} from "../../regulations/legalStanding";
 import {
   actionName,
   reductionLevel,
@@ -68,6 +74,7 @@ export function TopPickCard({
   isSelected,
   onToggleSelect,
   onOpenDetail,
+  legal = null,
 }: {
   action: MeedRankedActionResult;
   index: MeedActionIndex;
@@ -77,6 +84,8 @@ export function TopPickCard({
   /** Omit to render the card read-only (no report checkbox), as on the home screen. */
   onToggleSelect?: (actionId: string) => void;
   onOpenDetail: (action: MeedRankedActionResult) => void;
+  /** Legal standing of this action, when the ranking carries one. */
+  legal?: MeedLegalStanding | null;
 }) {
   const name = actionName(index, action.action_id, t);
   const level = reductionLevel(index, action.action_id);
@@ -145,6 +154,13 @@ export function TopPickCard({
               label={t("card-sector")}
               value={sectorLabel(index, action.action_id, t)}
             />
+            {legal && (
+              <MetaRow
+                label={t("card-legal")}
+                value={t(legalCategoryLabelKey(legal.ownership))}
+                valueColor={MEED_TONE_FG[LEGAL_CATEGORY_TONE[legal.ownership]]}
+              />
+            )}
             <MetaRow
               label={t("card-timeline")}
               value={timelineLabel(index, action.action_id, t)}

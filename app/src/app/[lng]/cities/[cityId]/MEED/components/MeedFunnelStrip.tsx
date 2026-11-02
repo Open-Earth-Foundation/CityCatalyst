@@ -8,17 +8,8 @@ import { LabelMedium } from "@/components/package/Texts/Label";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
-import type { MeedTone } from "./MeedStatusTag";
+import { MEED_TONE_FG, type MeedTone } from "./meedTones";
 import { MeedChartTip } from "./MeedChartTip";
-
-const TONE_COLOR: Record<MeedTone, string> = {
-  neutral: "content.tertiary",
-  info: "content.link",
-  positive: "interactive.tertiary",
-  warning: "sentiment.warningFg",
-  caution: "sentiment.warningFg",
-  negative: "sentiment.negativeDefault",
-};
 
 export interface MeedFunnelStep {
   label: string;
@@ -85,7 +76,7 @@ export function MeedFunnelStrip({
               >
                 <LabelMedium color="content.tertiary">{step.label}</LabelMedium>
                 <HeadlineLarge
-                  color={TONE_COLOR[step.tone]}
+                  color={MEED_TONE_FG[step.tone]}
                   fontVariantNumeric="tabular-nums"
                   lineHeight="1"
                 >
@@ -101,7 +92,7 @@ export function MeedFunnelStrip({
               <VStack key={step.label} alignItems="flex-start" gap="0" minW={0}>
                 <Overline color="content.tertiary">{step.label}</Overline>
                 <TitleLarge
-                  color={TONE_COLOR[step.tone]}
+                  color={MEED_TONE_FG[step.tone]}
                   fontVariantNumeric="tabular-nums"
                   fontSize={compact ? "title.md" : undefined}
                 >
@@ -141,7 +132,7 @@ export function MeedFunnelStrip({
                     {step.label}
                   </LabelMedium>
                   <HeadlineLarge
-                    color={TONE_COLOR[step.tone]}
+                    color={MEED_TONE_FG[step.tone]}
                     fontVariantNumeric="tabular-nums"
                     lineHeight="1"
                   >
@@ -162,7 +153,7 @@ export function MeedFunnelStrip({
                 >
                   <Overline color="content.tertiary">{step.label}</Overline>
                   <TitleLarge
-                    color={TONE_COLOR[step.tone]}
+                    color={MEED_TONE_FG[step.tone]}
                     fontVariantNumeric="tabular-nums"
                   >
                     {step.value}
@@ -199,7 +190,7 @@ export function MeedFunnelStrip({
         <Box>
           <SegmentedProgress
             values={reversedSegments}
-            colors={reversed.map((s) => TONE_COLOR[s.tone])}
+            colors={reversed.map((s) => MEED_TONE_FG[s.tone])}
             max={max || 1}
             height={compact ? 2 : 3}
           />
@@ -214,7 +205,7 @@ export function MeedFunnelStrip({
       title={tipTitle}
       rows={steps.map((step) => ({
         label: step.sublabel ? `${step.label} — ${step.sublabel}` : step.label,
-        swatch: TONE_COLOR[step.tone],
+        swatch: MEED_TONE_FG[step.tone],
         value: String(step.value),
       }))}
       note={tipNote}

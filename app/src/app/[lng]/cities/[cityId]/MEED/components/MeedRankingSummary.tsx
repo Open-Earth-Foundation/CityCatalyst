@@ -24,15 +24,14 @@ import { BodyMedium } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import type { MeedRankingInsights } from "../[inventory]/results/components/rankingInsights";
-import type {
-  MeedLegalFunnel,
-  MeedPolicyBacking,
-} from "../[inventory]/results/components/rankingFacts";
+import type { MeedPolicyBacking } from "../[inventory]/results/components/rankingFacts";
+import type { MeedLegalCategory } from "../[inventory]/regulations/legalStanding";
 import { MeedStatusTag } from "./MeedStatusTag";
 
 export interface MeedRankingSummaryProps {
   insights: MeedRankingInsights;
-  funnel: MeedLegalFunnel | null;
+  /** Ranked actions per municipal-authority category; null when the ranking carries no legal data. */
+  legalCounts: Record<MeedLegalCategory, number> | null;
   backing: MeedPolicyBacking;
   nationalPolicy: number | null;
   /** Inputs the model used, already worded — rendered as one row of tags. */
@@ -60,7 +59,7 @@ const PILLAR_KEY = {
  */
 export function MeedRankingSummary({
   insights,
-  funnel,
+  legalCounts,
   backing,
   nationalPolicy,
   inputs,
@@ -109,14 +108,10 @@ export function MeedRankingSummary({
     });
   }
 
-  if (funnel) {
+  if (legalCounts) {
     lines.push({
       icon: LuScale,
-      text: t("insight-legal", {
-        excluded: funnel.assessed - funnel.passed,
-        assessed: funnel.assessed,
-        passed: funnel.passed,
-      }),
+      text: t("insight-legal", legalCounts),
     });
   }
 

@@ -5,7 +5,7 @@
  */
 
 import type { TFunction } from "i18next";
-import type { MeedTone } from "../../components/MeedStatusTag";
+import { MEED_TONE_FG, type MeedTone } from "../../components/meedTones";
 import type { FeasibilityRow } from "./types";
 
 // ─── Financing routes ─────────────────────────────────────────────────────────
@@ -206,14 +206,7 @@ export function profileAttrs(profile: string | null | undefined): ProfileAttrs {
 // ─── Scores, statuses, amounts ────────────────────────────────────────────────
 
 /** Text colour matching a `MeedTone`, for numbers shown next to a meter. */
-export const TONE_TEXT_COLOR: Record<MeedTone, string> = {
-  neutral: "content.tertiary",
-  info: "content.link",
-  positive: "sentiment.positiveDefault",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
-  negative: "sentiment.negativeDefault",
-};
+export const TONE_TEXT_COLOR: Record<MeedTone, string> = MEED_TONE_FG;
 
 /**
  * Feasibility score → the standard four-level scale: High (green), Medium

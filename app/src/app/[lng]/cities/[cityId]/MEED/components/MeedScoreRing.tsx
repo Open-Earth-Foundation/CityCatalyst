@@ -6,17 +6,8 @@ import {
   ProgressCircleRoot,
   ProgressCircleValueText,
 } from "@/components/ui/progress-circle";
-import type { MeedTone } from "./MeedStatusTag";
+import { MEED_TONE_DOT, type MeedTone } from "./meedTones";
 import { MeedChartTip } from "./MeedChartTip";
-
-const TONE_COLOR: Record<MeedTone, string> = {
-  neutral: "content.tertiary",
-  info: "content.link",
-  positive: "interactive.tertiary",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
-  negative: "sentiment.negativeDefault",
-};
 
 export interface MeedScoreRingProps {
   /** 0..1, or null when there is nothing to score (renders an empty ring). */
@@ -53,7 +44,7 @@ export function MeedScoreRing({
     <Box role="img" aria-label={ariaLabel} flexShrink={0} tabIndex={-1}>
       <ProgressCircleRoot value={pct} size={size}>
         <ProgressCircleRing
-          color={value === null ? "border.overlay" : TONE_COLOR[tone]}
+          color={value === null ? "border.overlay" : MEED_TONE_DOT[tone]}
           trackColor="border.overlay"
           cap="round"
         />

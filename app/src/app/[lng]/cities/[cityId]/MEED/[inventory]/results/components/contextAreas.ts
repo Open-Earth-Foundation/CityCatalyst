@@ -17,6 +17,7 @@ import type { TFunction } from "i18next";
 import type { MeedSectionStates } from "../../../meedStatus";
 import { MEED_OUTPUT_AREAS } from "../../../steps";
 import type { MeedLegalFunnel, MeedPolicyBacking } from "./rankingFacts";
+import type { MeedLegalCategory } from "../../regulations/legalStanding";
 
 export interface MeedContextArea {
   key: string;
@@ -89,6 +90,8 @@ export interface MeedContextFacts {
   finance?: { total: number; self: number; externalFinance: number } | null;
   /** Assessed → passed → ranked, when the ranking reports the counts. */
   legalFunnel?: MeedLegalFunnel | null;
+  /** Ranked actions per municipal-authority category, from the legal review. */
+  legalCounts?: Record<MeedLegalCategory, number> | null;
   /** Aggregate national plan alignment, 0..1. */
   nationalPolicy?: number | null;
 }
@@ -124,15 +127,12 @@ export function contextSummary(
       }
       return stepSub ?? t("context-summary-not-retrieved");
     case "regulations":
+      if (facts.legalCounts) {
+        return t("context-summary-legal");
+      }
       if (facts.legalFunnel) {
         return t("context-summary-legal-removed", {
           excluded: facts.legalFunnel.assessed - facts.legalFunnel.passed,
-        });
-      }
-      if (facts.excludedCount !== null) {
-        return t("context-summary-legal", {
-          included: facts.rankedCount,
-          excluded: facts.excludedCount,
         });
       }
       return hasRanking

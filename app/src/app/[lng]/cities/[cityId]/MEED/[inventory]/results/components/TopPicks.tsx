@@ -12,6 +12,7 @@ import { TopPickCard } from "./TopPickCard";
 import { GenerateReportControl } from "./ResultsHeader";
 import type { MeedActionIndex } from "./actionCatalog";
 import type { MeedScoreWeights } from "./rankingFacts";
+import type { MeedLegalStanding } from "../../regulations/legalStanding";
 import { FOCUS_RING } from "../../../focusRing";
 
 /**
@@ -36,6 +37,7 @@ export function TopPicks({
   onGenerate,
   isGenerating = false,
   progress = null,
+  legalFor,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
@@ -50,6 +52,8 @@ export function TopPicks({
   onGenerate?: () => void;
   isGenerating?: boolean;
   progress?: string | null;
+  /** Legal standing per action; shown on each card when set. */
+  legalFor?: (actionId: string) => MeedLegalStanding | null;
 }) {
   return (
     <VStack alignItems="stretch" gap="l">
@@ -94,6 +98,7 @@ export function TopPicks({
                 isSelected={selectedIds.includes(action.action_id)}
                 onToggleSelect={onToggleSelect}
                 onOpenDetail={onOpenDetail}
+                legal={legalFor?.(action.action_id) ?? null}
               />
             ))}
       </SimpleGrid>

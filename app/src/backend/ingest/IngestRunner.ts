@@ -8,11 +8,21 @@ import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
 import {
+  buildReviewDraftEnvelope,
+  bundleDigestOf,
+  cloneJson,
+  isReviewLockActive,
+  requireReviewDraft,
+  sameTargetBinding,
+} from "./review-draft";
+import {
   IngestItemError,
   type IngestFileInput,
   type IngestItemRecord,
   type IngestJobRecord,
   type IngestModuleId,
+  type IngestReviewDraftEnvelope,
+  type IngestReviewTargetBinding,
   type IngestScope,
   type IngestStage,
   type IngestVisibility,
@@ -199,20 +209,6 @@ export class IngestRunner {
       if (policy === "reject") {
         throw new IngestItemError("validation_failed", "Plugin rejected file");
       }
-      if (policy === "review") {
-        const summary = await plugin.reviewSummary?.(
-          { job, item: await this.requireItem(item.id), scope },
-          adapted,
-        );
-        await this.store.updateItem(item.id, {
-          status: "awaiting_review",
-          stage: "decide",
-          result: summary ? { review: summary } : { awaitingReview: true },
-        });
-        return;
-      }
-
-      await this.setStage(item.id, "commit");
       if (job.dryRun) {
         await this.store.updateItem(item.id, {
           status: "skipped",
@@ -222,6 +218,19 @@ export class IngestRunner {
         });
         return;
       }
+      if (policy === "review") {
+        await this.persistReviewDraft({
+          job,
+          itemId: item.id,
+          plugin,
+          adapted,
+          validation,
+          scope,
+        });
+        return;
+      }
+
+      await this.setStage(item.id, "commit");
       const result = await plugin.commit(
         { job, item: await this.requireItem(item.id), scope },
         adapted,
@@ -290,5 +299,262 @@ export class IngestRunner {
       skippedCount,
       awaitingReviewCount,
     });
+  }
+
+  async getReviewDraft(
+    itemId: string,
+    userId: string,
+  ): Promise<{
+    item: IngestItemRecord;
+    draft: IngestReviewDraftEnvelope;
+    readOnly: boolean;
+    editorUserId: string | null;
+  }> {
+    const item = this.requireAwaitingReview(await this.requireItem(itemId));
+    const draft = requireReviewDraft(item.reviewDraft);
+    const lockedBy = item.reviewLockedByUserId ?? null;
+    const lockHeldByOther =
+      Boolean(lockedBy) &&
+      lockedBy !== userId &&
+      isReviewLockActive(item.reviewLockedAt);
+
+    if (lockHeldByOther) {
+      return {
+        item,
+        draft,
+        readOnly: true,
+        editorUserId: lockedBy,
+      };
+    }
+
+    const next = await this.store.updateItem(itemId, {
+      reviewLockedByUserId: userId,
+      reviewLockedAt: new Date(),
+    });
+    return {
+      item: next,
+      draft: requireReviewDraft(next.reviewDraft),
+      readOnly: false,
+      editorUserId: userId,
+    };
+  }
+
+  async saveReviewDraft(
+    itemId: string,
+    userId: string,
+    input: { payload: unknown; reviewDraftVersion: number },
+  ): Promise<IngestReviewDraftEnvelope> {
+    const item = this.requireAwaitingReview(await this.requireItem(itemId));
+    this.assertCanEditReview(item, userId);
+    const current = requireReviewDraft(item.reviewDraft);
+    if (current.version !== input.reviewDraftVersion) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Review draft version does not match",
+      );
+    }
+    const payload = cloneJson(input.payload);
+    const next: IngestReviewDraftEnvelope = {
+      ...current,
+      version: current.version + 1,
+      bundleDigest: bundleDigestOf(payload),
+      payload,
+      decision: { status: "pending", userId: null, at: null },
+    };
+    const saved = await this.store.updateItem(itemId, {
+      reviewDraft: next,
+      reviewDraftVersion: next.version,
+      reviewLockedByUserId: userId,
+      reviewLockedAt: new Date(),
+    });
+    return requireReviewDraft(saved.reviewDraft);
+  }
+
+  /**
+   * Commit the stored draft. Does not re-parse the file.
+   * The same version confirmed twice is a no-op once the item is completed.
+   */
+  async confirmReview(
+    itemId: string,
+    plugin: IngestPlugin,
+    input: {
+      userId: string;
+      reviewDraftVersion: number;
+      targetBinding?: IngestReviewTargetBinding;
+    },
+  ): Promise<IngestItemRecord> {
+    const item = await this.requireItem(itemId);
+    const job = await this.requireJob(item.jobId);
+    if (plugin.moduleId !== job.moduleId) {
+      throw new Error(
+        `Plugin ${plugin.moduleId} cannot confirm job for module ${job.moduleId}`,
+      );
+    }
+
+    const draft = requireReviewDraft(item.reviewDraft);
+    if (
+      item.status === "completed" &&
+      draft.version === input.reviewDraftVersion &&
+      draft.decision.status === "confirmed"
+    ) {
+      return item;
+    }
+
+    this.requireAwaitingReview(item);
+    this.assertCanEditReview(item, input.userId);
+    this.assertDraftStillValid(item, draft, input);
+
+    const adapted = plugin.hydrateReviewDraft
+      ? plugin.hydrateReviewDraft(draft.payload)
+      : draft.payload;
+    const scope: IngestScope = {
+      organizationId: job.organizationId,
+      projectId: job.projectId,
+      cityId: item.targetCityId ?? job.cityId,
+      inventoryId: item.targetInventoryId,
+    };
+
+    await this.setStage(item.id, "commit");
+    const result = await plugin.commit(
+      { job, item: await this.requireItem(item.id), scope },
+      adapted,
+    );
+    const confirmed: IngestReviewDraftEnvelope = {
+      ...draft,
+      decision: {
+        status: "confirmed",
+        userId: input.userId,
+        at: new Date().toISOString(),
+      },
+    };
+    const completed = await this.store.updateItem(item.id, {
+      status: "completed",
+      stage: "publish",
+      result: result ?? { committed: true },
+      reviewDraft: confirmed,
+      reviewLockedByUserId: null,
+      reviewLockedAt: null,
+    });
+    await this.summarize(job.id);
+    return completed;
+  }
+
+  private async persistReviewDraft(input: {
+    job: IngestJobRecord;
+    itemId: string;
+    plugin: IngestPlugin;
+    adapted: unknown;
+    validation: { warnings?: string[] } | void;
+    scope: IngestScope;
+  }): Promise<void> {
+    const current = await this.requireItem(input.itemId);
+    const serialized = input.plugin.serializeReviewDraft
+      ? input.plugin.serializeReviewDraft(input.adapted, input.validation)
+      : input.adapted;
+    const envelope = buildReviewDraftEnvelope({
+      payload: serialized,
+      sourceContentHash: current.contentHash ?? "",
+      targetBinding: {
+        cityId: current.targetCityId ?? input.job.cityId,
+        inventoryId: current.targetInventoryId ?? input.scope.inventoryId,
+      },
+    });
+    const summary = await input.plugin.reviewSummary?.(
+      {
+        job: input.job,
+        item: current,
+        scope: input.scope,
+      },
+      input.adapted,
+    );
+    await this.store.updateItem(input.itemId, {
+      status: "awaiting_review",
+      stage: "decide",
+      result: summary ? { review: summary } : { awaitingReview: true },
+      reviewDraft: envelope,
+      reviewDraftVersion: envelope.version,
+    });
+  }
+
+  private requireAwaitingReview(item: IngestItemRecord): IngestItemRecord {
+    if (item.status !== "awaiting_review") {
+      throw new IngestItemError(
+        "stale_review_draft",
+        `Item is ${item.status}, not awaiting_review`,
+      );
+    }
+    return item;
+  }
+
+  private assertCanEditReview(item: IngestItemRecord, userId: string): void {
+    const lockedBy = item.reviewLockedByUserId ?? null;
+    if (
+      lockedBy &&
+      lockedBy !== userId &&
+      isReviewLockActive(item.reviewLockedAt)
+    ) {
+      throw new IngestItemError(
+        "review_locked",
+        "Another collaborator is editing this review",
+      );
+    }
+  }
+
+  private assertDraftStillValid(
+    item: IngestItemRecord,
+    draft: IngestReviewDraftEnvelope,
+    input: {
+      reviewDraftVersion: number;
+      targetBinding?: IngestReviewTargetBinding;
+    },
+  ): void {
+    const currentBinding: IngestReviewTargetBinding = {
+      cityId: item.targetCityId ?? null,
+      inventoryId: item.targetInventoryId ?? null,
+    };
+    if (draft.version !== input.reviewDraftVersion) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Review draft version does not match",
+      );
+    }
+    if (new Date(draft.expiresAt).getTime() <= Date.now()) {
+      throw new IngestItemError("stale_review_draft", "Review draft expired");
+    }
+    if (draft.sourceContentHash !== (item.contentHash ?? "")) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Source file bytes changed",
+      );
+    }
+    if (draft.bundleDigest !== bundleDigestOf(draft.payload)) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Stored bundle digest does not match payload",
+      );
+    }
+    if (!sameTargetBinding(draft.targetBinding, currentBinding)) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Target city or inventory changed",
+      );
+    }
+    if (
+      input.targetBinding &&
+      !sameTargetBinding(draft.targetBinding, input.targetBinding)
+    ) {
+      throw new IngestItemError(
+        "stale_review_draft",
+        "Confirm target does not match the stored draft",
+      );
+    }
+  }
+
+  private async requireJob(jobId: string): Promise<IngestJobRecord> {
+    const job = await this.store.getJob(jobId);
+    if (!job) {
+      throw new Error(`Ingest job ${jobId} not found`);
+    }
+    return job;
   }
 }

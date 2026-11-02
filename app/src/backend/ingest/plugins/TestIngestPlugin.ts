@@ -49,6 +49,14 @@ export class TestIngestPlugin implements IngestPlugin {
     return "auto";
   }
 
+  serializeReviewDraft(adapted: unknown): unknown {
+    return adapted;
+  }
+
+  hydrateReviewDraft(draft: unknown): unknown {
+    return draft;
+  }
+
   async commit(
     _ctx: IngestPluginContext,
     adapted: unknown,

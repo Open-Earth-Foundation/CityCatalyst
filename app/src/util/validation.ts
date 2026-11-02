@@ -500,3 +500,18 @@ export const recordConsentRequest = z.object({
 });
 
 export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;
+
+export const patchIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  payload: z.unknown(),
+});
+
+export const approveIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  targetBinding: z
+    .object({
+      cityId: z.string().uuid().nullable().optional(),
+      inventoryId: z.string().uuid().nullable().optional(),
+    })
+    .optional(),
+});

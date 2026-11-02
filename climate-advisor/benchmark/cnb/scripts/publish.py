@@ -21,7 +21,8 @@ Outputs (no model calls, no network, no database):
 Usage (from climate-advisor/):
 - uv run python -m benchmark.cnb.scripts.publish [--results-dir benchmark/cnb/results]
 - open output/cnb_golden_set/index.html (or benchmark/cnb/results/index.html) in a
-  browser (no server needed)
+  browser (no server needed). The generated index.html, app.js and runs/index.js
+  are not committed, so run this after checkout to view the committed runs.
 """
 
 from __future__ import annotations

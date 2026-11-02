@@ -1729,7 +1729,9 @@ diffs any two runs: configuration, stage results, and changed verdicts.
 CNB-specific code, scripts, viewer, judge prompts, fixtures, tests, and committed
 runs live in [`benchmark/cnb/`](benchmark/cnb/benchmark.md); reusable provider
 usage accounting lives in `benchmark/utils/`. Pass
-`--results-dir benchmark/cnb/results` to save a run with the committed ones.
+`--results-dir benchmark/cnb/results` to save a run with the committed ones. Only the
+runs are committed; build that folder's viewer with
+`uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results`.
 
 The live evaluation requires `OPENROUTER_API_KEY` for the production models and
 `models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in

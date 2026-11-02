@@ -47,8 +47,14 @@ later runs record.
 
 ## Open the website
 
-From `climate-advisor/`, open `benchmark/cnb/results/index.html` in a browser
-(no server needed):
+The site is generated, not committed. From `climate-advisor/`, build it from
+`viewer/` and the saved runs (no model calls, no network):
+
+```bash
+uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results
+```
+
+Then open `benchmark/cnb/results/index.html` in a browser (no server needed):
 
 ```bash
 start benchmark/cnb/results/index.html      # Windows
@@ -62,13 +68,9 @@ Or serve it and open http://127.0.0.1:8765:
 python -m http.server 8765 --directory benchmark/cnb/results
 ```
 
-The "Open original PDF" buttons need the PDFs copied next to the site once.
-They are kept out of git: place each pinned `source.pdf` in its fixture folder
-first (see `fixtures/README.md`), then run:
-
-```bash
-uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results
-```
+The "Open original PDF" buttons also need the PDFs, which are kept out of git:
+place each pinned `source.pdf` in its fixture folder (see `fixtures/README.md`)
+before running `publish`. Rerun `publish` after pulling viewer or run changes.
 
 Pages:
 

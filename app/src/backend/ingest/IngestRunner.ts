@@ -3,7 +3,10 @@ import {
   coarseKindsFromExtensions,
   detectCoarseFileKind,
 } from "./coarse-kind";
-import type { IngestDocumentPool } from "./document-pool";
+import {
+  assertDocumentReusable,
+  type IngestDocumentPool,
+} from "./document-pool";
 import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
@@ -33,6 +36,14 @@ export interface EnqueueIngestJobInput {
   files: IngestFileInput[];
   dryRun?: boolean;
   visibility?: IngestVisibility;
+  uploadedByUserId?: string | null;
+  scope: IngestScope;
+}
+
+export interface EnqueueFromDocumentInput {
+  moduleId: IngestModuleId;
+  documentId: string;
+  dryRun?: boolean;
   uploadedByUserId?: string | null;
   scope: IngestScope;
 }
@@ -81,6 +92,58 @@ export class IngestRunner {
     return this.store.updateJob(job.id, { totalCount: files.length });
   }
 
+  /**
+   * Reuse a pooled document. Skips store and Path B; starts at match/detect.
+   */
+  async enqueueFromDocument(
+    input: EnqueueFromDocumentInput,
+  ): Promise<IngestJobRecord> {
+    if (!this.documentPool) {
+      throw new IngestItemError(
+        "commit_failed",
+        "Document pool is required for from-document ingest",
+      );
+    }
+    const document = await this.documentPool.get(input.documentId);
+    if (!document) {
+      throw new IngestItemError("document_not_found");
+    }
+    assertDocumentReusable(document);
+    if (!document.buffer || !document.contentHash) {
+      throw new IngestItemError("commit_failed", "Missing bytes to reuse");
+    }
+
+    const scope: IngestScope = {
+      organizationId: input.scope.organizationId ?? document.organizationId,
+      projectId: input.scope.projectId ?? document.projectId,
+      cityId: input.scope.cityId ?? document.cityId,
+      inventoryId: input.scope.inventoryId,
+    };
+    if (!hasScope(scope)) {
+      throw new IngestItemError("missing_scope");
+    }
+
+    const job = await this.store.createJob({
+      moduleId: input.moduleId,
+      dryRun: input.dryRun ?? false,
+      visibility: document.visibility,
+      organizationId: scope.organizationId ?? null,
+      projectId: scope.projectId ?? null,
+      cityId: scope.cityId ?? null,
+      uploadedByUserId: input.uploadedByUserId ?? null,
+    });
+    await this.store.createItem({
+      jobId: job.id,
+      originalFileName: document.originalFileName,
+      buffer: document.buffer,
+      contentHash: document.contentHash,
+      documentId: document.id,
+      targetCityId: scope.cityId ?? null,
+      targetInventoryId: scope.inventoryId ?? null,
+    });
+    return this.store.updateJob(job.id, { totalCount: 1 });
+  }
+
   async run(jobId: string, plugin: IngestPlugin): Promise<IngestJobRecord> {
     const job = await this.store.getJob(jobId);
     if (!job) {
@@ -116,7 +179,8 @@ export class IngestRunner {
       await this.setStage(item.id, "receive");
 
       await this.setStage(item.id, "store");
-      if (!job.dryRun && this.documentPool) {
+      const fromDocument = Boolean(item.documentId);
+      if (!fromDocument && !job.dryRun && this.documentPool) {
         const current = await this.requireItem(item.id);
         if (!current.contentHash || !current.buffer) {
           throw new IngestItemError("commit_failed", "Missing bytes to store");
@@ -237,7 +301,7 @@ export class IngestRunner {
       );
 
       await this.setStage(item.id, "publish");
-      // Path A/B catalog registration is CC-955 / plugin commit, not Core.
+      await this.publishPathA(item.id, plugin);
 
       await this.store.updateItem(item.id, {
         status: "completed",
@@ -427,6 +491,7 @@ export class IngestRunner {
         at: new Date().toISOString(),
       },
     };
+    await this.publishPathA(item.id, plugin);
     const completed = await this.store.updateItem(item.id, {
       status: "completed",
       stage: "publish",
@@ -548,6 +613,22 @@ export class IngestRunner {
         "Confirm target does not match the stored draft",
       );
     }
+  }
+
+  private async publishPathA(
+    itemId: string,
+    plugin: IngestPlugin,
+  ): Promise<void> {
+    if (!this.documentPool) return;
+    const item = await this.requireItem(itemId);
+    if (!item.documentId) return;
+    const document = await this.documentPool.get(item.documentId);
+    if (!document) return;
+    await this.documentPool.publishPathA(document, {
+      owningModule: plugin.moduleId,
+      sourceId: item.id,
+      inventoryId: item.targetInventoryId ?? null,
+    });
   }
 
   private async requireJob(jobId: string): Promise<IngestJobRecord> {

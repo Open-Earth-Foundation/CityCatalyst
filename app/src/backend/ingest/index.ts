@@ -19,8 +19,12 @@ export {
   INGEST_DOCUMENT_CATALOG_KIND,
   INGEST_DOCUMENT_OWNING_MODULE,
   INGEST_DOCUMENT_SOURCE_TYPE,
+  INGEST_EXTRACT_CATALOG_KIND,
+  INGEST_EXTRACT_SOURCE_TYPE,
   MemoryIngestDocumentPool,
+  assertDocumentReusable,
   buildIngestDocumentPathBInput,
+  buildIngestExtractPathAInput,
   initialMarkdownReady,
 } from "./document-pool";
 export type {

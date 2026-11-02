@@ -79,5 +79,39 @@ test.describe("Dashboard", () => {
         timeout: 10000,
       });
     });
+
+    test("User can switch to inventory results tab on first click", async ({
+      page,
+    }) => {
+      test.setTimeout(180000);
+
+      const { cityId } = await createCityAndInventoryThroughOnboarding(page);
+      await page.goto(`/en/cities/${cityId}/GHGI`);
+      await page.waitForLoadState("networkidle");
+
+      const calculationTab = page.getByTestId(
+        "tab-emission-inventory-calculation-title",
+      );
+      const resultsTab = page.getByTestId(
+        "tab-emission-inventory-results-title",
+      );
+
+      await expect(calculationTab).toBeVisible({ timeout: 10000 });
+      await expect(resultsTab).toBeVisible({ timeout: 10000 });
+
+      const calculationContent = page.getByTestId("sector-data-title");
+      await expect(calculationContent).toBeVisible({ timeout: 10000 });
+
+      await resultsTab.click();
+
+      const resultsHeading = page.getByRole("heading", {
+        name: /Total emissions in/i,
+      });
+      await expect(resultsHeading).toBeVisible({ timeout: 10000 });
+
+      await calculationTab.click();
+
+      await expect(calculationContent).toBeVisible({ timeout: 10000 });
+    });
   });
 });

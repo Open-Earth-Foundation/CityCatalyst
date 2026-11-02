@@ -3,6 +3,7 @@ import {
   coarseKindsFromExtensions,
   detectCoarseFileKind,
 } from "./coarse-kind";
+import type { IngestDocumentPool } from "./document-pool";
 import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
@@ -35,7 +36,10 @@ function contentHash(buffer: Buffer): string {
 }
 
 export class IngestRunner {
-  constructor(private readonly store: IngestStore) {}
+  constructor(
+    private readonly store: IngestStore,
+    private readonly documentPool?: IngestDocumentPool,
+  ) {}
 
   async enqueue(input: EnqueueIngestJobInput): Promise<IngestJobRecord> {
     if (!hasScope(input.scope)) {
@@ -91,7 +95,7 @@ export class IngestRunner {
     item: IngestItemRecord,
     plugin: IngestPlugin,
   ): Promise<void> {
-    const scope: IngestScope = {
+    let scope: IngestScope = {
       organizationId: job.organizationId,
       projectId: job.projectId,
       cityId: job.cityId,
@@ -102,10 +106,51 @@ export class IngestRunner {
       await this.setStage(item.id, "receive");
 
       await this.setStage(item.id, "store");
-      // Bytes and hash are already on the item (S3 comes in CC-955).
+      if (!job.dryRun && this.documentPool) {
+        const current = await this.requireItem(item.id);
+        if (!current.contentHash || !current.buffer) {
+          throw new IngestItemError("commit_failed", "Missing bytes to store");
+        }
+        const stored = await this.documentPool.store({
+          contentHash: current.contentHash,
+          originalFileName: current.originalFileName,
+          buffer: current.buffer,
+          scope,
+          uploadedByUserId: job.uploadedByUserId ?? null,
+          visibility: job.visibility,
+        });
+        await this.documentPool.publishPathB(stored.document);
+        await this.store.updateItem(item.id, {
+          documentId: stored.document.id,
+        });
+      }
 
       await this.setStage(item.id, "match");
-      await plugin.match?.({ job, item: await this.requireItem(item.id), scope });
+      const matched = await plugin.match?.({
+        job,
+        item: await this.requireItem(item.id),
+        scope,
+      });
+      if (matched) {
+        await this.store.updateItem(item.id, {
+          ...(matched.targetCityId !== undefined
+            ? { targetCityId: matched.targetCityId }
+            : {}),
+          ...(matched.targetInventoryId !== undefined
+            ? { targetInventoryId: matched.targetInventoryId }
+            : {}),
+          ...(matched.coverageYears
+            ? { coverageYears: matched.coverageYears }
+            : {}),
+        });
+        await this.addWarnings(item.id, matched.warnings);
+        const afterMatch = await this.requireItem(item.id);
+        scope = {
+          ...scope,
+          cityId: afterMatch.targetCityId ?? scope.cityId,
+          inventoryId: afterMatch.targetInventoryId ?? scope.inventoryId,
+        };
+      }
 
       await this.setStage(item.id, "detect");
       const current = await this.requireItem(item.id);
@@ -144,11 +189,7 @@ export class IngestRunner {
         { job, item: await this.requireItem(item.id), scope },
         adapted,
       );
-      if (validation?.warnings?.length) {
-        await this.store.updateItem(item.id, {
-          warnings: validation.warnings,
-        });
-      }
+      await this.addWarnings(item.id, validation?.warnings);
 
       await this.setStage(item.id, "decide");
       const policy = plugin.approvalPolicy(
@@ -203,6 +244,17 @@ export class IngestRunner {
         errorLog: err instanceof Error ? err.message : String(err),
       });
     }
+  }
+
+  private async addWarnings(
+    itemId: string,
+    warnings: string[] | undefined,
+  ): Promise<void> {
+    if (!warnings?.length) return;
+    const current = await this.requireItem(itemId);
+    await this.store.updateItem(itemId, {
+      warnings: [...new Set([...current.warnings, ...warnings])],
+    });
   }
 
   private async setStage(itemId: string, stage: IngestStage): Promise<void> {

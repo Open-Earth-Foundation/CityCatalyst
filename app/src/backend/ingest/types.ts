@@ -109,6 +109,8 @@ export interface IngestItemRecord {
   buffer?: Buffer | null;
   /** Set by Core at coarse detect (stage 4a). */
   coarseKind?: CoarseFileKind | null;
+  /** Document-pool id after a non-dry-run store (CC-955). */
+  documentId?: string | null;
 }
 
 export class IngestItemError extends Error {

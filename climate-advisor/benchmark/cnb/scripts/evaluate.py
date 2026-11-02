@@ -244,7 +244,7 @@ def _write_report(args: argparse.Namespace, report: GoldenSetReport) -> None:
     )
     temporary = args.output_dir / "report.json.tmp"
     temporary.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(data, ensure_ascii=False), encoding="utf-8"
     )
     temporary.replace(args.output_dir / "report.json")
     (args.output_dir / "report.md").write_text(
@@ -559,7 +559,7 @@ async def _evaluate_extraction(
             }
         )
     (output_dir / "analysis.json").write_text(
-        source.model_dump_json(indent=2), encoding="utf-8"
+        source.model_dump_json(), encoding="utf-8"
     )
     payload, integrity = extraction_judge_input(
         loaded, source, candidate=extraction_input
@@ -589,7 +589,7 @@ async def _evaluate_chapter_writing(
         return StageReport(evaluation_errors=["drafting_failed"])
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "drafts.json").write_text(
-        json.dumps([c.as_json() for c in drafted], ensure_ascii=False, indent=2),
+        json.dumps([c.as_json() for c in drafted], ensure_ascii=False),
         encoding="utf-8",
     )
     payload, integrity = chapter_writing_judge_input(loaded, drafted, supplied)
@@ -609,7 +609,7 @@ async def _judge(payload: JudgeInput, settings: Settings, output_dir: Path) -> A
         return StageReport(evaluation_errors=[str(exc)])
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "judgment.json").write_text(
-        judgment.model_dump_json(indent=2), encoding="utf-8"
+        judgment.model_dump_json(), encoding="utf-8"
     )
     return judgment
 
@@ -799,7 +799,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     _write_report(args, args.report)
     delivery_path = args.output_dir / "delivery.json"
-    delivery_path.write_text(json.dumps(args.delivery, indent=2), encoding="utf-8")
+    delivery_path.write_text(json.dumps(args.delivery), encoding="utf-8")
 
     async def bounded() -> GoldenSetReport:
         """Leave finalization time after a bounded evaluation timeout."""
@@ -838,7 +838,7 @@ def main(argv: list[str] | None = None) -> int:
         comparison["evaluation_unavailable"] = True
     comparison["baseline"] = selection
     (args.output_dir / "comparison.json").write_text(
-        json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(comparison, ensure_ascii=False), encoding="utf-8"
     )
     (args.output_dir / "comparison.md").write_text(
         render_comparison(comparison, args.delivery), encoding="utf-8"
@@ -846,14 +846,14 @@ def main(argv: list[str] | None = None) -> int:
 
     args.delivery["publication"] = {"status": "preparing"}
     delivery_path.write_text(
-        json.dumps(args.delivery, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
     )
     # Publication is separately visible; a quality failure must still get a bundle.
     try:
         publish_run(args.output_dir, args.results_dir, fixtures_dir=args.fixtures_dir)
         args.delivery["publication"] = {"status": "published"}
         delivery_path.write_text(
-            json.dumps(args.delivery, ensure_ascii=False, indent=2), encoding="utf-8"
+            json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
         )
         (args.output_dir / "comparison.md").write_text(
             render_comparison(comparison, args.delivery), encoding="utf-8"
@@ -870,7 +870,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         logger.error("Viewer publish failed error_type=%s", type(exc).__name__)
     delivery_path.write_text(
-        json.dumps(args.delivery, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
     )
     (args.output_dir / "comparison.md").write_text(
         render_comparison(comparison, args.delivery), encoding="utf-8"

@@ -111,13 +111,13 @@ def main(argv: list[str] | None = None) -> int:
         comparison["baseline"] = selection
         delivery["baseline"] = selection
         (candidate / "comparison.json").write_text(
-            json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8"
+            json.dumps(comparison, ensure_ascii=False), encoding="utf-8"
         )
 
         # Include the publication result in the bundle, and retain failures locally.
         delivery["publication"] = {"status": "published"}
         (candidate / "delivery.json").write_text(
-            json.dumps(delivery, ensure_ascii=False, indent=2), encoding="utf-8"
+            json.dumps(delivery, ensure_ascii=False), encoding="utf-8"
         )
         (candidate / "comparison.md").write_text(
             render_comparison(comparison, delivery), encoding="utf-8"
@@ -130,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
                 "error_type": type(exc).__name__,
             }
             (candidate / "delivery.json").write_text(
-                json.dumps(delivery, ensure_ascii=False, indent=2), encoding="utf-8"
+                json.dumps(delivery, ensure_ascii=False), encoding="utf-8"
             )
             (candidate / "comparison.md").write_text(
                 render_comparison(comparison, delivery), encoding="utf-8"

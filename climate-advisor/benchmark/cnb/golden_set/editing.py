@@ -325,13 +325,13 @@ async def evaluate_editing(
     ]
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "cases.json").write_text(
-        json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(records, ensure_ascii=False), encoding="utf-8"
     )
     payload = editing_judge_input(loaded, snapshots, records)
     try:
         judgment = await judge(payload, settings)
     except GoldenJudgeError as exc:
         return StageReport(evaluation_errors=[str(exc)], details={"cases": checks})
-    (output_dir / "judgment.json").write_text(judgment.model_dump_json(indent=2), encoding="utf-8")
+    (output_dir / "judgment.json").write_text(judgment.model_dump_json(), encoding="utf-8")
     assert isinstance(judgment, EditingEvaluation)
     return score_editing(loaded, payload, judgment, checks)

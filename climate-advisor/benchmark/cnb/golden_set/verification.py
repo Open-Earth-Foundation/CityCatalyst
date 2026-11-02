@@ -368,18 +368,18 @@ async def evaluate_verification(
     records = finding_records(requests, decisions, ref_by_id)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "seeded_draft.json").write_text(
-        json.dumps([c.model_dump(mode="json") for c in seeded], ensure_ascii=False, indent=2),
+        json.dumps([c.model_dump(mode="json") for c in seeded], ensure_ascii=False),
         encoding="utf-8",
     )
     (output_dir / "findings.json").write_text(
-        json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(records, ensure_ascii=False), encoding="utf-8"
     )
     payload = verification_judge_input(loaded, seeded, records)
     try:
         judgment = await judge(payload, settings)
     except GoldenJudgeError as exc:
         return StageReport(evaluation_errors=[str(exc)], details={"findings": records})
-    (output_dir / "judgment.json").write_text(judgment.model_dump_json(indent=2), encoding="utf-8")
+    (output_dir / "judgment.json").write_text(judgment.model_dump_json(), encoding="utf-8")
     assert isinstance(judgment, VerificationEvaluation)
     statuses = {ref_by_id[d.target_chapter_id]: d.status for d in decisions}
     return score_verification(loaded, payload, judgment, records, [], statuses)

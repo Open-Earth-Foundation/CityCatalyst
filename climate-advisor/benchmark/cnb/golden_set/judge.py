@@ -12,7 +12,7 @@ import logging
 from collections.abc import Iterable
 from typing import Any
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.config import Settings
 from app.services.openrouter_client import build_openrouter_client_options
 from openai import AsyncOpenAI
@@ -99,7 +99,11 @@ async def judge_output(
             "Judging CNB golden set stage=%s model=%s", payload.stage, model.name
         )
         result = await asyncio.wait_for(
-            runner.run(agent, payload.model_dump_json()),
+            runner.run(
+                agent,
+                payload.model_dump_json(),
+                run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+            ),
             timeout=JUDGE_TIMEOUT_SECONDS,
         )
         return output_type.model_validate(result.final_output)

@@ -666,7 +666,9 @@ and every document) fits `cnb_sources.context_window_tokens` (350,000 by
 default); `token_count` is that request size. The chapter drafter and CNB chat
 receive it as a separate `CONCEPT_NOTE_SOURCE_DOCUMENTS` message. Each chapter
 request is measured again before drafting, with its earlier chapters, and is
-drafted without the complete text if it no longer fits. Above the window, or
+drafted without the complete text if it no longer fits; a chat turn whose
+instructions, context, and conversation history exceed the window replaces it
+with a `CONCEPT_NOTE_SOURCE_DOCUMENTS_OMITTED` notice. Above the window, or
 when a reused source cannot be re-read, `mode` is `summary`, `documents` is
 empty, and agents rely on summaries, quotations, and the source-query tool.
 
@@ -681,7 +683,8 @@ read them as the chapter's `source_excerpts`. `chapter_evidence_fingerprint`
 hashes the template requirements, prompts, models, and limits; a build with a
 different fingerprint re-extracts only the chapter quotations, and a funding
 change or workspace open queues that rebuild. A failed extraction keeps the
-previous quotations and is retried on the next build.
+previous quotations and records `chapter_evidence_failed_fingerprint`; the next
+explicit build retries it, but opening the workspace does not.
 
 Apart from `source_text`, the bundle contains no raw source, storage key,
 credential, or derived chunk.

@@ -13,7 +13,7 @@ import logging
 import re
 from typing import Any
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.models.cnb.concept_note_draft import (
     ChapterSupportReview,
     ChapterSupportRevision,
@@ -99,7 +99,11 @@ async def review_chapter_support(
             "role": "user",
             "content": f"{DRAFT_MESSAGE_HEADER}\n{draft.model_dump_json()}",
         }
-        result = await runner.run(agent, [*messages, draft_message])
+        result = await runner.run(
+            agent,
+            [*messages, draft_message],
+            run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+        )
         return ChapterSupportReview.model_validate(result.final_output)
     except Exception as exc:
         raise ChapterSupportCheckError(type(exc).__name__) from exc

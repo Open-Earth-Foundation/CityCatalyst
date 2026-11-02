@@ -14,9 +14,15 @@ jobs:
   live:
     # Keep this unique check non-required in branch protection. Quality failures
     # remain visible; continue-on-error would hide a broken evaluation pipeline.
-    name: CNB quality report (non-required)
+    # One job per input path, so each has its own deadline and status: a
+    # quality failure on one path cannot be masked by the other's result.
+    name: CNB quality report (non-required, ${{ matrix.input }})
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        input: [markdown, pdf]
     steps:
       - name: Initialize failure evidence
         shell: bash
@@ -70,7 +76,7 @@ jobs:
           uv run pytest benchmark/cnb/tests -q
           node --test benchmark/cnb/tests/viewer.test.cjs
 
-      - name: Run serial benchmark paths
+      - name: Run ${{ matrix.input }} benchmark path
         id: benchmark
         working-directory: climate-advisor
         shell: bash
@@ -85,33 +91,31 @@ jobs:
           MLFLOW_ENABLED: 'false'
           CC_BASE_URL: http://localhost:3000
           RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          INPUT: ${{ matrix.input }}
         run: |
           if [[ -z "$OPENROUTER_API_KEY" ]]; then
             printf '%s\n' '# CNB live benchmark' '' 'Evaluation unavailable: OPENROUTER_API_KEY is missing.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
             echo 'status=3' >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          if [[ "$INPUT" == pdf && ( -z "$MISTRAL_API_KEY" || -z "$AWS_FILE_UPLOAD_S3_BUCKET_ID" || -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ) ]]; then
+            printf '%s\n' '# CNB live benchmark' '' 'PDF evaluation unavailable: OCR or dedicated temporary-upload credentials are missing.' > "$RUNNER_TEMP/cnb-evidence/summary.md"
+            echo 'status=3' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          manifest=baseline.json
+          if [[ "$INPUT" == pdf ]]; then manifest=baseline-pdf.json; fi
           status=0
+          # Three fixtures run serially; a saved run took about 2,150 seconds.
+          uv run python -m benchmark.cnb.scripts.evaluate \
+            --run-id "$RUN_ID-$INPUT" --label "$RUN_ID-$INPUT" \
+            --input-path "$INPUT" --timeout-seconds 3600 \
+            --results-dir "output/cnb-ci/$INPUT" \
+            --baseline-manifest "../.cnb-base/climate-advisor/benchmark/cnb/$manifest" \
+            --baseline-results-dir ../.cnb-base/climate-advisor/benchmark/cnb/results || status=$?
           : > "$RUNNER_TEMP/cnb-evidence/summary.md"
-          for input in markdown pdf; do
-            if [[ "$input" == pdf && ( -z "$MISTRAL_API_KEY" || -z "$AWS_FILE_UPLOAD_S3_BUCKET_ID" || -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ) ]]; then
-              printf '%s\n' '' 'PDF evaluation unavailable: OCR or dedicated temporary-upload credentials are missing.' >> "$RUNNER_TEMP/cnb-evidence/summary.md"
-              status=3
-              continue
-            fi
-            manifest=baseline.json
-            if [[ "$input" == pdf ]]; then manifest=baseline-pdf.json; fi
-            result=0
-            uv run python -m benchmark.cnb.scripts.evaluate \
-              --run-id "$RUN_ID-$input" --label "$RUN_ID-$input" \
-              --input-path "$input" --timeout-seconds 1500 \
-              --results-dir "output/cnb-ci/$input" \
-              --baseline-manifest "../.cnb-base/climate-advisor/benchmark/cnb/$manifest" \
-              --baseline-results-dir ../.cnb-base/climate-advisor/benchmark/cnb/results || result=$?
-            if [[ "$result" -ne 0 ]]; then status=$result; fi
-            summary="output/cnb-ci/$input/runs/$RUN_ID-$input/comparison.md"
-            if [[ -f "$summary" ]]; then cat "$summary" >> "$RUNNER_TEMP/cnb-evidence/summary.md"; fi
-          done
+          summary="output/cnb-ci/$INPUT/runs/$RUN_ID-$INPUT/comparison.md"
+          if [[ -f "$summary" ]]; then cat "$summary" >> "$RUNNER_TEMP/cnb-evidence/summary.md"; fi
           printf '{"execution":"finished","exit_code":%s}\n' "$status" > "$RUNNER_TEMP/cnb-evidence/status.json"
           echo "status=$status" >> "$GITHUB_OUTPUT"
 
@@ -120,7 +124,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cnb-review-${{ github.run_id }}-${{ github.run_attempt }}
+          name: cnb-review-${{ matrix.input }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             climate-advisor/output/cnb-ci/
             ${{ runner.temp }}/cnb-evidence/

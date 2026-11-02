@@ -6,14 +6,16 @@ Repeated full producer and judge evaluations on PR updates would consume provide
 usage too quickly. Offline tests remain automatic. After changing prompts, models
 or the extraction/PDF pipeline, agents should suggest a manual benchmark run before
 opening or updating a PR and wait for the user's authorization to spend that usage.
-Its unique check, `CNB quality report (non-required)`,
-must remain outside the repository's required checks. This file does not configure
+Its checks, `CNB quality report (non-required, markdown)` and
+`CNB quality report (non-required, pdf)`, must remain outside the repository's required checks. This file does not configure
 branch protection. Failures remain visible and are not hidden with
 `continue-on-error`.
 
-Runs are serial: frozen Markdown first, fresh PDF conversion second, with one
-fixture at a time. Each path has a 1,500-second evaluation deadline. The job has a
-75-minute limit, allowing setup and artifact publication. Per-branch concurrency does
+The frozen-Markdown and fresh-PDF-conversion paths run as parallel jobs, each
+with its own status and review artifact, so a quality failure on one path is not
+masked by an unavailable evaluation on the other. Within a path, fixtures run one
+at a time under a 3,600-second evaluation deadline. Each job has a 90-minute
+limit, allowing setup and artifact publication. Per-branch concurrency does
 not cancel an active run. There are no whole-run retries. Set provider spending
 limits on the dedicated keys; a timeout alone is not a monetary limit.
 

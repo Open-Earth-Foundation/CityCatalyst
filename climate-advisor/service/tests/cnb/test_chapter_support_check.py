@@ -100,8 +100,10 @@ async def test_draft_chapter_checks_the_draft_with_the_drafters_messages():
 
     class FakeRunner:
         @staticmethod
-        async def run(agent: Any, messages: Any) -> Any:
+        async def run(agent: Any, messages: Any, run_config: Any) -> Any:
             seen.append((agent.name, messages))
+            # Source content must not reach the SDK's trace exporter.
+            assert run_config.tracing_disabled and not run_config.trace_include_sensitive_data
             if agent.name == "Concept Note chapter drafter":
                 return SimpleNamespace(final_output=draft())
             return SimpleNamespace(final_output=review)

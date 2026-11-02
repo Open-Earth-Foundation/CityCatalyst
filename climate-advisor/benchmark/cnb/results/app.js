@@ -1,9 +1,11 @@
 /* CNB golden-set viewer. Reads runs/index.js and loads runs/<id>/viewer.js on demand
-   (both written by benchmark/scripts/publish.py). Works from disk. */
+   (both written by benchmark/cnb/scripts/publish.py). Works from disk. */
 (() => {
   "use strict";
   const INDEX = window.GOLDEN_INDEX || [];
-  const CURRENT = new URLSearchParams(location.search).get("run") || INDEX[0]?.id || null;
+  const REVIEW = window.GOLDEN_REVIEW || null;
+  const CURRENT = new URLSearchParams(location.search).get("run") || REVIEW?.candidate_run_id || INDEX[0]?.id || null;
+  if (REVIEW && !location.hash) location.hash = REVIEW.baseline_run_id ? `#/compare/${encodeURIComponent(REVIEW.baseline_run_id)}/${encodeURIComponent(CURRENT)}` : "#/compare";
   let D = null; // the payload of the run being viewed
   const app = document.getElementById("app");
   const nav = document.getElementById("nav");
@@ -329,8 +331,31 @@
     `<div class="tile"><div class="lbl">${esc(text)}</div><div class="val">${esc(value)}</div>${note ? `<div class="muted small" style="margin-top:8px">${esc(note)}</div>` : ""}</div>`;
 
   // ---------- stage summaries (shared by overview and tabs) ----------
+  function extractionFacts(f) {
+    return f.golden.extraction.facts.flatMap((fact) => fact.requirements
+      ? fact.requirements.map((r) => ({ ...fact, id: `${fact.id}::${r.chapter_ref}`, chapter_ref: r.chapter_ref, required: r.priority === "mandatory" }))
+      : [fact]); // Historical snapshots used document-level facts.
+  }
+  const extractionGate = (f) => f.golden.extraction.facts.some((x) => x.requirements) ? 1 : f.golden.extraction.thresholds.min_required_fact_coverage;
+
+  function approvalNote(f) {
+    if (f.inapplicable_reason) return `<div class="callout">Not applicable: ${esc(f.inapplicable_reason)}</div>`;
+    return `<div class="callout">Ground-truth approval: <b>${esc(f.approval_status || "not recorded")}</b>.
+      ${(f.approval_errors || []).map(esc).join(" · ")}</div>`;
+  }
+
+  function chapterCoverage(f) {
+    const rows = Object.entries(f.stages.extraction?.report?.details?.chapter_coverage || {});
+    if (!rows.length) return "";
+    const coverage = (item) => item?.total ? `${item.covered}/${item.total} (${pct(item.coverage)})` : "N/A";
+    return `<h2>Coverage per receiving chapter</h2><div class="card" style="padding:0;overflow-x:auto"><table>
+      <thead><tr><th>Chapter</th><th>Mandatory</th><th>Desirable</th><th>Missing mandatory facts</th></tr></thead>
+      <tbody>${rows.map(([ref, row]) => `<tr><td>${esc(chapterTitle(f, ref))}</td><td>${coverage(row.mandatory)}</td><td>${coverage(row.desirable)}</td>
+        <td>${(row.missing_mandatory_pairs || []).map(esc).join(", ") || "none"}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+
   function factStats(f, stage, j) {
-    const facts = stage === "extraction" ? f.golden.extraction.facts : f.golden.chapter_writing?.facts || [];
+    const facts = stage === "extraction" ? extractionFacts(f) : f.golden.chapter_writing?.facts || [];
     const req = new Set(facts.filter((x) => x.required).map((x) => x.id));
     const counts = {};
     for (const v of j?.facts || []) if (req.has(v.id)) counts[v.verdict] = (counts[v.verdict] || 0) + 1;
@@ -352,7 +377,7 @@
     let body = "";
     if (stage === "extraction" && j) {
       const fs = factStats(f, stage, j);
-      const gate = f.golden.extraction.thresholds.min_required_fact_coverage;
+      const gate = extractionGate(f);
       body = `${meterBar(fs.coverage, gate)}${verdictStack(fs.counts, fs.required, undefined, false)}
         <div class="cellnote">${fs.counts.covered || 0}/${fs.required} facts retained · topics ${pct(m.topic_coverage)}</div>`;
     } else if (stage === "chapter_writing" && j) {
@@ -378,11 +403,11 @@
   const METHOD = {
     extraction: {
       question: "Do the quotations that production source analysis keeps preserve the facts a reviewer needs?",
-      input: ["The original document exactly as CityCatalyst delivers it (pinned <code>source.md</code>; the PDF it came from is kept for reference)."],
+      input: ["Pinned source Markdown, or fresh production conversion of the pinned PDF. Judgments always use the independent approved reference."],
       production: ["Source analysis: reader and synthesizer agents partition the document, keep exact quotations with page or heading anchors, and label topics."],
       python: ["Every quotation is an exact substring at a valid page or heading.", "The generated summary is saved for diagnosis but never sent to the judge."],
       judge: ["Expected fact → retained quotations: covered, partial, missing or contradicted.", "Expected topic → topic labels.", "Retained quotation → complete source: misleading, or missing a qualifier?"],
-      gates: "Required facts fully covered ≥ 75% · topics ≥ 60% · no unsupported or unclear quotation",
+      gates: "Every mandatory receiving-chapter requirement fully covered · topics ≥ 60% · no unsupported or unclear quotation. Historical snapshots retain their recorded gate.",
     },
     chapter_writing: {
       question: "Does the drafter carry the facts into the right chapters, support every claim, and flag missing information instead of inventing it?",
@@ -424,7 +449,7 @@
   // ---------- overview ----------
   function overview() {
     const all = D.fixtures.flatMap((f) => fixtureStages(f).map((s) => stageStatus(f.stages[s])));
-    const overall = all.every((s) => s === "pass") ? "pass" : all.includes("fail") ? "fail" : all.includes("error") ? "error" : "notrun";
+    const overall = D.run.passed === true ? "pass" : all.includes("fail") ? "fail" : all.includes("error") ? "error" : "notrun";
     const run = D.run || {};
     return `
     <div class="eyebrow">Concept Note Builder · CC-750 golden set</div>
@@ -432,10 +457,10 @@
       <div>
         <h1>Does CNB keep the facts straight, end to end?</h1>
         <p class="lede">The benchmark follows a document through the production pipeline in four stages and asks a different question at each.
-        Production code runs unchanged. Python checks every exact contract, and an independent LLM judge scores meaning. The judge is calibrated with
-        examples quoted from the documents themselves and cites the text behind every verdict; its quotations point to evidence and are never matched by code.</p>
+        Python checks source quotations and receiving-chapter ownership; an independent LLM judge scores meaning.
+        Human-labelled judge calibration is a separate measurement. Prompt examples alone do not establish judge accuracy.</p>
       </div>
-      <div style="text-align:right">${bigBadge(overall, overall === "pass" ? "All stages pass" : overall === "fail" ? "Benchmark failing" : undefined)}</div>
+      <div style="text-align:right">${bigBadge(overall, overall === "pass" ? "Run passed" : overall === "fail" ? "Quality failures" : "No approved pass")}</div>
     </div>
 
     <div class="pipeline">${STAGE_KEYS.map((s, i) => `
@@ -458,9 +483,9 @@
     <h2>How a verdict is made</h2>
     <div class="grid g4">
       <div class="card"><div class="eyebrow">Python · exact</div><h3>Contracts, not meaning</h3><p class="small muted">Quotation and locator exactness, marker/gap parity, seeded edits, which chapters an edit changed, and the judge's output contract. Never keyword overlap.</p></div>
-      <div class="card"><div class="eyebrow">LLM judge · semantic</div><h3>Every verdict cites text</h3><p class="small muted">One structured judgment per stage and document. References point to the text behind a verdict; a misquote never voids the judgment.</p></div>
-      <div class="card"><div class="eyebrow">Calibration</div><h3>${Object.values(D.examples).reduce((n, l) => n + l.length, 0)} few-shot examples</h3><p class="small muted">Passages quoted verbatim from the three documents and tested never to overlap golden evidence, so examples teach the standard without leaking answers.</p></div>
-      <div class="card"><div class="eyebrow">Judge mistakes</div><h3>Not product failures</h3><p class="small muted">Only a missing or repeated verdict makes the stage an <b>evaluation error</b>. Quotes are never matched by code: an inflected or misplaced quote is shown as written and the verdict stands.</p></div>
+      <div class="card"><div class="eyebrow">LLM judge · semantic</div><h3>Every verdict cites text</h3><p class="small muted">One structured judgment per stage and document. For chapter-specific extraction, cited text must belong to the receiving chapter.</p></div>
+      <div class="card"><div class="eyebrow">Prompt examples</div><h3>${Object.values(D.examples).reduce((n, l) => n + l.length, 0)} few-shot examples</h3><p class="small muted">Examples teach the standard. Separate, approved held-out cases measure agreement and serious false passes.</p></div>
+      <div class="card"><div class="eyebrow">Judge mistakes</div><h3>Evaluation unavailable</h3><p class="small muted">Missing or duplicate verdicts and invalid chapter-specific evidence are evaluation errors. Semantic quality findings remain visible separately.</p></div>
     </div>
 
     <h2>What this run found</h2>
@@ -504,6 +529,8 @@
       <dl class="kv small" style="margin-top:12px">
         <dt>Drafted into</dt><dd>${esc(d?.funder || "–")}: ${esc(d?.template_name || "")}</dd>
         <dt>Expectations</dt><dd>${g.extraction.facts.length} extraction facts · ${g.chapter_writing?.facts.length || 0} draft facts · ${g.chapter_writing?.gaps.length || 0} expected gaps</dd>
+        <dt>Approval</dt><dd>${esc(f.approval_status || "not recorded")}${f.inapplicable_reason ? " · not applicable" : ""}</dd>
+        ${f.input_provenance?.conversion ? `<dt>PDF conversion</dt><dd>${fmtTime(f.input_provenance.conversion.elapsed_seconds)} · cost unavailable</dd>` : ""}
         <dt>Seeded · edits</dt><dd>${g.verification?.defects.length || 0} defects · ${g.editing?.cases.length || 0} edit cases</dd>
       </dl>
       <div class="row small" style="margin-top:12px">
@@ -605,7 +632,7 @@
     const j = judgmentOf(f, stage);
     if (stage === "extraction" && j) {
       const fs = factStats(f, stage, j);
-      tiles = meter(fs.coverage, f.golden.extraction.thresholds.min_required_fact_coverage, "Required facts kept") + verdictStack(fs.counts, fs.required, undefined, false);
+      tiles = meter(fs.coverage, extractionGate(f), "Mandatory requirements retained") + verdictStack(fs.counts, fs.required, undefined, false);
     } else if (stage === "chapter_writing" && j) {
       const fs = factStats(f, stage, j);
       const th = f.golden.chapter_writing.thresholds;
@@ -852,8 +879,9 @@
       <p class="sub">Golden expectations are <b>coverage targets, not evidence</b>. Truth comes only from the original document and authoritative context. No keyword lists, no reference answers: just semantic statements with stable IDs.</p>
       <div class="row small" style="color:var(--ink-2)">Jump to: <a href="#/f/${fid}/golden/g-ex">1 Extraction facts</a> · <a href="#/f/${fid}/golden/g-cw">2 Chapter writing</a> · <a href="#/f/${fid}/golden/g-ve">3 Seeded defects</a> · <a href="#/f/${fid}/golden/g-ed">4 Edit cases</a></div>
       <h2 id="g-ex">1 · Extraction facts <span class="muted small">(${g.extraction.facts.length})</span></h2>
-      <p class="sub">What the retained quotations must preserve, with exact evidence and allowed locators. Gate: ≥ ${pct(g.extraction.thresholds.min_required_fact_coverage)} of required facts fully covered; topics ≥ ${pct(g.extraction.thresholds.min_topic_coverage)}.</p>
-      ${g.extraction.facts.map((x) => `<div class="item"><div class="item-head"><div class="stmt">${esc(x.statement)}</div>${req(x.required)}</div>
+      ${approvalNote(f)}
+      <p class="sub">What the retained quotations must preserve in each receiving chapter. Gate: ${pct(extractionGate(f))} of mandatory requirements fully covered; topics ≥ ${pct(g.extraction.thresholds.min_topic_coverage)}. Desirable coverage is reported separately.</p>
+      ${g.extraction.facts.map((x) => `<div class="item"><div class="item-head"><div class="stmt">${esc(x.statement)}</div>${x.requirements ? x.requirements.map((r) => `<span class="pill ${r.priority === "mandatory" ? "req" : ""}">${esc(chapterTitle(f, r.chapter_ref))}: ${esc(r.priority)}</span>`).join("") : req(x.required)}</div>
         <div class="fid">${esc(x.id)}</div><div style="margin-top:10px">${x.evidence.map(ev).join("")}</div></div>`).join("")}
       <h3 style="margin-top:22px">Topics</h3>
       <div class="grid g3" style="margin-top:10px">${g.extraction.topics.map((t) => `<div class="item" style="margin:0"><div class="stmt">${esc(t.statement)}</div><div class="fid">${esc(t.id)}</div></div>`).join("")}</div>
@@ -892,14 +920,14 @@
     const a = f.analysis;
     const fid = f.golden.fixture_id;
     if (!j && !a) return notRun(f, stage);
-    const golden = Object.fromEntries(f.golden.extraction.facts.map((x) => [x.id, x]));
+    const golden = Object.fromEntries(extractionFacts(f).map((x) => [x.id, x]));
     const topics = Object.fromEntries(f.golden.extraction.topics.map((x) => [x.id, x]));
     const th = f.golden.extraction.thresholds;
     const fs = factStats(f, stage, j);
     const topicRate = j ? j.topics.filter((t) => t.verdict === "covered").length / (j.topics.length || 1) : null;
     const clean = j ? j.claims.filter((c) => claimStatus(c, stage) === "good").length : 0;
     const head = j ? stageHeader(f, stage, [
-      meter(fs.coverage, th.min_required_fact_coverage, "Required facts retained") + verdictStack(fs.counts, fs.required),
+      meter(fs.coverage, extractionGate(f), "Mandatory requirements retained") + verdictStack(fs.counts, fs.required),
       meter(topicRate, th.min_topic_coverage, "Expected topics conveyed"),
       countTile(clean, j.claims.length, "Retained claims supported & clear", "Each quotation checked against the complete document"),
       plainTile(retained(f).length, "Quotations retained", `from ${f.units.length} source units · ${a?.topics?.length ?? 0} topic labels`),
@@ -915,17 +943,17 @@
         <div class="spread"><span class="fid">${esc(name)}</span><a class="small" href="#/f/${fid}/source/${enc("u-" + anchor)}">${esc(e.page ? `page ${e.page}` : anchor)} →</a></div>
         <div class="doc" style="margin-top:6px">${highlightMd(e.text, spans[`retained/${key}/${anchor}`] || [])}</div></div>`;
     }).join("");
-    return `${head}
+    return `${approvalNote(f)}${head}${chapterCoverage(f)}
       ${jump(fid, stage, [["sec-facts", "Facts"], ["sec-topics", "Topics"], ["sec-claims", "Claims"], ["sec-output", "LLM output"]])}
       ${j ? `
       <h2 id="sec-facts">Expected facts → retained quotations</h2>
-      <p class="sub">Do the quotations kept by extraction preserve each fact? Facts present only in the unretained document do <b>not</b> count.</p>
+      <p class="sub">Do retained quotations preserve each requirement in its receiving chapter? Global excerpts, other chapters and unretained source text cannot satisfy chapter-specific requirements.</p>
       ${toolbar("facts")}
       <div id="list-facts">${j.facts.map((v) => {
         const gf = golden[v.id] || {};
-        return `<div class="item ${v.verdict === "covered" ? "ok" : ""}">
-          <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gf.statement || v.id)}</div><span class="pill ${gf.required ? "req" : ""}">${gf.required ? "required" : "optional"}</span></div>
-          <div class="fid">${esc(v.id)}</div>
+        return `<div class="item ${v.verdict === "covered" ? "ok" : ""}" id="${esc(v.id)}">
+          <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gf.statement || v.id)}</div><span class="pill ${gf.required ? "req" : ""}">${gf.chapter_ref ? (gf.required ? "mandatory" : "desirable") : (gf.required ? "required" : "optional")}</span></div>
+          <div class="fid">${esc(v.id)}${gf.chapter_ref ? ` · ${esc(chapterTitle(f, gf.chapter_ref))}` : ""}</div>
           <div class="cols"><div><div class="colhead">Golden evidence in source</div>${(gf.evidence || []).map((e) => `<div class="quote gold">${esc(e.text)}</div>`).join("")}</div>
           <div><div class="colhead">What the LLM retained (cited by judge)</div>${quotes(f, stage, v.output_refs, "out", "Nothing retained")}</div></div>
           <div class="reason">${esc(v.reason)}</div></div>`;
@@ -1012,17 +1040,17 @@
       ${jump(fid, stage, [["sec-transfer", "Transfer"], ["sec-gaps", "Expected gaps"], ["sec-raised", "Raised gaps"], ["sec-facts", "Facts"], ["sec-chapters", "Chapters"], ["sec-claims", "Claims"], ["sec-output", "Generated application"]])}
       ${j ? `
       <h2 id="sec-transfer">Extraction → draft: where facts survive or are lost</h2>
-      <p class="sub">For each document fact linked to an extraction fact: did extraction keep it, and did the drafter carry it into an allowed chapter? <b>Recovered</b> means extraction missed it but the drafter used the full source text anyway.</p>
+      <p class="sub">For each receiving extraction chapter: did extraction keep the linked fact, and did the drafter carry it into an allowed draft chapter? Draft verdicts aggregate allowed chapters; they do not prove transfer to every receiving chapter. <b>Recovered</b> means the drafter used the full source text.</p>
       <div class="card" style="padding:0"><table>
         <thead><tr><th>Draft fact</th><th>1 · Extraction</th><th>2 · Draft</th><th>Outcome</th></tr></thead>
-        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_fact)}</div></td>
+        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))}` : ""}</div></td>
           <td>${r.extraction_verdict ? badge(r.extraction_verdict) : "–"}</td><td>${r.draft_verdict ? badge(r.draft_verdict) : "–"}</td><td>${badge(r.outcome)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No transfer data (extraction judgment unavailable).</td></tr>`}</tbody>
       </table></div>
 
       <h2 id="sec-gaps">Expected gaps → draft</h2>
       <p class="sub">Information the application needs that <b>no input</b> supplies. The draft must flag it, not fill it.</p>
       ${toolbar("gaps")}
-      <div id="list-gaps">${j.gaps.map((v) => `<div class="item ${v.verdict === "flagged" ? "ok" : ""}">
+      <div id="list-gaps">${j.gaps.map((v) => `<div class="item ${v.verdict === "flagged" ? "ok" : ""}" id="gap-${esc(v.id)}">
         <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gaps[v.id]?.statement || v.id)}</div><span class="pill ${gaps[v.id]?.required ? "req" : ""}">${gaps[v.id]?.required ? "required" : "optional"}</span></div>
         <div class="row" style="margin-top:6px"><span class="fid">${esc(v.id)}</span>${(gaps[v.id]?.chapters || []).map((c) => `<span class="pill">→ ${esc(chapterTitle(f, c))}</span>`).join("")}</div>
         <div style="margin-top:10px"><div class="colhead">${v.verdict === "fabricated" ? "Invented statement" : "Where the draft flags it"}</div>${quotes(f, stage, v.output_refs, "out", "Not flagged anywhere")}</div>
@@ -1046,7 +1074,7 @@
       ${toolbar("facts")}
       <div id="list-facts">${j.facts.map((v) => {
         const gf = golden[v.id] || {};
-        return `<div class="item ${v.verdict === "covered" ? "ok" : ""}">
+        return `<div class="item ${v.verdict === "covered" ? "ok" : ""}" id="${esc(v.id)}">
           <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gf.statement || v.id)}</div><span class="pill ${gf.required ? "req" : ""}">${gf.required ? "required" : "optional"}</span></div>
           <div class="row" style="margin-top:6px"><span class="fid">${esc(v.id)}</span><span class="pill">origin: ${esc((gf.origin || "").replace(/_/g, " "))}</span>${(gf.chapters?.length ? gf.chapters : ["any"]).map((c) => `<span class="pill">→ ${esc(c === "any" ? "any chapter" : chapterTitle(f, c))}</span>`).join("")}</div>
           <div style="margin-top:10px"><div class="colhead">Where the draft says it</div>${quotes(f, stage, v.output_refs, "out", "Not found in the draft")}</div>
@@ -1113,7 +1141,7 @@
       ${toolbar("defects")}
       <div id="list-defects">${j.defects.map((v) => {
         const d = defects[v.id] || {};
-        return `<div class="item ${v.verdict === "detected" ? "ok" : ""}">
+        return `<div class="item ${v.verdict === "detected" ? "ok" : ""}" id="${esc(v.id)}">
           <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(d.description || v.id)}</div><span class="pill">${esc((d.kind || "").replace(/_/g, " "))}</span></div>
           <div class="row" style="margin-top:6px"><span class="fid">${esc(v.id)}</span>${checks[v.id] ? (checks[v.id].category_and_chapters_match ? badge("pass", "Category & chapters match") : badge("unclear", "Category or chapters differ")) : ""}</div>
           ${(d.edits || []).map((e) => `<div class="diff"><div class="colhead">${esc(chapterTitle(f, e.chapter_ref))}</div><del>${esc(e.find)}</del><ins>${esc(e.replace) || "<i>(deleted)</i>"}</ins></div>`).join("")}
@@ -1348,15 +1376,27 @@
   const shortFixture = (fid) => fid.split("-")[0].replace(/^./, (c) => c.toUpperCase());
   const fmtTime = (s) => (s == null ? "–" : s < 60 ? `${Math.round(s)} s` : `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, "0")} s`);
   const fmtCost = (c) => (c == null ? "–" : `$${c.toFixed(2)}`);
-  // Totals over a run's recorded stages; null for runs saved before usage recording.
-  function usageTotals(usageByFixture) {
+  const costComplete = (items) => items.some((u) => u.cost_complete === false) ? false
+    : items.every((u) => u.cost_complete === true) ? true : null;
+  const costText = (u) => !u ? "–" : `${fmtCost(u.cost ?? u.cost_usd)} (${u.cost_complete === true ? "complete"
+    : u.cost_complete === false ? `partial${u.unpriced_requests ? `: ${u.unpriced_requests} unpriced requests` : ""}`
+    : "completeness not recorded"})`;
+  const conversionNote = (u) => u?.conversion_count
+    ? `<div class="muted small">PDF conversion: ${fmtTime(u.conversion_seconds)} · cost unavailable, excluded from total</div>` : "";
+  // Reported model charges exclude unpriced requests and PDF conversion charges.
+  function usageTotals(usageByFixture, conversions = []) {
     const stages = Object.values(usageByFixture).flatMap((u) => Object.values(u || {}));
-    if (!stages.length) return null;
+    if (!stages.length && !conversions.length) return null;
     const sum = (key) => stages.reduce((n, s) => n + (s[key] || 0), 0);
-    return { seconds: sum("seconds"), requests: sum("requests"), cost: sum("cost_usd") };
+    const conversionSeconds = conversions.reduce((n, c) => n + (c.elapsed_seconds || 0), 0);
+    return { seconds: sum("seconds") + conversionSeconds, requests: sum("requests"), cost: sum("cost_usd"),
+      cost_complete: conversions.length ? false : costComplete(stages), unpriced_requests: sum("unpriced_requests"),
+      conversion_count: conversions.length, conversion_seconds: conversionSeconds };
   }
-  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])));
-  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])));
+  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])),
+    Object.values(r.fixtures).map((f) => f.input_provenance?.conversion).filter(Boolean));
+  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])),
+    run.fixtures.map((f) => f.input_provenance?.conversion).filter(Boolean));
 
   function loadRun(id) {
     return new Promise((resolve, reject) => {
@@ -1404,7 +1444,7 @@
             <div class="muted small">${esc(r.generated_at ? new Date(r.generated_at).toLocaleString() : "")} · ${esc(r.code_version || "unknown commit")}</div></td>
           <td class="nowrap">${(() => {
             const u = indexTotals(r);
-            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${fmtCost(u.cost)} · ${u.requests} requests</div>` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
+            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${costText(u)} · ${u.requests} requests</div>${conversionNote(u)}` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
           })()}</td>
           ${fids.map((fid) => {
             const fx = r.fixtures[fid];
@@ -1442,7 +1482,7 @@
       ${choose("b", "Run B", bId)}</div>`;
     if (!aId || !bId || aId === bId) {
       return `<div class="eyebrow">Runs</div><h1>Compare runs</h1>${picker}
-        <p class="lede">${INDEX.length < 2 ? "Only one run is saved so far. Each new evaluator run is added here automatically." : "Pick two different runs above, or with A and B in the history below."}</p>${history}`;
+        <p class="lede">${INDEX.length < 2 ? "Only one run is saved so far. Each new evaluator run is added here automatically." : "Pick two different runs above, or with A and B in the history below."}</p>${reviewSummary()}${history}`;
     }
     let A, B;
     try {
@@ -1457,14 +1497,30 @@
         <div class="muted small">${esc(run.run.generated_at ? new Date(run.run.generated_at).toLocaleString() : "")}${run.run.snapshot === "rebuilt_with_current_fixtures" ? " · snapshot rebuilt with later fixtures" : ""}</div>
         <div class="small" style="margin-top:6px">${(() => {
           const u = runTotals(run);
-          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${fmtCost(u.cost)}</b> · ${u.requests} model requests` : `<span class="muted">Time and cost not recorded for this run</span>`;
+          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${costText(u)}</b> · ${u.requests} model requests${conversionNote(u)}` : `<span class="muted">Time and cost not recorded for this run</span>`;
         })()}</div>
         <a class="small" href="?run=${enc(run.run.id)}#/">Open this run →</a></div>`).join("")}</div>
+      ${reviewSummary()}
       ${provenanceDiff(A, B)}
       ${stageDiff(A, B)}
       ${usageDiff(A, B)}
       ${verdictDiff(A, B)}
       ${history}`;
+  }
+
+  function reviewSummary() {
+    if (!REVIEW) return "";
+    const evidence = (id, row) => id ? `<a href="?run=${enc(id)}#/f/${enc(row.fixture_id)}/${enc(row.stage)}">${esc(id)}</a>` : "unavailable";
+    return `<h2>Approved baseline review</h2><div class="callout"><b>${esc(REVIEW.baseline?.status || "unavailable")}</b>: ${esc(REVIEW.baseline?.reason || "Pinned approved baseline")}
+      <p>Quality regression: ${esc(REVIEW.quality_regression)} · quality failures: ${esc(REVIEW.quality_failures)} · evaluation unavailable: ${esc(REVIEW.evaluation_unavailable)}</p>
+      <a href="comparison.md">Download review summary</a> · <a href="comparison.json">Comparison data</a></div>
+      ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.new_failures.length} new failures · ${row.evaluation_errors.length} unavailable</summary>
+        <p>Baseline: ${evidence(REVIEW.baseline_run_id, row)} · Candidate: ${evidence(REVIEW.candidate_run_id, row)}</p>
+        ${["new_failures", "resolved_failures", "quality_failures", "evaluation_errors"].map((key) => row[key].length ? `<h4>${esc(key.replace(/_/g, " "))}</h4><ul>${row[key].map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : "").join("")}
+        <h4>Chapter and mandatory evidence</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.details, null, 2))}</pre>
+        <h4>Metrics</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.metrics, null, 2))}</pre>
+        <h4>Usage and cost completeness</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify({ baseline: row.baseline_usage, candidate: row.candidate_usage }, null, 2))}</pre>
+      </details>`).join("")}`;
   }
 
   function provenanceDiff(A, B) {
@@ -1481,8 +1537,9 @@
     for (const fid of new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))) {
       const a = fx(A, fid), b = fx(B, fid);
       add(`Source · ${shortFixture(fid)}`, a ? short(a.golden.source.sha256, 12) : null, b ? short(b.golden.source.sha256, 12) : null);
-      const digest = (f) => (f ? String(JSON.stringify([f.golden.extraction, f.golden.chapter_writing, f.golden.verification, f.golden.editing]).length) + " chars" : null);
-      add(`Golden expectations · ${shortFixture(fid)}`, digest(a), digest(b));
+      const digest = (f) => (f ? JSON.stringify([f.golden.extraction, f.golden.chapter_writing, f.golden.verification, f.golden.editing]) : null);
+      const same = digest(a) === digest(b);
+      add(`Golden expectations · ${shortFixture(fid)}`, a ? "baseline content" : null, b ? (same ? "baseline content" : "changed content (comparison may be incompatible)") : null);
     }
     return `<h2>What changed between the runs</h2>
       <p class="sub">A changed model, prompt, source or expectation explains a changed result; if nothing here changed, the difference is run-to-run variance.</p>
@@ -1517,34 +1574,47 @@
       const cls = Math.abs(ratio) < 0.05 ? "muted" : (ratio < 0) === lowerIsBetter ? "up" : "down";
       return `${fmt(a)} → ${fmt(b)} <span class="${cls}">${ratio > 0 ? "+" : ""}${Math.round(ratio * 100)}%</span>`;
     };
+    const costChange = (a, b) => a?.cost_complete === true && b?.cost_complete === true
+      ? `${change(a.cost ?? a.cost_usd, b.cost ?? b.cost_usd, fmtCost)} (complete)`
+      : `${costText(a)} → ${costText(b)}<div class="muted small">Cost comparison unavailable</div>`;
     const rows = fids.flatMap((fid) => STAGE_KEYS.map((s) => {
       const a = usage(A, fid, s), b = usage(B, fid, s);
       if (!a && !b) return "";
       return `<tr><td>${esc(shortFixture(fid))} · ${STAGES[s].n} ${esc(STAGES[s].label)}</td>
         <td class="nowrap">${change(a?.seconds, b?.seconds, fmtTime)}</td>
-        <td class="nowrap">${change(a?.cost_usd, b?.cost_usd, fmtCost)}</td>
+        <td class="nowrap">${costChange(a, b)}</td>
         <td class="nowrap">${a?.requests ?? "–"} → ${b?.requests ?? "–"}</td></tr>`;
     }));
+    for (const fid of fids) {
+      const conversion = (run) => run.fixtures.find((f) => f.golden.fixture_id === fid)?.input_provenance?.conversion;
+      const a = conversion(A), b = conversion(B);
+      if (a || b) rows.push(`<tr><td>${esc(shortFixture(fid))} · PDF conversion</td>
+        <td>${change(a?.elapsed_seconds, b?.elapsed_seconds, fmtTime)}</td>
+        <td>Cost unavailable · excluded from total</td><td>–</td></tr>`);
+    }
     const ta = runTotals(A), tb = runTotals(B);
     const agents = {};
     for (const [tag, run] of [["a", A], ["b", B]])
       for (const f of run.fixtures)
         for (const st of Object.values(f.usage || {}))
           for (const [name, u] of Object.entries(st.agents || {})) {
-            const row = (agents[name] ||= { a: 0, b: 0, ra: 0, rb: 0 });
-            row[tag] += u.cost_usd || 0;
-            row["r" + tag] += u.requests || 0;
+            const row = (agents[name] ||= {});
+            const total = (row[tag] ||= { cost_usd: 0, requests: 0, cost_complete: true, unpriced_requests: 0 });
+            total.cost_usd += u.cost_usd || 0;
+            total.requests += u.requests || 0;
+            total.cost_complete = costComplete([total, u]);
+            total.unpriced_requests += u.unpriced_requests || 0;
           }
-    const agentRows = Object.entries(agents).sort((x, y) => y[1].b - x[1].b).map(([name, u]) =>
-      `<tr><td class="mono small">${esc(name)}</td><td class="nowrap">${ta ? `${fmtCost(u.a)} · ${u.ra}` : "–"}</td><td class="nowrap">${fmtCost(u.b)} · ${u.rb}</td>
-        <td>${tb?.cost ? `${Math.round((u.b / tb.cost) * 100)}%` : "–"}</td></tr>`).join("");
+    const agentRows = Object.entries(agents).sort((x, y) => (y[1].b?.cost_usd || 0) - (x[1].b?.cost_usd || 0)).map(([name, u]) =>
+      `<tr><td class="mono small">${esc(name)}</td><td class="nowrap">${costText(u.a)} · ${u.a?.requests ?? "–"}</td><td class="nowrap">${costText(u.b)} · ${u.b?.requests ?? "–"}</td>
+        <td>${tb?.cost && tb.cost_complete === true && u.b?.cost_complete === true ? `${Math.round((u.b.cost_usd / tb.cost) * 100)}%` : "–"}</td></tr>`).join("");
     return `<h2>Time and cost, A → B</h2>
-      <p class="sub">Wall time of each stage and the cost OpenRouter reported for its model requests (the provider's charge for bring-your-own-key requests). Stage times overlap when documents run in parallel.</p>
+      <p class="sub">Wall time and reported model cost. Cost comparisons require complete prices in both runs; older runs with no completeness record are unknown. PDF conversion cost is unavailable and excluded. Stage times overlap when documents run in parallel.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table>
-        <thead><tr><th>Document · stage</th><th>Time</th><th>Cost</th><th>Requests</th></tr></thead>
+        <thead><tr><th>Document · stage</th><th>Time</th><th>Reported cost · coverage</th><th>Requests</th></tr></thead>
         <tbody>${rows.join("")}
           <tr><td><b>Run total</b></td><td class="nowrap"><b>${change(A.run.wall_seconds ?? ta?.seconds, B.run.wall_seconds ?? tb?.seconds, fmtTime)}</b> <span class="muted small">wall</span></td>
-          <td class="nowrap"><b>${change(ta?.cost, tb?.cost, fmtCost)}</b></td><td>${ta?.requests ?? "–"} → ${tb?.requests ?? "–"}</td></tr></tbody></table></div>
+          <td class="nowrap">${costChange(ta, tb)}</td><td>${ta?.requests ?? "–"} → ${tb?.requests ?? "–"}</td></tr></tbody></table></div>
       ${agentRows ? `<h3 style="margin-top:18px">Where the money goes</h3>
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Agent (configured prompt)</th><th>Run A · requests</th><th>Run B · requests</th><th>Share of B</th></tr></thead>
@@ -1560,15 +1630,23 @@
       const changes = [];
       const compare = (stage, kind, listOf, nameOf) => {
         const ja = judgmentOf(a, stage), jb = judgmentOf(b, stage);
-        if (!ja || !jb) return;
+        if (!a.golden[stage] && !b.golden[stage]) return;
+        if (!ja || !jb || a.stages[stage]?.report?.evaluation_errors?.length || b.stages[stage]?.report?.evaluation_errors?.length) {
+          changes.push(`<tr><td>${esc(stage)}</td><td>Unavailable judgment</td><td><a href="?run=${enc(A.run.id)}#/f/${enc(fid)}/${stage}">${badge(stageStatus(a.stages[stage]))}</a></td><td><a href="?run=${enc(B.run.id)}#/f/${enc(fid)}/${stage}">${badge(stageStatus(b.stages[stage]))}</a></td></tr>`);
+          return;
+        }
         const va = Object.fromEntries(listOf(ja).map((x) => [x.id, x.verdict]));
         const vb = Object.fromEntries(listOf(jb).map((x) => [x.id, x.verdict]));
         for (const id of new Set([...Object.keys(va), ...Object.keys(vb)])) {
-          if (va[id] !== vb[id]) changes.push(`<tr><td>${STAGES[stage].n} · ${esc(kind)}</td><td>${esc(nameOf(id))}<div class="fid">${esc(id)}</div></td><td>${va[id] ? badge(va[id]) : "–"}</td><td>${vb[id] ? badge(vb[id]) : "–"}</td></tr>`);
+          const target = kind === "expected gap" ? `gap-${id}` : id;
+          if (va[id] !== vb[id]) changes.push(`<tr><td>${STAGES[stage].n} · ${esc(kind)}</td><td>${esc(nameOf(id))}<div class="fid">${esc(id)}</div></td><td><a href="?run=${enc(A.run.id)}#/f/${enc(fid)}/${stage}/${enc(target)}">${va[id] ? badge(va[id]) : "–"}</a></td><td><a href="?run=${enc(B.run.id)}#/f/${enc(fid)}/${stage}/${enc(target)}">${vb[id] ? badge(vb[id]) : "–"}</a></td></tr>`);
         }
       };
       const statement = (list, id) => list?.find((x) => x.id === id)?.statement || id;
-      compare("extraction", "fact", (j) => j.facts, (id) => statement(b.golden.extraction.facts, id));
+      compare("extraction", "fact", (j) => j.facts, (id) => {
+        const fact = extractionFacts(b).find((x) => x.id === id) || extractionFacts(a).find((x) => x.id === id);
+        return fact ? `${fact.statement}${fact.chapter_ref ? ` · ${chapterTitle(b, fact.chapter_ref)}` : ""}` : id;
+      });
       compare("chapter_writing", "fact", (j) => j.facts, (id) => statement(b.golden.chapter_writing?.facts, id));
       compare("chapter_writing", "expected gap", (j) => j.gaps || [], (id) => statement(b.golden.chapter_writing?.gaps, id));
       compare("verification", "seeded defect", (j) => j.defects, (id) => b.golden.verification?.defects.find((d) => d.id === id)?.description || id);
@@ -1581,12 +1659,12 @@
       const ca = caseVerdicts(a), cb = caseVerdicts(b);
       if (ca && cb)
         for (const id of new Set([...Object.keys(ca), ...Object.keys(cb)]))
-          if (ca[id] !== cb[id]) changes.push(`<tr><td>4 · edit case</td><td>${esc(b.golden.editing?.cases.find((c) => c.id === id)?.instruction || id)}<div class="fid">${esc(id)}</div></td><td>${ca[id] ? badge(ca[id]) : "–"}</td><td>${cb[id] ? badge(cb[id]) : "–"}</td></tr>`);
+          if (ca[id] !== cb[id]) changes.push(`<tr><td>4 · edit case</td><td>${esc(b.golden.editing?.cases.find((c) => c.id === id)?.instruction || id)}<div class="fid">${esc(id)}</div></td><td><a href="?run=${enc(A.run.id)}#/f/${enc(fid)}/editing/${enc(`case-${id}`)}">${ca[id] ? badge(ca[id]) : "–"}</a></td><td><a href="?run=${enc(B.run.id)}#/f/${enc(fid)}/editing/${enc(`case-${id}`)}">${cb[id] ? badge(cb[id]) : "–"}</a></td></tr>`);
       sections.push(`<h3 style="margin:22px 0 10px">${esc(cityOf(b))} <span class="muted small">(${changes.length} changed verdict${changes.length === 1 ? "" : "s"})</span></h3>
         ${changes.length ? `<div class="card" style="padding:0"><table><thead><tr><th>Stage · item</th><th>Expectation</th><th>Run A</th><th>Run B</th></tr></thead><tbody>${changes.join("")}</tbody></table></div>` : `<div class="empty">Every comparable verdict is the same in both runs.</div>`}`);
     }
     return `<h2>Verdicts that changed</h2>
-      <p class="sub">Item-by-item differences for expectations judged in both runs. Stages without a valid judgment in either run are skipped.</p>${sections.join("")}`;
+      <p class="sub">Item-by-item differences for expectations judged in both runs. Unavailable or invalid judgments are shown explicitly and cannot resolve earlier failures.</p>${sections.join("")}`;
   }
 
   // ---------- routing ----------
@@ -1692,11 +1770,11 @@
   window.addEventListener("hashchange", render);
   if (!CURRENT) {
     app.innerHTML = `<h1>No runs yet</h1><p class="lede">Run the evaluator; each run is saved in <code>runs/</code> next to this page and appears here automatically.</p>
-      <pre class="card">cd climate-advisor\nuv run python -m benchmark.scripts.evaluate --label my-first-run</pre>`;
+      <pre class="card">cd climate-advisor\nuv run python -m benchmark.cnb.scripts.evaluate --label my-first-run</pre>`;
   } else {
     runPicker();
     loadRun(CURRENT)
       .then((payload) => { D = payload; render(); })
-      .catch(() => { app.innerHTML = `<h1>Run not found</h1><p class="lede">Could not load <code>runs/${esc(CURRENT)}/viewer.js</code>. Republish with <code>uv run python -m benchmark.scripts.publish</code>.</p>`; });
+      .catch(() => { app.innerHTML = `<h1>Run not found</h1><p class="lede">Could not load <code>runs/${esc(CURRENT)}/viewer.js</code>. Republish with <code>uv run python -m benchmark.cnb.scripts.publish</code>.</p>`; });
   }
 })();

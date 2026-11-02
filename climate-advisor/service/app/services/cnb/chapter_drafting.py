@@ -11,7 +11,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -864,7 +864,11 @@ async def generate_chapter_draft(
             tools=[],
         )
         try:
-            result = await runner.run(agent, _chapter_input_messages(payload))
+            result = await runner.run(
+                agent,
+                _chapter_input_messages(payload),
+                run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+            )
             return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
         finally:
             await client.close()

@@ -267,21 +267,15 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
 
 
 def marker_parity_problems(body: str, gaps: Sequence[object]) -> list[str]:
-    """Mirror production's one-to-one marker/gap rule (workspace persistence).
+    """Mirror production's marker/gap rule (``_require_marker_parity``).
 
-    Production rejects a generated chapter whose ``[Information needed: ...]``
-    markers and structured gap questions do not match exactly once each.
+    Production compares the sets of normalized ``[Information needed: ...]``
+    markers and structured gap questions, so a repeated marker is accepted.
     """
-    markers = Counter(information_marker_key(marker) for marker in information_needed_markers(body))
-    questions = Counter(information_marker_key(gap.question) for gap in gaps)
-    problems = [
-        f"marker without structured gap: {key}"
-        for key in sorted((markers - questions).elements())
-    ]
-    problems += [
-        f"structured gap without marker: {key}"
-        for key in sorted((questions - markers).elements())
-    ]
+    markers = {information_marker_key(marker) for marker in information_needed_markers(body)}
+    questions = {information_marker_key(gap.question) for gap in gaps}
+    problems = [f"marker without structured gap: {key}" for key in sorted(markers - questions)]
+    problems += [f"structured gap without marker: {key}" for key in sorted(questions - markers)]
     return problems
 
 

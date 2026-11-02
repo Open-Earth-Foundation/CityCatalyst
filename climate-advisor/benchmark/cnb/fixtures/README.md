@@ -218,8 +218,8 @@ existing run is never overwritten. There is no `--repeats` flag; run again to
 measure variance and compare the runs in the viewer. A full run makes one
 extraction, one draft per chapter, two or more validator passes per chapter, up
 to four edit plans with review per fixture, and four judge calls per fixture. The
-advisory live workflow runs the fixed-Markdown and PDF paths serially on relevant
-pull requests and manual dispatch. Missing credentials are reported as unavailable.
+advisory live workflow runs the fixed-Markdown and PDF paths as parallel jobs on
+manual dispatch. Missing credentials are reported as unavailable.
 See [delivery and approval](../DELIVERY.md) for setup and baseline review.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor

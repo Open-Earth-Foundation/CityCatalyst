@@ -66,6 +66,11 @@ class SelectedSource(ContextBundleContract):
     chapter_evidence_fingerprint: str | None = Field(
         default=None, pattern=r"^[0-9a-f]{64}$"
     )
+    # Fingerprint whose extraction last failed; opening the workspace does not
+    # retry it, an explicit rebuild does.
+    chapter_evidence_failed_fingerprint: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
     structured_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     structured_schema_version: str | None = None
     visual_context: list[UnverifiedVisualAnnotationEnvelope] = Field(

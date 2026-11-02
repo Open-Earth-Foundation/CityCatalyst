@@ -8,7 +8,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any, Literal, cast
 from uuid import UUID
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
@@ -489,6 +489,7 @@ class ConceptNoteChapterValidationService:
         result = await self._runner.run(
             agent,
             json.dumps(payload, ensure_ascii=False),
+            run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
         )
         return cast(
             ValidationPassOutput,

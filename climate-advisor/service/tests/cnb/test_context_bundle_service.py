@@ -1002,8 +1002,11 @@ async def test_failed_chapter_quotations_keep_the_bundle(monkeypatch) -> None:
 
     sources = complete_build.await_args.kwargs["selected_sources"]
     assert extract.await_count == 2
-    # No fingerprint is stored, so the next build retries the extraction.
+    # No fingerprint is stored, so the next build retries the extraction;
+    # the failed one is recorded so opening the workspace does not.
+    current = chapter_evidence_fingerprint(get_settings(), template_chapter_requirements(TEMPLATE))
     assert all(s.chapter_evidence_fingerprint is None and not s.chapter_excerpts for s in sources)
+    assert all(s.chapter_evidence_failed_fingerprint == current for s in sources)
 
 
 @pytest.mark.asyncio
@@ -1126,6 +1129,17 @@ async def test_refresh_rebuilds_when_quotations_predate_the_template(monkeypatch
     assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "current"
     sources.return_value = [stored.model_copy(update={"chapter_evidence_fingerprint": None})]
     assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "queued"
+    queue.assert_awaited_once()
+    # A failed extraction for the current template does not rebuild on every open.
+    sources.return_value = [
+        stored.model_copy(
+            update={
+                "chapter_evidence_fingerprint": None,
+                "chapter_evidence_failed_fingerprint": current,
+            }
+        )
+    ]
+    assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "current"
     queue.assert_awaited_once()
 
 

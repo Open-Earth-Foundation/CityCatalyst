@@ -602,7 +602,8 @@ class ContextBundleService:
         """Extract per-chapter quotations for sources built for another template.
 
         A failed extraction keeps the source's previous quotations and
-        fingerprint, so the next build retries it.
+        fingerprint and records the failed fingerprint, so the next explicit
+        build retries it but opening the workspace does not.
         """
         chapters = template_chapter_requirements(template)
         fingerprint = chapter_evidence_fingerprint(settings, chapters)
@@ -625,11 +626,14 @@ class ContextBundleService:
                     source.upload_id,
                     exc.code,
                 )
-                return source
+                return source.model_copy(
+                    update={"chapter_evidence_failed_fingerprint": fingerprint}
+                )
             return source.model_copy(
                 update={
                     "chapter_excerpts": excerpts,
                     "chapter_evidence_fingerprint": fingerprint,
+                    "chapter_evidence_failed_fingerprint": None,
                 }
             )
 
@@ -646,7 +650,13 @@ class ContextBundleService:
         fingerprint = chapter_evidence_fingerprint(
             get_settings(), template_chapter_requirements(template)
         )
-        return any(source.chapter_evidence_fingerprint != fingerprint for source in sources)
+        # A failed extraction is not retried on open, so a provider outage
+        # cannot turn every visit into a blocking, paid rebuild.
+        return any(
+            fingerprint
+            not in (source.chapter_evidence_fingerprint, source.chapter_evidence_failed_fingerprint)
+            for source in sources
+        )
 
     async def _verified_visual_context(
         self,

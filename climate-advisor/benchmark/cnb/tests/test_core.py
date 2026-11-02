@@ -145,6 +145,9 @@ def test_marker_parity_mirrors_production_normalization():
     assert marker_parity_problems("[Information needed: Orphan.]", []) == [
         "marker without structured gap: orphan"
     ]
+    # Production compares sets, so a repeated marker with one gap is accepted.
+    repeated = "[Information needed: Confirm the submission date.] " * 2
+    assert marker_parity_problems(repeated, [gap]) == []
 
 
 @pytest.fixture

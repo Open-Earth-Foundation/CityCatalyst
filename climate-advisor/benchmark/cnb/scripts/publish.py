@@ -15,7 +15,8 @@ Outputs (no model calls, no network, no database):
 - With --candidate, recompute comparison.json/.md against the selected approved
   baseline, update delivery.json, and package review-bundle.zip. The saved report
   remains unchanged; only --rebuild replaces an existing viewer snapshot.
-- Exit 3 if bundle publication fails; delivery.json records the failure.
+- Exit 2 for invalid arguments, including an unknown --candidate run; exit 3 if
+  bundle publication fails; delivery.json records the failure.
 
 Usage (from climate-advisor/):
 - uv run python -m benchmark.cnb.scripts.publish [--results-dir benchmark/cnb/results]
@@ -81,6 +82,8 @@ def main(argv: list[str] | None = None) -> int:
         if not RUN_ID_PATTERN.fullmatch(args.candidate):
             parser.error("Invalid candidate run ID")
         candidate = args.results_dir / "runs" / args.candidate
+        if not (candidate / "delivery.json").is_file():
+            parser.error(f"Unknown candidate run: {args.candidate}")
         delivery = json.loads((candidate / "delivery.json").read_text(encoding="utf-8"))
         baseline, selection = load_approved_baseline(
             args.baseline_manifest,

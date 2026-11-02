@@ -117,3 +117,9 @@ def test_republish_retains_failed_publication_status(review_runs, monkeypatch):
     summary = (candidate / "comparison.md").read_text(encoding="utf-8")
     assert "Publication: **failed**" in summary
     assert "private filesystem detail" not in summary
+
+def test_unknown_candidate_is_a_usage_error(tmp_path, capsys):
+    with pytest.raises(SystemExit) as exit_info:
+        publish.main(["--results-dir", str(tmp_path), "--candidate", "missing-run"])
+    assert exit_info.value.code == 2
+    assert "Unknown candidate run: missing-run" in capsys.readouterr().err

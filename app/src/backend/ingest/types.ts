@@ -57,6 +57,10 @@ export const INGEST_ERROR_CODES = [
   "no_files",
   "stale_review_draft",
   "review_locked",
+  "document_not_found",
+  "document_withdrawn",
+  "document_superseded",
+  "document_unavailable",
 ] as const;
 export type IngestErrorCode = (typeof INGEST_ERROR_CODES)[number];
 
@@ -156,8 +160,19 @@ export class IngestItemError extends Error {
   }
 }
 
-export function ingestItemErrorStatus(error: IngestItemError): 400 | 409 {
-  if (error.code === "stale_review_draft" || error.code === "review_locked") {
+export function ingestItemErrorStatus(
+  error: IngestItemError,
+): 400 | 404 | 409 {
+  if (error.code === "document_not_found") {
+    return 404;
+  }
+  if (
+    error.code === "stale_review_draft" ||
+    error.code === "review_locked" ||
+    error.code === "document_withdrawn" ||
+    error.code === "document_superseded" ||
+    error.code === "document_unavailable"
+  ) {
     return 409;
   }
   return 400;

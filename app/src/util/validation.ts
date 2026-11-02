@@ -506,6 +506,14 @@ export const patchIngestReviewDraftRequest = z.object({
   payload: z.unknown(),
 });
 
+export const ingestFromDocumentRequest = z.object({
+  inventoryId: z.string().uuid().optional(),
+  cityId: z.string().uuid().optional(),
+  projectId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional(),
+  dryRun: z.boolean().optional(),
+});
+
 export const approveIngestReviewDraftRequest = z.object({
   reviewDraftVersion: z.number().int().positive(),
   targetBinding: z

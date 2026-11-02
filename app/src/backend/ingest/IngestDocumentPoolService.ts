@@ -3,26 +3,31 @@ import { db } from "@/models";
 import { registerNativeInput } from "@/backend/NativeInputCatalogService";
 import {
   buildIngestDocumentPathBInput,
+  buildIngestExtractPathAInput,
   initialMarkdownReady,
   type IngestDocumentPool,
   type IngestDocumentRecord,
+  type PublishIngestExtractInput,
   type StoreIngestDocumentInput,
 } from "./document-pool";
 
-function toRecord(row: {
-  id: string;
-  contentHash: string;
-  originalFileName: string;
-  cityId?: string | null;
-  projectId?: string | null;
-  organizationId?: string | null;
-  uploadedByUserId?: string | null;
-  visibility: IngestDocumentRecord["visibility"];
-  markdownReady: boolean;
-  catalogId?: string | null;
-  s3Key?: string | null;
-  data?: Buffer | Uint8Array | null;
-}): IngestDocumentRecord {
+function toRecord(
+  row: {
+    id: string;
+    contentHash: string;
+    originalFileName: string;
+    cityId?: string | null;
+    projectId?: string | null;
+    organizationId?: string | null;
+    uploadedByUserId?: string | null;
+    visibility: IngestDocumentRecord["visibility"];
+    markdownReady: boolean;
+    catalogId?: string | null;
+    s3Key?: string | null;
+    data?: Buffer | Uint8Array | null;
+  },
+  availability: IngestDocumentRecord["availability"] = "active",
+): IngestDocumentRecord {
   return {
     id: row.id,
     contentHash: row.contentHash,
@@ -36,6 +41,7 @@ function toRecord(row: {
     catalogId: row.catalogId,
     s3Key: row.s3Key ?? null,
     buffer: row.data ? Buffer.from(row.data) : null,
+    availability,
   };
 }
 
@@ -79,7 +85,13 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
 
   async get(documentId: string): Promise<IngestDocumentRecord | null> {
     const row = await db.models.IngestDocument.findByPk(documentId);
-    return row ? toRecord(row) : null;
+    if (!row) return null;
+    let availability: IngestDocumentRecord["availability"] = "active";
+    if (row.catalogId) {
+      const catalog = await db.models.NativeInputCatalog.findByPk(row.catalogId);
+      availability = catalog?.availability ?? "active";
+    }
+    return toRecord(row, availability);
   }
 
   async publishPathB(document: IngestDocumentRecord): Promise<{
@@ -109,5 +121,15 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       }
     }
     return toRecord(row);
+  }
+
+  async publishPathA(
+    document: IngestDocumentRecord,
+    input: PublishIngestExtractInput,
+  ): Promise<{ catalogId: string; created: boolean }> {
+    const registered = await registerNativeInput(
+      buildIngestExtractPathAInput(document, input),
+    );
+    return { catalogId: registered.catalog.id, created: registered.created };
   }
 }

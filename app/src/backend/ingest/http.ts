@@ -1,8 +1,16 @@
 import createHttpError from "http-errors";
 import type { AppSession } from "@/lib/auth";
 import { assertCanAccessIngestItem } from "./access";
+import { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 import { IngestRunner } from "./IngestRunner";
 import { SequelizeIngestStore } from "./IngestStoreService";
+
+export function createIngestRunner(): IngestRunner {
+  return new IngestRunner(
+    new SequelizeIngestStore(),
+    new SequelizeIngestDocumentPool(),
+  );
+}
 
 export async function loadIngestReviewContext(
   itemId: string,
@@ -18,5 +26,5 @@ export async function loadIngestReviewContext(
     throw new createHttpError.NotFound("Ingest job not found");
   }
   await assertCanAccessIngestItem(session, job, item);
-  return { store, item, job, runner: new IngestRunner(store) };
+  return { store, item, job, runner: createIngestRunner() };
 }

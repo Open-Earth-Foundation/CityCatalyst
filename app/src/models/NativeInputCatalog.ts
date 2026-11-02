@@ -10,6 +10,7 @@ export const NATIVE_INPUT_CATALOG_KINDS = [
   "hiap_action_plan",
   "cnb_upload",
   "ingest_document",
+  "ingest_extract",
   "hiap_meed_artifact",
   "hiap_meed_ranking",
   "hiap_meed_output_plan",
@@ -21,6 +22,8 @@ export const NATIVE_INPUT_CATALOG_OWNING_MODULES = [
   "hiap_meed",
   "cnb",
   "ingest",
+  "ccra",
+  "test",
 ] as const;
 
 export const NATIVE_INPUT_CATALOG_SOURCE_TYPES = [
@@ -33,6 +36,7 @@ export const NATIVE_INPUT_CATALOG_SOURCE_TYPES = [
   "action_plan",
   "cnb_upload",
   "ingest_document",
+  "ingest_extract",
   "hiap_meed_artifact",
   "hiap_meed_ranking",
   "hiap_meed_output_plan",

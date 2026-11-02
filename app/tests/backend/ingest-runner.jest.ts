@@ -119,6 +119,27 @@ describe("IngestRunner", () => {
     },
   );
 
+  it("merges match and validate warnings instead of replacing", async () => {
+    const { store, runner: ingest } = runner();
+    class WarningPlugin extends TestIngestPlugin {
+      match() {
+        return { warnings: ["year_mismatch"] };
+      }
+      async validate() {
+        return { warnings: ["import_warning", "year_mismatch"] };
+      }
+    }
+    const job = await ingest.enqueue({
+      moduleId: "test",
+      scope: { cityId: CITY_ID },
+      files: [{ name: "notes.csv", buffer: Buffer.from("hello city\n") }],
+    });
+    await ingest.run(job.id, new WarningPlugin());
+    const [item] = await store.listItems(job.id);
+
+    expect(item?.warnings).toEqual(["year_mismatch", "import_warning"]);
+  });
+
   it("rejects enqueue without a city/org/project scope", async () => {
     const { runner: ingest } = runner();
     await expect(

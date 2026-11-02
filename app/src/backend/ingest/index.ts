@@ -21,7 +21,12 @@ export type {
 } from "./document-pool";
 export { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";
-export type { IngestPlugin } from "./plugin";
+export { GhgiIngestPlugin } from "./plugins/GhgiIngestPlugin";
+export type {
+  GhgiAdaptedPayload,
+  GhgiIngestPluginDeps,
+} from "./plugins/GhgiIngestPlugin";
+export type { IngestMatchResult, IngestPlugin } from "./plugin";
 export type { IngestStore } from "./store";
 export {
   INGEST_ERROR_CODES,

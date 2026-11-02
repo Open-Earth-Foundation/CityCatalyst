@@ -187,12 +187,26 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
-// "outside" must directly follow the verb: "generated in the city, shipped outside
-// and treated in a regional plant" is III.x.2, and a false match leaves the total.
-const GENERATED_OUTSIDE_TREATED_INSIDE =
-  /\b(generated|produced|originating)\s+(from\s+)?outside\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\b(within|inside|in\s+(the\s+)?(city|municipality|town))\b|\bimported waste/i;
-const GENERATED_INSIDE_TREATED_OUTSIDE =
-  /\b(generated|produced|originating)\s+(within|inside|in)\b.*\b(treated|disposed|processed|incinerated|landfilled)\b.*\boutside\b|\bexported waste/i;
+// A direction counts only when the whole label is one positive statement, like
+// the catalogue names. Excluding wording, a second clause or a place that is not
+// the city leaves no match, so an ambiguous row keeps the reference it was given.
+const WASTE_SUBJECT =
+  "(emissions\\s+from\\s+)?((solid|municipal)\\s+)?(waste|wastewater)";
+const GENERATED = "(generated|produced|originating)";
+const TREATED = "(treated|disposed|processed|incinerated|landfilled)";
+const CITY = "(the\\s+)?(city|municipality|town)(\\s+(boundary|limits?))?";
+const NEGATED =
+  "(?!.*\\b(not|no|non|excl\\w*|except\\w*|without|other\\s+than|apart\\s+from|besides)\\b)";
+const SAME_CLAUSE = "[^,;:()]*";
+
+const GENERATED_OUTSIDE_TREATED_INSIDE = new RegExp(
+  `^${NEGATED}(${WASTE_SUBJECT}\\s+${GENERATED}\\s+(from\\s+)?outside\\b${SAME_CLAUSE}\\b${TREATED}\\b${SAME_CLAUSE}\\b(within|inside|in)\\s+${CITY}|imported\\s+(waste|wastewater))\\.?$`,
+  "i",
+);
+const GENERATED_INSIDE_TREATED_OUTSIDE = new RegExp(
+  `^${NEGATED}(${WASTE_SUBJECT}\\s+${GENERATED}\\s+(within|inside|in)\\s+${CITY}${SAME_CLAUSE}\\b${TREATED}\\b${SAME_CLAUSE}\\boutside(\\s+(of\\s+)?${CITY})?|exported\\s+(waste|wastewater))\\.?$`,
+  "i",
+);
 
 /**
  * Corrects a waste reference when a row's label states the direction. III.x.2 is
@@ -213,8 +227,9 @@ export function correctWasteDirection(
   if (!match) return gpcRefNo;
   for (const label of labels) {
     if (!label) continue;
-    if (GENERATED_INSIDE_TREATED_OUTSIDE.test(label)) return `${match[1]}.2`;
-    if (GENERATED_OUTSIDE_TREATED_INSIDE.test(label)) return `${match[1]}.3`;
+    const text = label.trim();
+    if (GENERATED_INSIDE_TREATED_OUTSIDE.test(text)) return `${match[1]}.2`;
+    if (GENERATED_OUTSIDE_TREATED_INSIDE.test(text)) return `${match[1]}.3`;
   }
   if (match[2] === "3" && scopeFromLabel(scopeLabel) === 3) {
     return `${match[1]}.2`;

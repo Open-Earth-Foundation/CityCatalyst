@@ -64,6 +64,74 @@ describe("correctWasteDirection", () => {
     expect(correctWasteDirection(ref, [label])).toBe(ref);
   });
 
+  it.each([
+    [
+      "III.1.2",
+      "Waste generated in the city and sent to a regional landfill, excluding imported waste",
+    ],
+    [
+      "III.1.2",
+      "Waste generated in the city; waste generated outside the city and treated in the city is excluded",
+    ],
+    ["III.1.2", "Non-imported waste landfilled outside the city"],
+    ["III.1.1", "Solid waste disposal (excl. imported waste)"],
+    [
+      "III.1.1",
+      "Landfill, excluding waste generated outside the city and treated within the city",
+    ],
+    [
+      "III.3.2",
+      "Municipal waste incinerated elsewhere, imported waste not included",
+    ],
+    ["III.1.1", "Landfill except imported waste"],
+    ["III.1.1", "Landfill without imported waste"],
+    ["III.1.1", "Landfill not including imported waste"],
+    ["III.1.1", "No imported waste"],
+    ["III.1.2", "Waste other than imported waste"],
+    [
+      "III.1.2",
+      "Waste generated outside the city and treated within the city is excluded",
+    ],
+    [
+      "III.1.2",
+      "Waste generated outside the city and not treated within the city",
+    ],
+    [
+      "III.1.2",
+      "Waste generated outside the city and treated within the city, not included",
+    ],
+    [
+      "III.1.2",
+      "Except waste generated outside the city and treated in the city",
+    ],
+    [
+      "III.1.2",
+      "Waste generated outside the city except that treated within the city",
+    ],
+  ])("keeps %s on exclusion wording: %s", (ref, label) => {
+    expect(correctWasteDirection(ref, [label])).toBe(ref);
+    expect(correctWasteDirection(ref, [label], "3")).toBe(ref);
+  });
+
+  it.each([
+    "Waste generated in neighbouring cities and disposed in the city landfill located outside the urban area",
+    "Waste generated in other municipalities, treated at the plant just outside town",
+    "Excluding waste generated in the city and treated outside",
+  ])("keeps a real III.x.3 row: %s", (label) => {
+    expect(correctWasteDirection("III.1.3", [label])).toBe("III.1.3");
+  });
+
+  it("keeps every catalogue name on its own reference", () => {
+    const wasteRows = GPC_REFERENCE_TABLE.filter((row) =>
+      row.gpcRefNo.startsWith("III."),
+    );
+    expect(wasteRows).toHaveLength(12);
+    for (const { gpcRefNo, subcategoryName } of wasteRows) {
+      const name = subcategoryName!.replaceAll("-", " ");
+      expect(correctWasteDirection(gpcRefNo, [name])).toBe(gpcRefNo);
+    }
+  });
+
   it("does not mix the sub-sector name with a row label", () => {
     expect(
       correctWasteDirection("III.1.2", [
@@ -129,6 +197,19 @@ describe("waste reference resolution from labels", () => {
       }),
     ).toBe("III.1.3");
   });
+
+  it.each(["1", "3"])(
+    "ignores excluded imported waste on scope %s",
+    (scopeLabel) => {
+      expect(
+        resolveGpcRefFromLabels({
+          ...solidWaste,
+          scopeLabel,
+          fuelTypeOrActivity: "Landfilled waste excluding imported waste",
+        }),
+      ).toBe(scopeLabel === "1" ? "III.1.1" : "III.1.2");
+    },
+  );
 
   it("resolves Other Scope 3 labels", () => {
     expect(

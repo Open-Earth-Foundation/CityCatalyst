@@ -249,6 +249,38 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     expect(imported!.subCategoryId).toBe(subCategory!.subcategoryId);
   });
 
+  it("keeps a row that excludes imported waste in the total", async () => {
+    const { inventoryId } = await newInventory();
+    const extracted = await ECRFImportService.fromExtractedRows([
+      {
+        ...extractedRow("III.1.2"),
+        scope: "3",
+        category:
+          "Waste generated in the city and sent to a regional landfill, excluding imported waste",
+        totalCO2e: 1000,
+      },
+      {
+        ...extractedRow("III.1.1"),
+        category: "Landfilled waste excluding imported waste",
+        totalCO2e: 2000,
+      },
+    ]);
+    await InventoryImportService.importECRFData(
+      inventoryId,
+      extracted,
+      user.userId,
+    );
+    const stored = await db.models.InventoryValue.findAll({
+      where: { inventoryId },
+    });
+    expect(stored.map((value) => value.gpcReferenceNumber).sort()).toEqual([
+      "III.1.1",
+      "III.1.2",
+    ]);
+    const results = await getEmissionResults(inventoryId);
+    expect(results.totalEmissions.toNumber()).toBe(3_000_000);
+  });
+
   it("does not list III.x.3 as a notation key row to complete", async () => {
     const inventory = await newInventory();
     const wasteRefs = async () => {

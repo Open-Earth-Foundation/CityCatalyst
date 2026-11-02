@@ -24,26 +24,63 @@ const { MANUAL_INPUT_HIERARCHY } = await import("@/util/form-schema");
 const { default: GPC_REFERENCE_TABLE } =
   await import("@/util/GHGI/data/gpc-reference-table.json");
 
+// Review round 4: labels that looked like a .3 statement and were not.
+const NOT_OUTSIDE_IN = [
+  "Waste generated outside households and treated in the city",
+  "Waste generated outside the city centre and treated in the city",
+  "Waste generated outside residential areas and treated in the city",
+  "Wastewater generated outside the sewer network and treated in the city",
+  "Waste generated outside and inside the city and treated in the city",
+  "Waste generated outside or within the city and treated within the city",
+  "Waste generated outside the city and waste generated in the city treated in the city",
+  "Waste generated outside the city and never treated in the city",
+  "Waste generated outside the city that cannot be treated in the city",
+  "Waste generated outside the city that isn't treated in the city",
+  "Waste generated outside the city rather than treated in the city",
+  "Waste generated outside the city minus that treated in the city",
+  "Waste generated outside the city w/o waste treated in the city",
+  "Waste generated outside the city unless treated in the city",
+  "Waste generated outside the city\nand not treated in the city",
+  "Waste generated outside the city\nexcluding waste treated in the city",
+  "Waste generated outside the city\r\nwithout waste treated in the city",
+];
+
 const OUTSIDE_IN = [
   "Waste generated outside the city boundary and disposed in landfills within the city boundary",
   "Wastewater generated outside the city but treated within the city",
   "Imported waste",
 ];
 const INSIDE_OUT = [
+  "Emissions from solid waste generated within the city boundary but disposed in landfills or open dumps outside the city boundary",
   "Solid waste generated within the city boundary but disposed in landfills outside the city boundary",
   "Wastewater generated in the city and treated outside",
   "Exported waste",
 ];
 
 describe("correctWasteDirection", () => {
-  it.each(OUTSIDE_IN)("reads outside to inside: %s", (label) => {
-    expect(correctWasteDirection("III.1.2", [label])).toBe("III.1.3");
-    expect(correctWasteDirection("III.1.3", [label])).toBe("III.1.3");
-    expect(correctWasteDirection("III.1.1", [label])).toBe("III.1.3");
+  it.each([...OUTSIDE_IN, ...NOT_OUTSIDE_IN])(
+    "never creates III.x.3 from a label: %s",
+    (label) => {
+      expect(correctWasteDirection("III.1.1", [label])).toBe("III.1.1");
+      expect(correctWasteDirection("III.1.2", [label])).toBe("III.1.2");
+      expect(correctWasteDirection("III.1.1", [label], "1")).toBe("III.1.1");
+      expect(correctWasteDirection("III.1.2", [label], "3")).toBe("III.1.2");
+    },
+  );
+
+  it.each([...OUTSIDE_IN, ...NOT_OUTSIDE_IN])(
+    "keeps an explicit III.x.3: %s",
+    (label) => {
+      expect(correctWasteDirection("III.1.3", [label])).toBe("III.1.3");
+    },
+  );
+
+  it.each(INSIDE_OUT)("corrects III.x.3 to III.x.2: %s", (label) => {
+    expect(correctWasteDirection("III.4.3", [label])).toBe("III.4.2");
   });
 
-  it.each(INSIDE_OUT)("reads inside to outside: %s", (label) => {
-    expect(correctWasteDirection("III.4.3", [label])).toBe("III.4.2");
+  it.each(INSIDE_OUT)("leaves III.x.1 and III.x.2 alone: %s", (label) => {
+    expect(correctWasteDirection("III.4.1", [label])).toBe("III.4.1");
     expect(correctWasteDirection("III.4.2", [label])).toBe("III.4.2");
   });
 
@@ -117,6 +154,11 @@ describe("correctWasteDirection", () => {
     "Waste generated in neighbouring cities and disposed in the city landfill located outside the urban area",
     "Waste generated in other municipalities, treated at the plant just outside town",
     "Excluding waste generated in the city and treated outside",
+    "Waste generated in the city of Canoas and treated in a landfill outside",
+    "Waste generated in the town of Eastville and treated at a plant outside",
+    "Waste generated in town X and treated outside",
+    "Waste generated in the municipality of Viamao and disposed in a landfill outside of the city",
+    "Waste generated in the city and not treated outside",
   ])("keeps a real III.x.3 row: %s", (label) => {
     expect(correctWasteDirection("III.1.3", [label])).toBe("III.1.3");
   });
@@ -132,13 +174,7 @@ describe("correctWasteDirection", () => {
     }
   });
 
-  it("does not mix the sub-sector name with a row label", () => {
-    expect(
-      correctWasteDirection("III.1.2", [
-        "Disposal of solid waste generated in the city",
-        OUTSIDE_IN[0],
-      ]),
-    ).toBe("III.1.3");
+  it("ignores the sub-sector name, which says generated in the city", () => {
     expect(
       correctWasteDirection("III.1.3", [
         "Disposal of solid waste generated in the city",
@@ -147,12 +183,19 @@ describe("correctWasteDirection", () => {
     ).toBe("III.1.3");
   });
 
-  it("does not read treatment outside as treatment inside", () => {
+  it("reads a real inside-to-outside label across a line break", () => {
     expect(
-      correctWasteDirection("III.1.2", [
-        "Waste generated outside the city and treated outside",
+      correctWasteDirection("III.1.3", [
+        "Waste generated in the city\nand treated outside",
       ]),
     ).toBe("III.1.2");
+  });
+
+  it("stays fast on a very long label", () => {
+    const label = `Waste generated in the city and ${"treated ".repeat(25000)}`;
+    const started = performance.now();
+    expect(correctWasteDirection("III.1.3", [label])).toBe("III.1.3");
+    expect(performance.now() - started).toBeLessThan(100);
   });
 
   it("maps III.x.3 on an explicit scope 3 row to III.x.2", () => {
@@ -160,12 +203,6 @@ describe("correctWasteDirection", () => {
     expect(correctWasteDirection("III.1.3", [], "Scope 3")).toBe("III.1.2");
     expect(correctWasteDirection("III.1.3", [], "1")).toBe("III.1.3");
     expect(correctWasteDirection("III.1.3", [], null)).toBe("III.1.3");
-  });
-
-  it("lets a stated direction win over the scope", () => {
-    expect(correctWasteDirection("III.1.3", [OUTSIDE_IN[0]], "3")).toBe(
-      "III.1.3",
-    );
   });
 
   it("leaves a row without a direction and other sectors alone", () => {
@@ -188,26 +225,22 @@ describe("waste reference resolution from labels", () => {
     );
   });
 
-  it("uses the stated direction", () => {
-    expect(
-      resolveGpcRefFromLabels({
-        ...solidWaste,
-        scopeLabel: "1",
-        fuelTypeOrActivity: OUTSIDE_IN[0],
-      }),
-    ).toBe("III.1.3");
-  });
-
-  it.each(["1", "3"])(
-    "ignores excluded imported waste on scope %s",
-    (scopeLabel) => {
-      expect(
-        resolveGpcRefFromLabels({
-          ...solidWaste,
-          scopeLabel,
-          fuelTypeOrActivity: "Landfilled waste excluding imported waste",
-        }),
-      ).toBe(scopeLabel === "1" ? "III.1.1" : "III.1.2");
+  it.each([...OUTSIDE_IN, ...NOT_OUTSIDE_IN])(
+    "never resolves a label to III.x.3: %s",
+    (label) => {
+      for (const [scopeLabel, ref] of [
+        ["1", "III.1.1"],
+        ["3", "III.1.2"],
+        [undefined, "III.1.1"],
+      ]) {
+        expect(
+          resolveGpcRefFromLabels({
+            ...solidWaste,
+            scopeLabel,
+            fuelTypeOrActivity: label,
+          }),
+        ).toBe(ref);
+      }
     },
   );
 

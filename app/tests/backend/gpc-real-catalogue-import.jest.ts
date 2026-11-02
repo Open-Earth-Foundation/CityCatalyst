@@ -281,6 +281,54 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     expect(results.totalEmissions.toNumber()).toBe(3_000_000);
   });
 
+  it("keeps rows counted when a label reads like III.x.3", async () => {
+    const { inventoryId } = await newInventory();
+    const extracted = await ECRFImportService.fromExtractedRows([
+      {
+        ...extractedRow("III.1.1"),
+        category:
+          "Waste generated outside residential areas and treated in the city",
+        totalCO2e: 2000,
+      },
+      {
+        ...extractedRow("III.1.2"),
+        scope: "3",
+        category:
+          "Waste generated outside and inside the city and treated in the city",
+        totalCO2e: 1000,
+      },
+      {
+        ...extractedRow("III.2.2"),
+        scope: "3",
+        category:
+          "Waste generated outside the city\nand not treated in the city",
+        totalCO2e: 500,
+      },
+      {
+        // A true .3 statement with a wrong reference: counted, by plan step 6.
+        ...extractedRow("III.3.1"),
+        category: "Waste generated outside the city and treated in the city",
+        totalCO2e: 100,
+      },
+    ]);
+    await InventoryImportService.importECRFData(
+      inventoryId,
+      extracted,
+      user.userId,
+    );
+    const stored = await db.models.InventoryValue.findAll({
+      where: { inventoryId },
+    });
+    expect(stored.map((value) => value.gpcReferenceNumber).sort()).toEqual([
+      "III.1.1",
+      "III.1.2",
+      "III.2.2",
+      "III.3.1",
+    ]);
+    const results = await getEmissionResults(inventoryId);
+    expect(results.totalEmissions.toNumber()).toBe(3_600_000);
+  });
+
   it("does not list III.x.3 as a notation key row to complete", async () => {
     const inventory = await newInventory();
     const wasteRefs = async () => {

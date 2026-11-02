@@ -28,6 +28,7 @@ export interface IngestItemAttributes {
   coverageYears?: number[] | null;
   result?: Record<string, unknown> | null;
   reviewDraft?: Record<string, unknown> | null;
+  reviewDraftVersion?: number | null;
   reviewLockedByUserId?: string | null;
   reviewLockedAt?: Date | null;
   data?: Buffer | Uint8Array | null;
@@ -52,6 +53,7 @@ export type IngestItemOptionalAttributes =
   | "coverageYears"
   | "result"
   | "reviewDraft"
+  | "reviewDraftVersion"
   | "reviewLockedByUserId"
   | "reviewLockedAt"
   | "data"
@@ -82,6 +84,7 @@ export class IngestItem
   declare coverageYears?: number[] | null;
   declare result?: Record<string, unknown> | null;
   declare reviewDraft?: Record<string, unknown> | null;
+  declare reviewDraftVersion?: number | null;
   declare reviewLockedByUserId?: string | null;
   declare reviewLockedAt?: Date | null;
   declare data?: Buffer | Uint8Array | null;
@@ -181,6 +184,12 @@ export class IngestItem
           type: DataTypes.JSONB,
           allowNull: true,
           field: "review_draft",
+        },
+        reviewDraftVersion: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+          field: "review_draft_version",
         },
         reviewLockedByUserId: {
           type: DataTypes.UUID,

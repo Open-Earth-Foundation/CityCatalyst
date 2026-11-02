@@ -324,13 +324,15 @@ describe("CcraIngestPlugin", () => {
     expect(plugin.hydrateReviewDraft(draft)).toEqual(bundle);
   });
 
-  it("stops at review without commit when dryRun is true", async () => {
+  it("skips commit, catalog, and review persist when dryRun is true", async () => {
     const { llm } = fakeLlm(valuesReply([HAZARD]));
     const { finished, item } = await runPlugin(llm, PDF, { dryRun: true });
 
-    expect(finished.status).toBe("awaiting_review");
-    expect(item.status).toBe("awaiting_review");
-    expect(item.stage).toBe("decide");
+    expect(finished.status).toBe("completed");
+    expect(finished.skippedCount).toBe(1);
+    expect(item.status).toBe("skipped");
+    expect(item.errorCode).toBe("dry_run");
+    expect(item.reviewDraft).toBeUndefined();
   });
 
   it("fails the item when one chunk fails among many", async () => {

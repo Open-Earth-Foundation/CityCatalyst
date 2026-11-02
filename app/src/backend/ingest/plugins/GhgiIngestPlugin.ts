@@ -193,6 +193,14 @@ export class GhgiIngestPlugin implements IngestPlugin {
     return "reject";
   }
 
+  serializeReviewDraft(adapted: unknown): unknown {
+    return adapted;
+  }
+
+  hydrateReviewDraft(draft: unknown): unknown {
+    return draft;
+  }
+
   async commit(
     ctx: IngestPluginContext,
     adapted: unknown,

@@ -7,6 +7,14 @@ export {
 export type { CoarseFileKind } from "./coarse-kind";
 export { IngestRunner } from "./IngestRunner";
 export { MemoryIngestStore } from "./MemoryIngestStore";
+export { SequelizeIngestStore } from "./IngestStoreService";
+export { createIngestPlugin } from "./registry";
+export {
+  REVIEW_DRAFT_TTL_MS,
+  REVIEW_LOCK_MS,
+  bundleDigestOf,
+  buildReviewDraftEnvelope,
+} from "./review-draft";
 export {
   INGEST_DOCUMENT_CATALOG_KIND,
   INGEST_DOCUMENT_OWNING_MODULE,
@@ -45,6 +53,8 @@ export type {
   IngestItemRecord,
   IngestJobRecord,
   IngestModuleId,
+  IngestReviewDraftEnvelope,
+  IngestReviewTargetBinding,
   IngestScope,
   IngestStage,
   IngestVisibility,

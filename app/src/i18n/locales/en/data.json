@@ -1296,5 +1296,8 @@
   "filter-by-subsector": "Filter by sub-sector",
   "refresh-datasets": "Refresh datasets",
   "agriculture-forestry-and-other-land-use-afolu": "Agriculture, forestry and land use (AFOLU)",
-  "industrial-processes-and-product-uses-ippu": "Industrial processes and product use (IPPU)"
+  "industrial-processes-and-product-uses-ippu": "Industrial processes and product use (IPPU)",
+  "ingest-stale-review-draft": "This review is out of date. Re-open the draft before confirming.",
+  "ingest-review-resume": "Resume this review from where it was saved.",
+  "ingest-review-locked-by": "{{name}} is editing this review."
 }

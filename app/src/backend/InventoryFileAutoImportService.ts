@@ -40,7 +40,7 @@ function extensionOf(filename: string): string {
   return i >= 0 ? filename.slice(i + 1).toLowerCase() : "";
 }
 
-function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
+export function fileTypeOf(filename: string): "xlsx" | "csv" | "pdf" | "unknown" {
   const ext = extensionOf(filename);
   if (ext === "xlsx" || ext === "csv" || ext === "pdf") return ext;
   return "unknown";
@@ -82,7 +82,7 @@ export function classifyBulkInventoryFile(validation: ValidationResult): {
   return { kind: "not_ecrf", detectedType: "unknown" };
 }
 
-async function buildImportResult(args: {
+export async function buildBulkInventoryImportResult(args: {
   kind: BulkInventoryAcceptedKind;
   buffer: Buffer;
   fileType: "xlsx" | "csv";
@@ -188,7 +188,7 @@ export class InventoryFileAutoImportService {
       );
     }
 
-    const importResult = await buildImportResult({
+    const importResult = await buildBulkInventoryImportResult({
       kind: classified.kind,
       buffer: input.buffer,
       fileType,

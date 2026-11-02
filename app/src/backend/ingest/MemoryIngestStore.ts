@@ -50,6 +50,7 @@ export class MemoryIngestStore implements IngestStore {
       status: "pending",
       warnings: input.warnings ?? [],
       coverageYears: input.coverageYears ?? [],
+      reviewDraftVersion: input.reviewDraftVersion ?? 0,
     };
     this.items.set(item.id, item);
     return { ...item, buffer: item.buffer };

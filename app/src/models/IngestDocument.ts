@@ -134,7 +134,7 @@ export class IngestDocument
           references: { model: "NativeInputCatalog", key: "id" },
         },
         s3Key: {
-          type: DataTypes.STRING(1024),
+          type: DataTypes.TEXT,
           allowNull: true,
           field: "s3_key",
         },
@@ -165,6 +165,7 @@ export class IngestDocument
         indexes: [
           {
             name: "idx_ingest_document_hash_scope",
+            unique: true,
             fields: [
               { name: "content_hash" },
               { name: "city_id" },

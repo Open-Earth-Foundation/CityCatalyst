@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from "sequelize";
 import { db } from "@/models";
 import { registerNativeInput } from "@/backend/NativeInputCatalogService";
 import {
@@ -46,30 +47,34 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
     document: IngestDocumentRecord;
     created: boolean;
   }> {
-    const existing = await db.models.IngestDocument.findOne({
-      where: {
-        contentHash: input.contentHash,
-        cityId: input.scope.cityId ?? null,
-        projectId: input.scope.projectId ?? null,
-        organizationId: input.scope.organizationId ?? null,
-      },
-    });
+    const where = {
+      contentHash: input.contentHash,
+      cityId: input.scope.cityId ?? null,
+      projectId: input.scope.projectId ?? null,
+      organizationId: input.scope.organizationId ?? null,
+    };
+    const existing = await db.models.IngestDocument.findOne({ where });
     if (existing) {
       return { document: toRecord(existing), created: false };
     }
 
-    const created = await db.models.IngestDocument.create({
-      contentHash: input.contentHash,
-      originalFileName: input.originalFileName,
-      cityId: input.scope.cityId ?? null,
-      projectId: input.scope.projectId ?? null,
-      organizationId: input.scope.organizationId ?? null,
-      uploadedByUserId: input.uploadedByUserId ?? null,
-      visibility: input.visibility,
-      markdownReady: input.markdownReady ?? initialMarkdownReady(input.originalFileName),
-      data: input.buffer,
-    });
-    return { document: toRecord(created), created: true };
+    try {
+      const created = await db.models.IngestDocument.create({
+        ...where,
+        originalFileName: input.originalFileName,
+        uploadedByUserId: input.uploadedByUserId ?? null,
+        visibility: input.visibility,
+        markdownReady:
+          input.markdownReady ?? initialMarkdownReady(input.originalFileName),
+        data: input.buffer,
+      });
+      return { document: toRecord(created), created: true };
+    } catch (error) {
+      if (!(error instanceof UniqueConstraintError)) throw error;
+      const raced = await db.models.IngestDocument.findOne({ where });
+      if (!raced) throw error;
+      return { document: toRecord(raced), created: false };
+    }
   }
 
   async get(documentId: string): Promise<IngestDocumentRecord | null> {

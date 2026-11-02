@@ -57,7 +57,7 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "SET NULL",
       },
-      s3_key: { type: Sequelize.STRING(1024), allowNull: true },
+      s3_key: { type: Sequelize.TEXT, allowNull: true },
       data: { type: Sequelize.BLOB, allowNull: true },
       created: {
         type: Sequelize.DATE,
@@ -80,11 +80,18 @@ module.exports = {
         OR city_id IS NOT NULL
       );
     `);
-    await queryInterface.addIndex(
-      "IngestDocument",
-      ["content_hash", "city_id", "project_id", "organization_id"],
-      { name: "idx_ingest_document_hash_scope" },
-    );
+    // NULLS NOT DISTINCT so city-only (or project/org-only) rows cannot race
+    // two inserts for the same hash + scope.
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX "idx_ingest_document_hash_scope"
+      ON "IngestDocument" (
+        "content_hash",
+        "city_id",
+        "project_id",
+        "organization_id"
+      )
+      NULLS NOT DISTINCT;
+    `);
 
     await queryInterface.addColumn("IngestItem", "document_id", {
       type: Sequelize.UUID,

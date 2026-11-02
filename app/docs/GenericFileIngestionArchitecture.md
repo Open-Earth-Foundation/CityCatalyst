@@ -489,7 +489,7 @@ Keep module-facing URLs. Implement them as thin wrappers over the core runner.
 
 ### CCRA (greenfield consumer)
 
-No CCRA plugin ticket yet. The slot is reserved so the runner does not grow a GHGI-only row type.
+CC-1156 is the CCRA plugin ticket. `CcraIngestPlugin` drafts CRVA fields from a PDF and stops at review, because no CCRA SoT exists yet. The slot is reserved so the runner does not grow a GHGI-only row type.
 
 | Piece | Direction |
 | --- | --- |

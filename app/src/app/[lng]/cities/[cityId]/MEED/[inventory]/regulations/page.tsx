@@ -180,8 +180,17 @@ function RegulationsContent({
     enabled: groups.enabled.length,
     not_assessed: groups.not_assessed.length,
   };
-  const needsAttention =
-    counts.blocked + counts.conditional + excludedBeforeScoring.length > 0;
+  const assessedCount = counts.blocked + counts.conditional + counts.enabled;
+  // The all-clear card needs a positive signal: at least one action assessed
+  // as enabled, and nothing blocked, conditional, unassessed or excluded.
+  // A ranking whose legal data is all neutral fallbacks is not "all clear".
+  const allEnabled =
+    counts.enabled > 0 &&
+    counts.blocked +
+      counts.conditional +
+      counts.not_assessed +
+      excludedBeforeScoring.length ===
+      0;
 
   // Report progress only once there is something to report.
   //
@@ -189,7 +198,11 @@ function RegulationsContent({
   // data behind it — which meant merely opening the URL satisfied one of the
   // three sections `computeMeedGate` requires before the ranking can be
   // generated. Visiting a screen is not the same as having screened anything.
-  const stepSub = hasScreening ? t("step-sub-counts", counts) : t("step-sub");
+  const stepSub = !hasScreening
+    ? t("step-sub")
+    : assessedCount > 0
+      ? t("step-sub-counts", counts)
+      : t("step-sub-not-assessed", { count: counts.not_assessed });
   useEffect(() => {
     if (!inventoryId || !isReady) return;
     setMeedStepState(
@@ -272,7 +285,7 @@ function RegulationsContent({
             </Card.Body>
           </Card.Root>
 
-          {!needsAttention && (
+          {allEnabled && (
             <Card.Root borderColor="border.neutral">
               <Card.Body>
                 <VStack gap="s" py="l" px="l" textAlign="center">

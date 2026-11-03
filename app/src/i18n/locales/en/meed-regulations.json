@@ -8,6 +8,7 @@
   "precondition-continue": "No action needed here — continue to the next step.",
   "step-sub": "Screening runs with the ranking",
   "step-sub-counts": "{{blocked}} blocked · {{conditional}} conditional · {{enabled}} enabled",
+  "step-sub-not-assessed": "{{count}} ranked · none legally assessed",
   "excluded-tag": "Excluded",
   "reasons-label": "Legal justification",
   "summary-title": "Municipal authority across the ranking",

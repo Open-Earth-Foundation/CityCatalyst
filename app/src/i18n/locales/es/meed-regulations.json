@@ -8,6 +8,7 @@
   "precondition-continue": "No se necesita ninguna acción aquí — continúa al siguiente paso.",
   "step-sub": "La proyección se realiza con la clasificación",
   "step-sub-counts": "{{blocked}} bloqueadas · {{conditional}} condicionales · {{enabled}} habilitadas",
+  "step-sub-not-assessed": "{{count}} en el ranking · ninguna evaluada legalmente",
   "excluded-tag": "Excluida",
   "reasons-label": "Justificación legal",
   "summary-title": "Autoridad municipal en el ranking",

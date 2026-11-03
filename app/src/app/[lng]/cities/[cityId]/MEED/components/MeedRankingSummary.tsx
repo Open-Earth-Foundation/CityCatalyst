@@ -108,11 +108,17 @@ export function MeedRankingSummary({
     });
   }
 
-  if (legalCounts) {
-    lines.push({
-      icon: LuScale,
-      text: t("insight-legal", legalCounts),
-    });
+  if (
+    legalCounts &&
+    legalCounts.blocked + legalCounts.conditional + legalCounts.enabled > 0
+  ) {
+    const key =
+      legalCounts.blocked > 0
+        ? "insight-legal"
+        : legalCounts.conditional > 0
+          ? "insight-legal-conditional"
+          : "insight-legal-all-enabled";
+    lines.push({ icon: LuScale, text: t(key, legalCounts) });
   }
 
   lines.push({

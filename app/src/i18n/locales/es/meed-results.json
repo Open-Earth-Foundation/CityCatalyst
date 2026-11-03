@@ -219,6 +219,8 @@
   "insight-sector-mismatch": "La mayoría de acciones clasificadas apuntan a {{sector}} ({{count}} de {{total}}). {{topSector}}, tu mayor fuente con el {{share}}% de las emisiones, tiene {{topCount}}.",
   "insight-driver": "{{pillar}} impulsa el ranking: en promedio, representa el {{pct}}% de cada puntuación final.",
   "insight-legal": "Revisión legal: {{blocked}} acciones del ranking están fuera de la autoridad municipal y {{conditional}} son condicionales; quedan más abajo en lugar de eliminarse.",
+  "insight-legal-conditional": "Revisión legal: ninguna acción del ranking está fuera de la autoridad municipal; {{conditional}} son condicionales y por eso quedan más abajo.",
+  "insight-legal-all-enabled": "Revisión legal: todas las acciones del ranking están dentro de la autoridad municipal.",
   "insight-policy": "{{strong}} de las {{total}} acciones clasificadas están fuertemente respaldadas por la política existente; el alineamiento del plan nacional tiene un promedio del {{pct}}%.",
   "insight-policy-no-plan": "{{strong}} de {{total}} acciones clasificadas cuentan con un fuerte respaldo de la política existente.",
   "insight-finance": "{{count}} de {{total}} acciones clasificadas pueden ser financiadas con el presupuesto propio de la ciudad.",

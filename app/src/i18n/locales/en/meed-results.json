@@ -224,6 +224,8 @@
   "insight-sector-mismatch": "Most ranked actions target {{sector}} ({{count}} of {{total}}). {{topSector}}, your largest source at {{share}}% of emissions, has {{topCount}}.",
   "insight-driver": "{{pillar}} drives the ranking: on average it accounts for {{pct}}% of each final score.",
   "insight-legal": "Legal review: {{blocked}} ranked actions are outside municipal authority and {{conditional}} are conditional; they rank lower rather than being removed.",
+  "insight-legal-conditional": "Legal review: no ranked action is outside municipal authority; {{conditional}} are conditional and rank lower for it.",
+  "insight-legal-all-enabled": "Legal review: every ranked action is within municipal authority.",
   "insight-policy": "{{strong}} of {{total}} ranked actions are strongly backed by existing policy; national plan alignment averages {{pct}}%.",
   "insight-policy-no-plan": "{{strong}} of {{total}} ranked actions are strongly backed by existing policy.",
   "insight-finance": "{{count}} of {{total}} ranked actions can be funded from the city's own budget.",

@@ -128,7 +128,13 @@ export function contextSummary(
       return stepSub ?? t("context-summary-not-retrieved");
     case "regulations":
       if (facts.legalCounts) {
-        return t("context-summary-legal");
+        // Standings exist for the ranked actions. If the backend also removed
+        // actions before scoring, say so instead of "none are removed".
+        return facts.excludedCount
+          ? t("context-summary-legal-removed", {
+              excluded: facts.excludedCount,
+            })
+          : t("context-summary-legal");
       }
       if (facts.legalFunnel) {
         return t("context-summary-legal-removed", {

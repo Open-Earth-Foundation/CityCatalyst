@@ -1,3 +1,4 @@
+import { io } from "next/cache";
 import HomePage from "@/components/GHGIHomePage/HomePage";
 import { checkInventoryRedirect } from "./actions";
 
@@ -11,6 +12,10 @@ export default async function PublicHome(props: {
 }) {
   const { lng, inventory } = await props.params;
 
+  // checkInventoryRedirect hits Sequelize/pg, which reads Date.now()
+  // internally - Next.js treats that as unstable during prerendering,
+  // so exclude it from the shell.
+  await io();
   // Check if we should redirect to city dashboard (server action handles the logic)
   await checkInventoryRedirect(inventory, lng);
 

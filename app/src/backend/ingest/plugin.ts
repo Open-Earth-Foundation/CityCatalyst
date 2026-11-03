@@ -1,3 +1,4 @@
+import type { CoarseFileKind } from "./coarse-kind";
 import type {
   IngestApprovalPolicy,
   IngestItemRecord,
@@ -5,6 +6,13 @@ import type {
   IngestModuleId,
   IngestScope,
 } from "./types";
+
+export interface IngestMatchResult {
+  targetCityId?: string | null;
+  targetInventoryId?: string | null;
+  coverageYears?: number[];
+  warnings?: string[];
+}
 
 export interface IngestPluginContext {
   job: IngestJobRecord;
@@ -20,7 +28,11 @@ export interface IngestPlugin {
   readonly moduleId: IngestModuleId;
   readonly allowedExtensions: readonly string[];
 
-  detect(ctx: IngestPluginContext): Promise<void> | void;
+  /** Format-specific detect (eCRF, near-eCRF, …). Core already set coarse. */
+  detect(
+    ctx: IngestPluginContext,
+    coarse: CoarseFileKind,
+  ): Promise<void> | void;
   parse(ctx: IngestPluginContext): Promise<unknown>;
   adapt(ctx: IngestPluginContext, parsed: unknown): Promise<unknown>;
   validate(
@@ -43,5 +55,20 @@ export interface IngestPlugin {
     ctx: IngestPluginContext,
     adapted: unknown,
   ): Promise<Record<string, unknown> | void> | Record<string, unknown> | void;
-  match?(ctx: IngestPluginContext): Promise<void> | void;
+  match?(
+    ctx: IngestPluginContext,
+  ):
+    | Promise<IngestMatchResult | void>
+    | IngestMatchResult
+    | void;
+  /**
+   * Opaque review DTO. Core stores it and never reads domain columns.
+   * Default is a JSON clone of `adapted`.
+   */
+  serializeReviewDraft?(
+    adapted: unknown,
+    validation?: { warnings?: string[] } | void,
+  ): unknown;
+  /** Rebuild the canonical bundle Core will pass to commit. */
+  hydrateReviewDraft?(draft: unknown): unknown;
 }

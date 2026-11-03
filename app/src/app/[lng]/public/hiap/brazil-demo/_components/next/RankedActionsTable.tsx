@@ -165,7 +165,7 @@ export function RankedActionsTable({
   onResetOrder,
   onExportCsv,
   report,
-  onAdjust,
+  onOpenAction,
 }: {
   /** All ranked rows, in suggested order; the list filters and orders them. */
   rows: RankedRow[];
@@ -194,8 +194,8 @@ export function RankedActionsTable({
     isGenerating: boolean;
     progress: string | null;
   };
-  /** Opens the preferences panel from the list itself. */
-  onAdjust?: () => void;
+  /** Opens any action's detail by id, for the "Depends on" links. */
+  onOpenAction: (id: string) => void;
 }) {
   const order = useMemo(() => cityOrder ?? [], [cityOrder]);
   const unscored = notRanked ?? [];
@@ -241,19 +241,17 @@ export function RankedActionsTable({
     shown: visible.length,
     total: rows.length,
   });
-  // A prerequisite outside the ranking says so, with its reason.
+  // A prerequisite opens on click, and one outside the ranking says why.
   const dependsOn = (row: RankedRow) =>
     relatedActions(row.action)
       .filter((r) => r.role === "requires")
       .map((r) => {
-        const name = pick(r.action.name, lng);
         const reason = reasonOf(r.action.id);
-        return reason
-          ? t("next-depends-on-item-unranked", {
-              name,
-              why: unrankedShort(r.action, reason, lng, t),
-            })
-          : name;
+        return {
+          id: r.action.id,
+          name: pick(r.action.name, lng),
+          aside: reason ? unrankedShort(r.action, reason, lng, t) : null,
+        };
       });
 
   return (
@@ -297,9 +295,6 @@ export function RankedActionsTable({
                   <TextLink arrow={false} onClick={onResetOrder}>
                     {t("next-order-reset")}
                   </TextLink>
-                )}
-                {onAdjust && (
-                  <TextLink onClick={onAdjust}>{t("next-customize")}</TextLink>
                 )}
               </HStack>
             </VStack>
@@ -419,7 +414,24 @@ export function RankedActionsTable({
                       </chakra.button>
                       {deps.length > 0 && (
                         <BodySmall color="content.secondary">
-                          {t("next-depends-on", { names: deps.join(", ") })}
+                          {t("next-depends-on-label")}{" "}
+                          {deps.map((d, i) => (
+                            <React.Fragment key={d.id}>
+                              {i > 0 && ", "}
+                              <chakra.button
+                                type="button"
+                                color="content.link"
+                                textDecoration="underline"
+                                textUnderlineOffset="2px"
+                                onClick={() => onOpenAction(d.id)}
+                                _hover={{ textDecoration: "none" }}
+                                _focusVisible={FOCUS_RING}
+                              >
+                                {d.name}
+                              </chakra.button>
+                              {d.aside && ` (${d.aside})`}
+                            </React.Fragment>
+                          ))}
                         </BodySmall>
                       )}
                     </VStack>

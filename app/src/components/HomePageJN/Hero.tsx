@@ -47,11 +47,15 @@ export function Hero({
       : { value: t("no-data"), unit: "" };
 
   return (
-    <Box py={12} w="full">
+    <Box py={12} px={{ base: 4, md: 0 }} w="full">
       <Box maxW="1090px" mx="auto">
-        <HStack align="center" gap={8}>
+        <HStack
+          align={{ base: "stretch", md: "center" }}
+          flexDirection={{ base: "column", md: "row" }}
+          gap={8}
+        >
           {/* Left Panel - Text Information */}
-          <VStack align="start" flex={1} gap={6}>
+          <VStack align="start" flex={1} minW={0} gap={6}>
             {/* Project Title */}
             {!hideMap && (
               <TitleMedium color="base.dark">
@@ -77,7 +81,12 @@ export function Hero({
                 width={32}
                 height={32}
               />
-              <DisplayMedium color="base.dark" data-testid="hero-city-name">
+              <DisplayMedium
+                color="base.dark"
+                overflowWrap="anywhere"
+                minW={0}
+                data-testid="hero-city-name"
+              >
                 {city?.name}
               </DisplayMedium>
             </HStack>
@@ -227,7 +236,7 @@ export function Hero({
 
           {/* Right Panel - Map */}
           {!hideMap && (
-            <Box h="317px">
+            <Box w="full" maxW="422px" flexShrink={0}>
               {city ? (
                 <CityMap
                   locode={city?.locode ?? null}

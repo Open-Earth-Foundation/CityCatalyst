@@ -19,8 +19,11 @@ import { MdOutlineMap, MdWarning } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import ReportingLevelWarning from "./reporting-level-warning";
-import { activityDescriptionSample } from "@/util/activity-description-sample";
 import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
+import {
+  rowImportWarnings,
+  translateReviewImportWarning,
+} from "@/util/translate-review-import-warning";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -110,9 +113,13 @@ export default function ReviewConfirmStep({
   const reviewData = data?.reviewData;
   const fileInfo = data?.fileInfo;
   const validationResults = data?.validationResults;
-  const importWarnings = (validationResults?.warnings ?? []).filter((warning) =>
-    warning.startsWith("Row "),
-  );
+  const storedFileWarnings = (
+    data as { validationResults_legacy?: { warnings?: unknown } } | undefined
+  )?.validationResults_legacy?.warnings;
+  const importWarnings = [
+    ...rowImportWarnings(validationResults?.warnings),
+    ...rowImportWarnings(storedFileWarnings),
+  ].filter((warning, index, all) => all.indexOf(warning) === index);
 
   const extractionSummary = data?.mappingConfiguration?.extractionSummary;
   const { reconciliation, reconciledPages, failedPages, droppedReasons } =
@@ -136,11 +143,11 @@ export default function ReviewConfirmStep({
   }
 
   // Use field mappings from reviewData, or fallback to validation results.
-  // Activity data description is the one example the review should show.
+  // Example values all come from one source row (see exampleValuesFromSingleRow).
   const fieldMappings: FieldMappingRow[] =
     reviewData?.fieldMappings?.map((mapping) => ({
       ...mapping,
-      sampleValue: activityDescriptionSample(mapping),
+      sampleValue: mapping.sampleValue ?? null,
     })) ||
     validationResults?.columns
       ?.filter((col) => col.interpretedAs)
@@ -366,7 +373,7 @@ export default function ReviewConfirmStep({
             >
               {importWarnings.map((warning, index) => (
                 <Text key={index} fontSize="body.sm" color="content.secondary">
-                  {warning}
+                  {translateReviewImportWarning(warning, t)}
                 </Text>
               ))}
             </VStack>

@@ -1,20 +1,24 @@
+import type { CoarseFileKind } from "../coarse-kind";
 import type { IngestPlugin, IngestPluginContext } from "../plugin";
-import { IngestItemError } from "../types";
+import { IngestItemError, type IngestModuleId } from "../types";
 
 /**
- * Fixture plugin for CC-989. Accepts .txt/.csv, never writes a module SoT.
+ * Fixture plugin. Accepts csv; never writes a module SoT.
+ * MIME allowlisting is Core's job (CC-959).
  */
 export class TestIngestPlugin implements IngestPlugin {
-  readonly moduleId = "test" as const;
-  readonly allowedExtensions = ["txt", "csv"] as const;
+  readonly moduleId: IngestModuleId;
+  readonly allowedExtensions = ["csv"] as const;
 
-  detect(ctx: IngestPluginContext): void {
-    const name = ctx.item.originalFileName.toLowerCase();
-    const ok = this.allowedExtensions.some((ext) => name.endsWith(`.${ext}`));
-    if (!ok) {
+  constructor(moduleId: IngestModuleId = "test") {
+    this.moduleId = moduleId;
+  }
+
+  detect(_ctx: IngestPluginContext, coarse: CoarseFileKind): void {
+    if (coarse !== "csv") {
       throw new IngestItemError(
         "unknown_format",
-        `Test plugin does not accept ${ctx.item.originalFileName}`,
+        `Test plugin has no format for ${coarse}`,
       );
     }
   }
@@ -47,6 +51,14 @@ export class TestIngestPlugin implements IngestPlugin {
 
   approvalPolicy(): "auto" {
     return "auto";
+  }
+
+  serializeReviewDraft(adapted: unknown): unknown {
+    return adapted;
+  }
+
+  hydrateReviewDraft(draft: unknown): unknown {
+    return draft;
   }
 
   async commit(

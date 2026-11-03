@@ -8,13 +8,18 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { use } from "react";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
+// Remove this opt-out after verifying the segment passes validation without it.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "CityCatalyst",
   description: "Make building a climate inventory a breeze",
 };
 
 export async function generateStaticParams() {
-  return languages.map((lng: string) => ({ lng }));
+  return languages.map((lng: string) => ({ not_found: [lng] }));
 }
 
 export default function RootLayout({

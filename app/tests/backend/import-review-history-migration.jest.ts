@@ -14,8 +14,25 @@ const describeWithDatabase =
     : describe.skip;
 
 describeWithDatabase("import review history migration", () => {
+  let admin: Sequelize;
   let db: Sequelize;
   const schema = `cc1201_test_${randomUUID().replace(/-/g, "")}`;
+
+  // Fail closed: nothing below may run unless the connection is confined to
+  // the throwaway schema, so `down` can never touch a real table in public.
+  const assertIsolated = async () => {
+    const [rows] = await db.query(
+      "SELECT current_schema() AS current, current_schemas(true) AS visible",
+    );
+    const { current, visible } = rows[0] as {
+      current: string;
+      visible: string[];
+    };
+    if (current !== schema || visible.includes("public"))
+      throw new Error(
+        `Refusing to run: connection is not confined to ${schema} (${visible.join(",")})`,
+      );
+  };
 
   beforeAll(async () => {
     const isolatedPort = Number(process.env.CC1201_TEST_PG_PORT);
@@ -23,20 +40,29 @@ describeWithDatabase("import review history migration", () => {
       throw new Error(
         "CC1201_TEST_PG_PORT must identify an isolated test database",
       );
-    db = new Sequelize(
-      isolatedPort ? "citycatalyst" : process.env.DATABASE_NAME!,
-      isolatedPort ? "postgres" : process.env.DATABASE_USER!,
-      isolatedPort ? "localtest" : process.env.DATABASE_PASSWORD,
-      {
-        host: isolatedPort ? "127.0.0.1" : process.env.DATABASE_HOST,
-        port: isolatedPort || 5432,
-        dialect: "postgres",
-        logging: false,
-        pool: { max: 1, min: 0 },
-      },
-    );
-    await db.query(`CREATE SCHEMA "${schema}"`);
-    await db.query(`SET search_path TO "${schema}"`);
+    const connection = {
+      host: isolatedPort ? "127.0.0.1" : process.env.DATABASE_HOST,
+      port: isolatedPort || 5432,
+      dialect: "postgres" as const,
+      logging: false,
+    };
+    const database = isolatedPort ? "citycatalyst" : process.env.DATABASE_NAME!;
+    const user = isolatedPort ? "postgres" : process.env.DATABASE_USER!;
+    const password = isolatedPort ? "localtest" : process.env.DATABASE_PASSWORD;
+    // Only creates and drops the schema; it never runs migration code.
+    admin = new Sequelize(database, user, password, {
+      ...connection,
+      pool: { max: 1, min: 0 },
+    });
+    await admin.query(`CREATE SCHEMA "${schema}"`);
+    // Every connection the pool ever opens starts with this search_path and
+    // has no "public" in it, so a recycled connection stays isolated too.
+    db = new Sequelize(database, user, password, {
+      ...connection,
+      pool: { max: 2, min: 0, idle: 60_000 },
+      dialectOptions: { options: `-c search_path=${schema}` },
+    });
+    await assertIsolated();
     await db.query(
       'CREATE TABLE "ImportedInventoryFile" (id integer PRIMARY KEY, status text)',
     );
@@ -46,9 +72,29 @@ describeWithDatabase("import review history migration", () => {
   });
 
   afterAll(async () => {
-    if (db) {
-      await db.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
-      await db.close();
+    if (admin) {
+      await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
+      await admin.close();
+    }
+    if (db) await db.close();
+  });
+
+  it("confines every pooled connection to the isolated schema", async () => {
+    const schemas = await Promise.all(
+      [0, 1].map(() =>
+        db.transaction(async (transaction) => {
+          await db.query("SELECT pg_sleep(0.2)", { transaction });
+          const [rows] = await db.query(
+            "SELECT current_schema() AS current, current_schemas(true) AS visible",
+            { transaction },
+          );
+          return rows[0] as { current: string; visible: string[] };
+        }),
+      ),
+    );
+    for (const entry of schemas) {
+      expect(entry.current).toBe(schema);
+      expect(entry.visible).not.toContain("public");
     }
   });
 
@@ -77,6 +123,7 @@ describeWithDatabase("import review history migration", () => {
           options,
         ),
     };
+    await assertIsolated();
     await migration.up(isolatedInterface, Sequelize);
     const [existing] = await db.query(
       'SELECT review_history FROM "ImportedInventoryFile" WHERE id = 1',
@@ -117,7 +164,9 @@ describeWithDatabase("import review history migration", () => {
     expect(rows).toEqual([
       { status: "completed", review_history: { version: 1 } },
     ]);
+    await assertIsolated();
     await migration.down(isolatedInterface, Sequelize);
+    await assertIsolated();
     await migration.up(isolatedInterface, Sequelize);
     const [restored] = await db.query(
       'SELECT review_history FROM "ImportedInventoryFile" WHERE id = 1',

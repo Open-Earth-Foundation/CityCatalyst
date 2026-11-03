@@ -5,6 +5,21 @@ import type { City, CityId } from "./City";
 import type { Inventory, InventoryId } from "./Inventory";
 import { ImportStatusEnum } from "@/util/enums";
 
+export interface ImportReviewHistory {
+  version: 1;
+  fileId: string;
+  completedAt: string;
+  rows: Array<{
+    rowIndex: number;
+    originalReference: string | null;
+    originalScope: string | null;
+    finalReference: string | null;
+    finalScope: string | null;
+    decision: string;
+    provenance: string | null;
+  }>;
+}
+
 export interface ImportedInventoryFileAttributes {
   id: string;
   userId: string;
@@ -21,6 +36,7 @@ export interface ImportedInventoryFileAttributes {
   originalFileName: string;
   importStatus: ImportStatusEnum;
   mappingConfiguration?: Record<string, unknown> | null;
+  reviewHistory?: ImportReviewHistory | null;
   validationResults?: Record<string, unknown> | null;
   errorLog?: string | null;
   rowCount?: number | null;
@@ -38,6 +54,7 @@ export type ImportedInventoryFileOptionalAttributes =
   | "contentDigest"
   | "s3Key"
   | "mappingConfiguration"
+  | "reviewHistory"
   | "validationResults"
   | "errorLog"
   | "rowCount"
@@ -70,6 +87,7 @@ export class ImportedInventoryFile
   declare originalFileName: string;
   declare importStatus: ImportStatusEnum;
   declare mappingConfiguration?: Record<string, unknown> | null;
+  declare reviewHistory?: ImportReviewHistory | null;
   declare validationResults?: Record<string, unknown> | null;
   declare errorLog?: string | null;
   declare rowCount?: number | null;
@@ -181,6 +199,11 @@ export class ImportedInventoryFile
           type: DataTypes.JSONB,
           allowNull: true,
           field: "mapping_configuration",
+        },
+        reviewHistory: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "review_history",
         },
         validationResults: {
           type: DataTypes.JSONB,

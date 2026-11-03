@@ -5,7 +5,7 @@ import type { TFunction } from "i18next";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
-import { MeedMeter } from "../../../components/MeedMeter";
+import { MeedLevel } from "../../../components/MeedLevel";
 import {
   FOCUS_RING,
   humanizeEnum,
@@ -82,28 +82,15 @@ export function FeasibilityRow({
           </Box>
         </Table.Cell>
         <Table.Cell textAlign="end" verticalAlign="top">
-          <VStack gap="0" alignItems="flex-end">
-            <HStack gap="s" justifyContent="flex-end">
-              <Box
-                w="40px"
-                flexShrink={0}
-                display={{ base: "none", lg: "block" }}
-              >
-                <MeedMeter
-                  value={row.financial_feasibility}
-                  tone={tone}
-                  ariaLabel={`${name} — ${row.financial_feasibility.toFixed(2)} (${t(level.labelKey)})`}
-                />
-              </Box>
-              <LabelMedium
-                color={TONE_TEXT_COLOR[tone]}
-                fontVariantNumeric="tabular-nums"
-                textAlign="end"
-              >
-                {row.financial_feasibility.toFixed(2)}
-              </LabelMedium>
-            </HStack>
-            <Caption color={TONE_TEXT_COLOR[tone]}>{t(level.labelKey)}</Caption>
+          <VStack gap="xs" alignItems="flex-end">
+            <LabelMedium
+              color={TONE_TEXT_COLOR[tone]}
+              fontVariantNumeric="tabular-nums"
+              textAlign="end"
+            >
+              {row.financial_feasibility.toFixed(2)}
+            </LabelMedium>
+            <MeedLevel tone={tone}>{t(level.labelKey)}</MeedLevel>
           </VStack>
         </Table.Cell>
         <Table.Cell

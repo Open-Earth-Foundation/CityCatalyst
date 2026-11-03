@@ -9,7 +9,7 @@ const HEADER_CELL = {
   bg: "background.neutral",
   borderBottomWidth: "1px",
   borderColor: "border.neutral",
-  py: "10px",
+  py: "s",
   verticalAlign: "middle",
 } as const;
 

@@ -258,5 +258,9 @@
   "detail-legal-score": "Puntuación legal",
   "detail-legal-justification": "Justificación legal",
   "detail-legal-references": "Referencias legales",
-  "detail-legal-none": "Esta acción no tiene una evaluación legal asociada."
+  "detail-legal-none": "Esta acción no tiene una evaluación legal asociada.",
+  "basis-default": "Ranking por defecto — sin preferencias",
+  "basis-custom": "Ranking según tus preferencias",
+  "basis-more": "y {{count}} más",
+  "basis-weights": "pesos personalizados"
 }

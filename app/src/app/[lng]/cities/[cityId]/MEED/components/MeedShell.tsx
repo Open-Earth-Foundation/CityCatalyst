@@ -23,6 +23,7 @@ import {
 } from "../navigation";
 import { MeedStepper } from "./MeedStepper";
 import { MeedContextHeader } from "./MeedContextHeader";
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 export interface MeedShellProps {
   lng: string;
@@ -216,7 +217,7 @@ export function MeedShell({
         pb="xxl-6"
         px="l"
         w="full"
-        maxW="1090px"
+        maxW={MEED_CONTENT_MAX_W}
         flexDirection="column"
         gap="l"
       >

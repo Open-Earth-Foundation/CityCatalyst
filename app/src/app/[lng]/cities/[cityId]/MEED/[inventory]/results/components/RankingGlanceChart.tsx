@@ -228,7 +228,7 @@ export function RankingGlanceChart({
                 <Box minW={0}>
                   <Text
                     fontSize="body.sm"
-                    lineHeight="18px"
+                    lineHeight="20"
                     color="content.primary"
                     whiteSpace="normal"
                   >

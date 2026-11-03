@@ -40,15 +40,12 @@ export interface MeedRankingConfigProps {
  * they have moved on since the ranking was generated, the row says so instead
  * of presenting today's settings as the ones that produced the result.
  */
-export function MeedRankingConfig({
-  inventoryId,
-  weights,
-  isStale,
-  editHref,
-  lng,
-}: MeedRankingConfigProps) {
-  const { t } = useTranslation(lng, "meed-preferences");
-  const { t: tResults } = useTranslation(lng, "meed-results");
+/**
+ * The stored preferences and confirmed exclusions for an inventory, kept in
+ * step with the module's state-changed event. Read in an effect, not during
+ * render, so the server and the first client render agree.
+ */
+export function useMeedStoredPreferences(inventoryId: string) {
   const [prefs, setPrefs] = useState<MeedStrategicPreferences | null>(null);
   const [exclusions, setExclusions] = useState<string[]>([]);
 
@@ -61,6 +58,23 @@ export function MeedRankingConfig({
     window.addEventListener(MEED_STATE_CHANGED_EVENT, refresh);
     return () => window.removeEventListener(MEED_STATE_CHANGED_EVENT, refresh);
   }, [inventoryId]);
+
+  return { prefs, exclusions };
+}
+
+/** API option keys use snake_case; locale keys are kebab-case. */
+export const prefKeyToLocale = kebab;
+
+export function MeedRankingConfig({
+  inventoryId,
+  weights,
+  isStale,
+  editHref,
+  lng,
+}: MeedRankingConfigProps) {
+  const { t } = useTranslation(lng, "meed-preferences");
+  const { t: tResults } = useTranslation(lng, "meed-results");
+  const { prefs, exclusions } = useMeedStoredPreferences(inventoryId);
 
   const chips = (keys: string[], prefix: string) =>
     keys.length ? (

@@ -23,6 +23,7 @@ import type { MeedContextArea } from "./components/contextAreas";
 import { MeedScoreLegend } from "../../components/MeedScoreComposition";
 import { MeedRankingSummary } from "../../components/MeedRankingSummary";
 import { MeedRankingConfig } from "../../components/MeedRankingConfig";
+import { MeedRankingBasis } from "../../components/MeedRankingBasis";
 import { rankingInsights } from "./components/rankingInsights";
 import { sectorTagLabel } from "./components/actionCatalog";
 import { SECTORS } from "@/util/constants";
@@ -463,6 +464,19 @@ export default function Page(props: {
               visualFor={visualFor}
             />
 
+            <MeedRankingBasis
+              inventoryId={inventoryId}
+              weights={scoreWeights}
+              isStale={isStale}
+              editHref={stepHref(
+                lng,
+                cityId,
+                inventoryId,
+                "preferences",
+                "results",
+              )}
+              lng={lng}
+            />
             <FullRanking
               ref={rankingRef}
               actions={ranked}

@@ -639,8 +639,8 @@ function PreflightContent(props: {
                   <HStack alignItems="baseline" gap="s">
                     <TitleLarge
                       color="content.primary"
-                      fontSize="40px"
-                      lineHeight="44px"
+                      fontSize="display.sm"
+                      lineHeight="44"
                       fontVariantNumeric="tabular-nums"
                     >
                       {confidence.score}

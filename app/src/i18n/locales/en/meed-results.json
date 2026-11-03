@@ -258,5 +258,9 @@
   "detail-legal-score": "Legal score",
   "detail-legal-justification": "Legal justification",
   "detail-legal-references": "Legal references",
-  "detail-legal-none": "No legal assessment is attached to this action."
+  "detail-legal-none": "No legal assessment is attached to this action.",
+  "basis-default": "Default ranking — no preferences set",
+  "basis-custom": "Ranked with your preferences",
+  "basis-more": "and {{count}} more",
+  "basis-weights": "custom weights"
 }

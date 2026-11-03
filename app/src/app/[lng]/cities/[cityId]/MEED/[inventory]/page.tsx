@@ -49,6 +49,7 @@ import {
   policyBacking,
   readRankingWeights,
 } from "./results/components/rankingFacts";
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 /**
  * Minimum time the retrieve action shows as working. The inventory totals are
@@ -376,7 +377,7 @@ export default function MEEDInventoryPage(props: {
         pb="xxl-6"
         px="l"
         w="full"
-        maxW="1090px"
+        maxW={MEED_CONTENT_MAX_W}
         flexDirection="column"
         gap="xl"
       >

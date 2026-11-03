@@ -741,6 +741,61 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     },
   );
 
+  describe("legacy per-row overrides and the final reference/scope pair", () => {
+    const legacyFile = () =>
+      ({
+        id: "legacy-final-pair",
+        fileType: "pdf",
+        mappingConfiguration: {
+          rows: [
+            {
+              year: 2022,
+              sector: "Stationary Energy",
+              subsector: "Residential buildings",
+              category: null,
+              gpcRefNo: "I.1.1",
+              scope: "1",
+              refSource: "document",
+              totalCO2e: 6300,
+            },
+          ],
+        },
+        validationResults: {},
+      }) as unknown as Parameters<typeof buildImportResult>[0];
+
+    it("holds a legacy override that pairs I.4.3 with the stated scope 1", async () => {
+      const { importResult } = await buildImportResult(legacyFile(), {
+        "0": { gpcRefNo: "I.4.3", scope: "1" },
+      });
+      expect(importResult.rows[0].gpcRefNo).toBe("I.4.3");
+      const pending = findPendingRows(importResult);
+      expect(pending).toHaveLength(1);
+      expect(pending[0].issue).toBe("reference-conflict");
+      const preview = await previewImportRows(
+        importResult,
+        InventoryTypeEnum.GPC_BASIC,
+      );
+      expect(preview.pendingRows).toBe(1);
+      expect(preview.rows.find((r) => r.status === "pending")).toBeDefined();
+    });
+
+    it("lets a compatible legacy override through", async () => {
+      const { importResult } = await buildImportResult(legacyFile(), {
+        "0": { gpcRefNo: "I.2.1", scope: "1" },
+      });
+      expect(findPendingRows(importResult)).toHaveLength(0);
+    });
+
+    it("does not hold a legacy override with a missing or invalid scope", async () => {
+      for (const scope of [null, "not a scope"]) {
+        const { importResult } = await buildImportResult(legacyFile(), {
+          "0": { gpcRefNo: "I.4.3", scope },
+        });
+        expect(findPendingRows(importResult)).toHaveLength(0);
+      }
+    });
+  });
+
   it("does not apply a forged review decision to a row that needs no review", async () => {
     const csv = "GPC ref. no.,Scope,Total CO2e\nIII.4.1,1,6300\n";
     const importedFile = {
@@ -1241,6 +1296,59 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
         const file =
           await db.models.ImportedInventoryFile.findByPk(importedFileId);
         expect(file!.importStatus).toBe(ImportStatusEnum.WAITING_FOR_APPROVAL);
+      });
+
+      it("rejects a legacy override that saves an incompatible final reference/scope pair", async () => {
+        const legacyId = randomUUID();
+        await db.models.ImportedInventoryFile.create({
+          id: legacyId,
+          userId: testUserID,
+          cityId: testData.cityId,
+          inventoryId,
+          fileName: "legacy.pdf",
+          originalFileName: "legacy.pdf",
+          fileType: "pdf",
+          fileSize: 1,
+          data: Buffer.from("x"),
+          importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+          mappingConfiguration: {
+            rows: [
+              {
+                year: 2022,
+                sector: "Stationary Energy",
+                subsector: "Residential buildings",
+                category: null,
+                gpcRefNo: "I.1.1",
+                scope: "1",
+                refSource: "document",
+                totalCO2e: 6300,
+              },
+            ],
+          },
+          rowCount: 1,
+          validationResults: { errors: [], warnings: [] },
+        });
+        try {
+          const response = await approveImport(
+            mockRequest({
+              importedFileId: legacyId,
+              mappingOverrides: { "0": { gpcRefNo: "I.4.3", scope: "1" } },
+            }),
+            { params: params() },
+          );
+          await expectStatusCode(response, 409);
+          const file = await db.models.ImportedInventoryFile.findByPk(legacyId);
+          expect(file!.importStatus).toBe(
+            ImportStatusEnum.WAITING_FOR_APPROVAL,
+          );
+          expect(
+            await db.models.InventoryValue.count({ where: { inventoryId } }),
+          ).toBe(0);
+        } finally {
+          await db.models.ImportedInventoryFile.destroy({
+            where: { id: legacyId },
+          });
+        }
       });
 
       it("rejects a forged decision", async () => {

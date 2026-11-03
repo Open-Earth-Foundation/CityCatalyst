@@ -38,10 +38,28 @@ function conflictingScope(row: ImportRow): number | null {
  * Nothing here looks at the wording of a quote: a found quote proves the text
  * exists, so it never clears a row. Only a recorded decision does.
  */
+/**
+ * True when the reference the row will be saved under and the scope it will
+ * be saved with disagree in the database catalogue. This looks only at the
+ * final values, so a per-row override that swaps the reference cannot hide a
+ * conflict. A missing or invalid scope, or a reference with no catalogue
+ * scope, is never a conflict.
+ */
+function finalPairConflict(row: ImportRow): boolean {
+  const finalScope = scopeFromLabel(row.review?.finalScope);
+  const finalCatalogue = row.review?.finalCatalogueScope;
+  return (
+    finalCatalogue != null &&
+    finalScope != null &&
+    finalScope !== finalCatalogue
+  );
+}
+
 function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
+  if (finalPairConflict(row)) return "reference-conflict";
   if (row.review?.refSource === "document") return null;
   return isImportedWasteRef(ref) ? "direction-unconfirmed" : null;
 }
@@ -49,7 +67,9 @@ function reviewIssue(row: ImportRow): ImportRowIssue | null {
 function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
   const review = row.review!;
   const suggestedRefNo = review.suggestedRefNo ?? row.gpcRefNo;
-  const expectedScope = conflictingScope({ ...row, gpcRefNo: suggestedRefNo });
+  const expectedScope =
+    conflictingScope({ ...row, gpcRefNo: suggestedRefNo }) ??
+    (finalPairConflict(row) ? (review.finalCatalogueScope ?? null) : null);
   return {
     rowIndex: row.rowIndex,
     issue,

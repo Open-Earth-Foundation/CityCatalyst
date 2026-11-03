@@ -44,6 +44,7 @@ import {
   ZERO_TOKENS,
   gitInfo,
   writeRunArtifact,
+  zeroRowMessage,
   type CaseResult,
   type Prices,
   type Tokens,
@@ -406,6 +407,7 @@ function pctDiff(actual: number, expected: number): number | null {
             let importedFileId: string;
             let extractedRows = 0;
             let failedPages: number[] = [];
+            let zeroRows: string | null = null;
             if (ocrResult) {
               const { rows, summary } =
                 await extraction.extractInventoryFromDocument(
@@ -414,25 +416,28 @@ function pctDiff(actual: number, expected: number): number | null {
                 );
               extractedRows = rows.length;
               failedPages = summary.failedPages ?? [];
+              // Production fails a PDF import with no rows before approval (CC-1202).
+              if (rows.length === 0) zeroRows = zeroRowMessage(summary);
               importedFileId = randomUUID();
-              await db.models.ImportedInventoryFile.create({
-                id: importedFileId,
-                userId: TEST_USER_ID,
-                cityId: ids.city,
-                inventoryId: ids.inventory,
-                fileName,
-                originalFileName: fileName,
-                fileType: "pdf",
-                fileSize: buffer.length,
-                contentDigest: createHash("sha256")
-                  .update(buffer)
-                  .digest("hex"),
-                data: buffer,
-                importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-                mappingConfiguration: { rows },
-                rowCount: rows.length,
-                validationResults: { errors: [], warnings: [] },
-              });
+              if (!zeroRows)
+                await db.models.ImportedInventoryFile.create({
+                  id: importedFileId,
+                  userId: TEST_USER_ID,
+                  cityId: ids.city,
+                  inventoryId: ids.inventory,
+                  fileName,
+                  originalFileName: fileName,
+                  fileType: "pdf",
+                  fileSize: buffer.length,
+                  contentDigest: createHash("sha256")
+                    .update(buffer)
+                    .digest("hex"),
+                  data: buffer,
+                  importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+                  mappingConfiguration: { rows },
+                  rowCount: rows.length,
+                  validationResults: { errors: [], warnings: [] },
+                });
             } else {
               const form = new FormData();
               form.append("file", new File([buffer], fileName));
@@ -469,17 +474,22 @@ function pctDiff(actual: number, expected: number): number | null {
               }
               extractedRows = Number(state.json?.data?.rowCount ?? 0);
             }
-            const approved = await approveRoute.POST(
-              mockRequest({ importedFileId }),
-              { params: Promise.resolve(ids) },
-            );
-            if (approved.status >= 300) {
-              throw new Error(`approve ${approved.status}`);
+            let done: { importStatus: string };
+            if (zeroRows) {
+              done = { importStatus: "failed" };
+            } else {
+              const approved = await approveRoute.POST(
+                mockRequest({ importedFileId }),
+                { params: Promise.resolve(ids) },
+              );
+              if (approved.status >= 300) {
+                throw new Error(`approve ${approved.status}`);
+              }
+              done = await pollStatus(ids, importedFileId, [
+                "completed",
+                "failed",
+              ]);
             }
-            const done = await pollStatus(ids, importedFileId, [
-              "completed",
-              "failed",
-            ]);
             const back = await readBack(ids.inventory);
             const reference = file.reference;
             const score = key ? scoreFile(key, back.stored) : null;
@@ -491,9 +501,10 @@ function pctDiff(actual: number, expected: number): number | null {
                 ? {}
                 : {
                     message:
-                      extractedRows === 0
+                      zeroRows ??
+                      (extractedRows === 0
                         ? "extraction returned 0 rows"
-                        : `import ended ${done.importStatus}`,
+                        : `import ended ${done.importStatus}`),
                   }),
               ms: Date.now() - started,
               extractedRows,

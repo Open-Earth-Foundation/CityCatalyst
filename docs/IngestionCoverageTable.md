@@ -12,7 +12,7 @@ Legend: 🟢 90% to 100% of rows, or tested and fine · 🟡 partial or one file
 | 🟡 Validated PDF cases at 15 to 40% of rows | **1 of 22** (Phoenix) |
 | 🔴 Validated PDF cases under 15% of rows | **4 of 22** (Philadelphia, Toronto 2019, New York, Peñalolén) |
 | 🟡 Non-GPC layouts, scored on the total only | **5 of 22** (Seattle, Madrid, Kyoto, Coimbatore, Münster) |
-| 🔴 PDF cases with no rows extracted | **1 of 22** in all runs (Guadalajara); Münster in 2 of 3 runs |
+| 🔴 PDF cases with no rows extracted | **2 of 22** (Guadalajara, Münster); in the 2026-11-03 rerun both returned no rows in 3 of 3 runs, with the reason recorded (see below) |
 | Validated cases with the total within tolerance in every run | **8 of 22** (26 of 66 runs) |
 | Held-out cases | **5**: recall 28%, value accuracy 35%, totals within tolerance 0 of 5 (3 of 15 runs) |
 | OCR step failures | **0 of 22** (was 5 of 11 before PR #3348) |
@@ -66,8 +66,8 @@ A case counts as within tolerance only when every run is. Means cover the cases 
 | 🟡 Kyoto 2023 (not GPC, total only) | n/a | 0 of 0 | −3.9% (runs: −1.7%, −1.7%, −8.3%), outside tolerance | rows not scored; total varies between runs |
 | 🟡 Coimbatore 2019-20 (not GPC, total only) | n/a | 0 of 0 | +0.1%, 1 of 3 runs within tolerance | rows not scored |
 | 🟡 Seattle 2022 (not GPC, total only) | n/a | 0 of 0 | −35.5% (runs: −4.1%, −52.7%, −49.6%), outside tolerance | rows not scored; total varies between runs |
-| 🔴 Münster 2022 (not GPC, total only) | n/a | 0 of 0 | 1 run ×5.2; 2 runs no rows | extraction returns no rows in 2 of 3 runs |
-| 🔴 Guadalajara 2022 | no rows | | | extraction returns no rows in all 3 runs; the OCR text holds 39 images and few table lines |
+| 🔴 Münster 2022 (not GPC, total only) | n/a | 0 of 0 | no rows in 3 of 3 runs | 2026-11-03 rerun (CC-1202): the model finds only the grand total (1,788,000 t, 2022) in 3 of 3 runs; it is kept as a reported total, so no line item is left. Sectors are percentages and a chart. The earlier run with a total ×5.2 did not repeat |
+| 🔴 Guadalajara 2022 | no rows | | no rows in 3 of 3 runs | 2026-11-03 rerun (CC-1202): 2 runs find only the prose total (23,787,113 t, 2022), 1 run finds nothing; sector values are not in the OCR text (39 images) |
 
 #### Held-out cases
 

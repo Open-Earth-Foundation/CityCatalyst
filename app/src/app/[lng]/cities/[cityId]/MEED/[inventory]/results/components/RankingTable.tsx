@@ -1,15 +1,20 @@
 "use client";
 import React from "react";
-import { Box, Card, HStack, Icon, IconButton, Table } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  HStack,
+  Icon,
+  IconButton,
+  Table,
+  VStack,
+} from "@chakra-ui/react";
 import { LuDownload, LuSquareArrowOutUpRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { MeedButton } from "../../../components/MeedButton";
-import { MeedInfoTip } from "../../../components/MeedInfoTip";
-import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { TitleLarge } from "@/components/package/Texts/Title";
-import { BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { GenerateReportControl } from "./ResultsHeader";
 import { FOCUS_RING } from "../../../focusRing";
@@ -19,7 +24,8 @@ import {
   legalCategoryLabelKey,
   type MeedLegalStanding,
 } from "../../regulations/legalStanding";
-import { MeedStatusTag } from "../../../components/MeedStatusTag";
+import { MeedLevel } from "../../../components/MeedLevel";
+import { MeedColumnHeader } from "../../../components/MeedColumnHeader";
 import {
   actionName,
   actionSectorTag,
@@ -32,14 +38,13 @@ import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
  * The full ranked-actions table. Names and sectors come from the action
  * catalog index; rank and scores come from the prioritization ranking result.
  *
- * The score-composition column shows *how* each action earned its final
- * score — the same three weighted pillars the drawer breaks down — as a bar
- * only; the number lives once, in the final-score column, and the exact parts
- * are on hover.
+ * Each row carries the final score; how it is made up (the three weighted
+ * pillars) lives on the cards and in the drawer, where there is room for it.
  *
  * The leading checkbox column shares its state with the top-pick cards. When
  * the caller wires `onGenerate`, the report control sits in this header, next
- * to the checkboxes that feed it.
+ * to the checkboxes that feed it. With `variant="controls"` the header is a
+ * control panel (count, export, report) under a heading the caller owns.
  *
  * This component stays presentational: the export button only calls back, and
  * the caller — which knows the city and inventory year — builds the file.
@@ -47,7 +52,6 @@ import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 export function RankingTable({
   actions,
   index,
-  weights,
   t,
   onSelect,
   selectedIds,
@@ -57,6 +61,7 @@ export function RankingTable({
   isGenerating = false,
   progress = null,
   legalFor,
+  variant = "titled",
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
@@ -72,11 +77,14 @@ export function RankingTable({
   progress?: string | null;
   /** Legal standing per action; adds the municipal-authority column when set. */
   legalFor?: (actionId: string) => MeedLegalStanding | null;
+  /** `controls`: a count line instead of a title, for a caller-framed section. */
+  variant?: "titled" | "controls";
 }) {
+  const controls = variant === "controls";
   return (
     <Card.Root overflow="hidden">
       <HStack
-        px="l"
+        px={controls ? "xl" : "l"}
         py="l"
         gap="m"
         alignItems="flex-start"
@@ -85,14 +93,23 @@ export function RankingTable({
         borderColor="border.overlay"
         flexWrap="wrap"
       >
-        <Box flex="1" minW="240px">
-          <TitleLarge color="content.primary">{t("table-title")}</TitleLarge>
-          <BodyMedium color="content.secondary" mt="s">
-            {t("table-description", { count: actions.length })}
-          </BodyMedium>
-        </Box>
-        <HStack gap="m" alignItems="flex-start" flexWrap="wrap">
-          {onExport && (
+        {controls ? (
+          <VStack alignItems="flex-start" gap="xs" flex="1" minW="240px">
+            <BodySmall color="content.primary" fontWeight="semibold">
+              {t("list-summary", { count: actions.length })}
+            </BodySmall>
+            <BodySmall color="content.secondary">{t("list-hint")}</BodySmall>
+          </VStack>
+        ) : (
+          <Box flex="1" minW="240px">
+            <TitleLarge color="content.primary">{t("table-title")}</TitleLarge>
+            <BodyMedium color="content.secondary" mt="xs">
+              {t("table-description", { count: actions.length })}
+            </BodyMedium>
+          </Box>
+        )}
+        {(() => {
+          const exportButton = onExport ? (
             <MeedButton
               variant="outlined"
               flexShrink={0}
@@ -102,8 +119,10 @@ export function RankingTable({
             >
               {t("export-csv")}
             </MeedButton>
-          )}
-          {onGenerate && (
+          ) : null;
+          // One group: the two controls side by side, the report hint under
+          // both, so the pair never drifts apart when the hint is long.
+          return onGenerate ? (
             <GenerateReportControl
               selectedCount={selectedIds.length}
               isGenerating={isGenerating}
@@ -111,9 +130,12 @@ export function RankingTable({
               onGenerate={onGenerate}
               t={t}
               hintId="meed-report-hint-table"
+              leading={exportButton}
             />
-          )}
-        </HStack>
+          ) : (
+            exportButton
+          );
+        })()}
       </HStack>
       {/* Below the tablet breakpoint the table scrolls sideways instead of
           crushing the action name into one word per line. */}
@@ -121,47 +143,26 @@ export function RankingTable({
         <Table.Root size="md" minW="720px">
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeader w="40px">
-                {t("column-select")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader w="64px">
-                {t("column-rank")}
-              </Table.ColumnHeader>
+              {/* A visible "Select" heading made this 40 px column 109 px wide. */}
+              <MeedColumnHeader
+                label={t("column-select")}
+                hideLabel
+                width="40px"
+              />
+              <MeedColumnHeader label={t("column-rank")} width="64px" />
               {/* The name is what the row is about: it takes whatever width the
                 fixed columns leave. */}
-              <Table.ColumnHeader minW="260px">
-                {t("column-action")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
+              <MeedColumnHeader label={t("column-action")} minW="240px" />
+              <MeedColumnHeader label={t("column-sector")} />
               {legalFor && (
-                <Table.ColumnHeader
+                <MeedColumnHeader
+                  label={t("column-legal")}
+                  tip={t("column-legal-info")}
                   display={{ base: "none", md: "table-cell" }}
-                >
-                  <HStack gap="xs" alignItems="center">
-                    <span>{t("column-legal")}</span>
-                    <MeedInfoTip
-                      content={t("column-legal-info")}
-                      ariaLabel={t("column-legal-info")}
-                    />
-                  </HStack>
-                </Table.ColumnHeader>
+                />
               )}
-              <Table.ColumnHeader
-                w="200px"
-                display={{ base: "none", md: "table-cell" }}
-              >
-                <HStack gap="xs" alignItems="center">
-                  <span>{t("column-composition")}</span>
-                  <MeedInfoTip
-                    content={t("column-composition-info")}
-                    ariaLabel={t("column-composition-info")}
-                  />
-                </HStack>
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-score")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader />
+              <MeedColumnHeader label={t("column-score")} align="end" />
+              <MeedColumnHeader width="40px" />
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -178,7 +179,11 @@ export function RankingTable({
                     />
                   </Table.Cell>
                   <Table.Cell whiteSpace="nowrap">
-                    <BodyMedium color="content.link" fontWeight="bold">
+                    <BodyMedium
+                      color="content.primary"
+                      fontWeight="semibold"
+                      fontVariantNumeric="tabular-nums"
+                    >
                       #{action.rank}
                     </BodyMedium>
                   </Table.Cell>
@@ -199,28 +204,16 @@ export function RankingTable({
                   {legalFor && (
                     <Table.Cell display={{ base: "none", md: "table-cell" }}>
                       {legal && (
-                        <MeedStatusTag
-                          tone={LEGAL_CATEGORY_TONE[legal.ownership]}
-                        >
+                        <MeedLevel tone={LEGAL_CATEGORY_TONE[legal.ownership]}>
                           {t(legalCategoryLabelKey(legal.ownership))}
-                        </MeedStatusTag>
+                        </MeedLevel>
                       )}
                     </Table.Cell>
                   )}
-                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                    <Box w="180px">
-                      <MeedScoreComposition
-                        action={action}
-                        weights={weights}
-                        variant="bar"
-                        t={t}
-                      />
-                    </Box>
-                  </Table.Cell>
                   <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
-                    <LabelLarge color="content.primary">
+                    <BodySmall color="content.primary" fontWeight="semibold">
                       {action.final_score.toFixed(2)}
-                    </LabelLarge>
+                    </BodySmall>
                   </Table.Cell>
                   <Table.Cell textAlign="end">
                     <IconButton

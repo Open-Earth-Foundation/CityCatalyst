@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import { HStack, VStack } from "@chakra-ui/react";
+import { HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuFileText } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { MeedButton } from "../../../components/MeedButton";
-import { LabelLarge } from "@/components/package/Texts/Label";
-import { Caption } from "@/components/package/Texts/Caption";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { FOCUS_RING } from "../../../focusRing";
 
 /**
@@ -16,7 +16,7 @@ import { FOCUS_RING } from "../../../focusRing";
  *
  * The button is enabled only with a selection: reports are generated per
  * action, so with nothing selected there is nothing to generate. Every
- * checkbox on the screen — card or table row — feeds it.
+ * checkbox on the screen — card, table row or drawer — feeds it.
  */
 export function GenerateReportControl({
   selectedCount,
@@ -25,6 +25,7 @@ export function GenerateReportControl({
   onGenerate,
   t,
   hintId = "meed-report-hint",
+  leading,
 }: {
   selectedCount: number;
   isGenerating: boolean;
@@ -34,31 +35,46 @@ export function GenerateReportControl({
   t: TFunction;
   /** Unique when the control is rendered more than once on a screen. */
   hintId?: string;
+  /** A sibling control (e.g. Export CSV) shown beside the button, above the hint. */
+  leading?: React.ReactNode;
 }) {
   return (
-    <VStack alignItems="flex-end" gap="xs" flexShrink={0} maxW="full">
-      <MeedButton
-        variant="filled"
-        minW="auto"
-        px="l"
-        disabled={selectedCount === 0 || isGenerating}
-        aria-describedby={hintId}
-        onClick={onGenerate}
-        _focusVisible={FOCUS_RING}
+    <VStack
+      alignItems={{ base: "flex-start", md: "flex-end" }}
+      gap="xs"
+      flexShrink={0}
+      maxW="full"
+    >
+      <HStack gap="m" flexWrap="wrap">
+        {leading}
+        <MeedButton
+          variant="filled"
+          minW="auto"
+          px="l"
+          disabled={selectedCount === 0 || isGenerating}
+          leftIcon={<Icon as={LuFileText} boxSize="16px" />}
+          aria-describedby={hintId}
+          onClick={onGenerate}
+          _focusVisible={FOCUS_RING}
+        >
+          {isGenerating
+            ? t("generate-report-running")
+            : selectedCount > 0
+              ? t("generate-report-count", { count: selectedCount })
+              : t("generate-report")}
+        </MeedButton>
+      </HStack>
+      <BodySmall
+        id={hintId}
+        color="content.tertiary"
+        textAlign={{ base: "start", md: "end" }}
       >
-        {isGenerating
-          ? t("generate-report-running")
-          : selectedCount > 0
-            ? t("generate-report-count", { count: selectedCount })
-            : t("generate-report")}
-      </MeedButton>
-      <Caption id={hintId} color="content.tertiary" textAlign="end">
         {isGenerating && progress
           ? progress
           : selectedCount === 0
             ? t("generate-report-hint")
             : t("generate-report-duration", { count: selectedCount })}
-      </Caption>
+      </BodySmall>
     </VStack>
   );
 }
@@ -66,7 +82,7 @@ export function GenerateReportControl({
 /**
  * Census line plus, when the caller wants it here, the screen's report entry
  * point. Callers that place the report control next to the selection (the
- * top-pick grid, the ranked table) leave `onGenerate` out.
+ * ranked list's control panel) leave `onGenerate` out.
  */
 export function ResultsHeader({
   rankedCount,
@@ -112,7 +128,7 @@ export function ResultsHeader({
       gap="m"
       flexWrap="wrap"
     >
-      <LabelLarge color="content.tertiary">{census}</LabelLarge>
+      <BodyMedium color="content.tertiary">{census}</BodyMedium>
       {!onGenerate && trailing}
       {onGenerate && (
         <GenerateReportControl

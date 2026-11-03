@@ -21,12 +21,12 @@ import { CoBenefitStrip } from "./components/CoBenefitStrip";
 import { ContextCardGrid } from "./components/ContextCardGrid";
 import type { MeedContextArea } from "./components/contextAreas";
 import { MeedScoreLegend } from "../../components/MeedScoreComposition";
-import { MeedRankingSummary } from "../../components/MeedRankingSummary";
-import { MeedRankingConfig } from "../../components/MeedRankingConfig";
 import { MeedRankingBasis } from "../../components/MeedRankingBasis";
+import { MeedSection } from "../../components/MeedSection";
+import { MeedInsightList } from "../../components/MeedInsightList";
+import { RankingRecipe } from "./components/RankingRecipe";
 import { rankingInsights } from "./components/rankingInsights";
 import { sectorTagLabel } from "./components/actionCatalog";
-import { SECTORS } from "@/util/constants";
 import { meedContextVisual } from "../../components/meedContextVisuals";
 import { useMeedContextFacts } from "../../useMeedContextFacts";
 import { buildActionIndex } from "./components/actionCatalog";
@@ -171,7 +171,7 @@ export default function Page(props: {
       headers,
       rows,
     });
-  }, [ranked, index, t, inventory]);
+  }, [ranked, index, t, inventory, legalFor]);
 
   const { generate, isRunning, progress } = useMeedReport(cityId, inventoryId);
   // Carries its own title: "some reports could not be generated" is the wrong
@@ -310,34 +310,10 @@ export default function Page(props: {
       }),
     [ranked, index, scoreWeights, context.bySector, context.financeRoutes],
   );
-  const inventoryYear = inventory?.year;
-  const summaryInputs = useMemo(
-    () =>
-      [
-        inventoryYear && emissionsText
-          ? t("summary-input-inventory", {
-              year: inventoryYear,
-              emissions: emissionsText,
-            })
-          : null,
-        context.sectorsWithData !== null
-          ? t("summary-input-sectors", {
-              n: context.sectorsWithData,
-              total: SECTORS.length,
-            })
-          : null,
-        context.indicatorCount
-          ? t("summary-input-indicators", { n: context.indicatorCount })
-          : null,
-        context.cityProfileLabel,
-        index.size ? t("summary-input-catalog", { n: index.size }) : null,
-      ].filter((x): x is string => Boolean(x)),
-    [inventoryYear, emissionsText, context, index.size, t],
-  );
-
   // Rationale deep links come back here, not into the wizard.
   const hrefFor = (segment: string) =>
     stepHref(lng, cityId, inventoryId, segment, "results");
+  const editHref = stepHref(lng, cityId, inventoryId, "preferences", "results");
 
   return (
     <MeedShell
@@ -347,6 +323,7 @@ export default function Page(props: {
       title={t("page-title")}
       description={t("page-description")}
       currentLabel={t("page-title")}
+      hideFooter
     >
       <>
         {!isReady ? (
@@ -373,122 +350,130 @@ export default function Page(props: {
             }
           />
         ) : (
-          <VStack alignItems="stretch" gap="xl">
-            <ResultsHeader
-              rankedCount={ranked.length}
-              excludedCount={excludedCount}
-              emissionsText={emissionsText}
-              selectedCount={selectedIds.length}
-              isGenerating={isRunning}
-              progress={
-                isRunning
-                  ? t("report-progress", {
-                      done: progress.done + 1,
-                      total: progress.total,
-                    })
-                  : null
-              }
-              onGenerate={generateReport}
-              t={t}
-            />
-
-            {/*
-              Named, dismissible, and never blocking: a partial failure still
-              produced a report, so this sits beside it rather than replacing it.
-            */}
-            {reportError && (
-              <MeedErrorCard
-                title={reportError.title}
-                body={reportError.body}
-                retryLabel={t("report-error-dismiss")}
-                onRetry={() => setReportError(null)}
-                actionLabel={reportError.action?.label}
-                actionHref={reportError.action?.href}
+          <VStack alignItems="stretch" gap="xxl-6">
+            {/* What this is: the census, and the basis the list was ranked on. */}
+            <VStack alignItems="stretch" gap="m">
+              <ResultsHeader
+                rankedCount={ranked.length}
+                excludedCount={excludedCount}
+                emissionsText={emissionsText}
+                t={t}
               />
-            )}
+              <MeedRankingBasis
+                inventoryId={inventoryId}
+                weights={scoreWeights}
+                isStale={isStale}
+                editHref={editHref}
+                lng={lng}
+              />
+            </VStack>
 
             {/*
-              One scroll, in the order the user reasons in: what to do, what it
-              also buys you, and only then why. The rationale areas used to sit
-              behind a "Context" tab, which put the explanation of the ranking
-              somewhere most users never opened.
+              One scroll, in the order the user reasons in: what to do first,
+              the whole list to work from, why, and how it was built.
             */}
-            <MeedRankingSummary
-              insights={insights}
-              legalCounts={legalCounts}
-              backing={backing}
-              nationalPolicy={context.policy?.national ?? null}
-              inputs={summaryInputs}
-              sectorLabelFor={(tag) => sectorTagLabel(tag, t)}
-              inventorySectorLabelFor={sectorLabelFor}
-              t={t}
-              config={
-                <MeedRankingConfig
-                  inventoryId={inventoryId}
-                  weights={scoreWeights}
-                  isStale={isStale}
-                  editHref={stepHref(
-                    lng,
-                    cityId,
-                    inventoryId,
-                    "preferences",
-                    "results",
-                  )}
-                  lng={lng}
-                />
-              }
-            />
-            <TopPicks
-              actions={topPicks}
-              index={index}
-              weights={scoreWeights}
-              t={t}
-              isCatalogLoading={isCatalogLoading}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-              onOpenDetail={setSelected}
-              onBrowseFullRanking={showFullRanking}
-              legalFor={legalFor}
-            />
-            {scoreWeights && <MeedScoreLegend weights={scoreWeights} t={t} />}
-            <CoBenefitStrip
-              benefits={coBenefits}
-              total={topPicks.length}
-              t={t}
-            />
-            <ContextCardGrid
-              facts={facts}
-              backing={backing}
-              t={t}
-              hrefFor={hrefFor}
-              visualFor={visualFor}
-            />
+            <MeedSection
+              title={t("top-picks-title")}
+              body={t("top-picks-description")}
+            >
+              <TopPicks
+                actions={topPicks}
+                index={index}
+                weights={scoreWeights}
+                t={t}
+                isCatalogLoading={isCatalogLoading}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+                onOpenDetail={setSelected}
+                onBrowseFullRanking={showFullRanking}
+                legalFor={legalFor}
+                layout="section"
+              />
+              <CoBenefitStrip
+                benefits={coBenefits}
+                total={topPicks.length}
+                t={t}
+              />
+            </MeedSection>
 
-            <MeedRankingBasis
-              inventoryId={inventoryId}
-              weights={scoreWeights}
-              isStale={isStale}
-              editHref={stepHref(
-                lng,
-                cityId,
-                inventoryId,
-                "preferences",
-                "results",
-              )}
-              lng={lng}
-            />
-            <FullRanking
+            <MeedSection
               ref={rankingRef}
-              actions={ranked}
-              index={index}
-              weights={scoreWeights}
-              t={t}
-              onSelect={setSelected}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-              onExport={exportRanking}
-              legalFor={legalFor}
-            />
+              id="meed-all-actions"
+              title={t("section-list-title")}
+              body={t("section-list-body")}
+            >
+              {/*
+                Named, dismissible, and never blocking: a partial failure still
+                produced a report, so this sits beside the control rather than
+                replacing anything.
+              */}
+              {reportError && (
+                <MeedErrorCard
+                  title={reportError.title}
+                  body={reportError.body}
+                  retryLabel={t("report-error-dismiss")}
+                  onRetry={() => setReportError(null)}
+                  actionLabel={reportError.action?.label}
+                  actionHref={reportError.action?.href}
+                />
+              )}
+              <FullRanking
+                actions={ranked}
+                index={index}
+                weights={scoreWeights}
+                t={t}
+                onSelect={setSelected}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+                onExport={exportRanking}
+                onGenerate={generateReport}
+                isGenerating={isRunning}
+                progress={
+                  isRunning
+                    ? t("report-progress", {
+                        done: progress.done + 1,
+                        total: progress.total,
+                      })
+                    : null
+                }
+                legalFor={legalFor}
+                tableVariant="controls"
+              />
+            </MeedSection>
+
+            <MeedSection
+              title={t("context-title")}
+              body={t("context-description")}
+            >
+              <MeedInsightList
+                insights={insights}
+                legalCounts={legalCounts}
+                backing={backing}
+                nationalPolicy={context.policy?.national ?? null}
+                sectorLabelFor={(tag) => sectorTagLabel(tag, t)}
+                inventorySectorLabelFor={sectorLabelFor}
+                t={t}
+              />
+              <ContextCardGrid
+                facts={facts}
+                backing={backing}
+                t={t}
+                hrefFor={hrefFor}
+                visualFor={visualFor}
+                heading={false}
+              />
+            </MeedSection>
+
+            <MeedSection title={t("section-built-title")}>
+              <RankingRecipe
+                inventoryId={inventoryId}
+                weights={scoreWeights}
+                hrefFor={hrefFor}
+                editHref={editHref}
+                t={t}
+              />
+              {scoreWeights && <MeedScoreLegend weights={scoreWeights} t={t} />}
+            </MeedSection>
           </VStack>
         )}
 

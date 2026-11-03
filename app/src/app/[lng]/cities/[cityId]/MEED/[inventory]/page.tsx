@@ -11,14 +11,14 @@ import {
   HeadlineLarge,
   HeadlineSmall,
 } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
+import { BodyLarge, BodySmall } from "@/components/package/Texts/Body";
 import { MeedButton } from "../components/MeedButton";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedInventoryMenu } from "../components/MeedInventoryMenu";
 import { MeedLatestRanking } from "../components/MeedLatestRanking";
-import { MeedRankingSummary } from "../components/MeedRankingSummary";
-import { MeedRankingConfig } from "../components/MeedRankingConfig";
+import { MeedRankingBasis } from "../components/MeedRankingBasis";
+import { MeedSection } from "../components/MeedSection";
+import { MeedScoreLegend } from "../components/MeedScoreComposition";
 import { MeedCardGridSkeleton } from "../components/MeedSkeletons";
 import { meedContextVisual } from "../components/meedContextVisuals";
 import {
@@ -40,9 +40,6 @@ import {
 import { buildActionIndex } from "./results/components/actionCatalog";
 import { ContextCardGrid } from "./results/components/ContextCardGrid";
 import type { MeedContextArea } from "./results/components/contextAreas";
-import { rankingInsights } from "./results/components/rankingInsights";
-import { sectorTagLabel } from "./results/components/actionCatalog";
-import { SECTORS } from "@/util/constants";
 import {
   excludedActionCount,
   legalFunnel,
@@ -230,50 +227,24 @@ export default function MEEDInventoryPage(props: {
     ],
   );
 
-  // ── Ranking summary ─────────────────────────────────────────────────────
-  const insights = useMemo(
-    () =>
-      ranking
-        ? rankingInsights({
-            ranked,
-            index,
-            weights,
-            bySector: context.bySector,
-            financeRoutes: context.financeRoutes,
-          })
-        : null,
-    [ranking, ranked, index, weights, context.bySector, context.financeRoutes],
-  );
-  const inventoryYear = inventory?.year;
-  const summaryInputs = useMemo(() => {
-    const items: string[] = [];
-    if (inventoryYear && emissionsText) {
-      items.push(
-        tResults("summary-input-inventory", {
-          year: inventoryYear,
-          emissions: emissionsText,
-        }),
-      );
-    }
-    if (context.sectorsWithData !== null) {
-      items.push(
-        tResults("summary-input-sectors", {
-          n: context.sectorsWithData,
-          total: SECTORS.length,
-        }),
-      );
-    }
-    if (context.indicatorCount) {
-      items.push(
-        tResults("summary-input-indicators", { n: context.indicatorCount }),
-      );
-    }
-    if (context.cityProfileLabel) items.push(context.cityProfileLabel);
-    if (index.size) {
-      items.push(tResults("summary-input-catalog", { n: index.size }));
-    }
-    return items;
-  }, [inventoryYear, emissionsText, context, index.size, tResults]);
+  const generatedLabel = useMemo(() => {
+    if (!ranking) return null;
+    const generated = new Date(ranking.generatedAtUtc);
+    return Number.isNaN(generated.valueOf())
+      ? null
+      : new Intl.DateTimeFormat(lng, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(generated);
+  }, [ranking, lng]);
+  const rankingSectionBody = [
+    excludedCount !== null
+      ? t("ranking-census", { ranked: ranked.length, excluded: excludedCount })
+      : null,
+    generatedLabel ? t("ranking-generated-at", { when: generatedLabel }) : null,
+  ]
+    .filter(Boolean)
+    .join(" \u00b7 ");
 
   const ctaFor = useCallback(
     (area: MeedContextArea) => {
@@ -379,7 +350,7 @@ export default function MEEDInventoryPage(props: {
         w="full"
         maxW={MEED_CONTENT_MAX_W}
         flexDirection="column"
-        gap="xl"
+        gap="xxl-6"
       >
         {/* Module block: what this is, and the one action that starts it. */}
         <HStack
@@ -434,7 +405,7 @@ export default function MEEDInventoryPage(props: {
             </HStack>
             {/* The disabled button says why, next to itself — never in a tooltip. */}
             {isReady && !emissionsRetrieved && (
-              <Caption
+              <BodySmall
                 id="meed-get-recommendations-hint"
                 color="content.tertiary"
                 textAlign={{ base: "start", md: "end" }}
@@ -443,73 +414,66 @@ export default function MEEDInventoryPage(props: {
                 {emissionsEmpty
                   ? t("get-recommendations-hint-no-data")
                   : t("get-recommendations-hint")}
-              </Caption>
+              </BodySmall>
             )}
           </VStack>
         </HStack>
 
         {/* Once a ranking exists, it — not the setup — is what the user came back for. */}
-        {isReady && ranking && insights && (
-          <MeedRankingSummary
-            insights={insights}
-            legalCounts={legalCounts}
-            backing={backing}
-            nationalPolicy={context.policy?.national ?? null}
-            inputs={summaryInputs}
-            sectorLabelFor={(tag) => sectorTagLabel(tag, tResults)}
-            inventorySectorLabelFor={sectorLabelFor}
-            t={tResults}
-            config={
-              <MeedRankingConfig
-                inventoryId={inventoryId}
-                weights={weights}
-                isStale={isRankingStale}
-                editHref={stepHref(lng, cityId, inventoryId, "preferences")}
-                lng={lng}
-              />
-            }
-          />
-        )}
         {isReady && ranking && (
-          <MeedLatestRanking
-            ranking={ranking}
-            index={index}
-            isCatalogLoading={isCatalogLoading}
-            weights={weights}
-            excludedCount={excludedCount}
-            isStale={isRankingStale}
-            resultsHref={getMeedPath(lng, cityId, inventoryId, "results")}
-            onOpenDetail={() =>
-              router.push(getMeedPath(lng, cityId, inventoryId, "results"))
-            }
-            lng={lng}
-            t={t}
-            tResults={tResults}
-          />
+          <MeedSection
+            title={t("ranking-title", { count: ranked.length })}
+            body={rankingSectionBody || undefined}
+          >
+            <MeedRankingBasis
+              inventoryId={inventoryId}
+              weights={weights}
+              isStale={isRankingStale}
+              editHref={stepHref(lng, cityId, inventoryId, "preferences")}
+              lng={lng}
+            />
+            <MeedLatestRanking
+              ranking={ranking}
+              index={index}
+              isCatalogLoading={isCatalogLoading}
+              weights={weights}
+              isStale={isRankingStale}
+              resultsHref={getMeedPath(lng, cityId, inventoryId, "results")}
+              onOpenDetail={() =>
+                router.push(getMeedPath(lng, cityId, inventoryId, "results"))
+              }
+              t={t}
+              tResults={tResults}
+            />
+            {weights && <MeedScoreLegend weights={weights} t={tResults} />}
+          </MeedSection>
         )}
 
         {/* The context the model ranks against — explorable before and after a run. */}
         {isReady ? (
-          <VStack alignItems="stretch" gap="xs">
+          <MeedSection
+            title={t("how-ranking-works-title")}
+            body={t("how-ranking-works-description")}
+          >
             <ContextCardGrid
-              title={t("how-ranking-works-title")}
-              description={t("how-ranking-works-description")}
               facts={facts}
               backing={backing}
               t={tResults}
               hrefFor={(segment) => stepHref(lng, cityId, inventoryId, segment)}
               ctaFor={ctaFor}
               visualFor={visualFor}
+              heading={false}
             />
             {retrieveFailed && (
-              <Caption color="sentiment.negativeDefault" role="alert">
+              <BodySmall color="sentiment.negativeDefault" role="alert">
                 {t("emissions-error-body")}
-              </Caption>
+              </BodySmall>
             )}
-          </VStack>
+          </MeedSection>
         ) : (
           <MeedCardGridSkeleton items={5} />
         )}
+
       </Box>
     </Box>
   );

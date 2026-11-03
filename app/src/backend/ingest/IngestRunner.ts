@@ -7,6 +7,11 @@ import {
   assertDocumentReusable,
   type IngestDocumentPool,
 } from "./document-pool";
+import {
+  confirmColumnMap,
+  isColumnMappingPending,
+  proposeColumnMap,
+} from "./column-mapping";
 import type { IngestPlugin } from "./plugin";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
@@ -20,6 +25,7 @@ import {
 } from "./review-draft";
 import {
   IngestItemError,
+  type IngestColumnMappingInput,
   type IngestFileInput,
   type IngestItemRecord,
   type IngestJobRecord,
@@ -252,62 +258,27 @@ export class IngestRunner {
         scope,
       });
 
-      await this.setStage(item.id, "adapt");
-      const adapted = await plugin.adapt(
+      const mappingInput = await plugin.columnMapping?.(
         { job, item: await this.requireItem(item.id), scope },
         parsed,
       );
-
-      await this.setStage(item.id, "validate");
-      const validation = await plugin.validate(
-        { job, item: await this.requireItem(item.id), scope },
-        adapted,
-      );
-      await this.addWarnings(item.id, validation?.warnings);
-
-      await this.setStage(item.id, "decide");
-      const policy = plugin.approvalPolicy(
-        { job, item: await this.requireItem(item.id), scope },
-        adapted,
-      );
-      if (policy === "reject") {
-        throw new IngestItemError("validation_failed", "Plugin rejected file");
-      }
-      if (job.dryRun) {
-        await this.store.updateItem(item.id, {
-          status: "skipped",
-          stage: "commit",
-          errorCode: "dry_run",
-          errorLog: "dryRun stops before commit and catalog registration",
-        });
-        return;
-      }
-      if (policy === "review") {
-        await this.persistReviewDraft({
+      if (mappingInput) {
+        await this.setStage(item.id, "map");
+        if (job.dryRun) {
+          await this.skipDryRun(item.id);
+          return;
+        }
+        await this.persistColumnMappingDraft({
           job,
           itemId: item.id,
-          plugin,
-          adapted,
-          validation,
+          parsed,
+          mappingInput,
           scope,
         });
         return;
       }
 
-      await this.setStage(item.id, "commit");
-      const result = await plugin.commit(
-        { job, item: await this.requireItem(item.id), scope },
-        adapted,
-      );
-
-      await this.setStage(item.id, "publish");
-      await this.publishPathA(item.id, plugin);
-
-      await this.store.updateItem(item.id, {
-        status: "completed",
-        stage: "publish",
-        result: result ?? { committed: true },
-      });
+      await this.continueFromParsed(job, item.id, plugin, parsed, scope);
     } catch (err) {
       const code =
         err instanceof IngestItemError ? err.code : "commit_failed";
@@ -317,6 +288,127 @@ export class IngestRunner {
         errorLog: err instanceof Error ? err.message : String(err),
       });
     }
+  }
+
+  private async skipDryRun(itemId: string): Promise<void> {
+    await this.store.updateItem(itemId, {
+      status: "skipped",
+      stage: "commit",
+      errorCode: "dry_run",
+      errorLog: "dryRun stops before commit and catalog registration",
+    });
+  }
+
+  private async continueFromParsed(
+    job: IngestJobRecord,
+    itemId: string,
+    plugin: IngestPlugin,
+    parsed: unknown,
+    scope: IngestScope,
+  ): Promise<void> {
+    await this.setStage(itemId, "adapt");
+    const adapted = await plugin.adapt(
+      { job, item: await this.requireItem(itemId), scope },
+      parsed,
+    );
+
+    await this.setStage(itemId, "validate");
+    const validation = await plugin.validate(
+      { job, item: await this.requireItem(itemId), scope },
+      adapted,
+    );
+    await this.addWarnings(itemId, validation?.warnings);
+
+    await this.setStage(itemId, "decide");
+    const policy = plugin.approvalPolicy(
+      { job, item: await this.requireItem(itemId), scope },
+      adapted,
+    );
+    if (policy === "reject") {
+      throw new IngestItemError("validation_failed", "Plugin rejected file");
+    }
+    if (job.dryRun) {
+      await this.skipDryRun(itemId);
+      return;
+    }
+    if (policy === "review") {
+      await this.persistReviewDraft({
+        job,
+        itemId,
+        plugin,
+        adapted,
+        validation,
+        scope,
+      });
+      return;
+    }
+
+    await this.setStage(itemId, "commit");
+    const result = await plugin.commit(
+      { job, item: await this.requireItem(itemId), scope },
+      adapted,
+    );
+
+    await this.setStage(itemId, "publish");
+    await this.publishPathA(itemId, plugin);
+
+    const current = await this.requireItem(itemId);
+    const mappingDraft = current.reviewDraft;
+    await this.store.updateItem(itemId, {
+      status: "completed",
+      stage: "publish",
+      result: {
+        ...(result ?? { committed: true }),
+        ...(mappingDraft?.columnMapping?.confirmed
+          ? { columnMapping: mappingDraft.columnMapping.confirmed }
+          : {}),
+      },
+      ...(mappingDraft
+        ? {
+            reviewDraft: {
+              ...mappingDraft,
+              decision: {
+                status: "confirmed" as const,
+                userId: mappingDraft.decision.userId ?? null,
+                at: new Date().toISOString(),
+              },
+            },
+          }
+        : {}),
+      reviewLockedByUserId: null,
+      reviewLockedAt: null,
+    });
+  }
+
+  private async persistColumnMappingDraft(input: {
+    job: IngestJobRecord;
+    itemId: string;
+    parsed: unknown;
+    mappingInput: IngestColumnMappingInput;
+    scope: IngestScope;
+  }): Promise<void> {
+    const current = await this.requireItem(input.itemId);
+    const proposal = proposeColumnMap(input.mappingInput);
+    const envelope = buildReviewDraftEnvelope({
+      payload: input.parsed,
+      sourceContentHash: current.contentHash ?? "",
+      targetBinding: {
+        cityId: current.targetCityId ?? input.job.cityId,
+        inventoryId: current.targetInventoryId ?? input.scope.inventoryId,
+      },
+      columnMapping: {
+        status: "pending",
+        proposal,
+        confirmed: null,
+      },
+    });
+    await this.store.updateItem(input.itemId, {
+      status: "awaiting_review",
+      stage: "map",
+      result: { columnMapping: proposal },
+      reviewDraft: envelope,
+      reviewDraftVersion: envelope.version,
+    });
   }
 
   private async addWarnings(
@@ -417,6 +509,12 @@ export class IngestRunner {
         "Review draft version does not match",
       );
     }
+    if (isColumnMappingPending(current.columnMapping)) {
+      throw new IngestItemError(
+        "mapping_incomplete",
+        "Confirm the column map before editing the review payload",
+      );
+    }
     const payload = cloneJson(input.payload);
     const next: IngestReviewDraftEnvelope = {
       ...current,
@@ -467,6 +565,12 @@ export class IngestRunner {
     this.requireAwaitingReview(item);
     this.assertCanEditReview(item, input.userId);
     this.assertDraftStillValid(item, draft, input);
+    if (isColumnMappingPending(draft.columnMapping)) {
+      throw new IngestItemError(
+        "mapping_incomplete",
+        "Confirm the column map before committing",
+      );
+    }
 
     const adapted = plugin.hydrateReviewDraft
       ? plugin.hydrateReviewDraft(draft.payload)
@@ -504,6 +608,82 @@ export class IngestRunner {
     return completed;
   }
 
+  /**
+   * Store the confirmed column map, then adapt / validate / decide.
+   * Does not commit until Decide says so.
+   */
+  async confirmColumnMapping(
+    itemId: string,
+    plugin: IngestPlugin,
+    input: {
+      userId: string;
+      reviewDraftVersion: number;
+      mappings: Array<{ sourceColumn: string; taxonomyField: string }>;
+    },
+  ): Promise<IngestItemRecord> {
+    const item = this.requireAwaitingReview(await this.requireItem(itemId));
+    const job = await this.requireJob(item.jobId);
+    if (plugin.moduleId !== job.moduleId) {
+      throw new Error(
+        `Plugin ${plugin.moduleId} cannot confirm job for module ${job.moduleId}`,
+      );
+    }
+    this.assertCanEditReview(item, input.userId);
+    const draft = requireReviewDraft(item.reviewDraft);
+    this.assertDraftStillValid(item, draft, {
+      reviewDraftVersion: input.reviewDraftVersion,
+    });
+    if (!isColumnMappingPending(draft.columnMapping) || !draft.columnMapping) {
+      throw new IngestItemError(
+        "mapping_incomplete",
+        "Item is not waiting for a column map",
+      );
+    }
+    const confirmed = confirmColumnMap(
+      draft.columnMapping.proposal,
+      input.mappings,
+    );
+    const next: IngestReviewDraftEnvelope = {
+      ...draft,
+      version: draft.version + 1,
+      columnMapping: {
+        status: "confirmed",
+        proposal: draft.columnMapping.proposal,
+        confirmed,
+      },
+      decision: { status: "pending", userId: null, at: null },
+    };
+    await this.store.updateItem(itemId, {
+      reviewDraft: next,
+      reviewDraftVersion: next.version,
+      reviewLockedByUserId: input.userId,
+      reviewLockedAt: new Date(),
+      stage: "map",
+    });
+
+    const scope: IngestScope = {
+      organizationId: job.organizationId,
+      projectId: job.projectId,
+      cityId: item.targetCityId ?? job.cityId,
+      inventoryId: item.targetInventoryId,
+    };
+    try {
+      await this.continueFromParsed(job, itemId, plugin, draft.payload, scope);
+    } catch (err) {
+      const code =
+        err instanceof IngestItemError ? err.code : "commit_failed";
+      await this.store.updateItem(itemId, {
+        status: "failed",
+        errorCode: code,
+        errorLog: err instanceof Error ? err.message : String(err),
+      });
+      await this.summarize(job.id);
+      throw err;
+    }
+    await this.summarize(job.id);
+    return this.requireItem(itemId);
+  }
+
   private async persistReviewDraft(input: {
     job: IngestJobRecord;
     itemId: string;
@@ -523,6 +703,8 @@ export class IngestRunner {
         cityId: current.targetCityId ?? input.job.cityId,
         inventoryId: current.targetInventoryId ?? input.scope.inventoryId,
       },
+      columnMapping: current.reviewDraft?.columnMapping ?? null,
+      version: (current.reviewDraftVersion ?? 0) + 1,
     });
     const summary = await input.plugin.reviewSummary?.(
       {

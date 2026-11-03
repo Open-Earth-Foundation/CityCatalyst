@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
   IngestItemError,
+  type IngestColumnMappingState,
   type IngestReviewDraftEnvelope,
   type IngestReviewTargetBinding,
 } from "./types";
@@ -101,6 +102,7 @@ export function buildReviewDraftEnvelope(input: {
   targetBinding: IngestReviewTargetBinding;
   version?: number;
   now?: Date;
+  columnMapping?: IngestColumnMappingState | null;
 }): IngestReviewDraftEnvelope {
   const payload = cloneJson(input.payload);
   const now = input.now ?? new Date();
@@ -115,5 +117,6 @@ export function buildReviewDraftEnvelope(input: {
     expiresAt: new Date(now.getTime() + REVIEW_DRAFT_TTL_MS).toISOString(),
     decision: { status: "pending", userId: null, at: null },
     payload,
+    columnMapping: input.columnMapping ?? null,
   };
 }

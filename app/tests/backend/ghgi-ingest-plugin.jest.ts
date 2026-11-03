@@ -82,6 +82,10 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     expect(finished.completedCount).toBe(2);
     expect(imported).toEqual([-12.5, -12.5]);
     expect(items.every((item) => item.result?.kind === "ecrf")).toBe(true);
+    expect(items.every((item) => item.stage !== "map")).toBe(true);
+    expect(
+      items.every((item) => item.reviewDraft?.columnMapping == null),
+    ).toBe(true);
   });
 
   it("rejects CIRIS/PDF before reaching commit", async () => {

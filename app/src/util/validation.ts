@@ -523,3 +523,15 @@ export const approveIngestReviewDraftRequest = z.object({
     })
     .optional(),
 });
+
+export const confirmIngestColumnMapRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  mappings: z
+    .array(
+      z.object({
+        sourceColumn: z.string().min(1),
+        taxonomyField: z.string().min(1),
+      }),
+    )
+    .min(1),
+});

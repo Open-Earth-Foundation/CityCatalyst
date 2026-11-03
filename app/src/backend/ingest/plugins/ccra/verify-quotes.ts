@@ -19,6 +19,15 @@ export function normalizeForQuoteMatch(text: string): string {
     .trim();
 }
 
+/** True when a quote long enough to mean anything occurs in normalized text. */
+export function isQuoteInText(quote: string, normalizedText: string): boolean {
+  const normalizedQuote = normalizeForQuoteMatch(quote);
+  return (
+    normalizedQuote.length >= MIN_QUOTE_CHARS &&
+    normalizedText.includes(normalizedQuote)
+  );
+}
+
 export function verifyQuotes(
   values: CrvaDraftValue[],
   pages: ReadonlyMap<number, string>,

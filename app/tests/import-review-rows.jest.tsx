@@ -35,7 +35,7 @@ const row: ImportRowReview = {
 function render(rows: ImportRowReview[]) {
   return renderToStaticMarkup(
     <ChakraProvider value={defaultSystem}>
-      <ImportReviewRows t={t} rows={rows} onDecide={() => {}} />
+      <ImportReviewRows t={t} fileId="file-a" rows={rows} onDecide={() => {}} />
     </ChakraProvider>,
   );
 }
@@ -93,6 +93,7 @@ describe("ImportReviewRows", () => {
     ]);
     expect(html).toContain("import-review-conflict");
     expect(html).toContain("&quot;stated&quot;:&quot;3&quot;");
+    expect(html).toContain("import-review-change-scope");
   });
 
   it("renders nothing with no held rows", () => {

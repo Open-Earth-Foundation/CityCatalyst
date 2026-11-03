@@ -9,13 +9,17 @@ import type { ImportRowDecision } from "./import-row-decisions";
 
 interface ImportReviewRowsProps {
   t: TFunction;
+  fileId: string;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
 }
 
 /** What the user decided on, so the server can tell a stale decision. */
-const seen = (row: ImportRowReview) => ({
+const seen = (row: ImportRowReview, fileId: string) => ({
+  decisionFileId: fileId,
+  decisionToken: row.decisionToken ?? "",
   decisionRef: row.suggestedRefNo,
+  decisionScope: row.scope,
   decisionValue: row.value,
 });
 
@@ -73,6 +77,7 @@ function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
  */
 export default function ImportReviewRows({
   t,
+  fileId,
   rows,
   onDecide,
 }: ImportReviewRowsProps) {
@@ -142,8 +147,12 @@ export default function ImportReviewRows({
             <Button
               size="sm"
               variant={row.decision === "keep" ? "solid" : "outline"}
+              disabled={row.issue === "reference-conflict"}
               onClick={() =>
-                onDecide(row.rowIndex, { ...seen(row), reviewDecision: "keep" })
+                onDecide(row.rowIndex, {
+                  ...seen(row, fileId),
+                  reviewDecision: "keep",
+                })
               }
             >
               {t("import-review-keep")}
@@ -157,7 +166,7 @@ export default function ImportReviewRows({
                     row.rowIndex,
                     event.target.value
                       ? {
-                          ...seen(row),
+                          ...seen(row, fileId),
                           reviewDecision: "reclassify",
                           gpcRefNo: event.target.value,
                         }
@@ -176,11 +185,46 @@ export default function ImportReviewRows({
               </NativeSelect.Field>
               <NativeSelect.Indicator />
             </NativeSelect.Root>
+            {row.issue === "reference-conflict" && (
+              <NativeSelect.Root size="sm" w="auto">
+                <NativeSelect.Field
+                  aria-label={t("import-review-change-scope")}
+                  value={
+                    row.decision === "correct-scope"
+                      ? (row.finalScope ?? "")
+                      : ""
+                  }
+                  onChange={(event) =>
+                    onDecide(
+                      row.rowIndex,
+                      event.target.value
+                        ? {
+                            ...seen(row, fileId),
+                            reviewDecision: "correct-scope",
+                            scope: event.target.value,
+                          }
+                        : null,
+                    )
+                  }
+                >
+                  <option value="">{t("import-review-change-scope")}</option>
+                  {["1", "2", "3"].map((scope) => (
+                    <option key={scope} value={scope}>
+                      {scope}
+                    </option>
+                  ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            )}
             <Button
               size="sm"
               variant={row.decision === "skip" ? "solid" : "outline"}
               onClick={() =>
-                onDecide(row.rowIndex, { ...seen(row), reviewDecision: "skip" })
+                onDecide(row.rowIndex, {
+                  ...seen(row, fileId),
+                  reviewDecision: "skip",
+                })
               }
             >
               {t("import-review-skip")}

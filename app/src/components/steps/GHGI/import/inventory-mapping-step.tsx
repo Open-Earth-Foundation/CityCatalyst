@@ -249,7 +249,7 @@ export default function InventoryMappingStep({
           cityId={cityId}
           inventoryId={inventoryId}
           importedFileId={importedFileId}
-          mappingOverrides={{ ...mappingOverrides, ...rowDecisions }}
+          mappingOverrides={{ columnMappings: mappingOverrides, rowDecisions }}
           onRowDecision={onRowDecision}
         />
       )}

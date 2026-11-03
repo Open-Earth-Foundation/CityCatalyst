@@ -24,6 +24,7 @@ import {
 } from "@/components/steps/GHGI/import/import-row-decisions";
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
+import ImportReviewRows from "@/components/steps/GHGI/import/import-review-rows";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import ReplaceInventoryConfirmModal from "@/components/Modals/replace-inventory-confirm-modal";
@@ -137,7 +138,7 @@ function ImportButton({
       onImportProgressChange(false);
       makeErrorToast(
         "Import failed",
-        resolveErrorMessage(res.errorLog, "Failed to import data", t),
+        `${resolveErrorMessage(res.errorLog, "Failed to import data", t)} ${t("import-failed-new-upload")}`,
       );
     },
     onPollError: (err) =>
@@ -192,7 +193,7 @@ function ImportButton({
             (result as { errorLog?: string | null }).errorLog,
             "Failed to import data",
             t,
-          ),
+          ) + ` ${t("import-failed-new-upload")}`,
         );
         return;
       }
@@ -325,7 +326,7 @@ export default function GhgiImportWizard({
   const [fileRowDecisions, setFileRowDecisions] = useState(NO_ROW_DECISIONS);
   const rowDecisions = decisionsForFile(fileRowDecisions, importedFileId);
   const allOverrides = useMemo(
-    () => ({ ...mappingOverrides, ...rowDecisions }),
+    () => ({ columnMappings: mappingOverrides, rowDecisions }),
     [mappingOverrides, rowDecisions],
   );
   const handleRowDecision = (
@@ -425,16 +426,24 @@ export default function GhgiImportWizard({
   }, [mappingStepData, mappingOverrides]);
 
   // Same preview the approve route checks, so the button matches the server.
-  const { data: rowPreview } = api.useGetImportRowPreviewQuery(
+  const {
+    data: rowPreview,
+    isFetching: isPreviewFetching,
+    isError: isPreviewError,
+  } = api.useGetImportRowPreviewQuery(
     {
       cityId,
       inventoryId: inventoryId ?? "",
       importedFileId: importedFileId ?? "",
-      mappingOverrides: Object.fromEntries(
-        Object.entries(allOverrides).filter(([, value]) => value !== ""),
-      ),
+      mappingOverrides: allOverrides,
     },
-    { skip: activeStep !== 2 || !importedFileId || !inventoryId },
+    {
+      skip:
+        activeStep !== 2 ||
+        !importedFileId ||
+        !inventoryId ||
+        isImportInProgress,
+    },
   );
   const pendingRows = rowPreview?.pendingRows ?? 0;
 
@@ -1171,15 +1180,42 @@ export default function GhgiImportWizard({
                       cityName={inventory?.city?.name}
                     />
                   ) : (
-                    <ReviewConfirmStep
-                      t={t}
-                      cityId={cityId}
-                      cityName={inventory?.city?.name}
-                      inventoryId={inventoryId}
-                      importedFileId={importedFileId}
-                      onEditMapping={goToPrevStep}
-                      mappingOverrides={allOverrides}
-                    />
+                    <>
+                      <ImportReviewRows
+                        t={t}
+                        fileId={importedFileId}
+                        rows={rowPreview?.reviewRows ?? []}
+                        onDecide={handleRowDecision}
+                      />
+                      {(rowPreview?.scopeWarnings ?? []).length > 0 && (
+                        <Box mb={6}>
+                          <Text
+                            color="sentiment.warningDefault"
+                            fontWeight="medium"
+                          >
+                            {t("import-scope-warning")}
+                          </Text>
+                          {rowPreview?.scopeWarnings?.map((row) => (
+                            <Text key={row.rowNumber} fontSize="body.sm">
+                              {t("import-scope-warning-row", {
+                                row: row.rowNumber,
+                                reference: row.gpcRefNo,
+                                scope: row.scope || t("import-scope-missing"),
+                              })}
+                            </Text>
+                          ))}
+                        </Box>
+                      )}
+                      <ReviewConfirmStep
+                        t={t}
+                        cityId={cityId}
+                        cityName={inventory?.city?.name}
+                        inventoryId={inventoryId}
+                        importedFileId={importedFileId}
+                        onEditMapping={goToPrevStep}
+                        mappingOverrides={allOverrides}
+                      />
+                    </>
                   )}
                 </motion.div>
               )}
@@ -1310,7 +1346,12 @@ export default function GhgiImportWizard({
                     mappingOverrides={allOverrides}
                     pendingRows={pendingRows}
                     onImportProgressChange={setIsImportInProgress}
-                    disabled={fileYearMismatch}
+                    disabled={
+                      fileYearMismatch ||
+                      !rowPreview ||
+                      isPreviewFetching ||
+                      isPreviewError
+                    }
                     inventoryHasData={inventoryHasData}
                     inventoryYear={inventoryYear}
                     onImport={() => {
@@ -1318,6 +1359,11 @@ export default function GhgiImportWizard({
                     }}
                     t={t}
                   />
+                  {isPreviewError && (
+                    <Text color="sentiment.negativeDefault">
+                      {t("import-rows-check-failed")}
+                    </Text>
+                  )}
                 </HStack>
               )}
             </Box>

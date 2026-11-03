@@ -66,15 +66,38 @@ export default function ImportRowIssues({
   const reviewRows = (
     <ImportReviewRows
       t={t}
+      fileId={importedFileId}
       rows={data.reviewRows ?? []}
       onDecide={onRowDecision}
     />
+  );
+  const scopeWarnings = (data.scopeWarnings ?? []).length > 0 && (
+    <Box mb={6} data-testid="import-scope-warnings">
+      <Text color="sentiment.warningDefault" fontWeight="medium">
+        {t("import-scope-warning")}
+      </Text>
+      {(data.scopeWarnings ?? []).map((row) => (
+        <Text key={row.rowNumber} fontSize="body.sm">
+          {t("import-scope-warning-row", {
+            row: row.rowNumber,
+            reference: row.gpcRefNo,
+            scope: row.scope || t("import-scope-missing"),
+          })}
+        </Text>
+      ))}
+    </Box>
   );
   // Held rows have their own list above; this table is the rest.
   const issueRows = data.rows.filter((row) => row.status !== "pending");
 
   if (issueRows.length === 0) {
-    if ((data.reviewRows ?? []).length > 0) return reviewRows;
+    if ((data.reviewRows ?? []).length > 0 || scopeWarnings)
+      return (
+        <>
+          {scopeWarnings}
+          {reviewRows}
+        </>
+      );
     return (
       <Box display="flex" alignItems="center" gap="8px" mb={6}>
         <Icon
@@ -96,6 +119,7 @@ export default function ImportRowIssues({
 
   return (
     <>
+      {scopeWarnings}
       {reviewRows}
       <Card.Root
         mb={6}

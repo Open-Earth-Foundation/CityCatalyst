@@ -12,7 +12,10 @@ import {
 
 const keep: ImportRowDecision = {
   reviewDecision: "keep",
+  decisionFileId: "file-a",
+  decisionToken: "token-a",
   decisionRef: "III.4.3",
+  decisionScope: null,
   decisionValue: 6300,
 };
 

@@ -1,9 +1,13 @@
 /** Stored per row in `mappingConfiguration.overrides`. */
 export type ImportRowDecision = {
-  reviewDecision: "keep" | "reclassify" | "skip";
+  reviewDecision: "keep" | "reclassify" | "correct-scope" | "skip";
   gpcRefNo?: string;
+  scope?: string;
+  decisionFileId: string;
+  decisionToken: string;
   /** What the user saw: the server drops a decision when the row differs. */
   decisionRef: string;
+  decisionScope: string | null;
   decisionValue: number | null;
 };
 

@@ -6,7 +6,11 @@ import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import type { InventoryTypeEnum } from "@/util/enums";
-import { siblingReferences, taxonomyScope } from "@/util/GHGI/gpc-ref-resolver";
+import {
+  scopeFromLabel,
+  siblingReferences,
+  taxonomyScope,
+} from "@/util/GHGI/gpc-ref-resolver";
 import type {
   ImportRowIssue,
   ImportRowOutcome,
@@ -18,9 +22,12 @@ type ImportRow = ECRFImportResult["rows"][number];
 
 /** Taxonomy scope, when the row states a different one. */
 function conflictingScope(row: ImportRow): number | null {
-  const stated = Number(row.review?.scope);
-  const expected = taxonomyScope(row.gpcRefNo);
-  return expected != null && stated > 0 && stated !== expected
+  const stated = scopeFromLabel(row.review?.scope);
+  const expected =
+    row.review?.catalogueScope !== undefined
+      ? row.review.catalogueScope
+      : taxonomyScope(row.gpcRefNo);
+  return expected != null && stated != null && stated !== expected
     ? expected
     : null;
 }
@@ -33,11 +40,9 @@ function conflictingScope(row: ImportRow): number | null {
  */
 function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
-  if (row.review?.refSource === "document") {
-    return conflictingScope({ ...row, gpcRefNo: ref }) != null
-      ? "reference-conflict"
-      : null;
-  }
+  if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
+    return "reference-conflict";
+  if (row.review?.refSource === "document") return null;
   return isImportedWasteRef(ref) ? "direction-unconfirmed" : null;
 }
 
@@ -56,6 +61,9 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     subsector: review.subsector,
     category: review.category,
     scope: review.scope,
+    finalScope: review.finalScope ?? review.scope,
+    decisionToken: review.decisionToken,
+    finalCatalogueScope: review.finalCatalogueScope,
     expectedScope,
     quote: review.directionEvidence,
     quoteFound: review.directionEvidenceFound,
@@ -86,7 +94,18 @@ export function findReviewRows(
 export function findPendingRows(
   importResult: ECRFImportResult,
 ): ImportRowReview[] {
-  return findReviewRows(importResult).filter((row) => !row.decision);
+  return findReviewRows(importResult).filter((row) => {
+    if (!row.decision) return true;
+    if (row.decision === "skip") return false;
+    const finalScope = scopeFromLabel(row.finalScope);
+    const expected =
+      row.finalCatalogueScope !== undefined
+        ? row.finalCatalogueScope
+        : taxonomyScope(row.chosenRefNo);
+    return row.issue === "reference-conflict"
+      ? finalScope == null || expected == null || finalScope !== expected
+      : finalScope != null && expected != null && finalScope !== expected;
+  });
 }
 
 /**
@@ -102,7 +121,7 @@ export async function previewImportRows(
   const importedRows: ECRFImportResult["rows"] = [];
   const reviewRows = findReviewRows(importResult);
   const pending = new Map(
-    reviewRows.filter((row) => !row.decision).map((row) => [row.rowIndex, row]),
+    findPendingRows(importResult).map((row) => [row.rowIndex, row]),
   );
 
   for (const row of importResult.rows) {
@@ -183,6 +202,13 @@ export async function previewImportRows(
     skippedByIssue,
     pendingRows: pending.size,
     reviewRows,
+    scopeWarnings: importedRows
+      .filter((row) => row.review && scopeFromLabel(row.review.scope) == null)
+      .map((row) => ({
+        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        gpcRefNo: row.gpcRefNo,
+        scope: row.review?.scope ?? null,
+      })),
     rows: outcomes,
   };
 }

@@ -208,6 +208,8 @@ export type ExtractedRow = {
   subsector: string | null;
   /** GPC scope when present in the document (e.g. "1", "2", "3" for Scope 1/2/3). Fetched from uploaded file when available. */
   scope?: string | null;
+  /** Exact scope text emitted by extraction, before normalization. */
+  originalScope?: string | null;
   category: string | null;
   totalCO2e: number | null;
   co2?: number | null;
@@ -844,11 +846,8 @@ export function verifyRowProvenance(
         ? isQuoteInText(row.directionEvidence, text)
         : null,
     };
-    // The scope check was skipped for a claimed document reference. Without the
-    // claim the scope column wins, as for any other model reference.
-    if (ref && !stated && !canonicalGpcRefNo(ref, row.scope)) {
-      out.gpcRefNo = null;
-    }
+    // Keep the original reference even if its scope conflicts. The review
+    // resolves the conflict instead of silently deriving a different one.
     return out;
   });
   return fillMissingGpcRefNo(checked).map((row) =>
@@ -1503,9 +1502,12 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     }
     if (typeof row.sector === "string") out.sector = row.sector;
     if (typeof row.subsector === "string") out.subsector = row.subsector;
-    if (typeof row.scope === "string" && !isPlaceholderOrEmpty(row.scope)) {
-      const normalized = normalizeScopeString(row.scope);
-      if (normalized) out.scope = normalized;
+    if (typeof row.scope === "string") {
+      out.originalScope = row.scope;
+      const normalized = isPlaceholderOrEmpty(row.scope)
+        ? null
+        : normalizeScopeString(row.scope);
+      out.scope = normalized || row.scope;
     }
     if (typeof row.category === "string") out.category = row.category;
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
@@ -1520,10 +1522,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.gpcRefNo === "string") {
       // A reference the document states is kept even if the scope disagrees:
       // the review shows that conflict. verifyRowProvenance checks the claim.
-      const ref = canonicalGpcRefNo(
-        row.gpcRefNo,
-        out.refSource === "document" ? undefined : out.scope,
-      );
+      const ref = canonicalGpcRefNo(row.gpcRefNo, undefined);
       if (ref) out.gpcRefNo = ref;
     }
     if (

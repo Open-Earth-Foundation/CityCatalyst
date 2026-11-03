@@ -1011,6 +1011,11 @@ export interface ImportRowPreview {
   pendingRows: number;
   /** Every row held for a decision, decided or not. */
   reviewRows: ImportRowReview[];
+  scopeWarnings?: Array<{
+    rowNumber: number;
+    gpcRefNo: string;
+    scope: string | null;
+  }>;
 }
 
 /** A row the import cannot complete without a user decision. */
@@ -1038,7 +1043,10 @@ export interface ImportRowReview {
   quoteFound: boolean | null;
   page: number | null;
   source: string | null;
-  decision: "keep" | "reclassify" | "skip" | null;
+  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  finalScope?: string | null;
+  decisionToken?: string;
+  finalCatalogueScope?: number | null;
   referenceOptions: string[];
 }
 

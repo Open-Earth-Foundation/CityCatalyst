@@ -141,7 +141,7 @@ describe("verifyRowProvenance", () => {
     expect(out.directionEvidenceFound).toBeNull();
   });
 
-  it("applies the scope check when a document claim fails", () => {
+  it("keeps a conflicting reference when a document claim fails so it can be reviewed", () => {
     const [out] = verifyRowProvenance(
       [
         row({
@@ -153,7 +153,7 @@ describe("verifyRowProvenance", () => {
       ],
       DOCUMENT,
     );
-    expect(out.gpcRefNo).toBe("III.1.1");
+    expect(out.gpcRefNo).toBe("III.1.2");
     expect(out.refSource).toBe("inferred");
   });
 

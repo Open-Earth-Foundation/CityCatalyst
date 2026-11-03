@@ -65,8 +65,12 @@ import FileParserService from "@/backend/FileParserService";
 import {
   buildImportResult,
   type ImportValidationResults,
+  type BuiltImportResult,
 } from "@/backend/ImportResultBuilder";
-import { findPendingRows } from "@/backend/ImportRowPreviewService";
+import {
+  findPendingRows,
+  findReviewRows,
+} from "@/backend/ImportRowPreviewService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import InventoryReplaceService, {
   IMPORT_REPLACE_LABEL,
@@ -84,6 +88,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 import { v4 as uuidv4 } from "uuid";
+import { Op, Sequelize } from "sequelize";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
 const approveImportSchema = z.object({
@@ -240,8 +245,18 @@ async function runApproveImportInBackground(args: {
   importedFileId: string;
   userId: string;
   replaceExisting: boolean;
+  validated: BuiltImportResult;
+  claimId: string;
 }): Promise<void> {
-  const { cityId, inventoryId, importedFileId, userId, replaceExisting } = args;
+  const {
+    cityId,
+    inventoryId,
+    importedFileId,
+    userId,
+    replaceExisting,
+    validated,
+    claimId,
+  } = args;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: {
@@ -263,15 +278,27 @@ async function runApproveImportInBackground(args: {
   await syncGHGIImportedInventorySource(importedFile);
 
   try {
-    const mappingConfiguration = (importedFile.mappingConfiguration || {}) as {
-      // For xlsx/csv: columnName -> internal key (string). For PDF imports:
-      // row index (stringified) -> per-row field overrides (object).
-      overrides?: Record<string, unknown>;
+    const { importResult, extractedRows } = validated;
+    const completedAt = new Date();
+    const reviewHistory = {
+      version: 1 as const,
+      fileId: importedFile.id,
+      completedAt: completedAt.toISOString(),
+      rows: findReviewRows(importResult)
+        .filter((row) => row.decision)
+        .map((row) => ({
+          rowIndex: row.rowIndex,
+          originalReference: row.suggestedRefNo,
+          originalScope: row.scope,
+          finalReference: row.chosenRefNo,
+          finalScope: row.finalScope ?? row.scope,
+          decision: row.decision!,
+          provenance:
+            importResult.rows.find(
+              (candidate) => candidate.rowIndex === row.rowIndex,
+            )?.review?.refSource ?? null,
+        })),
     };
-    const { importResult, extractedRows } = await buildImportResult(
-      importedFile,
-      mappingConfiguration.overrides,
-    );
 
     const defaultActivityDataSource =
       (importedFile.originalFileName as string) ||
@@ -305,16 +332,22 @@ async function runApproveImportInBackground(args: {
             transaction,
           },
         );
+        if (importSummary.errors.length > 0) {
+          throw new Error(
+            `Could not import all rows: ${importSummary.errors.join("; ")}`,
+          );
+        }
         if (didReplace && importSummary.importedRows === 0) {
           throw new Error(
             "No rows could be imported, so the existing inventory data was kept.",
           );
         }
-        await importedFile.update(
+        const [finished] = await db.models.ImportedInventoryFile.update(
           {
             importStatus: ImportStatusEnum.COMPLETED,
             processedRowCount: importSummary.importedRows,
-            completedAt: new Date(),
+            completedAt,
+            reviewHistory,
             lastUpdated: new Date(),
             validationResults: {
               ...((importedFile.validationResults as ImportValidationResults) ??
@@ -322,14 +355,32 @@ async function runApproveImportInBackground(args: {
               importSummary: { ...importSummary, replacedData },
             },
           },
-          { transaction },
+          {
+            transaction,
+            where: {
+              id: importedFile.id,
+              importStatus: ImportStatusEnum.IMPORTING,
+              reviewHistory: null,
+              [Op.and]: Sequelize.where(
+                Sequelize.literal(
+                  `"mapping_configuration"->>'approvalAttemptId'`,
+                ),
+                claimId,
+              ),
+            },
+          },
         );
+        if (finished !== 1)
+          throw new Error(
+            "Import is no longer active or has already completed",
+          );
         return { importSummary };
       },
     );
 
     // Best-effort follow-ups: the import has committed, so a failure here must
     // not reach the catch below and mark it FAILED.
+    await importedFile.reload();
     await syncGHGIInventory(importedFile);
     try {
       await persistPathBMappingFeedback(cityId, importedFile, extractedRows);
@@ -349,11 +400,24 @@ async function runApproveImportInBackground(args: {
       "Import completed successfully",
     );
   } catch (error) {
-    await importedFile.update({
-      importStatus: ImportStatusEnum.FAILED,
-      errorLog: error instanceof Error ? error.message : "Unknown error",
-      lastUpdated: new Date(),
-    });
+    await db.models.ImportedInventoryFile.update(
+      {
+        importStatus: ImportStatusEnum.FAILED,
+        errorLog: error instanceof Error ? error.message : "Unknown error",
+        lastUpdated: new Date(),
+      },
+      {
+        where: {
+          id: importedFile.id,
+          importStatus: ImportStatusEnum.IMPORTING,
+          reviewHistory: null,
+          [Op.and]: Sequelize.where(
+            Sequelize.literal(`"mapping_configuration"->>'approvalAttemptId'`),
+            claimId,
+          ),
+        },
+      },
+    );
 
     logger.error(
       { err: error, importedFileId: importedFile.id },
@@ -403,7 +467,7 @@ export const POST = apiHandler(
     }
 
     // Existing data is only replaced when the user confirmed it
-    const existingValueCount = await db.models.InventoryValue.count({
+    let existingValueCount = await db.models.InventoryValue.count({
       where: { inventoryId },
     });
     if (existingValueCount > 0 && !replaceExisting) {
@@ -414,25 +478,23 @@ export const POST = apiHandler(
       );
     }
 
-    // The server decides, not the review screen: held PDF rows need a decision.
-    if (importedFile.fileType === "pdf") {
-      const { importResult } = await buildImportResult(
-        importedFile,
-        mappingOverrides ??
-          (importedFile.mappingConfiguration?.overrides as
-            Record<string, unknown> | undefined),
+    // The server decides, not the review screen: held rows need a decision.
+    const validated = await buildImportResult(
+      importedFile,
+      mappingOverrides ??
+        (importedFile.mappingConfiguration?.overrides as
+          Record<string, unknown> | undefined),
+    );
+    const pendingRows = findPendingRows(validated.importResult);
+    if (pendingRows.length > 0) {
+      throw createHttpError(
+        409,
+        "Some rows need a decision before this import can be approved.",
+        {
+          code: "import-rows-pending",
+          data: { pendingRows: pendingRows.length },
+        },
       );
-      const pendingRows = findPendingRows(importResult);
-      if (pendingRows.length > 0) {
-        throw createHttpError(
-          409,
-          "Some rows need a decision before this import can be approved.",
-          {
-            code: "import-rows-pending",
-            data: { pendingRows: pendingRows.length },
-          },
-        );
-      }
     }
 
     // Update mapping configuration if overrides provided
@@ -444,17 +506,63 @@ export const POST = apiHandler(
       };
     }
 
-    // Update import status to APPROVED, then start background import
-    await importedFile.update({
-      importStatus: ImportStatusEnum.APPROVED,
-      mappingConfiguration,
-      errorLog: null,
-      lastUpdated: new Date(),
-    });
-
-    await importedFile.update({
-      importStatus: ImportStatusEnum.IMPORTING,
-      lastUpdated: new Date(),
+    // Serialize claims for the inventory, not just this file. Otherwise two
+    // different files can both see an empty inventory and import concurrently.
+    const claimId = uuidv4();
+    mappingConfiguration = {
+      ...mappingConfiguration,
+      approvalAttemptId: claimId,
+    };
+    await db.sequelize!.transaction(async (transaction) => {
+      await db.models.Inventory.findByPk(inventoryId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      const active = await db.models.ImportedInventoryFile.count({
+        where: { inventoryId, importStatus: ImportStatusEnum.IMPORTING },
+        transaction,
+      });
+      if (active)
+        throw createHttpError(
+          409,
+          "Another import is already processing for this inventory.",
+        );
+      existingValueCount = await db.models.InventoryValue.count({
+        where: { inventoryId },
+        transaction,
+      });
+      if (existingValueCount > 0 && !replaceExisting) {
+        throw createHttpError(
+          409,
+          "This inventory already contains data. Confirm to replace it.",
+          { code: "inventory-has-data", data: { existingValueCount } },
+        );
+      }
+      const [claimed] = await db.models.ImportedInventoryFile.update(
+        {
+          importStatus: ImportStatusEnum.IMPORTING,
+          mappingConfiguration,
+          errorLog: null,
+          lastUpdated: new Date(),
+        },
+        {
+          transaction,
+          where: {
+            id: importedFileId,
+            inventoryId,
+            cityId,
+            userId: session.user.id,
+            importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+            lastUpdated: importedFile.lastUpdated,
+          },
+        },
+      );
+      if (claimed !== 1) {
+        throw createHttpError(
+          409,
+          "This import changed or is already being processed.",
+        );
+      }
     });
 
     runApproveImportInBackground({
@@ -463,6 +571,8 @@ export const POST = apiHandler(
       importedFileId,
       userId: session.user.id,
       replaceExisting: existingValueCount > 0 && !!replaceExisting,
+      validated,
+      claimId,
     }).catch((err) =>
       logger.error({ err, importedFileId }, "Approve/import background failed"),
     );

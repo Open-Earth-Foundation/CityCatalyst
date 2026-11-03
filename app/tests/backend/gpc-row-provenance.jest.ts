@@ -167,6 +167,33 @@ describe("verifyRowProvenance", () => {
   });
 });
 
+describe("verifyRowProvenance with regex metacharacters", () => {
+  it("does not throw or match loosely on a reference with regex characters", () => {
+    for (const gpcRefNo of ["III.4.3(", "III\\4", "III.4.3|1", "I.*"]) {
+      const [out] = verifyRowProvenance(
+        [row({ gpcRefNo, refSource: "document" })],
+        DOCUMENT,
+      );
+      expect(out.refSource).toBe("inferred");
+    }
+  });
+
+  it("does not throw on a notation key with regex characters", () => {
+    const [out] = verifyRowProvenance(
+      [
+        row({
+          gpcRefNo: "III.4.3",
+          refSource: "document",
+          totalCO2e: null,
+          notationKey: "N(" as ExtractedRow["notationKey"],
+        }),
+      ],
+      "| III.4.3 | NO |",
+    );
+    expect(out.refSource).toBe("inferred");
+  });
+});
+
 describe("canonicalGpcRefNo", () => {
   it("keeps III.x.3 on a scope 3 row", () => {
     expect(canonicalGpcRefNo("III.1.3", "3")).toBe("III.1.3");

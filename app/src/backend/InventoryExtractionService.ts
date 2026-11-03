@@ -792,6 +792,11 @@ function lineNumbers(line: string): string[] {
   );
 }
 
+/** Escapes every regular expression metacharacter so text matches literally. */
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
  * True when the document prints the reference on the row's own line: the same
  * line as its value or notation key, on its page when that is known. A legend or
@@ -805,9 +810,7 @@ function isReferenceOnRowLine(
   const pageText = splitDocumentPages(documentContent).find(
     (page) => page.page === row.page,
   )?.text;
-  const pattern = new RegExp(
-    `(?<![\\w.])${ref.replace(/\./g, "\\.")}(?![\\w]|\\.\\d)`,
-  );
+  const pattern = new RegExp(`(?<![\\w.])${escapeRegExp(ref)}(?![\\w]|\\.\\d)`);
   const value =
     row.totalCO2e == null
       ? null
@@ -818,7 +821,8 @@ function isReferenceOnRowLine(
     const rest = line.replace(pattern, " ");
     return value != null
       ? lineNumbers(rest).includes(value)
-      : !!row.notationKey && new RegExp(`\\b${row.notationKey}\\b`).test(rest);
+      : !!row.notationKey &&
+          new RegExp(`\\b${escapeRegExp(row.notationKey)}\\b`).test(rest);
   });
 }
 

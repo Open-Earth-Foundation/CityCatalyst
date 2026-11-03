@@ -240,6 +240,8 @@ export function MeedShell({
             w="full"
             pt="l"
             mt="s"
+            gap="m"
+            flexWrap="wrap"
             borderTopWidth="1px"
             borderColor="border.overlay"
           >

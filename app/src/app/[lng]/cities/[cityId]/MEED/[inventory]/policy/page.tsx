@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Box,
   Card,
   HStack,
   Icon,
@@ -231,49 +232,56 @@ function PolicyAlignmentContent(props: {
       </VStack>
 
       <Card.Root overflow="hidden" borderColor="border.neutral">
-        <Table.Root size="md" tableLayout="fixed">
-          <Table.Header>
-            <Table.Row bg="background.neutral">
-              <PolicyColumnHeader label={t("column-action")} width={wAction} />
-              <PolicyColumnHeader
-                label={t("column-national")}
-                width={wNational}
-                align="end"
-                {...sortProps("National", t("column-national"))}
-              />
-              <PolicyColumnHeader
-                label={t("column-regional")}
-                width={wRegional}
-                align="end"
-                {...sortProps("Regional", t("column-regional"))}
-              />
-              <PolicyColumnHeader
-                label={t("column-municipal")}
-                width={wMunicipal}
-                align="end"
-                {...sortProps("Municipal", t("column-municipal"))}
-              />
-              <PolicyColumnHeader
-                label={t("column-policy-support")}
-                width={wScore}
-                align="end"
-                tip={t("policy-support-tip")}
-                tipAriaLabel={t("policy-support-tip-label")}
-                {...sortProps("score", t("column-policy-support"))}
-              />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {visibleRows.map((row) => (
-              <PolicyActionRow
-                key={row.id}
-                row={row}
-                index={actionIndex}
-                t={t}
-              />
-            ))}
-          </Table.Body>
-        </Table.Root>
+        {/* Fixed column shares need a floor: below it the table scrolls
+            sideways rather than breaking words. */}
+        <Box overflowX="auto">
+          <Table.Root size="md" tableLayout="fixed" minW="720px">
+            <Table.Header>
+              <Table.Row bg="background.neutral">
+                <PolicyColumnHeader
+                  label={t("column-action")}
+                  width={wAction}
+                />
+                <PolicyColumnHeader
+                  label={t("column-national")}
+                  width={wNational}
+                  align="end"
+                  {...sortProps("National", t("column-national"))}
+                />
+                <PolicyColumnHeader
+                  label={t("column-regional")}
+                  width={wRegional}
+                  align="end"
+                  {...sortProps("Regional", t("column-regional"))}
+                />
+                <PolicyColumnHeader
+                  label={t("column-municipal")}
+                  width={wMunicipal}
+                  align="end"
+                  {...sortProps("Municipal", t("column-municipal"))}
+                />
+                <PolicyColumnHeader
+                  label={t("column-policy-support")}
+                  width={wScore}
+                  align="end"
+                  tip={t("policy-support-tip")}
+                  tipAriaLabel={t("policy-support-tip-label")}
+                  {...sortProps("score", t("column-policy-support"))}
+                />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {visibleRows.map((row) => (
+                <PolicyActionRow
+                  key={row.id}
+                  row={row}
+                  index={actionIndex}
+                  t={t}
+                />
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </Box>
       </Card.Root>
 
       <HStack justifyContent="space-between" flexWrap="wrap" gap="s">

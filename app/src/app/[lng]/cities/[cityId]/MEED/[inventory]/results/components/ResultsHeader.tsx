@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import { HStack, Icon, VStack } from "@chakra-ui/react";
-import { LuSparkles } from "react-icons/lu";
+import { HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { MeedButton } from "../../../components/MeedButton";
 import { LabelLarge } from "@/components/package/Texts/Label";
@@ -37,13 +36,12 @@ export function GenerateReportControl({
   hintId?: string;
 }) {
   return (
-    <VStack alignItems="flex-end" gap="xs" flexShrink={0}>
+    <VStack alignItems="flex-end" gap="xs" flexShrink={0} maxW="full">
       <MeedButton
         variant="filled"
         minW="auto"
         px="l"
         disabled={selectedCount === 0 || isGenerating}
-        leftIcon={<Icon as={LuSparkles} boxSize="16px" />}
         aria-describedby={hintId}
         onClick={onGenerate}
         _focusVisible={FOCUS_RING}
@@ -54,12 +52,7 @@ export function GenerateReportControl({
             ? t("generate-report-count", { count: selectedCount })
             : t("generate-report")}
       </MeedButton>
-      <Caption
-        id={hintId}
-        color="content.tertiary"
-        textAlign="end"
-        whiteSpace="nowrap"
-      >
+      <Caption id={hintId} color="content.tertiary" textAlign="end">
         {isGenerating && progress
           ? progress
           : selectedCount === 0

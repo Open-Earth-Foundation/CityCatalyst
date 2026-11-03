@@ -19,6 +19,8 @@ export interface FeasibilityRow {
   action_id: string;
   action_name?: string;
   sector?: string | null;
+  /** Sector label in the page language, set by the page from the catalog's sector keys. */
+  sector_label?: string;
   financial_feasibility: number;
   route?: string | null;
   reason?: string | null;

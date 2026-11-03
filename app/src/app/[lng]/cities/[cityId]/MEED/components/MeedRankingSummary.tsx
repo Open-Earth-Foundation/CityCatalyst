@@ -15,7 +15,7 @@ import {
   LuCoins,
   LuFactory,
   LuScale,
-  LuSparkles,
+  LuLightbulb,
   LuClipboardList,
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
@@ -175,7 +175,7 @@ export function MeedRankingSummary({
           <GridItem>
             <VStack alignItems="stretch" gap="s">
               <HStack gap="xs" alignItems="center">
-                <Icon as={LuSparkles} boxSize="14px" color="content.link" />
+                <Icon as={LuLightbulb} boxSize="14px" color="content.link" />
                 <Overline color="content.tertiary">
                   {t("summary-insights-title")}
                 </Overline>

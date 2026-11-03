@@ -6,6 +6,7 @@ import { BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedLevel } from "../../../components/MeedLevel";
+import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 import {
   FOCUS_RING,
   humanizeEnum,
@@ -72,7 +73,10 @@ export function FeasibilityRow({
           </HStack>
         </Table.Cell>
         <Table.Cell verticalAlign="top">
-          <Caption>{humanizeEnum(row.sector)}</Caption>
+          <HStack gap="xs" alignItems="center">
+            <MeedSectorIcon sectorTag={row.sector} size="14px" />
+            <Caption>{row.sector_label ?? humanizeEnum(row.sector)}</Caption>
+          </HStack>
         </Table.Cell>
         {/* nowrap + a non-shrinking tag: together they stop "Self-deliverable"
             truncating to "Self…". */}

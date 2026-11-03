@@ -20,7 +20,13 @@ import {
   type MeedLegalStanding,
 } from "../../regulations/legalStanding";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
-import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
+import {
+  actionName,
+  actionSectorTag,
+  sectorLabel,
+  type MeedActionIndex,
+} from "./actionCatalog";
+import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 
 /**
  * The full ranked-actions table. Names and sectors come from the action
@@ -109,110 +115,130 @@ export function RankingTable({
           )}
         </HStack>
       </HStack>
-      <Table.Root size="md">
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader w="40px">
-              {t("column-select")}
-            </Table.ColumnHeader>
-            <Table.ColumnHeader>{t("column-rank")}</Table.ColumnHeader>
-            <Table.ColumnHeader>{t("column-action")}</Table.ColumnHeader>
-            <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
-            {legalFor && (
-              <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+      {/* Below the tablet breakpoint the table scrolls sideways instead of
+          crushing the action name into one word per line. */}
+      <Box overflowX="auto">
+        <Table.Root size="md" minW="720px">
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader w="40px">
+                {t("column-select")}
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w="64px">
+                {t("column-rank")}
+              </Table.ColumnHeader>
+              {/* The name is what the row is about: it takes whatever width the
+                fixed columns leave. */}
+              <Table.ColumnHeader minW="260px">
+                {t("column-action")}
+              </Table.ColumnHeader>
+              <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
+              {legalFor && (
+                <Table.ColumnHeader
+                  display={{ base: "none", md: "table-cell" }}
+                >
+                  <HStack gap="xs" alignItems="center">
+                    <span>{t("column-legal")}</span>
+                    <MeedInfoTip
+                      content={t("column-legal-info")}
+                      ariaLabel={t("column-legal-info")}
+                    />
+                  </HStack>
+                </Table.ColumnHeader>
+              )}
+              <Table.ColumnHeader
+                w="200px"
+                display={{ base: "none", md: "table-cell" }}
+              >
                 <HStack gap="xs" alignItems="center">
-                  <span>{t("column-legal")}</span>
+                  <span>{t("column-composition")}</span>
                   <MeedInfoTip
-                    content={t("column-legal-info")}
-                    ariaLabel={t("column-legal-info")}
+                    content={t("column-composition-info")}
+                    ariaLabel={t("column-composition-info")}
                   />
                 </HStack>
               </Table.ColumnHeader>
-            )}
-            <Table.ColumnHeader
-              w="220px"
-              display={{ base: "none", md: "table-cell" }}
-            >
-              <HStack gap="xs" alignItems="center">
-                <span>{t("column-composition")}</span>
-                <MeedInfoTip
-                  content={t("column-composition-info")}
-                  ariaLabel={t("column-composition-info")}
-                />
-              </HStack>
-            </Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end">
-              {t("column-score")}
-            </Table.ColumnHeader>
-            <Table.ColumnHeader />
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {actions.map((action) => {
-            const name = actionName(index, action.action_id, t);
-            const legal = legalFor?.(action.action_id) ?? null;
-            return (
-              <Table.Row key={action.action_id}>
-                <Table.Cell>
-                  <SelectActionCheckbox
-                    checked={selectedIds.includes(action.action_id)}
-                    onToggle={() => onToggleSelect(action.action_id)}
-                    ariaLabel={t("select-action", { name })}
-                  />
-                </Table.Cell>
-                <Table.Cell whiteSpace="nowrap">
-                  <BodyMedium color="content.link" fontWeight="bold">
-                    #{action.rank}
-                  </BodyMedium>
-                </Table.Cell>
-                <Table.Cell maxW="280px">
-                  <BodyMedium color="content.primary">{name}</BodyMedium>
-                </Table.Cell>
-                <Table.Cell whiteSpace="nowrap">
-                  <BodyMedium color="content.secondary">
-                    {sectorLabel(index, action.action_id, t)}
-                  </BodyMedium>
-                </Table.Cell>
-                {legalFor && (
-                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                    {legal && (
-                      <MeedStatusTag tone={LEGAL_CATEGORY_TONE[legal.ownership]}>
-                        {t(legalCategoryLabelKey(legal.ownership))}
-                      </MeedStatusTag>
-                    )}
-                  </Table.Cell>
-                )}
-                <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                  <Box w="180px">
-                    <MeedScoreComposition
-                      action={action}
-                      weights={weights}
-                      variant="bar"
-                      t={t}
+              <Table.ColumnHeader textAlign="end">
+                {t("column-score")}
+              </Table.ColumnHeader>
+              <Table.ColumnHeader />
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {actions.map((action) => {
+              const name = actionName(index, action.action_id, t);
+              const legal = legalFor?.(action.action_id) ?? null;
+              return (
+                <Table.Row key={action.action_id}>
+                  <Table.Cell>
+                    <SelectActionCheckbox
+                      checked={selectedIds.includes(action.action_id)}
+                      onToggle={() => onToggleSelect(action.action_id)}
+                      ariaLabel={t("select-action", { name })}
                     />
-                  </Box>
-                </Table.Cell>
-                <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
-                  <LabelLarge color="content.primary">
-                    {action.final_score.toFixed(2)}
-                  </LabelLarge>
-                </Table.Cell>
-                <Table.Cell textAlign="end">
-                  <IconButton
-                    aria-label={t("select-action-details", { name })}
-                    size="2xs"
-                    variant="ghost"
-                    onClick={() => onSelect(action)}
-                    _focusVisible={FOCUS_RING}
-                  >
-                    <Icon as={LuSquareArrowOutUpRight} color="content.link" />
-                  </IconButton>
-                </Table.Cell>
-              </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table.Root>
+                  </Table.Cell>
+                  <Table.Cell whiteSpace="nowrap">
+                    <BodyMedium color="content.link" fontWeight="bold">
+                      #{action.rank}
+                    </BodyMedium>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <BodyMedium color="content.primary">{name}</BodyMedium>
+                  </Table.Cell>
+                  <Table.Cell whiteSpace="nowrap">
+                    <HStack gap="xs" alignItems="center">
+                      <MeedSectorIcon
+                        sectorTag={actionSectorTag(index, action.action_id)}
+                        size="14px"
+                      />
+                      <BodyMedium color="content.secondary">
+                        {sectorLabel(index, action.action_id, t)}
+                      </BodyMedium>
+                    </HStack>
+                  </Table.Cell>
+                  {legalFor && (
+                    <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                      {legal && (
+                        <MeedStatusTag
+                          tone={LEGAL_CATEGORY_TONE[legal.ownership]}
+                        >
+                          {t(legalCategoryLabelKey(legal.ownership))}
+                        </MeedStatusTag>
+                      )}
+                    </Table.Cell>
+                  )}
+                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                    <Box w="180px">
+                      <MeedScoreComposition
+                        action={action}
+                        weights={weights}
+                        variant="bar"
+                        t={t}
+                      />
+                    </Box>
+                  </Table.Cell>
+                  <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
+                    <LabelLarge color="content.primary">
+                      {action.final_score.toFixed(2)}
+                    </LabelLarge>
+                  </Table.Cell>
+                  <Table.Cell textAlign="end">
+                    <IconButton
+                      aria-label={t("select-action-details", { name })}
+                      size="2xs"
+                      variant="ghost"
+                      onClick={() => onSelect(action)}
+                      _focusVisible={FOCUS_RING}
+                    >
+                      <Icon as={LuSquareArrowOutUpRight} color="content.link" />
+                    </IconButton>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
+        </Table.Root>
+      </Box>
     </Card.Root>
   );
 }

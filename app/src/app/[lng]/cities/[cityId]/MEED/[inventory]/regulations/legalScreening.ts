@@ -28,7 +28,9 @@ export interface LegalScreenedAction {
   sector?: string | null;
   /** Position in the ranking; absent for an action removed before scoring. */
   rank?: number;
-  /** Why the backend removed it (excluded actions only). */
+  /** The prioritizer's removal code (excluded actions only), e.g. `legal_verdict_blocked`. */
+  removalReason?: string | null;
+  /** Supporting text for the removal, e.g. the legal justification. */
   reasons?: string[];
   standing?: MeedLegalStanding;
 }
@@ -94,12 +96,10 @@ export function deriveLegalScreening(
     actionId: r.action_id,
     actionName: nameOf(index, r.action_id, r.action_name),
     sector: sectorOf(index, r.action_id),
-    reasons: [
-      r.removal_reason,
-      resolveLocalizedText(r.legal?.legalJustification, language),
-    ]
+    removalReason: r.removal_reason ?? null,
+    reasons: [resolveLocalizedText(r.legal?.legalJustification, language)]
       .filter((v): v is string => typeof v === "string" && v.length > 0)
-      .slice(0, 2),
+      .slice(0, 1),
   }));
 
   const includedCount =

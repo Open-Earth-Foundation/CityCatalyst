@@ -230,8 +230,8 @@ describe("MEED ranking adapter — downstream consumers", () => {
     )!;
     // Falls back to the response's own name when the catalog is not loaded.
     expect(blocked.actionName).toContain("smart grid");
-    expect(blocked.reasons?.[0]).toBe("legal_verdict_blocked");
-    expect(blocked.reasons?.[1]).toContain("Regulation of electrical networks");
+    expect(blocked.removalReason).toBe("legal_verdict_blocked");
+    expect(blocked.reasons?.[0]).toContain("Regulation of electrical networks");
   });
 });
 

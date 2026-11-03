@@ -76,7 +76,7 @@
   "how-ranking-works-title": "How the ranking works",
   "how-ranking-works-description": "What the model weighs to rank actions for your city. Explore any area before or after generating recommendations.",
   "ranking-update": "Update ranking",
-  "ranking-census": "{{ranked}} ranked · {{excluded}} excluded by legal screening",
+  "ranking-census": "{{ranked}} ranked · {{excluded}} excluded before scoring",
   "emissions-none-sub": "No emissions data in this inventory",
   "get-recommendations-hint-no-data": "This inventory has no emissions data. Add it in the GHGI module to unlock recommendations."
 }

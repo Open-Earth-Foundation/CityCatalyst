@@ -29,18 +29,23 @@ import {
   sectorLabel,
   timelineLabel,
   type MeedActionIndex,
+  actionSectorTag,
 } from "./actionCatalog";
+import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 
 function MetaRow({
   label,
   value,
   valueColor = "content.secondary",
   info,
+  icon,
 }: {
   label: string;
   value: string;
   valueColor?: string;
   info?: React.ReactNode;
+  /** Small glyph before the value, e.g. the sector icon. */
+  icon?: React.ReactNode;
 }) {
   return (
     <HStack justifyContent="space-between" alignItems="center" gap="s">
@@ -48,9 +53,12 @@ function MetaRow({
         <Caption color="content.tertiary">{label}</Caption>
         {info}
       </HStack>
-      <BodySmall color={valueColor} fontWeight="semibold" textAlign="end">
-        {value}
-      </BodySmall>
+      <HStack gap="xs" alignItems="center" justifyContent="flex-end">
+        {icon}
+        <BodySmall color={valueColor} fontWeight="semibold" textAlign="end">
+          {value}
+        </BodySmall>
+      </HStack>
     </HStack>
   );
 }
@@ -153,6 +161,12 @@ export function TopPickCard({
             <MetaRow
               label={t("card-sector")}
               value={sectorLabel(index, action.action_id, t)}
+              icon={
+                <MeedSectorIcon
+                  sectorTag={actionSectorTag(index, action.action_id)}
+                  size="14px"
+                />
+              }
             />
             {legal && (
               <MetaRow

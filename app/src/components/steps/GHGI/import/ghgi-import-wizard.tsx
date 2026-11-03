@@ -16,6 +16,7 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
+import type { ImportRowDecision } from "@/components/steps/GHGI/import/import-review-rows";
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
@@ -49,6 +50,7 @@ function ImportButton({
   inventoryId,
   importedFileId,
   mappingOverrides,
+  pendingRows,
   onImport,
   onImportProgressChange,
   disabled,
@@ -59,7 +61,9 @@ function ImportButton({
   cityId: string;
   inventoryId: string;
   importedFileId: string;
-  mappingOverrides: Record<string, string>;
+  mappingOverrides: Record<string, unknown>;
+  /** Rows with no decision yet. The server rejects approval while above zero. */
+  pendingRows: number;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
   disabled?: boolean;
@@ -216,10 +220,12 @@ function ImportButton({
         }
         h="64px"
         loading={isImporting || isImportPolling}
-        disabled={disabled || isImporting || isImportPolling}
+        disabled={disabled || pendingRows > 0 || isImporting || isImportPolling}
       >
         <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-          {t("import-inventory")}
+          {pendingRows > 0
+            ? t("import-rows-pending", { count: pendingRows })
+            : t("import-inventory")}
         </Text>
         <MdArrowForward height="24px" width="24px" />
       </Button>
@@ -305,6 +311,21 @@ export default function GhgiImportWizard({
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
+  const [rowDecisions, setRowDecisions] = useState<
+    Record<string, ImportRowDecision>
+  >({});
+  const allOverrides = useMemo(
+    () => ({ ...mappingOverrides, ...rowDecisions }),
+    [mappingOverrides, rowDecisions],
+  );
+  const handleRowDecision = (
+    rowIndex: number,
+    decision: ImportRowDecision | null,
+  ) =>
+    setRowDecisions((prev) => {
+      const { [String(rowIndex)]: _previous, ...rest } = prev;
+      return decision ? { ...rest, [String(rowIndex)]: decision } : rest;
+    });
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [dataLossVariant, setDataLossVariant] = useState<
     "leave" | "reset-upload"
@@ -393,6 +414,20 @@ export default function GhgiImportWizard({
       MANDATORY.has(mappingOverrides[col.columnName] ?? "");
     return cols.filter(isMandatory).every((col) => effectiveKey(col) !== "");
   }, [mappingStepData, mappingOverrides]);
+
+  // Same preview the approve route checks, so the button matches the server.
+  const { data: rowPreview } = api.useGetImportRowPreviewQuery(
+    {
+      cityId,
+      inventoryId: inventoryId ?? "",
+      importedFileId: importedFileId ?? "",
+      mappingOverrides: Object.fromEntries(
+        Object.entries(allOverrides).filter(([, value]) => value !== ""),
+      ),
+    },
+    { skip: activeStep !== 2 || !importedFileId || !inventoryId },
+  );
+  const pendingRows = rowPreview?.pendingRows ?? 0;
 
   // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
@@ -1101,6 +1136,8 @@ export default function GhgiImportWizard({
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
+                    rowDecisions={rowDecisions}
+                    onRowDecision={handleRowDecision}
                     onMappingChange={(columnName, mappedKey) => {
                       setMappingOverrides((prev) => ({
                         ...prev,
@@ -1132,7 +1169,7 @@ export default function GhgiImportWizard({
                       inventoryId={inventoryId}
                       importedFileId={importedFileId}
                       onEditMapping={goToPrevStep}
-                      mappingOverrides={mappingOverrides}
+                      mappingOverrides={allOverrides}
                     />
                   )}
                 </motion.div>
@@ -1245,6 +1282,7 @@ export default function GhgiImportWizard({
                         setIsInterpretInProgress(false);
                         setIsImportInProgress(false);
                         setMappingOverrides({});
+                        setRowDecisions({});
                         setExtractionProgress(null);
                         setStep(0);
                       }, "reset-upload");
@@ -1262,7 +1300,8 @@ export default function GhgiImportWizard({
                     cityId={cityId}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    mappingOverrides={mappingOverrides}
+                    mappingOverrides={allOverrides}
+                    pendingRows={pendingRows}
                     onImportProgressChange={setIsImportInProgress}
                     disabled={fileYearMismatch}
                     inventoryHasData={inventoryHasData}

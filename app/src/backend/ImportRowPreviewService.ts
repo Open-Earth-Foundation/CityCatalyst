@@ -6,7 +6,7 @@ import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import type { InventoryTypeEnum } from "@/util/enums";
-import { taxonomyScope } from "@/util/GHGI/gpc-ref-resolver";
+import { siblingReferences, taxonomyScope } from "@/util/GHGI/gpc-ref-resolver";
 import type {
   ImportRowIssue,
   ImportRowOutcome,
@@ -62,9 +62,7 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     page: review.page,
     source: review.source,
     decision: review.decision,
-    referenceOptions: [1, 2, 3].map(
-      (digit) => `${suggestedRefNo.split(".").slice(0, 2).join(".")}.${digit}`,
-    ),
+    referenceOptions: siblingReferences(suggestedRefNo),
   };
 }
 

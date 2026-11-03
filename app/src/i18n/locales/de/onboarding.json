@@ -366,6 +366,7 @@
   "import-review-no-context": "Für diese Zeile ist kein Quellenkontext verfügbar.",
   "import-review-quote-found": "Im Dokument gefunden",
   "import-review-quote-not-found": "Nicht im Dokument gefunden",
+  "import-review-quote-unchecked": "Zu kurz zum Prüfen",
   "import-review-conflict": "{{reference}} ist Scope {{expected}}, aber diese Zeile nennt Scope {{stated}}.",
   "import-review-keep": "Diese Referenz behalten",
   "import-review-reclassify": "Andere Referenz wählen",

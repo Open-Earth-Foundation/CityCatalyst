@@ -367,6 +367,7 @@
   "import-review-no-context": "No hay contexto de la fuente para esta fila.",
   "import-review-quote-found": "Encontrado en el documento",
   "import-review-quote-not-found": "No encontrado en el documento",
+  "import-review-quote-unchecked": "Demasiado corto para comprobar",
   "import-review-conflict": "{{reference}} es alcance {{expected}}, pero esta fila indica alcance {{stated}}.",
   "import-review-keep": "Mantener esta referencia",
   "import-review-reclassify": "Elegir otra referencia",

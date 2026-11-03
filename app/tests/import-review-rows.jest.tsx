@@ -74,6 +74,14 @@ describe("ImportReviewRows", () => {
     expect(html).toContain("import-review-quote-not-found");
   });
 
+  it("gives a quote too short to check a neutral label", () => {
+    const html = render([
+      { ...row, quote: "来自城外的废水", quoteFound: null },
+    ]);
+    expect(html).toContain("import-review-quote-unchecked");
+    expect(html).not.toContain("import-review-quote-not-found");
+  });
+
   it("shows the reference and the conflicting scope side by side", () => {
     const html = render([
       {

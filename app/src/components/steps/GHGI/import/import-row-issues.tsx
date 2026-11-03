@@ -7,7 +7,8 @@ import { MdCheckCircle, MdError, MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 import type { ImportRowOutcome } from "@/util/types";
-import ImportReviewRows, { type ImportRowDecision } from "./import-review-rows";
+import ImportReviewRows from "./import-review-rows";
+import type { ImportRowDecision } from "./import-row-decisions";
 
 const COLLAPSED_ROW_LIMIT = 10;
 

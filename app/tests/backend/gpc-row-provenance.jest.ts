@@ -14,7 +14,7 @@ const row = (fields: Partial<ExtractedRow>): ExtractedRow => ({
   sector: "Waste",
   subsector: "Wastewater Treatment And Discharge",
   category: "Wastewater",
-  totalCO2e: 6300,
+  totalCO2e: 608,
   ...fields,
 });
 
@@ -31,6 +31,53 @@ describe("verifyRowProvenance", () => {
       DOCUMENT,
     );
     expect(out.refSource).toBe("document");
+  });
+
+  it("does not take a legend line as the document stating the row", () => {
+    const [out] = verifyRowProvenance(
+      [row({ gpcRefNo: "III.4.3", refSource: "document", totalCO2e: 6300 })],
+      `III.4.3 Wastewater generated outside the city
+
+| Wastewater Treatment & Discharge | 6,300 |`,
+    );
+    expect(out.refSource).toBe("inferred");
+  });
+
+  it("reads a stated reference with a formatted value on its line", () => {
+    const [out] = verifyRowProvenance(
+      [row({ gpcRefNo: "III.4.3", refSource: "document", totalCO2e: 1188394 })],
+      "| III.4.3 | Wastewater | 1,188,394 |",
+    );
+    expect(out.refSource).toBe("document");
+  });
+
+  it("reads a stated reference with a notation key on its line", () => {
+    const [out] = verifyRowProvenance(
+      [
+        row({
+          gpcRefNo: "III.4.3",
+          refSource: "document",
+          totalCO2e: null,
+          notationKey: "NE",
+        }),
+      ],
+      "| III.4.3 | Wastewater | NE |",
+    );
+    expect(out.refSource).toBe("document");
+  });
+
+  it("looks only at the row's page when it is known", () => {
+    const pages = `<!-- page: 1 -->
+| III.4.3 | Wastewater | 608 |
+<!-- page: 2 -->
+| Wastewater | 608 |`;
+    const onPage = (page: number) =>
+      verifyRowProvenance(
+        [row({ gpcRefNo: "III.4.3", refSource: "document", page })],
+        pages,
+      )[0].refSource;
+    expect(onPage(1)).toBe("document");
+    expect(onPage(2)).toBe("inferred");
   });
 
   it("treats a claim as inferred when the reference is not in the text", () => {
@@ -81,12 +128,12 @@ describe("verifyRowProvenance", () => {
     expect(out.directionEvidenceFound).toBe(false);
   });
 
-  it("does not count a very short quote as found", () => {
+  it("gives no label to a quote too short to check", () => {
     const [out] = verifyRowProvenance(
-      [row({ gpcRefNo: "III.4.3", directionEvidence: "fora" })],
-      DOCUMENT,
+      [row({ gpcRefNo: "III.4.3", directionEvidence: "来自城外的废水" })],
+      "来自城外的废水 608",
     );
-    expect(out.directionEvidenceFound).toBe(false);
+    expect(out.directionEvidenceFound).toBeNull();
   });
 
   it("leaves the quote result empty when there is no quote", () => {

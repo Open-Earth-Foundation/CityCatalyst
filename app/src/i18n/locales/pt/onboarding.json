@@ -366,6 +366,7 @@
   "import-review-no-context": "Não há contexto da fonte para esta linha.",
   "import-review-quote-found": "Encontrado no documento",
   "import-review-quote-not-found": "Não encontrado no documento",
+  "import-review-quote-unchecked": "Curto demais para verificar",
   "import-review-conflict": "{{reference}} é escopo {{expected}}, mas esta linha informa escopo {{stated}}.",
   "import-review-keep": "Manter esta referência",
   "import-review-reclassify": "Escolher outra referência",

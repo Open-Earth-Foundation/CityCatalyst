@@ -16,7 +16,12 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
-import type { ImportRowDecision } from "@/components/steps/GHGI/import/import-review-rows";
+import {
+  decisionsForFile,
+  type ImportRowDecision,
+  NO_ROW_DECISIONS,
+  withRowDecision,
+} from "@/components/steps/GHGI/import/import-row-decisions";
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
@@ -300,6 +305,12 @@ export default function GhgiImportWizard({
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const selectImportedFile = (fileId: string | null) => {
+    setImportedFileId(fileId);
+    // Overrides and decisions belong to the file they were made on.
+    setMappingOverrides({});
+    setFileRowDecisions(NO_ROW_DECISIONS);
+  };
   const [lastImportStatus, setLastImportStatus] =
     useState<ImportStatusResponse | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
@@ -311,9 +322,8 @@ export default function GhgiImportWizard({
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
-  const [rowDecisions, setRowDecisions] = useState<
-    Record<string, ImportRowDecision>
-  >({});
+  const [fileRowDecisions, setFileRowDecisions] = useState(NO_ROW_DECISIONS);
+  const rowDecisions = decisionsForFile(fileRowDecisions, importedFileId);
   const allOverrides = useMemo(
     () => ({ ...mappingOverrides, ...rowDecisions }),
     [mappingOverrides, rowDecisions],
@@ -322,10 +332,9 @@ export default function GhgiImportWizard({
     rowIndex: number,
     decision: ImportRowDecision | null,
   ) =>
-    setRowDecisions((prev) => {
-      const { [String(rowIndex)]: _previous, ...rest } = prev;
-      return decision ? { ...rest, [String(rowIndex)]: decision } : rest;
-    });
+    setFileRowDecisions((prev) =>
+      withRowDecision(prev, importedFileId, rowIndex, decision),
+    );
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [dataLossVariant, setDataLossVariant] = useState<
     "leave" | "reset-upload"
@@ -498,7 +507,7 @@ export default function GhgiImportWizard({
       setLastImportStatus(res);
       const file = uploadPendingFileRef.current;
       if (file) setUploadedFile(file);
-      setImportedFileId(res.id);
+      selectImportedFile(res.id);
       if (res.importStatus === "pending_ai_extraction") {
         setPdfPendingExtraction(true);
         setTabularPendingInterpretation(false);
@@ -661,7 +670,7 @@ export default function GhgiImportWizard({
       }
 
       setUploadedFile(file);
-      setImportedFileId(result.id);
+      selectImportedFile(result.id);
       setPdfPendingExtraction(
         (result as { importStatus?: string; fileType?: string })
           .importStatus === "pending_ai_extraction" ||
@@ -724,7 +733,7 @@ export default function GhgiImportWizard({
     setIsExtractInProgress(false);
     setIsInterpretInProgress(false);
     setUploadedFile(null);
-    setImportedFileId(null);
+    selectImportedFile(null);
     setLastImportStatus(null);
     setPdfPendingExtraction(false);
     setTabularPendingInterpretation(false);
@@ -1274,15 +1283,13 @@ export default function GhgiImportWizard({
                     onClick={() => {
                       handleNavigation(() => {
                         setUploadedFile(null);
-                        setImportedFileId(null);
+                        selectImportedFile(null);
                         setLastImportStatus(null);
                         setPdfPendingExtraction(false);
                         setTabularPendingInterpretation(false);
                         setIsExtractInProgress(false);
                         setIsInterpretInProgress(false);
                         setIsImportInProgress(false);
-                        setMappingOverrides({});
-                        setRowDecisions({});
                         setExtractionProgress(null);
                         setStep(0);
                       }, "reset-upload");

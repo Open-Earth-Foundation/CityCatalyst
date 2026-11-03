@@ -1031,7 +1031,10 @@ export interface ImportRowReview {
   /** Taxonomy scope of the reference, when the row states another one. */
   expectedScope: number | null;
   quote: string | null;
-  /** Found in the extracted text. Says nothing about what the quote means. */
+  /**
+   * Found in the extracted text, or null when too short to check. Says nothing
+   * about what the quote means.
+   */
   quoteFound: boolean | null;
   page: number | null;
   source: string | null;

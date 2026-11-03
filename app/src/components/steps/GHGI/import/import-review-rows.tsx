@@ -5,18 +5,19 @@ import { Badge, Box, Card, HStack, NativeSelect, Text } from "@chakra-ui/react";
 import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import type { ImportRowReview } from "@/util/types";
-
-/** Stored per row in `mappingConfiguration.overrides`. */
-export type ImportRowDecision = {
-  reviewDecision: "keep" | "reclassify" | "skip";
-  gpcRefNo?: string;
-};
+import type { ImportRowDecision } from "./import-row-decisions";
 
 interface ImportReviewRowsProps {
   t: TFunction;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
 }
+
+/** What the user decided on, so the server can tell a stale decision. */
+const seen = (row: ImportRowReview) => ({
+  decisionRef: row.suggestedRefNo,
+  decisionValue: row.value,
+});
 
 function ContextLine({ label, value }: { label: string; value: string }) {
   return (
@@ -47,9 +48,11 @@ function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
           {/* Whether the text exists, never whether it justifies the reference. */}
           <Badge colorPalette="gray" flexShrink={0}>
             {t(
-              row.quoteFound
-                ? "import-review-quote-found"
-                : "import-review-quote-not-found",
+              row.quoteFound === null
+                ? "import-review-quote-unchecked"
+                : row.quoteFound
+                  ? "import-review-quote-found"
+                  : "import-review-quote-not-found",
             )}
           </Badge>
         </HStack>
@@ -139,7 +142,9 @@ export default function ImportReviewRows({
             <Button
               size="sm"
               variant={row.decision === "keep" ? "solid" : "outline"}
-              onClick={() => onDecide(row.rowIndex, { reviewDecision: "keep" })}
+              onClick={() =>
+                onDecide(row.rowIndex, { ...seen(row), reviewDecision: "keep" })
+              }
             >
               {t("import-review-keep")}
             </Button>
@@ -152,6 +157,7 @@ export default function ImportReviewRows({
                     row.rowIndex,
                     event.target.value
                       ? {
+                          ...seen(row),
                           reviewDecision: "reclassify",
                           gpcRefNo: event.target.value,
                         }
@@ -173,7 +179,9 @@ export default function ImportReviewRows({
             <Button
               size="sm"
               variant={row.decision === "skip" ? "solid" : "outline"}
-              onClick={() => onDecide(row.rowIndex, { reviewDecision: "skip" })}
+              onClick={() =>
+                onDecide(row.rowIndex, { ...seen(row), reviewDecision: "skip" })
+              }
             >
               {t("import-review-skip")}
             </Button>

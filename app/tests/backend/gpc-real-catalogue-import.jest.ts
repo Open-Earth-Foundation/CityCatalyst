@@ -399,6 +399,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
   });
 
   describe("review of model-assigned III.x.3", () => {
+    const SEEN = { decisionRef: "III.4.3", decisionValue: 6300 };
     const WASTEWATER = {
       year: 2022,
       sector: "Waste",
@@ -505,7 +506,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     it("stores a kept row as III.x.3, left out of the total", async () => {
       const { inventoryId } = await newInventory();
       const result = await pdfResult([{ ...WASTEWATER, gpcRefNo: "III.4.3" }], {
-        "0": { reviewDecision: "keep" },
+        "0": { reviewDecision: "keep", ...SEEN },
       });
       expect(findPendingRows(result)).toEqual([]);
       await InventoryImportService.importECRFData(inventoryId, result);
@@ -519,7 +520,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     it("stores a reclassified row with the chosen reference, counted", async () => {
       const { inventoryId } = await newInventory();
       const result = await pdfResult([{ ...WASTEWATER, gpcRefNo: "III.4.3" }], {
-        "0": { reviewDecision: "reclassify", gpcRefNo: "III.4.1" },
+        "0": { reviewDecision: "reclassify", gpcRefNo: "III.4.1", ...SEEN },
       });
       expect(findPendingRows(result)).toEqual([]);
       expect(findReviewRows(result)[0].suggestedRefNo).toBe("III.4.3");
@@ -533,6 +534,18 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       expect(results.totalEmissions.toNumber()).toBe(6_300_000);
     });
 
+    it("ignores a stale decision entirely", async () => {
+      const result = await pdfResult([{ ...WASTEWATER, gpcRefNo: "III.1.1" }], {
+        "0": {
+          reviewDecision: "reclassify",
+          gpcRefNo: "III.2.1",
+          decisionRef: "III.4.3",
+          decisionValue: 9,
+        },
+      });
+      expect(result.rows[0].gpcRefNo).toBe("III.1.1");
+    });
+
     it("does not store a skipped row", async () => {
       const { inventoryId } = await newInventory();
       const result = await pdfResult(
@@ -540,7 +553,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
           { ...WASTEWATER, gpcRefNo: "III.4.3" },
           { ...WASTEWATER, gpcRefNo: "III.4.1", totalCO2e: 10 },
         ],
-        { "0": { reviewDecision: "skip" } },
+        { "0": { reviewDecision: "skip", ...SEEN } },
       );
       expect(findPendingRows(result)).toEqual([]);
       await InventoryImportService.importECRFData(inventoryId, result);
@@ -551,9 +564,12 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     });
 
     it.each([
-      [{ reviewDecision: "confirmed" }],
-      [{ reviewDecision: "reclassify" }],
-      [{ reviewDecision: "reclassify", gpcRefNo: "III.4.3" }],
+      [{ reviewDecision: "confirmed", ...SEEN }],
+      [{ reviewDecision: "keep" }],
+      [{ reviewDecision: "keep", decisionRef: "III.1.3", decisionValue: 6300 }],
+      [{ reviewDecision: "keep", decisionRef: "III.4.3", decisionValue: 7 }],
+      [{ reviewDecision: "reclassify", ...SEEN }],
+      [{ reviewDecision: "reclassify", gpcRefNo: "III.4.3", ...SEEN }],
       [{ totalCO2e: 7 }],
     ])(
       "keeps the row held after an incomplete decision %j",
@@ -645,7 +661,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
 
       it("accepts approval once the row has a decision", async () => {
         await expectStatusCode(
-          await approve({ "0": { reviewDecision: "keep" } }),
+          await approve({ "0": { reviewDecision: "keep", ...SEEN } }),
           202,
         );
       });

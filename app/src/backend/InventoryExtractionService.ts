@@ -783,10 +783,48 @@ export async function extractInventoryFromDocument(
   };
 }
 
+/** Numbers on a line without separators, so "1,188,394" reads as 1188394. */
+function lineNumbers(line: string): string[] {
+  return (line.match(/\d[\d.,\s]*\d|\d/g) ?? []).map((number) =>
+    number.replace(/[.,\s]/g, ""),
+  );
+}
+
+/**
+ * True when the document prints the reference on the row's own line: the same
+ * line as its value or notation key, on its page when that is known. A legend or
+ * a table of contents elsewhere is not the document stating it for this row.
+ */
+function isReferenceOnRowLine(
+  row: ExtractedRow,
+  ref: string,
+  documentContent: string,
+): boolean {
+  const pageText = splitDocumentPages(documentContent).find(
+    (page) => page.page === row.page,
+  )?.text;
+  const pattern = new RegExp(
+    `(?<![\\w.])${ref.replace(/\./g, "\\.")}(?![\\w]|\\.\\d)`,
+  );
+  const value =
+    row.totalCO2e == null
+      ? null
+      : String(Math.abs(row.totalCO2e)).replace(/\./g, "");
+  return (pageText ?? documentContent).split("\n").some((rawLine) => {
+    const line = normalizeForQuoteMatch(rawLine);
+    if (!pattern.test(line)) return false;
+    const rest = line.replace(pattern, " ");
+    return value != null
+      ? lineNumbers(rest).includes(value)
+      : !!row.notationKey && new RegExp(`\\b${row.notationKey}\\b`).test(rest);
+  });
+}
+
 /**
  * Checks what the model said about each row against the extracted text. A claim
- * of `document` stands only when the reference is in the text. A quote is marked
- * found or not found; neither result confirms a row. Exported for unit tests.
+ * of `document` stands only when the reference is on the row's own line. A quote
+ * is marked found or not found, or left unmarked when too short to tell; no
+ * result confirms a row. Exported for unit tests.
  */
 export function verifyRowProvenance(
   rows: ExtractedRow[],
@@ -798,9 +836,7 @@ export function verifyRowProvenance(
     const stated =
       !!ref &&
       row.refSource === "document" &&
-      new RegExp(
-        `(?<![\\w.])${ref.replace(/\./g, "\\.")}(?![\\w]|\\.\\d)`,
-      ).test(text);
+      isReferenceOnRowLine(row, ref, documentContent);
     const out: ExtractedRow = {
       ...row,
       refSource: ref ? (stated ? "document" : "inferred") : null,

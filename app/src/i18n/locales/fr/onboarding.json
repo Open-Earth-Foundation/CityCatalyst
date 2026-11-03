@@ -364,6 +364,7 @@
   "import-review-no-context": "Aucun contexte source disponible pour cette ligne.",
   "import-review-quote-found": "Trouvé dans le document",
   "import-review-quote-not-found": "Non trouvé dans le document",
+  "import-review-quote-unchecked": "Trop court pour être vérifié",
   "import-review-conflict": "{{reference}} est au scope {{expected}}, mais cette ligne indique le scope {{stated}}.",
   "import-review-keep": "Conserver cette référence",
   "import-review-reclassify": "Choisir une autre référence",

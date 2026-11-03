@@ -16,7 +16,7 @@ import { MdError, MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
 import ImportRowIssues from "./import-row-issues";
-import type { ImportRowDecision } from "./import-review-rows";
+import type { ImportRowDecision } from "./import-row-decisions";
 
 const MANDATORY_KEYS = new Set([
   "gpcRefNo",

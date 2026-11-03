@@ -305,6 +305,7 @@
   "import-review-no-context": "No source context available for this row.",
   "import-review-quote-found": "Found in document",
   "import-review-quote-not-found": "Not found in document",
+  "import-review-quote-unchecked": "Too short to check",
   "import-review-conflict": "{{reference}} is scope {{expected}}, but this row states scope {{stated}}.",
   "import-review-keep": "Keep this reference",
   "import-review-reclassify": "Choose another reference",

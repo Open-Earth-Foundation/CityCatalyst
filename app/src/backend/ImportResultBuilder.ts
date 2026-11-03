@@ -50,6 +50,14 @@ function applyRowOverrides(
   base: ExtractedRow,
   overrides: Record<string, unknown>,
 ): ExtractedRow {
+  // A decision made on another row or file must not touch this one.
+  if (
+    overrides.reviewDecision != null &&
+    (overrides.decisionRef !== base.gpcRefNo ||
+      (overrides.decisionValue ?? null) !== (base.totalCO2e ?? null))
+  ) {
+    return base;
+  }
   const out = { ...base };
   for (const [key, value] of Object.entries(overrides)) {
     if (!ALLOWED_ROW_OVERRIDE_KEYS.has(key)) continue;

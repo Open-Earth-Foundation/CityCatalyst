@@ -9,7 +9,6 @@ import {
   costUsd,
   groupSummary,
   totalUsage,
-  zeroRowMessage,
   renderReport,
   runFolderName,
   writeRunArtifact,
@@ -248,46 +247,5 @@ describe("report", () => {
     expect(readFileSync(join(second, "report.md"), "utf8")).toContain("+50 pts");
     const index = readFileSync(join(root, "INDEX.md"), "utf8");
     expect(index.match(/\| `/g)).toHaveLength(2);
-  });
-});
-
-describe("zeroRowMessage (CC-1202)", () => {
-  const base = {
-    reportedTotals: [],
-    droppedRows: {},
-    importedSum: 0,
-    yearAssumed: false,
-    targetYear: 2022,
-  };
-
-  it("says the document only states totals, with the total and the year", () => {
-    const message = zeroRowMessage({
-      ...base,
-      droppedRows: { subtotal_or_total: 1 },
-      reportedTotals: [
-        {
-          label: "Total CO2 emissions",
-          value: 1_788_000,
-          year: 2022,
-          scope: null,
-          sector: null,
-          subsector: null,
-          level: "total",
-        },
-      ],
-    });
-    expect(message).toContain("only totals");
-    expect(message).toContain("1788000");
-    expect(message).toContain("2022");
-  });
-
-  it("names the drop reasons when rows were left out", () => {
-    expect(
-      zeroRowMessage({ ...base, droppedRows: { unsupported_unit: 4 } }),
-    ).toContain("unsupported_unit: 4");
-  });
-
-  it("says the model found nothing when there is nothing to show", () => {
-    expect(zeroRowMessage({ ...base })).toContain("no values");
   });
 });

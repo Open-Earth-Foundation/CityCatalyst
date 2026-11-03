@@ -5,9 +5,10 @@
  *
  * What it does, per file and per run:
  * - Creates a test city and inventory for the report year.
- * - PDF: uploads the file to the configured bucket, runs Mistral OCR and the
- *   extraction, stores the rows as `waiting_for_approval` (as the OCR job does),
- *   then calls the real approve route.
+ * - PDF: the production path. Calls the real upload and extract routes, then runs
+ *   the OCR queue worker (`processPdfOcrJobs`, what the scheduler runs in
+ *   production) until the import is `waiting_for_approval` or `failed`, then
+ *   calls the real approve route. OCR runs once per run, as it does per upload.
  * - CSV/XLSX: calls the real upload, interpret (if needed), status and approve
  *   routes.
  * - Reads the imported values back from `InventoryValue` and compares the total
@@ -28,14 +29,13 @@ import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import env from "@next/env";
 import { NextRequest } from "next/server";
 import pino from "pino";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import { Auth, type AppSession } from "@/lib/auth";
 import {
   GlobalWarmingPotentialTypeEnum,
-  ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
 import { toCanonical } from "@/util/notation-keys";
@@ -44,7 +44,6 @@ import {
   ZERO_TOKENS,
   gitInfo,
   writeRunArtifact,
-  zeroRowMessage,
   type CaseResult,
   type Prices,
   type Tokens,
@@ -167,8 +166,8 @@ function pctDiff(actual: number, expected: number): number | null {
 (RUN ? describe : describe.skip)("GHGI import accuracy", () => {
   let db: typeof import("@/models").db;
   let Storage: typeof import("@/backend/InventoryFileStorageService").default;
-  let ocr: typeof import("@/backend/MistralOcrService");
-  let extraction: typeof import("@/backend/InventoryExtractionService");
+  let processPdfOcrJobs: typeof import("@/backend/PdfOcrService").processPdfOcrJobs;
+  let extractRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/extract/route");
   let uploadRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/route");
   let statusRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/route");
   let interpretRoute: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/interpret/route");
@@ -179,18 +178,21 @@ function pctDiff(actual: number, expected: number): number | null {
     process.env.INGESTION_ACCURACY_OUT ?? "../docs/ingestion-accuracy-runs";
   const uploadedKeys: string[] = [];
   const cityIds: string[] = [];
+  const importedFileIds: string[] = [];
 
   beforeAll(async () => {
     env.loadEnvConfig(process.cwd());
     installUsageMeter((await import("@/services/logger")).logger);
     ({ db } = await import("@/models"));
     Storage = (await import("@/backend/InventoryFileStorageService")).default;
-    ocr = await import("@/backend/MistralOcrService");
-    extraction = await import("@/backend/InventoryExtractionService");
+    ({ processPdfOcrJobs } = await import("@/backend/PdfOcrService"));
     uploadRoute = await import(`${IMPORT_PATH}/route`);
     statusRoute = await import(`${IMPORT_PATH}/[importedFileId]/route`);
     interpretRoute = await import(
       `${IMPORT_PATH}/[importedFileId]/interpret/route`
+    );
+    extractRoute = await import(
+      `${IMPORT_PATH}/[importedFileId]/extract/route`
     );
     approveRoute = await import(`${IMPORT_PATH}/approve/route`);
     await db.initialize();
@@ -218,6 +220,10 @@ function pctDiff(actual: number, expected: number): number | null {
 
   afterAll(async () => {
     for (const key of uploadedKeys) await Storage.deleteFile(key);
+    await db.models.PdfOcrJob.destroy({
+      where: { sourceType: "inventory_import", sourceId: importedFileIds },
+      force: true,
+    });
     for (const cityId of cityIds) {
       await db.models.ImportedInventoryFile.destroy({
         where: { cityId },
@@ -297,58 +303,32 @@ function pctDiff(actual: number, expected: number): number | null {
     };
   }
 
-  async function runOcr(buffer: Buffer, fileName: string) {
-    const key = `ingestion-accuracy/${randomUUID()}-${fileName}`;
-    await Storage.putFile(key, buffer, "application/pdf");
-    uploadedKeys.push(key);
-    const url = await Storage.createSignedDownloadUrl(key, 600);
-    const started = Date.now();
-    try {
-      const result = await ocr.convertPdfUrlToMarkdown(url, "none");
-      return {
-        markdown: result.markdown,
-        stage: {
-          ok: true,
-          pages: result.pageCount,
-          chars: result.markdown.length,
-          ms: Date.now() - started,
-        } as Record<string, unknown>,
-      };
-    } catch (error) {
-      // Keep measuring the extraction on the raw OCR text when the structured
-      // artifact step rejects the document; the stage is reported as failed.
-      const response = await fetch("https://api.mistral.ai/v1/ocr", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          ocr.buildMistralOcrRequest(
-            url,
-            process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
-            "none",
-          ),
-        ),
-      });
-      const payload = (await response.json()) as {
-        pages?: { markdown?: string }[];
-      };
-      return {
-        markdown: (payload.pages ?? [])
-          .map(
-            (page, index) =>
-              `<!-- page ${index + 1} -->\n${page.markdown ?? ""}`,
-          )
-          .join("\n\n"),
-        stage: {
-          ok: false,
-          code: (error as { code?: string }).code ?? null,
-          message: (error as Error).message,
-          pages: payload.pages?.length ?? null,
-          ms: Date.now() - started,
-        } as Record<string, unknown>,
-      };
+  // What the scheduler does in production: extract queues the job, then the
+  // worker passes run OCR and extraction until the import settles.
+  async function runPdfJob(
+    ids: { city: string; inventory: string },
+    importedFileId: string,
+  ) {
+    const queued = await extractRoute.POST(mockRequest(), {
+      params: Promise.resolve({ ...ids, importedFileId }),
+    });
+    if (queued.status >= 300) throw new Error(`extract ${queued.status}`);
+    const start = Date.now();
+    for (;;) {
+      await processPdfOcrJobs();
+      const state = await pollStatus(
+        ids,
+        importedFileId,
+        ["waiting_for_approval", "failed"],
+        -1,
+      );
+      if (["waiting_for_approval", "failed"].includes(state.importStatus)) {
+        return state;
+      }
+      if (Date.now() - start > 600_000) {
+        throw new Error(`PDF job still ${state.importStatus} after 10 min`);
+      }
+      await sleep(2000);
     }
   }
 
@@ -368,19 +348,13 @@ function pctDiff(actual: number, expected: number): number | null {
         const extension = extname(file.path).slice(1).toLowerCase();
         const kind = file.kind ?? (extension as "pdf" | "csv" | "xlsx");
         const runs: Record<string, unknown>[] = [];
-        const beforeOcr = snapshot();
-        const ocrResult =
-          kind === "pdf" ? await runOcr(buffer, fileName) : null;
-        if (ocrResult) {
-          // Third-party document text: kept next to the runs, ignored by git.
-          const ocrDir = join(outDir, ".ocr-text");
-          mkdirSync(ocrDir, { recursive: true });
-          writeFileSync(join(ocrDir, `${file.id}.md`), ocrResult.markdown);
-        }
-        const ocrUsage = {
-          ...since(beforeOcr),
-          pages: (ocrResult?.stage.pages as number | null | undefined) ?? null,
-        };
+        // One entry per run: each run is a new upload with its own OCR job.
+        const pdfOcrRuns: {
+          ok: boolean;
+          code: string | null;
+          pages: number | null;
+          ms: number;
+        }[] = [];
 
         for (let run = 1; run <= config.runs; run++) {
           const started = Date.now();
@@ -404,58 +378,79 @@ function pctDiff(actual: number, expected: number): number | null {
           });
           const ids = { city: city.cityId, inventory: inventory.inventoryId };
           try {
-            let importedFileId: string;
             let extractedRows = 0;
             let failedPages: number[] = [];
-            let zeroRows: string | null = null;
-            if (ocrResult) {
-              const { rows, summary } =
-                await extraction.extractInventoryFromDocument(
-                  ocrResult.markdown,
-                  { targetYear },
-                );
-              extractedRows = rows.length;
-              failedPages = summary.failedPages ?? [];
-              // Production fails a PDF import with no rows before approval (CC-1202).
-              if (rows.length === 0) zeroRows = zeroRowMessage(summary);
-              importedFileId = randomUUID();
-              if (!zeroRows)
-                await db.models.ImportedInventoryFile.create({
-                  id: importedFileId,
-                  userId: TEST_USER_ID,
-                  cityId: ids.city,
-                  inventoryId: ids.inventory,
-                  fileName,
-                  originalFileName: fileName,
-                  fileType: "pdf",
-                  fileSize: buffer.length,
-                  contentDigest: createHash("sha256")
-                    .update(buffer)
-                    .digest("hex"),
-                  data: buffer,
-                  importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-                  mappingConfiguration: { rows },
-                  rowCount: rows.length,
-                  validationResults: { errors: [], warnings: [] },
+            // errorLog of a PDF import that failed before approval.
+            let failedReason: string | null = null;
+            const form = new FormData();
+            form.append("file", new File([buffer], fileName));
+            const request = mockRequest();
+            request.formData = jest.fn(() =>
+              Promise.resolve(form),
+            ) as unknown as typeof request.formData;
+            const uploaded = await uploadRoute.POST(request, {
+              params: Promise.resolve(ids),
+            });
+            const uploadedJson = await uploaded.json();
+            if (uploaded.status >= 300) {
+              throw new Error(
+                `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
+              );
+            }
+            const importedFileId: string = uploadedJson.data.id;
+            importedFileIds.push(importedFileId);
+            let state;
+            if (kind === "pdf") {
+              const jobStarted = Date.now();
+              try {
+                state = await runPdfJob(ids, importedFileId);
+              } finally {
+                const job = await db.models.PdfOcrJob.findOne({
+                  where: {
+                    sourceType: "inventory_import",
+                    sourceId: importedFileId,
+                  },
                 });
-            } else {
-              const form = new FormData();
-              form.append("file", new File([buffer], fileName));
-              const request = mockRequest();
-              request.formData = jest.fn(() =>
-                Promise.resolve(form),
-              ) as unknown as typeof request.formData;
-              const uploaded = await uploadRoute.POST(request, {
-                params: Promise.resolve(ids),
-              });
-              const uploadedJson = await uploaded.json();
-              if (uploaded.status >= 300) {
-                throw new Error(
-                  `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
-                );
+                const stored =
+                  await db.models.ImportedInventoryFile.findByPk(
+                    importedFileId,
+                  );
+                for (const key of [
+                  stored?.s3Key,
+                  job?.resultS3Key,
+                  job?.structuredS3Key,
+                ]) {
+                  if (key) uploadedKeys.push(key);
+                }
+                pdfOcrRuns.push({
+                  ok: job?.status === "succeeded",
+                  code: job?.errorCode ?? null,
+                  pages: job?.pageCount ?? null,
+                  ms: Date.now() - jobStarted,
+                });
+                if (job?.resultS3Key) {
+                  // Third-party document text: kept next to the runs, ignored by git.
+                  const ocrDir = join(outDir, ".ocr-text");
+                  mkdirSync(ocrDir, { recursive: true });
+                  writeFileSync(
+                    join(ocrDir, `${file.id}-r${run}.md`),
+                    await Storage.getTextFile(job.resultS3Key),
+                  );
+                }
+                const summary = (
+                  stored?.mappingConfiguration as {
+                    extractionSummary?: { failedPages?: number[] };
+                  } | null
+                )?.extractionSummary;
+                failedPages = summary?.failedPages ?? [];
               }
-              importedFileId = uploadedJson.data.id;
-              let state = await pollStatus(ids, importedFileId, [
+              if (state.importStatus === "failed") {
+                failedReason =
+                  (state.json?.data?.errorLog as string | null) ??
+                  "import failed without errorLog";
+              }
+            } else {
+              state = await pollStatus(ids, importedFileId, [
                 "pending_ai_interpretation",
                 "waiting_for_approval",
                 "failed",
@@ -472,10 +467,10 @@ function pctDiff(actual: number, expected: number): number | null {
               if (state.importStatus !== "waiting_for_approval") {
                 throw new Error(`before approve: ${state.importStatus}`);
               }
-              extractedRows = Number(state.json?.data?.rowCount ?? 0);
             }
+            extractedRows = Number(state.json?.data?.rowCount ?? 0);
             let done: { importStatus: string };
-            if (zeroRows) {
+            if (failedReason) {
               done = { importStatus: "failed" };
             } else {
               const approved = await approveRoute.POST(
@@ -501,7 +496,7 @@ function pctDiff(actual: number, expected: number): number | null {
                 ? {}
                 : {
                     message:
-                      zeroRows ??
+                      failedReason ??
                       (extractedRows === 0
                         ? "extraction returned 0 rows"
                         : `import ended ${done.importStatus}`),
@@ -545,10 +540,28 @@ function pctDiff(actual: number, expected: number): number | null {
           targetYear,
           keyId: key?.id ?? null,
           reference: file.reference ?? null,
-          ocr: ocrResult?.stage ?? null,
-          ocrUsage,
-          // When true, a user would see a failed import: the runs below measure the extraction on the raw OCR text only.
-          productFlowFailsAtOcr: ocrResult ? !ocrResult.stage.ok : false,
+          ocr:
+            kind === "pdf"
+              ? {
+                  ok: pdfOcrRuns.every((entry) => entry.ok),
+                  code: pdfOcrRuns.find((entry) => entry.code)?.code ?? null,
+                  runs: pdfOcrRuns,
+                }
+              : null,
+          // OCR is billed per run; pages are unknown when a job failed before reporting them.
+          ocrUsage: {
+            ...ZERO_TOKENS,
+            pages:
+              kind === "pdf" &&
+              pdfOcrRuns.length > 0 &&
+              pdfOcrRuns.every((entry) => entry.pages != null)
+                ? pdfOcrRuns.reduce((sum, entry) => sum + (entry.pages ?? 0), 0)
+                : null,
+          },
+          // When true, a user would see a failed import at OCR (the job failed), not at extraction.
+          productFlowFailsAtOcr: pdfOcrRuns.some(
+            (entry) => !entry.ok && entry.code != null,
+          ),
           runs,
           stableTotal: totals.length > 1 && new Set(totals).size === 1,
         });

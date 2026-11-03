@@ -66,8 +66,8 @@ A case counts as within tolerance only when every run is. Means cover the cases 
 | 🟡 Kyoto 2023 (not GPC, total only) | n/a | 0 of 0 | −3.9% (runs: −1.7%, −1.7%, −8.3%), outside tolerance | rows not scored; total varies between runs |
 | 🟡 Coimbatore 2019-20 (not GPC, total only) | n/a | 0 of 0 | +0.1%, 1 of 3 runs within tolerance | rows not scored |
 | 🟡 Seattle 2022 (not GPC, total only) | n/a | 0 of 0 | −35.5% (runs: −4.1%, −52.7%, −49.6%), outside tolerance | rows not scored; total varies between runs |
-| 🔴 Münster 2022 (not GPC, total only) | n/a | 0 of 0 | no rows in 3 of 3 runs | 2026-11-03 rerun (CC-1202): the model finds only the grand total (1,788,000 t, 2022) in 3 of 3 runs; it is kept as a reported total, so no line item is left. Sectors are percentages and a chart. The earlier run with a total ×5.2 did not repeat |
-| 🔴 Guadalajara 2022 | no rows | | no rows in 3 of 3 runs | 2026-11-03 rerun (CC-1202): 2 runs find only the prose total (23,787,113 t, 2022), 1 run finds nothing; sector values are not in the OCR text (39 images) |
+| 🔴 Münster 2022 (not GPC, total only) | n/a | 0 of 0 | no rows in 3 of 3 runs | 2026-11-03 reruns (CC-1202): the model finds only the grand total (1,788,000 t, 2022) in 3 of 3 runs (direct extraction on the OCR text, commit 6afd197cc); it is kept as a reported total, so no line item is left. Sectors are percentages and a chart. The full production flow (upload, extract, OCR job) also ends `failed` in 3 of 3 runs, with the message "PDF does not contain extractable inventory data" until PR #3378 ships. The earlier run with a total ×5.2 did not repeat |
+| 🔴 Guadalajara 2022 | no rows | | no rows in 3 of 3 runs | 2026-11-03 reruns (CC-1202): 2 of 3 direct extractions find only the prose total (23,787,113 t, 2022), 1 finds nothing; sector values are not in the OCR text (39 images). The full production flow also ends `failed` in 3 of 3 runs with the generic message until PR #3378 ships. OCR text differs between runs of the same file (55,644 / 55,670 / 55,646 characters) |
 
 #### Held-out cases
 

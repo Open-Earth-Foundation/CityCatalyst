@@ -17,7 +17,6 @@ import {
   writeFileSync,
 } from "node:fs";
 import { extname, join } from "node:path";
-import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import type { FileScore, KeyFile, StoredValue } from "./score";
 
 export type Tokens = {
@@ -64,7 +63,7 @@ export type CaseResult = {
   productFlowFailsAtOcr: boolean;
   runs: RunEntry[];
   stableTotal: boolean;
-  /** OCR is done once per file and shared by its runs. */
+  /** OCR runs in every PDF run (each run is a new upload); pages are summed over the runs. */
   ocrUsage?: Tokens & { pages: number | null };
 };
 
@@ -530,26 +529,4 @@ export function writeRunArtifact(args: {
   if (!existsSync(indexPath)) writeFileSync(indexPath, INDEX_HEADER);
   appendFileSync(indexPath, `${renderIndexLine(summary, folder)}\n`);
   return dir;
-}
-
-/**
- * Why an extraction left no row to import, as the text a run records in `message`.
- * Mirrors the user-facing reasons of the import wizard (CC-1202).
- */
-export function zeroRowMessage(summary: ExtractionSummary): string {
-  const totals = summary.reportedTotals ?? [];
-  if (totals.length > 0) {
-    const shown = totals
-      .slice(0, 3)
-      .map((t) => `${t.label} ${t.value} t (${t.year ?? "no year"})`)
-      .join("; ");
-    return `extraction returned 0 rows: document states only totals (${shown})`;
-  }
-  const dropped = Object.entries(summary.droppedRows ?? {})
-    .filter(([, count]) => (count ?? 0) > 0)
-    .map(([reason, count]) => `${reason}: ${count}`);
-  if (dropped.length > 0) {
-    return `extraction returned 0 rows: rows left out (${dropped.join(", ")})`;
-  }
-  return "extraction returned 0 rows: model found no values in the OCR text";
 }

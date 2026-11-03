@@ -330,7 +330,7 @@ export default function Page(props: {
     // recreates `states`, which would re-enter this effect forever.
     if (!mockWritten.current && isMockMode && catalog) {
       mockWritten.current = true;
-      const result = buildMockRanking(buildActionIndex(catalog), {
+      const result = buildMockRanking(buildActionIndex(catalog, lng), {
         locode: inventory?.city?.locode ?? "",
       });
       if (result) {

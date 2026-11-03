@@ -112,7 +112,7 @@ export default function Page(props: {
       cityId,
     },
   );
-  const index = useMemo(() => buildActionIndex(catalog), [catalog]);
+  const index = useMemo(() => buildActionIndex(catalog, lng), [catalog, lng]);
 
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,

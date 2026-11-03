@@ -5,6 +5,8 @@
  * results screen reads are declared here.
  */
 import type { TFunction } from "i18next";
+import type { MeedLocalizedText } from "@/util/types/meed";
+import { resolveLocalizedText } from "../../../localizedText";
 
 export interface MeedCatalogCoBenefit {
   impact_relationship?: string | null;
@@ -17,8 +19,15 @@ export interface MeedCatalogCoBenefit {
 
 export interface MeedCatalogAction {
   actionId?: string;
+  /**
+   * Name and description in the language the index was built for (see
+   * `buildActionIndex`), falling back to the catalog's English text.
+   */
   actionName?: string;
   description?: string;
+  /** The catalog's translation maps, e.g. `{ en, es, pt }`, when present. */
+  nameI18n?: MeedLocalizedText | null;
+  descriptionI18n?: MeedLocalizedText | null;
   /**
    * GPC sector tag, derived from `emissions` at index-build time — the catalog
    * has no sector field of its own. Never read a raw `sector` here: doing so is
@@ -78,8 +87,23 @@ function normalizeEmissions(raw: unknown): MeedCatalogAction["emissions"] {
  * Build an action_id → catalog record index from the raw (unknown) catalog
  * payload. Tolerates both a bare array and an `{ actions: [...] }` envelope,
  * and both camelCase (`actionId`) and PascalCase (`ActionID`) field casings.
+ *
+ * The catalog carries `nameI18n` / `descriptionI18n` maps (en, es, pt) next
+ * to its English `actionName` / `description`. Pass the page language and
+ * the index resolves them once, so every consumer — table, cards, drawer,
+ * CSV, legal and policy screens — shows the user's language without each
+ * one knowing about the maps. Without a language the English text is kept.
  */
-export function buildActionIndex(data: unknown): MeedActionIndex {
+function localizedMap(raw: unknown): MeedLocalizedText | null {
+  return raw && typeof raw === "object" && !Array.isArray(raw)
+    ? (raw as MeedLocalizedText)
+    : null;
+}
+
+export function buildActionIndex(
+  data: unknown,
+  language?: string,
+): MeedActionIndex {
   const index: MeedActionIndex = new Map();
   const rows: unknown[] = Array.isArray(data)
     ? data
@@ -97,16 +121,27 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
       (typeof record.ActionID === "string" && record.ActionID) ||
       null;
     if (!id) continue;
+    const nameI18n = localizedMap(record.nameI18n ?? record.name_i18n);
+    const descriptionI18n = localizedMap(
+      record.descriptionI18n ?? record.description_i18n,
+    );
+    const englishName =
+      (typeof record.actionName === "string" && record.actionName) ||
+      (typeof record.ActionName === "string" && record.ActionName) ||
+      undefined;
+    const englishDescription =
+      (typeof record.description === "string" && record.description) ||
+      (typeof record.Description === "string" && record.Description) ||
+      undefined;
     index.set(id, {
       actionId: id,
       actionName:
-        (typeof record.actionName === "string" && record.actionName) ||
-        (typeof record.ActionName === "string" && record.ActionName) ||
-        undefined,
+        (language && resolveLocalizedText(nameI18n, language)) || englishName,
       description:
-        (typeof record.description === "string" && record.description) ||
-        (typeof record.Description === "string" && record.Description) ||
-        undefined,
+        (language && resolveLocalizedText(descriptionI18n, language)) ||
+        englishDescription,
+      nameI18n,
+      descriptionI18n,
       sectorTag: sectorTagOf(normalizeEmissions(record.emissions)),
       timelineForImplementation:
         (typeof record.timelineForImplementation === "string" &&

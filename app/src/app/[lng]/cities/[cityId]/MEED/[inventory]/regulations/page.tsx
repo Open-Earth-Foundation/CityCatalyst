@@ -21,7 +21,10 @@ import { useMeedSectionStates } from "../../meedStatus";
 import { useMeedRanking } from "../../useMeedRanking";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
-import { buildActionIndex } from "../results/components/actionCatalog";
+import {
+  buildActionIndex,
+  sectorTagLabel,
+} from "../results/components/actionCatalog";
 import {
   deriveLegalScreening,
   type LegalScreenedAction,
@@ -52,11 +55,14 @@ function ScreenedActionCard({
   action,
   category,
   t,
+  tResults,
 }: {
   action: LegalScreenedAction;
   /** Omitted for an action removed before scoring. */
   category?: MeedLegalCategory;
   t: TFunction;
+  /** The `meed-results` namespace, which owns the sector labels. */
+  tResults: TFunction;
 }) {
   const standing = action.standing;
   return (
@@ -74,7 +80,7 @@ function ScreenedActionCard({
             </BodyMedium>
             {action.sector && (
               <MeedStatusTag tone="neutral">
-                {action.sector.replace(/_/g, " ")}
+                {sectorTagLabel(action.sector, tResults)}
               </MeedStatusTag>
             )}
             {category ? (
@@ -156,6 +162,7 @@ function RegulationsContent({
   inventoryId: string;
 }) {
   const { t } = useTranslation(lng, "meed-regulations");
+  const { t: tResults } = useTranslation(lng, "meed-results");
 
   // Legal standing is produced by the prioritizer, so it lives on the stored
   // ranking. `useMeedRanking` is the module's single read point for that.
@@ -169,7 +176,12 @@ function RegulationsContent({
   } = useGetMeedActionsQuery({ cityId });
 
   const screening = useMemo(
-    () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog), lng),
+    () =>
+      deriveLegalScreening(
+        ranking?.result,
+        buildActionIndex(catalog, lng),
+        lng,
+      ),
     [ranking, catalog, lng],
   );
   const { groups, excludedBeforeScoring, isEmpty } = screening;
@@ -324,6 +336,7 @@ function RegulationsContent({
                     action={action}
                     category={category}
                     t={t}
+                    tResults={tResults}
                   />
                 ))}
               </VStack>
@@ -347,6 +360,7 @@ function RegulationsContent({
                   key={action.actionId}
                   action={action}
                   t={t}
+                  tResults={tResults}
                 />
               ))}
             </VStack>

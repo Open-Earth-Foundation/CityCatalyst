@@ -73,8 +73,8 @@ function PolicyAlignmentContent(props: {
     [scores],
   );
   const actionIndex = useMemo(
-    () => buildActionIndex(catalogData),
-    [catalogData],
+    () => buildActionIndex(catalogData, lng),
+    [catalogData, lng],
   );
   const sortedRows = useMemo(
     () => sortPolicyRows(rows, sortKey, sortDirection),

@@ -291,7 +291,10 @@ function PreflightContent(props: {
     isLoading: isCatalogLoading,
     isError: isCatalogError,
   } = useGetMeedActionsQuery({ cityId });
-  const actionIndex = useMemo(() => buildActionIndex(catalog), [catalog]);
+  const actionIndex = useMemo(
+    () => buildActionIndex(catalog, lng),
+    [catalog, lng],
+  );
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewSelectedIds, setPreviewSelectedIds] = useState<string[]>([]);

@@ -105,7 +105,7 @@ export default function MEEDInventoryPage(props: {
   const { data: catalog, isLoading: isCatalogLoading } = useGetMeedActionsQuery(
     { cityId },
   );
-  const index = useMemo(() => buildActionIndex(catalog), [catalog]);
+  const index = useMemo(() => buildActionIndex(catalog, lng), [catalog, lng]);
 
   const emissionsRetrieved = isEmissionsRetrieved(states.emissions);
   const emissionsEmpty = isEmissionsEmpty(states.emissions);

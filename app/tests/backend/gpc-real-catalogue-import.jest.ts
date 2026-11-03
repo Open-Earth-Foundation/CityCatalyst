@@ -7,6 +7,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
+import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
 import ActivityService from "@/backend/ActivityService";
 import {
   listNotationKeyCandidateGroups,
@@ -17,6 +18,11 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import type { ParsedFileData } from "@/backend/FileParserService";
 import ImportMappingService from "@/backend/ImportMappingService";
+import { buildImportResult } from "@/backend/ImportResultBuilder";
+import {
+  findPendingRows,
+  findReviewRows,
+} from "@/backend/ImportRowPreviewService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import {
@@ -30,8 +36,21 @@ import { User } from "@/models/User";
 import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import {
   GlobalWarmingPotentialTypeEnum,
+  ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  teardownTests,
+  testUserID,
+} from "../helpers";
+import {
+  cleanupTestData,
+  createTestData,
+  type TestData,
+} from "../helpers/testDataCreationHelper";
 
 const PREFIX = "XX_CC1201R_";
 const EXCLUDED_WASTE = ["III.1.3", "III.2.3", "III.3.3", "III.4.3"];
@@ -377,6 +396,260 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     );
     expect(row!.status).toBe("mapped");
     expect(row!.mappingIssues).toBeUndefined();
+  });
+
+  describe("review of model-assigned III.x.3", () => {
+    const WASTEWATER = {
+      year: 2022,
+      sector: "Waste",
+      subsector: "Wastewater Treatment And Discharge",
+      category: "Wastewater Treatment & Discharge",
+      totalCO2e: 6300,
+    };
+
+    function pdfResult(
+      rows: Record<string, unknown>[],
+      overrides?: Record<string, unknown>,
+    ) {
+      return buildImportResult(
+        {
+          id: randomUUID(),
+          fileType: "pdf",
+          mappingConfiguration: { rows },
+          validationResults: {},
+        } as never,
+        overrides,
+      ).then(({ importResult }) => importResult);
+    }
+
+    it("holds a Phoenix-shaped row and leaves it unchanged", async () => {
+      const result = await pdfResult([
+        { ...WASTEWATER, gpcRefNo: "III.4.3", scope: "1" },
+      ]);
+      expect(result.rows[0].gpcRefNo).toBe("III.4.3");
+      const [pending] = findPendingRows(result);
+      expect(pending).toMatchObject({
+        issue: "direction-unconfirmed",
+        value: 6300,
+        suggestedRefNo: "III.4.3",
+        category: WASTEWATER.category,
+        quote: null,
+        quoteFound: null,
+      });
+    });
+
+    it.each([
+      ["found, table heading", "Efluentes gerados fora do município", true],
+      ["found but ambiguous", "Wastewater Treatment & Discharge", true],
+      ["not found", "Imported from neighbouring cities", false],
+    ])("keeps the row held when the quote is %s", async (_, quote, found) => {
+      const result = await pdfResult([
+        {
+          ...WASTEWATER,
+          gpcRefNo: "III.4.3",
+          directionEvidence: quote,
+          directionEvidenceFound: found,
+        },
+      ]);
+      const [pending] = findPendingRows(result);
+      expect(pending.quote).toBe(quote);
+      expect(pending.quoteFound).toBe(found);
+    });
+
+    it("preserves a stated III.x.3 and does not hold it", async () => {
+      const result = await pdfResult([
+        {
+          ...WASTEWATER,
+          gpcRefNo: "III.4.3",
+          refSource: "document",
+          scope: "1",
+        },
+      ]);
+      expect(result.rows[0].gpcRefNo).toBe("III.4.3");
+      expect(findPendingRows(result)).toEqual([]);
+    });
+
+    it("holds a stated III.x.3 with scope 3 and leaves it unchanged", async () => {
+      const result = await pdfResult([
+        {
+          ...WASTEWATER,
+          gpcRefNo: "III.4.3",
+          refSource: "document",
+          scope: "3",
+        },
+      ]);
+      expect(result.rows[0].gpcRefNo).toBe("III.4.3");
+      const [pending] = findPendingRows(result);
+      expect(pending).toMatchObject({
+        issue: "reference-conflict",
+        scope: "3",
+        expectedScope: 1,
+      });
+    });
+
+    it("does not hold III.x.1, III.x.2 or VI.1 rows", async () => {
+      const result = await pdfResult(
+        ["III.1.1", "III.1.2", "VI.1"].map((ref) => extractedRow(ref)),
+      );
+      expect(findPendingRows(result)).toEqual([]);
+    });
+
+    it("does not hold file rows", async () => {
+      const processed = await ECRFImportService.processECRFFile(parsedFile(), {
+        gpcRefNo: 0,
+        totalCO2e: 1,
+      });
+      expect(findPendingRows(processed)).toEqual([]);
+    });
+
+    it("stores a kept row as III.x.3, left out of the total", async () => {
+      const { inventoryId } = await newInventory();
+      const result = await pdfResult([{ ...WASTEWATER, gpcRefNo: "III.4.3" }], {
+        "0": { reviewDecision: "keep" },
+      });
+      expect(findPendingRows(result)).toEqual([]);
+      await InventoryImportService.importECRFData(inventoryId, result);
+      const [stored] = await db.models.InventoryValue.findAll({
+        where: { inventoryId },
+      });
+      expect(stored.gpcReferenceNumber).toBe("III.4.3");
+      expect(stored.omitFromTotal).toBe(true);
+    });
+
+    it("stores a reclassified row with the chosen reference, counted", async () => {
+      const { inventoryId } = await newInventory();
+      const result = await pdfResult([{ ...WASTEWATER, gpcRefNo: "III.4.3" }], {
+        "0": { reviewDecision: "reclassify", gpcRefNo: "III.4.1" },
+      });
+      expect(findPendingRows(result)).toEqual([]);
+      expect(findReviewRows(result)[0].suggestedRefNo).toBe("III.4.3");
+      await InventoryImportService.importECRFData(inventoryId, result);
+      const [stored] = await db.models.InventoryValue.findAll({
+        where: { inventoryId },
+      });
+      expect(stored.gpcReferenceNumber).toBe("III.4.1");
+      expect(stored.omitFromTotal).toBe(false);
+      const results = await getEmissionResults(inventoryId);
+      expect(results.totalEmissions.toNumber()).toBe(6_300_000);
+    });
+
+    it("does not store a skipped row", async () => {
+      const { inventoryId } = await newInventory();
+      const result = await pdfResult(
+        [
+          { ...WASTEWATER, gpcRefNo: "III.4.3" },
+          { ...WASTEWATER, gpcRefNo: "III.4.1", totalCO2e: 10 },
+        ],
+        { "0": { reviewDecision: "skip" } },
+      );
+      expect(findPendingRows(result)).toEqual([]);
+      await InventoryImportService.importECRFData(inventoryId, result);
+      const stored = await db.models.InventoryValue.findAll({
+        where: { inventoryId },
+      });
+      expect(stored.map((row) => row.gpcReferenceNumber)).toEqual(["III.4.1"]);
+    });
+
+    it.each([
+      [{ reviewDecision: "confirmed" }],
+      [{ reviewDecision: "reclassify" }],
+      [{ reviewDecision: "reclassify", gpcRefNo: "III.4.3" }],
+      [{ totalCO2e: 7 }],
+    ])(
+      "keeps the row held after an incomplete decision %j",
+      async (override) => {
+        const result = await pdfResult(
+          [{ ...WASTEWATER, gpcRefNo: "III.4.3" }],
+          {
+            "0": override,
+          },
+        );
+        expect(findPendingRows(result)).toHaveLength(1);
+      },
+    );
+
+    describe("approve route", () => {
+      let testData: TestData;
+      let importedFileId: string;
+      let inventoryId: string;
+      const params = () =>
+        Promise.resolve({ city: testData.cityId, inventory: inventoryId });
+      const approve = (mappingOverrides?: Record<string, unknown>) =>
+        approveImport(mockRequest({ importedFileId, mappingOverrides }), {
+          params: params(),
+        });
+
+      beforeAll(async () => {
+        setupTests();
+        testData = await createTestData({
+          cityName: `${PREFIX}approve-city`,
+          countryLocode: "XX",
+        });
+        await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+        const approveCity = await db.models.City.findByPk(testData.cityId);
+        await approveCity!.addUser(testUserID);
+        const inventory = await db.models.Inventory.create({
+          inventoryId: randomUUID(),
+          cityId: testData.cityId,
+          inventoryName: `${PREFIX}approve`,
+          year: 2022,
+          inventoryType: InventoryTypeEnum.GPC_BASIC,
+          globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+        });
+        inventoryId = inventory.inventoryId;
+        inventoryIds.push(inventoryId);
+        importedFileId = randomUUID();
+        await db.models.ImportedInventoryFile.create({
+          id: importedFileId,
+          userId: testUserID,
+          cityId: testData.cityId,
+          inventoryId,
+          fileName: "review.pdf",
+          originalFileName: "review.pdf",
+          fileType: "pdf",
+          fileSize: 1,
+          data: Buffer.from("x"),
+          importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+          mappingConfiguration: {
+            rows: [{ ...WASTEWATER, gpcRefNo: "III.4.3" }],
+          },
+          rowCount: 1,
+          validationResults: { errors: [], warnings: [] },
+        });
+      });
+
+      afterAll(async () => {
+        await db.models.ImportedInventoryFile.destroy({
+          where: { id: importedFileId },
+        });
+        await db.models.InventoryValue.destroy({ where: { inventoryId } });
+        await db.models.Inventory.destroy({ where: { inventoryId } });
+        await cleanupTestData(testData);
+        teardownTests();
+      });
+
+      it("rejects approval while a row has no decision", async () => {
+        const response = await approve();
+        await expectStatusCode(response, 409);
+        const file =
+          await db.models.ImportedInventoryFile.findByPk(importedFileId);
+        expect(file!.importStatus).toBe(ImportStatusEnum.WAITING_FOR_APPROVAL);
+      });
+
+      it("rejects a forged decision", async () => {
+        await expectStatusCode(
+          await approve({ "0": { reviewDecision: "confirmed" } }),
+          409,
+        );
+      });
+
+      it("accepts approval once the row has a decision", async () => {
+        await expectStatusCode(
+          await approve({ "0": { reviewDecision: "keep" } }),
+          202,
+        );
+      });
+    });
   });
 
   it("keeps required units the same and ignores stored III.x.3", async () => {

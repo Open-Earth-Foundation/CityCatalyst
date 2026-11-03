@@ -982,7 +982,10 @@ export type ImportRowIssue =
   | "invalid-row"
   | "outside-inventory-type"
   | "omitted-from-total"
-  | "reported-apart-from-total";
+  | "reported-apart-from-total"
+  | "direction-unconfirmed"
+  | "reference-conflict"
+  | "skipped-in-review";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -992,7 +995,7 @@ export interface ImportRowOutcome {
   sourceLabel: string | null;
   /** Notation key as written in the file, for unknown-notation-key rows. */
   notationKey: string | null;
-  status: "skipped" | "not-counted";
+  status: "skipped" | "not-counted" | "pending";
   issue: ImportRowIssue;
 }
 
@@ -1002,8 +1005,38 @@ export interface ImportRowPreview {
   skippedRows: number;
   /** Counts of skipped rows by reason, for the review summary line. */
   skippedByIssue: Partial<Record<ImportRowIssue, number>>;
-  /** Only rows that are skipped or will not count toward completion. */
+  /** Only rows that are skipped, held, or will not count toward completion. */
   rows: ImportRowOutcome[];
+  /** Rows with no user decision yet. Approval is rejected while above zero. */
+  pendingRows: number;
+  /** Every row held for a decision, decided or not. */
+  reviewRows: ImportRowReview[];
+}
+
+/** A row the import cannot complete without a user decision. */
+export interface ImportRowReview {
+  /** Key of the row in `mappingConfiguration.overrides`. */
+  rowIndex: number;
+  issue: ImportRowIssue;
+  /** Tonnes CO2e; null on a notation key row. */
+  value: number | null;
+  notationKey: string | null;
+  suggestedRefNo: string;
+  chosenRefNo: string;
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  /** Scope stated on the row. */
+  scope: string | null;
+  /** Taxonomy scope of the reference, when the row states another one. */
+  expectedScope: number | null;
+  quote: string | null;
+  /** Found in the extracted text. Says nothing about what the quote means. */
+  quoteFound: boolean | null;
+  page: number | null;
+  source: string | null;
+  decision: "keep" | "reclassify" | "skip" | null;
+  referenceOptions: string[];
 }
 
 export interface ReviewData {

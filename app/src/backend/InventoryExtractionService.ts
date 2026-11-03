@@ -798,9 +798,9 @@ export function verifyRowProvenance(
     const stated =
       !!ref &&
       row.refSource === "document" &&
-      new RegExp(`(?<![\\w.])${ref.replace(/\./g, "\\.")}(?![\\w.])`).test(
-        text,
-      );
+      new RegExp(
+        `(?<![\\w.])${ref.replace(/\./g, "\\.")}(?![\\w]|\\.\\d)`,
+      ).test(text);
     const out: ExtractedRow = {
       ...row,
       refSource: ref ? (stated ? "document" : "inferred") : null,

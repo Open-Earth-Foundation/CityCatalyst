@@ -66,6 +66,7 @@ import {
   buildImportResult,
   type ImportValidationResults,
 } from "@/backend/ImportResultBuilder";
+import { findPendingRows } from "@/backend/ImportRowPreviewService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import InventoryReplaceService, {
   IMPORT_REPLACE_LABEL,
@@ -411,6 +412,27 @@ export const POST = apiHandler(
         "This inventory already contains data. Confirm to replace it.",
         { code: "inventory-has-data", data: { existingValueCount } },
       );
+    }
+
+    // The server decides, not the review screen: held PDF rows need a decision.
+    if (importedFile.fileType === "pdf") {
+      const { importResult } = await buildImportResult(
+        importedFile,
+        mappingOverrides ??
+          (importedFile.mappingConfiguration?.overrides as
+            Record<string, unknown> | undefined),
+      );
+      const pendingRows = findPendingRows(importResult);
+      if (pendingRows.length > 0) {
+        throw createHttpError(
+          409,
+          "Some rows need a decision before this import can be approved.",
+          {
+            code: "import-rows-pending",
+            data: { pendingRows: pendingRows.length },
+          },
+        );
+      }
     }
 
     // Update mapping configuration if overrides provided

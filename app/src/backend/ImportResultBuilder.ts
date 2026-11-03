@@ -37,7 +37,10 @@ const ALLOWED_ROW_OVERRIDE_KEYS = new Set([
   "activityType",
   "activityDataSource",
   "activityDataQuality",
+  "reviewDecision",
 ]);
+
+const REVIEW_DECISIONS = new Set(["keep", "reclassify", "skip"]);
 
 /**
  * Apply user overrides to an extracted row. Only allowed keys are applied;
@@ -62,6 +65,16 @@ function applyRowOverrides(
       (out as Record<string, unknown>)[key] = value;
     }
   }
+  // A decision only counts when it is complete: an unknown value, or a
+  // reclassification with no other reference, leaves the row held.
+  const reclassified = out.gpcRefNo && out.gpcRefNo !== base.gpcRefNo;
+  if (
+    !REVIEW_DECISIONS.has(out.reviewDecision ?? "") ||
+    (out.reviewDecision === "reclassify" && !reclassified)
+  ) {
+    out.reviewDecision = null;
+  }
+  if (reclassified) out.suggestedRefNo = base.gpcRefNo;
   return out;
 }
 
@@ -123,6 +136,7 @@ export async function buildImportResult(
         });
       }
     }
+    importResult.requiresReferenceReview = importedFile.fileType === "pdf";
     return { importResult, extractedRows: storedRows };
   }
 

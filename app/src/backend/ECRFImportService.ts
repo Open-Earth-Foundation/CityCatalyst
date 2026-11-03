@@ -1,7 +1,6 @@
 import { db } from "@/models";
 import { Op } from "sequelize";
 import {
-  correctWasteDirection,
   resolveGpcRefFromLabels,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
@@ -76,10 +75,28 @@ export interface ECRFRowData {
   issue?: ImportRowIssue;
   errors?: string[];
   warnings?: string[];
+  /** What the import review needs; extracted rows only. */
+  review?: ECRFRowReviewData;
+}
+
+export interface ECRFRowReviewData {
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  scope: string | null;
+  refSource: "document" | "inferred" | null;
+  directionEvidence: string | null;
+  directionEvidenceFound: boolean | null;
+  page: number | null;
+  source: string | null;
+  decision: "keep" | "reclassify" | "skip" | null;
+  suggestedRefNo: string | null;
 }
 
 export interface ECRFImportResult {
   rows: ECRFRowData[];
+  /** PDF rows come from a model, so held rows need a user decision. */
+  requiresReferenceReview?: boolean;
   errors: string[];
   warnings: string[];
   rowCount: number;
@@ -185,15 +202,6 @@ export default class ECRFImportService {
         ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
         : undefined;
       if (gpcRefNo === "") gpcRefNo = undefined;
-
-      // A file reference is trusted, except III.x.3 on an explicit scope 3 row.
-      if (gpcRefNo && scopeHeader) {
-        gpcRefNo = correctWasteDirection(
-          gpcRefNo,
-          [],
-          row[scopeHeader]?.toString(),
-        );
-      }
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
         const rawSector = hasSectorColumn
@@ -743,14 +751,8 @@ export default class ECRFImportService {
       );
       const activityHint =
         row.activityType?.trim() || row.category?.trim() || undefined;
-      const copiedRef = row.gpcRefNo?.trim();
       const gpcRefNo =
-        (copiedRef &&
-          correctWasteDirection(
-            copiedRef,
-            [row.subsector, row.category, row.activityType],
-            row.scope,
-          )) ||
+        row.gpcRefNo?.trim() ||
         resolveGpcRefFromLabels({
           sector: row.sector,
           subsector: row.subsector,
@@ -810,12 +812,32 @@ export default class ECRFImportService {
         inferredYear = inferredYear ?? (row.year as number);
       }
 
+      const skippedInReview = row.reviewDecision === "skip";
       rows.push({
         gpcRefNo,
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
         scopeId: resolvedScopeId,
+        ...(skippedInReview
+          ? {
+              issue: "skipped-in-review" as const,
+              errors: ["Skipped in the import review"],
+            }
+          : {}),
+        review: {
+          sector: row.sector ?? null,
+          subsector: row.subsector ?? null,
+          category: row.category ?? null,
+          scope: row.scope ?? null,
+          refSource: row.refSource ?? null,
+          directionEvidence: row.directionEvidence ?? null,
+          directionEvidenceFound: row.directionEvidenceFound ?? null,
+          page: row.page ?? null,
+          source: row.source ?? null,
+          decision: row.reviewDecision ?? null,
+          suggestedRefNo: row.suggestedRefNo ?? null,
+        },
         co2: num(row.co2),
         ch4: num(row.ch4),
         n2o: num(row.n2o),

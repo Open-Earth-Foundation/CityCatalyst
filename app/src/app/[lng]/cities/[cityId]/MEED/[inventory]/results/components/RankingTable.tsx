@@ -14,6 +14,12 @@ import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import { GenerateReportControl } from "./ResultsHeader";
 import { FOCUS_RING } from "../../../focusRing";
 import type { MeedScoreWeights } from "./rankingFacts";
+import {
+  LEGAL_CATEGORY_TONE,
+  legalCategoryLabelKey,
+  type MeedLegalStanding,
+} from "../../regulations/legalStanding";
+import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
 /**
@@ -44,6 +50,7 @@ export function RankingTable({
   onGenerate,
   isGenerating = false,
   progress = null,
+  legalFor,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
@@ -57,6 +64,8 @@ export function RankingTable({
   onGenerate?: () => void;
   isGenerating?: boolean;
   progress?: string | null;
+  /** Legal standing per action; adds the municipal-authority column when set. */
+  legalFor?: (actionId: string) => MeedLegalStanding | null;
 }) {
   return (
     <Card.Root overflow="hidden">
@@ -109,6 +118,17 @@ export function RankingTable({
             <Table.ColumnHeader>{t("column-rank")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-action")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
+            {legalFor && (
+              <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
+                <HStack gap="xs" alignItems="center">
+                  <span>{t("column-legal")}</span>
+                  <MeedInfoTip
+                    content={t("column-legal-info")}
+                    ariaLabel={t("column-legal-info")}
+                  />
+                </HStack>
+              </Table.ColumnHeader>
+            )}
             <Table.ColumnHeader
               w="220px"
               display={{ base: "none", md: "table-cell" }}
@@ -130,6 +150,7 @@ export function RankingTable({
         <Table.Body>
           {actions.map((action) => {
             const name = actionName(index, action.action_id, t);
+            const legal = legalFor?.(action.action_id) ?? null;
             return (
               <Table.Row key={action.action_id}>
                 <Table.Cell>
@@ -152,6 +173,15 @@ export function RankingTable({
                     {sectorLabel(index, action.action_id, t)}
                   </BodyMedium>
                 </Table.Cell>
+                {legalFor && (
+                  <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                    {legal && (
+                      <MeedStatusTag tone={LEGAL_CATEGORY_TONE[legal.ownership]}>
+                        {t(legalCategoryLabelKey(legal.ownership))}
+                      </MeedStatusTag>
+                    )}
+                  </Table.Cell>
+                )}
                 <Table.Cell display={{ base: "none", md: "table-cell" }}>
                   <Box w="180px">
                     <MeedScoreComposition

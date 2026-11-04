@@ -48,6 +48,11 @@ import {
 } from "./report/useMeedReport";
 import { buildReportPdf } from "./report/meedReportPdf";
 import { actionName as catalogActionName } from "./components/actionCatalog";
+import { LegalStandingSection } from "./components/LegalStandingSection";
+import {
+  countByOwnership,
+  legalStandingByAction,
+} from "../regulations/legalStanding";
 
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -107,7 +112,7 @@ export default function Page(props: {
       cityId,
     },
   );
-  const index = useMemo(() => buildActionIndex(catalog), [catalog]);
+  const index = useMemo(() => buildActionIndex(catalog, lng), [catalog, lng]);
 
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,
@@ -115,6 +120,21 @@ export default function Page(props: {
 
   const ranked = useMemo(() => ranking?.ranked_actions ?? [], [ranking]);
   const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);
+  // Legal standing per ranked action — the municipal-authority tag on the
+  // cards, the table, the CSV and the drawer all read from this one map.
+  const legalByAction = useMemo(
+    () => legalStandingByAction(ranked, lng),
+    [ranked, lng],
+  );
+  const legalFor = useCallback(
+    (actionId: string) => legalByAction.get(actionId) ?? null,
+    [legalByAction],
+  );
+  const legalCounts = useMemo(
+    () =>
+      legalByAction.size ? countByOwnership(legalByAction.values()) : null,
+    [legalByAction],
+  );
   const excludedCount = excludedActionCount(ranking);
   const backing = useMemo(() => policyBacking(ranked), [ranked]);
   const coBenefits = useMemo(
@@ -136,7 +156,7 @@ export default function Page(props: {
   // drops it rather than writing "undefined" into the filename.
   const exportRanking = useCallback(() => {
     if (ranked.length === 0) return;
-    const { headers, rows } = buildRankingCsv(ranked, index, t);
+    const { headers, rows } = buildRankingCsv(ranked, index, t, legalFor);
     const parts = [
       inventory?.city?.name,
       inventory?.year,
@@ -262,6 +282,7 @@ export default function Page(props: {
     indicatorCount: context.indicatorCount,
     finance: context.finance,
     legalFunnel: funnel,
+    legalCounts,
     nationalPolicy: context.policy?.national ?? null,
   };
   const visualFor = (area: MeedContextArea) =>
@@ -270,6 +291,7 @@ export default function Page(props: {
       showEmissions: true,
       keyIndicators: context.keyIndicators,
       funnel,
+      legalCounts,
       finance: context.finance,
       policy: context.policy,
       t,
@@ -392,7 +414,7 @@ export default function Page(props: {
             */}
             <MeedRankingSummary
               insights={insights}
-              funnel={funnel}
+              legalCounts={legalCounts}
               backing={backing}
               nationalPolicy={context.policy?.national ?? null}
               inputs={summaryInputs}
@@ -425,6 +447,7 @@ export default function Page(props: {
               onToggleSelect={toggleSelect}
               onOpenDetail={setSelected}
               onBrowseFullRanking={showFullRanking}
+              legalFor={legalFor}
             />
             {scoreWeights && <MeedScoreLegend weights={scoreWeights} t={t} />}
             <CoBenefitStrip
@@ -450,6 +473,7 @@ export default function Page(props: {
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
               onExport={exportRanking}
+              legalFor={legalFor}
             />
           </VStack>
         )}
@@ -466,6 +490,12 @@ export default function Page(props: {
             isSelected={selectedIds.includes(selected.action_id)}
             onToggleSelect={toggleSelect}
             finance={{ cityId, lng, financeHref: hrefFor("finance") }}
+            extraSections={
+              <LegalStandingSection
+                standing={legalByAction.get(selected.action_id)}
+                t={t}
+              />
+            }
           />
         )}
       </>

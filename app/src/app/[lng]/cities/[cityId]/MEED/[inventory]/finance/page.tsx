@@ -4,6 +4,7 @@ import { Card, HStack, Table, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityQuery,
+  useGetMeedActionsQuery,
   useGetMeedReferenceFinanceFeasibilityQuery,
 } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
@@ -19,6 +20,7 @@ import {
 } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { EmptyState } from "../results/components/EmptyState";
+import { buildActionIndex } from "../results/components/actionCatalog";
 import { CityProfileCard } from "./components/CityProfileCard";
 import { FeasibilityRow } from "./components/FeasibilityRow";
 import { FinanceColumnHeader } from "./components/FinanceColumnHeader";
@@ -50,13 +52,25 @@ function FinancialFeasibilityContent(props: {
   const { data, isLoading, isError, refetch } =
     useGetMeedReferenceFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
   const { data: city } = useGetCityQuery(cityId, { skip: !cityId });
+  // The feasibility rows name actions in English only; the catalog carries
+  // the translations, so names are taken from there once it has loaded.
+  const { data: catalog } = useGetMeedActionsQuery(
+    { cityId },
+    { skip: !cityId },
+  );
 
   const [activeRoute, setActiveRoute] = useState<RouteKey | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  const rows = useMemo(() => extractFeasibilityRows(data), [data]);
+  const rows = useMemo(() => {
+    const index = buildActionIndex(catalog, lng);
+    return extractFeasibilityRows(data).map((row) => {
+      const name = index.get(row.action_id)?.actionName;
+      return name ? { ...row, action_name: name } : row;
+    });
+  }, [data, catalog, lng]);
 
   const routeCounts = useMemo(() => {
     const counts: Partial<Record<RouteKey, number>> = {};

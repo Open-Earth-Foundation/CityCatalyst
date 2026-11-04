@@ -15,80 +15,136 @@ import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedWizardPage } from "../../MeedWizardPage";
-import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
+import { MeedStatusTag } from "../../components/MeedStatusTag";
 import { setMeedStepState } from "../../meedLocalState";
 import { useMeedSectionStates } from "../../meedStatus";
 import { useMeedRanking } from "../../useMeedRanking";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
-import { buildActionIndex } from "../results/components/actionCatalog";
-import { legalFunnel } from "../results/components/rankingFacts";
-import { MeedFunnelStrip } from "../../components/MeedFunnelStrip";
+import {
+  buildActionIndex,
+  sectorTagLabel,
+} from "../results/components/actionCatalog";
 import {
   deriveLegalScreening,
   type LegalScreenedAction,
 } from "./legalScreening";
+import {
+  LEGAL_CATEGORY_ORDER,
+  LEGAL_CATEGORY_TONE,
+  legalCategoryLabelKey,
+  type MeedLegalCategory,
+} from "./legalStanding";
 
-/** Screening verdict for an action that did not pass cleanly. */
-type ScreenedStatus = "blocked" | "flagged";
-
-const STATUS_TONE: Record<ScreenedStatus, MeedTone> = {
-  blocked: "negative",
-  flagged: "warning",
-};
-
-const STATUS_TAG_KEY: Record<ScreenedStatus, string> = {
-  blocked: "excluded-tag",
-  flagged: "flagged-tag",
-};
+/** Label / value line inside a card. */
+function Fact({ label, value }: { label: string; value: string }) {
+  return (
+    <HStack gap="s" alignItems="baseline" flexWrap="wrap">
+      <Caption color="content.tertiary">{label}</Caption>
+      <BodySmall color="content.secondary">{value}</BodySmall>
+    </HStack>
+  );
+}
 
 /**
- * One screened action. Blocked and flagged actions differ only in tone, tag and
- * body copy, so they share a single card rather than two near-identical ones.
+ * One screened action. Ranked actions carry their legal standing; actions the
+ * backend removed before scoring carry the removal reasons instead. Both use
+ * the same card so the page reads as one list.
  */
 function ScreenedActionCard({
   action,
-  status,
+  category,
   t,
+  tResults,
 }: {
   action: LegalScreenedAction;
-  status: ScreenedStatus;
+  /** Omitted for an action removed before scoring. */
+  category?: MeedLegalCategory;
   t: TFunction;
+  /** The `meed-results` namespace, which owns the sector labels. */
+  tResults: TFunction;
 }) {
-  const hasReasons = status === "blocked" && !!action.reasons?.length;
-
+  const standing = action.standing;
   return (
     <Card.Root borderColor="border.overlay">
       <Card.Body>
         <VStack alignItems="stretch" gap="s">
           <HStack gap="s" flexWrap="wrap" alignItems="center">
+            {action.rank !== undefined && (
+              <BodyMedium color="content.link" fontWeight="bold">
+                #{action.rank}
+              </BodyMedium>
+            )}
             <BodyMedium color="content.primary" fontWeight="bold" flex="1">
               {action.actionName}
             </BodyMedium>
             {action.sector && (
               <MeedStatusTag tone="neutral">
-                {action.sector.replace(/_/g, " ")}
+                {sectorTagLabel(action.sector, tResults)}
               </MeedStatusTag>
             )}
-            <MeedStatusTag tone={STATUS_TONE[status]}>
-              {t(STATUS_TAG_KEY[status])}
-            </MeedStatusTag>
+            {category ? (
+              <MeedStatusTag tone={LEGAL_CATEGORY_TONE[category]}>
+                {t(legalCategoryLabelKey(category))}
+              </MeedStatusTag>
+            ) : (
+              <MeedStatusTag tone="negative">{t("excluded-tag")}</MeedStatusTag>
+            )}
           </HStack>
-          {hasReasons ? (
+
+          {standing && (
             <VStack alignItems="stretch" gap="xs">
-              <Overline color="content.tertiary">{t("reasons-label")}</Overline>
-              {action.reasons!.map((reason, i) => (
+              <Fact
+                label={t("verdict-label")}
+                value={t(legalCategoryLabelKey(standing.verdict))}
+              />
+              {standing.score !== null && (
+                <Fact
+                  label={t("score-label")}
+                  value={standing.score.toFixed(2)}
+                />
+              )}
+              {standing.ownershipDescription && (
+                <BodySmall color="content.secondary">
+                  {standing.ownershipDescription}
+                </BodySmall>
+              )}
+              {standing.justification && (
+                <Box pt="xs">
+                  <Overline color="content.tertiary">
+                    {t("reasons-label")}
+                  </Overline>
+                  <BodySmall color="content.secondary">
+                    {standing.justification}
+                  </BodySmall>
+                </Box>
+              )}
+              {standing.references.length > 0 && (
+                <Box pt="xs">
+                  <Overline color="content.tertiary">
+                    {t("references-label")}
+                  </Overline>
+                  {standing.references.map((ref, i) => (
+                    <BodySmall key={i} color="content.secondary">
+                      {ref}
+                    </BodySmall>
+                  ))}
+                </Box>
+              )}
+            </VStack>
+          )}
+
+          {!standing && !!action.reasons?.length && (
+            <VStack alignItems="stretch" gap="xs">
+              <Overline color="content.tertiary">
+                {t("excluded-reasons-label")}
+              </Overline>
+              {action.reasons.map((reason, i) => (
                 <BodySmall key={i} color="content.secondary">
                   {reason}
                 </BodySmall>
               ))}
             </VStack>
-          ) : (
-            status === "flagged" && (
-              <BodySmall color="content.secondary">
-                {t("flagged-card-body")}
-              </BodySmall>
-            )
           )}
         </VStack>
       </Card.Body>
@@ -106,8 +162,9 @@ function RegulationsContent({
   inventoryId: string;
 }) {
   const { t } = useTranslation(lng, "meed-regulations");
+  const { t: tResults } = useTranslation(lng, "meed-results");
 
-  // Legal screening is produced by the prioritizer, so it lives on the stored
+  // Legal standing is produced by the prioritizer, so it lives on the stored
   // ranking. `useMeedRanking` is the module's single read point for that.
   const { states } = useMeedSectionStates(inventoryId);
   const { ranking, isReady } = useMeedRanking(inventoryId, states);
@@ -119,19 +176,33 @@ function RegulationsContent({
   } = useGetMeedActionsQuery({ cityId });
 
   const screening = useMemo(
-    () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog), lng),
+    () =>
+      deriveLegalScreening(
+        ranking?.result,
+        buildActionIndex(catalog, lng),
+        lng,
+      ),
     [ranking, catalog, lng],
   );
-  const { blocked, flagged, includedCount, isEmpty } = screening;
+  const { groups, excludedBeforeScoring, isEmpty } = screening;
   const hasScreening = Boolean(ranking) && !isEmpty;
-  const catalogSize = useMemo(() => buildActionIndex(catalog).size, [catalog]);
-  // Assessed → passed → ranked. `includedCount` is what the screening derived
-  // as "passed"; the response counts, when present, take precedence.
-  const funnel = legalFunnel(ranking?.result ?? null, catalogSize) ?? {
-    assessed: catalogSize,
-    passed: includedCount,
-    ranked: ranking?.result?.ranked_actions?.length ?? 0,
+  const counts = {
+    blocked: groups.blocked.length,
+    conditional: groups.conditional.length,
+    enabled: groups.enabled.length,
+    not_assessed: groups.not_assessed.length,
   };
+  const assessedCount = counts.blocked + counts.conditional + counts.enabled;
+  // The all-clear card needs a positive signal: at least one action assessed
+  // as enabled, and nothing blocked, conditional, unassessed or excluded.
+  // A ranking whose legal data is all neutral fallbacks is not "all clear".
+  const allEnabled =
+    counts.enabled > 0 &&
+    counts.blocked +
+      counts.conditional +
+      counts.not_assessed +
+      excludedBeforeScoring.length ===
+      0;
 
   // Report progress only once there is something to report.
   //
@@ -139,12 +210,11 @@ function RegulationsContent({
   // data behind it — which meant merely opening the URL satisfied one of the
   // three sections `computeMeedGate` requires before the ranking can be
   // generated. Visiting a screen is not the same as having screened anything.
-  const stepSub = hasScreening
-    ? t("step-sub-counts", {
-        excluded: blocked.length,
-        included: includedCount,
-      })
-    : t("step-sub");
+  const stepSub = !hasScreening
+    ? t("step-sub")
+    : assessedCount > 0
+      ? t("step-sub-counts", counts)
+      : t("step-sub-not-assessed", { count: counts.not_assessed });
   useEffect(() => {
     if (!inventoryId || !isReady) return;
     setMeedStepState(
@@ -199,46 +269,35 @@ function RegulationsContent({
           <Card.Root borderColor="border.overlay">
             <Card.Body>
               <VStack alignItems="stretch" gap="m">
-                <MeedFunnelStrip
-                  steps={[
-                    {
-                      label: t("funnel-assessed"),
-                      sublabel: t("funnel-assessed-sub"),
-                      value: funnel.assessed,
-                      tone: "neutral",
-                    },
-                    {
-                      label: t("funnel-passed"),
-                      sublabel: t("funnel-passed-sub"),
-                      value: funnel.passed,
-                      tone: "positive",
-                    },
-                    {
-                      label: t("funnel-ranked"),
-                      sublabel: t("funnel-ranked-sub"),
-                      value: funnel.ranked,
-                      tone: "info",
-                    },
-                  ]}
-                  ariaLabel={t("funnel-aria", { ...funnel })}
-                  tipTitle={t("funnel-tip-title")}
-                  tipNote={t("funnel-tip-note")}
-                />
-                {flagged.length > 0 && (
-                  <HStack gap="s" alignItems="center">
-                    <MeedStatusTag tone="warning">
-                      {t("summary-flagged")}
+                <Box>
+                  <TitleMedium color="content.primary">
+                    {t("summary-title")}
+                  </TitleMedium>
+                  <BodySmall color="content.secondary" mt="xs">
+                    {t("summary-body", {
+                      count: screening.includedCount,
+                    })}
+                  </BodySmall>
+                </Box>
+                <HStack gap="s" flexWrap="wrap">
+                  {LEGAL_CATEGORY_ORDER.filter((c) => counts[c] > 0).map(
+                    (c) => (
+                      <MeedStatusTag key={c} tone={LEGAL_CATEGORY_TONE[c]}>
+                        {t(legalCategoryLabelKey(c))} · {counts[c]}
+                      </MeedStatusTag>
+                    ),
+                  )}
+                  {excludedBeforeScoring.length > 0 && (
+                    <MeedStatusTag tone="negative">
+                      {t("excluded-tag")} · {excludedBeforeScoring.length}
                     </MeedStatusTag>
-                    <Caption color="content.secondary">
-                      {t("summary-flagged-count", { count: flagged.length })}
-                    </Caption>
-                  </HStack>
-                )}
+                  )}
+                </HStack>
               </VStack>
             </Card.Body>
           </Card.Root>
 
-          {blocked.length === 0 && flagged.length === 0 && (
+          {allEnabled && (
             <Card.Root borderColor="border.neutral">
               <Card.Body>
                 <VStack gap="s" py="l" px="l" textAlign="center">
@@ -248,53 +307,60 @@ function RegulationsContent({
                     color="sentiment.positiveDefault"
                   />
                   <TitleMedium color="content.primary">
-                    {t("all-passed-title")}
+                    {t("all-enabled-title")}
                   </TitleMedium>
                   <BodyMedium color="content.secondary">
-                    {t("all-passed-body")}
+                    {t("all-enabled-body")}
                   </BodyMedium>
                 </VStack>
               </Card.Body>
             </Card.Root>
           )}
 
-          {blocked.length > 0 && (
-            <VStack alignItems="stretch" gap="m">
-              <Box>
-                <TitleMedium color="content.primary">
-                  {t("blocked-section-title", { count: blocked.length })}
-                </TitleMedium>
-                <BodySmall color="content.secondary" mt="xs">
-                  {t("blocked-section-description")}
-                </BodySmall>
-              </Box>
-              {blocked.map((action) => (
-                <ScreenedActionCard
-                  key={action.actionId}
-                  action={action}
-                  status="blocked"
-                  t={t}
-                />
-              ))}
-            </VStack>
+          {LEGAL_CATEGORY_ORDER.filter((c) => groups[c].length > 0).map(
+            (category) => (
+              <VStack key={category} alignItems="stretch" gap="m">
+                <Box>
+                  <TitleMedium color="content.primary">
+                    {t(`section-${category.replace("_", "-")}`, {
+                      count: groups[category].length,
+                    })}
+                  </TitleMedium>
+                  <BodySmall color="content.secondary" mt="xs">
+                    {t(`section-${category.replace("_", "-")}-description`)}
+                  </BodySmall>
+                </Box>
+                {groups[category].map((action) => (
+                  <ScreenedActionCard
+                    key={action.actionId}
+                    action={action}
+                    category={category}
+                    t={t}
+                    tResults={tResults}
+                  />
+                ))}
+              </VStack>
+            ),
           )}
 
-          {flagged.length > 0 && (
+          {excludedBeforeScoring.length > 0 && (
             <VStack alignItems="stretch" gap="m">
               <Box>
                 <TitleMedium color="content.primary">
-                  {t("flagged-section-title", { count: flagged.length })}
+                  {t("excluded-section-title", {
+                    count: excludedBeforeScoring.length,
+                  })}
                 </TitleMedium>
                 <BodySmall color="content.secondary" mt="xs">
-                  {t("flagged-section-description")}
+                  {t("excluded-section-description")}
                 </BodySmall>
               </Box>
-              {flagged.map((action) => (
+              {excludedBeforeScoring.map((action) => (
                 <ScreenedActionCard
                   key={action.actionId}
                   action={action}
-                  status="flagged"
                   t={t}
+                  tResults={tResults}
                 />
               ))}
             </VStack>

@@ -86,6 +86,16 @@ export const POST = apiHandler(
         cityId: (city as City)?.cityId,
       });
       didExistAlready = false;
+    } else {
+      // Same city+year is reused. Apply the type/GWP from this request so
+      // onboarding BASIC+ is not dropped when a BASIC inventory already exists.
+      await inventory.update({
+        inventoryType: body.inventoryType,
+        globalWarmingPotentialType: body.globalWarmingPotentialType,
+        inventoryName: body.inventoryName,
+        totalCountryEmissions:
+          body.totalCountryEmissions ?? inventory.totalCountryEmissions,
+      });
     }
     return NextResponse.json({ data: inventory, didExistAlready });
   },

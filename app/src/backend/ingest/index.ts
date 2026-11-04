@@ -21,6 +21,19 @@ export { MemoryIngestStore } from "./MemoryIngestStore";
 export { SequelizeIngestStore } from "./IngestStoreService";
 export { createIngestPlugin } from "./registry";
 export {
+  filesFromIngestForm,
+  parseIngestDryRun,
+  parseIngestScope,
+  publicIngestItem,
+  publicIngestJob,
+  startModuleIngest,
+} from "./start";
+export {
+  bulkErrorFromIngestItem,
+  ingestGhgiBuffer,
+  shouldCommitViaGhgiRunner,
+} from "./ghgi-run";
+export {
   REVIEW_DRAFT_TTL_MS,
   REVIEW_LOCK_MS,
   bundleDigestOf,

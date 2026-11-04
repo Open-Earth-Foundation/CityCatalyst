@@ -24,13 +24,25 @@ import {
 const DEFAULT_TIMEFRAMES: MeedTimeframePreference[] = ["no_preference"];
 
 /**
+ * Languages hiap-meed can write explanations in (its translations.yaml). Any
+ * other language makes the whole ranking request fail, so those pages get
+ * English, which the detail panel already falls back to.
+ * Keep in sync with hiap-meed/app/modules/prioritizer/translations.yaml.
+ */
+const MEED_EXPLANATION_LANGUAGES = ["en", "es"];
+
+/**
  * English is the engine's canonical explanation language; the page language
  * is requested next to it so the detail drawer can show the explanation in
  * the language the user is reading. One language means one less translation
  * call, so the two are never duplicated.
  */
 export function requestedLanguagesFor(language?: string): string[] {
-  return language && language !== "en" ? ["en", language] : ["en"];
+  return language &&
+    language !== "en" &&
+    MEED_EXPLANATION_LANGUAGES.includes(language)
+    ? ["en", language]
+    : ["en"];
 }
 
 const DEFAULT_TOP_N = 20;

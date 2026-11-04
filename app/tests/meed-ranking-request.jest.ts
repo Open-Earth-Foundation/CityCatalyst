@@ -52,6 +52,14 @@ describe("MEED run-ranking request", () => {
       language: "en",
     });
     expect(en.requestedLanguages).toEqual(["en"]);
+    // The engine only writes en and es; other UI languages must not break the run.
+    const de = buildRunRankingRequest({
+      inventoryId: INVENTORY,
+      preferences: preferences(),
+      excludedActionIds: [],
+      language: "de",
+    });
+    expect(de.requestedLanguages).toEqual(["en"]);
   });
 
   it("sends the city's priority sectors, not the excluded ones", () => {

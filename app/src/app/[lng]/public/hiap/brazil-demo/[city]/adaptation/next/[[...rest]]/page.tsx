@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { trackHref } from "../../../../_lib/hrefs";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
+// Remove this opt-out after verifying the segment passes validation without it.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 /**
  * The proposal screens lived under `/adaptation/next/…` until they became
  * the adaptation track; links shared during the review still land on them,

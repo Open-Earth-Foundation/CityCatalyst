@@ -500,3 +500,48 @@ export const recordConsentRequest = z.object({
 });
 
 export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;
+
+export const patchIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  payload: z.unknown(),
+});
+
+export const ingestFromDocumentRequest = z.object({
+  inventoryId: z.string().uuid().optional(),
+  cityId: z.string().uuid().optional(),
+  projectId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional(),
+  dryRun: z.boolean().optional(),
+});
+
+export const withdrawIngestDocumentRequest = z.object({
+  withdrawExtractsFor: z
+    .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
+    .optional(),
+});
+
+export const supersedeIngestDocumentRequest = z.object({
+  replacementDocumentId: z.string().uuid(),
+});
+
+export const approveIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  targetBinding: z
+    .object({
+      cityId: z.string().uuid().nullable().optional(),
+      inventoryId: z.string().uuid().nullable().optional(),
+    })
+    .optional(),
+});
+
+export const confirmIngestColumnMapRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  mappings: z
+    .array(
+      z.object({
+        sourceColumn: z.string().min(1),
+        taxonomyField: z.string().min(1),
+      }),
+    )
+    .min(1),
+});

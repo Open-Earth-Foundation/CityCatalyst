@@ -1,7 +1,7 @@
 {
   "header-running": "Erzeugung von Handlungsempfehlungen",
   "header-done": "Empfehlungen bereit",
-  "header-sub": "Soeben gestartet · voraussichtliche Wartezeit etwa 30 Sekunden",
+  "header-sub": "Soeben gestartet · voraussichtliche Wartezeit etwa eine Minute",
   "percent-complete": "{{pct}}% abgeschlossen",
   "stage-in-progress": "{{stage}} in Bearbeitung",
   "all-complete": "Alle Analysen abgeschlossen",

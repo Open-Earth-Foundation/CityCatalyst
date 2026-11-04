@@ -1,6 +1,6 @@
 import {
   isImportedWasteRef,
-  isOmittedFromTotalRef,
+  isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import {
@@ -194,7 +194,7 @@ export async function previewImportRows(
     // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
     const issue = isImportedWasteRef(row.gpcRefNo)
       ? "omitted-from-total"
-      : isOmittedFromTotalRef(row.gpcRefNo)
+      : isOmittedGPCReference(row.gpcRefNo)
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"

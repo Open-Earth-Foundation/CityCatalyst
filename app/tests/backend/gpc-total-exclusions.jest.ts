@@ -224,6 +224,20 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       },
     );
 
+    it.each(EXCLUDED)(
+      "clears the flag when %s is reclassified to a counted reference",
+      async (ref) => {
+        const { inventoryId } = await newInventory();
+        const value = await addValue(inventoryId, ref, 10n);
+        await value.reload();
+        expect(value.omitFromTotal).toBe(true);
+
+        await value.update({ gpcReferenceNumber: "III.1.1" });
+        await value.reload();
+        expect(value.omitFromTotal).toBe(false);
+      },
+    );
+
     it("keeps an explicit flag on any other reference", async () => {
       const { inventoryId } = await newInventory();
       const value = await addValue(inventoryId, "III.1.1", 10n, {

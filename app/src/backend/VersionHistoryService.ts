@@ -1,7 +1,7 @@
 import "@/util/big_int_json";
 import { db } from "@/models";
 import type { Version } from "@/models/Version";
-import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
@@ -270,7 +270,7 @@ export default class VersionHistoryService {
         // predate the rule, so restoring must not put the row back in totals.
         if (
           version.table === "InventoryValue" &&
-          isOmittedFromTotalRef(previousData.gpcReferenceNumber as string)
+          isOmittedGPCReference(previousData.gpcReferenceNumber as string)
         ) {
           previousData.omitFromTotal = true;
         }

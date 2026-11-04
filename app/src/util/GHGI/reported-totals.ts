@@ -43,7 +43,7 @@ export function isImportedWasteRef(
   );
 }
 
-export function isOmittedFromTotalRef(
+export function isOmittedGPCReference(
   gpcReferenceNumber?: string | null,
 ): boolean {
   return (

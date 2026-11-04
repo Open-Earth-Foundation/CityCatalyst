@@ -1,4 +1,5 @@
 import type { CoarseFileKind } from "./coarse-kind";
+import type { IngestSourceReconciliationReport } from "./source-reconciliation";
 
 export const INGEST_MODULES = ["test", "ghgi", "ccra", "cnb"] as const;
 export type IngestModuleId = (typeof INGEST_MODULES)[number];
@@ -63,6 +64,7 @@ export const INGEST_ERROR_CODES = [
   "document_withdrawn",
   "document_superseded",
   "document_unavailable",
+  "reconciliation_failed",
 ] as const;
 export type IngestErrorCode = (typeof INGEST_ERROR_CODES)[number];
 
@@ -126,6 +128,7 @@ export interface IngestReviewDraftEnvelope {
   payload: unknown;
   /** Core-owned mapping stage. Absent when the plugin skipped mapping. */
   columnMapping?: IngestColumnMappingState | null;
+  reconciliation?: IngestSourceReconciliationReport | null;
 }
 
 export interface IngestScope {

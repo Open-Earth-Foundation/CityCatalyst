@@ -13,6 +13,10 @@ import {
   proposeColumnMap,
 } from "./column-mapping";
 import type { IngestPlugin } from "./plugin";
+import {
+  reconcileIngestSource,
+  type IngestSourceReconciliationReport,
+} from "./source-reconciliation";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
 import {
@@ -318,6 +322,17 @@ export class IngestRunner {
       adapted,
     );
     await this.addWarnings(itemId, validation?.warnings);
+    const reconciliation = await this.reconcileAdapted(
+      plugin,
+      { job, item: await this.requireItem(itemId), scope },
+      adapted,
+    );
+    if (reconciliation) {
+      await this.addWarnings(
+        itemId,
+        reconciliation.issues.map((issue) => issue.message),
+      );
+    }
 
     await this.setStage(itemId, "decide");
     const policy = plugin.approvalPolicy(
@@ -331,7 +346,7 @@ export class IngestRunner {
       await this.skipDryRun(itemId);
       return;
     }
-    if (policy === "review") {
+    if (policy === "review" || (reconciliation && !reconciliation.ok)) {
       await this.persistReviewDraft({
         job,
         itemId,
@@ -339,6 +354,7 @@ export class IngestRunner {
         adapted,
         validation,
         scope,
+        reconciliation,
       });
       return;
     }
@@ -359,6 +375,7 @@ export class IngestRunner {
       stage: "publish",
       result: {
         ...(result ?? { committed: true }),
+        ...(reconciliation ? { reconciliation } : {}),
         ...(mappingDraft?.columnMapping?.confirmed
           ? { columnMapping: mappingDraft.columnMapping.confirmed }
           : {}),
@@ -581,6 +598,17 @@ export class IngestRunner {
       cityId: item.targetCityId ?? job.cityId,
       inventoryId: item.targetInventoryId,
     };
+    const reconciliation = await this.reconcileAdapted(
+      plugin,
+      { job, item, scope },
+      adapted,
+    );
+    if (reconciliation && !reconciliation.ok) {
+      throw new IngestItemError(
+        "reconciliation_failed",
+        "Source reconciliation failed; values cannot be committed",
+      );
+    }
 
     await this.setStage(item.id, "commit");
     const result = await plugin.commit(
@@ -684,6 +712,17 @@ export class IngestRunner {
     return this.requireItem(itemId);
   }
 
+  private async reconcileAdapted(
+    plugin: IngestPlugin,
+    ctx: { job: IngestJobRecord; item: IngestItemRecord; scope: IngestScope },
+    adapted: unknown,
+  ): Promise<IngestSourceReconciliationReport | null> {
+    if (!plugin.sourceReconciliation) return null;
+    const input = await plugin.sourceReconciliation(ctx, adapted);
+    if (!input) return null;
+    return reconcileIngestSource(input);
+  }
+
   private async persistReviewDraft(input: {
     job: IngestJobRecord;
     itemId: string;
@@ -691,6 +730,7 @@ export class IngestRunner {
     adapted: unknown;
     validation: { warnings?: string[] } | void;
     scope: IngestScope;
+    reconciliation?: IngestSourceReconciliationReport | null;
   }): Promise<void> {
     const current = await this.requireItem(input.itemId);
     const serialized = input.plugin.serializeReviewDraft
@@ -705,6 +745,7 @@ export class IngestRunner {
       },
       columnMapping: current.reviewDraft?.columnMapping ?? null,
       version: (current.reviewDraftVersion ?? 0) + 1,
+      reconciliation: input.reconciliation ?? null,
     });
     const summary = await input.plugin.reviewSummary?.(
       {
@@ -717,7 +758,12 @@ export class IngestRunner {
     await this.store.updateItem(input.itemId, {
       status: "awaiting_review",
       stage: "decide",
-      result: summary ? { review: summary } : { awaitingReview: true },
+      result: {
+        ...(summary ? { review: summary } : { awaitingReview: true }),
+        ...(input.reconciliation
+          ? { reconciliation: input.reconciliation }
+          : {}),
+      },
       reviewDraft: envelope,
       reviewDraftVersion: envelope.version,
     });

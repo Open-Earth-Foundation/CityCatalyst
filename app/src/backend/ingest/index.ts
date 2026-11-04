@@ -37,10 +37,12 @@ export {
   buildIngestDocumentPathBInput,
   buildIngestExtractPathAInput,
   initialMarkdownReady,
+  sameDocumentScope,
 } from "./document-pool";
 export type {
   IngestDocumentPool,
   IngestDocumentRecord,
+  WithdrawIngestDocumentInput,
 } from "./document-pool";
 export { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";
@@ -56,6 +58,18 @@ export {
   proposeColumnMap,
 } from "./column-mapping";
 export type { IngestMatchResult, IngestPlugin } from "./plugin";
+export {
+  ingestCellKey,
+  ingestRowKey,
+  reconcileIngestSource,
+} from "./source-reconciliation";
+export type {
+  IngestProposedCommitValue,
+  IngestSourceOccupancy,
+  IngestSourcePointer,
+  IngestSourceReconciliationInput,
+  IngestSourceReconciliationReport,
+} from "./source-reconciliation";
 export type { IngestStore } from "./store";
 export {
   INGEST_ERROR_CODES,

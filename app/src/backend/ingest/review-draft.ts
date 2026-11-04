@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type { IngestSourceReconciliationReport } from "./source-reconciliation";
 import {
   IngestItemError,
   type IngestColumnMappingState,
@@ -103,6 +104,7 @@ export function buildReviewDraftEnvelope(input: {
   version?: number;
   now?: Date;
   columnMapping?: IngestColumnMappingState | null;
+  reconciliation?: IngestSourceReconciliationReport | null;
 }): IngestReviewDraftEnvelope {
   const payload = cloneJson(input.payload);
   const now = input.now ?? new Date();
@@ -118,5 +120,6 @@ export function buildReviewDraftEnvelope(input: {
     decision: { status: "pending", userId: null, at: null },
     payload,
     columnMapping: input.columnMapping ?? null,
+    reconciliation: input.reconciliation ?? null,
   };
 }

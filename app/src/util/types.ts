@@ -997,6 +997,8 @@ export interface ImportRowOutcome {
   notationKey: string | null;
   status: "skipped" | "not-counted" | "pending";
   issue: ImportRowIssue;
+  /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
+  tonnes?: number | null;
 }
 
 export interface ImportRowPreview {
@@ -1005,6 +1007,8 @@ export interface ImportRowPreview {
   skippedRows: number;
   /** Counts of skipped rows by reason, for the review summary line. */
   skippedByIssue: Partial<Record<ImportRowIssue, number>>;
+  /** Tonnes CO2e of imported rows left out of BASIC and BASIC+ totals. */
+  omittedFromTotalTonnes: number;
   /** Only rows that are skipped, held, or will not count toward completion. */
   rows: ImportRowOutcome[];
   /** Rows with no user decision yet. Approval is rejected while above zero. */

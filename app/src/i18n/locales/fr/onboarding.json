@@ -334,6 +334,7 @@
   "import-rows-skipped_other": "{{count}} lignes seront ignorées.",
   "import-rows-not-counted_one": "{{count}} ligne sera importée mais ne comptera pas pour l'achèvement.",
   "import-rows-not-counted_other": "{{count}} lignes seront importées mais ne compteront pas pour l'achèvement.",
+  "import-rows-omitted-tonnes": "{{tonnes}} t CO₂e de lignes importées sont exclues des totaux BASIC et BASIC+.",
   "import-rows-show-all": "Afficher tous les {{count}} lignes",
   "import-rows-show-less": "Afficher moins de lignes",
   "import-row-number": "Ligne",

@@ -514,6 +514,16 @@ export const ingestFromDocumentRequest = z.object({
   dryRun: z.boolean().optional(),
 });
 
+export const withdrawIngestDocumentRequest = z.object({
+  withdrawExtractsFor: z
+    .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
+    .optional(),
+});
+
+export const supersedeIngestDocumentRequest = z.object({
+  replacementDocumentId: z.string().uuid(),
+});
+
 export const approveIngestReviewDraftRequest = z.object({
   reviewDraftVersion: z.number().int().positive(),
   targetBinding: z
@@ -522,4 +532,16 @@ export const approveIngestReviewDraftRequest = z.object({
       inventoryId: z.string().uuid().nullable().optional(),
     })
     .optional(),
+});
+
+export const confirmIngestColumnMapRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  mappings: z
+    .array(
+      z.object({
+        sourceColumn: z.string().min(1),
+        taxonomyField: z.string().min(1),
+      }),
+    )
+    .min(1),
 });

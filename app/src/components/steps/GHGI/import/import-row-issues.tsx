@@ -164,7 +164,14 @@ export default function ImportRowIssues({
                   }) + " "
                 : null}
               {notCounted.length > 0 &&
-                t("import-rows-not-counted", { count: notCounted.length })}
+                t("import-rows-not-counted", { count: notCounted.length })}{" "}
+              {data.omittedFromTotalTonnes ? (
+                <span data-testid="import-omitted-tonnes">
+                  {t("import-rows-omitted-tonnes", {
+                    tonnes: data.omittedFromTotalTonnes.toLocaleString(),
+                  })}
+                </span>
+              ) : null}
             </Text>
           </Box>
         </Box>

@@ -342,6 +342,11 @@ export async function buildImportResult(
     return { importResult, extractedRows: storedRows };
   }
 
+  // A PDF can only import extracted rows; its bytes are not a table to parse.
+  if (importedFile.fileType === "pdf") {
+    throw new Error("PDF import has no extracted rows");
+  }
+
   // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
   const fileBuffer =
     await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);

@@ -2,6 +2,7 @@ import { Box, VStack } from "@chakra-ui/react";
 import ModuleHeroSkeleton from "@/components/Skeletons/module-hero-skeleton";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { MeedCardGridSkeleton } from "../components/MeedSkeletons";
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 export default function Loading() {
   return (
@@ -19,7 +20,7 @@ export default function Loading() {
         pb="xxl-6"
         px="l"
         w="full"
-        maxW="1090px"
+        maxW={MEED_CONTENT_MAX_W}
         flexDirection="column"
         gap="xl"
       >

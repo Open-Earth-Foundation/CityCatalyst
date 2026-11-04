@@ -336,6 +336,7 @@
   "import-rows-skipped_other": "{{count}} Reihen werden übersprungen.",
   "import-rows-not-counted_one": "{{count}} Zeile wird importiert, zählt aber nicht zur Fertigstellung.",
   "import-rows-not-counted_other": "{{count}} Zeilen werden importiert, zählen aber nicht zur Fertigstellung.",
+  "import-rows-omitted-tonnes": "{{tonnes}} t CO₂e der importierten Zeilen werden nicht in die BASIC- und BASIC+-Summen einbezogen.",
   "import-rows-show-all": "Zeige alle {{count}} Zeilen",
   "import-rows-show-less": "Weniger Zeilen anzeigen",
   "import-row-number": "Zeile",

@@ -26,6 +26,7 @@ export interface IngestDocumentRecord {
   buffer?: Buffer | null;
   s3Key?: string | null;
   availability?: NativeInputCatalogAvailability;
+  supersededByDocumentId?: string | null;
 }
 
 export interface StoreIngestDocumentInput {
@@ -36,6 +37,11 @@ export interface StoreIngestDocumentInput {
   uploadedByUserId?: string | null;
   visibility: IngestVisibility;
   markdownReady?: boolean;
+}
+
+export interface WithdrawIngestDocumentInput {
+  /** Path A extracts to withdraw. Default none — imported values stay (D9). */
+  withdrawExtractsFor?: IngestModuleId[];
 }
 
 export interface IngestDocumentPool {
@@ -53,6 +59,17 @@ export interface IngestDocumentPool {
     document: IngestDocumentRecord,
     input: PublishIngestExtractInput,
   ): Promise<{ catalogId: string; created: boolean }>;
+  withdraw(
+    documentId: string,
+    input?: WithdrawIngestDocumentInput,
+  ): Promise<IngestDocumentRecord>;
+  supersede(
+    documentId: string,
+    replacementDocumentId: string,
+  ): Promise<{
+    previous: IngestDocumentRecord;
+    replacement: IngestDocumentRecord;
+  }>;
 }
 
 export interface PublishIngestExtractInput {
@@ -67,6 +84,17 @@ export function scopeKey(scope: IngestScope): string {
     scope.projectId ?? "",
     scope.organizationId ?? "",
   ].join("|");
+}
+
+export function sameDocumentScope(
+  left: IngestDocumentRecord,
+  right: IngestDocumentRecord,
+): boolean {
+  return (
+    (left.cityId ?? null) === (right.cityId ?? null) &&
+    (left.projectId ?? null) === (right.projectId ?? null) &&
+    (left.organizationId ?? null) === (right.organizationId ?? null)
+  );
 }
 
 export function assertDocumentReusable(document: IngestDocumentRecord): void {
@@ -170,6 +198,7 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       markdownReady: input.markdownReady ?? initialMarkdownReady(input.originalFileName),
       buffer: input.buffer,
       availability: "active",
+      supersededByDocumentId: null,
     };
     this.documents.set(document.id, document);
     this.byHashScope.set(key, document.id);
@@ -236,5 +265,98 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       buildIngestExtractPathAInput(document, input),
     ]);
     return { catalogId: randomUUID(), created: true };
+  }
+
+  async withdraw(
+    documentId: string,
+    input: WithdrawIngestDocumentInput = {},
+  ): Promise<IngestDocumentRecord> {
+    const current = this.documents.get(documentId);
+    if (!current) {
+      throw new IngestItemError("document_not_found");
+    }
+    if ((current.availability ?? "active") === "withdrawn") {
+      return { ...current, buffer: current.buffer };
+    }
+    const next: IngestDocumentRecord = { ...current, availability: "withdrawn" };
+    this.documents.set(documentId, next);
+    const pathB = this.catalogByDocumentId.get(documentId);
+    if (pathB) {
+      this.catalogByDocumentId.set(documentId, {
+        ...pathB,
+        availability: "withdrawn",
+      } as RegisterNativeInputInput);
+    }
+    const modules = new Set(input.withdrawExtractsFor ?? []);
+    if (modules.size > 0) {
+      const extracts = this.extractsByDocumentId.get(documentId) ?? [];
+      this.extractsByDocumentId.set(
+        documentId,
+        extracts.map((row) =>
+          modules.has(row.owningModule as IngestModuleId)
+            ? ({ ...row, availability: "withdrawn" } as RegisterNativeInputInput)
+            : row,
+        ),
+      );
+    }
+    return { ...next, buffer: next.buffer };
+  }
+
+  async supersede(
+    documentId: string,
+    replacementDocumentId: string,
+  ): Promise<{
+    previous: IngestDocumentRecord;
+    replacement: IngestDocumentRecord;
+  }> {
+    if (documentId === replacementDocumentId) {
+      throw new IngestItemError(
+        "validation_failed",
+        "Superseding a document requires a different replacement id",
+      );
+    }
+    const previous = this.documents.get(documentId);
+    if (!previous) {
+      throw new IngestItemError("document_not_found");
+    }
+    assertDocumentReusable(previous);
+    const replacement = this.documents.get(replacementDocumentId);
+    if (!replacement) {
+      throw new IngestItemError("document_not_found");
+    }
+    assertDocumentReusable(replacement);
+    if (!sameDocumentScope(previous, replacement)) {
+      throw new IngestItemError(
+        "missing_scope",
+        "Replacement document is not in the same city, project, or organization",
+      );
+    }
+    await this.publishPathB(replacement);
+    const publishedReplacement = this.documents.get(replacementDocumentId);
+    if (!publishedReplacement) {
+      throw new IngestItemError("document_not_found");
+    }
+    const nextPrevious: IngestDocumentRecord = {
+      ...previous,
+      availability: "superseded",
+      supersededByDocumentId: publishedReplacement.id,
+    };
+    this.documents.set(documentId, nextPrevious);
+    const pathB = this.catalogByDocumentId.get(documentId);
+    if (pathB) {
+      this.catalogByDocumentId.set(documentId, {
+        ...pathB,
+        availability: "superseded",
+        supersededById:
+          publishedReplacement.catalogId ?? publishedReplacement.id,
+      } as RegisterNativeInputInput);
+    }
+    return {
+      previous: { ...nextPrevious, buffer: nextPrevious.buffer },
+      replacement: {
+        ...publishedReplacement,
+        buffer: publishedReplacement.buffer,
+      },
+    };
   }
 }

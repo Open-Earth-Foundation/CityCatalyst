@@ -34,6 +34,8 @@ export const FullRanking = React.forwardRef<
     colorOf?: (sectorTag: string | null | undefined) => string | undefined;
     /** Forwarded to the table; see `RankingTable.legalFor`. */
     legalFor?: (actionId: string) => MeedLegalStanding | null;
+    /** Forwarded to the table; see `RankingTable.variant`. */
+    tableVariant?: "titled" | "controls";
   }
 >(function FullRanking(
   {
@@ -50,12 +52,13 @@ export const FullRanking = React.forwardRef<
     progress,
     colorOf,
     legalFor,
+    tableVariant = "titled",
   },
   ref,
 ) {
   return (
     <Box ref={ref} scrollMarginTop="l">
-      <VStack alignItems="stretch" gap="xl">
+      <VStack alignItems="stretch" gap="l">
         <RankingTable
           actions={actions}
           index={index}
@@ -69,9 +72,10 @@ export const FullRanking = React.forwardRef<
           isGenerating={isGenerating}
           progress={progress}
           legalFor={legalFor}
+          variant={tableVariant}
         />
         <Card.Root>
-          <Card.Body p="l">
+          <Card.Body p={tableVariant === "controls" ? "xl" : "l"}>
             <RankingGlanceChart
               actions={actions}
               index={index}

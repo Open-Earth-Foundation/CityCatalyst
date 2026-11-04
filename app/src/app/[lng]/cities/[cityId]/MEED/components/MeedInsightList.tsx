@@ -1,49 +1,37 @@
 "use client";
 import React from "react";
-import {
-  Box,
-  Card,
-  Grid,
-  GridItem,
-  HStack,
-  Icon,
-  VStack,
-} from "@chakra-ui/react";
+import { HStack, Icon, VStack } from "@chakra-ui/react";
 import {
   LuChartColumn,
+  LuClipboardList,
   LuClock,
   LuCoins,
   LuFactory,
+  LuLightbulb,
   LuScale,
-  LuSparkles,
-  LuClipboardList,
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { IconType } from "react-icons";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleMedium } from "@/components/package/Texts/Title";
 import type { MeedRankingInsights } from "../[inventory]/results/components/rankingInsights";
 import type { MeedPolicyBacking } from "../[inventory]/results/components/rankingFacts";
 import type { MeedLegalCategory } from "../[inventory]/regulations/legalStanding";
-import { MeedStatusTag } from "./MeedStatusTag";
 
-export interface MeedRankingSummaryProps {
+export interface MeedInsightListProps {
   insights: MeedRankingInsights;
   /** Ranked actions per municipal-authority category; null when the ranking carries no legal data. */
   legalCounts: Record<MeedLegalCategory, number> | null;
   backing: MeedPolicyBacking;
   nationalPolicy: number | null;
-  /** Inputs the model used, already worded — rendered as one row of tags. */
-  inputs: string[];
   /** Catalog sector tag → label. */
   sectorLabelFor: (tag: string) => string;
   /** Inventory sector name (e.g. "transportation") → label. */
   inventorySectorLabelFor: (name: string) => string;
   /** `meed-results` namespace. */
   t: TFunction;
-  /** The configuration row (preferences, exclusions, weights), rendered below. */
-  config?: React.ReactNode;
+  /** Show the "Key insights" eyebrow above the lines. */
+  eyebrow?: boolean;
 }
 
 const PILLAR_KEY = {
@@ -52,22 +40,16 @@ const PILLAR_KEY = {
   feasibility: "composition-feasibility",
 } as const;
 
-/**
- * What the model used and what came out — in five sentences with numbers,
- * above the ranking. Every line is derived from the ranking and the context
- * queries; nothing is generated, so it is exactly as true as the cards below.
- */
-export function MeedRankingSummary({
+/** The sentences, derived only from the ranking and the context queries. */
+export function rankingInsightLines({
   insights,
   legalCounts,
   backing,
   nationalPolicy,
-  inputs,
   sectorLabelFor,
   inventorySectorLabelFor,
   t,
-  config,
-}: MeedRankingSummaryProps) {
+}: Omit<MeedInsightListProps, "eyebrow">): { icon: IconType; text: string }[] {
   const lines: { icon: IconType; text: string }[] = [];
   const total = insights.rankedCount;
 
@@ -151,58 +133,44 @@ export function MeedRankingSummary({
     }),
   });
 
+  return lines;
+}
+
+/**
+ * What came out of the ranking, in a handful of sentences with numbers. Every
+ * line is derived, nothing is generated, so it is exactly as true as the
+ * cards it sits above.
+ */
+export function MeedInsightList({
+  eyebrow = true,
+  ...props
+}: MeedInsightListProps) {
+  const lines = rankingInsightLines(props);
+  const { t } = props;
   return (
-    <Card.Root borderColor="border.overlay">
-      <Card.Body p="l">
-        <Grid templateColumns={{ base: "1fr", lg: "2fr 3fr" }} gap="l">
-          <GridItem>
-            <VStack alignItems="stretch" gap="s">
-              <Overline color="content.tertiary">
-                {t("summary-inputs-title")}
-              </Overline>
-              <TitleMedium color="content.primary">
-                {t("summary-inputs-heading")}
-              </TitleMedium>
-              <HStack gap="s" flexWrap="wrap">
-                {inputs.map((label) => (
-                  <MeedStatusTag key={label} tone="neutral">
-                    {label}
-                  </MeedStatusTag>
-                ))}
-              </HStack>
-            </VStack>
-          </GridItem>
-          <GridItem>
-            <VStack alignItems="stretch" gap="s">
-              <HStack gap="xs" alignItems="center">
-                <Icon as={LuSparkles} boxSize="14px" color="content.link" />
-                <Overline color="content.tertiary">
-                  {t("summary-insights-title")}
-                </Overline>
-              </HStack>
-              <VStack alignItems="stretch" gap="s">
-                {lines.map((line, i) => (
-                  <HStack key={i} alignItems="flex-start" gap="s">
-                    <Icon
-                      as={line.icon}
-                      boxSize="16px"
-                      color="content.link"
-                      mt="xs"
-                      flexShrink={0}
-                    />
-                    <BodyMedium color="content.primary">{line.text}</BodyMedium>
-                  </HStack>
-                ))}
-              </VStack>
-            </VStack>
-          </GridItem>
-        </Grid>
-        {config && (
-          <Box mt="l" pt="l" borderTopWidth="1px" borderColor="border.overlay">
-            {config}
-          </Box>
-        )}
-      </Card.Body>
-    </Card.Root>
+    <VStack alignItems="stretch" gap="s">
+      {eyebrow && (
+        <HStack gap="xs" alignItems="center">
+          <Icon as={LuLightbulb} boxSize="14px" color="content.link" />
+          <Overline color="content.tertiary">
+            {t("summary-insights-title")}
+          </Overline>
+        </HStack>
+      )}
+      <VStack alignItems="stretch" gap="s">
+        {lines.map((line, i) => (
+          <HStack key={i} alignItems="flex-start" gap="s">
+            <Icon
+              as={line.icon}
+              boxSize="16px"
+              color="content.link"
+              mt="xs"
+              flexShrink={0}
+            />
+            <BodyMedium color="content.primary">{line.text}</BodyMedium>
+          </HStack>
+        ))}
+      </VStack>
+    </VStack>
   );
 }

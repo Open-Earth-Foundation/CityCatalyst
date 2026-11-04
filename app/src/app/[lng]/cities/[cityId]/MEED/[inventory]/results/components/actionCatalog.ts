@@ -6,6 +6,7 @@
  */
 import type { TFunction } from "i18next";
 import type { MeedLocalizedText } from "@/util/types/meed";
+import type { MeedTone } from "../../../components/meedTones";
 import { resolveLocalizedText } from "../../../localizedText";
 
 export interface MeedCatalogCoBenefit {
@@ -245,6 +246,19 @@ export function sectorTagOf(
   return (prefix && SECTOR_NUMBER_TO_TAG[prefix]) || null;
 }
 
+/** Raw catalog sector tag of an action, for icons and lookups. */
+export function actionSectorTag(
+  index: MeedActionIndex,
+  actionId: string,
+): string | null {
+  return index.get(actionId)?.sectorTag ?? null;
+}
+
+/** True when the tag has a label in `meed-results` (a GPC sector). */
+export function isKnownSectorTag(tag: string | null | undefined): boolean {
+  return !!tag && tag in SECTOR_KEYS;
+}
+
 export function sectorLabel(
   index: MeedActionIndex,
   actionId: string,
@@ -302,6 +316,13 @@ const LEVEL_LABEL_KEYS = [
 
 export function reductionLevelLabelKey(level: number): string {
   return LEVEL_LABEL_KEYS[level] ?? LEVEL_LABEL_KEYS[0];
+}
+
+/** Tone for a reduction level, for the dot-and-word `MeedLevel`. */
+export function reductionLevelTone(level: number): MeedTone {
+  if (level >= 4) return "positive";
+  if (level >= 2) return "warning";
+  return "neutral";
 }
 
 /** Semantic color token for a reduction level. */

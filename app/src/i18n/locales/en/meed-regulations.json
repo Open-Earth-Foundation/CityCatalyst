@@ -30,6 +30,11 @@
   "excluded-section-title": "Excluded before scoring ({{count}})",
   "excluded-section-description": "These actions were removed before scoring and do not appear in the ranking.",
   "excluded-reasons-label": "Why excluded",
+  "reason-legal-verdict-blocked": "The legal review found no municipal authority for this action, so it was removed before scoring.",
+  "reason-user-excluded": "Removed by the city's own exclusion criteria.",
+  "reason-score-missing": "A score the ranking needs was missing for this action.",
+  "reason-assessment-missing": "No assessment was available for this action.",
+  "reason-other": "Removed before scoring ({{code}}).",
   "verdict-label": "Overall assessment",
   "score-label": "Legal score",
   "references-label": "Legal references"

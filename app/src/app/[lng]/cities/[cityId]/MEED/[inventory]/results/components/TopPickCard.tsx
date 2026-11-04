@@ -1,70 +1,70 @@
 "use client";
 import React from "react";
-import { Box, Card, HStack, Icon, VStack } from "@chakra-ui/react";
-import { LuArrowRight, LuBookmark } from "react-icons/lu";
+import {
+  Box,
+  Card,
+  GridItem,
+  HStack,
+  SimpleGrid,
+  VStack,
+} from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import { Caption } from "@/components/package/Texts/Caption";
 import { MeedInfoTip } from "../../../components/MeedInfoTip";
+import { MeedLevel } from "../../../components/MeedLevel";
+import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
+import { MeedTextLink } from "../../../components/MeedTextLink";
 import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import type { MeedScoreWeights } from "./rankingFacts";
-import { FOCUS_RING } from "../../../focusRing";
-import { MEED_TONE_FG } from "../../../components/meedTones";
 import {
   LEGAL_CATEGORY_TONE,
   legalCategoryLabelKey,
   type MeedLegalStanding,
 } from "../../regulations/legalStanding";
 import {
+  actionDescription,
   actionName,
+  actionSectorTag,
   reductionLevel,
-  reductionLevelColor,
   reductionLevelLabelKey,
+  reductionLevelTone,
   sectorLabel,
   timelineLabel,
   type MeedActionIndex,
 } from "./actionCatalog";
 
-function MetaRow({
+/** A labelled fact with no tone: eyebrow, optional tip, then the value. */
+function Fact({
   label,
-  value,
-  valueColor = "content.secondary",
   info,
+  children,
 }: {
   label: string;
-  value: string;
-  valueColor?: string;
-  info?: React.ReactNode;
+  info?: string;
+  children: React.ReactNode;
 }) {
   return (
-    <HStack justifyContent="space-between" alignItems="center" gap="s">
-      <HStack gap="xs" alignItems="center">
-        <Caption color="content.tertiary">{label}</Caption>
-        {info}
+    <Box>
+      <HStack gap="xs" alignItems="center" mb="xs">
+        <Overline color="content.tertiary">{label}</Overline>
+        {info && <MeedInfoTip content={info} ariaLabel={info} />}
       </HStack>
-      <BodySmall color={valueColor} fontWeight="semibold" textAlign="end">
-        {value}
-      </BodySmall>
-    </HStack>
+      {children}
+    </Box>
   );
 }
 
 /**
- * One of the three hero cards at the top of the results overview.
+ * One of the three cards at the top of the results overview, in the order a
+ * city officer reads: what it is, why it ranks here, and what delivering it
+ * takes. Tick it to put the action in a report, or open its full detail.
  *
- * The card offers exactly two things: tick it to put the action in a report, or
- * open its full detail. It carries the name, the final score with its
- * composition, and three facts — the description lives in the drawer, where
- * it can be read in full rather than clamped to three lines.
- *
- * The spacer above the score is load-bearing: names vary in length, and
- * without it the scores and metadata rows step up and down across the cards.
+ * The spacer above the facts is load-bearing: names and descriptions vary in
+ * length, and without it the facts grid steps up and down across the row.
  */
 export function TopPickCard({
   action,
@@ -88,6 +88,7 @@ export function TopPickCard({
   legal?: MeedLegalStanding | null;
 }) {
   const name = actionName(index, action.action_id, t);
+  const description = actionDescription(index, action.action_id);
   const level = reductionLevel(index, action.action_id);
 
   return (
@@ -99,12 +100,22 @@ export function TopPickCard({
       bg={isSelected ? "background.neutral" : "base.light"}
       transition="border-color 0.15s, background-color 0.15s"
     >
-      <Card.Body display="flex" flexDirection="column" gap="m" h="full" p="l">
-        <HStack justifyContent="space-between" alignItems="flex-start" gap="s">
-          <HStack gap="xs" alignItems="center">
-            <Icon as={LuBookmark} boxSize="14px" color="content.link" />
-            <Overline color="content.link">{t("top-pick-overline")}</Overline>
-          </HStack>
+      <Card.Body display="flex" flexDirection="column" gap="l" h="full" p="xl">
+        <HStack justifyContent="space-between" alignItems="flex-start" gap="m">
+          <VStack alignItems="flex-start" gap="xs" minW={0}>
+            <HStack gap="xs" alignItems="center">
+              <MeedSectorIcon
+                sectorTag={actionSectorTag(index, action.action_id)}
+                size="16px"
+              />
+              <Overline color="content.tertiary">
+                {sectorLabel(index, action.action_id, t)}
+              </Overline>
+            </HStack>
+            <TitleMedium as="h3" color="content.primary" lineClamp={3}>
+              {name}
+            </TitleMedium>
+          </VStack>
           {onToggleSelect && (
             <SelectActionCheckbox
               checked={Boolean(isSelected)}
@@ -114,77 +125,71 @@ export function TopPickCard({
           )}
         </HStack>
 
-        <TitleMedium color="content.primary" lineClamp={3}>
-          {name}
-        </TitleMedium>
-
-        {/* Absorbs the height difference between cards so everything below
-            this point lines up across the row. */}
-        <Box flex="1" minH="s" />
-
-        <VStack alignItems="stretch" gap="xs" mt="s">
-          <HStack alignItems="baseline" gap="s">
-            <HeadlineLarge
-              color="content.primary"
-              fontVariantNumeric="tabular-nums"
-              lineHeight="1"
-            >
-              {action.final_score.toFixed(2)}
-            </HeadlineLarge>
-            <Caption color="content.tertiary">
-              {t("detail-final-score")}
-            </Caption>
-          </HStack>
-          <MeedScoreComposition
-            action={action}
-            weights={weights}
-            variant="bar"
-            t={t}
-          />
+        <VStack alignItems="flex-start" gap="xs">
+          <Overline color="content.tertiary">{t("card-why-first")}</Overline>
+          <MeedLevel tone={reductionLevelTone(level)}>
+            {t("card-reduction-potential")} · {t(reductionLevelLabelKey(level))}
+          </MeedLevel>
+          {description && (
+            <BodySmall color="content.secondary" lineClamp={2}>
+              {description}
+            </BodySmall>
+          )}
         </VStack>
 
-        <Box borderTopWidth="1px" borderColor="border.overlay" pt="s" mt="xs">
-          <VStack alignItems="stretch" gap="xs">
-            <MetaRow
-              label={t("card-reduction-potential")}
-              value={t(reductionLevelLabelKey(level))}
-              valueColor={reductionLevelColor(level)}
-            />
-            <MetaRow
-              label={t("card-sector")}
-              value={sectorLabel(index, action.action_id, t)}
-            />
-            {legal && (
-              <MetaRow
-                label={t("card-legal")}
-                value={t(legalCategoryLabelKey(legal.ownership))}
-                valueColor={MEED_TONE_FG[LEGAL_CATEGORY_TONE[legal.ownership]]}
-              />
-            )}
-            <MetaRow
-              label={t("card-timeline")}
-              value={timelineLabel(index, action.action_id, t)}
-              info={
-                <MeedInfoTip
-                  content={t("timeline-info")}
-                  ariaLabel={t("timeline-info-label")}
-                />
-              }
-            />
-          </VStack>
-        </Box>
+        <Box flex="1" />
 
-        <MeedButton
-          variant="text"
-          px="0"
-          minW="auto"
-          justifyContent="flex-start"
-          rightIcon={<Icon as={LuArrowRight} boxSize="14px" />}
+        <SimpleGrid
+          columns={{ base: 1, sm: 2 }}
+          gap="m"
+          pt="l"
+          borderTopWidth="1px"
+          borderColor="border.overlay"
+        >
+          <GridItem colSpan={{ base: 1, sm: 2 }}>
+            <Fact
+              label={t("detail-final-score")}
+              info={t("column-composition-info")}
+            >
+              <VStack alignItems="stretch" gap="xs">
+                <TitleMedium
+                  as="p"
+                  color="content.primary"
+                  fontVariantNumeric="tabular-nums"
+                >
+                  {action.final_score.toFixed(2)}
+                </TitleMedium>
+                <MeedScoreComposition
+                  action={action}
+                  weights={weights}
+                  variant="bar"
+                  t={t}
+                />
+              </VStack>
+            </Fact>
+          </GridItem>
+          {legal && (
+            <MeedLevel
+              label={t("card-legal")}
+              info={t("column-legal-info")}
+              tone={LEGAL_CATEGORY_TONE[legal.ownership]}
+            >
+              {t(legalCategoryLabelKey(legal.ownership))}
+            </MeedLevel>
+          )}
+          <Fact label={t("card-timeline")} info={t("timeline-info")}>
+            <BodySmall color="content.primary" fontWeight="semibold">
+              {timelineLabel(index, action.action_id, t)}
+            </BodySmall>
+          </Fact>
+        </SimpleGrid>
+
+        <MeedTextLink
           onClick={() => onOpenDetail(action)}
-          _focusVisible={FOCUS_RING}
+          alignSelf="flex-start"
         >
           {t("view-details")}
-        </MeedButton>
+        </MeedTextLink>
       </Card.Body>
     </Card.Root>
   );

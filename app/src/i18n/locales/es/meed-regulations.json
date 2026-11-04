@@ -30,6 +30,11 @@
   "excluded-section-title": "Excluidas antes de puntuar ({{count}})",
   "excluded-section-description": "Estas acciones fueron eliminadas antes de la puntuación y no aparecen en el ranking.",
   "excluded-reasons-label": "Por qué fue excluida",
+  "reason-legal-verdict-blocked": "La revisión legal no encontró autoridad municipal para esta acción, por lo que se eliminó antes de la puntuación.",
+  "reason-user-excluded": "Eliminada por los criterios de exclusión definidos por la ciudad.",
+  "reason-score-missing": "Faltaba una puntuación que el ranking necesita para esta acción.",
+  "reason-assessment-missing": "No había una evaluación disponible para esta acción.",
+  "reason-other": "Eliminada antes de la puntuación ({{code}}).",
   "verdict-label": "Evaluación general",
   "score-label": "Puntuación legal",
   "references-label": "Referencias legales"

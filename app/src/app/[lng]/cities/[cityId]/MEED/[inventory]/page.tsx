@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetMeedActionsQuery } from "@/services/api";
@@ -11,14 +11,14 @@ import {
   HeadlineLarge,
   HeadlineSmall,
 } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
-import { Caption } from "@/components/package/Texts/Caption";
+import { BodyLarge, BodySmall } from "@/components/package/Texts/Body";
 import { MeedButton } from "../components/MeedButton";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedInventoryMenu } from "../components/MeedInventoryMenu";
 import { MeedLatestRanking } from "../components/MeedLatestRanking";
-import { MeedRankingSummary } from "../components/MeedRankingSummary";
-import { MeedRankingConfig } from "../components/MeedRankingConfig";
+import { MeedRankingBasis } from "../components/MeedRankingBasis";
+import { MeedSection } from "../components/MeedSection";
+import { MeedScoreLegend } from "../components/MeedScoreComposition";
 import { MeedCardGridSkeleton } from "../components/MeedSkeletons";
 import { meedContextVisual } from "../components/meedContextVisuals";
 import {
@@ -31,33 +31,19 @@ import { useMeedSectionStates } from "../meedStatus";
 import { useMeedRanking } from "../useMeedRanking";
 import { useMeedInventories } from "../useMeedInventories";
 import { useMeedContextFacts } from "../useMeedContextFacts";
-import { setMeedStepState } from "../meedLocalState";
-import {
-  emissionsRetrievedState,
-  isEmissionsEmpty,
-  isEmissionsRetrieved,
-} from "../meedEmissions";
+import { isEmissionsEmpty, isEmissionsRetrieved } from "../meedEmissions";
+import { useMeedEmissions } from "../useMeedEmissions";
+import { MeedTextLink } from "../components/MeedTextLink";
 import { buildActionIndex } from "./results/components/actionCatalog";
 import { ContextCardGrid } from "./results/components/ContextCardGrid";
 import type { MeedContextArea } from "./results/components/contextAreas";
-import { rankingInsights } from "./results/components/rankingInsights";
-import { sectorTagLabel } from "./results/components/actionCatalog";
-import { SECTORS } from "@/util/constants";
 import {
   excludedActionCount,
   legalFunnel,
   policyBacking,
   readRankingWeights,
 } from "./results/components/rankingFacts";
-
-/**
- * Minimum time the retrieve action shows as working. The inventory totals are
- * usually cached and come back instantly, and a button that flips state with
- * no visible work reads as "nothing happened".
- */
-const RETRIEVE_MIN_MS = 1500;
-
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 /**
  * The module home.
@@ -66,9 +52,10 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * action that starts it (module block) → the latest result, if any → the
  * context the model ranks against, explorable before and after a run.
  *
- * Emissions data is not a step here: the GHGI card offers "Retrieve emissions
- * data", which pulls the inventory totals CityCatalyst already holds. Until
- * that has happened the primary action is disabled and says why.
+ * Emissions data is not a step here and nothing to fetch: the inventory
+ * CityCatalyst already holds is read on entry and the emissions step follows
+ * it. The primary action is only disabled while that read is in flight or
+ * when the inventory has no emissions, and says why beside itself.
  */
 export default function MEEDInventoryPage(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -119,38 +106,20 @@ export default function MEEDInventoryPage(props: {
     ? `${formatted.value} ${formatted.unit}`.trim()
     : undefined;
 
-  // ── Retrieve emissions data ─────────────────────────────────────────────
-  const [fetchResults] = api.useLazyGetResultsQuery();
-  const [isRetrieving, setIsRetrieving] = useState(false);
-  const [retrieveFailed, setRetrieveFailed] = useState(false);
-
-  const retrieveEmissions = useCallback(async () => {
-    if (!inventoryId || isRetrieving) return;
-    setIsRetrieving(true);
-    setRetrieveFailed(false);
-    try {
-      const [results] = await Promise.all([
-        fetchResults(inventoryId).unwrap(),
-        delay(RETRIEVE_MIN_MS),
-      ]);
-      setMeedStepState(
-        inventoryId,
-        "emissions",
-        emissionsRetrievedState(results, t),
-      );
-    } catch {
-      setRetrieveFailed(true);
-    } finally {
-      setIsRetrieving(false);
-    }
-  }, [inventoryId, isRetrieving, fetchResults, t]);
+  // ── Emissions data ──────────────────────────────────────────────────────
+  // Read on entry; the step state is written from the data (see the hook).
+  const {
+    isLoading: isEmissionsLoading,
+    isError: emissionsFailed,
+    refetch: refetchEmissions,
+  } = useMeedEmissions(inventoryId, t);
 
   // ── Context cards ───────────────────────────────────────────────────────
   const context = useMeedContextFacts({
     lng,
     cityId,
     inventoryId,
-    includeEmissions: emissionsRetrieved || emissionsEmpty,
+    includeEmissions: true,
   });
   const ranked = useMemo(() => ranking?.result.ranked_actions ?? [], [ranking]);
   const legalCounts = useMemo(() => {
@@ -229,50 +198,24 @@ export default function MEEDInventoryPage(props: {
     ],
   );
 
-  // ── Ranking summary ─────────────────────────────────────────────────────
-  const insights = useMemo(
-    () =>
-      ranking
-        ? rankingInsights({
-            ranked,
-            index,
-            weights,
-            bySector: context.bySector,
-            financeRoutes: context.financeRoutes,
-          })
-        : null,
-    [ranking, ranked, index, weights, context.bySector, context.financeRoutes],
-  );
-  const inventoryYear = inventory?.year;
-  const summaryInputs = useMemo(() => {
-    const items: string[] = [];
-    if (inventoryYear && emissionsText) {
-      items.push(
-        tResults("summary-input-inventory", {
-          year: inventoryYear,
-          emissions: emissionsText,
-        }),
-      );
-    }
-    if (context.sectorsWithData !== null) {
-      items.push(
-        tResults("summary-input-sectors", {
-          n: context.sectorsWithData,
-          total: SECTORS.length,
-        }),
-      );
-    }
-    if (context.indicatorCount) {
-      items.push(
-        tResults("summary-input-indicators", { n: context.indicatorCount }),
-      );
-    }
-    if (context.cityProfileLabel) items.push(context.cityProfileLabel);
-    if (index.size) {
-      items.push(tResults("summary-input-catalog", { n: index.size }));
-    }
-    return items;
-  }, [inventoryYear, emissionsText, context, index.size, tResults]);
+  const generatedLabel = useMemo(() => {
+    if (!ranking) return null;
+    const generated = new Date(ranking.generatedAtUtc);
+    return Number.isNaN(generated.valueOf())
+      ? null
+      : new Intl.DateTimeFormat(lng, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(generated);
+  }, [ranking, lng]);
+  const rankingSectionBody = [
+    excludedCount !== null
+      ? t("ranking-census", { ranked: ranked.length, excluded: excludedCount })
+      : null,
+    generatedLabel ? t("ranking-generated-at", { when: generatedLabel }) : null,
+  ]
+    .filter(Boolean)
+    .join(" \u00b7 ");
 
   const ctaFor = useCallback(
     (area: MeedContextArea) => {
@@ -290,24 +233,10 @@ export default function MEEDInventoryPage(props: {
           href: `/${lng}/cities/${cityId}/GHGI/${inventoryId}`,
         };
       }
-      return {
-        label: isRetrieving
-          ? tResults("context-retrieving-emissions")
-          : tResults("context-retrieve-emissions"),
-        onClick: retrieveEmissions,
-        isLoading: isRetrieving,
-      };
+      // Still loading: the card's summary line says so.
+      return undefined;
     },
-    [
-      emissionsRetrieved,
-      emissionsEmpty,
-      isRetrieving,
-      retrieveEmissions,
-      tResults,
-      lng,
-      cityId,
-      inventoryId,
-    ],
+    [emissionsRetrieved, emissionsEmpty, tResults, lng, cityId, inventoryId],
   );
 
   const onInventorySelect = (item: YearSelectorItem) => {
@@ -376,9 +305,9 @@ export default function MEEDInventoryPage(props: {
         pb="xxl-6"
         px="l"
         w="full"
-        maxW="1090px"
+        maxW={MEED_CONTENT_MAX_W}
         flexDirection="column"
-        gap="xl"
+        gap="xxl-6"
       >
         {/* Module block: what this is, and the one action that starts it. */}
         <HStack
@@ -411,8 +340,8 @@ export default function MEEDInventoryPage(props: {
                 />
               )}
               {/* Preferences are collected on the way (this leads into the
-                  wizard), so the only thing that blocks the button is the
-                  emissions data it cannot collect for the user. */}
+                  wizard), so the only thing that blocks the button is an
+                  inventory with no emissions to rank on. */}
               <MeedButton
                 minW="auto"
                 px="l"
@@ -433,7 +362,7 @@ export default function MEEDInventoryPage(props: {
             </HStack>
             {/* The disabled button says why, next to itself — never in a tooltip. */}
             {isReady && !emissionsRetrieved && (
-              <Caption
+              <BodySmall
                 id="meed-get-recommendations-hint"
                 color="content.tertiary"
                 textAlign={{ base: "start", md: "end" }}
@@ -441,71 +370,70 @@ export default function MEEDInventoryPage(props: {
               >
                 {emissionsEmpty
                   ? t("get-recommendations-hint-no-data")
-                  : t("get-recommendations-hint")}
-              </Caption>
+                  : emissionsFailed
+                    ? t("emissions-error-body")
+                    : t("get-recommendations-hint")}
+              </BodySmall>
             )}
           </VStack>
         </HStack>
 
         {/* Once a ranking exists, it — not the setup — is what the user came back for. */}
-        {isReady && ranking && insights && (
-          <MeedRankingSummary
-            insights={insights}
-            legalCounts={legalCounts}
-            backing={backing}
-            nationalPolicy={context.policy?.national ?? null}
-            inputs={summaryInputs}
-            sectorLabelFor={(tag) => sectorTagLabel(tag, tResults)}
-            inventorySectorLabelFor={sectorLabelFor}
-            t={tResults}
-            config={
-              <MeedRankingConfig
-                inventoryId={inventoryId}
-                weights={weights}
-                isStale={isRankingStale}
-                editHref={stepHref(lng, cityId, inventoryId, "preferences")}
-                lng={lng}
-              />
-            }
-          />
-        )}
         {isReady && ranking && (
-          <MeedLatestRanking
-            ranking={ranking}
-            index={index}
-            isCatalogLoading={isCatalogLoading}
-            weights={weights}
-            excludedCount={excludedCount}
-            isStale={isRankingStale}
-            resultsHref={getMeedPath(lng, cityId, inventoryId, "results")}
-            onOpenDetail={() =>
-              router.push(getMeedPath(lng, cityId, inventoryId, "results"))
-            }
-            lng={lng}
-            t={t}
-            tResults={tResults}
-          />
+          <MeedSection
+            title={t("ranking-title", { count: ranked.length })}
+            body={rankingSectionBody || undefined}
+          >
+            <MeedRankingBasis
+              inventoryId={inventoryId}
+              weights={weights}
+              isStale={isRankingStale}
+              editHref={stepHref(lng, cityId, inventoryId, "preferences")}
+              lng={lng}
+            />
+            <MeedLatestRanking
+              ranking={ranking}
+              index={index}
+              isCatalogLoading={isCatalogLoading}
+              weights={weights}
+              isStale={isRankingStale}
+              resultsHref={getMeedPath(lng, cityId, inventoryId, "results")}
+              onOpenDetail={() =>
+                router.push(getMeedPath(lng, cityId, inventoryId, "results"))
+              }
+              t={t}
+              tResults={tResults}
+            />
+            {weights && <MeedScoreLegend weights={weights} t={tResults} />}
+          </MeedSection>
         )}
 
         {/* The context the model ranks against — explorable before and after a run. */}
         {isReady ? (
-          <VStack alignItems="stretch" gap="xs">
+          <MeedSection
+            title={t("how-ranking-works-title")}
+            body={t("how-ranking-works-description")}
+          >
             <ContextCardGrid
-              title={t("how-ranking-works-title")}
-              description={t("how-ranking-works-description")}
               facts={facts}
               backing={backing}
               t={tResults}
               hrefFor={(segment) => stepHref(lng, cityId, inventoryId, segment)}
               ctaFor={ctaFor}
               visualFor={visualFor}
+              heading={false}
             />
-            {retrieveFailed && (
-              <Caption color="sentiment.negativeDefault" role="alert">
-                {t("emissions-error-body")}
-              </Caption>
+            {emissionsFailed && !isEmissionsLoading && (
+              <HStack gap="m" flexWrap="wrap">
+                <BodySmall color="sentiment.negativeDefault" role="alert">
+                  {t("emissions-error-body")}
+                </BodySmall>
+                <MeedTextLink icon={null} onClick={() => refetchEmissions()}>
+                  {t("retry")}
+                </MeedTextLink>
+              </HStack>
             )}
-          </VStack>
+          </MeedSection>
         ) : (
           <MeedCardGridSkeleton items={5} />
         )}

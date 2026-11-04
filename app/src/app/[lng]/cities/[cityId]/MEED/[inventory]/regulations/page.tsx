@@ -16,6 +16,8 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag } from "../../components/MeedStatusTag";
+import { MeedSectorIcon } from "../../components/MeedSectorIcon";
+import { removalReasonText } from "./removalReasons";
 import { setMeedStepState } from "../../meedLocalState";
 import { useMeedSectionStates } from "../../meedStatus";
 import { useMeedRanking } from "../../useMeedRanking";
@@ -75,13 +77,22 @@ function ScreenedActionCard({
                 #{action.rank}
               </BodyMedium>
             )}
-            <BodyMedium color="content.primary" fontWeight="bold" flex="1">
+            {/* A basis wide enough to read: when the tags no longer fit
+                beside it they wrap below instead of squeezing the title. */}
+            <BodyMedium
+              color="content.primary"
+              fontWeight="bold"
+              flex="1 1 240px"
+            >
               {action.actionName}
             </BodyMedium>
             {action.sector && (
-              <MeedStatusTag tone="neutral">
-                {sectorTagLabel(action.sector, tResults)}
-              </MeedStatusTag>
+              <HStack gap="xs" alignItems="center">
+                <MeedSectorIcon sectorTag={action.sector} size="14px" />
+                <MeedStatusTag tone="neutral">
+                  {sectorTagLabel(action.sector, tResults)}
+                </MeedStatusTag>
+              </HStack>
             )}
             {category ? (
               <MeedStatusTag tone={LEGAL_CATEGORY_TONE[category]}>
@@ -134,12 +145,17 @@ function ScreenedActionCard({
             </VStack>
           )}
 
-          {!standing && !!action.reasons?.length && (
+          {!standing && (action.removalReason || action.reasons?.length) && (
             <VStack alignItems="stretch" gap="xs">
               <Overline color="content.tertiary">
                 {t("excluded-reasons-label")}
               </Overline>
-              {action.reasons.map((reason, i) => (
+              {action.removalReason && (
+                <BodySmall color="content.secondary">
+                  {removalReasonText(action.removalReason, t)}
+                </BodySmall>
+              )}
+              {action.reasons?.map((reason, i) => (
                 <BodySmall key={i} color="content.secondary">
                   {reason}
                 </BodySmall>

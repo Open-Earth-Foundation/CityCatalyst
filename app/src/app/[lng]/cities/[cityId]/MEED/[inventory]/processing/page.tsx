@@ -9,6 +9,7 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedButton } from "../../components/MeedButton";
+import { MeedMeter } from "../../components/MeedMeter";
 import {
   useGetMeedActionsQuery,
   useRunMeedRankingMutation,
@@ -142,19 +143,11 @@ function StageRow({
           {t(`stage-${stageId}-desc`)}
         </BodySmall>
         {status === "running" && (
-          <Box
-            mt="s"
-            h="4px"
-            bg="background.neutral"
-            borderRadius="full"
-            overflow="hidden"
-          >
-            <Box
-              h="full"
-              w={`${pct}%`}
-              bg="content.link"
-              borderRadius="full"
-              transition="width 0.3s ease"
+          <Box mt="s">
+            <MeedMeter
+              value={pct / 100}
+              height="4px"
+              ariaLabel={t(`stage-${stageId}-desc`)}
             />
           </Box>
         )}
@@ -423,26 +416,11 @@ export default function Page(props: {
 
         {/* Overall progress */}
         <Box px="l" pt="m">
-          <Box
-            h="6px"
-            bg="background.neutral"
-            borderRadius="full"
-            overflow="hidden"
-          >
-            <Box
-              h="full"
-              w={`${displayPct}%`}
-              bg={
-                hasError
-                  ? "sentiment.negativeDefault"
-                  : done
-                    ? "sentiment.positiveDefault"
-                    : "content.link"
-              }
-              borderRadius="full"
-              transition="width 0.2s ease, background 0.4s ease"
-            />
-          </Box>
+          <MeedMeter
+            value={displayPct / 100}
+            tone={hasError ? "negative" : done ? "positive" : "info"}
+            ariaLabel={`${displayPct}%`}
+          />
           <BodySmall
             color="content.secondary"
             mt="s"

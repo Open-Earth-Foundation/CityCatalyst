@@ -1,19 +1,22 @@
 """The drafting overview is one hidden, server-owned chat turn per drafting build."""
 
+import json
 from datetime import UTC, datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 from uuid import uuid4
 
 import httpx
 import pytest
 import pytest_asyncio
+from agents.tool_context import ToolContext
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import get_settings
 from app.config.settings import _load_llm_config
 from app.db import Base
-from app.db.session import get_session_factory, get_session_optional
+from app.db.session import get_session, get_session_factory, get_session_optional
 from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.db.concept_note import (
     ConceptNoteContextBundle,
@@ -21,7 +24,7 @@ from app.models.db.concept_note import (
 )
 from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
-from app.routes import messages
+from app.routes import messages, threads
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.cnb.draft_overview import (
     BODY_EXCERPT_CHARS,
@@ -31,6 +34,7 @@ from app.services.cnb.draft_overview import (
     overview_pending,
     release_draft_overview,
 )
+from app.tools.concept_note_question import concept_note_ask_question
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
 
@@ -89,10 +93,17 @@ async def chat_api(tmp_path, monkeypatch):
     handler = Mock()
     handler.return_value.stream_response = empty_stream
     monkeypatch.setattr(messages, "StreamingHandler", handler)
+
+    async def session():
+        async with factory() as db_session:
+            yield db_session
+
     app = FastAPI()
     app.include_router(messages.router, prefix="/v1")
+    app.include_router(threads.router, prefix="/v1")
     app.dependency_overrides[get_session_factory] = lambda: factory
     app.dependency_overrides[get_session_optional] = lambda: None
+    app.dependency_overrides[get_session] = session
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -312,6 +323,68 @@ async def test_regular_messages_are_still_saved(chat_api):
     assert response.status_code == 200
     save_message.assert_awaited_once()
     assert handler.call_args.kwargs["draft_overview_claim"] is None
+
+
+@pytest.mark.asyncio
+async def test_completed_draft_overview_choices_survive_a_reload(chat_api, monkeypatch):
+    client, factory, run_id, thread_id, _save_message, _handler = chat_api
+    question = {
+        "message": "**What I drafted**\n- 2 chapters\n\nWhat should we do next?",
+        "options": ["Fill the budget gap", "Review the baseline"],
+    }
+    arguments = json.dumps({"question": question})
+    # The real tool output, as the SDK hands it to the stream after the call.
+    output = await concept_note_ask_question.on_invoke_tool(
+        ToolContext(
+            context=None,
+            tool_name="concept_note_ask_question",
+            tool_call_id="call",
+            tool_arguments=arguments,
+        ),
+        arguments,
+    )
+    call = SimpleNamespace(
+        name="concept_note_ask_question", call_id="call", arguments=arguments
+    )
+
+    class ModelRun:
+        async def stream_events(self):
+            for name, item in [
+                ("tool_called", SimpleNamespace(raw_item=call)),
+                ("tool_output", SimpleNamespace(raw_item=call, output=output)),
+            ]:
+                yield SimpleNamespace(
+                    type="run_item_stream_event", name=name, item=item
+                )
+
+    # Only agent setup and the model run are stubbed; route, claim, stream,
+    # persistence and history reload are real.
+    monkeypatch.setattr(messages, "StreamingHandler", StreamingHandler)
+    monkeypatch.setattr(
+        "app.utils.streaming_handler.prepare_stream_agent",
+        AsyncMock(return_value=(object(), [])),
+    )
+    monkeypatch.setattr(
+        "app.utils.streaming_runner.Runner.run_streamed", Mock(return_value=ModelRun())
+    )
+
+    response = await client.post(
+        "/v1/messages", json=_overview_request(thread_id), headers=AUTH_HEADERS
+    )
+
+    assert response.status_code == 200
+    assert '"history_saved": true' in response.text
+    assert not overview_pending(await _draft_progress(factory, run_id))
+
+    history = await client.get(
+        f"/v1/threads/{thread_id}/messages", params={"user_id": "owner"}
+    )
+
+    assert history.status_code == 200
+    assert [
+        (message["role"], message["text"], message["choices"])
+        for message in history.json()["messages"]
+    ] == [("assistant", question["message"], question["options"])]
 
 
 def _gap(question: str, severity: str, state: str) -> dict:

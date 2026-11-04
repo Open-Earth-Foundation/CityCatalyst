@@ -261,6 +261,7 @@ export default function Page(props: {
       // The exclusions the user reviewed and confirmed on pre-flight — never
       // the raw criteria.
       excludedActionIds: getMeedConfirmedExclusions(inventoryId),
+      language: lng,
     });
 
     let cancelled = false;
@@ -299,6 +300,7 @@ export default function Page(props: {
     isMockMode,
     cityId,
     inventoryId,
+    lng,
     runMeedRanking,
     attempt,
     statesReady,

@@ -23,8 +23,15 @@ import {
 /** Matches the route's own default when the city expressed no preference. */
 const DEFAULT_TIMEFRAMES: MeedTimeframePreference[] = ["no_preference"];
 
-/** Only `en` locale files exist for MEED, so only `en` is worth requesting. */
-const REQUESTED_LANGUAGES = ["en"];
+/**
+ * English is the engine's canonical explanation language; the page language
+ * is requested next to it so the detail drawer can show the explanation in
+ * the language the user is reading. One language means one less translation
+ * call, so the two are never duplicated.
+ */
+export function requestedLanguagesFor(language?: string): string[] {
+  return language && language !== "en" ? ["en", language] : ["en"];
+}
 
 const DEFAULT_TOP_N = 20;
 
@@ -64,6 +71,8 @@ export interface BuildRunRankingRequestParams {
   preferences: MeedStrategicPreferences | null;
   /** Confirmed on the pre-flight screen; `[]` when the user confirmed none. */
   excludedActionIds: string[];
+  /** The page language (i18n `lng`); explanations are produced in it too. */
+  language?: string;
   topN?: number;
 }
 
@@ -71,13 +80,14 @@ export function buildRunRankingRequest({
   inventoryId,
   preferences,
   excludedActionIds,
+  language,
   topN = DEFAULT_TOP_N,
 }: BuildRunRankingRequestParams): MeedRunRankingRequest {
   const timeframes = preferences?.timeline ?? [];
 
   return {
     inventoryId,
-    requestedLanguages: [...REQUESTED_LANGUAGES],
+    requestedLanguages: requestedLanguagesFor(language),
     topN,
     createExplanations: true,
     // An array even though one inventory means one city — the upstream

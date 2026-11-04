@@ -73,7 +73,9 @@ GHGI today registers the **source file** at the start of approve (`syncGHGIImpor
 
 On [PR #3344](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3344): `IngestJob` / `IngestItem`, the stage runner, the plugin contract, and a test plugin that does not write a module SoT. Core `detectCoarseFileKind` ([CC-959](https://linear.app/openearth/issue/CC-959/split-coarse-file-detect-core-from-format-detect-plugin)) maps files to `pdf | xlsx | csv | md | zip | unknown` and passes that into `plugin.detect`. Plugins do not MIME-allowlist. The GHGI wizard still uses `FileValidatorService` (`xlsx` / `csv` / `pdf`) until the GHGI plugin wraps it.
 
-[CC-955](https://linear.app/openearth/issue/CC-955/document-pool-early-path-b-nativeinputcatalog-registration) adds `IngestDocument` and Path B catalog rows (`kind = ingest_document`, `owningModule = ingest`) at the store stage. Dry-run skips the pool and Path B. [CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services) wraps eCRF / near-eCRF classify → adapt → `importECRFData` in `GhgiIngestPlugin` (PDF/CIRIS/BIOMATEC stay `unknown_format`, no OpenAI). [CC-956](https://linear.app/openearth/issue/CC-956/persist-multi-session-ingest-review-drafts-in-core) stores a versioned review envelope on `awaiting_review` items (`serializeReviewDraft` / `hydrateReviewDraft`). GET/PATCH `/api/v1/ingest/items/{id}/review-draft` and POST `.../approve` resume and commit that envelope; city collaborators share the draft with a five-minute editor lock. [CC-957](https://linear.app/openearth/issue/CC-957/ingest-from-existing-document-cross-module-reuse) reuses a pool id (`POST /api/v1/modules/{module}/ingest/from-document/{documentId}`): no new bytes, skip store/Path B, Path A `ingest_extract` on commit, refuse withdrawn/superseded/run-scoped attachments. The GHGI wizard and Chile bulk worker are not switched yet. Not running yet: withdraw/supersede APIs, HTTP enqueue of new files.
+[CC-955](https://linear.app/openearth/issue/CC-955/document-pool-early-path-b-nativeinputcatalog-registration) adds `IngestDocument` and Path B catalog rows (`kind = ingest_document`, `owningModule = ingest`) at the store stage. Dry-run skips the pool and Path B. [CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services) wraps eCRF / near-eCRF classify → adapt → `importECRFData` in `GhgiIngestPlugin` (PDF/CIRIS/BIOMATEC stay `unknown_format`, no OpenAI). [CC-956](https://linear.app/openearth/issue/CC-956/persist-multi-session-ingest-review-drafts-in-core) stores a versioned review envelope on `awaiting_review` items (`serializeReviewDraft` / `hydrateReviewDraft`). GET/PATCH `/api/v1/ingest/items/{id}/review-draft` and POST `.../approve` resume and commit that envelope; city collaborators share the draft with a five-minute editor lock. [CC-957](https://linear.app/openearth/issue/CC-957/ingest-from-existing-document-cross-module-reuse) reuses a pool id (`POST /api/v1/modules/{module}/ingest/from-document/{documentId}`): no new bytes, skip store/Path B, Path A `ingest_extract` on commit, refuse withdrawn/superseded/run-scoped attachments. [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog) withdraws or supersedes Path B (`DELETE /api/v1/ingest/documents/{id}`, `POST …/supersede`) without cascade-deleting imported values; Path A auto-withdraw is module opt-in. [CC-990](https://linear.app/openearth/issue/CC-990/verify-imported-values-against-the-source-file-and-record-row) runs source reconciliation after validate: plugins supply occupancy and pointers; Core blocks commit on extra, missing, or unreasoned skips and leaves the item reviewable with the report.
+
+Cutover still ahead (children of [CC-953](https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine)): live GHGI wizard and Chile bulk onto the runner ([CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner)); HTTP enqueue of new bytes ([CC-1219](https://linear.app/openearth/issue/CC-1219/add-http-enqueue-for-module-ingest-multipart-file-post)); CNB uploads on the pool / Path B ([CC-1220](https://linear.app/openearth/issue/CC-1220/register-cnb-uploads-on-the-ingest-document-pool-path-b)); S3 retention and delete-including-data ([CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data)). GHGI PDF occupancy is [CC-1128](https://linear.app/openearth/issue/CC-1128/preserve-and-verify-source-evidence-for-extracted-pdf-values), not a Core spine slice.
 
 ### Shared lessons from GHGI
 
@@ -321,9 +323,11 @@ Product proposal for [CC-958](https://linear.app/openearth/issue/CC-958/deletesu
 
 A new ingest from a withdrawn or superseded document id is refused (`document_withdrawn` / `document_superseded`). An active catalog pointer must not outlive the pool row it names: the Path B row stays, with `withdrawn` or `superseded`, so the value can still name its source.
 
+[CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog) is withdraw/supersede (Path B only by default). Retention cron and the confirmed data-delete exception are [CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data).
+
 Open with legal / product:
 
-- **Retention.** GDPR cron today covers accounts, invites, and tokens only (defaults 1095 / 180 / 365 days). Lean for withdrawn document **bytes**: 365 days, then drop S3. Keep the catalog row so values can still say “source withdrawn.”
+- **Retention.** GDPR cron today covers accounts, invites, and tokens only (defaults 1095 / 180 / 365 days). Lean for withdrawn document **bytes**: 365 days, then drop S3. Keep the catalog row so values can still say “source withdrawn.” [CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data)
 - **Who can delete.** Map “city admins and the uploader” to Org Admin, Project Admin, and author. Collaborators should not get “delete including data.”
 
 ---
@@ -345,7 +349,7 @@ v1 does **not** accept one zip that several plugins consume (D3). Reuse is expli
 
 ## CC and Climate Advisor
 
-Concept-note uploads already have an identity. The spine must not replace it. The city still owns the file. Climate Advisor owns the upload record. A working attachment stays inside the concept note until a user marks it as a city document. A city document uploaded in CNB, such as an action plan or a report, is discoverable by other modules immediately. Whether today's CNB uploads can already be split that way is still open. See [Document ownership](#document-ownership).
+Concept-note uploads already have an identity. The spine must not replace it. The city still owns the file. Climate Advisor owns the upload record. A working attachment stays inside the concept note until a user marks it as a city document. A city document uploaded in CNB, such as an action plan or a report, is discoverable by other modules immediately. Wiring that onto the document pool is [CC-1220](https://linear.app/openearth/issue/CC-1220/register-cnb-uploads-on-the-ingest-document-pool-path-b). See [Document ownership](#document-ownership).
 
 | Record | Authoritative owner | Identity |
 | --- | --- | --- |
@@ -460,9 +464,11 @@ Keep module-facing URLs. Implement them as thin wrappers over the core runner.
 
 | Entry | Example | Notes |
 | --- | --- | --- |
-| Module single | existing GHGI `…/import`, or `…/modules/{module}/ingest` | Wrapper. Does not grow a second importer |
-| Module bulk | existing GHGI bulk, or `…/admin/bulk-ingest` | Zip + job |
+| Module single | `POST …/modules/{module}/ingest` | New bytes. [CC-1219](https://linear.app/openearth/issue/CC-1219/add-http-enqueue-for-module-ingest-multipart-file-post). Existing GHGI `…/import` stays a wrapper after [CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner) |
+| Module bulk | existing GHGI bulk, or `…/admin/bulk-ingest` | Zip + job. Cutover is [CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner) |
 | From document | `…/modules/{module}/ingest/from-document/{documentId}` | [CC-957](https://linear.app/openearth/issue/CC-957/ingest-from-existing-document-cross-module-reuse) |
+| Withdraw | `DELETE …/ingest/documents/{documentId}` | [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog). Path B withdrawn; Path A opt-in |
+| Supersede | `POST …/ingest/documents/{documentId}/supersede` | Replacement id; `supersededById` on Path B |
 | Status | `…/ingest/jobs/{jobId}` | Shared shape |
 | Review draft | `…/ingest/items/{itemId}/review-draft` | GET/PATCH the stored draft |
 | Approve | `…/ingest/items/{itemId}/approve` | Replays the stored draft |
@@ -485,7 +491,7 @@ Keep module-facing URLs. Implement them as thin wrappers over the core runner.
 | Path B | Source file registered at approve | Core registers it at store. The plugin does not wait until commit to publish the file |
 | Path A | Inventory extract registered after commit | Plugin `registerExtract` after commit. Unchanged timing |
 
-[CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services) is this façade. Existing routes become wrappers. Signed CO2e stays. There is no bulk-only writer. Chile bulk ([CC-878](https://linear.app/openearth/issue/CC-878/bulk-import-inventory-files-for-380-chilean-cities)) is not blocked on the rename.
+[CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services) is this façade. Signed CO2e stays. There is no bulk-only writer. Chile bulk ([CC-878](https://linear.app/openearth/issue/CC-878/bulk-import-inventory-files-for-380-chilean-cities)) is not blocked on the rename. Switching the live wizard and bulk worker onto the runner is [CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner).
 
 ### CCRA (greenfield consumer)
 
@@ -569,9 +575,11 @@ Plugins may append detail (`not_ecrf:ciris`, `ccra:unknown_hazard_code`) on `err
 3. **Introduce `IngestJob` / `IngestItem`** — done on [PR #3344](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3344) / [CC-989](https://linear.app/openearth/issue/CC-989/add-ingestion-jobitem-model-stage-runner-and-plugin-contract). Chile bulk tables are unchanged.
 4. **Extract `GhgiIngestPlugin`** over the services that already run on `develop` ([CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services)). Behavior of eCRF and near-eCRF bulk stays the same, including a negative CO2e row. Non-eCRF bulk still does not call OpenAI.
 5. **Publish Path B at store** ([CC-955](https://linear.app/openearth/issue/CC-955/document-pool-early-path-b-nativeinputcatalog-registration)) and **persist review drafts** ([CC-956](https://linear.app/openearth/issue/CC-956/persist-multi-session-ingest-review-drafts-in-core)).
-6. **From-document, withdraw/supersede, coarse detect, column mapping, source reconciliation, agent confirm** are the remaining children of CC-953. Each one is a slice. None of them is a second importer.
-7. **Ship a CCRA plugin** for the first agreed template after the CCRA SoT migrations exist.
-8. **Point CNB uploads** at the same store and Path B publish, without a new upload SoT.
+6. **Remaining Core slices** of [CC-953](https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine): withdraw/supersede ([CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog)), source reconciliation ([CC-990](https://linear.app/openearth/issue/CC-990/verify-imported-values-against-the-source-file-and-record-row)), shared column mapping ([CC-992](https://linear.app/openearth/issue/CC-992/add-a-shared-column-mapping-stage-with-user-confirmation)), agent start/status/confirm ([CC-993](https://linear.app/openearth/issue/CC-993/add-agentic-ingest-start-status-and-confirm-on-the-shared-runner)). Each is a slice. None of them is a second importer.
+7. **Ship a CCRA plugin** for the first agreed template after the CCRA SoT migrations exist ([CC-1156](https://linear.app/openearth/issue/CC-1156/build-the-crva-adapter-v0-on-the-core-ingestion-pipeline) is v0).
+8. **Point CNB uploads** at the same store and Path B publish, without a new upload SoT ([CC-1220](https://linear.app/openearth/issue/CC-1220/register-cnb-uploads-on-the-ingest-document-pool-path-b)).
+9. **Cut live GHGI traffic over** to the plugin ([CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner)) and add HTTP enqueue of new files ([CC-1219](https://linear.app/openearth/issue/CC-1219/add-http-enqueue-for-module-ingest-multipart-file-post)).
+10. **Retention and delete-including-data** after withdraw ([CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data)).
 
 Do not block Chile/GHGI bulk delivery on the generic rename.
 
@@ -589,7 +597,7 @@ Do not block Chile/GHGI bulk delivery on the generic rename.
 | D6 | Agent confirm API | Internal capabilities + the existing session approve route. No new MCP surface |
 | D7 | Who owns a document? | **Closed.** City owns; uploader is author. CNB working attachments stay run-scoped until marked as a city document. Delete = org/project admin or author. Confidentiality class is out of v1. [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) |
 | D8 | Does dry-run register Path B? | No |
-| D9 | Does deleting a document delete imported values? | **Closed.** No. The link stays. Removing imported values is a separate confirmed action, written to version history. [CC-958](https://linear.app/openearth/issue/CC-958/delete-supersede-ingest-documents-and-sync-nativeinputcatalog) |
+| D9 | Does deleting a document delete imported values? | **Closed.** No. The link stays. Removing imported values is a separate confirmed action, written to version history. Default withdraw is [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog); the exception and S3 drop are [CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data) |
 
 ---
 
@@ -624,21 +632,25 @@ Running on `develop` (not on this documentation branch):
 | CNB OCR identity | `sourceType = concept_note_upload`, `sourceId = upload_id` |
 | Agentic registries | `app/src/backend/agentic/**/registry.ts` |
 
-Proposed (child tickets of CC-953). CC-989 has code on PR #3344; the rest is still ahead:
+Child tickets of [CC-953](https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine):
 
 | Slice | Ticket |
 | --- | --- |
-| Ownership spike | CC-954 |
-| Document pool + early Path B | CC-955 |
-| Review drafts | CC-956 |
-| From-document | CC-957 |
-| Withdraw / supersede | CC-958 |
-| Coarse vs format detect | CC-959 |
-| Job, runner, plugin contract | CC-989 |
-| Source reconciliation | CC-990 |
-| GHGI plugin façade | CC-991 |
-| Shared column mapping | CC-992 |
-| Agent start / status / confirm | CC-993 |
+| Ownership spike | [CC-954](https://linear.app/openearth/issue/CC-954/spike-document-ownership-hierarchy-sot) |
+| Document pool + early Path B | [CC-955](https://linear.app/openearth/issue/CC-955/document-pool-early-path-b-nativeinputcatalog-registration) |
+| Review drafts | [CC-956](https://linear.app/openearth/issue/CC-956/persist-multi-session-ingest-review-drafts-in-core) |
+| From-document | [CC-957](https://linear.app/openearth/issue/CC-957/ingest-from-existing-document-cross-module-reuse) |
+| Withdraw / supersede | [CC-958](https://linear.app/openearth/issue/CC-958/deletesupersede-ingest-documents-and-sync-nativeinputcatalog) |
+| Coarse vs format detect | [CC-959](https://linear.app/openearth/issue/CC-959/split-coarse-file-detect-core-from-format-detect-plugin) |
+| Job, runner, plugin contract | [CC-989](https://linear.app/openearth/issue/CC-989/add-ingestion-jobitem-model-stage-runner-and-plugin-contract) |
+| Source reconciliation | [CC-990](https://linear.app/openearth/issue/CC-990/verify-imported-values-against-the-source-file-and-record-row) |
+| GHGI plugin façade | [CC-991](https://linear.app/openearth/issue/CC-991/add-ghgiingestplugin-over-the-existing-ghgi-import-services) |
+| Shared column mapping | [CC-992](https://linear.app/openearth/issue/CC-992/add-a-shared-column-mapping-stage-with-user-confirmation) |
+| Agent start / status / confirm | [CC-993](https://linear.app/openearth/issue/CC-993/add-agentic-ingest-start-status-and-confirm-on-the-shared-runner) |
+| GHGI wizard + Chile bulk cutover | [CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner) |
+| HTTP enqueue (multipart POST) | [CC-1219](https://linear.app/openearth/issue/CC-1219/add-http-enqueue-for-module-ingest-multipart-file-post) |
+| CNB uploads on Path B | [CC-1220](https://linear.app/openearth/issue/CC-1220/register-cnb-uploads-on-the-ingest-document-pool-path-b) |
+| S3 retention + delete-including-data | [CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data) |
 
 ---
 
@@ -654,3 +666,6 @@ Proposed (child tickets of CC-953). CC-989 has code on PR #3344; the rest is sti
 | 2026-10-29 | CC-955: Core document pool + Path B `ingest_document` at store; dry-run does not register |
 | 2026-11-02 | CC-956: Versioned review drafts on `IngestItem`; confirm hydrates the stored bundle; `stale_review_draft` on hash/version/target mismatch |
 | 2026-11-02 | CC-957: From-document ingest skips store/Path B; Path A extract shares the Path B content hash |
+| 2026-11-03 | CC-958: Withdraw/supersede Path B; imported values stay; Path A withdraw is module opt-in |
+| 2026-11-03 | CC-990: Core source reconciliation after validate; failed accounting stays reviewable and blocks commit |
+| 2026-11-03 | Cutover children of CC-953: GHGI wizard/bulk ([CC-1218](https://linear.app/openearth/issue/CC-1218/switch-ghgi-wizard-and-chile-bulk-onto-the-ingest-runner)), HTTP enqueue ([CC-1219](https://linear.app/openearth/issue/CC-1219/add-http-enqueue-for-module-ingest-multipart-file-post)), CNB Path B ([CC-1220](https://linear.app/openearth/issue/CC-1220/register-cnb-uploads-on-the-ingest-document-pool-path-b)), retention / delete-including-data ([CC-1221](https://linear.app/openearth/issue/CC-1221/ingest-document-s3-retention-and-delete-including-data)) |

@@ -1,6 +1,8 @@
 import type { CoarseFileKind } from "./coarse-kind";
+import type { IngestSourceReconciliationInput } from "./source-reconciliation";
 import type {
   IngestApprovalPolicy,
+  IngestColumnMappingInput,
   IngestItemRecord,
   IngestJobRecord,
   IngestModuleId,
@@ -34,6 +36,17 @@ export interface IngestPlugin {
     coarse: CoarseFileKind,
   ): Promise<void> | void;
   parse(ctx: IngestPluginContext): Promise<unknown>;
+  /**
+   * Ask Core to run the shared mapping stage. Omit or return void to skip
+   * (known formats). Suggestions may come from a model; they cannot commit.
+   */
+  columnMapping?(
+    ctx: IngestPluginContext,
+    parsed: unknown,
+  ):
+    | Promise<IngestColumnMappingInput | void>
+    | IngestColumnMappingInput
+    | void;
   adapt(ctx: IngestPluginContext, parsed: unknown): Promise<unknown>;
   validate(
     ctx: IngestPluginContext,
@@ -71,4 +84,15 @@ export interface IngestPlugin {
   ): unknown;
   /** Rebuild the canonical bundle Core will pass to commit. */
   hydrateReviewDraft?(draft: unknown): unknown;
+  /**
+   * How adapted values point back at the source file. Core checks occupancy
+   * and row accounting; it does not read domain columns.
+   */
+  sourceReconciliation?(
+    ctx: IngestPluginContext,
+    adapted: unknown,
+  ):
+    | Promise<IngestSourceReconciliationInput | void>
+    | IngestSourceReconciliationInput
+    | void;
 }

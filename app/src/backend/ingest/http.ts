@@ -1,6 +1,9 @@
 import createHttpError from "http-errors";
 import type { AppSession } from "@/lib/auth";
-import { assertCanAccessIngestItem } from "./access";
+import {
+  assertCanAccessIngestItem,
+  assertCanManageIngestDocument,
+} from "./access";
 import { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 import { IngestRunner } from "./IngestRunner";
 import { SequelizeIngestStore } from "./IngestStoreService";
@@ -27,4 +30,17 @@ export async function loadIngestReviewContext(
   }
   await assertCanAccessIngestItem(session, job, item);
   return { store, item, job, runner: createIngestRunner() };
+}
+
+export async function loadManagedIngestDocument(
+  documentId: string,
+  session: AppSession | null,
+) {
+  const pool = new SequelizeIngestDocumentPool();
+  const document = await pool.get(documentId);
+  if (!document) {
+    throw new createHttpError.NotFound("Ingest document not found");
+  }
+  await assertCanManageIngestDocument(session, document);
+  return { pool, document };
 }

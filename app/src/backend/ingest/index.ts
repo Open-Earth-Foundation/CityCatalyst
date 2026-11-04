@@ -26,10 +26,12 @@ export {
   buildIngestDocumentPathBInput,
   buildIngestExtractPathAInput,
   initialMarkdownReady,
+  sameDocumentScope,
 } from "./document-pool";
 export type {
   IngestDocumentPool,
   IngestDocumentRecord,
+  WithdrawIngestDocumentInput,
 } from "./document-pool";
 export { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";

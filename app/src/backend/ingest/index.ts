@@ -6,6 +6,17 @@ export {
 } from "./coarse-kind";
 export type { CoarseFileKind } from "./coarse-kind";
 export { IngestRunner } from "./IngestRunner";
+export {
+  INGEST_CONFIRM_CAPABILITY,
+  INGEST_START_CAPABILITY,
+  INGEST_STATUS_CAPABILITY,
+  IngestAgent,
+} from "./agent";
+export type {
+  IngestAgentConfirmInput,
+  IngestAgentStartInput,
+  IngestAgentStatusView,
+} from "./agent";
 export { MemoryIngestStore } from "./MemoryIngestStore";
 export { SequelizeIngestStore } from "./IngestStoreService";
 export { createIngestPlugin } from "./registry";
@@ -41,6 +52,11 @@ export type {
   GhgiAdaptedPayload,
   GhgiIngestPluginDeps,
 } from "./plugins/GhgiIngestPlugin";
+export {
+  confirmColumnMap,
+  isColumnMappingPending,
+  proposeColumnMap,
+} from "./column-mapping";
 export type { IngestMatchResult, IngestPlugin } from "./plugin";
 export {
   ingestCellKey,
@@ -66,6 +82,10 @@ export {
 } from "./types";
 export type {
   IngestApprovalPolicy,
+  IngestColumnMappingInput,
+  IngestColumnMappingProposal,
+  IngestColumnMappingState,
+  IngestConfirmedColumnMap,
   IngestErrorCode,
   IngestFileInput,
   IngestItemRecord,

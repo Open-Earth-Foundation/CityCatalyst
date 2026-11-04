@@ -33,6 +33,8 @@ module.exports = {
   },
 
   async down(queryInterface) {
+    // Intentional: rolling back permanently deletes the stored review history.
+    // Preserve it first in any environment that has recorded decisions.
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.sequelize.query(
         `

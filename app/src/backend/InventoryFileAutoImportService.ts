@@ -337,6 +337,8 @@ export class InventoryFileAutoImportService {
           where: { inventoryId, importStatus: ImportStatusEnum.IMPORTING },
           transaction,
         });
+        // A file stuck in `importing` blocks the inventory until an operator
+        // marks it failed; see docs/import-stuck-importing-runbook.md.
         if (active)
           throw new BulkInventoryImportAutoImportError(
             "import_in_progress",

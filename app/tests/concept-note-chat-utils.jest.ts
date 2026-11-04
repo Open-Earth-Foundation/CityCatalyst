@@ -185,3 +185,26 @@ describe("uploaded file rows", () => {
     ).toEqual({ labelKey: "status-failed", tone: "warning" });
   });
 });
+
+it("restores valid choices but ignores malformed and user-supplied choices", () => {
+  const messages = readConceptNoteThreadMessages({
+    messages: [
+      {
+        message_id: "1",
+        role: "assistant",
+        text: "Which?",
+        choices: ["Budget", "Scope"],
+      },
+      {
+        message_id: "2",
+        role: "assistant",
+        text: "Broken",
+        choices: ["Budget", " budget "],
+      },
+      { message_id: "3", role: "user", text: "Budget", choices: ["A", "B"] },
+    ],
+  });
+  expect(messages[0].choices).toEqual(["Budget", "Scope"]);
+  expect(messages[1].choices).toBeUndefined();
+  expect(messages[2].choices).toBeUndefined();
+});

@@ -15,6 +15,7 @@ class ThreadMessageResponse(BaseModel):
     role: str
     text: str
     created_at: datetime
+    choices: list[str] | None = None
 
 
 class ThreadMessagesResponse(BaseModel):

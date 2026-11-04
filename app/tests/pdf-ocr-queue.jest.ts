@@ -543,6 +543,90 @@ describe("PdfOcrJob queue", () => {
     expect(convertPdfUrlToMarkdown).not.toHaveBeenCalled();
   });
 
+  const runStoredExtraction = async () => {
+    const importedFile = {
+      inventoryId: "inventory-id",
+      importStatus: "extracting",
+      mappingConfiguration: { keep: true, rows: [{ sector: "Old" }] } as Record<
+        string,
+        unknown
+      >,
+      update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
+    };
+    const job = {
+      sourceType: "inventory_import",
+      sourceId: "source-id",
+      status: "succeeded",
+      resultS3Key: "result.md",
+    } as unknown as Parameters<
+      typeof extractInventoryRowsFromStoredMarkdown
+    >[0];
+    importedFindByPk.mockResolvedValue(importedFile);
+    inventoryFindByPk.mockResolvedValue({ year: 2022 });
+    getTextFile.mockResolvedValue("OCR Markdown");
+    importedUpdate.mockImplementation(async (values) => {
+      Object.assign(importedFile, values);
+      return [1];
+    });
+    await extractInventoryRowsFromStoredMarkdown(job, "extractor-1");
+    return importedFile as typeof importedFile & { errorLog?: string };
+  };
+
+  it("fails a totals-only extraction with an i18n reason and keeps the summary (CC-1202)", async () => {
+    const summary = {
+      ...extraction.summary,
+      importedSum: 0,
+      targetYear: 2022,
+      droppedRows: { subtotal_or_total: 1 },
+      reportedTotals: [
+        {
+          label: "Total CO2 emissions",
+          value: 1_788_000,
+          year: 2022,
+          scope: null,
+          sector: null,
+          subsector: null,
+          level: "total",
+        },
+      ],
+    };
+    extractRows.mockResolvedValueOnce({ rows: [], summary });
+
+    const importedFile = await runStoredExtraction();
+
+    expect(importedFile.importStatus).toBe("failed");
+    expect(importedFile.errorLog).toBe("i18n:pdf-extraction-only-totals");
+    expect(importedFile.mappingConfiguration).toEqual(
+      expect.objectContaining({ keep: true, extractionSummary: summary }),
+    );
+    expect(importedFile.mappingConfiguration.rows).toBeUndefined();
+  });
+
+  it("fails an empty extraction with the no-data reason (CC-1202)", async () => {
+    extractRows.mockResolvedValueOnce({
+      rows: [],
+      summary: { ...extraction.summary, importedSum: 0 },
+    });
+
+    const importedFile = await runStoredExtraction();
+
+    expect(importedFile.importStatus).toBe("failed");
+    expect(importedFile.errorLog).toBe("i18n:pdf-extraction-no-data");
+  });
+
+  it("translates the target-year error into an i18n reason (CC-1202)", async () => {
+    extractRows.mockRejectedValueOnce(
+      new Error("Inventory not found for the target year"),
+    );
+
+    const importedFile = await runStoredExtraction();
+
+    expect(importedFile.importStatus).toBe("failed");
+    expect(importedFile.errorLog).toBe(
+      "i18n:inventory-not-found-for-target-year",
+    );
+  });
+
   it("prevents a stale extractor from overwriting a newer terminal state", async () => {
     const importedFile = {
       inventoryId: "inventory-id",

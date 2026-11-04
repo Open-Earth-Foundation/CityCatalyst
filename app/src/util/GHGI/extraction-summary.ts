@@ -159,6 +159,39 @@ export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
   "other_page",
 ];
 
+export type ZeroRowReason =
+  | "pdf-extraction-only-totals"
+  | "pdf-extraction-unsupported-units"
+  | "pdf-extraction-no-data"
+  | "inventory-not-found-for-target-year";
+
+/**
+ * Why an extraction left no row to import, as an i18n key (onboarding namespace).
+ * Totals win over units: a document with one total and sector percentages is a
+ * totals-only document for the user. Totals are kept before the year filter, so
+ * totals of other years only mean the target year is missing.
+ */
+export function zeroRowReason(
+  summary: ExtractionSummary | null,
+): ZeroRowReason {
+  const targetYear = summary?.targetYear ?? null;
+  const totals = summary?.reportedTotals ?? [];
+  const totalsForYear = totals.filter(
+    (total) =>
+      targetYear == null || total.year == null || total.year === targetYear,
+  );
+  if (totalsForYear.length > 0) {
+    return "pdf-extraction-only-totals";
+  }
+  if (totals.length > 0) {
+    return "inventory-not-found-for-target-year";
+  }
+  if ((summary?.droppedRows?.unsupported_unit ?? 0) > 0) {
+    return "pdf-extraction-unsupported-units";
+  }
+  return "pdf-extraction-no-data";
+}
+
 export type ExtractionReviewNotes = {
   reconciliation: Reconciliation | null;
   /** Pages to name in the "adds up to the total" note; empty when it would be false. */

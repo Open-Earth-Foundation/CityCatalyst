@@ -73,7 +73,7 @@
   "how-ranking-works-title": "Wie das Ranking funktioniert",
   "how-ranking-works-description": "Wie das Modell Aktionen für Ihre Stadt gewichtet. Erforschen Sie jeden Bereich vor oder nach der Erstellung von Empfehlungen.",
   "ranking-update": "Rangliste aktualisieren",
-  "ranking-census": "{{ranked}} eingestuft · {{excluded}} aufgrund einer rechtlichen Prüfung ausgeschlossen",
+  "ranking-census": "{{ranked}} eingestuft · {{excluded}} vor der Bewertung ausgeschlossen",
   "emissions-none-sub": "Keine Emissionsdaten in diesem Inventar",
   "get-recommendations-hint-no-data": "Für dieses Inventar liegen keine Emissionsdaten vor. Fügen Sie diese im GHGI-Modul hinzu, um Empfehlungen freizuschalten."
 }

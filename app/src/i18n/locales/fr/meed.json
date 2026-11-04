@@ -73,7 +73,7 @@
   "how-ranking-works-title": "Comment fonctionne le classement",
   "how-ranking-works-description": "Ce que le modèle pèse pour classer les actions pour votre ville. Explorez n'importe quel domaine avant ou après avoir généré des recommandations.",
   "ranking-update": "Mettre à jour le classement",
-  "ranking-census": "{{ranked}} classé · {{excluded}} exclu par un dépistage légal",
+  "ranking-census": "{{ranked}} classées · {{excluded}} exclues avant la notation",
   "emissions-none-sub": "Aucune donnée d'émissions dans cet inventaire",
   "get-recommendations-hint-no-data": "Cet inventaire ne contient aucune donnée d'émissions. Ajoutez-le dans le module GHGI pour débloquer des recommandations."
 }

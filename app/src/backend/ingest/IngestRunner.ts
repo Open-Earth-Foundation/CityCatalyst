@@ -8,6 +8,10 @@ import {
   type IngestDocumentPool,
 } from "./document-pool";
 import type { IngestPlugin } from "./plugin";
+import {
+  reconcileIngestSource,
+  type IngestSourceReconciliationReport,
+} from "./source-reconciliation";
 import type { IngestStore } from "./store";
 import { expandIngestInputs } from "./unpack-zip";
 import {
@@ -264,6 +268,17 @@ export class IngestRunner {
         adapted,
       );
       await this.addWarnings(item.id, validation?.warnings);
+      const reconciliation = await this.reconcileAdapted(
+        plugin,
+        { job, item: await this.requireItem(item.id), scope },
+        adapted,
+      );
+      if (reconciliation) {
+        await this.addWarnings(
+          item.id,
+          reconciliation.issues.map((issue) => issue.message),
+        );
+      }
 
       await this.setStage(item.id, "decide");
       const policy = plugin.approvalPolicy(
@@ -282,7 +297,7 @@ export class IngestRunner {
         });
         return;
       }
-      if (policy === "review") {
+      if (policy === "review" || (reconciliation && !reconciliation.ok)) {
         await this.persistReviewDraft({
           job,
           itemId: item.id,
@@ -290,6 +305,7 @@ export class IngestRunner {
           adapted,
           validation,
           scope,
+          reconciliation,
         });
         return;
       }
@@ -306,7 +322,10 @@ export class IngestRunner {
       await this.store.updateItem(item.id, {
         status: "completed",
         stage: "publish",
-        result: result ?? { committed: true },
+        result: {
+          ...(result ?? { committed: true }),
+          ...(reconciliation ? { reconciliation } : {}),
+        },
       });
     } catch (err) {
       const code =
@@ -477,6 +496,17 @@ export class IngestRunner {
       cityId: item.targetCityId ?? job.cityId,
       inventoryId: item.targetInventoryId,
     };
+    const reconciliation = await this.reconcileAdapted(
+      plugin,
+      { job, item, scope },
+      adapted,
+    );
+    if (reconciliation && !reconciliation.ok) {
+      throw new IngestItemError(
+        "reconciliation_failed",
+        "Source reconciliation failed; values cannot be committed",
+      );
+    }
 
     await this.setStage(item.id, "commit");
     const result = await plugin.commit(
@@ -504,6 +534,17 @@ export class IngestRunner {
     return completed;
   }
 
+  private async reconcileAdapted(
+    plugin: IngestPlugin,
+    ctx: { job: IngestJobRecord; item: IngestItemRecord; scope: IngestScope },
+    adapted: unknown,
+  ): Promise<IngestSourceReconciliationReport | null> {
+    if (!plugin.sourceReconciliation) return null;
+    const input = await plugin.sourceReconciliation(ctx, adapted);
+    if (!input) return null;
+    return reconcileIngestSource(input);
+  }
+
   private async persistReviewDraft(input: {
     job: IngestJobRecord;
     itemId: string;
@@ -511,6 +552,7 @@ export class IngestRunner {
     adapted: unknown;
     validation: { warnings?: string[] } | void;
     scope: IngestScope;
+    reconciliation?: IngestSourceReconciliationReport | null;
   }): Promise<void> {
     const current = await this.requireItem(input.itemId);
     const serialized = input.plugin.serializeReviewDraft
@@ -523,6 +565,7 @@ export class IngestRunner {
         cityId: current.targetCityId ?? input.job.cityId,
         inventoryId: current.targetInventoryId ?? input.scope.inventoryId,
       },
+      reconciliation: input.reconciliation ?? null,
     });
     const summary = await input.plugin.reviewSummary?.(
       {
@@ -535,7 +578,12 @@ export class IngestRunner {
     await this.store.updateItem(input.itemId, {
       status: "awaiting_review",
       stage: "decide",
-      result: summary ? { review: summary } : { awaitingReview: true },
+      result: {
+        ...(summary ? { review: summary } : { awaitingReview: true }),
+        ...(input.reconciliation
+          ? { reconciliation: input.reconciliation }
+          : {}),
+      },
       reviewDraft: envelope,
       reviewDraftVersion: envelope.version,
     });

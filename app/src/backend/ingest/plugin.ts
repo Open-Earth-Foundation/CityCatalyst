@@ -1,4 +1,5 @@
 import type { CoarseFileKind } from "./coarse-kind";
+import type { IngestSourceReconciliationInput } from "./source-reconciliation";
 import type {
   IngestApprovalPolicy,
   IngestItemRecord,
@@ -71,4 +72,15 @@ export interface IngestPlugin {
   ): unknown;
   /** Rebuild the canonical bundle Core will pass to commit. */
   hydrateReviewDraft?(draft: unknown): unknown;
+  /**
+   * How adapted values point back at the source file. Core checks occupancy
+   * and row accounting; it does not read domain columns.
+   */
+  sourceReconciliation?(
+    ctx: IngestPluginContext,
+    adapted: unknown,
+  ):
+    | Promise<IngestSourceReconciliationInput | void>
+    | IngestSourceReconciliationInput
+    | void;
 }

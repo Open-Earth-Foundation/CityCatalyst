@@ -3,7 +3,10 @@ import {
   isOmittedFromTotalRef,
 } from "@/util/GHGI/reported-totals";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
-import { importRowSkipReason } from "@/backend/InventoryImportService";
+import {
+  importRowSkipReason,
+  resolveImportedTotalCO2e,
+} from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import type { InventoryTypeEnum } from "@/util/enums";
 import type { ImportRowOutcome, ImportRowPreview } from "@/util/types";
@@ -44,6 +47,7 @@ export async function previewImportRows(
   }
 
   // Imported rows the inventory type does not require are stored but not counted.
+  let omittedFromTotalTonnes = 0;
   const outsideReferences = new Set(
     await InventoryProgressService.findReferencesOutsideInventoryType(
       inventoryType,
@@ -60,6 +64,12 @@ export async function previewImportRows(
           ? "outside-inventory-type"
           : null;
     if (issue) {
+      const leftOutOfTotal =
+        issue === "omitted-from-total" || issue === "reported-apart-from-total";
+      const tonnes = leftOutOfTotal
+        ? (resolveImportedTotalCO2e(row) ?? null)
+        : null;
+      if (tonnes != null) omittedFromTotalTonnes += tonnes;
       outcomes.push({
         rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
         gpcRefNo: row.gpcRefNo,
@@ -67,6 +77,7 @@ export async function previewImportRows(
         notationKey: row.notationKey ?? null,
         status: "not-counted",
         issue,
+        tonnes,
       });
     }
   }
@@ -84,6 +95,7 @@ export async function previewImportRows(
     importedRows: importedRows.length,
     skippedRows: importResult.rows.length - importedRows.length,
     skippedByIssue,
+    omittedFromTotalTonnes,
     rows: outcomes,
   };
 }

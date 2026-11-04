@@ -278,6 +278,7 @@
   "import-rows-skipped-empty_other": "{{count}} empty rows.",
   "import-rows-not-counted_one": "{{count}} row will be imported but won't count toward completion.",
   "import-rows-not-counted_other": "{{count}} rows will be imported but won't count toward completion.",
+  "import-rows-omitted-tonnes": "{{tonnes}} t CO₂e of imported rows are left out of the BASIC and BASIC+ totals.",
   "import-rows-show-all": "Show all {{count}} rows",
   "import-rows-show-less": "Show fewer rows",
   "import-row-number": "Row",

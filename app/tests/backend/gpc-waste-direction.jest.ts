@@ -314,6 +314,8 @@ describe("import review", () => {
       undefined,
     );
     expect(preview.skippedRows).toBe(0);
+    expect(preview.omittedFromTotalTonnes).toBe(3);
+    expect(preview.rows.map((row) => row.tonnes)).toEqual([1, 1, 1]);
     expect(
       preview.rows.map((row) => [row.gpcRefNo, row.status, row.issue]),
     ).toEqual([

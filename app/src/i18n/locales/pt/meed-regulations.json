@@ -7,7 +7,7 @@
   "precondition-body": "Conclua as etapas restantes do assistente e gere seu ranking - cada ação candidata será então filtrada de acordo com as leis locais, e todas as ações bloqueadas ou sinalizadas aparecerão aqui. Você pode continuar para a próxima etapa agora.",
   "precondition-continue": "Não é necessária nenhuma ação aqui — continue para o próximo passo.",
   "step-sub": "A triagem ocorre com o ranqueamento",
-  "step-sub-counts": "{{excluded}} excluído · {{included}} incluído",
+  "step-sub-counts": "{{blocked}} bloqueadas · {{conditional}} condicionais · {{enabled}} habilitadas",
   "summary-flagged": "Sinalizado — evidência em falta",
   "summary-flagged-sub": "Incluído no ranking, avaliação pendente",
   "all-passed-title": "Todas as ações passaram pela revisão jurídica",

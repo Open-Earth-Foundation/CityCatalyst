@@ -125,7 +125,7 @@ export function contextSummary(
             })
           : t("context-summary-emissions", { value: facts.emissionsText });
       }
-      return stepSub ?? t("context-summary-not-retrieved");
+      return stepSub ?? t("context-summary-loading-emissions");
     case "regulations":
       if (facts.legalCounts) {
         // Standings exist for the ranked actions. If the backend also removed

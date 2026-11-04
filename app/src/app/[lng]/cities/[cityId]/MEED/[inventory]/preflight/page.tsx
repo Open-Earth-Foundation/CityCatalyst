@@ -54,10 +54,10 @@ type Weights = Record<WeightKey, number>;
 const WEIGHT_KEYS: WeightKey[] = ["impact", "alignment", "feasibility"];
 
 /**
- * The inputs summarized on this screen: the retrieved emissions data first,
- * then every wizard step before pre-flight. Emissions is an output area (it is
- * retrieved from the home screen, not entered), but it still gates the ranking
- * so it has to show up here.
+ * The inputs summarized on this screen: the emissions data first, then every
+ * wizard step before pre-flight. Emissions is an output area (it is read from
+ * the inventory, not entered), but it still gates the ranking so it has to
+ * show up here.
  */
 const SUMMARY_STEPS = [
   ...MEED_OUTPUT_AREAS.filter((s) => s.key === "emissions"),
@@ -454,8 +454,8 @@ function PreflightContent(props: {
                           "preflight",
                         )}
                         isLast={index === SUMMARY_STEPS.length - 1}
-                        // Emissions is retrieved, not entered: the only thing
-                        // to do from here is look at the breakdown.
+                        // Emissions is read from the inventory, not entered:
+                        // the only thing to do from here is look at the breakdown.
                         linkLabel={
                           step.key === "emissions"
                             ? t("view-breakdown")

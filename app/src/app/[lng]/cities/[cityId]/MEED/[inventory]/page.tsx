@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetMeedActionsQuery } from "@/services/api";
@@ -31,12 +31,9 @@ import { useMeedSectionStates } from "../meedStatus";
 import { useMeedRanking } from "../useMeedRanking";
 import { useMeedInventories } from "../useMeedInventories";
 import { useMeedContextFacts } from "../useMeedContextFacts";
-import { setMeedStepState } from "../meedLocalState";
-import {
-  emissionsRetrievedState,
-  isEmissionsEmpty,
-  isEmissionsRetrieved,
-} from "../meedEmissions";
+import { isEmissionsEmpty, isEmissionsRetrieved } from "../meedEmissions";
+import { useMeedEmissions } from "../useMeedEmissions";
+import { MeedTextLink } from "../components/MeedTextLink";
 import { buildActionIndex } from "./results/components/actionCatalog";
 import { ContextCardGrid } from "./results/components/ContextCardGrid";
 import type { MeedContextArea } from "./results/components/contextAreas";
@@ -49,24 +46,16 @@ import {
 import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 /**
- * Minimum time the retrieve action shows as working. The inventory totals are
- * usually cached and come back instantly, and a button that flips state with
- * no visible work reads as "nothing happened".
- */
-const RETRIEVE_MIN_MS = 1500;
-
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/**
  * The module home.
  *
  * Reads top-down as: which city (hero) → what this module does and the one
  * action that starts it (module block) → the latest result, if any → the
  * context the model ranks against, explorable before and after a run.
  *
- * Emissions data is not a step here: the GHGI card offers "Retrieve emissions
- * data", which pulls the inventory totals CityCatalyst already holds. Until
- * that has happened the primary action is disabled and says why.
+ * Emissions data is not a step here and nothing to fetch: the inventory
+ * CityCatalyst already holds is read on entry and the emissions step follows
+ * it. The primary action is only disabled while that read is in flight or
+ * when the inventory has no emissions, and says why beside itself.
  */
 export default function MEEDInventoryPage(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -117,38 +106,20 @@ export default function MEEDInventoryPage(props: {
     ? `${formatted.value} ${formatted.unit}`.trim()
     : undefined;
 
-  // ── Retrieve emissions data ─────────────────────────────────────────────
-  const [fetchResults] = api.useLazyGetResultsQuery();
-  const [isRetrieving, setIsRetrieving] = useState(false);
-  const [retrieveFailed, setRetrieveFailed] = useState(false);
-
-  const retrieveEmissions = useCallback(async () => {
-    if (!inventoryId || isRetrieving) return;
-    setIsRetrieving(true);
-    setRetrieveFailed(false);
-    try {
-      const [results] = await Promise.all([
-        fetchResults(inventoryId).unwrap(),
-        delay(RETRIEVE_MIN_MS),
-      ]);
-      setMeedStepState(
-        inventoryId,
-        "emissions",
-        emissionsRetrievedState(results, t),
-      );
-    } catch {
-      setRetrieveFailed(true);
-    } finally {
-      setIsRetrieving(false);
-    }
-  }, [inventoryId, isRetrieving, fetchResults, t]);
+  // ── Emissions data ──────────────────────────────────────────────────────
+  // Read on entry; the step state is written from the data (see the hook).
+  const {
+    isLoading: isEmissionsLoading,
+    isError: emissionsFailed,
+    refetch: refetchEmissions,
+  } = useMeedEmissions(inventoryId, t);
 
   // ── Context cards ───────────────────────────────────────────────────────
   const context = useMeedContextFacts({
     lng,
     cityId,
     inventoryId,
-    includeEmissions: emissionsRetrieved || emissionsEmpty,
+    includeEmissions: true,
   });
   const ranked = useMemo(() => ranking?.result.ranked_actions ?? [], [ranking]);
   const legalCounts = useMemo(() => {
@@ -262,24 +233,10 @@ export default function MEEDInventoryPage(props: {
           href: `/${lng}/cities/${cityId}/GHGI/${inventoryId}`,
         };
       }
-      return {
-        label: isRetrieving
-          ? tResults("context-retrieving-emissions")
-          : tResults("context-retrieve-emissions"),
-        onClick: retrieveEmissions,
-        isLoading: isRetrieving,
-      };
+      // Still loading: the card's summary line says so.
+      return undefined;
     },
-    [
-      emissionsRetrieved,
-      emissionsEmpty,
-      isRetrieving,
-      retrieveEmissions,
-      tResults,
-      lng,
-      cityId,
-      inventoryId,
-    ],
+    [emissionsRetrieved, emissionsEmpty, tResults, lng, cityId, inventoryId],
   );
 
   const onInventorySelect = (item: YearSelectorItem) => {
@@ -383,8 +340,8 @@ export default function MEEDInventoryPage(props: {
                 />
               )}
               {/* Preferences are collected on the way (this leads into the
-                  wizard), so the only thing that blocks the button is the
-                  emissions data it cannot collect for the user. */}
+                  wizard), so the only thing that blocks the button is an
+                  inventory with no emissions to rank on. */}
               <MeedButton
                 minW="auto"
                 px="l"
@@ -413,7 +370,9 @@ export default function MEEDInventoryPage(props: {
               >
                 {emissionsEmpty
                   ? t("get-recommendations-hint-no-data")
-                  : t("get-recommendations-hint")}
+                  : emissionsFailed
+                    ? t("emissions-error-body")
+                    : t("get-recommendations-hint")}
               </BodySmall>
             )}
           </VStack>
@@ -464,16 +423,20 @@ export default function MEEDInventoryPage(props: {
               visualFor={visualFor}
               heading={false}
             />
-            {retrieveFailed && (
-              <BodySmall color="sentiment.negativeDefault" role="alert">
-                {t("emissions-error-body")}
-              </BodySmall>
+            {emissionsFailed && !isEmissionsLoading && (
+              <HStack gap="m" flexWrap="wrap">
+                <BodySmall color="sentiment.negativeDefault" role="alert">
+                  {t("emissions-error-body")}
+                </BodySmall>
+                <MeedTextLink icon={null} onClick={() => refetchEmissions()}>
+                  {t("retry")}
+                </MeedTextLink>
+              </HStack>
             )}
           </MeedSection>
         ) : (
           <MeedCardGridSkeleton items={5} />
         )}
-
       </Box>
     </Box>
   );

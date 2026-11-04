@@ -1,10 +1,13 @@
 import { Op, QueryTypes } from "sequelize";
 import { db } from "@/models";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
+import { BulkInventoryImportAutoImportError } from "@/backend/InventoryFileAutoImportService";
+import { createIngestRuntime } from "@/backend/ingest/http";
 import {
-  BulkInventoryImportAutoImportError,
-  InventoryFileAutoImportService,
-} from "@/backend/InventoryFileAutoImportService";
+  bulkErrorFromIngestItem,
+  ingestGhgiBuffer,
+} from "@/backend/ingest/ghgi-run";
+import InventoryReplaceService from "@/backend/InventoryReplaceService";
 import { BulkInventoryImportJobService } from "@/backend/BulkInventoryImportJobService";
 import { logger } from "@/services/logger";
 import {
@@ -108,51 +111,72 @@ async function processItem(
     }
     await setItemStage(item, BulkInventoryImportStage.IMPORTING_EMISSIONS);
 
-    const result = await InventoryFileAutoImportService.importFile({
-      buffer,
-      originalFileName: item.originalFileName,
-      cityId: item.cityId ?? undefined,
-      inventoryId: item.inventoryId ?? undefined,
-      userId: job.userId,
-      replaceExisting: shouldReplace,
-      dryRun: job.dryRun,
-    });
-
-    if (
-      result.warnings.includes("already_imported") &&
-      result.importedRows === 0 &&
-      result.importedFileId
-    ) {
-      await item.update({
-        status: BulkInventoryImportItemStatus.SKIPPED,
-        stage: null,
-        errorCode: "already_imported",
-        errorLog: "Same content digest already completed for this inventory",
-        importedFileId: result.importedFileId,
-        warnings: result.warnings,
-        lastUpdated: new Date(),
+    if (shouldReplace && item.inventoryId) {
+      if (!db.sequelize) {
+        throw new Error("Database not initialized");
+      }
+      await db.sequelize.transaction(async (transaction) => {
+        await InventoryReplaceService.replaceInventoryValues(
+          item.inventoryId!,
+          job.userId,
+          transaction,
+        );
       });
-      return "skipped";
     }
 
-    if (result.dryRun) {
+    const { store, runner } = createIngestRuntime();
+    logger.info(
+      {
+        ingest: true,
+        bulkItemId: item.id,
+        inventoryId: item.inventoryId,
+        fileName: item.originalFileName,
+      },
+      "[ingest] Chile bulk item handing off to the ingest runner",
+    );
+    const { item: ingestItem } = await ingestGhgiBuffer({
+      buffer,
+      originalFileName: item.originalFileName,
+      cityId: item.cityId,
+      inventoryId: item.inventoryId,
+      userId: job.userId,
+      dryRun: job.dryRun,
+      runner,
+      store,
+    });
+
+    if (ingestItem.status === "failed") {
+      const mapped = bulkErrorFromIngestItem(ingestItem);
+      throw new BulkInventoryImportAutoImportError(mapped.code, mapped.message);
+    }
+
+    if (ingestItem.status === "skipped" || job.dryRun) {
       await item.update({
         status: BulkInventoryImportItemStatus.SKIPPED,
         stage: null,
         errorCode: "dry_run",
         errorLog:
           "Dry-run: file validated and matched; activities were not written",
-        warnings: result.warnings,
+        warnings: ingestItem.warnings,
         lastUpdated: new Date(),
       });
       return "skipped";
     }
 
+    if (ingestItem.status === "awaiting_review") {
+      throw new BulkInventoryImportAutoImportError(
+        "needs_review",
+        "Bulk import cannot wait on a review draft",
+      );
+    }
+
     await item.update({
       status: BulkInventoryImportItemStatus.COMPLETED,
       stage: null,
-      importedFileId: result.importedFileId,
-      warnings: result.warnings.length ? result.warnings : item.warnings,
+      importedFileId: null,
+      warnings: ingestItem.warnings.length
+        ? ingestItem.warnings
+        : item.warnings,
       errorCode: null,
       errorLog: null,
       lastUpdated: new Date(),

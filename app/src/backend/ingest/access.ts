@@ -3,7 +3,37 @@ import type { AppSession } from "@/lib/auth";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Roles, UserRole } from "@/util/types";
 import type { IngestDocumentRecord } from "./document-pool";
-import type { IngestItemRecord, IngestJobRecord } from "./types";
+import type {
+  IngestItemRecord,
+  IngestJobRecord,
+  IngestScope,
+} from "./types";
+
+export async function assertCanEnqueueIngest(
+  session: AppSession | null,
+  scope: IngestScope,
+): Promise<void> {
+  if (scope.inventoryId) {
+    await PermissionService.canAccessInventory(session, scope.inventoryId);
+    return;
+  }
+  if (scope.cityId) {
+    await PermissionService.canAccessCity(session, scope.cityId);
+    return;
+  }
+  if (scope.projectId) {
+    await PermissionService.canAccessProject(session, scope.projectId);
+    return;
+  }
+  if (scope.organizationId) {
+    await PermissionService.canAccessOrganization(
+      session,
+      scope.organizationId,
+    );
+    return;
+  }
+  throw new createHttpError.BadRequest("Ingest enqueue requires a city, project, or organization");
+}
 
 export async function assertCanAccessIngestItem(
   session: AppSession | null,

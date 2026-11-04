@@ -1493,3 +1493,80 @@ def test_incomplete_policy_evidence_is_omitted_with_a_visible_limitation() -> No
         "lacked document, signal, or quotation context" in limitation
         for limitation in chapters["policy_backing"].limitations
     )
+
+
+def test_chapter_score_facts_are_rounded_to_two_decimals() -> None:
+    """Chapters quote scores rounded once, so prose, tables and the UI agree."""
+    ranked = _ranked_action_payload("A_1")
+    ranked.update(
+        {
+            "final_score": 0.5847385809014939,
+            "impact_score": 0.39,
+            "alignment_score": 0.7549999,
+            "feasibility_score": 0.885,
+        }
+    )
+    context = build_report_context(
+        request=_report_request(
+            response_results=[
+                {
+                    "locode": "CL-SCL",
+                    "ranked_action_ids": ["A_1"],
+                    "ranked_actions": [ranked],
+                    "removed_actions": [],
+                    "metadata": {
+                        "locode": "CL-SCL",
+                        "internal_request_id": "internal-1",
+                        "frontend_request_id": "prioritize-req-1",
+                        "counts": {
+                            "total_actions": 1,
+                            "valid_actions": 1,
+                            "discarded_excluded": 0,
+                            "discarded_legal": 0,
+                            "ranked_actions": 1,
+                        },
+                        "weights": {
+                            "impact": 0.34,
+                            "alignment": 0.33,
+                            "feasibility": 0.33,
+                        },
+                        "timings": {},
+                        "explanations": {
+                            "requested": True,
+                            "generated": 1,
+                            "requested_languages": ["en"],
+                            "canonical_language": "en",
+                            "generated_languages": ["en"],
+                            "translation_warnings": [],
+                        },
+                        "hard_filter_evidence_by_action_id": {},
+                    },
+                    "warnings": [],
+                }
+            ]
+        ),
+        action=Action(action_id="A_1", action_name="Bus electrification"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        policy_score=None,
+        legal_assessment=None,
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+
+    chapters = build_chapter_inputs(context)
+    snapshot = next(chapter for chapter in chapters if chapter.key == "snapshot")
+    ranking = snapshot.facts["ranking"]
+    assert ranking["final_score"] == 0.58
+    assert ranking["impact_score"] == 0.39
+    assert ranking["alignment_score"] == 0.75
+    assert ranking["feasibility_score"] == 0.89
+    # No chapter sees the raw float anywhere.
+    for chapter in chapters:
+        assert "0.5847" not in json.dumps(chapter.facts)

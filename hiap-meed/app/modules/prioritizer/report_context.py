@@ -899,14 +899,29 @@ def _normalized_text(value: str | None) -> str | None:
     return normalized or None
 
 
+def _report_score(value: float | None) -> float | None:
+    """Round a score once, here, so every chapter quotes the same figure.
+
+    The scores reach the chapter writer as facts and are copied into prose and
+    tables verbatim. Passing raw floats (0.5847...) left the rounding to the
+    writer, which produced 0.59 in one chapter and 0.584 in another for the
+    same action, and disagreed with the two-decimal figure the UI shows.
+    """
+    if value is None:
+        return None
+    return round(float(value), 2)
+
+
 def _score_facts(context: ReportContext) -> dict[str, Any]:
-    """Return report-ready ranking score facts."""
+    """Return report-ready ranking score facts, rounded to two decimals."""
     return {
         "rank": context.ranked_action.rank,
-        "final_score": context.ranked_action.final_score,
-        "impact_score": context.ranked_action.impact_score,
-        "alignment_score": context.ranked_action.alignment_score,
-        "feasibility_score": context.ranked_action.feasibility_score,
+        "final_score": _report_score(context.ranked_action.final_score),
+        "impact_score": _report_score(context.ranked_action.impact_score),
+        "alignment_score": _report_score(context.ranked_action.alignment_score),
+        "feasibility_score": _report_score(
+            context.ranked_action.feasibility_score
+        ),
     }
 
 

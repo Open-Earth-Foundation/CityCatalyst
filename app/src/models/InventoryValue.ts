@@ -11,7 +11,7 @@ import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { ActivityValue, ActivityValueId } from "./ActivityValue";
-import { isOmittedFromTotalRef } from "@/util/GHGI/reported-totals";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -307,8 +307,18 @@ export class InventoryValue
           beforeSave: (inventoryValue: InventoryValue) => {
             // These references stay stored and are omitted from BASIC/BASIC+
             // totals. Other rows can set the flag directly.
-            if (isOmittedFromTotalRef(inventoryValue.gpcReferenceNumber)) {
+            if (isOmittedGPCReference(inventoryValue.gpcReferenceNumber)) {
               inventoryValue.omitFromTotal = true;
+            } else if (
+              inventoryValue.changed("gpcReferenceNumber") &&
+              isOmittedGPCReference(
+                inventoryValue.previous("gpcReferenceNumber") as
+                  string | null | undefined,
+              )
+            ) {
+              // Reclassified away from an omitted reference: the flag was
+              // derived from that reference, so it must not outlive it.
+              inventoryValue.omitFromTotal = false;
             }
           },
           afterCreate: async (inventoryValue: InventoryValue) => {

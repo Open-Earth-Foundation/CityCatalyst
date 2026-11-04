@@ -10,7 +10,7 @@ import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import {
   GRID_GENERATION_GPC_REF,
-  isOmittedFromTotalRef,
+  isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
@@ -1574,7 +1574,7 @@ function scaleOrNull(
 export function sumImported(rows: ExtractedRow[]): number {
   return rows.reduce(
     (sum, row) =>
-      isOmittedFromTotalRef(row.gpcRefNo?.trim()) || row.totalCO2e == null
+      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
         ? sum
         : sum + row.totalCO2e,
     0,

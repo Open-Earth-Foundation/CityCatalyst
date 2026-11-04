@@ -514,6 +514,16 @@ export const ingestFromDocumentRequest = z.object({
   dryRun: z.boolean().optional(),
 });
 
+export const withdrawIngestDocumentRequest = z.object({
+  withdrawExtractsFor: z
+    .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
+    .optional(),
+});
+
+export const supersedeIngestDocumentRequest = z.object({
+  replacementDocumentId: z.string().uuid(),
+});
+
 export const approveIngestReviewDraftRequest = z.object({
   reviewDraftVersion: z.number().int().positive(),
   targetBinding: z

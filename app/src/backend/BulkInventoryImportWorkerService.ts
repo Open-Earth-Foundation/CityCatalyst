@@ -79,7 +79,8 @@ async function processItem(
 ): Promise<"completed" | "failed" | "skipped"> {
   // Status is already IMPORTING from claimPendingItems (atomic claim).
 
-  if (!job.userId) {
+  const userId = job.userId;
+  if (!userId) {
     await failItem(item, "missing_inventory", "Job has no user");
     return "failed";
   }
@@ -115,10 +116,11 @@ async function processItem(
       if (!db.sequelize) {
         throw new Error("Database not initialized");
       }
+      const inventoryId = item.inventoryId;
       await db.sequelize.transaction(async (transaction) => {
         await InventoryReplaceService.replaceInventoryValues(
-          item.inventoryId!,
-          job.userId,
+          inventoryId,
+          userId,
           transaction,
         );
       });
@@ -139,7 +141,7 @@ async function processItem(
       originalFileName: item.originalFileName,
       cityId: item.cityId,
       inventoryId: item.inventoryId,
-      userId: job.userId,
+      userId,
       dryRun: job.dryRun,
       runner,
       store,

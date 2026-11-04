@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { BsPlus } from "react-icons/bs";
@@ -366,28 +366,41 @@ export default function HomePage({
                         </Tabs.Trigger>
                       ))}
                     </Tabs.List>
+                    {/*
+                      Each panel gets its own Suspense boundary. A lazily mounted
+                      tab can suspend on first open (e.g. loading the "data" i18n
+                      namespace); without a local boundary that suspends the whole
+                      page, React disconnects the other panels' effects, and the
+                      previously open panel never gets hidden (CC-1199).
+                    */}
                     <Tabs.Content value="tab-emission-inventory-calculation-title">
-                      <InventoryCalculationTab
-                        lng={language}
-                        inventory={inventory}
-                        inventoryProgress={inventoryProgress}
-                        isInventoryProgressLoading={isInventoryProgressLoading}
-                        numberFormat={userInfo?.numberFormat}
-                      />
+                      <Suspense fallback={<ProgressLoader />}>
+                        <InventoryCalculationTab
+                          lng={language}
+                          inventory={inventory}
+                          inventoryProgress={inventoryProgress}
+                          isInventoryProgressLoading={isInventoryProgressLoading}
+                          numberFormat={userInfo?.numberFormat}
+                        />
+                      </Suspense>
                     </Tabs.Content>
                     <Tabs.Content value="tab-emission-inventory-results-title">
-                      <InventoryReportTab
-                        isPublic={isPublic}
-                        lng={language}
-                        population={population}
-                        inventory={inventory}
-                      />
+                      <Suspense fallback={<ProgressLoader />}>
+                        <InventoryReportTab
+                          isPublic={isPublic}
+                          lng={language}
+                          population={population}
+                          inventory={inventory}
+                        />
+                      </Suspense>
                     </Tabs.Content>
                     <Tabs.Content value="tab-emission-versions-title">
-                      <InventoryVersions
-                        lng={language}
-                        inventoryId={inventory?.inventoryId}
-                      />
+                      <Suspense fallback={<ProgressLoader />}>
+                        <InventoryVersions
+                          lng={language}
+                          inventoryId={inventory?.inventoryId}
+                        />
+                      </Suspense>
                     </Tabs.Content>
                   </Tabs.Root>
                 </>

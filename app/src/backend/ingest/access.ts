@@ -9,30 +9,43 @@ import type {
   IngestScope,
 } from "./types";
 
-export async function assertCanEnqueueIngest(
+/** Inventory, then city, then project, then org. Returns false when none are set. */
+async function assertCanAccessIngestScope(
   session: AppSession | null,
   scope: IngestScope,
-): Promise<void> {
+): Promise<boolean> {
   if (scope.inventoryId) {
     await PermissionService.canAccessInventory(session, scope.inventoryId);
-    return;
+    return true;
   }
   if (scope.cityId) {
     await PermissionService.canAccessCity(session, scope.cityId);
-    return;
+    return true;
   }
   if (scope.projectId) {
     await PermissionService.canAccessProject(session, scope.projectId);
-    return;
+    return true;
   }
   if (scope.organizationId) {
     await PermissionService.canAccessOrganization(
       session,
       scope.organizationId,
     );
+    return true;
+  }
+  return false;
+}
+
+export async function assertCanEnqueueIngest(
+  session: AppSession | null,
+  scope: IngestScope,
+): Promise<void> {
+  if (await assertCanAccessIngestScope(session, scope)) {
     return;
   }
-  throw new createHttpError.BadRequest("Ingest enqueue requires a city, project, or organization");
+  throw new createHttpError.BadRequest(
+    "Ingest enqueue requires a city, project, or organization",
+  );
 }
 
 export async function assertCanAccessIngestItem(
@@ -40,47 +53,29 @@ export async function assertCanAccessIngestItem(
   job: IngestJobRecord,
   item: IngestItemRecord,
 ): Promise<void> {
-  const inventoryId = item.targetInventoryId ?? null;
-  const cityId = item.targetCityId ?? job.cityId ?? null;
-  if (inventoryId) {
-    await PermissionService.canAccessInventory(session, inventoryId);
-    return;
+  const ok = await assertCanAccessIngestScope(session, {
+    inventoryId: item.targetInventoryId,
+    cityId: item.targetCityId ?? job.cityId,
+    projectId: job.projectId,
+    organizationId: job.organizationId,
+  });
+  if (!ok) {
+    throw new createHttpError.Forbidden("Ingest item has no accessible scope");
   }
-  if (cityId) {
-    await PermissionService.canAccessCity(session, cityId);
-    return;
-  }
-  if (job.projectId) {
-    await PermissionService.canAccessProject(session, job.projectId);
-    return;
-  }
-  if (job.organizationId) {
-    await PermissionService.canAccessOrganization(session, job.organizationId);
-    return;
-  }
-  throw new createHttpError.Forbidden("Ingest item has no accessible scope");
 }
 
 export async function assertCanAccessIngestDocument(
   session: AppSession | null,
   document: IngestDocumentRecord,
 ): Promise<void> {
-  if (document.cityId) {
-    await PermissionService.canAccessCity(session, document.cityId);
-    return;
+  const ok = await assertCanAccessIngestScope(session, {
+    cityId: document.cityId,
+    projectId: document.projectId,
+    organizationId: document.organizationId,
+  });
+  if (!ok) {
+    throw new createHttpError.Forbidden("Document has no accessible scope");
   }
-  if (document.projectId) {
-    await PermissionService.canAccessProject(session, document.projectId);
-    return;
-  }
-  if (document.organizationId) {
-    await PermissionService.canAccessOrganization(
-      session,
-      document.organizationId,
-    );
-    return;
-  }
-  throw new createHttpError.Forbidden("Document has no accessible scope");
 }
 
 /** Org admin, project admin, or the uploader. Collaborators cannot withdraw. */

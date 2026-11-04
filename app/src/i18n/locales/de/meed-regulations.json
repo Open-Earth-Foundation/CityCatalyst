@@ -7,7 +7,7 @@
   "precondition-body": "Schließen Sie die verbleibenden Schritte des Assistenten ab und erstellen Sie Ihr Ranking - jede potenzielle Maßnahme wird dann gegen lokale Gesetze geprüft, und alle blockierten oder markierten Maßnahmen werden hier angezeigt. Sie können nun zum nächsten Schritt übergehen.",
   "precondition-continue": "Keine Aktion erforderlich — gehen Sie zum nächsten Schritt weiter.",
   "step-sub": "Screening-Läufe mit dem Ranking",
-  "step-sub-counts": "{{excluded}} ausgeschlossen · {{included}} eingeschlossen",
+  "step-sub-counts": "{{blocked}} blockiert · {{conditional}} bedingt · {{enabled}} freigegeben",
   "summary-flagged": "Markiert — Beweise fehlen",
   "summary-flagged-sub": "In Ranking aufgenommen, Bewertung ausstehend",
   "all-passed-title": "Alle Maßnahmen haben die rechtliche Überprüfung bestanden",

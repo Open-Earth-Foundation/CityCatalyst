@@ -7,7 +7,7 @@
   "precondition-body": "Terminez les étapes restantes de l'assistant et générer votre classement - chaque action candidate sera ensuite contrôlée par rapport aux lois locales, et toutes les actions bloquées ou signalées apparaitront ici. Vous pouvez passer à l'étape suivante maintenant.",
   "precondition-continue": "Aucune action nécessaire ici - passez à l'étape suivante.",
   "step-sub": "La sélection s'exécute avec le classement",
-  "step-sub-counts": "{{excluded}} exclus · {{included}} inclus",
+  "step-sub-counts": "{{blocked}} bloquées · {{conditional}} conditionnelles · {{enabled}} habilitées",
   "summary-flagged": "Signalé — preuves manquantes",
   "summary-flagged-sub": "Inclus dans le classement, évaluation en attente",
   "all-passed-title": "Toutes les actions ont passé l'examen juridique",

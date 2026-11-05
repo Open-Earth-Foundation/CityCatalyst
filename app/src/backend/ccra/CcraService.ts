@@ -199,14 +199,14 @@ export class CcraService {
 
       // remap to existing data schema from Impact Chain for compatibility
       const processedRisks = data.riskAssessment.map((risk) => ({
-        hazard: risk.risk_name,
+        hazard: risk.risk_component_name,
         keyimpact: risk.sector_name,
-        risk_score: risk.risk_component_value_numeric,
+        risk_score: risk.risk_value_numeric,
         original_risk_score: risk.risk_value_numeric,
-        hazard_score: 0,
-        exposure_score: 0,
-        vulnerability_score: 0,
-        original_vulnerability_score: 0,
+        hazard_score: risk.risk_component_value_numeric,
+        exposure_score: risk.risk_component_value_numeric,
+        vulnerability_score: risk.risk_component_value_numeric,
+        original_vulnerability_score: risk.risk_component_value_numeric,
       }));
 
       // Sort by risk score and get top N

@@ -34,7 +34,7 @@ function registry() {
   };
 }
 
-describe("CNB Path B registration (CC-1220)", () => {
+describe("CNB Path B registration", () => {
   it("stores a run-scoped document and a cnb_upload catalog keyed by the CA upload id", async () => {
     const pool = new MemoryIngestDocumentPool();
     const catalogs = registry();
@@ -109,7 +109,7 @@ describe("CNB Path B registration (CC-1220)", () => {
   });
 });
 
-describe("withdrawn document byte clock (CC-1221)", () => {
+describe("withdrawn document byte clock", () => {
   it("purges only after the retention window, and only once", () => {
     const now = new Date("2026-11-05T00:00:00.000Z");
     const recent = new Date("2026-11-04T00:00:00.000Z");

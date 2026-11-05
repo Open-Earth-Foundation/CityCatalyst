@@ -15,6 +15,7 @@ import {
   isGrandTotal,
   namesRemovals,
   reconciliationTargets,
+  removalsTotals,
   type DroppedRowReason,
   type ExtractionSummary,
   type ReportedTotal,
@@ -746,11 +747,12 @@ function hasRemovalsLineItem(rows: ExtractedRow[]): boolean {
 }
 
 /**
- * Record the removals totals the document reports while the rows hold no removals
- * line item, so the review screen can warn that the imported sum leaves them out.
+ * Record the removals totals and subtotals the document reports while the rows hold
+ * no removals line item, so the review screen can warn that the imported sum leaves
+ * them out.
  */
 function withOrphanRemovals(result: ExtractionResult): ExtractionResult {
-  const { removals } = reconciliationTargets(
+  const removals = removalsTotals(
     result.summary.reportedTotals,
     result.summary.targetYear,
   );

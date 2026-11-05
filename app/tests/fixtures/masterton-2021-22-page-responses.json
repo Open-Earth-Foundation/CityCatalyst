@@ -1,0 +1,1068 @@
+{
+  "source": "Masterton District Emissions Inventory 2021/22 (GWRC, AECOM, 42 pages). Mistral OCR, then one real LLM_EXTRACTION_MODEL run on 2026-11-05 with targetYear 2022. Responses per candidate page, in call order (a second entry is the page retry).",
+  "targetYear": 2022,
+  "candidatePages": [
+    2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 27,
+    28, 29, 31, 32, 36, 37, 38, 39, 40, 41
+  ],
+  "responses": {
+    "6": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Harvest Emissions",
+            "totalCO2e": 611139,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory",
+            "activityType": "Harvest Emissions"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Native Forest Sequestration",
+            "totalCO2e": -155932,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory",
+            "activityType": "Native Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Exotic Forest Sequestration",
+            "totalCO2e": -1266719,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory",
+            "activityType": "Exotic Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Net Forestry Emissions",
+            "totalCO2e": -811512,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total Gross Emissions (excluding Forestry)",
+            "totalCO2e": 785873,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total Net Emissions (including Forestry)",
+            "totalCO2e": -25639,
+            "unit": "t",
+            "rowType": "total",
+            "source": "Figure 1: Masterton 2021/22 Emissions Inventory"
+          }
+        ]
+      }
+    ],
+    "11": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Agriculture",
+            "totalCO2e": 635774,
+            "unit": "t",
+            "rowType": "line_item"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Total Gross Emissions",
+            "totalCO2e": 785873,
+            "unit": "t",
+            "rowType": "total"
+          }
+        ]
+      }
+    ],
+    "12": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Livestock Within The City Boundary",
+            "category": "Enteric Fermentation",
+            "totalCO2e": 488422,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.1",
+            "source": "Table 1"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Unmanaged Manure on Pasture",
+            "totalCO2e": 73102,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 1"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Agricultural Leaching and Deposition (manure, urine, and fertiliser)",
+            "totalCO2e": 49543,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 1"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Fertilisers on Land",
+            "totalCO2e": 14665,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 1"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Livestock Within The City Boundary",
+            "category": "Managed Manure",
+            "totalCO2e": 10042,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.1",
+            "source": "Table 1"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Livestock Within The City Boundary",
+            "category": "Subtotal",
+            "totalCO2e": 635774,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 1"
+          }
+        ]
+      }
+    ],
+    "13": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Diesel - On-Road",
+            "totalCO2e": 38736,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.1.1",
+            "source": "Table 4",
+            "activityType": "Diesel"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Petrol - On-Road",
+            "totalCO2e": 33156,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.1.1",
+            "source": "Table 4",
+            "activityType": "Petrol"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Off Road Transportation",
+            "category": "Diesel - Off-Road",
+            "totalCO2e": 9166,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.5.1",
+            "source": "Table 4",
+            "activityType": "Diesel"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Off Road Transportation",
+            "category": "Petrol - Off-Road",
+            "totalCO2e": 307,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.5.1",
+            "source": "Table 4",
+            "activityType": "Petrol"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Waterborne Navigation",
+            "category": "Marine Freight",
+            "totalCO2e": 6991,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.3.1",
+            "source": "Table 3",
+            "activityType": "Marine Freight"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Aviation",
+            "category": "Jet Kerosene (Air Travel)",
+            "totalCO2e": 5793,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.4.1",
+            "source": "Table 3",
+            "activityType": "Jet Kerosene"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Waterborne Navigation",
+            "category": "Marine (Inter-Island Ferries)",
+            "totalCO2e": 2601,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.3.1",
+            "source": "Table 3",
+            "activityType": "Marine"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "LPG",
+            "totalCO2e": 243,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.1.1",
+            "source": "Table 3",
+            "activityType": "LPG"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Railways",
+            "category": "Rail (Diesel)",
+            "totalCO2e": 79,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.2.1",
+            "source": "Table 3",
+            "activityType": "Diesel"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Aviation",
+            "category": "Aviation Gas (Air Travel)",
+            "totalCO2e": 31,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "II.4.1",
+            "source": "Table 3",
+            "activityType": "Aviation Gas"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Petrol and Diesel Total",
+            "totalCO2e": 81365,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 4"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Transport total",
+            "totalCO2e": 97102,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 3"
+          }
+        ]
+      }
+    ],
+    "14": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Electricity Consumption",
+            "totalCO2e": 16119,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Stationary Petrol & Diesel Use",
+            "totalCO2e": 5333,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Biofuel / Wood",
+            "totalCO2e": 2944,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "LPG",
+            "totalCO2e": 1927,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Electricity Transmission & Distribution Losses",
+            "totalCO2e": 1710,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Coal",
+            "totalCO2e": 256,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Stationary Energy",
+            "subsector": "Non Specified Sources",
+            "category": "Subtotal",
+            "totalCO2e": 28289,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 5"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Closed Landfill Sites",
+            "totalCO2e": 9945,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 6"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Wastewater Treatment And Discharge",
+            "category": "Wastewater Treatment Plants",
+            "totalCO2e": 2805,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 6"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Wastewater Treatment And Discharge",
+            "category": "Individual Septic Tanks",
+            "totalCO2e": 2752,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 6"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Open Landfill Sites",
+            "totalCO2e": 1260,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 6"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Subtotal",
+            "totalCO2e": 16762,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 6"
+          }
+        ]
+      }
+    ],
+    "15": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Open landfill sites",
+            "totalCO2e": 1260,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "III.1.1",
+            "source": "Waste emissions narrative",
+            "activityType": "Open landfill sites"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Closed landfill sites",
+            "totalCO2e": 9945,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "III.1.1",
+            "source": "Waste emissions narrative",
+            "activityType": "Closed landfill sites"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Solid Waste Disposal",
+            "category": "Subtotal",
+            "totalCO2e": 11205,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Waste emissions narrative"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Wastewater Treatment And Discharge",
+            "category": "Wastewater treatment plants",
+            "totalCO2e": 2805,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "III.4.1",
+            "source": "Waste emissions narrative",
+            "activityType": "Wastewater treatment plants"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Wastewater Treatment And Discharge",
+            "category": "Individual septic tanks",
+            "totalCO2e": 2752,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "III.4.1",
+            "source": "Waste emissions narrative",
+            "activityType": "Individual septic tanks"
+          },
+          {
+            "year": 2022,
+            "sector": "Waste",
+            "subsector": "Wastewater Treatment And Discharge",
+            "category": "Subtotal",
+            "totalCO2e": 5557,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Waste emissions narrative"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "Refrigerants and Air Conditioning",
+            "totalCO2e": 7393,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "Refrigerants and Air Conditioning"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "Aerosols",
+            "totalCO2e": 412,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "Aerosols"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "SF6 - Electrical Equipment",
+            "totalCO2e": 81,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "SF6 - Electrical Equipment"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "Foam Blowing",
+            "totalCO2e": 32,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "Foam Blowing"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "SF6 - Other",
+            "totalCO2e": 16,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "SF6 - Other"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "Fire Extinguishers",
+            "totalCO2e": 13,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.2",
+            "source": "Table 7",
+            "activityType": "Fire Extinguishers"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Product Use Occurring Within The City Boundary",
+            "category": "Subtotal",
+            "totalCO2e": 7947,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 7"
+          }
+        ]
+      }
+    ],
+    "16": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Harvest Emissions",
+            "totalCO2e": 611139,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Harvest Emissions"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Native Forest Sequestration",
+            "totalCO2e": -155932,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Native Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Exotic Forest Sequestration",
+            "totalCO2e": -1266719,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Exotic Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total Forestry emissions",
+            "totalCO2e": -811512,
+            "unit": "t",
+            "rowType": "subtotal",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total net emissions",
+            "totalCO2e": -25639,
+            "unit": "t",
+            "rowType": "total",
+            "source": "Section 3.7 Net Emissions"
+          }
+        ]
+      },
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Harvest Emissions",
+            "totalCO2e": 611139,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Harvest Emissions"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Native Forest Sequestration",
+            "totalCO2e": -155932,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Native Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Exotic Forest Sequestration",
+            "totalCO2e": -1266719,
+            "unit": "t",
+            "rowType": "line_item",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)",
+            "activityType": "Exotic Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total",
+            "totalCO2e": -811512,
+            "unit": "t",
+            "rowType": "subtotal",
+            "gpcRefNo": "V.2",
+            "source": "Table 8 Forestry emissions by emission source (including sequestration)"
+          }
+        ]
+      }
+    ],
+    "25": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Livestock Within The City Boundary",
+            "category": "Livestock Enteric Fermentation",
+            "totalCO2e": 488422,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.1",
+            "source": "Table 13",
+            "activityType": "Livestock Enteric Fermentation"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Unmanaged Manure on Pasture",
+            "totalCO2e": 73102,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 13",
+            "activityType": "Unmanaged Manure on Pasture"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Agricultural Leaching and Deposition (Manure, Urine, and Fertiliser)",
+            "totalCO2e": 49543,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 13",
+            "activityType": "Agricultural Leaching and Deposition (Manure, Urine, and Fertiliser)"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Fertilisers on Land",
+            "totalCO2e": 14665,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.3",
+            "source": "Table 13",
+            "activityType": "Fertilisers on Land"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Livestock Within The City Boundary",
+            "category": "Managed Manure",
+            "totalCO2e": 10042,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.1",
+            "source": "Table 13",
+            "activityType": "Managed Manure"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+            "category": "Total",
+            "totalCO2e": 635774,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 13"
+          }
+        ]
+      }
+    ],
+    "26": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Diesel",
+            "totalCO2e": 47902,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Diesel"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Petrol",
+            "totalCO2e": 33463,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Petrol"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Aviation",
+            "category": "Jet Kerosene (Air Travel)",
+            "totalCO2e": 5793,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Jet Kerosene (Air Travel)"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Waterborne Navigation",
+            "category": "Marine Freight",
+            "totalCO2e": 6991,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Marine Freight"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Waterborne Navigation",
+            "category": "Marine (Inter-Island Ferries)",
+            "totalCO2e": 2601,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Marine (Inter-Island Ferries)"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "LPG",
+            "totalCO2e": 243,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "LPG"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Railways",
+            "category": "Rail (Diesel)",
+            "totalCO2e": 79,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Rail (Diesel)"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "Aviation",
+            "category": "Aviation Gas (Air Travel)",
+            "totalCO2e": 31,
+            "unit": "t",
+            "rowType": "line_item",
+            "source": "Table 14",
+            "activityType": "Aviation Gas (Air Travel)"
+          },
+          {
+            "year": 2022,
+            "sector": "Transportation",
+            "subsector": "On Road Transportation",
+            "category": "Total",
+            "totalCO2e": 97102,
+            "unit": "t",
+            "rowType": "subtotal",
+            "source": "Table 14"
+          }
+        ]
+      }
+    ],
+    "28": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "Refrigerants and Air Conditioning",
+            "totalCO2e": 7393,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "Aerosols",
+            "totalCO2e": 412,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "SF6 - Electrical Equipment",
+            "totalCO2e": 81,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "Foam Blowing",
+            "totalCO2e": 32,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "SF6 - Other",
+            "totalCO2e": 15.8,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "Fire Extinguishers",
+            "totalCO2e": 13,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          },
+          {
+            "year": 2022,
+            "sector": "Industrial Processes And Product Uses Ippu",
+            "subsector": "Emissions From Industrial Processes Occurring Within The City Boundary",
+            "category": "Total",
+            "totalCO2e": 7947,
+            "unit": "t",
+            "rowType": "subtotal",
+            "scope": "1",
+            "gpcRefNo": "IV.1",
+            "source": "Table 17"
+          }
+        ]
+      }
+    ],
+    "29": [
+      {
+        "rows": [
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total Harvest Emissions",
+            "totalCO2e": 611139,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 18",
+            "activityType": "Total Harvest Emissions"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Native Forest Sequestration",
+            "totalCO2e": -155932,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 18",
+            "activityType": "Native Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Exotic Forest Sequestration",
+            "totalCO2e": -1266719,
+            "unit": "t",
+            "rowType": "line_item",
+            "scope": "1",
+            "gpcRefNo": "V.2",
+            "source": "Table 18",
+            "activityType": "Exotic Forest Sequestration"
+          },
+          {
+            "year": 2022,
+            "sector": "Agriculture Forestry And Other Land Use Afolu",
+            "subsector": "Emissions From Land Within The City Boundary",
+            "category": "Total",
+            "totalCO2e": -811512,
+            "unit": "t",
+            "rowType": "subtotal",
+            "gpcRefNo": "V.2",
+            "source": "Table 18"
+          }
+        ]
+      }
+    ]
+  }
+}

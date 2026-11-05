@@ -17,7 +17,7 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 
 const { finalizeExtractedRows, selectReconciledPages } =
   await import("@/backend/InventoryExtractionService");
-const { extractionReviewNotes, reconciliationTargets } =
+const { extractionReviewNotes, reconciliationTargets, removalsTotals } =
   await import("@/util/GHGI/extraction-summary");
 type ExtractedRow = import("@/backend/InventoryExtractionService").ExtractedRow;
 type ReportedTotal = import("@/util/GHGI/extraction-summary").ReportedTotal;
@@ -332,6 +332,36 @@ describe("CC-1161 reconciliation targets", () => {
       2021,
     );
     expect(targets.removals).toEqual([]);
+  });
+
+  it("does not take a gross total 'excluding forestry' for removals", () => {
+    const totals = [
+      reported(GROSS, "Total Gross Emissions (excluding Forestry)", {
+        sector: AFOLU,
+      }),
+      reported(NET, "Total Net Emissions (including Forestry)"),
+    ];
+    const targets = reconciliationTargets(totals, 2021);
+    expect(targets.grand).toEqual([GROSS]);
+    expect(targets.removals).toEqual([]);
+    expect(removalsTotals(totals, 2021)).toEqual([]);
+  });
+
+  it("counts removals subtotals as removals totals (Masterton labels)", () => {
+    expect(
+      removalsTotals(
+        [
+          reported(REMOVALS, "Net Forestry Emissions", {
+            sector: AFOLU,
+            level: "subtotal",
+          }),
+          reported(REMOVALS, "Total Forestry emissions", { level: "subtotal" }),
+          reported(635774, "Subtotal", { sector: AFOLU, level: "subtotal" }),
+          reported(-5000, "Forestry", { scope: "1", level: "subtotal" }),
+        ],
+        2021,
+      ),
+    ).toEqual([REMOVALS]);
   });
 
   it("does not take a negative total for removals by its sign", () => {

@@ -42,9 +42,9 @@ export type ExtractionSummary = {
   /** Pages the model could not read twice in a row; their rows are missing. */
   failedPages?: number[];
   /**
-   * Totals of forestry removals the document reports while the selected rows hold no
-   * removals line item (no V.2 row). The imported sum then leaves the removals out.
-   * Missing on summaries stored before this field.
+   * Totals and subtotals of forestry removals the document reports while the selected
+   * rows hold no removals line item (no V.2 row). The imported sum then leaves the
+   * removals out. Missing on summaries stored before this field.
    */
   orphanRemovals?: number[];
 };
@@ -71,9 +71,18 @@ const REMOVALS_LABEL = /forestry|removals?|sequestration/i;
 const AFOLU_NAME =
   /agriculture,?\s*forestry\s*(?:and|&)\s*other\s*land\s*use|\bafolu\b/gi;
 
-/** True when the text names forestry removals; the AFOLU sector name does not count. */
+/** "Gross emissions (excluding forestry)" names a total without the removals. */
+const EXCLUDING_REMOVALS =
+  /excl(?:uding|udes|\.)?\s+(?:forestry|removals?|sequestration)/gi;
+
+/**
+ * True when the text names forestry removals. The AFOLU sector name and an
+ * "excluding forestry" phrase do not count.
+ */
 export function namesRemovals(text: string): boolean {
-  return REMOVALS_LABEL.test(text.replace(AFOLU_NAME, " "));
+  return REMOVALS_LABEL.test(
+    text.replace(AFOLU_NAME, " ").replace(EXCLUDING_REMOVALS, " "),
+  );
 }
 
 /** Phrases that name the city total net of removals, whatever else the label says. */
@@ -104,6 +113,30 @@ export function isRemovalsTotal(total: ReportedTotal): boolean {
   return [total.label, total.sector, total.subsector].some(
     (text) => text != null && namesRemovals(text),
   );
+}
+
+/**
+ * Values of the removals totals and subtotals of the year, scope totals left out.
+ * The model often types the forestry line a subtotal ("Net Forestry Emissions",
+ * Masterton); a removals subtotal still says the removals belong in the inventory.
+ */
+export function removalsTotals(
+  totals: ReportedTotal[] | null | undefined,
+  targetYear?: number | null,
+): number[] {
+  const values = new Set<number>();
+  for (const total of totals ?? []) {
+    if (
+      !total.scope &&
+      Number.isFinite(total.value) &&
+      total.value !== 0 &&
+      (total.year == null || targetYear == null || total.year === targetYear) &&
+      isRemovalsTotal(total)
+    ) {
+      values.add(total.value);
+    }
+  }
+  return [...values];
 }
 
 export type ReconciliationTargets = {

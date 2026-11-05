@@ -220,7 +220,7 @@
   "import-warnings-title": "Some rows will not be imported",
   "import-warnings-detail": "These rows are left out of the inventory. A GPC reference could not be resolved, or the row has no emissions and no notation key.",
   "import-removals-title": "Removals may be missing",
-  "import-removals-orphan": "The document reports forestry removals of {{removals}} tCO2e, but this import has no line items for them. The imported total reconciles only to the gross figure.",
+  "import-removals-orphan": "The document reports forestry removals of {{removals}} tCO2e, but this import has no line items for them.",
   "import-removals-gross-only": "The document reports a net total of {{net}} tCO2e, but the imported rows only add up to the gross total. Forestry removals may be missing.",
   "import-reconciliation-title": "The imported total does not match the document",
   "import-reconciliation-detail": "The rows to import add up to {{imported}} tCO2e. The document reports {{reported}} tCO2e, a difference of {{deviation}}%. Check the file before you confirm. The data may be missing, counted twice or taken from another year.",

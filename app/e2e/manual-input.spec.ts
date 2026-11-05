@@ -471,10 +471,18 @@ test.describe.serial("Manual Input", () => {
         const activityTable = scopeOnePanel.locator("table");
         await expect(activityTable).toBeVisible({ timeout: 30000 });
 
-        await scopeOnePanel
+        // The fixed page header shrinks as the page scrolls, so a button can sit
+        // under it or the AI button at the moment Playwright checks. Center it
+        // and retry until the header has settled.
+        const moreButton = scopeOnePanel
           .getByTestId(testIds.activityMoreButton)
-          .first()
-          .click();
+          .first();
+        await expect(async () => {
+          await moreButton.evaluate((button) =>
+            button.scrollIntoView({ block: "center" }),
+          );
+          await moreButton.click({ timeout: 2000 });
+        }).toPass({ timeout: 30000 });
         await page.getByTestId(testIds.deleteActivityButton).click();
 
         const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);

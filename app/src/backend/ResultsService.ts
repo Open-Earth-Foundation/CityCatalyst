@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import groupBy from "lodash/groupBy";
-import { ActivityDataByScope } from "@/util/types";
+import { ActivityDataByScope, OmittedActivityData } from "@/util/types";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import createHttpError from "http-errors";
@@ -99,7 +99,12 @@ interface GroupedActivityResult {
 
 /** we get this names for the sectors in the query from the FE */
 export type SectorNamesInFE =
-  "stationary-energy" | "transportation" | "waste" | "ippu" | "afolu";
+  | "stationary-energy"
+  | "transportation"
+  | "waste"
+  | "ippu"
+  | "afolu"
+  | "other-scope-3";
 
 /** and we convert them to the names they have in the DB */
 const SectorMappingsFromFEToDB = {
@@ -108,6 +113,7 @@ const SectorMappingsFromFEToDB = {
   waste: "Waste",
   ippu: "Industrial Processes and Product Uses (IPPU)",
   afolu: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+  "other-scope-3": "Other Scope 3",
 };
 
 export type SectorNamesInDB =
@@ -115,7 +121,8 @@ export type SectorNamesInDB =
   | "Transportation"
   | "Waste"
   | "Industrial Processes and Product Uses (IPPU)"
-  | "Agriculture, Forestry, and Other Land Use (AFOLU)";
+  | "Agriculture, Forestry, and Other Land Use (AFOLU)"
+  | "Other Scope 3";
 
 const SectorMappingsFromDBToFE = {
   "Stationary Energy": "stationary-energy",
@@ -123,6 +130,7 @@ const SectorMappingsFromDBToFE = {
   Waste: "waste",
   "Industrial Processes and Product Uses (IPPU)": "ippu",
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "afolu",
+  "Other Scope 3": "other-scope-3",
 };
 
 interface TotalEmissionsBySectorAndSubsector {
@@ -350,6 +358,9 @@ interface InventoryValueQueryResult {
   datasource_name: string;
   datasource_source_type: string | null;
   inventory_value_id: string;
+  gpc_reference_number: string | null;
+  omit_from_total: boolean;
+  subcategory_name: string | null;
 }
 
 interface InventoryValuesBySector {
@@ -361,9 +372,13 @@ interface InventoryValuesBySector {
   datasource_id: string;
   datasource_source_type: string | null;
   inventory_value_id: string;
+  gpc_reference_number: string | null;
+  omit_from_total: boolean;
+  subcategory_name: string | null;
   activities: ActivityValue[];
 }
 
+/** Every stored value of a sector, including those omitted from totals. */
 const fetchInventoryValuesBySector = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
@@ -377,7 +392,10 @@ const fetchInventoryValuesBySector = async (
       COALESCE(iv.datasource_id, av_source.datasource_id) AS datasource_id,
       ds.datasource_name,
       ds.source_type AS datasource_source_type,
-      iv.id as inventory_value_id
+      iv.id as inventory_value_id,
+      iv.gpc_reference_number,
+      iv.omit_from_total,
+      sc.subcategory_name
     FROM "InventoryValue" iv
            JOIN "Sector" s ON iv.sector_id = s.sector_id
            JOIN "SubSector" ss ON iv.sub_sector_id = ss.subsector_id
@@ -396,7 +414,6 @@ const fetchInventoryValuesBySector = async (
     WHERE iv.inventory_id = (:inventoryId)
       and iv.co2eq IS NOT NULL
       AND (s.sector_name) = (:sectorName)
-      AND ${sqlOmitFromTotal("iv.omit_from_total")}
   `;
   const sectorNameDB = SectorMappingsFromFEToDB[sectorName as SectorNamesInFE];
 
@@ -447,6 +464,25 @@ function sumItemCo2eq(item: InventoryValuesBySector): Decimal {
   return bigIntToDecimal(item.co2eq ?? 0n);
 }
 
+/** One row per value: an omitted row has no share of the sector total. */
+function toOmittedActivityData(
+  item: InventoryValuesBySector,
+): OmittedActivityData {
+  const totalEmissions = sumItemCo2eq(item);
+  return {
+    // The sub-sector name can state the opposite direction for III.x.3.
+    activityTitle: item.subcategory_name ?? item.subsector_name,
+    gpcReferenceNumber: item.gpc_reference_number,
+    scopes: item.scope_name ? { [item.scope_name]: totalEmissions } : {},
+    totalEmissions,
+    percentage: null,
+    datasource_id: item.datasource_id,
+    datasource_name: item.datasource_name,
+    datasource_source_type: item.datasource_source_type,
+    activities: item.activities,
+  };
+}
+
 export const getEmissionsBreakdownBatch = async (
   inventoryId: string,
   sectorName: SectorNamesInFE,
@@ -454,13 +490,21 @@ export const getEmissionsBreakdownBatch = async (
   GroupedActivityResult & {
     byScope: ActivityDataByScope[];
     grossTotalEmissions: Decimal;
+    omittedFromTotal: OmittedActivityData[];
   }
 > => {
   try {
-    const emissionsForSector = await fetchInventoryValuesBySector(
+    const allValuesForSector = await fetchInventoryValuesBySector(
       inventoryId,
       sectorName,
     );
+    // Omitted rows stay visible, in their own list: nothing below may count them.
+    const emissionsForSector = allValuesForSector.filter(
+      (item) => !item.omit_from_total,
+    );
+    const omittedFromTotal = allValuesForSector
+      .filter((item) => item.omit_from_total)
+      .map(toOmittedActivityData);
 
     const bySubSectorAndDataSource = groupBy(
       emissionsForSector,
@@ -528,7 +572,7 @@ export const getEmissionsBreakdownBatch = async (
       },
     );
 
-    return { byScope: resultsByScope, grossTotalEmissions };
+    return { byScope: resultsByScope, grossTotalEmissions, omittedFromTotal };
   } catch (error) {
     logger.error({ err: error }, "Error in getEmissionsBreakdownBatch:");
     throw error;
@@ -542,6 +586,7 @@ export async function getEmissionsBreakdown(
 ): Promise<{
   byScope: ActivityDataByScope[];
   grossTotalEmissions: Decimal;
+  omittedFromTotal: OmittedActivityData[];
 }> {
   return getEmissionsBreakdownBatch(inventory, sectorName);
 }

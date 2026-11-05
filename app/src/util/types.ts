@@ -475,11 +475,18 @@ export interface ActivityDataByScope {
   activities?: ActivityValue[];
 }
 
+/** A stored value left out of BASIC/BASIC+ totals: percentage is always null */
+export interface OmittedActivityData extends ActivityDataByScope {
+  gpcReferenceNumber: string | null;
+}
+
 export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
   /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
   grossTotalEmissions: Decimal;
+  /** values shown apart from byScope; never part of a total or percentage */
+  omittedFromTotal: OmittedActivityData[];
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {
@@ -1031,7 +1038,9 @@ export type ImportRowIssue =
   | "unknown-notation-key"
   | "no-value-or-notation-key"
   | "invalid-row"
-  | "outside-inventory-type";
+  | "outside-inventory-type"
+  | "omitted-from-total"
+  | "reported-apart-from-total";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1043,6 +1052,8 @@ export interface ImportRowOutcome {
   notationKey: string | null;
   status: "skipped" | "not-counted";
   issue: ImportRowIssue;
+  /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
+  tonnes?: number | null;
 }
 
 export interface ImportRowPreview {
@@ -1051,6 +1062,8 @@ export interface ImportRowPreview {
   skippedRows: number;
   /** Counts of skipped rows by reason, for the review summary line. */
   skippedByIssue: Partial<Record<ImportRowIssue, number>>;
+  /** Tonnes CO2e of imported rows left out of BASIC and BASIC+ totals. */
+  omittedFromTotalTonnes: number;
   /** Only rows that are skipped or will not count toward completion. */
   rows: ImportRowOutcome[];
 }

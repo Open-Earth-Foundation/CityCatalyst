@@ -8,7 +8,10 @@ import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import {
+  GRID_GENERATION_GPC_REF,
+  isOmittedGPCReference,
+} from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
@@ -150,6 +153,11 @@ const HIERARCHY_TEXT = [...SECTOR_SUBSECTOR_HIERARCHY.entries()]
  * reference a row belongs to (enteric fermentation and managed manure are V.1; manure
  * left on pasture and N2O from soils are V.3).
  */
+const WASTE_DIRECTION: Record<string, string> = {
+  "1": " (generated and treated inside the city)",
+  "2": " (generated inside the city, treated outside)",
+  "3": " (generated outside the city, treated inside)",
+};
 const REFERENCE_TEXT = gpcTable
   .map((row) => {
     const scope = row.scope == null ? "no scope" : `scope ${row.scope}`;
@@ -159,7 +167,9 @@ const REFERENCE_TEXT = gpcTable
           .filter((option) => !option.startsWith("land-classification"))
           .join(", ")})`
       : "";
-    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${activities === " ()" ? "" : activities}`;
+    const direction = WASTE_DIRECTION[row.gpcRefNo.split(".")[2]] ?? "";
+    const wasteNote = row.gpcRefNo.startsWith("III.") ? direction : "";
+    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${wasteNote}${activities === " ()" ? "" : activities}`;
   })
   .join("\n");
 
@@ -274,7 +284,7 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
-- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
+- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
 - activityAmount (number | null): consumption/quantity value when table has such column.
@@ -1560,11 +1570,11 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
-/** Sum of imported values in tonnes, without rows left out of totals (I.4.4). */
-function sumImported(rows: ExtractedRow[]): number {
+/** Sum of imported values in tonnes, without rows left out of totals. */
+export function sumImported(rows: ExtractedRow[]): number {
   return rows.reduce(
     (sum, row) =>
-      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
         ? sum
         : sum + row.totalCO2e,
     0,

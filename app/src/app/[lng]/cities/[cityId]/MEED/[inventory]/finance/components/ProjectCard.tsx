@@ -6,10 +6,14 @@ import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import {
+  CHANNEL_KEYS,
   confidenceMeta,
+  enumLabel,
   formatClpAmount,
-  humanizeEnum,
+  LIFECYCLE_KEYS,
   lifecycleTone,
+  projectName,
+  SECTOR_KEYS,
 } from "../labels";
 import type { Project } from "../types";
 import { FieldGrid, type Field } from "./FieldGrid";
@@ -17,29 +21,31 @@ import { FieldGrid, type Field } from "./FieldGrid";
 export interface ProjectCardProps {
   proj: Project;
   t: TFunction;
+  /** Page language, for the project's translated name. */
+  lng?: string;
 }
 
 /** One funded project matched to the action. */
-export function ProjectCard({ proj, t }: ProjectCardProps) {
+export function ProjectCard({ proj, t, lng }: ProjectCardProps) {
   const conf = proj.action_matches?.[0]
     ? confidenceMeta(proj.action_matches[0].confidence)
     : null;
   const cost = formatClpAmount(proj.cost_total, proj.amount_unit, t);
   const funder = proj.funding_sources?.[0]?.funder_name;
-  const name =
-    proj.project_name_i18n?.en ??
-    proj.project_name ??
-    t("project-fallback-name");
+  const name = projectName(proj, lng, t("project-fallback-name"));
 
   const fields: Field[] = [];
   if (cost) fields.push({ label: t("field-cost"), value: cost });
   if (proj.sector) {
-    fields.push({ label: t("field-sector"), value: humanizeEnum(proj.sector) });
+    fields.push({
+      label: t("field-sector"),
+      value: enumLabel(SECTOR_KEYS, proj.sector, t),
+    });
   }
   if (proj.funding_channel) {
     fields.push({
       label: t("field-channel"),
-      value: humanizeEnum(proj.funding_channel),
+      value: enumLabel(CHANNEL_KEYS, proj.funding_channel, t),
     });
   }
   if (funder) fields.push({ label: t("field-funder"), value: funder });
@@ -64,7 +70,7 @@ export function ProjectCard({ proj, t }: ProjectCardProps) {
               )}
               {proj.lifecycle_stage && (
                 <MeedStatusTag tone={lifecycleTone(proj.lifecycle_stage)}>
-                  {humanizeEnum(proj.lifecycle_stage)}
+                  {enumLabel(LIFECYCLE_KEYS, proj.lifecycle_stage, t)}
                 </MeedStatusTag>
               )}
             </HStack>

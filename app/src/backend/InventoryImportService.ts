@@ -70,6 +70,11 @@ export type ImportECRFDataOptions = {
   versionLabel?: string;
   /** Outer transaction (e.g. shared with a replace); otherwise the import runs in its own. */
   transaction?: Transaction;
+  /**
+   * Pool document that created the row. Set only on insert. A later file that
+   * accumulates into an existing GPC ref does not take ownership of that row.
+   */
+  sourceDocumentId?: string;
 };
 
 type RowOutcome = "imported" | "skipped";
@@ -581,6 +586,9 @@ export default class InventoryImportService {
                     co2eqYears: 100, // Default value
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
+                    ...(options?.sourceDocumentId
+                      ? { sourceDocumentId: options.sourceDocumentId }
+                      : {}),
                   },
                   { transaction: rowTransaction },
                 );
@@ -959,6 +967,9 @@ export default class InventoryImportService {
                       unavailableReason,
                       unavailableExplanation,
                       lastUpdated: new Date(),
+                      ...(options?.sourceDocumentId
+                        ? { sourceDocumentId: options.sourceDocumentId }
+                        : {}),
                     },
                     { transaction: rowTransaction },
                   );

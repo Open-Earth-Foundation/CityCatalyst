@@ -218,6 +218,7 @@ export class GhgiIngestPlugin implements IngestPlugin {
       InventoryImportService.importECRFData.bind(InventoryImportService);
     const summary = await importEcrf(inventoryId, payload.importResult, {
       defaultActivityDataSource: payload.originalFileName,
+      sourceDocumentId: ctx.item.documentId ?? undefined,
     });
     return {
       committed: true,

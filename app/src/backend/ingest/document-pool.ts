@@ -27,6 +27,10 @@ export interface IngestDocumentRecord {
   s3Key?: string | null;
   availability?: NativeInputCatalogAvailability;
   supersededByDocumentId?: string | null;
+  /** Set when Path B is withdrawn. Retention drops bytes after this, not the catalog row. */
+  withdrawnAt?: Date | null;
+  /** Set once withdrawn bytes have been removed from S3 and the pool blob. */
+  bytesPurgedAt?: Date | null;
 }
 
 export interface StoreIngestDocumentInput {
@@ -37,6 +41,8 @@ export interface StoreIngestDocumentInput {
   uploadedByUserId?: string | null;
   visibility: IngestVisibility;
   markdownReady?: boolean;
+  /** Concept-note PDFs already live under this key. The pool blob is a copy. */
+  s3Key?: string | null;
 }
 
 export interface WithdrawIngestDocumentInput {
@@ -63,6 +69,8 @@ export interface IngestDocumentPool {
     documentId: string,
     input?: WithdrawIngestDocumentInput,
   ): Promise<IngestDocumentRecord>;
+  /** Mark a concept-note attachment as a city document so other modules can reuse it. */
+  promoteToCity(documentId: string): Promise<IngestDocumentRecord>;
   supersede(
     documentId: string,
     replacementDocumentId: string,
@@ -183,6 +191,11 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       if (!existing) {
         throw new Error(`Ingest document ${existingId} missing`);
       }
+      if (input.s3Key && !existing.s3Key) {
+        const withKey = { ...existing, s3Key: input.s3Key };
+        this.documents.set(existingId, withKey);
+        return { document: { ...withKey, buffer: withKey.buffer }, created: false };
+      }
       return { document: { ...existing, buffer: existing.buffer }, created: false };
     }
 
@@ -197,8 +210,11 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       visibility: input.visibility,
       markdownReady: input.markdownReady ?? initialMarkdownReady(input.originalFileName),
       buffer: input.buffer,
+      s3Key: input.s3Key ?? null,
       availability: "active",
       supersededByDocumentId: null,
+      withdrawnAt: null,
+      bytesPurgedAt: null,
     };
     this.documents.set(document.id, document);
     this.byHashScope.set(key, document.id);
@@ -278,7 +294,11 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
     if ((current.availability ?? "active") === "withdrawn") {
       return { ...current, buffer: current.buffer };
     }
-    const next: IngestDocumentRecord = { ...current, availability: "withdrawn" };
+    const next: IngestDocumentRecord = {
+      ...current,
+      availability: "withdrawn",
+      withdrawnAt: current.withdrawnAt ?? new Date(),
+    };
     this.documents.set(documentId, next);
     const pathB = this.catalogByDocumentId.get(documentId);
     if (pathB) {
@@ -298,6 +318,39 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
             : row,
         ),
       );
+    }
+    return { ...next, buffer: next.buffer };
+  }
+
+  async promoteToCity(documentId: string): Promise<IngestDocumentRecord> {
+    const current = this.documents.get(documentId);
+    if (!current) {
+      throw new IngestItemError("document_not_found");
+    }
+    const availability = current.availability ?? "active";
+    if (availability === "withdrawn") {
+      throw new IngestItemError("document_withdrawn");
+    }
+    if (availability === "superseded") {
+      throw new IngestItemError("document_superseded");
+    }
+    if (current.visibility === "city") {
+      return { ...current, buffer: current.buffer };
+    }
+    if (current.visibility !== "run") {
+      throw new IngestItemError(
+        "validation_failed",
+        "Only a concept-note attachment can be marked as a city document",
+      );
+    }
+    const next: IngestDocumentRecord = { ...current, visibility: "city" };
+    this.documents.set(documentId, next);
+    const catalog = this.catalogByDocumentId.get(documentId);
+    if (catalog) {
+      this.catalogByDocumentId.set(documentId, {
+        ...catalog,
+        labels: { ...(catalog.labels ?? {}), visibility: "city" },
+      });
     }
     return { ...next, buffer: next.buffer };
   }

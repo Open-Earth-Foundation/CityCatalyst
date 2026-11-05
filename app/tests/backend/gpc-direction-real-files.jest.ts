@@ -38,7 +38,16 @@ async function eCrfRows(relative: string): Promise<RealRow[]> {
     .filter((row) => WASTE_REF.test(row.ref));
 }
 
-async function cirisReportRows(): Promise<RealRow[]> {
+// CIRIS_template.xlsm is about 8 MB. ExcelJS takes longer than Jest's 5s
+// default when the full suite is running, so parse it once and share it.
+let cirisRowsPromise: Promise<RealRow[]> | undefined;
+
+function cirisReportRows(): Promise<RealRow[]> {
+  cirisRowsPromise ??= loadCirisReportRows();
+  return cirisRowsPromise;
+}
+
+async function loadCirisReportRows(): Promise<RealRow[]> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(
     appFile("templates/CIRIS_template.xlsm") as unknown as Parameters<
@@ -105,7 +114,7 @@ describe("waste direction on real files", () => {
         row.ref,
       );
     }
-  });
+  }, 60_000);
 
   it("corrects a .3 that carries the official .2 name or scope 3", async () => {
     const rows = await cirisReportRows();
@@ -114,7 +123,7 @@ describe("waste direction on real files", () => {
       expect(correctWasteDirection(wrong, [row.label], "1")).toBe(row.ref);
       expect(correctWasteDirection(wrong, [], "3")).toBe(row.ref);
     }
-  });
+  }, 60_000);
 
   it("never creates a .3 and never moves a .3 on a .1 name or scope 1", async () => {
     const rows = await cirisReportRows();
@@ -125,7 +134,7 @@ describe("waste direction on real files", () => {
     for (const row of rows.filter((r) => !r.ref.endsWith(".3"))) {
       expect(correctWasteDirection(row.ref, [row.label], "3")).toBe(row.ref);
     }
-  });
+  }, 60_000);
 
   it("leaves the Auckland OCR excerpt references alone", () => {
     const text = readFileSync(

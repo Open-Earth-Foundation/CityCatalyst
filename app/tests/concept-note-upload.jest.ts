@@ -43,6 +43,7 @@ const normalizeStatus = jest.fn<
 const callConceptNoteApi =
   jest.fn<(request: { body?: { upload_id?: string } }) => Promise<Response>>();
 const canAccessCity = jest.fn<() => Promise<void>>();
+const registerOnPool = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteUploadRun: loadRunCity,
@@ -72,6 +73,9 @@ jest.unstable_mockModule("@/backend/concept-notes", () => ({
 }));
 jest.unstable_mockModule("@/backend/permissions/PermissionService", () => ({
   PermissionService: { canAccessCity },
+}));
+jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
+  registerConceptNoteOnDocumentPool: registerOnPool,
 }));
 jest.unstable_mockModule("@/util/api", () => ({
   apiHandler: (handler: unknown) => handler,
@@ -127,6 +131,13 @@ describe("Concept Note source upload route", () => {
     );
     expect(putFile).toHaveBeenCalledTimes(1);
     expect(enqueue).toHaveBeenCalledWith(result.uploadId);
+    expect(registerOnPool).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uploadId: result.uploadId,
+        cityId: "33333333-3333-4333-8333-333333333333",
+        markdownReady: false,
+      }),
+    );
     expect(triggerProcessing).toHaveBeenCalledTimes(1);
     expect(registerMarkdown).not.toHaveBeenCalled();
   });
@@ -148,6 +159,7 @@ describe("Concept Note source upload route", () => {
       initialUploads: [],
     });
     canAccessCity.mockResolvedValue(undefined);
+    registerOnPool.mockResolvedValue(undefined);
     callConceptNoteApi.mockImplementation(async (request) =>
       Response.json({
         upload_id: request.body?.upload_id,
@@ -531,6 +543,7 @@ describe("Concept Note source upload route", () => {
     expect(response.status).toBe(404);
     expect(putFile).not.toHaveBeenCalled();
     expect(enqueue).not.toHaveBeenCalled();
+    expect(registerOnPool).not.toHaveBeenCalled();
   });
 
   it("forwards the CA upload-limit conflict with its code and stores nothing", async () => {
@@ -551,6 +564,7 @@ describe("Concept Note source upload route", () => {
     await expect(response.json()).resolves.toEqual(problem);
     expect(putFile).not.toHaveBeenCalled();
     expect(enqueue).not.toHaveBeenCalled();
+    expect(registerOnPool).not.toHaveBeenCalled();
     expect(updateUpload).not.toHaveBeenCalled();
   });
 
@@ -560,6 +574,7 @@ describe("Concept Note source upload route", () => {
     await expect(
       uploadHandler(requestWithFile("%PDF-1.7\ncontent"), context),
     ).rejects.toMatchObject({ statusCode: 503 });
+    expect(registerOnPool).not.toHaveBeenCalled();
 
     expect(updateUpload).toHaveBeenCalledWith(
       expect.objectContaining({

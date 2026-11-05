@@ -36,10 +36,14 @@ export function ProjectCard({ proj, t, lng }: ProjectCardProps) {
 
   const fields: Field[] = [];
   if (cost) fields.push({ label: t("field-cost"), value: cost });
-  if (proj.sector) {
+  // The feed's own localized sector wins; the label map covers the GPC keys.
+  const localizedSector =
+    (lng ? proj.sector_i18n?.[lng as "en" | "es"] : undefined) ||
+    proj.sector_i18n?.en;
+  if (localizedSector || proj.sector) {
     fields.push({
       label: t("field-sector"),
-      value: enumLabel(SECTOR_KEYS, proj.sector, t),
+      value: localizedSector || enumLabel(SECTOR_KEYS, proj.sector, t),
     });
   }
   if (proj.funding_channel) {

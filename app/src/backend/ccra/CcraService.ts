@@ -163,7 +163,7 @@ export class CcraService {
   public static processTopRisksFromAdaptaBrazil(
     data: CCRATopRisksDataAdaptaBrazil,
     count: number = 3,
-    resilienceScore: number | null = null,
+    _resilienceScore: number | null = null,
   ): TopRisksResult {
     try {
       logger.info(`Processing top ${count} risks`);
@@ -177,25 +177,7 @@ export class CcraService {
         };
       }
 
-      /* TODO is this step necessary for the Adapta Brazil data? */
-      /*
-      // Count vulnerability indicators if resilience will be applied
-      const indicatorCounts = resilienceScore
-        ? this.countVulnerabilityIndicators(data.indicators || [])
-        : {};
-
-      // Process risks with resilience if provided
-      const processedRisks = data.riskAssessment.map((risk) => {
-        const key = `${risk.hazard}_${risk.keyimpact}`.toLowerCase();
-        const indicatorCount = indicatorCounts[key] || 1;
-
-        return this.applyResilienceToRisk(
-          risk,
-          resilienceScore,
-          indicatorCount,
-        );
-      });
-      */
+      // resilience won't be applied to risk for the Adapta Brazil data source since it doesn't provide the weights needed to recalculate the risk score
 
       // remap to existing data schema from Impact Chain for compatibility
       const processedRisks = data.riskAssessment.map((risk) => ({

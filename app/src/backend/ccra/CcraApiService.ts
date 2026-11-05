@@ -20,7 +20,7 @@ class CCRAApiService {
   ): Promise<RiskAssessmentAdaptaBrazil[]> {
     try {
       const response = await fetch(
-        `${CCRA_API_URL}/api/v1/cities/${actorId}/climate-risk/adapta`,
+        `${CCRA_API_URL}/api/v1/cities/${actorId}/climate-risk/adapta?scenario=current`,
         {
           headers: {
             "Content-Type": "application/json",

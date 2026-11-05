@@ -53,12 +53,11 @@ export async function purgeWithdrawnDocumentBytes(
 
   for (const document of documents) {
     try {
-      const catalogs = await db.models.NativeInputCatalog.findAll({
-        where: {
-          kind: "cnb_upload",
-          labels: { [Op.contains]: { documentId: document.id } },
-        },
-      });
+      const where: Record<string, unknown> = {
+        kind: "cnb_upload",
+        labels: { [Op.contains]: { documentId: document.id } },
+      };
+      const catalogs = await db.models.NativeInputCatalog.findAll({ where });
       await db.sequelize!.transaction(async (transaction) => {
         await db.models.RetentionActionLog.create(
           {

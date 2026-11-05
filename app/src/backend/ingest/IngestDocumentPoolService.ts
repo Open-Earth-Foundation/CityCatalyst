@@ -69,13 +69,14 @@ async function stampWithdrawnAt(documentId: string): Promise<void> {
 
 /** CNB Path B rows are a second catalog pointer. Default withdraw must drop them too. */
 async function withdrawCnbCatalogs(documentId: string): Promise<void> {
-  const rows = await db.models.NativeInputCatalog.findAll({
-    where: {
-      kind: "cnb_upload",
-      availability: "active",
-      labels: { [Op.contains]: { documentId } },
-    },
-  });
+  // JSONB containment is a runtime operator. The catalog attribute type
+  // does not accept a plain object under Op.contains.
+  const where: Record<string, unknown> = {
+    kind: "cnb_upload",
+    availability: "active",
+    labels: { [Op.contains]: { documentId } },
+  };
+  const rows = await db.models.NativeInputCatalog.findAll({ where });
   for (const row of rows) {
     await withdrawNativeInput(row.id);
   }
@@ -261,18 +262,17 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       { visibility: "city" },
       { where: { id: documentId } },
     );
-    const catalogs = await db.models.NativeInputCatalog.findAll({
-      where: {
-        [Op.or]: [
-          ...(document.catalogId ? [{ id: document.catalogId }] : []),
-          {
-            kind: "cnb_upload",
-            labels: { [Op.contains]: { documentId } },
-          },
-          { sourceType: "ingest_document", sourceId: documentId },
-        ],
-      },
-    });
+    const where: Record<string, unknown> = {
+      [Op.or]: [
+        ...(document.catalogId ? [{ id: document.catalogId }] : []),
+        {
+          kind: "cnb_upload",
+          labels: { [Op.contains]: { documentId } },
+        },
+        { sourceType: "ingest_document", sourceId: documentId },
+      ],
+    };
+    const catalogs = await db.models.NativeInputCatalog.findAll({ where });
     for (const catalog of catalogs) {
       await catalog.update({
         labels: { ...(catalog.labels ?? {}), visibility: "city" },

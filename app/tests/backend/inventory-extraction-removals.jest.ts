@@ -17,8 +17,12 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 
 const { finalizeExtractedRows, selectReconciledPages } =
   await import("@/backend/InventoryExtractionService");
-const { extractionReviewNotes, reconciliationTargets, removalsTotals } =
-  await import("@/util/GHGI/extraction-summary");
+const {
+  extractionReviewNotes,
+  isNetTotalLabel,
+  reconciliationTargets,
+  removalsTotals,
+} = await import("@/util/GHGI/extraction-summary");
 type ExtractedRow = import("@/backend/InventoryExtractionService").ExtractedRow;
 type ReportedTotal = import("@/util/GHGI/extraction-summary").ReportedTotal;
 
@@ -320,6 +324,26 @@ describe("CC-1161 reconciliation targets", () => {
     expect(targets.grand).toEqual([GROSS]);
     expect(targets.net).toEqual([NET]);
     expect(targets.removals).toEqual([REMOVALS, REMOVALS - 1]);
+  });
+
+  it("takes 'Total Net Forestry Emissions' for removals: 'total' does not make it the city net", () => {
+    expect(isNetTotalLabel("Total Net Forestry Emissions")).toBe(false);
+    expect(isNetTotalLabel("Total Net Emissions (including Forestry)")).toBe(
+      true,
+    );
+    expect(isNetTotalLabel("Total net emissions")).toBe(true);
+    const targets = reconciliationTargets(
+      [
+        reported(GROSS, "Total Gross Emissions"),
+        reported(NET, "Total net emissions"),
+        reported(REMOVALS, "Total Net Forestry Emissions"),
+      ],
+      2021,
+    );
+    // Left as a net total it would be the largest and a grand target again.
+    expect(targets.grand).toEqual([GROSS]);
+    expect(targets.net).toEqual([NET]);
+    expect(targets.removals).toEqual([REMOVALS]);
   });
 
   it("does not take the AFOLU sector for removals", () => {

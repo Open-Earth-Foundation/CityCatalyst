@@ -93,13 +93,14 @@ const CITY_NET_PHRASE =
  * Label of a net total: the gross total minus forestry removals, so far below the
  * gross figure ("Total Net Emissions (including Forestry)"). Only a total with such a
  * label may stand below the share of the largest total. "Net" next to a removals word
- * ("Net forestry", "Forestry (net)") is the net of the removals themselves, not the
- * city total, unless the label also says "total".
+ * ("Net forestry", "Total Net Forestry Emissions") is the net of the removals
+ * themselves: with a removals word, only a city-net phrase ("including forestry",
+ * "after removals") makes the label a net total.
  */
 export function isNetTotalLabel(label: string): boolean {
   if (CITY_NET_PHRASE.test(label)) return true;
   if (!/\bnet\b/i.test(label)) return false;
-  return !namesRemovals(label) || /\btotal\b/i.test(label);
+  return !namesRemovals(label);
 }
 
 /**

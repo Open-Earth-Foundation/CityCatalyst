@@ -11,7 +11,7 @@ import { Modules } from "@/util/constants";
 import createHttpError from "http-errors";
 import { Inventory } from "@/models/Inventory";
 import { CcraService, TopRisksResult } from "./ccra/CcraService";
-import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
+import { fetchCCRATopRisksDataFromAdaptaBrazil } from "./ccra/CcraApiService";
 import ActionService from "./hiap/ActionService";
 
 export class ModuleDashboardService {
@@ -154,10 +154,12 @@ export class ModuleDashboardService {
       logger.info(`Fetching CCRA top risks for inventory ${city.locode}`);
 
       // Fetch CCRA data
-      const ccraData = await fetchCCRATopRisksData(city.locode as string);
+      const ccraData = await fetchCCRATopRisksDataFromAdaptaBrazil(
+        city.locode as string,
+      );
 
       // Process top risks (default to top 3)
-      const topRisksResult = CcraService.processTopRisks(
+      const topRisksResult = CcraService.processTopRisksFromAdaptaBrazil(
         ccraData,
         3,
         resilienceScore,

@@ -1,6 +1,11 @@
 // backend/ccra/CcraService.ts
 import { logger } from "@/services/logger";
-import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
+import {
+  CCRATopRisksData,
+  CCRATopRisksDataAdaptaBrazil,
+  Indicator,
+  RiskAssessment,
+} from "@/util/types";
 
 export interface TopRisksResult {
   topRisks: RiskAssessment[];
@@ -100,7 +105,7 @@ export class CcraService {
   /**
    * Process and get top risks with all necessary data
    */
-  public static processTopRisks(
+  public static processTopRisksFromImpactChain(
     data: CCRATopRisksData,
     count: number = 3,
     resilienceScore: number | null = null,
@@ -133,6 +138,76 @@ export class CcraService {
           indicatorCount,
         );
       });
+
+      // Sort by risk score and get top N
+      const topRisks = processedRisks
+        .sort((a, b) => b.risk_score - a.risk_score)
+        .slice(0, count);
+
+      logger.info(`Successfully processed ${topRisks.length} top risks`);
+
+      return {
+        topRisks,
+        cityName: data.cityName,
+        region: data.region,
+      };
+    } catch (error) {
+      logger.error({ error }, "Error processing top risks");
+      throw error;
+    }
+  }
+
+  /**
+   * Process and get top risks with all necessary data
+   */
+  public static processTopRisksFromAdaptaBrazil(
+    data: CCRATopRisksDataAdaptaBrazil,
+    count: number = 3,
+    resilienceScore: number | null = null,
+  ): TopRisksResult {
+    try {
+      logger.info(`Processing top ${count} risks`);
+
+      if (!data.riskAssessment || data.riskAssessment.length === 0) {
+        logger.warn("No risk assessment data available");
+        return {
+          topRisks: [],
+          cityName: data.cityName,
+          region: data.region,
+        };
+      }
+
+      /* TODO is this step necessary for the Adapta Brazil data? */
+      /*
+      // Count vulnerability indicators if resilience will be applied
+      const indicatorCounts = resilienceScore
+        ? this.countVulnerabilityIndicators(data.indicators || [])
+        : {};
+
+      // Process risks with resilience if provided
+      const processedRisks = data.riskAssessment.map((risk) => {
+        const key = `${risk.hazard}_${risk.keyimpact}`.toLowerCase();
+        const indicatorCount = indicatorCounts[key] || 1;
+
+        return this.applyResilienceToRisk(
+          risk,
+          resilienceScore,
+          indicatorCount,
+        );
+      });
+      */
+
+      // remap to existing data schema from Impact Chain for compatibility
+      const processedRisks = data.riskAssessment.map((risk) => ({
+        hazard: risk.risk_name,
+        keyimpact: risk.sector_name,
+        risk_score: risk.risk_component_value_numeric,
+        original_risk_score: risk.risk_value_numeric,
+        hazard_score: 0,
+        exposure_score: 0,
+        vulnerability_score: 0,
+        original_vulnerability_score: 0,
+      }));
 
       // Sort by risk score and get top N
       const topRisks = processedRisks

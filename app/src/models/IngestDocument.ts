@@ -23,6 +23,8 @@ export interface IngestDocumentAttributes {
   catalogId?: string | null;
   s3Key?: string | null;
   data?: Buffer | Uint8Array | null;
+  withdrawnAt?: Date | null;
+  bytesPurgedAt?: Date | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -40,6 +42,8 @@ export type IngestDocumentOptionalAttributes =
   | "catalogId"
   | "s3Key"
   | "data"
+  | "withdrawnAt"
+  | "bytesPurgedAt"
   | "created"
   | "lastUpdated";
 export type IngestDocumentCreationAttributes = Optional<
@@ -63,6 +67,8 @@ export class IngestDocument
   declare catalogId?: string | null;
   declare s3Key?: string | null;
   declare data?: Buffer | Uint8Array | null;
+  declare withdrawnAt?: Date | null;
+  declare bytesPurgedAt?: Date | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -141,6 +147,16 @@ export class IngestDocument
         data: {
           type: DataTypes.BLOB,
           allowNull: true,
+        },
+        withdrawnAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "withdrawn_at",
+        },
+        bytesPurgedAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "bytes_purged_at",
         },
         created: {
           type: DataTypes.DATE,

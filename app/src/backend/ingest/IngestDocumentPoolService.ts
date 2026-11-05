@@ -1,4 +1,4 @@
-import { UniqueConstraintError } from "sequelize";
+import { Op, UniqueConstraintError } from "sequelize";
 import { db } from "@/models";
 import {
   registerNativeInput,
@@ -34,6 +34,8 @@ function toRecord(
     catalogId?: string | null;
     s3Key?: string | null;
     data?: Buffer | Uint8Array | null;
+    withdrawnAt?: Date | null;
+    bytesPurgedAt?: Date | null;
   },
   availability: IngestDocumentRecord["availability"] = "active",
   supersededByDocumentId: string | null = null,
@@ -53,7 +55,30 @@ function toRecord(
     buffer: row.data ? Buffer.from(row.data) : null,
     availability,
     supersededByDocumentId,
+    withdrawnAt: row.withdrawnAt ?? null,
+    bytesPurgedAt: row.bytesPurgedAt ?? null,
   };
+}
+
+async function stampWithdrawnAt(documentId: string): Promise<void> {
+  await db.models.IngestDocument.update(
+    { withdrawnAt: new Date() },
+    { where: { id: documentId, withdrawnAt: { [Op.is]: null } } },
+  );
+}
+
+/** CNB Path B rows are a second catalog pointer. Default withdraw must drop them too. */
+async function withdrawCnbCatalogs(documentId: string): Promise<void> {
+  const rows = await db.models.NativeInputCatalog.findAll({
+    where: {
+      kind: "cnb_upload",
+      availability: "active",
+      labels: { [Op.contains]: { documentId } },
+    },
+  });
+  for (const row of rows) {
+    await withdrawNativeInput(row.id);
+  }
 }
 
 async function catalogState(catalogId: string | null | undefined): Promise<{
@@ -93,6 +118,9 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
     };
     const existing = await db.models.IngestDocument.findOne({ where });
     if (existing) {
+      if (input.s3Key && !existing.s3Key) {
+        await existing.update({ s3Key: input.s3Key });
+      }
       return { document: toRecord(existing), created: false };
     }
 
@@ -104,6 +132,7 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
         visibility: input.visibility,
         markdownReady:
           input.markdownReady ?? initialMarkdownReady(input.originalFileName),
+        s3Key: input.s3Key ?? null,
         data: input.buffer,
       });
       return { document: toRecord(created), created: true };
@@ -171,7 +200,10 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       throw new IngestItemError("document_not_found");
     }
     if ((document.availability ?? "active") === "withdrawn") {
-      return document;
+      await stampWithdrawnAt(documentId);
+      await withdrawCnbCatalogs(documentId);
+      const again = await this.get(documentId);
+      return again ?? document;
     }
     if ((document.availability ?? "active") === "superseded") {
       throw new IngestItemError("document_superseded");
@@ -181,6 +213,8 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       catalogId = (await this.publishPathB(document)).catalogId;
     }
     await withdrawNativeInput(catalogId);
+    await withdrawCnbCatalogs(documentId);
+    await stampWithdrawnAt(documentId);
     const modules = input.withdrawExtractsFor ?? [];
     if (modules.length > 0) {
       const extracts = await db.models.NativeInputCatalog.findAll({
@@ -200,6 +234,55 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       throw new IngestItemError("document_not_found");
     }
     return withdrawn;
+  }
+
+  async promoteToCity(documentId: string): Promise<IngestDocumentRecord> {
+    const document = await this.get(documentId);
+    if (!document) {
+      throw new IngestItemError("document_not_found");
+    }
+    const availability = document.availability ?? "active";
+    if (availability === "withdrawn") {
+      throw new IngestItemError("document_withdrawn");
+    }
+    if (availability === "superseded") {
+      throw new IngestItemError("document_superseded");
+    }
+    if (document.visibility === "city") {
+      return document;
+    }
+    if (document.visibility !== "run") {
+      throw new IngestItemError(
+        "validation_failed",
+        "Only a concept-note attachment can be marked as a city document",
+      );
+    }
+    await db.models.IngestDocument.update(
+      { visibility: "city" },
+      { where: { id: documentId } },
+    );
+    const catalogs = await db.models.NativeInputCatalog.findAll({
+      where: {
+        [Op.or]: [
+          ...(document.catalogId ? [{ id: document.catalogId }] : []),
+          {
+            kind: "cnb_upload",
+            labels: { [Op.contains]: { documentId } },
+          },
+          { sourceType: "ingest_document", sourceId: documentId },
+        ],
+      },
+    });
+    for (const catalog of catalogs) {
+      await catalog.update({
+        labels: { ...(catalog.labels ?? {}), visibility: "city" },
+      });
+    }
+    const promoted = await this.get(documentId);
+    if (!promoted) {
+      throw new IngestItemError("document_not_found");
+    }
+    return promoted;
   }
 
   async supersede(

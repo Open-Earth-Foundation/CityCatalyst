@@ -53,7 +53,12 @@ export default function OnboardingSetup(props: {
     watch,
     control,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      inventoryGoal: "gpc_basic",
+      globalWarmingPotential: "ar6",
+    },
+  });
 
   const params = useSearchParams();
 
@@ -275,8 +280,9 @@ export default function OnboardingSetup(props: {
         year: typeof data.year === "string" ? parseInt(data.year) : data.year,
         inventoryName: `${data.name} - ${data.year}`,
         totalCountryEmissions: getValues("totalCountryEmissions"),
-        inventoryType: inventoryGoal,
-        globalWarmingPotentialType: globalWarmingPotential,
+        inventoryType: data.inventoryGoal || inventoryGoal,
+        globalWarmingPotentialType:
+          data.globalWarmingPotential || globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
         defaultInventoryId: inventory.inventoryId,

@@ -35,7 +35,7 @@
   "timeline-no-preference": "Sin preferencia",
   "timeline-no-preference-sub": "Incluye acciones en todos los plazos",
   "exclusions-title": "Acciones a excluir",
-  "exclusions-description": "Especifique qué tipos de acciones desea excluir su ciudad del ranking. En el resumen previo al vuelo, podrá revisar y confirmar qué acciones específicas se proponen para la exclusión antes de ejecutar el ranking.",
+  "exclusions-description": "Especifique qué tipos de acciones desea excluir su ciudad del ranking. En la revisión previa, podrá revisar y confirmar qué acciones específicas se proponen para la exclusión antes de ejecutar el ranking.",
   "exclude-by-sector-title": "Excluir por sector",
   "exclude-by-sector-description": "Todas las acciones pertenecientes a estos sectores serán propuestas para exclusión.",
   "sectors-marked-for-exclusion_one": "{{count}} sector marcado para exclusión",

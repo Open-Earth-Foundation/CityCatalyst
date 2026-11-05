@@ -292,3 +292,28 @@ it("reloads a failed history on retry", async () => {
   expect(chat.connection).toBe("connected");
   expect(chat.error).toBeNull();
 });
+
+it("starts the drafting overview once and attaches its choices", async () => {
+  await act(async () => {
+    void chat.requestDraftOverview();
+    void chat.requestDraftOverview();
+  });
+  expect(startStream).toHaveBeenCalledTimes(1);
+  expect(lastRequestBody().options).toEqual({
+    concept_note_turn: "draft_overview",
+  });
+  expect(chat.messages.some((message) => message.role === "user")).toBe(false);
+  await act(async () => {
+    streamOptions.onMessage?.("Where should we start?");
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Budget", "Scope"],
+    });
+    streamOptions.onComplete?.();
+  });
+  expect(chat.messages.at(-1)).toMatchObject({
+    role: "assistant",
+    text: "Where should we start?",
+    choices: ["Budget", "Scope"],
+  });
+});

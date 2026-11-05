@@ -276,3 +276,122 @@ def test_translate_output_plan_maps_transient_provider_failures(
                 ]
             },
         )
+
+
+def test_translate_output_plan_applies_localized_project_names(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Comparable project names from the catalogue reach the Spanish report."""
+    captured: dict[str, object] = {}
+
+    class FakeCompletions:
+        """Return a translation that kept one English project name."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Capture the prompt and answer with a partly localized chapter."""
+            captured.update(kwargs)
+            content = json.dumps(
+                {
+                    "translations": [
+                        {
+                            "language": "es",
+                            "chapters": [
+                                {
+                                    "key": "financing_precedents_pathway",
+                                    "markdown": (
+                                        "Proyectos comparables: Harnessing the Energy "
+                                        "of Inti (the Sun) en Alto del Carmen y "
+                                        "Encuentro Solar 2.0 en Linares."
+                                    ),
+                                    "limitations": [
+                                        "Harnessing the Energy of Inti (the Sun) "
+                                        "no informa montos."
+                                    ],
+                                }
+                            ],
+                        }
+                    ]
+                }
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(report_translation, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(report_translation, "get_output_plan_model", lambda: "test-model")
+    monkeypatch.setattr(
+        report_translation, "get_output_plan_temperature", lambda: 0.0
+    )
+    canonical = [
+        ReportChapterDraft(
+            key="financing_precedents_pathway",
+            title="Financing, precedents and pathway",
+            markdown=(
+                "Comparable projects: Harnessing the Energy of Inti (the Sun) in "
+                "Alto del Carmen and Solar Gathering 2.0 in Linares."
+            ),
+            source_refs=["climate_finance_projects"],
+            limitations=["Harnessing the Energy of Inti (the Sun) reports no amounts."],
+        )
+    ]
+    canonical_inputs = [
+        ReportChapterInput(
+            key="financing_precedents_pathway",
+            title="Financing, precedents and pathway",
+            language="en",
+            facts={
+                "comparable_projects": [
+                    {"project_name": "Harnessing the Energy of Inti (the Sun)"},
+                    {"project_name": "Solar Gathering 2.0"},
+                    {"project_name": "E-Mobility Program for Sustainable Cities in LAC"},
+                ]
+            },
+        )
+    ]
+    target_inputs = {
+        "es": [
+            ReportChapterInput(
+                key="financing_precedents_pathway",
+                title="Financiación, precedentes y hoja de ruta",
+                language="es",
+                facts={
+                    "comparable_projects": [
+                        {"project_name": "Aprovechando la Energia del Inti"},
+                        {"project_name": "Encuentro Solar 2.0"},
+                        {"project_name": "E-Mobility Program for Sustainable Cities in LAC"},
+                    ]
+                },
+            )
+        ]
+    }
+
+    translated, llm_io = translate_output_plan(
+        canonical_chapters=canonical,
+        target_chapter_inputs=target_inputs,
+        canonical_chapter_inputs=canonical_inputs,
+    )
+
+    chapter = translated["es"][0]
+    assert "Harnessing the Energy of Inti" not in chapter.markdown
+    assert "Aprovechando la Energia del Inti en Alto del Carmen" in chapter.markdown
+    assert "Encuentro Solar 2.0 en Linares" in chapter.markdown
+    assert chapter.limitations == [
+        "Aprovechando la Energia del Inti no informa montos."
+    ]
+    # Only names that differ are paired; identical ones are left alone.
+    assert llm_io["proper_names_by_language"] == {
+        "es": [
+            {
+                "source": "Harnessing the Energy of Inti (the Sun)",
+                "target": "Aprovechando la Energia del Inti",
+            },
+            {"source": "Solar Gathering 2.0", "target": "Encuentro Solar 2.0"},
+        ]
+    }
+    prompt = captured["messages"][1]["content"]  # type: ignore[index]
+    assert "proper_names_by_language" in prompt
+    assert "Aprovechando la Energia del Inti" in prompt
+

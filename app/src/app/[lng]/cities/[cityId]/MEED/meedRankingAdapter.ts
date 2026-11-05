@@ -155,6 +155,7 @@ function toHardFilterEvidence(
     map[actionId] = {
       legal_assessment_present: present,
       legal_verdict_category: str(legal.verdict_category),
+      legal_ownership_category: str(legal.ownership_category),
       legal_assessment_summary: legal,
     };
   }

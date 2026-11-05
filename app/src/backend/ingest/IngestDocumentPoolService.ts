@@ -1,15 +1,24 @@
 import { UniqueConstraintError } from "sequelize";
 import { db } from "@/models";
-import { registerNativeInput } from "@/backend/NativeInputCatalogService";
 import {
+  registerNativeInput,
+  supersedeNativeInput,
+  withdrawNativeInput,
+} from "@/backend/NativeInputCatalogService";
+import {
+  INGEST_EXTRACT_CATALOG_KIND,
+  assertDocumentReusable,
   buildIngestDocumentPathBInput,
   buildIngestExtractPathAInput,
   initialMarkdownReady,
+  sameDocumentScope,
   type IngestDocumentPool,
   type IngestDocumentRecord,
   type PublishIngestExtractInput,
   type StoreIngestDocumentInput,
+  type WithdrawIngestDocumentInput,
 } from "./document-pool";
+import { IngestItemError } from "./types";
 
 function toRecord(
   row: {
@@ -27,6 +36,7 @@ function toRecord(
     data?: Buffer | Uint8Array | null;
   },
   availability: IngestDocumentRecord["availability"] = "active",
+  supersededByDocumentId: string | null = null,
 ): IngestDocumentRecord {
   return {
     id: row.id,
@@ -42,6 +52,28 @@ function toRecord(
     s3Key: row.s3Key ?? null,
     buffer: row.data ? Buffer.from(row.data) : null,
     availability,
+    supersededByDocumentId,
+  };
+}
+
+async function catalogState(catalogId: string | null | undefined): Promise<{
+  availability: IngestDocumentRecord["availability"];
+  supersededByDocumentId: string | null;
+}> {
+  if (!catalogId) {
+    return { availability: "active", supersededByDocumentId: null };
+  }
+  const catalog = await db.models.NativeInputCatalog.findByPk(catalogId);
+  const availability = catalog?.availability ?? "active";
+  if (!catalog?.supersededById) {
+    return { availability, supersededByDocumentId: null };
+  }
+  const replacement = await db.models.NativeInputCatalog.findByPk(
+    catalog.supersededById,
+  );
+  return {
+    availability,
+    supersededByDocumentId: replacement?.sourceId ?? null,
   };
 }
 
@@ -86,12 +118,8 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
   async get(documentId: string): Promise<IngestDocumentRecord | null> {
     const row = await db.models.IngestDocument.findByPk(documentId);
     if (!row) return null;
-    let availability: IngestDocumentRecord["availability"] = "active";
-    if (row.catalogId) {
-      const catalog = await db.models.NativeInputCatalog.findByPk(row.catalogId);
-      availability = catalog?.availability ?? "active";
-    }
-    return toRecord(row, availability);
+    const state = await catalogState(row.catalogId);
+    return toRecord(row, state.availability, state.supersededByDocumentId);
   }
 
   async publishPathB(document: IngestDocumentRecord): Promise<{
@@ -120,7 +148,8 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
         await catalog.update({ markdownReady: true });
       }
     }
-    return toRecord(row);
+    const state = await catalogState(row.catalogId);
+    return toRecord(row, state.availability, state.supersededByDocumentId);
   }
 
   async publishPathA(
@@ -131,5 +160,94 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       buildIngestExtractPathAInput(document, input),
     );
     return { catalogId: registered.catalog.id, created: registered.created };
+  }
+
+  async withdraw(
+    documentId: string,
+    input: WithdrawIngestDocumentInput = {},
+  ): Promise<IngestDocumentRecord> {
+    const document = await this.get(documentId);
+    if (!document) {
+      throw new IngestItemError("document_not_found");
+    }
+    if ((document.availability ?? "active") === "withdrawn") {
+      return document;
+    }
+    if ((document.availability ?? "active") === "superseded") {
+      throw new IngestItemError("document_superseded");
+    }
+    let catalogId = document.catalogId ?? null;
+    if (!catalogId) {
+      catalogId = (await this.publishPathB(document)).catalogId;
+    }
+    await withdrawNativeInput(catalogId);
+    const modules = input.withdrawExtractsFor ?? [];
+    if (modules.length > 0) {
+      const extracts = await db.models.NativeInputCatalog.findAll({
+        where: {
+          kind: INGEST_EXTRACT_CATALOG_KIND,
+          availability: "active",
+          owningModule: modules,
+        },
+      });
+      for (const extract of extracts) {
+        if (extract.labels?.documentId !== documentId) continue;
+        await withdrawNativeInput(extract.id);
+      }
+    }
+    const withdrawn = await this.get(documentId);
+    if (!withdrawn) {
+      throw new IngestItemError("document_not_found");
+    }
+    return withdrawn;
+  }
+
+  async supersede(
+    documentId: string,
+    replacementDocumentId: string,
+  ): Promise<{
+    previous: IngestDocumentRecord;
+    replacement: IngestDocumentRecord;
+  }> {
+    if (documentId === replacementDocumentId) {
+      throw new IngestItemError(
+        "validation_failed",
+        "Superseding a document requires a different replacement id",
+      );
+    }
+    const previous = await this.get(documentId);
+    if (!previous) {
+      throw new IngestItemError("document_not_found");
+    }
+    assertDocumentReusable(previous);
+    const replacement = await this.get(replacementDocumentId);
+    if (!replacement) {
+      throw new IngestItemError("document_not_found");
+    }
+    assertDocumentReusable(replacement);
+    if (!sameDocumentScope(previous, replacement)) {
+      throw new IngestItemError(
+        "missing_scope",
+        "Replacement document is not in the same city, project, or organization",
+      );
+    }
+    const previousCatalogId =
+      previous.catalogId ?? (await this.publishPathB(previous)).catalogId;
+    const publishedReplacement = replacement.catalogId
+      ? replacement
+      : {
+          ...replacement,
+          catalogId: (await this.publishPathB(replacement)).catalogId,
+        };
+    await supersedeNativeInput(
+      previousCatalogId,
+      buildIngestDocumentPathBInput(publishedReplacement),
+    );
+    const nextPrevious = await this.get(documentId);
+    const nextReplacement = await this.get(replacementDocumentId);
+    if (!nextPrevious || !nextReplacement) {
+      throw new IngestItemError("document_not_found");
+    }
+    return { previous: nextPrevious, replacement: nextReplacement };
   }
 }

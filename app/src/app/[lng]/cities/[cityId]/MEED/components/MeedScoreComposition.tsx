@@ -59,6 +59,12 @@ export interface MeedScoreCompositionProps {
    * `detailed`: bar + one tile per pillar with its score and meaning.
    */
   variant?: "bar" | "compact" | "detailed";
+  /**
+   * `detailed` only. `tiles` (default) puts the three pillars side by side;
+   * `stacked` lists them one under the other for narrow containers such as
+   * the results drawer, where three tiles wrapped every number and word.
+   */
+  layout?: "tiles" | "stacked";
   /** `meed-results` namespace. */
   t: TFunction;
 }
@@ -77,6 +83,7 @@ export function MeedScoreComposition({
   action,
   weights,
   variant = "compact",
+  layout = "tiles",
   t,
 }: MeedScoreCompositionProps) {
   if (!weights) {
@@ -137,6 +144,51 @@ export function MeedScoreComposition({
           {action.final_score.toFixed(2)}
         </BodySmall>
       </HStack>
+    );
+  }
+
+  if (layout === "stacked") {
+    return (
+      <VStack alignItems="stretch" gap="m">
+        {bar}
+        <VStack alignItems="stretch" gap="s">
+          {PILLARS.map((pillar, i) => (
+            <VStack key={pillar} alignItems="stretch" gap="xs">
+              <HStack gap="xs" alignItems="baseline">
+                <Box
+                  w="10px"
+                  h="10px"
+                  borderRadius="full"
+                  bg={PILLAR_COLORS[i]}
+                  flexShrink={0}
+                  alignSelf="center"
+                />
+                <Overline color="content.tertiary" flex="1">
+                  {t(PILLAR_LABEL_KEY[pillar])}
+                </Overline>
+                <TitleMedium
+                  color="content.primary"
+                  fontVariantNumeric="tabular-nums"
+                >
+                  {scoreOf(action, pillar).toFixed(2)}
+                </TitleMedium>
+                <Caption
+                  color="content.tertiary"
+                  fontVariantNumeric="tabular-nums"
+                  whiteSpace="nowrap"
+                >
+                  {t("composition-weight-short", {
+                    weight: Math.round(weights[pillar] * 100),
+                  })}
+                </Caption>
+              </HStack>
+              <BodySmall color="content.secondary">
+                {t(PILLAR_DESCRIPTION_KEY[pillar])}
+              </BodySmall>
+            </VStack>
+          ))}
+        </VStack>
+      </VStack>
     );
   }
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from pydantic import ValidationError
@@ -539,7 +540,7 @@ def _chapter_input(
         title=title,
         language=context.language,
         terminology=chapter_terms(key, context.language),
-        facts=_drop_empty_values(facts),
+        facts=_drop_empty_values(_round_scores(facts)),
         source_refs=list(dict.fromkeys(source_refs)),
         limitations=list(dict.fromkeys(limitations)),
         notion_coverage=notion_coverage,
@@ -687,7 +688,8 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             "what_we_checked": translate_term(
                 "signal_labels", "climate_benefit", context.language
             ),
-            "reading": localized_impact_band or context.ranked_action.impact_score,
+            "reading": localized_impact_band
+            or _report_score(context.ranked_action.impact_score),
             "detail": (
                 f"The prioritization rates the action's direct emissions-reduction "
                 f"potential as {impact_band}."
@@ -899,8 +901,47 @@ def _normalized_text(value: str | None) -> str | None:
     return normalized or None
 
 
+def _report_score(value: float | None) -> float | None:
+    """Round a score to two decimals the way the UI's `toFixed(2)` does.
+
+    The scores reach the chapter writer as facts and are copied into prose and
+    tables verbatim. Passing raw floats (0.5847...) left the rounding to the
+    writer, which produced 0.59 in one chapter and 0.584 in another for the
+    same action. `Decimal(float)` uses the float's exact value and rounds ties
+    up, matching JS `toFixed(2)` (0.125 -> 0.13), unlike `round()`'s
+    half-to-even.
+    """
+    if value is None:
+        return None
+    return float(
+        Decimal(float(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    )
+
+
+def _round_scores(value: Any) -> Any:
+    """Round every numeric `*_score` field in chapter facts, at any depth.
+
+    Applied once in `_chapter_input`, so a score field added to any chapter
+    builder later is covered without remembering to round it.
+    """
+    if isinstance(value, dict):
+        return {
+            key: (
+                _report_score(item)
+                if key.endswith("_score")
+                and isinstance(item, (int, float))
+                and not isinstance(item, bool)
+                else _round_scores(item)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_round_scores(item) for item in value]
+    return value
+
+
 def _score_facts(context: ReportContext) -> dict[str, Any]:
-    """Return report-ready ranking score facts."""
+    """Return report-ready ranking score facts (rounded in `_chapter_input`)."""
     return {
         "rank": context.ranked_action.rank,
         "final_score": context.ranked_action.final_score,

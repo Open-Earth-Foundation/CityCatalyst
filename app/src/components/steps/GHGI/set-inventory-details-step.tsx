@@ -7,7 +7,6 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import type { GHGIFormInputs } from "@/util/GHGI/types";
-import { useEffect } from "react";
 import {
   Box,
   createListCollection,
@@ -65,13 +64,6 @@ export default function SetInventoryDetailsStep({
 }) {
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
-
-  // Handle inventory Goal Radio Input
-  // Set default inventory goal form value
-  useEffect(() => {
-    setValue("inventoryGoal", "gpc_basic");
-    setValue("globalWarmingPotential", "ar6");
-  }, [setValue]);
 
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
@@ -245,7 +237,9 @@ export default function SetInventoryDetailsStep({
                             field={field}
                             key={value}
                             value={value}
-                            inputValue={selectedInventoryGoalValue ?? ""}
+                            inputValue={
+                              field.value || selectedInventoryGoalValue || ""
+                            }
                             inputValueFunction={setSelectedInventoryGoalValue}
                             t={t}
                           />
@@ -342,7 +336,11 @@ export default function SetInventoryDetailsStep({
                           field={field}
                           key={value}
                           value={value}
-                          inputValue={selectedGlobalWarmingPotentialValue ?? ""}
+                          inputValue={
+                            field.value ||
+                            selectedGlobalWarmingPotentialValue ||
+                            ""
+                          }
                           inputValueFunction={
                             setSelectedGlobalWarmingPotentialValue
                           }

@@ -22,6 +22,7 @@ class ThreadMessageResponse(BaseModel):
     created_at: datetime
     # Successful CNB render-visual results stored with this message.
     visuals: list[ThreadMessageVisual] = []
+    choices: list[str] | None = None
 
 
 class ThreadMessagesResponse(BaseModel):

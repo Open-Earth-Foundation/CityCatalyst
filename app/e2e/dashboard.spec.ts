@@ -108,6 +108,9 @@ test.describe("Dashboard", () => {
         name: /Total emissions in/i,
       });
       await expect(resultsHeading).toBeVisible({ timeout: 10000 });
+      // CC-1199: the previously open panel must be hidden, not left visible
+      // alongside the results content.
+      await expect(calculationContent).toBeHidden({ timeout: 10000 });
 
       await calculationTab.click();
 

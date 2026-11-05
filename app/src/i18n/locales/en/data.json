@@ -1186,6 +1186,7 @@
   "emissions-from-energy-used-in-power-plant-auxiliary-operations-within-the-city-boundary": "Emissions from energy used in power plant auxiliary operations within the city boundary",
   "emissions-from-fugitive-emissions-within-the-city-boundary": "Emissions from fugitive emissions within the city boundary",
   "emissions-from-wastewater-generated-and-treated-within-the-city-boundary": "Emissions from wastewater generated and treated within the city boundary",
+  "imported-waste-optional": "Optional. Stored and shown in detail, but not counted in BASIC or BASIC+ totals or in completion.",
   "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-waterborne-navigation": "Emissions from grid-supplied energy consumed within the city boundary for waterborne navigation",
   "emissions-from-fuel-combustion-for-railway-transportation-occurring-within-the-city-boundary": "Emissions from fuel combustion for railway transportation occurring within the city boundary",
   "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption-in-power-plant-auxiliary-operations": "Emissions from transmission and distribution losses from grid-supplied energy consumption in power plant auxiliary operations",
@@ -1303,5 +1304,8 @@
   "ingest-from-document-reuse": "Use this city document in another module without uploading it again.",
   "ingest-document-unavailable": "This file cannot be reused until it is marked as a city document.",
   "ingest-document-withdrawn": "This source document was withdrawn and cannot start a new ingest.",
-  "ingest-document-superseded": "A newer version of this source is available. Re-import from the replacement."
+  "ingest-document-superseded": "A newer version of this source is available. Re-import from the replacement.",
+  "ingest-reconciliation-failed": "Imported values do not match the source file. Review the reconciliation report before confirming.",
+  "ingest-source-withdrawn": "Source document withdrawn",
+  "ingest-source-superseded": "A newer version of the source is available. Re-import?"
 }

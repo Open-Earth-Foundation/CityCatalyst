@@ -140,6 +140,23 @@ async function outsideRefs(
 }
 
 describe("import status reporting-level warning", () => {
+  it("does not claim III.4.3 can be included by switching to BASIC+", async () => {
+    importedFile.mappingConfiguration!.rows = [
+      {
+        ...extractedRow,
+        gpcRefNo: "III.4.3",
+        scope: "1",
+        refSource: "document",
+      },
+    ];
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector-I",
+      subsectorId: "subsector-I.1",
+      subcategoryId: "waste",
+      scopeId: "scope",
+    });
+    expect(await outsideRefs()).toEqual([]);
+  });
   it.each(["pdf", "AI"])(
     "resolves %s rows from sector/subsector text before checking the inventory level",
     async (kind) => {
@@ -151,14 +168,14 @@ describe("import status reporting-level warning", () => {
     },
   );
 
-  it("applies saved row overrides before checking the inventory level", async () => {
+  it("does not apply a legacy override that would hide a scope conflict", async () => {
     importedFile.mappingConfiguration!.rows = [
       { ...extractedRow, gpcRefNo: "I.1.1" },
     ];
     importedFile.mappingConfiguration!.overrides = {
       "0": { gpcRefNo: "I.1.3" },
     };
-    expect(await outsideRefs()).toEqual(["I.1.3"]);
+    expect(await outsideRefs()).toEqual([]);
   });
 
   it("uses current unsaved overrides instead of saved overrides without mutating the file", async () => {

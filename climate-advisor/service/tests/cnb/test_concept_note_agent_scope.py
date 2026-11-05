@@ -66,6 +66,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         else None
     )
     expected_tools = [
+        "concept_note_ask_question",
         "concept_note_help",
         "concept_note_gaps",
         "concept_note_sources_query",
@@ -114,6 +115,9 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
         agent = await service.create_agent()
         assert [tool.name for tool in agent.tools] == expected_tools
+        assert agent.tool_use_behavior == {
+            "stop_at_tool_names": ["concept_note_ask_question"]
+        }
         if edit_enabled:
             assert agent.tools[-1].params_json_schema["properties"] == {}
         assert service.active_instructions == settings.llm.prompts.compose_prompt(
@@ -151,6 +155,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
         agent = await service.create_agent()
         assert [tool.name for tool in agent.tools] == [
+            "concept_note_ask_question",
             "concept_note_help",
             "concept_note_gaps",
         ]
@@ -180,7 +185,7 @@ async def test_render_visual_registration_follows_setting(monkeypatch, enabled):
         agent = await service.create_agent()
     finally:
         await service.close()
-    expected = ["concept_note_help", "concept_note_gaps"]
+    expected = ["concept_note_ask_question", "concept_note_help", "concept_note_gaps"]
     if enabled:
         expected.append("concept_note_render_visual")
     assert [tool.name for tool in agent.tools] == expected

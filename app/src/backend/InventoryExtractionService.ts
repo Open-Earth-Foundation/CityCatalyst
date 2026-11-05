@@ -8,7 +8,15 @@ import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import {
+  isQuoteInText,
+  normalizeForQuoteMatch,
+} from "@/backend/ingest/plugins/ccra/verify-quotes";
+import {
+  GRID_GENERATION_GPC_REF,
+  isImportedWasteRef,
+  isOmittedGPCReference,
+} from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
@@ -54,7 +62,15 @@ export function canonicalGpcRefNo(
   if (!trimmed) return null;
   if (gpcRefScopes.has(trimmed)) {
     const refScope = gpcRefScopes.get(trimmed);
-    if (scope && refScope != null && String(refScope) !== scope) return null;
+    // A III.x.3 is never dropped or replaced here: the review shows the conflict.
+    if (
+      scope &&
+      refScope != null &&
+      String(refScope) !== scope &&
+      !isImportedWasteRef(trimmed)
+    ) {
+      return null;
+    }
     return trimmed;
   }
   if (scope && gpcRefScopes.has(`${trimmed}.${scope}`)) {
@@ -150,6 +166,11 @@ const HIERARCHY_TEXT = [...SECTOR_SUBSECTOR_HIERARCHY.entries()]
  * reference a row belongs to (enteric fermentation and managed manure are V.1; manure
  * left on pasture and N2O from soils are V.3).
  */
+const WASTE_DIRECTION: Record<string, string> = {
+  "1": " (generated and treated inside the city)",
+  "2": " (generated inside the city, treated outside)",
+  "3": " (generated outside the city, treated inside)",
+};
 const REFERENCE_TEXT = gpcTable
   .map((row) => {
     const scope = row.scope == null ? "no scope" : `scope ${row.scope}`;
@@ -159,7 +180,9 @@ const REFERENCE_TEXT = gpcTable
           .filter((option) => !option.startsWith("land-classification"))
           .join(", ")})`
       : "";
-    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${activities === " ()" ? "" : activities}`;
+    const direction = WASTE_DIRECTION[row.gpcRefNo.split(".")[2]] ?? "";
+    const wasteNote = row.gpcRefNo.startsWith("III.") ? direction : "";
+    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${wasteNote}${activities === " ()" ? "" : activities}`;
   })
   .join("\n");
 
@@ -185,12 +208,32 @@ export type ExtractedRow = {
   subsector: string | null;
   /** GPC scope when present in the document (e.g. "1", "2", "3" for Scope 1/2/3). Fetched from uploaded file when available. */
   scope?: string | null;
+  /** Exact scope text emitted by extraction, before normalization. */
+  originalScope?: string | null;
   category: string | null;
   totalCO2e: number | null;
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;
   gpcRefNo?: string | null;
+  /**
+   * Where the reference came from. `document` is the model's claim, kept only
+   * when the reference text is found in the extracted text.
+   */
+  refSource?: "document" | "inferred" | null;
+  /** Short verbatim quote the model gives for a III.x.3, in any language. */
+  directionEvidence?: string | null;
+  /**
+   * Whether the quote occurs in the extracted text. This proves the text exists,
+   * not what it means: it never decides anything.
+   */
+  directionEvidenceFound?: boolean | null;
+  /** Page of the extracted text, when extraction ran page by page. */
+  page?: number | null;
+  /** User decision on a row held for review (`mappingConfiguration.overrides`). */
+  reviewDecision?: "keep" | "reclassify" | "skip" | null;
+  /** Reference the model suggested, kept when the user chose another one. */
+  suggestedRefNo?: string | null;
   source?: string | null;
   /** Methodology name when present (e.g. Fuel Sales, Direct Measure, Geographic). Used to create ActivityValue. */
   methodology?: string | null;
@@ -274,7 +317,9 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
-- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
+- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
+- refSource (string): "document" when this row's reference number is printed in the document; "inferred" when you chose it yourself.
+- directionEvidence (string | null): only when gpcRefNo is III.1.3, III.2.3, III.3.3 or III.4.3: a short exact quote from the row, its table heading or its section that says the waste comes from outside the city. Copy it word for word in the document's language; never translate or summarize. Null when the document has no such text.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
 - activityAmount (number | null): consumption/quantity value when table has such column.
@@ -733,6 +778,91 @@ export async function extractInventoryFromDocument(
   documentContent: string,
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
+  const result = await extractRowsFromDocument(documentContent, options);
+  return {
+    ...result,
+    rows: verifyRowProvenance(result.rows, documentContent),
+  };
+}
+
+/** Numbers on a line without separators, so "1,188,394" reads as 1188394. */
+function lineNumbers(line: string): string[] {
+  return (line.match(/\d[\d.,\s]*\d|\d/g) ?? []).map((number) =>
+    number.replace(/[.,\s]/g, ""),
+  );
+}
+
+/** Escapes every regular expression metacharacter so text matches literally. */
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * True when the document prints the reference on the row's own line: the same
+ * line as its value or notation key, on its page when that is known. A legend or
+ * a table of contents elsewhere is not the document stating it for this row.
+ */
+function isReferenceOnRowLine(
+  row: ExtractedRow,
+  ref: string,
+  documentContent: string,
+): boolean {
+  const pageText = splitDocumentPages(documentContent).find(
+    (page) => page.page === row.page,
+  )?.text;
+  const pattern = new RegExp(`(?<![\\w.])${escapeRegExp(ref)}(?![\\w]|\\.\\d)`);
+  const value =
+    row.totalCO2e == null
+      ? null
+      : String(Math.abs(row.totalCO2e)).replace(/\./g, "");
+  return (pageText ?? documentContent).split("\n").some((rawLine) => {
+    const line = normalizeForQuoteMatch(rawLine);
+    if (!pattern.test(line)) return false;
+    const rest = line.replace(pattern, " ");
+    return value != null
+      ? lineNumbers(rest).includes(value)
+      : !!row.notationKey &&
+          new RegExp(`\\b${escapeRegExp(row.notationKey)}\\b`).test(rest);
+  });
+}
+
+/**
+ * Checks what the model said about each row against the extracted text. A claim
+ * of `document` stands only when the reference is on the row's own line. A quote
+ * is marked found or not found, or left unmarked when too short to tell; no
+ * result confirms a row. Exported for unit tests.
+ */
+export function verifyRowProvenance(
+  rows: ExtractedRow[],
+  documentContent: string,
+): ExtractedRow[] {
+  const text = normalizeForQuoteMatch(documentContent);
+  const checked = rows.map((row): ExtractedRow => {
+    const ref = row.gpcRefNo?.trim();
+    const stated =
+      !!ref &&
+      row.refSource === "document" &&
+      isReferenceOnRowLine(row, ref, documentContent);
+    const out: ExtractedRow = {
+      ...row,
+      refSource: ref ? (stated ? "document" : "inferred") : null,
+      directionEvidenceFound: row.directionEvidence
+        ? isQuoteInText(row.directionEvidence, text)
+        : null,
+    };
+    // Keep the original reference even if its scope conflicts. The review
+    // resolves the conflict instead of silently deriving a different one.
+    return out;
+  });
+  return fillMissingGpcRefNo(checked).map((row) =>
+    row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
+  );
+}
+
+async function extractRowsFromDocument(
+  documentContent: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
   const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
@@ -777,7 +907,7 @@ export async function extractInventoryFromDocument(
           finalizeExtractedRows(
             normalizeExtractedRows(
               await extractSegment(page.text, yearInstruction, false),
-            ),
+            ).map((row) => ({ ...row, page: page.page })),
             year,
             { deferYearAssumption: true },
           );
@@ -1376,9 +1506,12 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     }
     if (typeof row.sector === "string") out.sector = row.sector;
     if (typeof row.subsector === "string") out.subsector = row.subsector;
-    if (typeof row.scope === "string" && !isPlaceholderOrEmpty(row.scope)) {
-      const normalized = normalizeScopeString(row.scope);
-      if (normalized) out.scope = normalized;
+    if (typeof row.scope === "string") {
+      out.originalScope = row.scope;
+      const normalized = isPlaceholderOrEmpty(row.scope)
+        ? null
+        : normalizeScopeString(row.scope);
+      out.scope = normalized || row.scope;
     }
     if (typeof row.category === "string") out.category = row.category;
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
@@ -1387,9 +1520,20 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       const n = parseFloat(normalizeNumberString(row.totalCO2e));
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
+    if (row.refSource === "document" || row.refSource === "inferred") {
+      out.refSource = row.refSource;
+    }
     if (typeof row.gpcRefNo === "string") {
-      const ref = canonicalGpcRefNo(row.gpcRefNo, out.scope);
+      // A reference the document states is kept even if the scope disagrees:
+      // the review shows that conflict. verifyRowProvenance checks the claim.
+      const ref = canonicalGpcRefNo(row.gpcRefNo, undefined);
       if (ref) out.gpcRefNo = ref;
+    }
+    if (
+      typeof row.directionEvidence === "string" &&
+      !isPlaceholderOrEmpty(row.directionEvidence)
+    ) {
+      out.directionEvidence = row.directionEvidence.trim();
     }
     if (row.rowType === "line_item" || row.rowType === "subtotal") {
       out.rowType = row.rowType;
@@ -1560,11 +1704,11 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
-/** Sum of imported values in tonnes, without rows left out of totals (I.4.4). */
-function sumImported(rows: ExtractedRow[]): number {
+/** Sum of imported values in tonnes, without rows left out of totals. */
+export function sumImported(rows: ExtractedRow[]): number {
   return rows.reduce(
     (sum, row) =>
-      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
         ? sum
         : sum + row.totalCO2e,
     0,

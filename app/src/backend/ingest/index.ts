@@ -6,9 +6,33 @@ export {
 } from "./coarse-kind";
 export type { CoarseFileKind } from "./coarse-kind";
 export { IngestRunner } from "./IngestRunner";
+export {
+  INGEST_CONFIRM_CAPABILITY,
+  INGEST_START_CAPABILITY,
+  INGEST_STATUS_CAPABILITY,
+  IngestAgent,
+} from "./agent";
+export type {
+  IngestAgentConfirmInput,
+  IngestAgentStartInput,
+  IngestAgentStatusView,
+} from "./agent";
 export { MemoryIngestStore } from "./MemoryIngestStore";
 export { SequelizeIngestStore } from "./IngestStoreService";
 export { createIngestPlugin } from "./registry";
+export {
+  filesFromIngestForm,
+  parseIngestDryRun,
+  parseIngestScope,
+  publicIngestItem,
+  publicIngestJob,
+  startModuleIngest,
+} from "./start";
+export {
+  bulkErrorFromIngestItem,
+  ingestGhgiBuffer,
+  shouldCommitViaGhgiRunner,
+} from "./ghgi-run";
 export {
   REVIEW_DRAFT_TTL_MS,
   REVIEW_LOCK_MS,
@@ -26,10 +50,12 @@ export {
   buildIngestDocumentPathBInput,
   buildIngestExtractPathAInput,
   initialMarkdownReady,
+  sameDocumentScope,
 } from "./document-pool";
 export type {
   IngestDocumentPool,
   IngestDocumentRecord,
+  WithdrawIngestDocumentInput,
 } from "./document-pool";
 export { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
 export { TestIngestPlugin } from "./plugins/TestIngestPlugin";
@@ -39,7 +65,24 @@ export type {
   GhgiAdaptedPayload,
   GhgiIngestPluginDeps,
 } from "./plugins/GhgiIngestPlugin";
+export {
+  confirmColumnMap,
+  isColumnMappingPending,
+  proposeColumnMap,
+} from "./column-mapping";
 export type { IngestMatchResult, IngestPlugin } from "./plugin";
+export {
+  ingestCellKey,
+  ingestRowKey,
+  reconcileIngestSource,
+} from "./source-reconciliation";
+export type {
+  IngestProposedCommitValue,
+  IngestSourceOccupancy,
+  IngestSourcePointer,
+  IngestSourceReconciliationInput,
+  IngestSourceReconciliationReport,
+} from "./source-reconciliation";
 export type { IngestStore } from "./store";
 export {
   INGEST_ERROR_CODES,
@@ -52,6 +95,10 @@ export {
 } from "./types";
 export type {
   IngestApprovalPolicy,
+  IngestColumnMappingInput,
+  IngestColumnMappingProposal,
+  IngestColumnMappingState,
+  IngestConfirmedColumnMap,
   IngestErrorCode,
   IngestFileInput,
   IngestItemRecord,

@@ -45,6 +45,7 @@ import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
 import { ChatVisualFrame } from "./chat-visual-frame";
+import { ChatChoices } from "./chat-choices";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -508,7 +509,7 @@ export function ConceptNoteChatPanel({
             />
           )}
 
-        {messages.map((message) => (
+        {messages.map((message, messageIndex) => (
           <Fragment key={message.id}>
             {message.role === "assistant" &&
               message.id === messages.at(-1)?.id && (
@@ -519,15 +520,17 @@ export function ConceptNoteChatPanel({
                   isGenerating={isGenerating}
                 />
               )}
-            {(message.text || message.role === "user") && (
+            {(message.text || message.choices || message.role === "user") && (
               <Box
                 alignSelf={message.role === "user" ? "end" : "start"}
                 maxW="92%"
-                border="1px solid"
+                border={message.choices ? "none" : "1px solid"}
                 borderColor="border.neutral"
                 borderRadius="rounded"
                 bg={
-                  message.role === "user" ? "background.neutral" : "base.light"
+                  message.choices || message.role === "user"
+                    ? "background.neutral"
+                    : "base.light"
                 }
                 px={3}
                 py={2.5}
@@ -549,6 +552,19 @@ export function ConceptNoteChatPanel({
                     {message.text}
                   </Text>
                 ) : null}
+                {message.role === "assistant" && message.choices && (
+                  <ChatChoices
+                    choices={message.choices}
+                    lng={lng}
+                    disabled={chatDisabled}
+                    answered={messageIndex < messages.length - 1}
+                    onReply={async (answer) => {
+                      if (chatDisabled) return;
+                      followLatestRef.current = true;
+                      await sendChatMessage(answer);
+                    }}
+                  />
+                )}
               </Box>
             )}
             {message.visuals?.map((visual, index) => (
@@ -630,7 +646,7 @@ export function ConceptNoteChatPanel({
         onSubmit={submitMessage}
       >
         <Box mb={!chatDisabled && threadId ? 3 : 0}>
-          {!chatDisabled && threadId && (
+          {!chatDisabled && threadId && !messages.at(-1)?.choices && (
             <ChatSuggestions
               runId={runId}
               threadId={threadId}

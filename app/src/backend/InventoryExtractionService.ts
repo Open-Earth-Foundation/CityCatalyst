@@ -13,6 +13,7 @@ import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
+  namesRemovals,
   reconciliationTargets,
   type DroppedRowReason,
   type ExtractionSummary,
@@ -466,10 +467,11 @@ function mergeDropped(
  * Totals with a scope are never grand totals; sector totals were demoted per page.
  * A page that adds only notation-key rows with scope and reference (NO, IE, NE, C)
  * leaves the sum unchanged; it still joins the run as a continuation of the table.
+ * Inside one tier, a run that reaches a net total beats one that reaches only a gross
+ * total: the gross sum leaves out the forestry removals. GPC rows still rank first.
  * Without a candidate every page's rows are kept (fallback).
- * Exported for unit tests.
  */
-export function selectReconciledPages(
+function selectPages(
   input: PageResult[],
   targetYear?: number,
 ): ExtractionResult {
@@ -534,6 +536,8 @@ export function selectReconciledPages(
     rows: number;
     structured: number;
     deviation: number;
+    /** Within the review tolerance of a net total (forestry removals included). */
+    viaNet: boolean;
   };
   const tier = (run: Run): number =>
     (run.structured > 0 ? 0 : 2) +
@@ -541,6 +545,8 @@ export function selectReconciledPages(
   const better = (a: Run, b: Run): boolean => {
     if (tier(a) !== tier(b)) return tier(a) < tier(b);
     const inBand = tier(a) % 2 === 0;
+    // Same tier: the run that reaches a net total keeps the removals the other leaves out.
+    if (inBand && a.viaNet !== b.viaNet) return a.viaNet;
     if (inBand && a.structured !== b.structured) {
       return a.structured > b.structured;
     }
@@ -616,7 +622,21 @@ export function selectReconciledPages(
         previous[index] = d;
       });
       if (deviation > selectionTolerance) continue;
-      const run = { start, end, rows: rowCount, structured, deviation };
+      // allTotals lists the grand totals first, then the net ones.
+      const viaNet = deviations.some(
+        (d, index) =>
+          index >= grandTotals.length &&
+          eligible[index] &&
+          d <= RECONCILIATION_TOLERANCE,
+      );
+      const run = {
+        start,
+        end,
+        rows: rowCount,
+        structured,
+        deviation,
+        viaNet,
+      };
       if (!best || better(run, best)) best = run;
     }
   }
@@ -705,6 +725,52 @@ export function selectReconciledPages(
   }
 
   return buildFallback();
+}
+
+/** GPC reference of the AFOLU land-use rows, where the forestry removals live. */
+const REMOVALS_GPC_REF = /^V\.2(\.|$)/i;
+
+/**
+ * True when the rows hold a removals line item: a V.2 reference, or a sub-sector or
+ * category that names forestry or removals. The sector alone does not count: the
+ * livestock rows sit under "Agriculture, Forestry And Other Land Use" too.
+ */
+function hasRemovalsLineItem(rows: ExtractedRow[]): boolean {
+  return rows.some(
+    (row) =>
+      (row.gpcRefNo != null && REMOVALS_GPC_REF.test(row.gpcRefNo)) ||
+      [row.subsector, row.category].some(
+        (text) => text != null && namesRemovals(text),
+      ),
+  );
+}
+
+/**
+ * Record the removals totals the document reports while the rows hold no removals
+ * line item, so the review screen can warn that the imported sum leaves them out.
+ */
+function withOrphanRemovals(result: ExtractionResult): ExtractionResult {
+  const { removals } = reconciliationTargets(
+    result.summary.reportedTotals,
+    result.summary.targetYear,
+  );
+  if (removals.length === 0 || hasRemovalsLineItem(result.rows)) return result;
+  return {
+    rows: result.rows,
+    summary: { ...result.summary, orphanRemovals: removals },
+  };
+}
+
+/**
+ * Choose the rows of one inventory table out of per-page extractions (see
+ * selectPages) and flag removals totals that have no line item.
+ * Exported for unit tests.
+ */
+export function selectReconciledPages(
+  input: PageResult[],
+  targetYear?: number,
+): ExtractionResult {
+  return withOrphanRemovals(selectPages(input, targetYear));
 }
 
 /**
@@ -995,7 +1061,7 @@ function checkExtractionResult(
     );
   }
 
-  return { rows: result, summary };
+  return withOrphanRemovals({ rows: result, summary });
 }
 
 /**

@@ -254,6 +254,7 @@ describe("3. review notes", () => {
       reconciledPages: [],
       failedPages: [],
       droppedReasons: [],
+      removalsWarning: null,
     });
   });
 });

@@ -41,6 +41,12 @@ export type ExtractionSummary = {
   selectedPages?: number[];
   /** Pages the model could not read twice in a row; their rows are missing. */
   failedPages?: number[];
+  /**
+   * Totals of forestry removals the document reports while the selected rows hold no
+   * removals line item (no V.2 row). The imported sum then leaves the removals out.
+   * Missing on summaries stored before this field.
+   */
+  orphanRemovals?: number[];
 };
 
 /**
@@ -58,19 +64,55 @@ export const RECONCILIATION_TOLERANCE = 0.01;
 /** Totals below this share of the largest reported total are sector or part totals. */
 export const MIN_GRAND_TOTAL_SHARE = 0.5;
 
+/** Words that name forestry removals in a label, sector or sub-sector. */
+const REMOVALS_LABEL = /forestry|removals?|sequestration/i;
+
+/** The whole AFOLU sector contains the word "forestry" but is not the removals. */
+const AFOLU_NAME =
+  /agriculture,?\s*forestry\s*(?:and|&)\s*other\s*land\s*use|\bafolu\b/gi;
+
+/** True when the text names forestry removals; the AFOLU sector name does not count. */
+export function namesRemovals(text: string): boolean {
+  return REMOVALS_LABEL.test(text.replace(AFOLU_NAME, " "));
+}
+
+/** Phrases that name the city total net of removals, whatever else the label says. */
+const CITY_NET_PHRASE =
+  /after\s+(?:removals?|sequestration)|incl(?:uding|\.)?\s+(?:forestry|removals?|sequestration)/i;
+
 /**
  * Label of a net total: the gross total minus forestry removals, so far below the
  * gross figure ("Total Net Emissions (including Forestry)"). Only a total with such a
- * label may stand below the share of the largest total.
+ * label may stand below the share of the largest total. "Net" next to a removals word
+ * ("Net forestry", "Forestry (net)") is the net of the removals themselves, not the
+ * city total, unless the label also says "total".
  */
-const NET_TOTAL_LABEL =
-  /\bnet\b|after\s+(?:removals?|sequestration)|incl(?:uding|\.)?\s+(?:forestry|removals?|sequestration)/i;
+export function isNetTotalLabel(label: string): boolean {
+  if (CITY_NET_PHRASE.test(label)) return true;
+  if (!/\bnet\b/i.test(label)) return false;
+  return !namesRemovals(label) || /\btotal\b/i.test(label);
+}
+
+/**
+ * True for a total of forestry removals (-811,512 "Forestry removals"). Decided by
+ * words only, never by the sign: a net total is negative too. A label that names the
+ * city's net total ("Net emissions (including Forestry)") is a net total, not
+ * removals; "Net forestry" is removals. The AFOLU sector name alone is not removals.
+ */
+export function isRemovalsTotal(total: ReportedTotal): boolean {
+  if (isNetTotalLabel(total.label)) return false;
+  return [total.label, total.sector, total.subsector].some(
+    (text) => text != null && namesRemovals(text),
+  );
+}
 
 export type ReconciliationTargets = {
   /** City totals: at least the share of the largest reported total of the year. */
   grand: number[];
   /** Net totals: below the share but labeled as net. */
   net: number[];
+  /** Totals of forestry removals. Never a target: they stand for a part of the city. */
+  removals: number[];
 };
 
 /**
@@ -82,7 +124,7 @@ export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
   targetYear?: number | null,
 ): ReconciliationTargets {
-  const ofYear = (totals ?? []).filter(
+  const candidates = (totals ?? []).filter(
     (total) =>
       isGrandTotal(total) &&
       Number.isFinite(total.value) &&
@@ -90,17 +132,25 @@ export function reconciliationTargets(
       // A grand total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );
+  // Removals can exceed the gross total (Masterton: -811,512 against 785,873). Left
+  // among the candidates they would raise the share every other total is held to.
+  const removals = new Set<number>();
+  const ofYear = candidates.filter((total) => {
+    if (!isRemovalsTotal(total)) return true;
+    removals.add(total.value);
+    return false;
+  });
   const largest = Math.max(0, ...ofYear.map((total) => Math.abs(total.value)));
   const grand = new Set<number>();
   const net = new Set<number>();
   for (const total of ofYear) {
     if (Math.abs(total.value) >= largest * MIN_GRAND_TOTAL_SHARE) {
       grand.add(total.value);
-    } else if (NET_TOTAL_LABEL.test(total.label)) {
+    } else if (isNetTotalLabel(total.label)) {
       net.add(total.value);
     }
   }
-  return { grand: [...grand], net: [...net] };
+  return { grand: [...grand], net: [...net], removals: [...removals] };
 }
 
 export type Reconciliation = {
@@ -192,12 +242,55 @@ export function zeroRowReason(
   return "pdf-extraction-no-data";
 }
 
+/**
+ * The imported rows may leave out the forestry removals:
+ * - `orphan`: the document reports a removals total but no removals line item was
+ *   imported (`removals` is that total, `net` the net total when the document has one);
+ * - `gross-only`: the document reports a net total, yet the imported sum reaches a
+ *   gross total and not the net one.
+ */
+export type RemovalsWarning =
+  | { kind: "orphan"; removals: number; net: number | null }
+  | { kind: "gross-only"; net: number };
+
+/**
+ * Warn when removals may be missing. Both causes can hold at once; then the orphan
+ * warning wins, because it names the removals total. It informs and never blocks.
+ */
+export function removalsWarning(
+  summary: ExtractionSummary | null,
+): RemovalsWarning | null {
+  if (!summary) return null;
+  const targets = reconciliationTargets(
+    summary.reportedTotals,
+    summary.targetYear,
+  );
+  const net = targets.net[0] ?? null;
+  const orphans = summary.orphanRemovals ?? [];
+  if (orphans.length > 0) {
+    return {
+      kind: "orphan",
+      removals: orphans.reduce((sum, value) => sum + value, 0),
+      net,
+    };
+  }
+  if (net == null) return null;
+  const reaches = (target: number) =>
+    Math.abs(summary.importedSum - target) / Math.abs(target) <=
+    RECONCILIATION_TOLERANCE;
+  if (targets.grand.some(reaches) && !targets.net.some(reaches)) {
+    return { kind: "gross-only", net };
+  }
+  return null;
+}
+
 export type ExtractionReviewNotes = {
   reconciliation: Reconciliation | null;
   /** Pages to name in the "adds up to the total" note; empty when it would be false. */
   reconciledPages: number[];
   failedPages: number[];
   droppedReasons: DroppedRowReason[];
+  removalsWarning: RemovalsWarning | null;
 };
 
 /** What the review screen tells the user about an extraction. */
@@ -205,13 +298,17 @@ export function extractionReviewNotes(
   summary: ExtractionSummary | null,
 ): ExtractionReviewNotes {
   const reconciliation = reconcileExtraction(summary);
+  const warning = removalsWarning(summary);
   return {
     reconciliation,
-    // Only when the sum really matches; otherwise the mismatch banner speaks.
+    removalsWarning: warning,
+    // Only when the sum really matches; otherwise the mismatch banner speaks. With a
+    // removals warning the note "adds up to the total" would contradict it.
     reconciledPages:
       summary?.pageSelection === "reconciled" &&
       reconciliation != null &&
-      !reconciliation.mismatch
+      !reconciliation.mismatch &&
+      warning == null
         ? (summary.selectedPages ?? [])
         : [],
     failedPages: summary?.failedPages ?? [],

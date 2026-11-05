@@ -38,8 +38,11 @@ describe("finance enum labels", () => {
     expect(enumLabel(SECTOR_KEYS, "Transport", t)).toBe(
       "sector-transportation",
     );
-    expect(enumLabel(SECTOR_KEYS, "Housing and Urban Development", t)).toBe(
-      "Housing And Urban Development",
+    expect(enumLabel(SECTOR_KEYS, "Natural Resources and Environment", t)).toBe(
+      "Natural Resources and Environment",
+    );
+    expect(enumLabel(SECTOR_KEYS, "some_other_sector", t)).toBe(
+      "Some Other Sector",
     );
     expect(enumLabel(SECTOR_KEYS, null, t)).toBe("—");
   });

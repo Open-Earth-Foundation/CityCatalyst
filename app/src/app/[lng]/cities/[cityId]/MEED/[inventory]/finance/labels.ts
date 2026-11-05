@@ -282,8 +282,13 @@ export function enumLabel(
   value: string | null | undefined,
   t: TFunction,
 ): string {
-  const key = keys[(value ?? "").trim().toLowerCase()];
-  return key ? t(key) : humanizeEnum(value);
+  const raw = (value ?? "").trim();
+  const key = keys[raw.toLowerCase()];
+  if (key) return t(key);
+  // Free text from a feed ("Natural Resources and Environment") is shown as
+  // it comes; it is the backend's to localize, like `project_name_i18n`.
+  // Only enum-shaped values (snake_case / kebab-case) get humanized.
+  return /[\s A-Z]/.test(raw) ? raw : humanizeEnum(value);
 }
 
 /** Project name in the page language, then English, then the raw name. */

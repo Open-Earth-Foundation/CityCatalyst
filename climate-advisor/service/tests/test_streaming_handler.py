@@ -3,16 +3,21 @@ from __future__ import annotations
 import json
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
+from types import SimpleNamespace
 from uuid import uuid4
 
+from agents.tool import ToolContext
 from app.models.requests import MessageCreateRequest
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.utils.sse import format_sse
+from app.utils.streaming_events import handle_tool_called, handle_tool_output
 from app.utils.streaming_context import (
     native_input_catalog_request,
     resolve_workflow_context,
 )
+from app.utils.concept_note_context import rendered_visuals
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.streaming_runner import build_stream_run_config
 from tests.streaming_fixtures import _parse_sse_payload
@@ -206,10 +211,11 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
         visual = {
             "name": "concept_note_render_visual",
             "status": "success",
+            "arguments": {"title": "Chart", "html": "<html></html>"},
             "result_json": {
                 "action": "concept_note.visual.render",
                 "success": True,
-                "data": {"title": "Chart", "html": "<html></html>"},
+                "data": {"title": "Chart", "html_chars": 13},
                 "error_code": None,
             },
         }
@@ -223,6 +229,45 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(persist.await_args.kwargs["assistant_content"], "")
         self.assertEqual(persist.await_args.kwargs["tool_invocations"], [visual])
+
+    async def test_visual_html_is_streamed_and_stored_once(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1", user_id="user-1", session_factory=MagicMock()
+        )
+        html = "<html><body><svg>" + "x" * 500 + "</svg></body></html>"
+        arguments = json.dumps({"title": "Chart", "html": html})
+        output = await concept_note_render_visual.on_invoke_tool(
+            ToolContext(
+                context=None,
+                tool_call_id="call-1",
+                tool_name=concept_note_render_visual.name,
+                tool_arguments=arguments,
+            ),
+            arguments,
+        )
+        called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="concept_note_render_visual",
+                call_id="call-1",
+                arguments=arguments,
+            )
+        )
+        finished = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-1"), output=output
+        )
+
+        chunks = [chunk async for chunk in handle_tool_called(handler, called)]
+        chunks += [chunk async for chunk in handle_tool_output(handler, finished)]
+        chunks.append(handler._format_completion_event("req-1", ok=True))
+        streamed = b"".join(chunks).decode("utf-8")
+
+        self.assertEqual(streamed.count(html), 1)
+        stored = json.dumps(handler._tool_invocations_for_persistence())
+        self.assertEqual(stored.count(html), 1)
+        self.assertEqual(
+            rendered_visuals(handler.tool_invocations),
+            [{"title": "Chart", "html": html}],
+        )
 
     async def test_tool_only_turn_without_visual_is_not_persisted(self) -> None:
         handler = StreamingHandler(

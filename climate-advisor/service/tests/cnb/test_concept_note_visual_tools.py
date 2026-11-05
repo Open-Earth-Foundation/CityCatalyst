@@ -22,13 +22,13 @@ async def invoke(title: str, html: str) -> dict:
     )
 
 
-async def test_render_visual_returns_title_and_html() -> None:
+async def test_render_visual_returns_title_and_size_without_html() -> None:
     result = await invoke("Emissions by sector", HTML)
 
     assert result == {
         "action": "concept_note.visual.render",
         "success": True,
-        "data": {"title": "Emissions by sector", "html": HTML},
+        "data": {"title": "Emissions by sector", "html_chars": len(HTML)},
         "error_code": None,
     }
 

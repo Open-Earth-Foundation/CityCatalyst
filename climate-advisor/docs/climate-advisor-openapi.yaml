@@ -220,7 +220,7 @@ components:
           type: string
         html:
           type: string
-          description: Self-contained HTML document; render only in a sandboxed iframe.
+          description: Model-authored static HTML/SVG document; sanitize it and render only in a script-free sandboxed iframe.
     MessageCreateRequest:
       type: object
       required: [user_id, content]

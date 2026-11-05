@@ -148,28 +148,43 @@ VISUAL_RENDER_ACTION = "concept_note.visual.render"
 
 
 def rendered_visuals(tools_used: Any) -> list[dict[str, str]]:
-    """Return the title and HTML of each successful visual in stored tool calls."""
+    """Return the title and HTML of each successful visual in stored tool calls.
+
+    The HTML is read from the call arguments, its only stored copy; earlier
+    results also carried it in `data.html`.
+    """
     visuals = []
     for invocation in tools_used if isinstance(tools_used, list) else []:
-        result = invocation.get("result_json") if isinstance(invocation, dict) else None
+        if (
+            not isinstance(invocation, dict)
+            or invocation.get("name") != RENDER_VISUAL_TOOL_NAME
+        ):
+            continue
+        result = invocation.get("result_json")
         if not isinstance(result, dict) or result.get("action") != VISUAL_RENDER_ACTION:
             continue
         data = result.get("data")
+        arguments = invocation.get("arguments")
+        html = arguments.get("html") if isinstance(arguments, dict) else None
+        if not isinstance(html, str) and isinstance(data, dict):
+            html = data.get("html")
         if (
             result.get("success") is True
             and isinstance(data, dict)
             and isinstance(data.get("title"), str)
-            and isinstance(data.get("html"), str)
+            and isinstance(html, str)
+            and html
         ):
-            visuals.append({"title": data["title"], "html": data["html"]})
+            visuals.append({"title": data["title"], "html": html})
     return visuals
 
 
 def omit_visual_html(invocation: dict[str, Any]) -> dict[str, Any]:
     """Copy a replayed visual tool call with its HTML replaced by a placeholder.
 
-    Only the model-facing replay is compacted; the stored message row and the
-    SSE done event keep the full HTML for the chat to render.
+    Used for the model-facing replay and the live tool_called event; the stored
+    message row and the SSE done event keep the HTML in the arguments for the
+    chat to render. The result branch covers rows saved before results dropped it.
     """
     if invocation.get("name") != RENDER_VISUAL_TOOL_NAME:
         return invocation

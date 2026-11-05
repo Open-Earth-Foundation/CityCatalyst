@@ -12,6 +12,7 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.utils.cnb_progress import emit_cnb_reasoning
+from app.utils.concept_note_context import omit_visual_html
 from app.utils.mlflow_logging import finish_tool_observation, start_tool_observation
 from app.utils.sse import format_sse
 
@@ -193,7 +194,8 @@ async def handle_tool_called(
         {
             "name": invocation.get("name", "unknown_tool"),
             "status": invocation.get("status", "executing"),
-            "arguments": invocation.get("arguments"),
+            # Visual HTML streams once, in the done event.
+            "arguments": omit_visual_html(invocation).get("arguments"),
         },
         event="tool_result",
     ).encode("utf-8")

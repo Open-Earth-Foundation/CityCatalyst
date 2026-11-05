@@ -74,6 +74,23 @@ export function readConceptNoteVisual(
   return { title: value.title, html: value.html };
 }
 
+/** A live render result keeps only the title; the HTML is in the call arguments. */
+export function readConceptNoteToolVisual(
+  result: Record<string, unknown>,
+): ConceptNoteChatVisual | null {
+  if (
+    result.action !== "concept_note.visual.render" ||
+    result.success !== true ||
+    !isRecord(result.data) ||
+    !isRecord(result.arguments)
+  )
+    return null;
+  return readConceptNoteVisual({
+    title: result.data.title,
+    html: result.arguments.html,
+  });
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {

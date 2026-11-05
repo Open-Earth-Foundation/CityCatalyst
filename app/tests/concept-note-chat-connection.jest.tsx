@@ -285,9 +285,11 @@ it("attaches a rendered visual once to the reply, even without text", async () =
     name: "concept_note_render_visual",
     status: "success",
     tool_call_id: "call-1",
+    // The HTML arrives only in the call arguments, not in the result.
+    arguments: { title: "Emissions", html: "<svg></svg>" },
     action: "concept_note.visual.render",
     success: true,
-    data: { title: "Emissions", html: "<svg></svg>" },
+    data: { title: "Emissions", html_chars: 11 },
     error_code: null,
   };
   await act(async () => {
@@ -295,8 +297,9 @@ it("attaches a rendered visual once to the reply, even without text", async () =
     streamOptions.onToolResult?.(toolResult);
     streamOptions.onToolResult?.({
       ...toolResult,
+      arguments: { title: "Failed", html: "<p></p>" },
       success: false,
-      data: { title: "Failed", html: "<p></p>" },
+      data: null,
     });
     streamOptions.onComplete?.();
   });

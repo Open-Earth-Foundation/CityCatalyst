@@ -581,6 +581,7 @@ class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
             await conn.run_sync(Base.metadata.create_all)
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
         visual = {"title": "Emissions by sector", "html": "<html></html>"}
+        legacy = {"title": "Older chart", "html": "<html>old</html>"}
         try:
             async with session_factory() as session:
                 thread = await ThreadService(session).create_thread(
@@ -597,10 +598,21 @@ class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
                     tools_used=[
                         {
                             "name": "concept_note_render_visual",
+                            "arguments": visual,
                             "result_json": {
                                 "action": "concept_note.visual.render",
                                 "success": True,
-                                "data": visual,
+                                "data": {"title": visual["title"], "html_chars": 13},
+                                "error_code": None,
+                            },
+                        },
+                        # Rows saved before results dropped the HTML.
+                        {
+                            "name": "concept_note_render_visual",
+                            "result_json": {
+                                "action": "concept_note.visual.render",
+                                "success": True,
+                                "data": legacy,
                                 "error_code": None,
                             },
                         },
@@ -629,7 +641,9 @@ class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
         by_role = {message.role: message for message in response.messages}
         self.assertEqual(by_role["user"].visuals, [])
         self.assertEqual(by_role["assistant"].text, "")
-        self.assertEqual(by_role["assistant"].model_dump()["visuals"], [visual])
+        self.assertEqual(
+            by_role["assistant"].model_dump()["visuals"], [visual, legacy]
+        )
 
 
 class ResponseFormatTests(unittest.TestCase):

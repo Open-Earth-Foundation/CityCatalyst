@@ -16,7 +16,7 @@ import {
   type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
-  readConceptNoteVisual,
+  readConceptNoteToolVisual,
 } from "./chat-utils";
 
 // The service replaces this content with its own hidden overview trigger.
@@ -144,11 +144,7 @@ export function useConceptNoteChat({
     },
     onToolResult: (result) => {
       const data = result.data;
-      const visual =
-        result.action === "concept_note.visual.render" &&
-        result.success === true
-          ? readConceptNoteVisual(data)
-          : null;
+      const visual = readConceptNoteToolVisual(result);
       // The done event runs tool results before onComplete, so the turn's id is still set.
       const visualMessageId = assistantMessageIdRef.current;
       if (visual && visualMessageId) {

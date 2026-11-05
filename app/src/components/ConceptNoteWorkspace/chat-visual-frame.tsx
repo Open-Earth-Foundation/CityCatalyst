@@ -3,11 +3,13 @@
 import { Box, chakra, HStack, Icon, Text } from "@chakra-ui/react";
 import {
   type Ref,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
+import DOMPurify from "dompurify";
 import { LuMaximize2 } from "react-icons/lu";
 
 import {
@@ -23,43 +25,54 @@ import { useTranslation } from "@/i18n/client";
 
 import { ReviewButton as Button } from "./review-button";
 
-// Inline code and the jsDelivr chart libraries only; fetches, images and forms can't call out.
-// Self-navigation still can: only serving visuals from a separate origin closes that.
+// Static HTML/SVG only. Without scripts the frame cannot navigate itself, and with
+// links stripped a click cannot either, so note context cannot leave in a URL.
 const VISUAL_CSP =
-  "default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://cdn.jsdelivr.net; img-src data: blob:; font-src data: https://cdn.jsdelivr.net; connect-src 'none'; form-action 'none'; base-uri 'none'";
+  "default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; form-action 'none'; base-uri 'none'";
 
-const VISUAL_HEIGHT_MESSAGE = "cnb-visual-height";
+// DOMPurify already drops scripts, meta, link, base, embedded frames, SVG
+// <set>/<animate> and event handlers; links and forms go too.
+const SANITIZE_OPTIONS = {
+  WHOLE_DOCUMENT: true,
+  FORBID_TAGS: ["a", "area", "form"],
+  FORBID_ATTR: ["href", "xlink:href"],
+};
+
 const INLINE_DEFAULT_HEIGHT = 420;
 const INLINE_MIN_HEIGHT = 120;
 const INLINE_MAX_HEIGHT = 720;
 
-// Posts the content height so the inline card fits it. Starts after parsing so a
-// half-built page never shrinks the card, skips 0 from throttled offscreen frames,
-// takes max() for html/body pinned to 100%, and adds any horizontal scrollbar.
-const HEIGHT_REPORTER = `<script>(()=>{const p=parent;addEventListener("DOMContentLoaded",()=>{const d=document.documentElement,b=document.body,post=()=>{const h=Math.max(d.getBoundingClientRect().height,b.scrollHeight);if(h>0)p.postMessage({type:"${VISUAL_HEIGHT_MESSAGE}",height:h+innerHeight-d.clientHeight},"*")},o=new ResizeObserver(post);o.observe(d);o.observe(b);addEventListener("load",post)})})()</script>`;
-
-/** Wraps model HTML so our CSP meta and height reporter run before any model content. */
+/** Sanitizes model HTML and puts our CSP before any of it. */
 export function buildSandboxedVisualDocument(html: string): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${VISUAL_CSP}">${HEIGHT_REPORTER}${html.replace(/^\s*<!doctype[^>]*>/i, "")}`;
+  // Fail closed where DOMPurify has no DOM (server rendering).
+  if (!DOMPurify.isSupported) return "";
+  const clean = DOMPurify.sanitize(html, SANITIZE_OPTIONS);
+  const head = /^<html[^>]*><head>/.exec(clean)?.[0];
+  if (!head) return "";
+  return `<!doctype html>${head}<meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${VISUAL_CSP}">${clean.slice(head.length)}`;
 }
 
 function VisualIframe({
   html,
   title,
   height,
+  onLoad,
   ref,
 }: {
   html: string;
   title: string;
   height: string;
+  onLoad?: () => void;
   ref?: Ref<HTMLIFrameElement>;
 }) {
   return (
     <chakra.iframe
       ref={ref}
-      // Never add allow-same-origin: with allow-scripts it lets model code run as the app.
-      sandbox="allow-scripts"
+      // Same origin only so the card can measure the content; never add
+      // allow-scripts too, or model code would run as the app.
+      sandbox="allow-same-origin"
       srcDoc={buildSandboxedVisualDocument(html)}
+      onLoad={onLoad}
       title={title}
       referrerPolicy="no-referrer"
       loading="lazy"
@@ -79,7 +92,7 @@ interface ChatVisualFrameProps {
   title: string;
 }
 
-/** An AI-generated HTML visual, isolated in a script-only sandboxed iframe. */
+/** An AI-generated static HTML visual, sanitized into a script-free sandboxed iframe. */
 export function ChatVisualFrame({
   html,
   lng,
@@ -93,30 +106,35 @@ export function ChatVisualFrame({
   // After the resize is laid out, so a following chat can re-pin to the bottom.
   useLayoutEffect(() => onHeightChange?.(), [height, onHeightChange]);
 
-  useEffect(() => {
-    const onMessage = (event: MessageEvent) => {
-      // Sandboxed frames have a null origin, so accept only this card's own frame.
-      const frameWindow = frameRef.current?.contentWindow;
-      if (
-        !frameWindow ||
-        event.source !== frameWindow ||
-        event.data?.type !== VISUAL_HEIGHT_MESSAGE
-      ) {
-        return;
-      }
-      const reported = Number(event.data.height);
-      if (reported > 0) {
-        setHeight(
-          Math.min(
-            INLINE_MAX_HEIGHT,
-            Math.max(INLINE_MIN_HEIGHT, Math.ceil(reported)),
-          ),
-        );
-      }
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
+  // Takes max() for html/body pinned to 100% and adds any horizontal scrollbar.
+  const measure = useCallback(() => {
+    const frame = frameRef.current;
+    const doc = frame?.contentDocument;
+    if (!frame?.contentWindow || !doc?.body) return;
+    const root = doc.documentElement;
+    const reported =
+      Math.max(root.getBoundingClientRect().height, doc.body.scrollHeight) +
+      frame.contentWindow.innerHeight -
+      root.clientHeight;
+    // Throttled offscreen frames report 0; keep the current height then.
+    if (reported > 0) {
+      setHeight(
+        Math.min(
+          INLINE_MAX_HEIGHT,
+          Math.max(INLINE_MIN_HEIGHT, Math.ceil(reported)),
+        ),
+      );
+    }
   }, []);
+
+  // Static content only reflows when the chat column changes width.
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [measure]);
 
   return (
     <Box
@@ -191,6 +209,7 @@ export function ChatVisualFrame({
         html={html}
         title={title}
         height={`${height}px`}
+        onLoad={measure}
       />
     </Box>
   );

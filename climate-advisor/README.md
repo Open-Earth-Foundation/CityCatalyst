@@ -72,13 +72,16 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
    - When `CNB_RENDER_VISUAL_ENABLED=true`, also exposes experimental
-     `concept_note_render_visual(title, html)`. It validates one self-contained
-     HTML chart, diagram, or table (title at most 200 characters, HTML at most
-     200,000) and returns it as `concept_note.visual.render`; CityCatalyst
-     renders it in a sandboxed iframe. The SSE `done` event and the stored
-     message keep the full HTML, `GET /v1/threads/{thread_id}/messages` returns
-     it as `visuals`, and replayed history replaces it with a short placeholder.
-     A visual-only turn is saved with empty text.
+     `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
+     chart, diagram, or table (title at most 200 characters, HTML at most
+     200,000) and returns `concept_note.visual.render` with the title and size;
+     the HTML stays only in the call arguments. CityCatalyst strips scripts,
+     links, forms and external resources with DOMPurify and renders the rest in
+     a script-free sandboxed iframe, so a visual cannot send note context out.
+     The SSE `done` event and the stored message keep one copy of the HTML,
+     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
+     replayed history replaces it with a short placeholder. A visual-only turn
+     is saved with empty text.
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list

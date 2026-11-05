@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
-from urllib.parse import urlparse
 
 from app.config.settings import PromptsConfig, _load_llm_config
 
@@ -256,11 +254,7 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "concept_note_edit_propose" in composed
     assert "concept_note_render_visual" in composed
-    urls_in_composed = re.findall(r"https?://[^\s)>'\"`]+", composed)
-    assert any(
-        parsed.scheme == "https" and parsed.hostname == "cdn.jsdelivr.net"
-        for parsed in (urlparse(url) for url in urls_in_composed)
-    )
+    assert "draw every chart as inline SVG" in composed
     assert "takes no arguments" in composed
     assert "A proposal does not apply changes" in composed
     assert "If the edit tool is unavailable" in composed

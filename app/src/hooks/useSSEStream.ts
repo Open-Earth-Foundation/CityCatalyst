@@ -69,6 +69,7 @@ function mergeToolResult(
     name: tool.name,
     status: tool.status,
     tool_call_id: tool.id,
+    arguments: tool.arguments,
     ...result,
   };
 }

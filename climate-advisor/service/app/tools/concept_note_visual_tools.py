@@ -19,12 +19,12 @@ async def concept_note_render_visual(title: str, html: str) -> str:
 
     Use only when a visual genuinely helps the user: a chart of numbers already
     in the context, a diagram such as a theory of change or logframe, or a
-    comparison table. `html` must be ONE complete HTML document with inline data,
-    CSS and JS. Never load data over the network (no fetch, XHR or WebSocket);
-    load external scripts only from https://cdn.jsdelivr.net. No forms or inputs
-    collecting user data. Keep it under about 100 KB (hard limit 200,000
-    characters). Never invent numbers: use only data from the context and label
-    its sources. `title` is required, at most 200 characters.
+    comparison table. `html` must be ONE complete, static HTML document with
+    inline CSS and inline SVG. Scripts, links, forms, SVG animation and external
+    resources are removed before display, so draw charts as inline SVG. Keep it
+    under about 100 KB (hard limit 200,000 characters). Never invent numbers:
+    use only data from the context and label its sources. `title` is required,
+    at most 200 characters.
     It shows in a chat column 340 to 500 px wide that fits up to 720 px of
     height before scrolling: use one fluid column at width 100%, no fixed
     widths over 320 px, at most 4 table columns, the key result first, and no
@@ -46,7 +46,9 @@ async def concept_note_render_visual(title: str, html: str) -> str:
     logger.info(
         "Rendered CNB visual title_chars=%s html_chars=%s", len(title), len(html)
     )
-    return _visual_result(True, data={"title": title, "html": html})
+    # The chat reads the HTML from the call arguments; repeating it here would
+    # store and stream every visual twice more.
+    return _visual_result(True, data={"title": title, "html_chars": len(html)})
 
 
 def _visual_result(

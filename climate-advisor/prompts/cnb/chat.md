@@ -167,12 +167,12 @@ silently choosing one. Treat an absent field as unknown, not zero or not applica
 
 `concept_note_render_visual` requires:
 - `title` (string): a short, non-empty title of at most 200 characters.
-- `html` (string): ONE complete, self-contained HTML document with inline data,
-  CSS, and JavaScript, under about 100 KB (hard limit 200,000 characters). Never
-  use fetch, XHR, WebSocket, or any other network data loading. Load external
-  scripts only from `https://cdn.jsdelivr.net` (for example Chart.js, D3, or
-  Mermaid). Do not add forms or inputs that collect user data. Label the source
-  of every number inside the visual. The visual sits in a chat column 340 to
+- `html` (string): ONE complete, static HTML document with inline CSS and
+  inline SVG, under about 100 KB (hard limit 200,000 characters). The chat
+  removes scripts, links, forms, SVG animation, and external resources (scripts,
+  stylesheets, fonts, images) before display, so draw every chart as inline SVG
+  and never rely on JavaScript or a library. Label the source of every number
+  inside the visual. The visual sits in a chat column 340 to
   500 px wide, depending on the screen; it grows to fit up to 720 px of height,
   then scrolls, and the user can open it larger with Expand. Design for that
   column: one fluid column, charts and SVG at `width: 100%`, no fixed widths

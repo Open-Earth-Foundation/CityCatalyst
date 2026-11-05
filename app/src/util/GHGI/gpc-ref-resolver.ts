@@ -187,13 +187,14 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
-// One closed sentence, in the form of the III.x.2 catalogue names, with no open
+// One closed sentence, in the form of the III.x.2 catalogue names and the CIRIS
+// names ("generated within but treated outside of the city"), with no open
 // text: a place like "in the city of Canoas" or any other wording does not match.
 const WASTE_SUBJECT =
   "(emissions\\s+from\\s+)?((solid|municipal)\\s+)?(waste|wastewater)";
 const CITY = "(the\\s+)?(city|municipality|town)(\\s+(boundary|limits?))?";
 const GENERATED_INSIDE_TREATED_OUTSIDE = new RegExp(
-  `^(${WASTE_SUBJECT}\\s+(generated|produced|originating)\\s+(within|inside|in)\\s+${CITY}\\s+(and|but)\\s+(that\\s+is\\s+)?(treated|disposed|processed|incinerated|landfilled)\\s+(biologically\\s+)?(in\\s+landfills(\\s+or\\s+open\\s+dumps)?\\s+)?outside(\\s+(of\\s+)?${CITY})?|exported\\s+(waste|wastewater))\\.?$`,
+  `^(${WASTE_SUBJECT}\\s+(generated|produced|originating)\\s+(within|inside|in)(\\s+${CITY})?\\s+(and|but)\\s+(that\\s+is\\s+)?(treated|disposed|processed|incinerated|landfilled)\\s+(biologically\\s+)?(in\\s+landfills(\\s+or\\s+open\\s+dumps)?\\s+)?outside(\\s+(of\\s+)?${CITY})?|exported\\s+(waste|wastewater))\\.?$`,
   "i",
 );
 

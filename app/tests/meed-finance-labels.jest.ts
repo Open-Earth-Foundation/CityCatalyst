@@ -35,6 +35,9 @@ describe("finance enum labels", () => {
   });
 
   it("humanizes a value it has no key for, and dashes an empty one", () => {
+    expect(enumLabel(SECTOR_KEYS, "Transport", t)).toBe(
+      "sector-transportation",
+    );
     expect(enumLabel(SECTOR_KEYS, "Housing and Urban Development", t)).toBe(
       "Housing And Urban Development",
     );

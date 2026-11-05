@@ -269,6 +269,8 @@ export const CHANNEL_KEYS: Record<string, string> = {
 export const SECTOR_KEYS: Record<string, string> = {
   stationary_energy: "sector-stationary-energy",
   transportation: "sector-transportation",
+  // The projects feed tags its sector as "Transport" (GPC name, not the key).
+  transport: "sector-transportation",
   waste: "sector-waste",
   ippu: "sector-ippu",
   afolu: "sector-afolu",

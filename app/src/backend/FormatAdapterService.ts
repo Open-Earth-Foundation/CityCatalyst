@@ -310,7 +310,8 @@ export default class FormatAdapterService {
         continue;
       }
 
-      let gpcRefNo = this.strVal(get(gpcRefIdx));
+      const statedReference = this.strVal(get(gpcRefIdx));
+      let gpcRefNo = statedReference;
       if (!gpcRefNo) {
         gpcRefNo = resolveGpcRefFromLabels({
           sector: rawSectorVal,
@@ -342,6 +343,7 @@ export default class FormatAdapterService {
         ch4: this.numVal(get(ch4Idx)),
         n2o: this.numVal(get(n2oIdx)),
         gpcRefNo,
+        refSource: statedReference ? "document" : "inferred",
         source: dataSource,
         // The import cites activityDataSource; `source` is only shown on review
         activityDataSource: dataSource,

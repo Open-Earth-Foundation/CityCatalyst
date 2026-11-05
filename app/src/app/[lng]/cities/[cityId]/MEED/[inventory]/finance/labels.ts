@@ -276,6 +276,31 @@ export const SECTOR_KEYS: Record<string, string> = {
   afolu: "sector-afolu",
 };
 
+/**
+ * Sector of a matched project in the page language. GPC keys ("waste",
+ * "stationary_energy") go through the label map; for the feed's free-text
+ * sectors ("Natural Resources and Environment") the feed's own `sector_i18n`
+ * wins when it carries a localized value. The feed repeats the raw key in
+ * `sector_i18n` for GPC sectors, so an enum-shaped value is never shown as is.
+ */
+export function projectSector(
+  proj: Pick<Project, "sector" | "sector_i18n">,
+  lng: string | undefined,
+  t: TFunction,
+): string | null {
+  const raw = (proj.sector ?? "").trim();
+  const localized = (
+    (lng ? proj.sector_i18n?.[lng as "en" | "es"] : undefined) ||
+    proj.sector_i18n?.en ||
+    ""
+  ).trim();
+  const hasKey = Boolean(SECTOR_KEYS[raw.toLowerCase()]);
+  const enumShaped = /^[a-z0-9_-]+$/.test(localized);
+  if (!hasKey && localized && !enumShaped) return localized;
+  if (!raw && !localized) return null;
+  return enumLabel(SECTOR_KEYS, raw || localized, t);
+}
+
 /** Label for an endpoint enum in the page language, or humanized as a fallback. */
 export function enumLabel(
   keys: Record<string, string>,

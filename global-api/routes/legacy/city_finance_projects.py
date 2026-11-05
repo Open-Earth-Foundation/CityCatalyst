@@ -29,7 +29,7 @@ _ENDPOINT = "GET /api/v1/climate-finance/projects"
 # Fields surfaced per record (curated subset of modelled.finance_project),
 # plus the aggregated action_matches; provenance fields stay in meta.datasources.
 _FIELDS = [
-    "project_name", "project_name_i18n", "sector", "jurisdiction", "actor_id",
+    "project_name", "project_name_i18n", "sector", "sector_i18n", "jurisdiction", "actor_id",
     "lifecycle_stage", "funding_channel", "cost_total", "amount_committed",
     "amount_paid", "amount_unit", "funding_sources", "source_dataset", "country_code",
 ]
@@ -58,7 +58,7 @@ def _row_to_payload(row: Dict[str, Any], names_by_release: Dict[str, str]) -> Di
 _PROJECTS_SQL = text(
     """
     SELECT
-        fp.project_name, fp.project_name_i18n, fp.sector, fp.jurisdiction, fp.actor_id,
+        fp.project_name, fp.project_name_i18n, fp.sector, fp.sector_i18n, fp.jurisdiction, fp.actor_id,
         fp.lifecycle_stage, fp.funding_channel,
         fp.cost_total, fp.amount_committed, fp.amount_paid, fp.amount_unit,
         fp.funding_sources, fp.source_dataset, fp.country_code, fp.release_id,

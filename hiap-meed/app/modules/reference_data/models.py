@@ -358,6 +358,7 @@ class ClimateFinanceProjectResponse(ReferenceDataContract):
     project_name: str
     project_name_i18n: dict[str, str]
     sector: str | None
+    sector_i18n: dict[str, str] = Field(default_factory=dict)
     jurisdiction: str | None
     lifecycle_stage: str | None
     funding_channel: str | None

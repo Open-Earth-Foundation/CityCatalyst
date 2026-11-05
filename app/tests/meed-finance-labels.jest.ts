@@ -8,6 +8,7 @@ import {
   INSTRUMENT_KEYS,
   LIFECYCLE_KEYS,
   projectName,
+  projectSector,
   SECTOR_KEYS,
 } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/finance/labels";
 
@@ -99,5 +100,40 @@ describe("financeReason", () => {
       reason: "A reason the UI has no tagline for.",
     };
     expect(financeReason(row, t)).toBe("A reason the UI has no tagline for.");
+  });
+});
+
+describe("projectSector", () => {
+  it("labels GPC keys even when the feed repeats the key in sector_i18n", () => {
+    expect(
+      projectSector(
+        { sector: "waste", sector_i18n: { en: "waste", es: "waste" } },
+        "es",
+        t,
+      ),
+    ).toBe("sector-waste");
+  });
+
+  it("uses the feed's localized text for free-text sectors", () => {
+    expect(
+      projectSector(
+        {
+          sector: "Natural Resources and Environment",
+          sector_i18n: {
+            en: "Natural Resources and Environment",
+            es: "Recursos Naturales y Medio Ambiente",
+          },
+        },
+        "es",
+        t,
+      ),
+    ).toBe("Recursos Naturales y Medio Ambiente");
+  });
+
+  it("passes free text through without sector_i18n and dashes nothing", () => {
+    expect(projectSector({ sector: "Multisectoral" }, "es", t)).toBe(
+      "Multisectoral",
+    );
+    expect(projectSector({ sector: null }, "es", t)).toBeNull();
   });
 });

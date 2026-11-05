@@ -488,6 +488,7 @@ export default function Page(props: {
             total={ranked.length}
             isSelected={selectedIds.includes(selected.action_id)}
             onToggleSelect={toggleSelect}
+            lng={lng}
             finance={{ cityId, lng, financeHref: hrefFor("finance") }}
             extraSections={
               <LegalStandingSection

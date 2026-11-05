@@ -6,7 +6,7 @@
 
 import type { TFunction } from "i18next";
 import { MEED_TONE_FG, type MeedTone } from "../../components/meedTones";
-import type { FeasibilityRow } from "./types";
+import type { FeasibilityRow, Project } from "./types";
 
 // ─── Financing routes ─────────────────────────────────────────────────────────
 
@@ -240,6 +240,88 @@ export function scoreTone(v: number): MeedTone {
 export function humanizeEnum(value: string | null | undefined): string {
   if (!value) return "—";
   return value.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// Endpoint enums that have a label key; anything else keeps `humanizeEnum`.
+export const INSTRUMENT_KEYS: Record<string, string> = {
+  grant: "instrument-grant",
+  technical_assistance: "instrument-technical-assistance",
+  blended: "instrument-blended",
+  loan: "instrument-loan",
+};
+
+export const LIFECYCLE_KEYS: Record<string, string> = {
+  financed: "lifecycle-financed",
+  "in-execution": "lifecycle-in-execution",
+  in_execution: "lifecycle-in-execution",
+  formulated: "lifecycle-formulated",
+  appraised: "lifecycle-appraised",
+  completed: "lifecycle-completed",
+};
+
+export const CHANNEL_KEYS: Record<string, string> = {
+  "competitive fund": "channel-competitive-fund",
+  "intermediated multilateral": "channel-intermediated-multilateral",
+  "public investment": "channel-public-investment",
+};
+
+/** GPC sector tags; the projects feed also carries free-text sectors. */
+export const SECTOR_KEYS: Record<string, string> = {
+  stationary_energy: "sector-stationary-energy",
+  transportation: "sector-transportation",
+  // The projects feed tags its sector as "Transport" (GPC name, not the key).
+  transport: "sector-transportation",
+  waste: "sector-waste",
+  ippu: "sector-ippu",
+  afolu: "sector-afolu",
+};
+
+/** Label for an endpoint enum in the page language, or humanized as a fallback. */
+export function enumLabel(
+  keys: Record<string, string>,
+  value: string | null | undefined,
+  t: TFunction,
+): string {
+  const raw = (value ?? "").trim();
+  const key = keys[raw.toLowerCase()];
+  if (key) return t(key);
+  // Free text from a feed ("Natural Resources and Environment") is shown as
+  // it comes; it is the backend's to localize, like `project_name_i18n`.
+  // Only enum-shaped values (snake_case / kebab-case) get humanized.
+  return /[\s A-Z]/.test(raw) ? raw : humanizeEnum(value);
+}
+
+/** Project name in the page language, then English, then the raw name. */
+export function projectName(
+  proj: Pick<Project, "project_name" | "project_name_i18n">,
+  lng: string | undefined,
+  fallback: string,
+): string {
+  const names: Record<string, string | undefined> =
+    proj.project_name_i18n ?? {};
+  return (
+    (lng ? names[lng] : undefined) || names.en || proj.project_name || fallback
+  );
+}
+
+/**
+ * The endpoint's `reason` is its route tagline plus, when there are any, the
+ * number of comparable projects ("… 57 comparable project(s) on record.").
+ * Both parts arrive as fields too, so the sentence is rebuilt in the page
+ * language; a route the UI does not know keeps the raw text.
+ */
+export function financeReason(
+  row: FeasibilityRow,
+  t: TFunction,
+): string | null {
+  const key = routeKeyOf(row.route);
+  if (key === "other") return row.reason ?? null;
+  const parts = [t(ROUTE_META[key].taglineKey)];
+  const n = row.inputs?.evidence?.n_existing_projects;
+  if (typeof n === "number" && n > 0) {
+    parts.push(t("comparable-projects", { count: n }));
+  }
+  return parts.join(" ");
 }
 
 export const STATUS_KEYS: Record<string, string> = {

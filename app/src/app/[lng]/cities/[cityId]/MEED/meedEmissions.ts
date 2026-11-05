@@ -4,14 +4,14 @@ import type { MeedStepState } from "./meedLocalState";
 import type { MeedSectionState } from "./meedStatus";
 
 /**
- * Emissions data reaches MEED with one action on the home screen: "Retrieve
- * emissions data" pulls the inventory totals CityCatalyst already holds and
- * records the pull as the emissions step being complete. Both the home screen
- * and the breakdown page write that state through here so they can never
- * disagree about what "retrieved" means.
+ * Emissions data reaches MEED without any action from the city: the inventory
+ * totals CityCatalyst already holds are read on entry (`useMeedEmissions`) and
+ * the read is recorded as the emissions step being complete. Both the home
+ * screen and the breakdown page write that state through here so they can
+ * never disagree about what "loaded" means.
  */
 
-/** The minimal slice of the inventory results the retrieval reads. */
+/** The minimal slice of the inventory results the step state is read from. */
 export interface MeedEmissionsResults {
   totalEmissions?: {
     bySector?: { sectorName: string; co2eq: string | number | bigint }[];
@@ -29,7 +29,7 @@ export function countSectorsWithData(
 }
 
 /**
- * The step state a successful retrieval writes. Progress is always 100: the
+ * The step state a successful read writes. Progress is always 100: the
  * inventory is what it is, and a city with three sectors of data is just as
  * retrieved as one with five. Coverage lives in the detail line instead.
  */
@@ -39,7 +39,7 @@ export function emissionsRetrievedState(
 ): MeedStepState {
   const n = countSectorsWithData(results);
   // An inventory with no emissions gives the model nothing to score, so the
-  // pull is recorded (visited) but never counts as complete: the gate stays
+  // read is recorded (visited) but never counts as complete: the gate stays
   // shut and the home screen points the user at the GHGI module instead.
   if (n === 0) {
     return {
@@ -69,7 +69,7 @@ export function isEmissionsRetrieved(
   return state?.status === "complete";
 }
 
-/** The pull happened but found nothing to rank on. */
+/** The read happened but found nothing to rank on. */
 export function isEmissionsEmpty(state: MeedSectionState | undefined): boolean {
   return Boolean(state?.visited) && state?.status === "in-progress";
 }

@@ -115,6 +115,16 @@ describe("Bulk inventory import createMissingCities", () => {
       });
     }
     if (createdCityIds.length) {
+      // City delete SET NULLs IngestJob.city_id and trips IngestJob_scope_check.
+      await db.models.IngestItem.destroy({
+        where: { targetCityId: createdCityIds },
+      });
+      await db.models.IngestDocument.destroy({
+        where: { cityId: createdCityIds },
+      });
+      await db.models.IngestJob.destroy({
+        where: { cityId: createdCityIds },
+      });
       await db.models.Population.destroy({
         where: { cityId: createdCityIds },
       });

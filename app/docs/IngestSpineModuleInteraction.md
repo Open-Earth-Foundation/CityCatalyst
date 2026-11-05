@@ -74,7 +74,7 @@ A later upload of the same bytes reuses the pool row by content hash. The new ca
 
 `GhgiIngestPlugin` is the registered runner plugin (`createIngestPlugin("ghgi")`). It accepts eCRF and near-eCRF, commits through `InventoryImportService.importECRFData`, and tags new `InventoryValue` rows with `sourceDocumentId`. Core then publishes Path A `ingest_extract`.
 
-The city wizard and the Chile bulk importer still call those import services directly. They do not enqueue an `IngestJob` until that cutover lands.
+Wizard eCRF and near-eCRF approval, and Chile bulk, commit through `ingestGhgiBuffer`. The `/import` upload still stores `ImportedInventoryFile` and waits for approval. A PDF stores Path B, then the GHGI plugin rejects it as an unknown format.
 
 ```mermaid
 sequenceDiagram

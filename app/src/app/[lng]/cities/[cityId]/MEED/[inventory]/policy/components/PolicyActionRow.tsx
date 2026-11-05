@@ -7,12 +7,13 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { MeedMeter } from "../../../components/MeedMeter";
+import { MeedLevel } from "../../../components/MeedLevel";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import type { MeedActionIndex } from "../../results/components/actionCatalog";
 import { docScope } from "../policyAggregates";
 import { FOCUS_RING } from "../../../focusRing";
 import {
+  alignmentLabelKey,
   evidenceStrengthNum,
   scoreTone,
   SCOPE_LABEL_KEYS,
@@ -126,13 +127,7 @@ export function PolicyActionRow({ row, index, t }: PolicyActionRowProps) {
         <ScopeCell value={row.scopeMax.Municipal} t={t} />
         <Table.Cell textAlign="end">
           <HStack gap="s" justifyContent="flex-end">
-            <Box w="48px" flexShrink={0}>
-              <MeedMeter
-                value={row.score}
-                tone={tone}
-                ariaLabel={`${name} — ${t("percent-value", { value: pct })}`}
-              />
-            </Box>
+            <MeedLevel tone={tone}>{t(alignmentLabelKey(row.score))}</MeedLevel>
             <LabelMedium
               color={TONE_TEXT_COLOR[tone]}
               minW="40px"

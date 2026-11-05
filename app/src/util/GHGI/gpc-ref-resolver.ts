@@ -187,6 +187,41 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
+// One closed sentence, in the form of the III.x.2 catalogue names and the CIRIS
+// names ("generated within but treated outside of the city"), with no open
+// text: a place like "in the city of Canoas" or any other wording does not match.
+const WASTE_SUBJECT =
+  "(emissions\\s+from\\s+)?((solid|municipal)\\s+)?(waste|wastewater)";
+const CITY = "(the\\s+)?(city|municipality|town)(\\s+(boundary|limits?))?";
+const GENERATED_INSIDE_TREATED_OUTSIDE = new RegExp(
+  `^(${WASTE_SUBJECT}\\s+(generated|produced|originating)\\s+(within|inside|in)(\\s+${CITY})?\\s+(and|but)\\s+(that\\s+is\\s+)?(treated|disposed|processed|incinerated|landfilled)\\s+(biologically\\s+)?(in\\s+landfills(\\s+or\\s+open\\s+dumps)?\\s+)?outside(\\s+(of\\s+)?${CITY})?|exported\\s+(waste|wastewater))\\.?$`,
+  "i",
+);
+
+/**
+ * Corrects a III.x.3 reference to III.x.2. III.x.2 is generated inside and treated
+ * outside; III.x.3 is generated outside and treated inside, and leaves BASIC totals.
+ * This only ever moves .3 to .2: a label never creates III.x.3, because a wrong .3
+ * silently drops an amount from the total. Only an explicit reference from the
+ * model or the file does. A real III.x.3 row with a wrong reference stays counted.
+ * Two things correct it: a label that is exactly the closed sentence above, and an
+ * explicit scope 3, the pre-2025 mislabel of III.x.2.
+ */
+export function correctWasteDirection(
+  gpcRefNo: string,
+  labels: (string | null | undefined)[],
+  scopeLabel?: string | null,
+): string {
+  const match = gpcRefNo.match(/^(III\.[1-4])\.3$/);
+  if (!match) return gpcRefNo;
+  const saysInsideOut = labels.some(
+    (label) => label && GENERATED_INSIDE_TREATED_OUTSIDE.test(label.trim()),
+  );
+  return saysInsideOut || scopeFromLabel(scopeLabel) === 3
+    ? `${match[1]}.2`
+    : gpcRefNo;
+}
+
 /**
  * Resolve a missing GPC ref from the raw sector, sub-sector, fuel, and scope
  * labels, including "On-road > Passenger car" style splits.

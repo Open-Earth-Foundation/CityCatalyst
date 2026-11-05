@@ -1,5 +1,12 @@
+import {
+  isImportedWasteRef,
+  isOmittedGPCReference,
+} from "@/util/GHGI/reported-totals";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
-import { importRowSkipReason } from "@/backend/InventoryImportService";
+import {
+  importRowSkipReason,
+  resolveImportedTotalCO2e,
+} from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import type { InventoryTypeEnum } from "@/util/enums";
 import type { ImportRowOutcome, ImportRowPreview } from "@/util/types";
@@ -40,6 +47,7 @@ export async function previewImportRows(
   }
 
   // Imported rows the inventory type does not require are stored but not counted.
+  let omittedFromTotalTonnes = 0;
   const outsideReferences = new Set(
     await InventoryProgressService.findReferencesOutsideInventoryType(
       inventoryType,
@@ -47,14 +55,29 @@ export async function previewImportRows(
     ),
   );
   for (const row of importedRows) {
-    if (outsideReferences.has(row.gpcRefNo)) {
+    // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
+    const issue = isImportedWasteRef(row.gpcRefNo)
+      ? "omitted-from-total"
+      : isOmittedGPCReference(row.gpcRefNo)
+        ? "reported-apart-from-total"
+        : outsideReferences.has(row.gpcRefNo)
+          ? "outside-inventory-type"
+          : null;
+    if (issue) {
+      const leftOutOfTotal =
+        issue === "omitted-from-total" || issue === "reported-apart-from-total";
+      const tonnes = leftOutOfTotal
+        ? (resolveImportedTotalCO2e(row) ?? null)
+        : null;
+      if (tonnes != null) omittedFromTotalTonnes += tonnes;
       outcomes.push({
         rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
         status: "not-counted",
-        issue: "outside-inventory-type",
+        issue,
+        tonnes,
       });
     }
   }
@@ -72,6 +95,7 @@ export async function previewImportRows(
     importedRows: importedRows.length,
     skippedRows: importResult.rows.length - importedRows.length,
     skippedByIssue,
+    omittedFromTotalTonnes,
     rows: outcomes,
   };
 }

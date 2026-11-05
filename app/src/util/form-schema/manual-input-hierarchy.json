@@ -2001,7 +2001,7 @@
             "energy-usage-electricity",
             "energy-usage-heating",
             "energy-usage-steam",
-            "energy-usage-refrigeration"    
+            "energy-usage-refrigeration"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -4212,6 +4212,110 @@
       ]
     }
   },
+  "III.1.3": {
+    "scope": 1,
+    "methodologies": [
+      {
+        "id": "methane-commitment-solid-waste-inboundary-methodology",
+        "activityTypeField": "landfill-id",
+        "inputRequired": [
+          "landfill-id",
+          "landfill-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "methane-commitment",
+        "activities": [
+          {
+            "id": "methane-commitment-solid-waste-inboundary-activity",
+            "hideEmissionFactorsInput": true,
+            "unique-by": [
+              "methane-commitment-solid-waste-inboundary-landfill-id"
+            ],
+            "activity-title": "total-municipal-solid-waste-disposed",
+            "default-units": "units-kilograms",
+            "extra-fields": [
+              {
+                "id": "methane-commitment-solid-waste-inboundary-landfill-id",
+                "type": "text"
+              },
+              {
+                "id": "methane-commitment-solid-waste-inboundary-landfill-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "methane-commitment-solid-waste-inboundary-oxidation-factor",
+                "options": [
+                  "oxidation-factor-well-managed-landfill",
+                  "oxidation-factor-unmanaged-landfill"
+                ]
+              },
+              {
+                "id": "methane-collected-and-removed",
+                "type": "number",
+                "min": 0,
+                "max": 1
+              },
+              {
+                "id": "methane-commitment-solid-waste-inboundary-waste-composition",
+                "info-text": "waste-composition-info",
+                "default-composition-available": true,
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "waste-composition-food",
+                  "waste-composition-garden",
+                  "waste-composition-paper",
+                  "waste-composition-wood",
+                  "waste-composition-textiles",
+                  "waste-composition-industrial",
+                  "waste-composition-leather",
+                  "waste-composition-plastics",
+                  "waste-composition-metal",
+                  "waste-composition-glass",
+                  "waste-composition-nappies",
+                  "waste-composition-other"
+                ],
+                "required": false
+              },
+              {
+                "id": "methane-commitment-solid-waste-inboundary-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilograms",
+              "units-tonnes"
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-solid-waste-inboundary-methodology",
+      "activityTypeField": "landfill-id",
+      "inputRequired": [
+        "emissions-value-ch4"
+      ],
+      "extra-fields": [
+        {
+          "id": "landfill-id",
+          "type": "text"
+        },
+        {
+          "id": "landfill-address",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "direct-measure-solid-waste-inboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
   "III.2.1": {
     "scope": 1,
     "methodologies": [
@@ -4432,6 +4536,116 @@
       ]
     }
   },
+  "III.2.3": {
+    "scope": 1,
+    "methodologies": [
+      {
+        "id": "biological-treatment-inboundary-methodology",
+        "activityTypeField": "biological-treatment-inboundary-treatment-type",
+        "inputRequired": [
+          "mass-of-organic-waste-treated",
+          "total-of-ch4-recovered"
+        ],
+        "formula": "biological-treatment",
+        "activities": [
+          {
+            "id": "biological-treatment-inboundary-activity",
+            "hideEmissionFactorsInput": true,
+            "unique-by": [
+              "biological-treatment-inboundary-treatment-type",
+              "biological-treatment-inboundary-source"
+            ],
+            "formula-mapping": {
+              "treatment_type": "biological-treatment-inboundary-treatment-type",
+              "waste-state": "biological-treatment-inboundary-waste-state"
+            },
+            "activity-title": "total-organic-waste-treated",
+            "default-units": "units-kilograms",
+            "extra-fields": [
+              {
+                "id": "biological-treatment-inboundary-treatment-type",
+                "options": [
+                  "treatment-type-all-organic-waste",
+                  "treatment-type-composting",
+                  "treatment-type-anaerobic-digestion"
+                ],
+                "exclusive": "treatment-type-all-organic-waste"
+              },
+              {
+                "id": "biological-treatment-inboundary-waste-state",
+                "options": [
+                  "waste-state-dry-waste",
+                  "waste-state-wet-waste"
+                ]
+              },
+              {
+                "id": "total-of-ch4-recovered",
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
+                ],
+                "default-units": "units-kilograms"
+              },
+              {
+                "id": "biological-treatment-inboundary-source",
+                "type": "text"
+              }
+            ],
+            "units": [
+              "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "biological-treatment-inboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-inboundary-treatment-type",
+                "value": "treatment-type-composting"
+              }
+            ]
+          },
+          {
+            "id": "biological-treatment-inboundary-activity",
+            "prefills": [
+              {
+                "key": "biological-treatment-inboundary-treatment-type",
+                "value": "treatment-type-anaerobic-digestion"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "direct-measure-biological-treatment-inboundary-methodology",
+      "activityTypeField": "biological-treatment-inboundary-treatment-type",
+      "extra-fields": [
+        {
+          "id": "biological-treatment-inboundary-treatment-type",
+          "options": [
+            "treatment-type-all-organic-waste",
+            "treatment-type-composting",
+            "treatment-type-anaerobic-digestion"
+          ],
+          "exclusive": "treatment-type-all-organic-waste"
+        },
+        {
+          "id": "direct-measure-biological-treatment-inboundary-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
   "III.3.1": {
     "scope": 1,
     "methodologies": [
@@ -4610,6 +4824,104 @@
     ],
     "directMeasure": {
       "id": "direct-measure-incineration-waste-boundary-methodology",
+      "activityTypeField": "incineration-facility-id",
+      "extra-fields": [
+        {
+          "id": "incineration-facility-id",
+          "type": "text"
+        },
+        {
+          "id": "incineration-facility-address",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.3.3": {
+    "scope": 1,
+    "methodologies": [
+      {
+        "id": "incineration-waste-inboundary-methodology",
+        "activityTypeField": "incineration-facility-id",
+        "inputRequired": [
+          "incineration-facility-id",
+          "incineration-facility-address",
+          "total-municipal-solid-waste-disposed",
+          "methane-collected-and-removed",
+          "waste-composition"
+        ],
+        "formula": "incineration-waste",
+        "activities": [
+          {
+            "id": "incineration-waste-inboundary-activity",
+            "hideEmissionFactorsInput": true,
+            "unique-by": [
+              "incineration-waste-inboundary-incineration-facility-id"
+            ],
+            "formula-mapping": {
+              "technology": "incineration-waste-inboundary-technology",
+              "boiler-type": "incineration-waste-inboundary-boiler-type",
+              "waste-composition": "incineration-waste-inboundary-waste-composition"
+            },
+            "activity-title": "total-mass-of-waste-incinerated-or-burned",
+            "default-units": "units-kilograms",
+            "extra-fields": [
+              {
+                "id": "incineration-waste-inboundary-incineration-facility-id",
+                "type": "text"
+              },
+              {
+                "id": "incineration-waste-inboundary-incineration-facility-address",
+                "type": "text",
+                "required": false
+              },
+              {
+                "id": "incineration-waste-inboundary-waste-composition",
+                "type": "percentage-breakdown",
+                "total-required": 100,
+                "subtypes": [
+                  "waste-composition-clinical-waste",
+                  "waste-composition-hazardous-waste",
+                  "waste-composition-industrial-solid-waste",
+                  "waste-composition-municipal-solid-waste",
+                  "waste-composition-sewage-sludge"
+                ],
+                "required": false
+              },
+              {
+                "id": "incineration-waste-inboundary-technology",
+                "options": [
+                  "technology-continuous-incineration",
+                  "technology-semi-continuous-incineration",
+                  "technology-batch-type-incineration"
+                ]
+              },
+              {
+                "id": "incineration-waste-inboundary-boiler-type",
+                "options": [
+                  "boiler-type-stoker",
+                  "boiler-type-fluidised-bed"
+                ]
+              }
+            ],
+            "units": [
+              "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "id": "incineration-waste-inboundary-direct-measure-methodology",
       "activityTypeField": "incineration-facility-id",
       "extra-fields": [
         {
@@ -5237,6 +5549,318 @@
       "extra-fields": [
         {
           "id": "direct-measure-wastewater-outside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater",
+            "source-type-all-wastewater"
+          ],
+          "exclusive": "source-type-all-wastewater"
+        },
+        {
+          "id": "data-source",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "III.4.3": {
+    "scope": 1,
+    "methodologies": [
+      {
+        "id": "wastewater-inside-methodology",
+        "activityTypeField": "population-or-industrial-production",
+        "inputRequired": [
+          "wastewater-inside-generated",
+          "total-organic-sludge-removed",
+          "methane-recovered",
+          "population-or-industrial-production"
+        ],
+        "formula": "wastewater-calculator",
+        "activitySelectionField": {
+          "id": "wastewater-inside-source-type",
+          "options": [
+            "source-type-domestic-wastewater",
+            "source-type-industrial-wastewater"
+          ]
+        },
+        "activities": [
+          {
+            "id": "wastewater-inside-domestic-calculator-activity",
+            "hideEmissionFactorsInput": true,
+            "activitySelectedOption": "source-type-domestic-wastewater",
+            "unique-by": [
+              "wastewater-inside-domestic-calculator-income-group",
+              "wastewater-inside-domestic-calculator-collection-status",
+              "wastewater-inside-domestic-calculator-treatment-status",
+              "wastewater-inside-domestic-calculator-treatment-type",
+              "wastewater-inside-domestic-calculator-treatment-name",
+              "data-source"
+            ],
+            "activity-title": "total-population",
+            "extra-fields": [
+              {
+                "id": "wastewater-inside-domestic-calculator-income-group",
+                "options": [
+                  "income-group-type-rural",
+                  "income-group-type-urban-high-income",
+                  "income-group-type-urban-low-income"
+                ]
+              },
+              {
+                "id": "total-organic-sludge-removed",
+                "type": "number",
+                "units": [
+                  "units-kilograms-N-yr"
+                ],
+                "default-units": "units-kilograms-N-yr"
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-methane-recovered",
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
+                ],
+                "default-units": "units-kilograms"
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-garbage-disposal",
+                "options": [
+                  "garbage-disposal-type-non-garbage-disposals",
+                  "garbage-disposal-type-garbage-disposals"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-name",
+                "dependsOn": "wastewater-inside-domestic-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-domestic-calculator-treatment-name",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
+              },
+              {
+                "id": "data-source",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "id": "wastewater-inside-industrial-calculator-activity",
+            "activitySelectedOption": "source-type-industrial-wastewater",
+            "hideEmissionFactorsInput": true,
+            "unique-by": [
+              "wastewater-inside-industrial-calculator-industry-type",
+              "wastewater-inside-industrial-calculator-collection-status",
+              "wastewater-inside-industrial-calculator-treatment-status",
+              "wastewater-inside-industrial-calculator-treatment-type",
+              "wastewater-inside-industrial-calculator-treatment-name",
+              "data-source"
+            ],
+            "activity-title": "total-industry-production",
+            "units": [
+              "units-kilograms",
+              "units-tonnes",
+              "units-long-tons",
+              "units-short-tons",
+              "units-pounds"
+            ],
+            "default-units": "units-tonnes",
+            "extra-fields": [
+              {
+                "id": "wastewater-inside-industrial-calculator-industry-type",
+                "required": true,
+                "options": [
+                  "industry-type-alcohol-refining",
+                  "industry-type-coffee",
+                  "industry-type-dairy-products",
+                  "industry-type-fish-processing",
+                  "industry-type-meat-and-poultry",
+                  "industry-type-organic-chemicals",
+                  "industry-type-petroleum-refineries",
+                  "industry-type-plastics-and-resins",
+                  "industry-type-pulp-and-paper",
+                  "industry-type-soap-and-detergents",
+                  "industry-type-starch-production",
+                  "industry-type-sugar-refining",
+                  "industry-type-vegetable-oils",
+                  "industry-type-vegetables-fruits-juices",
+                  "industry-type-wine-and-vinegar"
+                ]
+              },
+              {
+                "id": "total-organic-sludge-removed",
+                "type": "number",
+                "units": [
+                  "units-kilograms-COD"
+                ],
+                "default-units": "units-kilograms-COD"
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-methane-recovered",
+                "type": "number",
+                "units": [
+                  "units-kilograms",
+                  "units-tonnes",
+                  "units-long-tons",
+                  "units-short-tons",
+                  "units-pounds"
+                ],
+                "default-units": "units-kilograms"
+              },
+              {
+                "id": "data-source",
+                "type": "text"
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-wastewater-generated",
+                "type": "number",
+                "units": [
+                  "units-cubic-meters-per-kilogram",
+                  "units-cubic-meters-per-tonne"
+                ],
+                "default-units": "units-cubic-meters-per-tonne",
+                "required": false
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-collection-status",
+                "options": [
+                  "collection-status-type-wastewater-collected",
+                  "collection-status-type-wastewater-not-collected"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-treatment-status",
+                "options": [
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
+                ]
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-treatment-name",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
+              },
+              {
+                "id": "wastewater-inside-industrial-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-name",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "suggestedActivities": [
+          {
+            "id": "wastewater-inside-domestic-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-inside-source-type",
+                "value": "source-type-domestic-wastewater"
+              }
+            ]
+          },
+          {
+            "id": "wastewater-inside-industrial-calculator-activity",
+            "prefills": [
+              {
+                "key": "wastewater-inside-source-type",
+                "value": "source-type-industrial-wastewater"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "directMeasure": {
+      "activityTypeField": "direct-measure-wastewater-inside-source-type",
+      "id": "direct-measure-wastewater-inside-methodology",
+      "extra-fields": [
+        {
+          "id": "direct-measure-wastewater-inside-source-type",
           "options": [
             "source-type-domestic-wastewater",
             "source-type-industrial-wastewater",

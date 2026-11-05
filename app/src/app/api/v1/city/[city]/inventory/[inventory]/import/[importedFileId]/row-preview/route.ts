@@ -89,6 +89,8 @@
  *                               - no-value-or-notation-key
  *                               - invalid-row
  *                               - outside-inventory-type
+ *                               - omitted-from-total
+ *                               - reported-apart-from-total
  *       400:
  *         description: File is not waiting for approval.
  *       401:

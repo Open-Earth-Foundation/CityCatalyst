@@ -1,6 +1,7 @@
 import { db } from "@/models";
 import { Op } from "sequelize";
 import {
+  correctWasteDirection,
   resolveGpcRefFromLabels,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
@@ -184,6 +185,15 @@ export default class ECRFImportService {
         ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
         : undefined;
       if (gpcRefNo === "") gpcRefNo = undefined;
+
+      // A file reference is trusted, except III.x.3 on an explicit scope 3 row.
+      if (gpcRefNo && scopeHeader) {
+        gpcRefNo = correctWasteDirection(
+          gpcRefNo,
+          [],
+          row[scopeHeader]?.toString(),
+        );
+      }
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
         const rawSector = hasSectorColumn
@@ -733,8 +743,14 @@ export default class ECRFImportService {
       );
       const activityHint =
         row.activityType?.trim() || row.category?.trim() || undefined;
+      const copiedRef = row.gpcRefNo?.trim();
       const gpcRefNo =
-        row.gpcRefNo?.trim() ||
+        (copiedRef &&
+          correctWasteDirection(
+            copiedRef,
+            [row.subsector, row.category, row.activityType],
+            row.scope,
+          )) ||
         resolveGpcRefFromLabels({
           sector: row.sector,
           subsector: row.subsector,

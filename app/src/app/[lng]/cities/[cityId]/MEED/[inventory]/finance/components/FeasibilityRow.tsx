@@ -8,13 +8,14 @@ import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedLevel } from "../../../components/MeedLevel";
 import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 import {
+  enumLabel,
   FOCUS_RING,
-  humanizeEnum,
   fundAccessLabelKey,
   isSelfFundable,
   routeKeyOf,
   SCORE_LEVEL_META,
   scoreLevel,
+  SECTOR_KEYS,
   TONE_TEXT_COLOR,
 } from "../labels";
 import type { FeasibilityRow as FeasibilityRowData } from "../types";
@@ -28,6 +29,8 @@ export interface FeasibilityRowProps {
   cityId: string;
   cityName: string;
   t: TFunction;
+  /** Page language, for translated project names in the detail. */
+  lng?: string;
 }
 
 /** One action in the feasibility table, with its detail behind a disclosure. */
@@ -38,6 +41,7 @@ export function FeasibilityRow({
   cityId,
   cityName,
   t,
+  lng,
 }: FeasibilityRowProps) {
   const routeKey = routeKeyOf(row.route);
   const selfFundable = isSelfFundable(row.route);
@@ -75,7 +79,9 @@ export function FeasibilityRow({
         <Table.Cell verticalAlign="top">
           <HStack gap="xs" alignItems="center">
             <MeedSectorIcon sectorTag={row.sector} size="14px" />
-            <Caption>{row.sector_label ?? humanizeEnum(row.sector)}</Caption>
+            <Caption>
+              {row.sector_label ?? enumLabel(SECTOR_KEYS, row.sector, t)}
+            </Caption>
           </HStack>
         </Table.Cell>
         {/* nowrap + a non-shrinking tag: together they stop "Self-deliverable"
@@ -122,7 +128,13 @@ export function FeasibilityRow({
       {expanded && (
         <Table.Row bg="background.neutral">
           <Table.Cell colSpan={5} id={detailId} p="0">
-            <RowDetail row={row} cityId={cityId} cityName={cityName} t={t} />
+            <RowDetail
+              row={row}
+              cityId={cityId}
+              cityName={cityName}
+              t={t}
+              lng={lng}
+            />
           </Table.Cell>
         </Table.Row>
       )}

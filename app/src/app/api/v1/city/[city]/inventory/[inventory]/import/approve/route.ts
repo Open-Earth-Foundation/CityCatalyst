@@ -82,6 +82,11 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
+import { createIngestRuntime } from "@/backend/ingest/http";
+import {
+  ingestGhgiBuffer,
+  shouldCommitViaGhgiRunner,
+} from "@/backend/ingest/ghgi-run";
 import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
@@ -262,6 +267,73 @@ async function runApproveImportInBackground(args: {
   await syncGHGIImportedInventorySource(importedFile);
 
   try {
+    if (shouldCommitViaGhgiRunner(importedFile)) {
+      logger.info(
+        {
+          ingest: true,
+          importedFileId: importedFile.id,
+          inventoryId,
+          fileName: importedFile.originalFileName || importedFile.fileName,
+        },
+        "[ingest] wizard approve handing off to the ingest runner",
+      );
+      const buffer =
+        await InventoryFileStorageService.resolveImportedFileBuffer(
+          importedFile,
+        );
+      if (!buffer) {
+        throw new Error("Could not retrieve uploaded file from storage.");
+      }
+      if (replaceExisting) {
+        await db.sequelize!.transaction(async (transaction) => {
+          await InventoryReplaceService.replaceInventoryValues(
+            inventoryId,
+            userId,
+            transaction,
+          );
+        });
+      }
+      const { store, runner } = createIngestRuntime();
+      const { item } = await ingestGhgiBuffer({
+        buffer,
+        originalFileName:
+          importedFile.originalFileName || importedFile.fileName || "upload",
+        cityId,
+        inventoryId,
+        userId,
+        runner,
+        store,
+      });
+      if (item.status !== "completed") {
+        throw new Error(
+          item.errorLog || item.errorCode || "Ingest did not complete",
+        );
+      }
+      const importedRows =
+        typeof item.result?.importedRows === "number"
+          ? item.result.importedRows
+          : 0;
+      await importedFile.update({
+        importStatus: ImportStatusEnum.COMPLETED,
+        processedRowCount: importedRows,
+        completedAt: new Date(),
+        lastUpdated: new Date(),
+      });
+      await syncGHGIInventory(importedFile);
+      logger.info(
+        {
+          ingest: true,
+          importedFileId: importedFile.id,
+          inventoryId,
+          importedRows,
+          ingestItemId: item.id,
+          ingestJobId: item.jobId,
+        },
+        "[ingest] wizard approve finished via runner",
+      );
+      return;
+    }
+
     const mappingConfiguration = (importedFile.mappingConfiguration || {}) as {
       // For xlsx/csv: columnName -> internal key (string). For PDF imports:
       // row index (stringified) -> per-row field overrides (object).

@@ -248,6 +248,7 @@ function FinancialFeasibilityContent(props: {
                     }
                     cityId={cityId}
                     cityName={cityName}
+                    lng={lng}
                     t={t}
                   />
                 ))

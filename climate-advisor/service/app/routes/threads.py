@@ -16,6 +16,7 @@ from app.models.responses import (
 )
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
+from app.tools.concept_note_question import saved_question_choices
 from app.utils.citycatalyst_auth import (
     authenticate_write_request,
     normalize_write_context,
@@ -132,6 +133,7 @@ async def get_thread_messages(
                 role=message.role.value,
                 text=message.text,
                 created_at=message.created_at,
+                choices=saved_question_choices(message.tools_used),
             )
             for message in messages
         ],

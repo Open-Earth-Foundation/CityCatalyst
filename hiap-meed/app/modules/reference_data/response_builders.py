@@ -483,6 +483,7 @@ def build_climate_finance_projects_response(
             project_name=record.project_name,
             project_name_i18n=record.project_name_i18n,
             sector=record.sector,
+            sector_i18n=record.sector_i18n,
             jurisdiction=record.jurisdiction,
             lifecycle_stage=record.lifecycle_stage,
             funding_channel=record.funding_channel,

@@ -38,6 +38,8 @@ export type FundingSource = Partial<
 
 export type Project = Partial<MeedReferenceFinanceProject> & {
   project_name_i18n?: { en?: string; es?: string } | null;
+  /** Localized sector from the feed; present once the Global API exposes it. */
+  sector_i18n?: { en?: string; es?: string } | null;
 };
 
 export function extractFeasibilityRows(data: unknown): FeasibilityRow[] {

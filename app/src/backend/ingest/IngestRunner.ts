@@ -27,6 +27,7 @@ import {
   requireReviewDraft,
   sameTargetBinding,
 } from "./review-draft";
+import { logger } from "@/services/logger";
 import {
   IngestItemError,
   type IngestColumnMappingInput,
@@ -40,6 +41,14 @@ import {
   type IngestStage,
   type IngestVisibility,
 } from "./types";
+
+function logIngest(
+  message: string,
+  fields: Record<string, unknown>,
+  level: "info" | "warn" | "error" = "info",
+): void {
+  logger[level]({ ingest: true, ...fields }, `[ingest] ${message}`);
+}
 
 export interface EnqueueIngestJobInput {
   moduleId: IngestModuleId;
@@ -99,7 +108,17 @@ export class IngestRunner {
       });
     }
 
-    return this.store.updateJob(job.id, { totalCount: files.length });
+    const created = await this.store.updateJob(job.id, {
+      totalCount: files.length,
+    });
+    logIngest("ingest.job.enqueued", {
+      ingestJobId: created.id,
+      moduleId: created.moduleId,
+      dryRun: created.dryRun,
+      fileCount: files.length,
+      fileNames: files.map((file) => file.name),
+    });
+    return created;
   }
 
   /**
@@ -151,7 +170,16 @@ export class IngestRunner {
       targetCityId: scope.cityId ?? null,
       targetInventoryId: scope.inventoryId ?? null,
     });
-    return this.store.updateJob(job.id, { totalCount: 1 });
+    const created = await this.store.updateJob(job.id, { totalCount: 1 });
+    logIngest("ingest.job.enqueued", {
+      ingestJobId: created.id,
+      moduleId: created.moduleId,
+      dryRun: created.dryRun,
+      fromDocument: true,
+      documentId: document.id,
+      fileName: document.originalFileName,
+    });
+    return created;
   }
 
   async run(jobId: string, plugin: IngestPlugin): Promise<IngestJobRecord> {
@@ -167,10 +195,26 @@ export class IngestRunner {
 
     await this.store.updateJob(jobId, { status: "running" });
     const items = await this.store.listItems(jobId);
+    logIngest("ingest.job.run.start", {
+      ingestJobId: jobId,
+      moduleId: job.moduleId,
+      dryRun: job.dryRun,
+      itemCount: items.length,
+    });
     for (const item of items) {
       await this.runItem(job, item, plugin);
     }
-    return this.summarize(jobId);
+    const finished = await this.summarize(jobId);
+    logIngest("ingest.job.run.finished", {
+      ingestJobId: finished.id,
+      moduleId: finished.moduleId,
+      status: finished.status,
+      completedCount: finished.completedCount,
+      failedCount: finished.failedCount,
+      skippedCount: finished.skippedCount,
+      awaitingReviewCount: finished.awaitingReviewCount,
+    });
+    return finished;
   }
 
   private async runItem(
@@ -186,9 +230,9 @@ export class IngestRunner {
     };
 
     try {
-      await this.setStage(item.id, "receive");
+      await this.setStage(job, item, "receive");
 
-      await this.setStage(item.id, "store");
+      await this.setStage(job, item, "store");
       const fromDocument = Boolean(item.documentId);
       if (!fromDocument && !job.dryRun && this.documentPool) {
         const current = await this.requireItem(item.id);
@@ -207,9 +251,15 @@ export class IngestRunner {
         await this.store.updateItem(item.id, {
           documentId: stored.document.id,
         });
+        logIngest("ingest.store.path_b", {
+          ingestJobId: job.id,
+          ingestItemId: item.id,
+          documentId: stored.document.id,
+          created: stored.created,
+        });
       }
 
-      await this.setStage(item.id, "match");
+      await this.setStage(job, item, "match");
       const matched = await plugin.match?.({
         job,
         item: await this.requireItem(item.id),
@@ -236,7 +286,7 @@ export class IngestRunner {
         };
       }
 
-      await this.setStage(item.id, "detect");
+      await this.setStage(job, item, "detect");
       const current = await this.requireItem(item.id);
       const coarse = detectCoarseFileKind(
         current.originalFileName,
@@ -254,8 +304,15 @@ export class IngestRunner {
         { job, item: await this.requireItem(item.id), scope },
         coarse,
       );
+      logIngest("ingest.detect", {
+        ingestJobId: job.id,
+        ingestItemId: item.id,
+        moduleId: job.moduleId,
+        fileName: current.originalFileName,
+        coarseKind: coarse,
+      });
 
-      await this.setStage(item.id, "parse");
+      await this.setStage(job, item, "parse");
       const parsed = await plugin.parse({
         job,
         item: await this.requireItem(item.id),
@@ -267,9 +324,9 @@ export class IngestRunner {
         parsed,
       );
       if (mappingInput) {
-        await this.setStage(item.id, "map");
+        await this.setStage(job, item, "map");
         if (job.dryRun) {
-          await this.skipDryRun(item.id);
+          await this.skipDryRun(job, item.id);
           return;
         }
         await this.persistColumnMappingDraft({
@@ -286,20 +343,44 @@ export class IngestRunner {
     } catch (err) {
       const code =
         err instanceof IngestItemError ? err.code : "commit_failed";
+      const errorLog = err instanceof Error ? err.message : String(err);
       await this.store.updateItem(item.id, {
         status: "failed",
         errorCode: code,
-        errorLog: err instanceof Error ? err.message : String(err),
+        errorLog,
       });
+      logIngest(
+        "ingest.item.failed",
+        {
+          ingestJobId: job.id,
+          ingestItemId: item.id,
+          moduleId: job.moduleId,
+          fileName: item.originalFileName,
+          stage: item.stage ?? null,
+          errorCode: code,
+          errorLog,
+        },
+        "warn",
+      );
     }
   }
 
-  private async skipDryRun(itemId: string): Promise<void> {
+  private async skipDryRun(
+    job: IngestJobRecord,
+    itemId: string,
+  ): Promise<void> {
     await this.store.updateItem(itemId, {
       status: "skipped",
       stage: "commit",
       errorCode: "dry_run",
       errorLog: "dryRun stops before commit and catalog registration",
+    });
+    logIngest("ingest.item.skipped", {
+      ingestJobId: job.id,
+      ingestItemId: itemId,
+      moduleId: job.moduleId,
+      dryRun: true,
+      stage: "commit",
     });
   }
 
@@ -310,13 +391,14 @@ export class IngestRunner {
     parsed: unknown,
     scope: IngestScope,
   ): Promise<void> {
-    await this.setStage(itemId, "adapt");
+    const item = await this.requireItem(itemId);
+    await this.setStage(job, item, "adapt");
     const adapted = await plugin.adapt(
       { job, item: await this.requireItem(itemId), scope },
       parsed,
     );
 
-    await this.setStage(itemId, "validate");
+    await this.setStage(job, item, "validate");
     const validation = await plugin.validate(
       { job, item: await this.requireItem(itemId), scope },
       adapted,
@@ -334,16 +416,24 @@ export class IngestRunner {
       );
     }
 
-    await this.setStage(itemId, "decide");
+    await this.setStage(job, item, "decide");
     const policy = plugin.approvalPolicy(
       { job, item: await this.requireItem(itemId), scope },
       adapted,
     );
+    logIngest("ingest.decide", {
+      ingestJobId: job.id,
+      ingestItemId: itemId,
+      moduleId: job.moduleId,
+      fileName: item.originalFileName,
+      policy,
+      reconciliationOk: reconciliation?.ok ?? null,
+    });
     if (policy === "reject") {
       throw new IngestItemError("validation_failed", "Plugin rejected file");
     }
     if (job.dryRun) {
-      await this.skipDryRun(itemId);
+      await this.skipDryRun(job, itemId);
       return;
     }
     if (policy === "review" || (reconciliation && !reconciliation.ok)) {
@@ -359,13 +449,13 @@ export class IngestRunner {
       return;
     }
 
-    await this.setStage(itemId, "commit");
+    await this.setStage(job, item, "commit");
     const result = await plugin.commit(
       { job, item: await this.requireItem(itemId), scope },
       adapted,
     );
 
-    await this.setStage(itemId, "publish");
+    await this.setStage(job, item, "publish");
     await this.publishPathA(itemId, plugin);
 
     const current = await this.requireItem(itemId);
@@ -394,6 +484,16 @@ export class IngestRunner {
         : {}),
       reviewLockedByUserId: null,
       reviewLockedAt: null,
+    });
+    logIngest("ingest.item.completed", {
+      ingestJobId: job.id,
+      ingestItemId: itemId,
+      moduleId: job.moduleId,
+      fileName: item.originalFileName,
+      importedRows:
+        result && typeof result.importedRows === "number"
+          ? result.importedRows
+          : null,
     });
   }
 
@@ -426,6 +526,14 @@ export class IngestRunner {
       reviewDraft: envelope,
       reviewDraftVersion: envelope.version,
     });
+    logIngest("ingest.item.awaiting_review", {
+      ingestJobId: input.job.id,
+      ingestItemId: input.itemId,
+      moduleId: input.job.moduleId,
+      fileName: current.originalFileName,
+      stage: "map",
+      reviewDraftVersion: envelope.version,
+    });
   }
 
   private async addWarnings(
@@ -439,8 +547,20 @@ export class IngestRunner {
     });
   }
 
-  private async setStage(itemId: string, stage: IngestStage): Promise<void> {
-    await this.store.updateItem(itemId, { status: "running", stage });
+  private async setStage(
+    job: IngestJobRecord,
+    item: Pick<IngestItemRecord, "id" | "originalFileName">,
+    stage: IngestStage,
+  ): Promise<void> {
+    await this.store.updateItem(item.id, { status: "running", stage });
+    logIngest("ingest.stage", {
+      ingestJobId: job.id,
+      ingestItemId: item.id,
+      moduleId: job.moduleId,
+      fileName: item.originalFileName,
+      dryRun: job.dryRun,
+      stage,
+    });
   }
 
   private async requireItem(itemId: string): Promise<IngestItemRecord> {
@@ -610,7 +730,7 @@ export class IngestRunner {
       );
     }
 
-    await this.setStage(item.id, "commit");
+    await this.setStage(job, item, "commit");
     const result = await plugin.commit(
       { job, item: await this.requireItem(item.id), scope },
       adapted,
@@ -623,6 +743,14 @@ export class IngestRunner {
         at: new Date().toISOString(),
       },
     };
+    logIngest("ingest.stage", {
+      ingestJobId: job.id,
+      ingestItemId: item.id,
+      moduleId: job.moduleId,
+      fileName: item.originalFileName,
+      dryRun: job.dryRun,
+      stage: "publish",
+    });
     await this.publishPathA(item.id, plugin);
     const completed = await this.store.updateItem(item.id, {
       status: "completed",
@@ -631,6 +759,13 @@ export class IngestRunner {
       reviewDraft: confirmed,
       reviewLockedByUserId: null,
       reviewLockedAt: null,
+    });
+    logIngest("ingest.item.completed", {
+      ingestJobId: job.id,
+      ingestItemId: item.id,
+      moduleId: job.moduleId,
+      fileName: item.originalFileName,
+      via: "confirmReview",
     });
     await this.summarize(job.id);
     return completed;
@@ -700,11 +835,25 @@ export class IngestRunner {
     } catch (err) {
       const code =
         err instanceof IngestItemError ? err.code : "commit_failed";
+      const errorLog = err instanceof Error ? err.message : String(err);
       await this.store.updateItem(itemId, {
         status: "failed",
         errorCode: code,
-        errorLog: err instanceof Error ? err.message : String(err),
+        errorLog,
       });
+      logIngest(
+        "ingest.item.failed",
+        {
+          ingestJobId: job.id,
+          ingestItemId: itemId,
+          moduleId: job.moduleId,
+          fileName: item.originalFileName,
+          stage: "map",
+          errorCode: code,
+          errorLog,
+        },
+        "warn",
+      );
       await this.summarize(job.id);
       throw err;
     }
@@ -766,6 +915,15 @@ export class IngestRunner {
       },
       reviewDraft: envelope,
       reviewDraftVersion: envelope.version,
+    });
+    logIngest("ingest.item.awaiting_review", {
+      ingestJobId: input.job.id,
+      ingestItemId: input.itemId,
+      moduleId: input.job.moduleId,
+      fileName: current.originalFileName,
+      stage: "decide",
+      reviewDraftVersion: envelope.version,
+      reconciliationOk: input.reconciliation?.ok ?? null,
     });
   }
 

@@ -904,6 +904,64 @@ export interface CCRATopRisksData {
   region?: string;
 }
 
+export interface RiskAssessmentAdaptaBrazil {
+  timeframe: number;
+  sector_id: number;
+  sector_name: string;
+  risk_id: number;
+  risk_name: string;
+  risk_component_id: number;
+  risk_component_name: string;
+  risk_value_numeric: number;
+  risk_value_string: string;
+  risk_component_value_numeric: number;
+  risk_component_value_string: string;
+  null_type: string;
+  value_status: string;
+  spatial_support_level: string;
+}
+
+export interface IndicatorAdaptaBrazil {
+  timeframe: number;
+  sector_id: number;
+  sector_name: string;
+  risk_id: number;
+  risk_name: string;
+  risk_component_id: number;
+  risk_component_name: string;
+  risk_value_numeric: number;
+  risk_value_string: string;
+  risk_component_value_numeric: number;
+  risk_component_value_string: string;
+  null_type: string;
+  value_status: string;
+  spatial_support_level: string;
+  impact_chain_id_1: number;
+  impact_chain_name_1: string;
+  impact_chain_id_2: number;
+  impact_chain_name_2: string;
+  impact_chain_id_3: number;
+  impact_chain_name_3: string;
+  base_indicator_id: number;
+  base_indicator_name: string;
+  base_indicator_level: number;
+  impact_chain_1_value_numeric: number;
+  impact_chain_1_value_string: string;
+  impact_chain_2_value_numeric: number;
+  impact_chain_2_value_string: string;
+  impact_chain_3_value_numeric: number;
+  impact_chain_3_value_string: string;
+  base_indicator_value_numeric: number;
+  base_indicator_value_string: string;
+}
+
+export interface CCRATopRisksDataAdaptaBrazil {
+  riskAssessment: RiskAssessmentAdaptaBrazil[];
+  indicators?: IndicatorAdaptaBrazil[];
+  cityName?: string;
+  region?: string;
+}
+
 export interface ImportedFileResponse {
   id: string;
   userId: string;

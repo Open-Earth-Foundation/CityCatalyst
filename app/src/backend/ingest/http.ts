@@ -5,6 +5,7 @@ import {
   assertCanManageIngestDocument,
 } from "./access";
 import { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
+import { IngestAgent } from "./agent";
 import { IngestRunner } from "./IngestRunner";
 import { SequelizeIngestStore } from "./IngestStoreService";
 
@@ -13,6 +14,25 @@ export function createIngestRunner(): IngestRunner {
     new SequelizeIngestStore(),
     new SequelizeIngestDocumentPool(),
   );
+}
+
+export function createIngestAgent(): IngestAgent {
+  const store = new SequelizeIngestStore();
+  return new IngestAgent(
+    new IngestRunner(store, new SequelizeIngestDocumentPool()),
+    store,
+  );
+}
+
+export function createIngestRuntime(): {
+  store: SequelizeIngestStore;
+  runner: IngestRunner;
+} {
+  const store = new SequelizeIngestStore();
+  return {
+    store,
+    runner: new IngestRunner(store, new SequelizeIngestDocumentPool()),
+  };
 }
 
 export async function loadIngestReviewContext(

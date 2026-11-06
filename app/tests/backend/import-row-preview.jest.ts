@@ -14,7 +14,11 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
-import { previewImportRows } from "@/backend/ImportRowPreviewService";
+import {
+  findPendingRows,
+  previewImportRows,
+} from "@/backend/ImportRowPreviewService";
+import { applyReviewedRows } from "@/backend/ImportResultBuilder";
 import type { Sector } from "@/models/Sector";
 import { InventoryTypeEnum } from "@/util/enums";
 
@@ -362,5 +366,338 @@ describe("ECRFImportService.processECRFFile", () => {
       sourceRowNumber: 3,
       issue: "no-value-or-notation-key",
     });
+  });
+});
+
+describe("excluded reference needs a decision (Net 1)", () => {
+  function reviewed(
+    ref: string,
+    review: Record<string, unknown>,
+    fields: Partial<ECRFRowData> = {},
+  ): ECRFRowData {
+    return row(0, {
+      gpcRefNo: ref,
+      totalCO2e: 1710,
+      review: {
+        sector: "Stationary Energy",
+        subsector: "Energy generation",
+        category: null,
+        scope: null,
+        refSource: "inferred",
+        directionEvidence: null,
+        directionEvidenceFound: null,
+        page: 1,
+        source: null,
+        decision: null,
+        suggestedRefNo: ref,
+        ...review,
+      } as ECRFRowData["review"],
+      ...fields,
+    });
+  }
+
+  function reviewResult(rows: ECRFRowData[]): ECRFImportResult {
+    return { ...importResult(rows), requiresReferenceReview: true };
+  }
+
+  beforeEach(() => {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+  });
+
+  async function preview(rows: ECRFRowData[]) {
+    return previewImportRows(
+      reviewResult(rows),
+      InventoryTypeEnum.GPC_BASIC_PLUS,
+    );
+  }
+
+  it.each([
+    ["no activity class", { activityClass: null }],
+    ["activity class other", { activityClass: "other" }],
+    [
+      "grid supply labelled as losses",
+      { activityClass: "grid_supply", category: "Electricity T&D Losses" },
+    ],
+    [
+      "grid supply labelled as losses in Portuguese",
+      { activityClass: "grid_supply", category: "Perdas de distribuição" },
+    ],
+  ])("holds a valued I.4.4 row with %s", async (_name, review) => {
+    const result = await preview([reviewed("I.4.4", review)]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.reviewRows[0].issue).toBe("excluded-reference-unconfirmed");
+    expect(result.rows[0]).toMatchObject({
+      status: "pending",
+      issue: "excluded-reference-unconfirmed",
+    });
+    expect(result.reviewRows[0].referenceOptions).toEqual(
+      expect.arrayContaining(["I.4.3", "I.6.2", "I.6.3"]),
+    );
+  });
+
+  it("does not hold genuine grid supply", async () => {
+    const result = await preview([
+      reviewed("I.4.4", {
+        activityClass: "grid_supply",
+        category: "Electricity supplied to grid",
+      }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+    expect(result.rows[0]).toMatchObject({
+      status: "not-counted",
+      issue: "reported-apart-from-total",
+    });
+  });
+
+  it("does not hold a reference the document printed", async () => {
+    const result = await preview([
+      reviewed("I.4.4", { activityClass: null, refSource: "document" }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("does not hold a legacy row without an activity class", async () => {
+    const result = await preview([reviewed("I.4.4", {})]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("does not hold a notation key row", async () => {
+    const result = await preview([
+      reviewed(
+        "I.4.4",
+        { activityClass: null },
+        { totalCO2e: undefined, notationKey: "IE" },
+      ),
+    ]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("holds a gas-only I.4.4 row without totalCO2e", async () => {
+    const result = await preview([
+      reviewed(
+        "I.4.4",
+        { activityClass: null },
+        { totalCO2e: undefined, co2: 1000 },
+      ),
+    ]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.reviewRows[0].issue).toBe("excluded-reference-unconfirmed");
+  });
+
+  it("does not hold a VI.1 row with class other (Net 1 is I.4.4 only)", async () => {
+    const result = await preview([
+      reviewed("VI.1", { activityClass: "other", subsector: "Other Scope 3" }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+    expect(result.reviewRows).toEqual([]);
+    expect(result.rows[0]).toMatchObject({
+      status: "not-counted",
+      issue: "reported-apart-from-total",
+    });
+  });
+
+  it("keeps a III.1.3 row with class other on direction-unconfirmed", async () => {
+    const result = await preview([
+      reviewed("III.1.3", {
+        activityClass: "other",
+        sector: "Waste",
+        subsector: "Solid Waste Disposal",
+      }),
+    ]);
+    expect(result.reviewRows.map((r) => r.issue)).toEqual([
+      "direction-unconfirmed",
+    ]);
+    expect(result.reviewRows[0].referenceOptions).not.toContain("I.6.2");
+  });
+
+  it("does not flag a corrected row as a reference conflict", async () => {
+    const result = await preview([
+      reviewed("I.6.2", {
+        activityClass: "td_losses",
+        scope: "2",
+        scopeSource: "inferred",
+        originalScope: "1",
+      }),
+    ]);
+    expect(result.reviewRows.map((r) => r.issue)).not.toContain(
+      "reference-conflict",
+    );
+  });
+
+  it("lists imported rows whose scope was inferred from the activity type", async () => {
+    const result = await preview([
+      {
+        ...reviewed("I.1.2", { scope: "2", scopeSource: "inferred" }),
+        rowIndex: 0,
+      },
+      {
+        ...reviewed("I.1.2", {
+          scope: "2",
+          scopeSource: "inferred",
+          originalScope: "1",
+        }),
+        rowIndex: 1,
+        sourceRowNumber: 3,
+      },
+      {
+        ...reviewed("I.1.1", { scope: "1", scopeSource: "document" }),
+        rowIndex: 2,
+        sourceRowNumber: 4,
+      },
+    ]);
+    expect(result.inferredScopeRows).toHaveLength(2);
+    expect(result.inferredScopeRows).toEqual([
+      { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
+      { rowNumber: 3, gpcRefNo: "I.1.2", scope: "2", originalScope: "1" },
+    ]);
+  });
+
+  it("compares the original scope with the inferred one after normalizing", async () => {
+    const result = await preview([
+      reviewed("I.1.2", {
+        scope: "2",
+        scopeSource: "inferred",
+        originalScope: "Scope 2",
+      }),
+    ]);
+    expect(result.inferredScopeRows).toEqual([
+      { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
+    ]);
+  });
+
+  it("leaves an inferred row held for review out of inferredScopeRows", async () => {
+    const result = await preview([
+      reviewed("I.4.4", {
+        activityClass: "other",
+        scope: "2",
+        scopeSource: "inferred",
+      }),
+    ]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.inferredScopeRows).toEqual([]);
+  });
+});
+
+describe("decisions on held rows (applyReviewedRows)", () => {
+  const SCOPE_IDS: Record<string, string> = {
+    "scope-1": "1",
+    "scope-2": "2",
+    "scope-3": "3",
+  };
+  const REF_SCOPE: Record<string, string> = {
+    "I.4.4": "scope-1",
+    "I.6.2": "scope-2",
+    "I.6.3": "scope-3",
+    "I.1.1": "scope-1",
+  };
+
+  function held(
+    ref: string,
+    review: Record<string, unknown>,
+  ): ECRFImportResult {
+    const rows = [
+      row(0, {
+        gpcRefNo: ref,
+        totalCO2e: 1710,
+        review: {
+          sector: "Stationary Energy",
+          subsector: "Energy generation",
+          category: null,
+          scope: "1",
+          refSource: "inferred",
+          directionEvidence: null,
+          directionEvidenceFound: null,
+          page: 1,
+          source: null,
+          decision: null,
+          suggestedRefNo: ref,
+          decisionToken: "tok",
+          activityClass: null,
+          ...review,
+        } as ECRFRowData["review"],
+      }),
+    ];
+    return { ...importResult(rows), requiresReferenceReview: true };
+  }
+
+  const decide = (extra: Record<string, unknown>) => ({
+    "0": {
+      decisionFileId: "file",
+      decisionToken: "tok",
+      decisionRef: "I.4.4",
+      decisionScope: "1",
+      decisionValue: 1710,
+      ...extra,
+    },
+  });
+
+  beforeEach(() => {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockImplementation(
+      async (ref: string) =>
+        ({
+          sectorId: "s",
+          subsectorId: "ss",
+          subcategoryId: `sub-${ref}`,
+          scopeId: REF_SCOPE[ref],
+        }) as never,
+    );
+    jest
+      .spyOn(db.models.Scope, "findByPk")
+      .mockImplementation(
+        async (id: unknown) =>
+          ({ scopeId: id, scopeName: SCOPE_IDS[String(id)] }) as never,
+      );
+    jest
+      .spyOn(db.models.Scope, "findOne")
+      .mockImplementation(async (opts: never) => {
+        const name = (opts as { where: { scopeName: string } }).where.scopeName;
+        const id = Object.keys(SCOPE_IDS).find((k) => SCOPE_IDS[k] === name);
+        return { scopeId: id, scopeName: name } as never;
+      });
+  });
+
+  it("is pending until decided", () => {
+    expect(findPendingRows(held("I.4.4", {}))).toHaveLength(1);
+  });
+
+  it.each(["keep", "skip"])("clears a held row on %s", async (kind) => {
+    const result = held("I.4.4", {});
+    await applyReviewedRows(result, decide({ reviewDecision: kind }), "file");
+    expect(findPendingRows(result)).toHaveLength(0);
+  });
+
+  it.each([
+    ["I.6.3", "3"],
+    ["I.6.2", "2"],
+  ])("reclassifies to %s with the target scope", async (ref, scope) => {
+    const result = held("I.4.4", {});
+    await applyReviewedRows(
+      result,
+      decide({ reviewDecision: "reclassify", gpcRefNo: ref }),
+      "file",
+    );
+    expect(findPendingRows(result)).toHaveLength(0);
+    expect(result.rows[0].gpcRefNo).toBe(ref);
+    expect(result.rows[0].review?.finalScope).toBe(scope);
+    expect(result.rows[0].scopeId).toBe(`scope-${scope}`);
+  });
+
+  it("still rejects a reclassify on a reference-conflict row whose scope mismatches", async () => {
+    // I.1.1 is scope 1; the document states scope 2, so this is a conflict.
+    const result = held("I.1.1", { scope: "2", refSource: "document" });
+    await applyReviewedRows(
+      result,
+      decide({
+        decisionRef: "I.1.1",
+        decisionScope: "2",
+        reviewDecision: "reclassify",
+        gpcRefNo: "I.6.3",
+      }),
+      "file",
+    );
+    expect(result.rows[0].gpcRefNo).toBe("I.1.1");
+    expect(findPendingRows(result)).toHaveLength(1);
   });
 });

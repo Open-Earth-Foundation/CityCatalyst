@@ -3,8 +3,14 @@
 import { useState } from "react";
 import { TFunction } from "i18next";
 import { Box, Card, Icon, Spinner, Table, Text } from "@chakra-ui/react";
-import { MdCheckCircle, MdError, MdWarning } from "react-icons/md";
+import {
+  MdCheckCircle,
+  MdError,
+  MdInfoOutline,
+  MdWarning,
+} from "react-icons/md";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { api } from "@/services/api";
 import type { ImportRowOutcome } from "@/util/types";
 import ImportReviewRows from "./import-review-rows";
@@ -87,14 +93,64 @@ export default function ImportRowIssues({
       ))}
     </Box>
   );
+  const inferredScopeRows = data.inferredScopeRows ?? [];
+  const inferredScope = inferredScopeRows.length > 0 && (
+    <Box mb={6} data-testid="import-inferred-scope">
+      <Text fontSize="body.sm" color="content.secondary">
+        {t("import-inferred-scope-summary", {
+          count: inferredScopeRows.length,
+        })}
+      </Text>
+      {inferredScopeRows.map((row) => {
+        const scope = row.scope || t("import-scope-missing");
+        const text = row.originalScope
+          ? t("import-inferred-scope-row-overridden", {
+              row: row.rowNumber,
+              ref: row.gpcRefNo,
+              scope,
+              originalScope: row.originalScope,
+            })
+          : t("import-inferred-scope-row", {
+              row: row.rowNumber,
+              ref: row.gpcRefNo,
+              scope,
+            });
+        return (
+          <Box
+            key={row.rowNumber}
+            display="flex"
+            alignItems="center"
+            gap="4px"
+            fontSize="body.sm"
+          >
+            <Text>
+              {row.rowNumber} · {row.gpcRefNo} · {scope}
+            </Text>
+            <Tooltip content={text} showArrow>
+              <Icon
+                as={MdInfoOutline}
+                boxSize={4}
+                color="content.tertiary"
+                // Focusable so keyboard users can open the tooltip.
+                tabIndex={0}
+                role="img"
+                aria-label={text}
+              />
+            </Tooltip>
+          </Box>
+        );
+      })}
+    </Box>
+  );
   // Held rows have their own list above; this table is the rest.
   const issueRows = data.rows.filter((row) => row.status !== "pending");
 
   if (issueRows.length === 0) {
-    if ((data.reviewRows ?? []).length > 0 || scopeWarnings)
+    if ((data.reviewRows ?? []).length > 0 || scopeWarnings || inferredScope)
       return (
         <>
           {scopeWarnings}
+          {inferredScope}
           {reviewRows}
         </>
       );
@@ -120,6 +176,7 @@ export default function ImportRowIssues({
   return (
     <>
       {scopeWarnings}
+      {inferredScope}
       {reviewRows}
       <Card.Root
         mb={6}

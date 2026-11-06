@@ -474,6 +474,44 @@ describe("excluded reference needs a decision (Net 1)", () => {
     expect(result.pendingRows).toBe(0);
   });
 
+  it("holds a gas-only I.4.4 row without totalCO2e", async () => {
+    const result = await preview([
+      reviewed(
+        "I.4.4",
+        { activityClass: null },
+        { totalCO2e: undefined, co2: 1000 },
+      ),
+    ]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.reviewRows[0].issue).toBe("excluded-reference-unconfirmed");
+  });
+
+  it("does not hold a VI.1 row with class other (Net 1 is I.4.4 only)", async () => {
+    const result = await preview([
+      reviewed("VI.1", { activityClass: "other", subsector: "Other Scope 3" }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+    expect(result.reviewRows).toEqual([]);
+    expect(result.rows[0]).toMatchObject({
+      status: "not-counted",
+      issue: "reported-apart-from-total",
+    });
+  });
+
+  it("keeps a III.1.3 row with class other on direction-unconfirmed", async () => {
+    const result = await preview([
+      reviewed("III.1.3", {
+        activityClass: "other",
+        sector: "Waste",
+        subsector: "Solid Waste Disposal",
+      }),
+    ]);
+    expect(result.reviewRows.map((r) => r.issue)).toEqual([
+      "direction-unconfirmed",
+    ]);
+    expect(result.reviewRows[0].referenceOptions).not.toContain("I.6.2");
+  });
+
   it("does not flag a corrected row as a reference conflict", async () => {
     const result = await preview([
       reviewed("I.6.2", {
@@ -513,6 +551,19 @@ describe("excluded reference needs a decision (Net 1)", () => {
     expect(result.inferredScopeRows).toEqual([
       { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
       { rowNumber: 3, gpcRefNo: "I.1.2", scope: "2", originalScope: "1" },
+    ]);
+  });
+
+  it("compares the original scope with the inferred one after normalizing", async () => {
+    const result = await preview([
+      reviewed("I.1.2", {
+        scope: "2",
+        scopeSource: "inferred",
+        originalScope: "Scope 2",
+      }),
+    ]);
+    expect(result.inferredScopeRows).toEqual([
+      { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
     ]);
   });
 

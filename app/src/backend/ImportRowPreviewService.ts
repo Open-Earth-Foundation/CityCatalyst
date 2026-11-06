@@ -1,4 +1,5 @@
 import {
+  GRID_GENERATION_GPC_REF,
   isImportedWasteRef,
   isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
@@ -60,16 +61,19 @@ function finalPairConflict(row: ImportRow): boolean {
 }
 
 /**
- * A valued row the model placed on a reference left out of the total, without
- * the document naming that reference. Genuine grid supply (I.4.4) may stay
- * there; anything else, or a label about losses or consumption, needs a
- * decision. Rows without an activity class are legacy and are not held.
+ * A valued row the model placed on I.4.4 (left out of the total), without the
+ * document naming that reference. Genuine grid supply may stay there; anything
+ * else, or a label about losses or consumption, needs a decision. Other
+ * omitted references (III.x.3, VI.1) keep their own handling. Rows without an
+ * activity class are legacy and are not held.
  */
 function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
   const review = row.review;
   const ref = review?.suggestedRefNo ?? row.gpcRefNo;
-  if (!review || !isOmittedGPCReference(ref)) return false;
-  if (row.totalCO2e == null || review.refSource === "document") return false;
+  if (!review || ref !== GRID_GENERATION_GPC_REF) return false;
+  // A gas-only row (no totalCO2e) still carries a value.
+  if (resolveImportedTotalCO2e(row) == null || review.refSource === "document")
+    return false;
   if (!("activityClass" in review)) return false;
   return (
     review.activityClass !== "grid_supply" ||
@@ -276,12 +280,16 @@ export async function previewImportRows(
       )
       .map((row) => {
         const scope = row.review?.scope ?? null;
-        const original = row.review?.originalScope ?? null;
+        const original = row.review?.originalScope?.trim() || null;
+        // "Scope 2" and "2" are the same scope, so compare normalized values.
+        const differs =
+          original != null &&
+          scopeFromLabel(original) !== scopeFromLabel(scope);
         return {
           rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
           gpcRefNo: row.gpcRefNo,
           scope,
-          originalScope: original !== scope ? original : null,
+          originalScope: differs ? original : null,
         };
       }),
     omittedFromTotalTonnes,

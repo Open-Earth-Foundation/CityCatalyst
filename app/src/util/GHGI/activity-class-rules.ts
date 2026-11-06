@@ -60,7 +60,12 @@ function gridReference(
 }
 
 function applyToRow<T extends ClassifiableRow>(row: T): T {
-  if (!("activityClass" in row) || row.refSource === "document") return row;
+  if (!("activityClass" in row)) return row;
+  if (row.refSource === "document") {
+    return row.scope && row.scopeSource !== "document"
+      ? { ...row, scopeSource: "document" }
+      : row;
+  }
   let next: T = row;
   const set = (fields: Partial<ClassifiableRow>): void => {
     next = { ...next, ...fields };
@@ -99,9 +104,6 @@ function applyToRow<T extends ClassifiableRow>(row: T): T {
       break;
   }
 
-  if (next === row && row.scope && row.refSource === "document") {
-    return row.scopeSource === "document" ? row : { ...row, scopeSource: "document" };
-  }
   return next;
 }
 

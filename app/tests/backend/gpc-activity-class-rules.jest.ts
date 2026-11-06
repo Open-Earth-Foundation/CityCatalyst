@@ -58,6 +58,11 @@ describe("applyActivityClassRules", () => {
     expect(apply(fixtures[7])).toEqual(fixtures[7]);
   });
 
+  it("marks a document row's scope as from the document, keeping ref and scope", () => {
+    const input = row({ activityClass: "td_losses", gpcRefNo: "I.4.4", scope: "3", refSource: "document" });
+    expect(apply(input)).toEqual({ ...input, scopeSource: "document" });
+  });
+
   it("leaves fuel_combustion alone", () => {
     expect(apply(fixtures[8])).toEqual(fixtures[8]);
   });

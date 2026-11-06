@@ -396,3 +396,143 @@ describe("CC-1161 reconciliation targets", () => {
     expect(targets.removals).toEqual([]);
   });
 });
+
+describe("CC-1161 removals by arithmetic (removals = net - gross)", () => {
+  const reported = (
+    value: number,
+    label: string,
+    extra: Partial<ReportedTotal> = {},
+  ): ReportedTotal => ({
+    label,
+    value,
+    year: 2021,
+    scope: null,
+    sector: null,
+    subsector: null,
+    level: "total",
+    ...extra,
+  });
+
+  it("takes a removals total with a generic label for removals, not for a grand total", () => {
+    const totals = [
+      reported(GROSS, "Total Gross Emissions"),
+      reported(NET, "Total net emissions"),
+      reported(REMOVALS, "Total"),
+    ];
+    const targets = reconciliationTargets(totals, 2021);
+    expect(targets.grand).toEqual([GROSS]);
+    expect(targets.net).toEqual([NET]);
+    expect(targets.removals).toEqual([REMOVALS]);
+    expect(removalsTotals(totals, 2021)).toEqual([REMOVALS]);
+  });
+
+  it("classifies Portuguese labels: removals and net by their values", () => {
+    const targets = reconciliationTargets(
+      [
+        reported(GROSS, "Emissões brutas"),
+        reported(NET, "Emissões líquidas"),
+        reported(REMOVALS, "Remoções florestais"),
+      ],
+      2021,
+    );
+    expect(targets.grand).toEqual([GROSS]);
+    expect(targets.net).toEqual([NET]);
+    expect(targets.removals).toEqual([REMOVALS]);
+  });
+
+  it("counts a removals subtotal with a non-English label", () => {
+    expect(
+      removalsTotals(
+        [
+          reported(GROSS, "Emisiones brutas"),
+          reported(NET, "Emisiones netas"),
+          reported(REMOVALS, "Absorciones", { level: "subtotal" }),
+        ],
+        2021,
+      ),
+    ).toEqual([REMOVALS]);
+  });
+
+  it("accepts removals within the 1% tolerance and rejects them outside it", () => {
+    const near = Math.round(REMOVALS * 1.005);
+    const far = Math.round(REMOVALS * 1.05);
+    expect(
+      removalsTotals(
+        [
+          reported(GROSS, "Total"),
+          reported(NET, "Total"),
+          reported(near, "Total", { level: "subtotal" }),
+        ],
+        2021,
+      ),
+    ).toEqual([near]);
+    expect(
+      removalsTotals(
+        [
+          reported(GROSS, "Total"),
+          reported(NET, "Total"),
+          reported(far, "Total", { level: "subtotal" }),
+        ],
+        2021,
+      ),
+    ).toEqual([]);
+  });
+
+  it("falls back to the label when the document reports no net total", () => {
+    expect(
+      removalsTotals(
+        [reported(GROSS, "Total"), reported(REMOVALS, "Total")],
+        2021,
+      ),
+    ).toEqual([]);
+    expect(
+      removalsTotals(
+        [reported(GROSS, "Total"), reported(REMOVALS, "Forestry removals")],
+        2021,
+      ),
+    ).toEqual([REMOVALS]);
+  });
+
+  it("finds no removals among positive sector subtotals", () => {
+    const totals = [
+      reported(1000000, "Total"),
+      reported(600000, "Energy", { level: "subtotal" }),
+      reported(400000, "Transport", { level: "subtotal" }),
+      reported(300000, "Waste", { level: "subtotal" }),
+      reported(100000, "Agriculture", { level: "subtotal" }),
+    ];
+    const targets = reconciliationTargets(totals, 2021);
+    expect(targets.grand).toEqual([1000000]);
+    expect(targets.net).toEqual([]);
+    expect(targets.removals).toEqual([]);
+  });
+
+  it("ignores totals of another year or with a scope", () => {
+    expect(
+      removalsTotals(
+        [
+          reported(GROSS, "Total"),
+          reported(NET, "Total"),
+          reported(REMOVALS, "Total", { year: 2016 }),
+          reported(REMOVALS, "Total", { scope: "1", level: "subtotal" }),
+        ],
+        2021,
+      ),
+    ).toEqual([]);
+  });
+
+  it("warns gross-only on a Portuguese document whose import reaches only the gross", () => {
+    const notes = extractionReviewNotes({
+      reportedTotals: [
+        reported(GROSS, "Emissões brutas"),
+        reported(NET, "Emissões líquidas"),
+        reported(REMOVALS, "Remoções florestais"),
+      ],
+      droppedRows: {},
+      importedSum: GROSS,
+      yearAssumed: false,
+      targetYear: 2021,
+    });
+    expect(notes.removalsWarning).toEqual({ kind: "gross-only", net: NET });
+  });
+});

@@ -104,8 +104,9 @@ export function isNetTotalLabel(label: string): boolean {
 }
 
 /**
- * True for a total of forestry removals (-811,512 "Forestry removals"). Decided by
- * words only, never by the sign: a net total is negative too. A label that names the
+ * True for a total whose words name forestry removals (-811,512 "Forestry removals").
+ * Fallback for reconciliationTargets, which first tells removals by value. Never
+ * decided by the sign: a net total is negative too. A label that names the
  * city's net total ("Net emissions (including Forestry)") is a net total, not
  * removals; "Net forestry" is removals. The AFOLU sector name alone is not removals.
  */
@@ -114,6 +115,121 @@ export function isRemovalsTotal(total: ReportedTotal): boolean {
   return [total.label, total.sector, total.subsector].some(
     (text) => text != null && namesRemovals(text),
   );
+}
+
+export type ReconciliationTargets = {
+  /** City totals: at least the share of the largest reported total of the year. */
+  grand: number[];
+  /** Net totals: gross plus removals by value, or below the share and labeled as net. */
+  net: number[];
+  /**
+   * Totals and subtotals of forestry removals. Never a target: they stand for a part
+   * of the city.
+   */
+  removals: number[];
+};
+
+/** True when `value` is within the reconciliation tolerance of `expected`. */
+function withinTolerance(value: number, expected: number): boolean {
+  return (
+    Math.abs(value - expected) <= RECONCILIATION_TOLERANCE * Math.abs(expected)
+  );
+}
+
+/**
+ * Net and removals told apart by their values, whatever the labels say and in any
+ * language: gross + removals = net (Masterton: 785,873 + -811,512 = -25,639).
+ * The gross must be positive and the removals negative: the sum is symmetric in the
+ * two, so without the signs the removals would pass for the gross.
+ */
+function netAndRemovalsByValue(
+  grossCandidates: number[],
+  values: number[],
+): { net: Set<number>; removals: Set<number> } {
+  const net = new Set<number>();
+  const removals = new Set<number>();
+  for (const gross of grossCandidates) {
+    if (gross <= 0) continue;
+    for (const candidateNet of values) {
+      if (candidateNet === gross) continue;
+      for (const candidateRemovals of values) {
+        if (
+          candidateRemovals < 0 &&
+          candidateRemovals !== candidateNet &&
+          candidateRemovals !== gross &&
+          withinTolerance(candidateRemovals, candidateNet - gross)
+        ) {
+          net.add(candidateNet);
+          removals.add(candidateRemovals);
+        }
+      }
+    }
+  }
+  return { net, removals };
+}
+
+/** Values at or above the share of the largest absolute value among them. */
+function aboveShare(values: number[]): number[] {
+  const largest = Math.max(0, ...values.map((value) => Math.abs(value)));
+  return values.filter(
+    (value) => Math.abs(value) >= largest * MIN_GRAND_TOTAL_SHARE,
+  );
+}
+
+/**
+ * The totals an import may be reconciled against, and the forestry removals.
+ * A table that adds up to a small total of its own (a council-operations table with
+ * its own "Total") is not a target: it would make a wrong table look reconciled.
+ *
+ * Removals and the net total are found by value first (gross + removals = net), so
+ * labels in any language and generic labels ("Total") work. The label is a fallback
+ * for documents without a net total. Removals never count toward the largest total:
+ * they can exceed the gross (Masterton: -811,512 against 785,873) and would raise the
+ * share every other total is held to.
+ */
+export function reconciliationTargets(
+  totals: ReportedTotal[] | null | undefined,
+  targetYear?: number | null,
+): ReconciliationTargets {
+  // Totals and subtotals of the year without a scope: the city-wide parts.
+  const cityTotals = (totals ?? []).filter(
+    (total) =>
+      !total.scope &&
+      Number.isFinite(total.value) &&
+      total.value !== 0 &&
+      // A total of another year (a 2016 comparison) is no target.
+      (total.year == null || targetYear == null || total.year === targetYear),
+  );
+  const candidates = cityTotals.filter(isGrandTotal);
+
+  // A gross total is positive; the share among the positive candidates cannot be
+  // raised by a removals value.
+  const grossCandidates = aboveShare(
+    candidates.map((total) => total.value).filter((value) => value > 0),
+  );
+  const byValue = netAndRemovalsByValue(
+    grossCandidates,
+    cityTotals.map((total) => total.value),
+  );
+
+  const removals = new Set(byValue.removals);
+  for (const total of cityTotals) {
+    if (!byValue.net.has(total.value) && isRemovalsTotal(total)) {
+      removals.add(total.value);
+    }
+  }
+
+  const ofYear = candidates.filter(
+    (total) => !removals.has(total.value) && !byValue.net.has(total.value),
+  );
+  const grand = new Set(aboveShare(ofYear.map((total) => total.value)));
+  const net = new Set(byValue.net);
+  for (const total of ofYear) {
+    if (!grand.has(total.value) && isNetTotalLabel(total.label)) {
+      net.add(total.value);
+    }
+  }
+  return { grand: [...grand], net: [...net], removals: [...removals] };
 }
 
 /**
@@ -125,66 +241,7 @@ export function removalsTotals(
   totals: ReportedTotal[] | null | undefined,
   targetYear?: number | null,
 ): number[] {
-  const values = new Set<number>();
-  for (const total of totals ?? []) {
-    if (
-      !total.scope &&
-      Number.isFinite(total.value) &&
-      total.value !== 0 &&
-      (total.year == null || targetYear == null || total.year === targetYear) &&
-      isRemovalsTotal(total)
-    ) {
-      values.add(total.value);
-    }
-  }
-  return [...values];
-}
-
-export type ReconciliationTargets = {
-  /** City totals: at least the share of the largest reported total of the year. */
-  grand: number[];
-  /** Net totals: below the share but labeled as net. */
-  net: number[];
-  /** Totals of forestry removals. Never a target: they stand for a part of the city. */
-  removals: number[];
-};
-
-/**
- * The totals an import may be reconciled against. A table that adds up to a small
- * total of its own (a council-operations table with its own "Total") is not a target:
- * it would make a wrong table look reconciled.
- */
-export function reconciliationTargets(
-  totals: ReportedTotal[] | null | undefined,
-  targetYear?: number | null,
-): ReconciliationTargets {
-  const candidates = (totals ?? []).filter(
-    (total) =>
-      isGrandTotal(total) &&
-      Number.isFinite(total.value) &&
-      total.value !== 0 &&
-      // A grand total of another year (a 2016 comparison) is no target.
-      (total.year == null || targetYear == null || total.year === targetYear),
-  );
-  // Removals can exceed the gross total (Masterton: -811,512 against 785,873). Left
-  // among the candidates they would raise the share every other total is held to.
-  const removals = new Set<number>();
-  const ofYear = candidates.filter((total) => {
-    if (!isRemovalsTotal(total)) return true;
-    removals.add(total.value);
-    return false;
-  });
-  const largest = Math.max(0, ...ofYear.map((total) => Math.abs(total.value)));
-  const grand = new Set<number>();
-  const net = new Set<number>();
-  for (const total of ofYear) {
-    if (Math.abs(total.value) >= largest * MIN_GRAND_TOTAL_SHARE) {
-      grand.add(total.value);
-    } else if (isNetTotalLabel(total.label)) {
-      net.add(total.value);
-    }
-  }
-  return { grand: [...grand], net: [...net], removals: [...removals] };
+  return reconciliationTargets(totals, targetYear).removals;
 }
 
 export type Reconciliation = {

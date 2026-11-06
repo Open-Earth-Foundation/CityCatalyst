@@ -169,7 +169,7 @@ const REVIEW_DECISIONS = new Set(["keep", "reclassify", "skip"]);
  * Apply user overrides to an extracted row. Only allowed keys are applied;
  * used for manual correction of sector/subsector/category etc. per row.
  */
-function applyRowOverrides(
+export function applyRowOverrides(
   base: ExtractedRow,
   overrides: Record<string, unknown>,
   fileId: string,
@@ -238,6 +238,16 @@ function applyRowOverrides(
     out.reviewDecision = null;
   }
   if (reclassified) out.suggestedRefNo = base.gpcRefNo;
+  // A user who sets the scope or the reference owns the pair now: the row no
+  // longer has a scope inferred from its activity type, and the model's
+  // original scope must not come back as the stated scope.
+  if (
+    base.scopeSource === "inferred" &&
+    (out.scope !== base.scope || out.gpcRefNo !== base.gpcRefNo)
+  ) {
+    out.scopeSource = null;
+    out.originalScope = null;
+  }
   return out;
 }
 

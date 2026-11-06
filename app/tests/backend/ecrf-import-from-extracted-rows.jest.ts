@@ -21,6 +21,8 @@ jest.unstable_mockModule("@/models", () => ({
 
 const { default: ECRFImportService } =
   await import("@/backend/ECRFImportService");
+const { applyRowOverrides } = await import("@/backend/ImportResultBuilder");
+const { previewImportRows } = await import("@/backend/ImportRowPreviewService");
 
 describe("ECRFImportService.fromExtractedRows", () => {
   afterEach(() => {
@@ -153,5 +155,69 @@ describe("fromExtractedRows review data", () => {
       },
     ]);
     expect("activityClass" in result.rows[0].review!).toBe(false);
+  });
+});
+
+describe("manual override of a row with an inferred scope", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const inferred = {
+    year: 2021,
+    sector: "Stationary Energy",
+    subsector: "Non-Specified Sources",
+    scope: "2",
+    originalScope: "1",
+    category: "Electricity",
+    gpcRefNo: "I.6.2",
+    refSource: "inferred" as const,
+    totalCO2e: 100,
+    activityClass: "grid_energy" as const,
+    scopeSource: "inferred" as const,
+  };
+
+  async function previewOf(row: typeof inferred) {
+    jest
+      .spyOn(ECRFImportService, "lookupGPCReference")
+      .mockImplementation(async (gpcRefNo: string) => ({
+        sectorId: "sector",
+        subsectorId: "subsector",
+        subcategoryId: `sub-${gpcRefNo}`,
+        scopeId: gpcRefNo.endsWith(".2") ? "scope-2-id" : "scope-3-id",
+      }));
+    const result = await ECRFImportService.fromExtractedRows([row]);
+    result.requiresReferenceReview = true;
+    return { result, preview: await previewImportRows(result, undefined) };
+  }
+
+  it.each([
+    ["scope", { scope: "3", gpcRefNo: "I.6.3" }],
+    ["reference", { gpcRefNo: "I.1.2", subsector: "Residential Buildings" }],
+  ])(
+    "drops the inferred flag when the user changes the %s",
+    async (_k, edit) => {
+      const out = applyRowOverrides(inferred, edit, "file", "tok");
+      expect(out.scopeSource).toBeNull();
+
+      const { result, preview } = await previewOf(out as typeof inferred);
+      expect(preview.inferredScopeRows).toEqual([]);
+      // The stated scope is the row's current one, not the model's original "1".
+      expect(result.rows[0].review?.scope).toBe(out.scope);
+      expect(preview.reviewRows).toEqual([]);
+    },
+  );
+
+  it("keeps the inferred flag when the user edits another field", async () => {
+    const out = applyRowOverrides(
+      inferred,
+      { category: "Grid electricity" },
+      "file",
+      "tok",
+    );
+    expect(out.scopeSource).toBe("inferred");
+
+    const { preview } = await previewOf(out as typeof inferred);
+    expect(preview.inferredScopeRows).toHaveLength(1);
   });
 });

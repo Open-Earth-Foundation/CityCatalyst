@@ -77,7 +77,7 @@ function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
   );
 }
 
-function reviewIssue(row: ImportRow): ImportRowIssue | null {
+export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";

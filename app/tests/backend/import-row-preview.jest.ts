@@ -14,7 +14,11 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
-import { previewImportRows } from "@/backend/ImportRowPreviewService";
+import {
+  findPendingRows,
+  previewImportRows,
+} from "@/backend/ImportRowPreviewService";
+import { applyReviewedRows } from "@/backend/ImportResultBuilder";
 import type { Sector } from "@/models/Sector";
 import { InventoryTypeEnum } from "@/util/enums";
 
@@ -482,5 +486,127 @@ describe("excluded reference needs a decision (Net 1)", () => {
     expect(result.reviewRows.map((r) => r.issue)).not.toContain(
       "reference-conflict",
     );
+  });
+});
+
+describe("decisions on held rows (applyReviewedRows)", () => {
+  const SCOPE_IDS: Record<string, string> = {
+    "scope-1": "1",
+    "scope-2": "2",
+    "scope-3": "3",
+  };
+  const REF_SCOPE: Record<string, string> = {
+    "I.4.4": "scope-1",
+    "I.6.2": "scope-2",
+    "I.6.3": "scope-3",
+    "I.1.1": "scope-1",
+  };
+
+  function held(
+    ref: string,
+    review: Record<string, unknown>,
+  ): ECRFImportResult {
+    const rows = [
+      row(0, {
+        gpcRefNo: ref,
+        totalCO2e: 1710,
+        review: {
+          sector: "Stationary Energy",
+          subsector: "Energy generation",
+          category: null,
+          scope: "1",
+          refSource: "inferred",
+          directionEvidence: null,
+          directionEvidenceFound: null,
+          page: 1,
+          source: null,
+          decision: null,
+          suggestedRefNo: ref,
+          decisionToken: "tok",
+          activityClass: null,
+          ...review,
+        } as ECRFRowData["review"],
+      }),
+    ];
+    return { ...importResult(rows), requiresReferenceReview: true };
+  }
+
+  const decide = (extra: Record<string, unknown>) => ({
+    "0": {
+      decisionFileId: "file",
+      decisionToken: "tok",
+      decisionRef: "I.4.4",
+      decisionScope: "1",
+      decisionValue: 1710,
+      ...extra,
+    },
+  });
+
+  beforeEach(() => {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockImplementation(
+      async (ref: string) =>
+        ({
+          sectorId: "s",
+          subsectorId: "ss",
+          subcategoryId: `sub-${ref}`,
+          scopeId: REF_SCOPE[ref],
+        }) as never,
+    );
+    jest
+      .spyOn(db.models.Scope, "findByPk")
+      .mockImplementation(
+        async (id: unknown) =>
+          ({ scopeId: id, scopeName: SCOPE_IDS[String(id)] }) as never,
+      );
+    jest
+      .spyOn(db.models.Scope, "findOne")
+      .mockImplementation(async (opts: never) => {
+        const name = (opts as { where: { scopeName: string } }).where.scopeName;
+        const id = Object.keys(SCOPE_IDS).find((k) => SCOPE_IDS[k] === name);
+        return { scopeId: id, scopeName: name } as never;
+      });
+  });
+
+  it("is pending until decided", () => {
+    expect(findPendingRows(held("I.4.4", {}))).toHaveLength(1);
+  });
+
+  it.each(["keep", "skip"])("clears a held row on %s", async (kind) => {
+    const result = held("I.4.4", {});
+    await applyReviewedRows(result, decide({ reviewDecision: kind }), "file");
+    expect(findPendingRows(result)).toHaveLength(0);
+  });
+
+  it.each([
+    ["I.6.3", "3"],
+    ["I.6.2", "2"],
+  ])("reclassifies to %s with the target scope", async (ref, scope) => {
+    const result = held("I.4.4", {});
+    await applyReviewedRows(
+      result,
+      decide({ reviewDecision: "reclassify", gpcRefNo: ref }),
+      "file",
+    );
+    expect(findPendingRows(result)).toHaveLength(0);
+    expect(result.rows[0].gpcRefNo).toBe(ref);
+    expect(result.rows[0].review?.finalScope).toBe(scope);
+    expect(result.rows[0].scopeId).toBe(`scope-${scope}`);
+  });
+
+  it("still rejects a reclassify on a reference-conflict row whose scope mismatches", async () => {
+    // I.1.1 is scope 1; the document states scope 2, so this is a conflict.
+    const result = held("I.1.1", { scope: "2", refSource: "document" });
+    await applyReviewedRows(
+      result,
+      decide({
+        decisionRef: "I.1.1",
+        decisionScope: "2",
+        reviewDecision: "reclassify",
+        gpcRefNo: "I.6.3",
+      }),
+      "file",
+    );
+    expect(result.rows[0].gpcRefNo).toBe("I.1.1");
+    expect(findPendingRows(result)).toHaveLength(1);
   });
 });

@@ -131,6 +131,9 @@ export default function ImportRowIssues({
                 as={MdInfoOutline}
                 boxSize={4}
                 color="content.tertiary"
+                // Focusable so keyboard users can open the tooltip.
+                tabIndex={0}
+                role="img"
                 aria-label={text}
               />
             </Tooltip>

@@ -5,17 +5,11 @@ frontend and backend code for the app, as well as database management scripts.
 
 ## Concept Note chat
 
-Clicking **Answer in chat** on a chapter gap opens a guided question in Clima.
-An authorized, read-only question request turns a compound gap into a short
-question with two to five answer categories where a choice is meaningful.
-These are possible user answers, not assertions extracted from source documents.
-Users can select a category, choose **Other** or **Not decided yet**, add details,
-and preview a chapter change. Exact factual questions use free text; generation
-failures show a retry action and keep free text available.
-**Answer later** leaves the gap open. Answers use the existing chat/edit proposal
-flow and focus the relevant chapter. Only accepting the proposed edit changes
-the draft and closes any gaps whose missing-information markers were filled.
-Answering one part of a compound gap keeps the remaining details open.
+**Answer in chat** on a chapter gap opens up to four questions in Clima, each
+with suggested choices (possible answers, not source facts), free text, or
+**Not decided yet**; a retry appears if generation fails. Answers become a
+chapter edit proposal: accepting it closes the gap only when every part was
+answered. **Answer later** leaves the gap open.
 
 ### Connection errors
 

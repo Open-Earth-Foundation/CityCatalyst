@@ -121,9 +121,15 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     container.querySelector('[data-testid="focused-review-finding"]')
       ?.textContent,
   ).toContain("Check the total budget");
-  expect(
-    container.querySelector('[data-testid="concept-note-gap-marker"]'),
-  ).not.toBeNull();
+  const marker = () =>
+    container.querySelector<HTMLButtonElement>(
+      '[data-testid="concept-note-gap-marker"]',
+    )!;
+  // A parent re-render must not remount the marker and close its popover.
+  await act(async () => marker().click());
+  await render({ isConfirmingChapter: true });
+  expect(marker().getAttribute("aria-expanded")).toBe("true");
+  await act(async () => marker().click());
   await render({
     reviewChanges: [change],
     activeChangeId: change.change_id,

@@ -37,13 +37,12 @@ def test_requires_one_to_four_questions(count):
         )
 
 
-@pytest.mark.parametrize("options", [[], ["Loan", "Grant", "Guarantee"]])
-async def test_generates_validated_question_with_dedicated_prompt(monkeypatch, options):
+async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
     settings = Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
     output = {
         "why_asking": "Support needed",
         "questions": [
-            {"question": "Instrument?", "options": options},
+            {"question": "Instrument?", "options": ["Loan", "Grant", "Guarantee"]},
             {"question": "Amount?", "options": []},
         ],
     }
@@ -76,7 +75,8 @@ def gap_route(monkeypatch):
     chapter = SimpleNamespace(
         chapter_id=chapter_id,
         title="Financing",
-        body_markdown="Current draft " * 2000,
+        body_markdown="Current draft " * 2000
+        + "[Information needed: Original question]",
         gaps=[
             SimpleNamespace(
                 gap_id=gap_id,
@@ -156,9 +156,15 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert result.questions[0].options == ["Loan", "Grant"]
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
+    # Long chapters are cut around the gap, not from the start.
     assert len(context["chapter_excerpt"]) == 12000
-    # Earlier accepted answers steer the model away from re-asking them.
-    assert gap_route.previous.call_args.kwargs["question"] == "Original question"
+    assert context["chapter_excerpt"].endswith("Original question]")
+    # Earlier accepted answers in this chapter steer the model away from re-asking.
+    assert gap_route.previous.call_args.kwargs == {
+        "run_id": gap_route.args["run_id"],
+        "chapter_id": gap_route.chapter.chapter_id,
+        "question": "Original question",
+    }
     # Whole entries: truncating would drop later answers and undecided parts.
     assert context["previous_answers"] == ["Earlier answer " * 300]
     gap_route.args["session"].commit.assert_not_called()
@@ -171,18 +177,19 @@ async def test_provider_failure_is_explicit_and_retryable(gap_route):
     assert error.value.status_code == 503
 
 
-async def test_previous_answers_keep_only_accepted_text_within_budget():
-    run_id, accepted, rejected = uuid4(), str(uuid4()), str(uuid4())
+async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
+    run_id, chapter_id = uuid4(), uuid4()
+    accepted, rejected = str(uuid4()), str(uuid4())
     question = "What is the requested instrument?"
 
-    def proposal(minute, status, instruction, **values):
+    def proposal(minute, status, instruction, chapter=chapter_id, **values):
         return ConceptNoteEditProposal(
             run_id=run_id,
             actor_user_id="owner",
             idempotency_key=uuid4(),
             request_fingerprint="a" * 64,
             instruction=instruction,
-            scope={},
+            scope={"kind": "auto", "focused_chapter_id": str(chapter)},
             status=status,
             created_at=datetime(2026, 10, 26, 12, minute, tzinfo=UTC),
             **values,
@@ -193,7 +200,7 @@ async def test_previous_answers_keep_only_accepted_text_within_budget():
             session.add_all(
                 [
                     proposal(1, "applied", f"{question}\n1. Instrument?\nLoan"),
-                    proposal(2, "applied", f"{question}\n{'x' * 200}"),
+                    proposal(2, "applied", f"{question}\nBond", chapter=uuid4()),
                     proposal(3, "rejected", f"{question}\nGuarantee"),
                     proposal(4, "applied", "Another gap\nGrant"),
                     proposal(
@@ -210,7 +217,12 @@ async def test_previous_answers_keep_only_accepted_text_within_budget():
             )
         async with factory() as session:
             answers = await applied_gap_answers(
-                session, run_id=run_id, question=question, limit=5, max_chars=100
+                session,
+                run_id=run_id,
+                chapter_id=chapter_id,
+                question=question,
+                limit=5,
             )
-    # The rejected amount is asked again; the over-budget entry is skipped whole.
+    # The rejected amount is asked again; the same question in another chapter
+    # does not count as answered here.
     assert answers == ["Grant", "1. Instrument?\nLoan"]

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import type { EditChange } from "@/util/concept-note-edit-types";
 import type { InlineReviewDecision } from "./inline-review";
 import { InlineDocumentDiff } from "./edit-diff";
@@ -38,7 +38,6 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
-  missingInformationRanges,
   remarkGapPassages,
   remarkMissingInformation,
 } from "./draft-markdown";
@@ -201,6 +200,36 @@ const markdownComponents = {
   },
 };
 
+const ChapterGapContext = createContext<{
+  chapter: ConceptNoteDraftChapter;
+  lng: string;
+  rows: ChapterGapRow[];
+  onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
+} | null>(null);
+
+// Module-level component types keep open gap popovers mounted across renders.
+const previewMarkdownComponents = {
+  ...markdownComponents,
+  a: function PreviewLink(props: React.ComponentPropsWithoutRef<"a">) {
+    const gaps = useContext(ChapterGapContext)!;
+    const message =
+      props.href === MISSING_INFORMATION_LINK
+        ? decodeMissingInformationMessage(props.title)
+        : null;
+    if (!message) return <markdownComponents.a {...props} />;
+    const row = gapRowForMessage(gaps.rows, message);
+    return row ? (
+      <ChapterGapMarker
+        chapter={gaps.chapter}
+        lng={gaps.lng}
+        row={row}
+        number={gaps.rows.indexOf(row) + 1}
+        onAnswerGap={gaps.onAnswerGap}
+      />
+    ) : null;
+  },
+};
+
 // Floor for the document area so the Sections column is never squeezed
 // shorter than the preview while the drafting progress card is showing.
 const DOCUMENT_MIN_HEIGHT = "360px";
@@ -283,6 +312,16 @@ export function DraftDocumentPanel({
     previewElement,
     selectChapter,
   } = focus;
+  const gapRows = useMemo(
+    () =>
+      new Map(
+        chapters.map((chapter) => [
+          chapter.chapter_id,
+          chapterGapRows(chapter),
+        ]),
+      ),
+    [chapters],
+  );
 
   useEffect(() => {
     if (!editFocus) return;
@@ -435,12 +474,7 @@ export function DraftDocumentPanel({
           >
             {chapters.map((chapter) => {
               const isSelected = focus.selectedChapterId === chapter.chapter_id;
-              const gapCount = chapterGapRows(
-                chapter,
-                missingInformationRanges(chapter.body_markdown ?? "").map(
-                  (marker) => marker.message,
-                ),
-              ).length;
+              const gapCount = gapRows.get(chapter.chapter_id)!.length;
               return (
                 <Button
                   key={chapter.chapter_id}
@@ -616,12 +650,7 @@ export function DraftDocumentPanel({
                   <ChapterGapsPanel
                     chapter={chapter}
                     lng={lng}
-                    rows={chapterGapRows(
-                      chapter,
-                      missingInformationRanges(chapter.body_markdown ?? "").map(
-                        (marker) => marker.message,
-                      ),
-                    )}
+                    rows={gapRows.get(chapter.chapter_id)!}
                     onAnswerGap={onAnswerGap}
                   />
                   {chapter.status === "draft" &&
@@ -722,16 +751,6 @@ export function DraftDocumentPanel({
                         </Box>
                       );
                     }
-                    const markdown = chapterPreviewMarkdown(
-                      chapter.body_markdown!,
-                      chapter.title,
-                    );
-                    const rows = chapterGapRows(
-                      chapter,
-                      missingInformationRanges(markdown).map(
-                        (marker) => marker.message,
-                      ),
-                    );
                     return (
                       <Box
                         data-testid="concept-note-current-chapter-body"
@@ -755,43 +774,28 @@ export function DraftDocumentPanel({
                               },
                           }}
                         >
-                          <ReactMarkdown
-                            components={{
-                              ...markdownComponents,
-                              a: ({ href, title, children }) => {
-                                const message =
-                                  href === MISSING_INFORMATION_LINK
-                                    ? decodeMissingInformationMessage(title)
-                                    : null;
-                                if (!message)
-                                  return (
-                                    <markdownComponents.a
-                                      href={href}
-                                      title={title}
-                                    >
-                                      {children}
-                                    </markdownComponents.a>
-                                  );
-                                const row = gapRowForMessage(rows, message);
-                                return row ? (
-                                  <ChapterGapMarker
-                                    chapter={chapter}
-                                    lng={lng}
-                                    row={row}
-                                    number={rows.indexOf(row) + 1}
-                                    onAnswerGap={onAnswerGap}
-                                  />
-                                ) : null;
-                              },
+                          <ChapterGapContext.Provider
+                            value={{
+                              chapter,
+                              lng,
+                              rows: gapRows.get(chapter.chapter_id)!,
+                              onAnswerGap,
                             }}
-                            remarkPlugins={[
-                              remarkGfm,
-                              remarkMissingInformation,
-                              remarkGapPassages,
-                            ]}
                           >
-                            {markdown}
-                          </ReactMarkdown>
+                            <ReactMarkdown
+                              components={previewMarkdownComponents}
+                              remarkPlugins={[
+                                remarkGfm,
+                                remarkMissingInformation,
+                                remarkGapPassages,
+                              ]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.body_markdown!,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </ChapterGapContext.Provider>
                         </Box>
                       </Box>
                     );

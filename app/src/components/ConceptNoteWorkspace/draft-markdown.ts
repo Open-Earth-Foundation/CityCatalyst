@@ -17,32 +17,6 @@ export function missingInformationRanges(markdown: string) {
   );
 }
 
-/** Lines that hold nothing but markers (optionally as list items). The
- * messages are returned so a chapter panel can list them instead. */
-export function splitStandaloneMarkers(markdown: string): {
-  markdown: string;
-  messages: string[];
-} {
-  const messages: string[] = [];
-  const kept: string[] = [];
-  for (const line of markdown.split(/\r?\n/)) {
-    const stripped = line.replace(/^\s*(?:[-*+]|\d+[.)])\s+/, "").trim();
-    const ranges = missingInformationRanges(stripped);
-    const onlyMarkers =
-      ranges.length > 0 &&
-      stripped.replace(missingInformationPattern(), "").trim() === "";
-    if (onlyMarkers) {
-      messages.push(...ranges.map((range) => range.message));
-      continue;
-    }
-    kept.push(line);
-  }
-  return {
-    markdown: kept.join("\n").replace(/\n{3,}/g, "\n\n"),
-    messages,
-  };
-}
-
 interface MarkerMarkdownNode {
   type: string;
   value?: string;
@@ -223,13 +197,12 @@ export function remarkGapPassages() {
               (part.type === "text" && !part.value?.trim()),
           );
         if (onlyMarkers && previous?.type === "paragraph") {
-          if (
-            previous.children!.some(
-              (part) => part.url === MISSING_INFORMATION_LINK,
-            )
-          )
-            previous.children!.push(...child.children!);
-          else previous.children!.unshift(...child.children!);
+          // Markers lead a plain passage, or follow ones it already holds.
+          const parts = previous.children!;
+          const at = parts.some((part) => part.url === MISSING_INFORMATION_LINK)
+            ? parts.length
+            : 0;
+          parts.splice(at, 0, ...child.children!);
           node.children.splice(index, 1);
         } else visit(child);
       }

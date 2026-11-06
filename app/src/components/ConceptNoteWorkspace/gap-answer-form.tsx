@@ -11,7 +11,6 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { LuArrowLeft, LuPaperclip } from "react-icons/lu";
-import { z } from "zod";
 
 import { Field } from "@/components/ui/field";
 import { Radio, RadioGroup } from "@/components/ui/radio";
@@ -39,27 +38,11 @@ interface GapAnswerFormProps {
   onAddSource: () => void;
 }
 
-const subQuestionSchema = z
-  .object({
-    question: z.string().trim().min(1).max(160),
-    options: z
-      .array(z.string().trim().min(1).max(80))
-      .max(5)
-      .refine(
-        (options) =>
-          options.length !== 1 &&
-          new Set(options.map((option) => option.toLowerCase())).size ===
-            options.length,
-      ),
-  })
-  .strict();
-
-const questionSchema = z
-  .object({
-    why_asking: z.string().trim().min(1).max(240),
-    questions: z.array(subQuestionSchema).min(1).max(4),
-  })
-  .strict();
+/** Validated by Climate Advisor's GapQuestionOutput before it reaches the browser. */
+interface GapQuestion {
+  why_asking: string;
+  questions: { question: string; options: string[] }[];
+}
 
 /** Ask about each missing part; choices are user answers, not inferred project facts. */
 export function GapAnswerForm({
@@ -72,9 +55,7 @@ export function GapAnswerForm({
   onAddSource,
 }: GapAnswerFormProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [question, setQuestion] = useState<z.infer<
-    typeof questionSchema
-  > | null>(null);
+  const [question, setQuestion] = useState<GapQuestion | null>(null);
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
   const [choices, setChoices] = useState<Record<number, string>>({});
@@ -98,11 +79,13 @@ export function GapAnswerForm({
     if (choice === "custom")
       return customAnswers[answerKey(index)]?.trim() || undefined;
     if (choice === "unknown") return undefined;
-    return options.find((_, option) => choice === String(option));
+    return options[Number(choice)];
   });
   // Edit validation only lets a marker be replaced for a recorded open gap, so
   // legacy inline markers (no gap record) are answered without replacing them.
-  const complete = request.row.gap !== null && answers.every(Boolean);
+  // Without generated questions nothing shows which parts an answer covers.
+  const complete =
+    question !== null && request.row.gap !== null && answers.every(Boolean);
   const answered = answers.some(Boolean);
 
   useEffect(() => {
@@ -124,7 +107,7 @@ export function GapAnswerForm({
           },
         );
         if (!response.ok) throw new Error("Question unavailable");
-        const result = questionSchema.parse(await response.json());
+        const result: GapQuestion = await response.json();
         if (controller.signal.aborted) return;
         setQuestion(result);
         setChoices(

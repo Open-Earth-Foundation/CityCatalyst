@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Flex, Icon, Text, chakra } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { LuArrowLeft, LuChevronRight, LuMessageSquare } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,10 +34,13 @@ function questionText(value: string): string {
     .toLowerCase();
 }
 
+/** Open gaps plus unrecorded markers, in document order, titled by their heading. */
 export function chapterGapRows(
   chapter: ConceptNoteDraftChapter,
-  markerMessages: string[],
 ): ChapterGapRow[] {
+  const markdown = chapter.body_markdown ?? "";
+  const markers = missingInformationRanges(markdown);
+  const keys = markers.map((marker) => questionText(marker.message));
   const rows: ChapterGapRow[] = chapter.gaps
     .filter((gap) => gap.state === "open" || gap.state === "processing")
     .map((gap) => ({
@@ -47,42 +50,35 @@ export function chapterGapRows(
       severity: gap.severity,
       gap,
     }));
-  for (const message of markerMessages) {
+  // Resolved gaps keep their markers out; legacy markers get their own row.
+  for (const { message } of markers) {
+    const key = questionText(message);
     if (
-      !chapter.gaps.some(
-        (gap) => questionText(gap.question) === questionText(message),
-      ) &&
-      !rows.some((row) => questionText(row.question) === questionText(message))
-    ) {
+      ![...chapter.gaps, ...rows].some(
+        (item) => questionText(item.question) === key,
+      )
+    )
       rows.push({
         id: "marker-" + rows.length,
         question: message.replace(/^information needed:\s*/i, "").trim(),
         severity: "critical",
         gap: null,
       });
-    }
   }
-  const markdown = chapter.body_markdown ?? "";
-  const markers = missingInformationRanges(markdown);
+  const position = (row: ChapterGapRow) => {
+    const index = keys.indexOf(questionText(row.question));
+    return index < 0 ? keys.length : index;
+  };
   for (const row of rows) {
-    const marker = markers.find(
-      (item) => questionText(item.message) === questionText(row.question),
-    );
-    if (marker) {
+    const marker = markers[position(row)];
+    if (marker)
       row.title = markdown
         .slice(0, marker.start)
         .match(/^#{1,6}\s+(.+)$/gm)
         ?.at(-1)
         ?.replace(/^#{1,6}\s+/, "")
         .trim();
-    }
   }
-  const position = (row: ChapterGapRow) => {
-    const index = markerMessages.findIndex(
-      (message) => questionText(message) === questionText(row.question),
-    );
-    return index < 0 ? markerMessages.length : index;
-  };
   return rows.sort((a, b) => position(a) - position(b));
 }
 
@@ -103,13 +99,26 @@ type GapDetailProps = Omit<ChapterGapsPanelProps, "rows"> & {
   number: number;
 };
 
+const severityKey = (row: ChapterGapRow) =>
+  row.severity === "critical"
+    ? "gap-severity-critical"
+    : "gap-severity-noncritical";
+const severityColor = (row: ChapterGapRow) =>
+  row.severity === "critical" ? "sentiment.warningFg" : "content.secondary";
+const severityBorder = (row: ChapterGapRow) =>
+  row.severity === "critical" ? "sentiment.warningDefault" : "gray.medium";
+
 function GapDetails({
-  chapter,
   lng,
   row,
   number,
-  onAnswerGap,
-}: GapDetailProps) {
+  onAnswer,
+}: {
+  lng: string;
+  row: ChapterGapRow;
+  number: number;
+  onAnswer?: () => void;
+}) {
   const { t } = useTranslation(lng, "concept-notes");
   return (
     <Box data-testid="concept-note-chapter-gap" data-severity={row.severity}>
@@ -125,21 +134,13 @@ function GapDetails({
         mt={2}
         fontSize="body.sm"
         fontWeight="semibold"
-        color={
-          row.severity === "critical"
-            ? "sentiment.warningFg"
-            : "content.secondary"
-        }
+        color={severityColor(row)}
       >
         <chakra.span data-testid="concept-note-gap-number">
           {t("gap-number", { number })}
         </chakra.span>
         {" · "}
-        {t(
-          row.severity === "critical"
-            ? "gap-severity-critical"
-            : "gap-severity-noncritical",
-        )}
+        {t(severityKey(row))}
       </Text>
       <Text mt={3} fontSize="body.sm" lineHeight="22px" color="content.primary">
         {row.question}
@@ -162,20 +163,57 @@ function GapDetails({
           </Text>
         </Box>
       )}
-      {onAnswerGap && (
+      {onAnswer && (
         <Button
           mt={4}
           w="full"
           size="sm"
           variant="outline"
           data-testid="concept-note-chapter-gap-answer"
-          onClick={() => onAnswerGap(chapter, row)}
+          onClick={onAnswer}
         >
           <Icon as={LuMessageSquare} />
           {t("gap-answer-in-chat")}
         </Button>
       )}
     </Box>
+  );
+}
+
+/** Shared frame for the inline-marker and chapter-list popovers. */
+function GapPopoverContent({
+  lng,
+  borderWidth,
+  borderColor,
+  arrow,
+  children,
+}: {
+  lng: string;
+  borderWidth: string;
+  borderColor: string;
+  arrow?: boolean;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation(lng, "concept-notes");
+  return (
+    <PopoverContent
+      w="360px"
+      maxW="calc(100vw - 32px)"
+      maxH="min(520px, 75dvh)"
+      overflowY="auto"
+      borderStyle="solid"
+      borderWidth={borderWidth}
+      borderColor={borderColor}
+      bg="base.light"
+      boxShadow="3dp"
+    >
+      {arrow && <PopoverArrow />}
+      <PopoverCloseTrigger
+        aria-label={t("gap-close")}
+        color="content.secondary"
+      />
+      <PopoverBody p={4}>{children}</PopoverBody>
+    </PopoverContent>
   );
 }
 
@@ -188,6 +226,7 @@ export function ChapterGapMarker({
 }: GapDetailProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
+  const critical = row.severity === "critical";
   return (
     <chakra.span
       float="right"
@@ -214,11 +253,7 @@ export function ChapterGapMarker({
             data-severity={row.severity}
             aria-label={t("gap-marker-label", {
               number,
-              severity: t(
-                row.severity === "critical"
-                  ? "gap-severity-critical"
-                  : "gap-severity-noncritical",
-              ),
+              severity: t(severityKey(row)),
               question: row.question,
             })}
             display="inline-flex"
@@ -230,30 +265,17 @@ export function ChapterGapMarker({
             borderRadius="full"
             border="1px solid"
             borderColor={
-              row.severity === "critical"
-                ? "sentiment.warningDefault"
-                : "border.neutral"
+              critical ? "sentiment.warningDefault" : "border.neutral"
             }
-            bg={
-              row.severity === "critical"
-                ? "sentiment.warningOverlay"
-                : "gray.medium/20"
-            }
-            color={
-              row.severity === "critical"
-                ? "sentiment.warningFg"
-                : "content.secondary"
-            }
+            bg={critical ? "sentiment.warningOverlay" : "gray.medium/20"}
+            color={severityColor(row)}
             fontSize="label.sm"
             fontWeight="semibold"
             cursor="pointer"
             _hover={{ borderColor: "content.link" }}
             _open={{
               outline: "2px solid",
-              outlineColor:
-                row.severity === "critical"
-                  ? "sentiment.warningDefault"
-                  : "gray.medium",
+              outlineColor: severityBorder(row),
               outlineOffset: "3px",
             }}
             _focusVisible={{
@@ -265,42 +287,25 @@ export function ChapterGapMarker({
             {number}
           </chakra.button>
         </PopoverTrigger>
-        <PopoverContent
-          w="360px"
-          maxW="calc(100vw - 32px)"
-          maxH="min(520px, 75dvh)"
-          overflowY="auto"
-          border="2px solid"
-          borderColor={
-            row.severity === "critical"
-              ? "sentiment.warningDefault"
-              : "gray.medium"
-          }
-          bg="base.light"
-          boxShadow="3dp"
+        <GapPopoverContent
+          lng={lng}
+          borderWidth="2px"
+          borderColor={severityBorder(row)}
+          arrow
         >
-          <PopoverArrow />
-          <PopoverCloseTrigger
-            aria-label={t("gap-close")}
-            color="content.secondary"
+          <GapDetails
+            lng={lng}
+            row={row}
+            number={number}
+            onAnswer={
+              onAnswerGap &&
+              (() => {
+                setOpen(false);
+                onAnswerGap(chapter, row);
+              })
+            }
           />
-          <PopoverBody p={4}>
-            <GapDetails
-              chapter={chapter}
-              lng={lng}
-              row={row}
-              number={number}
-              onAnswerGap={
-                onAnswerGap
-                  ? (currentChapter, currentRow) => {
-                      setOpen(false);
-                      onAnswerGap(currentChapter, currentRow);
-                    }
-                  : undefined
-              }
-            />
-          </PopoverBody>
-        </PopoverContent>
+        </GapPopoverContent>
       </PopoverRoot>
     </chakra.span>
   );
@@ -316,6 +321,8 @@ export function ChapterGapsPanel({
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
   const [selectedId, setSelected] = useState<string | null>(null);
+  // Keyboard focus returns to the row whose details were just closed.
+  const [returnId, setReturnId] = useState<string | null>(null);
   const selected = rows.find((row) => row.id === selectedId);
   if (!rows.length) return null;
   const required = rows.filter((row) => row.severity === "critical").length;
@@ -338,7 +345,10 @@ export function ChapterGapsPanel({
         open={open}
         onOpenChange={(details) => {
           setOpen(details.open);
-          if (!details.open) setSelected(null);
+          if (!details.open) {
+            setSelected(null);
+            setReturnId(null);
+          }
         }}
         positioning={{ placement: "bottom-end" }}
       >
@@ -359,127 +369,106 @@ export function ChapterGapsPanel({
             <Icon as={LuChevronRight} />
           </Button>
         </PopoverTrigger>
-        <PopoverContent
-          w="360px"
-          maxW="calc(100vw - 32px)"
-          maxH="min(520px, 75dvh)"
-          overflowY="auto"
+        <GapPopoverContent
+          lng={lng}
           borderWidth={selected ? "2px" : "1px"}
-          borderColor={
-            selected
-              ? selected.severity === "critical"
-                ? "sentiment.warningDefault"
-                : "gray.medium"
-              : "border.neutral"
-          }
-          bg="base.light"
-          boxShadow="3dp"
+          borderColor={selected ? severityBorder(selected) : "border.neutral"}
         >
-          <PopoverCloseTrigger
-            aria-label={t("gap-close")}
-            color="content.secondary"
-          />
-          <PopoverBody p={4}>
-            {selected ? (
-              <>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  color="content.link"
-                  textTransform="none"
-                  letterSpacing="normal"
-                  mb={3}
-                  onClick={() => setSelected(null)}
-                >
-                  <Icon as={LuArrowLeft} />
-                  {t("gap-view-all")}
-                </Button>
-                <GapDetails
-                  chapter={chapter}
-                  lng={lng}
-                  row={selected}
-                  number={rows.indexOf(selected) + 1}
-                  onAnswerGap={
-                    onAnswerGap
-                      ? (currentChapter, currentRow) => {
-                          setOpen(false);
-                          setSelected(null);
-                          onAnswerGap(currentChapter, currentRow);
-                        }
-                      : undefined
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <PopoverTitle fontSize="body.sm" fontWeight="semibold" pr={6}>
-                  {t("chapter-open-gaps", { count: rows.length })}
-                </PopoverTitle>
-                <Box as="ol" listStyleType="none" mt={3}>
-                  {rows.map((row, index) => (
-                    <Box
-                      as="li"
-                      key={row.id}
-                      borderTop="1px solid"
-                      borderColor="border.neutral"
+          {selected ? (
+            <>
+              <Button
+                size="xs"
+                variant="ghost"
+                color="content.link"
+                textTransform="none"
+                letterSpacing="normal"
+                mb={3}
+                autoFocus
+                data-testid="concept-note-gap-back"
+                onClick={() => {
+                  setReturnId(selected.id);
+                  setSelected(null);
+                }}
+              >
+                <Icon as={LuArrowLeft} />
+                {t("gap-view-all")}
+              </Button>
+              <GapDetails
+                lng={lng}
+                row={selected}
+                number={rows.indexOf(selected) + 1}
+                onAnswer={
+                  onAnswerGap &&
+                  (() => {
+                    setOpen(false);
+                    setSelected(null);
+                    onAnswerGap(chapter, selected);
+                  })
+                }
+              />
+            </>
+          ) : (
+            <>
+              <PopoverTitle fontSize="body.sm" fontWeight="semibold" pr={6}>
+                {t("chapter-open-gaps", { count: rows.length })}
+              </PopoverTitle>
+              <Box as="ol" listStyleType="none" mt={3}>
+                {rows.map((row, index) => (
+                  <Box
+                    as="li"
+                    key={row.id}
+                    borderTop="1px solid"
+                    borderColor="border.neutral"
+                  >
+                    <chakra.button
+                      type="button"
+                      w="full"
+                      display="flex"
+                      alignItems="start"
+                      gap={2}
+                      py={3}
+                      textAlign="left"
+                      cursor="pointer"
+                      autoFocus={row.id === returnId}
+                      data-testid="concept-note-gap-list-item"
+                      data-severity={row.severity}
+                      onClick={() => setSelected(row.id)}
+                      _focusVisible={{
+                        outline: "2px solid",
+                        outlineColor: "content.link",
+                      }}
                     >
-                      <chakra.button
-                        type="button"
-                        w="full"
-                        display="flex"
-                        alignItems="start"
-                        gap={2}
-                        py={3}
-                        textAlign="left"
-                        cursor="pointer"
-                        data-testid="concept-note-gap-list-item"
-                        data-severity={row.severity}
-                        onClick={() => setSelected(row.id)}
-                        _focusVisible={{
-                          outline: "2px solid",
-                          outlineColor: "content.link",
-                        }}
+                      <Text
+                        as="span"
+                        fontSize="label.sm"
+                        color={severityColor(row)}
                       >
-                        <Text
-                          as="span"
-                          fontSize="label.sm"
-                          color={
-                            row.severity === "critical"
-                              ? "sentiment.warningFg"
-                              : "content.secondary"
-                          }
-                        >
-                          {index + 1}
+                        {index + 1}
+                      </Text>
+                      <Box flex={1} minW={0}>
+                        <Text fontSize="body.sm" lineClamp={2}>
+                          {row.title || markerLabel(row.question)}
                         </Text>
-                        <Box flex={1} minW={0}>
-                          <Text fontSize="body.sm" lineClamp={2}>
-                            {row.title || markerLabel(row.question)}
-                          </Text>
-                          <Text
-                            mt={1}
-                            fontSize="label.sm"
-                            color="content.tertiary"
-                          >
-                            {t(
-                              row.severity === "critical"
-                                ? "gap-severity-critical"
-                                : "gap-severity-noncritical",
-                            )}
-                          </Text>
-                        </Box>
-                        <Icon
-                          as={LuChevronRight}
+                        <Text
                           mt={1}
+                          fontSize="label.sm"
                           color="content.tertiary"
-                        />
-                      </chakra.button>
-                    </Box>
-                  ))}
-                </Box>
-              </>
-            )}
-          </PopoverBody>
-        </PopoverContent>
+                        >
+                          {t(severityKey(row))}
+                        </Text>
+                      </Box>
+                      <Icon
+                        as={LuChevronRight}
+                        mt={1}
+                        color="content.tertiary"
+                      />
+                    </chakra.button>
+                  </Box>
+                ))}
+              </Box>
+            </>
+          )}
+        </GapPopoverContent>
       </PopoverRoot>
     </Flex>
   );

@@ -16,7 +16,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
 
 const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
-const { splitStandaloneMarkers, remarkMissingInformation, remarkGapPassages } =
+const { remarkMissingInformation, remarkGapPassages } =
   await import("@/components/ConceptNoteWorkspace/draft-markdown");
 
 let root: Root;
@@ -77,31 +77,13 @@ afterEach(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
 });
 
-it("moves standalone marker lines out of the prose and keeps inline ones", () => {
-  const result = splitStandaloneMarkers(
-    [
-      "The tunnel is 1,230 m long.",
-      "",
-      "[Information needed: Provide the opening date.]",
-      "- [Information needed: State the USD amount requested.]",
-      "",
-      "Costs are [Information needed: confirm currency] pending.",
-    ].join("\n"),
-  );
-  expect(result.messages).toEqual([
-    "Information needed: Provide the opening date.",
-    "Information needed: State the USD amount requested.",
-  ]);
-  expect(result.markdown).toBe(
-    "The tunnel is 1,230 m long.\n\nCosts are [Information needed: confirm currency] pending.",
-  );
-});
-
 it("lists only open gaps and falls back to marker messages", () => {
-  expect(chapterGapRows(chapter, []).map((row) => row.id)).toEqual(["a", "b"]);
-  const fallback = chapterGapRows({ ...chapter, gaps: [] }, [
-    "Information needed: Provide the opening date.",
-  ]);
+  expect(chapterGapRows(chapter).map((row) => row.id)).toEqual(["a", "b"]);
+  const fallback = chapterGapRows({
+    ...chapter,
+    gaps: [],
+    body_markdown: "[Information needed: Provide the opening date.]",
+  });
   expect(fallback).toHaveLength(1);
   expect(fallback[0]?.question).toBe("Provide the opening date.");
   expect(fallback[0]?.severity).toBe("critical");
@@ -115,7 +97,7 @@ it("keeps counts visible and opens only the selected question with its rationale
         <ChapterGapsPanel
           chapter={chapter}
           lng="en"
-          rows={chapterGapRows(chapter, [])}
+          rows={chapterGapRows(chapter)}
           onAnswerGap={onAnswerGap}
         />
       </ChakraProvider>,
@@ -160,8 +142,24 @@ it("keeps counts visible and opens only the selected question with its rationale
     detail?.querySelector('[data-testid="concept-note-gap-number"]')
       ?.textContent,
   ).toBe('gap-number:{"number":1}');
+  // Keyboard focus follows the view: into the details, then back to the row.
+  const back = document.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-gap-back"]',
+  );
+  expect(document.activeElement).toBe(back);
+  await act(async () => back?.click());
+  expect(document.activeElement).toBe(
+    document.querySelector('[data-testid="concept-note-gap-list-item"]'),
+  );
+  await act(async () => {
+    document
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-gap-list-item"]',
+      )
+      ?.click();
+  });
 
-  const answer = detail?.querySelector<HTMLButtonElement>(
+  const answer = document.querySelector<HTMLButtonElement>(
     '[data-testid="concept-note-chapter-gap-answer"]',
   );
   await act(async () => {
@@ -175,12 +173,8 @@ it("keeps counts visible and opens only the selected question with its rationale
 
 it("matches source passages, keeps unanchored gaps, and does not resurrect resolved ones", () => {
   const markdown =
-    "### Costs\n\nCosts pending.\n\n[Information needed: Question b?]\n\n### Timing\n\n[Information needed: New question?]";
-  const rows = chapterGapRows({ ...chapter, body_markdown: markdown }, [
-    "Information needed: Question b?",
-    "Information needed: Question c?",
-    "Information needed: New question?",
-  ]);
+    "### Costs\n\nCosts pending.\n\n[Information needed: Question b?]\n\n[Information needed: Question c?]\n\n### Timing\n\n[Information needed: New question?]";
+  const rows = chapterGapRows({ ...chapter, body_markdown: markdown });
   expect(rows.map((row) => row.id)).toEqual(["b", "marker-2", "a"]);
   expect(rows[0]?.title).toBe("Costs");
   expect(rows[1]?.title).toBe("Timing");
@@ -219,7 +213,7 @@ it("attaches a standalone marker to its actual passage without changing the text
 
 it("opens a numbered optional marker and routes the exact gap into chat", async () => {
   const onAnswerGap = jest.fn();
-  const row = chapterGapRows(chapter, [])[1]!;
+  const row = chapterGapRows(chapter)[1]!;
   await act(async () =>
     root.render(
       <ChakraProvider value={appTheme}>

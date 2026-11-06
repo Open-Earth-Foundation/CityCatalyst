@@ -3,7 +3,7 @@
  * /api/v1/concept-notes/{runId}/gap-question:
  *   post:
  *     operationId: proposeConceptNoteGapQuestion
- *     summary: Generate a focused question and answer choices for an authorized gap
+ *     summary: Generate questions and answer choices for an authorized gap
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -36,7 +36,7 @@
  *                 default: en
  *     responses:
  *       200:
- *         description: A focused question, rationale, and zero or two to five options
+ *         description: One to four questions, each with zero or two to five options
  *       401:
  *         description: Authentication required
  *       403:
@@ -49,14 +49,9 @@
  *         description: Question generation unavailable; retry or use free text
  */
 import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { loadConceptNoteRunCity } from "@/backend/ConceptNoteUploadService";
-import {
-  callAuthorizedConceptNoteApi,
-  readConceptNoteApiPayload,
-} from "@/backend/concept-notes";
+import { proxyConceptNoteRunRequest } from "@/backend/concept-note-run-proxy";
 import { apiHandler } from "@/util/api";
 
 const bodySchema = z
@@ -76,22 +71,11 @@ export const POST = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.Unauthorized("Authentication required");
   }
   const { runId } = z.object({ runId: z.string().uuid() }).parse(params);
-  const body = bodySchema.parse(await req.json());
-  const userId = session.user.id;
-  const requestId = req.headers.get("x-request-id")?.trim() || undefined;
-  const cityId = await loadConceptNoteRunCity({ runId, userId, requestId });
-  const response = await callAuthorizedConceptNoteApi({
+  return proxyConceptNoteRunRequest(req, session, {
+    runId,
     path: `/v1/concept-notes/${runId}/gap-question`,
     method: "POST",
+    body: bodySchema.parse(await req.json()),
     signal: req.signal,
-    session,
-    cityId,
-    requestId,
-    searchParams: { user_id: userId },
-    body,
-  });
-  return NextResponse.json(await readConceptNoteApiPayload(response), {
-    status: response.status,
-    headers: { "Cache-Control": "no-store" },
   });
 });

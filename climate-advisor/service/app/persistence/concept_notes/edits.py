@@ -763,20 +763,20 @@ async def applied_gap_answers(
     session: AsyncSession,
     *,
     run_id: UUID,
+    chapter_id: UUID,
     question: str,
     limit: int = 3,
-    max_chars: int = 8_000,
 ) -> list[str]:
-    """Return what the user accepted for this gap, newest first.
+    """Return what the user accepted for this chapter gap, newest first.
 
     A fully applied request contributes its instruction without the repeated gap
     question. A partially applied one contributes only the user text quoted by
-    its accepted changes, so rejected answers are asked again. Entries are kept
-    whole within max_chars: a cut entry would drop later answers and their
-    "Not decided yet" states.
+    its accepted changes, so rejected answers are asked again. Entries stay whole
+    (each instruction is capped at 8,000 characters) so later answers and their
+    "Not decided yet" states are never cut off.
     """
-    # shortcut: matches the quoted question text, not a gap ID; store gap_id on
-    # proposals if answers ever need exact attribution.
+    # shortcut: matches the quoted question text within the chapter, not a gap ID;
+    # store gap_id on proposals if answers ever need exact attribution.
     rows = (
         await session.execute(
             select(
@@ -788,6 +788,8 @@ async def applied_gap_answers(
             .where(
                 ConceptNoteEditProposal.run_id == run_id,
                 ConceptNoteEditProposal.status.in_(["applied", "partially_applied"]),
+                ConceptNoteEditProposal.scope["focused_chapter_id"].as_string()
+                == str(chapter_id),
                 ConceptNoteEditProposal.instruction.contains(question, autoescape=True),
             )
             .order_by(ConceptNoteEditProposal.created_at.desc())
@@ -795,7 +797,6 @@ async def applied_gap_answers(
         )
     ).all()
     answers: list[str] = []
-    used = 0
     for row in rows:
         if row.status == "applied":
             answer = row.instruction.replace(question, "").strip()
@@ -809,7 +810,6 @@ async def applied_gap_answers(
                     and change.get("user_input_quote")
                 )
             )
-        if answer and used + len(answer) <= max_chars:
+        if answer:
             answers.append(answer)
-            used += len(answer)
     return answers

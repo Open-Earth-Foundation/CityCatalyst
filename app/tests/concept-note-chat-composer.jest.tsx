@@ -358,6 +358,9 @@ const previewButton = () =>
 
 it("shows generated multiple-choice answers without claiming they are sourced facts", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(fetchQuestion.mock.calls[0][0]).toBe(
+    "/api/v1/concept-notes/run/gap-question/",
+  );
   expect(subQuestion(0).textContent).toContain("1Which financing instrument?");
   expect(subQuestion(1).textContent).toContain("2What amount?");
   // The long gap request is collapsible context, not the heading.
@@ -420,7 +423,7 @@ it("asks Clima to replace the gap marker once every question is answered", async
   expect(content).not.toContain("marked as missing");
 });
 
-it("leaves skipped gaps untouched and accepts a custom answer without claiming a suggestion's source", async () => {
+it("leaves the gap untouched when answered later", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
   const later = [...container.querySelectorAll("button")].find(
     (button) => button.textContent === "gap-answer-later",
@@ -428,12 +431,6 @@ it("leaves skipped gaps untouched and accepts a custom answer without claiming a
   await act(async () => later.click());
   expect(closeGap).toHaveBeenCalledTimes(1);
   expect(sendMessage).not.toHaveBeenCalled();
-  await type("A combination of loan and grant");
-  await pressEnter();
-  expect(sendMessage.mock.calls[0][0]).toContain(
-    "A combination of loan and grant",
-  );
-  expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");
 });
 
 it("offers free text for gaps without suggestions and blocks submission while Clima is busy", async () => {
@@ -445,30 +442,16 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
       questions: [{ question: "What amount?", options: [] }],
     }),
   } as Response);
-  await renderPanel(contextStatus, "thread", {
-    ...gapAnswer,
-    row: { ...gapAnswer.row, gap: null },
-  });
+  const legacy = { ...gapAnswer, row: { ...gapAnswer.row, gap: null } };
+  await renderPanel(contextStatus, "thread", legacy);
   expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(2);
-  const answer = container.querySelector<HTMLTextAreaElement>(
-    '[data-testid="concept-note-gap-custom-answer"]',
-  )!;
-  const setValue = Object.getOwnPropertyDescriptor(
-    HTMLTextAreaElement.prototype,
-    "value",
-  )!.set!;
-  await act(async () => {
-    setValue.call(answer, "Loan");
-    answer.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-  await act(async () => answer.form!.requestSubmit());
+  await writeAnswer(0, "Loan");
+  const form = previewButton().form!;
+  await act(async () => form.requestSubmit());
   expect(sendMessage).not.toHaveBeenCalled();
   isGenerating = false;
-  await renderPanel(contextStatus, "thread", {
-    ...gapAnswer,
-    row: { ...gapAnswer.row, gap: null },
-  });
-  await act(async () => answer.form!.requestSubmit());
+  await renderPanel(contextStatus, "thread", legacy);
+  await act(async () => form.requestSubmit());
   // A legacy marker has no gap record, which edit validation requires before a
   // marker may be replaced, so even a full answer keeps the marker.
   expect(sendMessage.mock.calls[0][0]).toContain(
@@ -477,17 +460,15 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
 });
 
-it("requests questions at the trailing-slash route", async () => {
-  await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(fetchQuestion.mock.calls[0][0]).toBe(
-    "/api/v1/concept-notes/run/gap-question/",
-  );
-});
-
-it("does not attach fallback text to a different question after a retry", async () => {
+it("falls back to free text on failure and drops it when a retry changes the question", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+    "gap-question-unavailable",
+  );
   await writeAnswer(0, "Loan");
+  // Without generated questions, nothing shows that every part is covered.
+  expect(container.textContent).toContain("gap-acceptance-hint");
   fetchQuestion.mockResolvedValueOnce({
     ok: true,
     json: async () => ({
@@ -556,18 +537,6 @@ it("keeps an undecided answer explicit instead of selecting an invented fact", a
   );
 });
 
-it("shows a recoverable error and free text when the question generator fails", async () => {
-  fetchQuestion.mockRejectedValue(new Error("offline"));
-  await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
-    "gap-question-unavailable",
-  );
-  expect(
-    container.querySelector('[data-testid="concept-note-gap-custom-answer"]'),
-  ).not.toBeNull();
-  expect(sendMessage).not.toHaveBeenCalled();
-});
-
 it("cancels stale generation when another gap is opened", async () => {
   let resolveOld!: (value: Response) => void;
   fetchQuestion.mockImplementationOnce(
@@ -606,4 +575,5 @@ it("preserves apostrophes, ampersands and source URLs in the plain-text gap answ
   await pressEnter();
   expect(sendMessage.mock.calls[0][0]).toContain(answer);
   expect(sendMessage.mock.calls[0][0]).not.toContain("&#");
+  expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");
 });

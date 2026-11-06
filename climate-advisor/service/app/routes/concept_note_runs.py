@@ -140,13 +140,16 @@ async def propose_gap_question(
     gap = next((item for item in chapter.gaps if item.gap_id == payload.gap_id), None)
     if payload.gap_id and (gap is None or gap.state not in {"open", "processing"}):
         raise HTTPException(status_code=409, detail="Gap is no longer open")
+    body = chapter.body_markdown or ""
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
-    if not payload.gap_id and payload.question not in (chapter.body_markdown or ""):
+    if not payload.gap_id and payload.question not in body:
         raise HTTPException(status_code=404, detail="Gap question not found")
     question = gap.question if gap else payload.question
+    # Center long chapters on the gap so facts confirmed near it stay in context.
+    start = max(0, min(body.find(question) - 6000, len(body) - 12000))
     async with get_cnb_reference_session_factory()() as cnb_session:
         previous_answers = await applied_gap_answers(
-            cnb_session, run_id=run_id, question=question
+            cnb_session, run_id=run_id, chapter_id=chapter.chapter_id, question=question
         )
     output = await _until_disconnect(
         request,
@@ -155,7 +158,7 @@ async def propose_gap_question(
             {
                 "language": payload.language,
                 "chapter_title": chapter.title,
-                "chapter_excerpt": (chapter.body_markdown or "")[:12000],
+                "chapter_excerpt": body[start : start + 12000],
                 "question": question,
                 "why_asking": gap.why_asking if gap else "",
                 "previous_answers": previous_answers,

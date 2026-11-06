@@ -8,6 +8,7 @@ import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
 import {
   isQuoteInText,
   normalizeForQuoteMatch,
@@ -866,7 +867,7 @@ export function verifyRowProvenance(
     // resolves the conflict instead of silently deriving a different one.
     return out;
   });
-  return fillMissingGpcRefNo(checked).map((row) =>
+  return fillMissingGpcRefNo(applyActivityClassRules(checked)).map((row) =>
     row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
   );
 }

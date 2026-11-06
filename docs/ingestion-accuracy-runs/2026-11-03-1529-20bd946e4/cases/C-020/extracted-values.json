@@ -1,0 +1,23 @@
+[
+  {
+    "run": 1,
+    "ok": false,
+    "message": "extraction returned 0 rows: document states only totals (Total GHG emissions 23787113 t (2022))",
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 2,
+    "ok": false,
+    "message": "extraction returned 0 rows: model found no values in the OCR text",
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 3,
+    "ok": false,
+    "message": "extraction returned 0 rows: document states only totals (Total GHG emissions 23787113 t (2022))",
+    "extractedRows": 0,
+    "stored": []
+  }
+]

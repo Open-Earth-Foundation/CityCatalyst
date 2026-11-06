@@ -1,0 +1,198 @@
+{
+  "id": "C-020",
+  "city": "Guadalajara (Área Metropolitana)",
+  "country": "Mexico",
+  "year": 2022,
+  "expectedTotal": 23787092,
+  "toleranceText": "±25 t (text total is 23,787,113)",
+  "tolerance": 25,
+  "totalTolerance": 25,
+  "keyValueRows": 12,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Industria manufacturera y de la construcción",
+      "year": 2022,
+      "value": 9475604,
+      "gpc": "I.3.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 2,
+      "description": "Edificios residenciales",
+      "year": 2022,
+      "value": 4486219,
+      "gpc": "I.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 3,
+      "description": "Instalaciones comerciales e institucionales",
+      "year": 2022,
+      "value": 1838091,
+      "gpc": "I.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 4,
+      "description": "Emisiones fugitivas de la distribución de gas natural",
+      "year": 2022,
+      "value": 17373,
+      "gpc": "I.8.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": ""
+    },
+    {
+      "row": 5,
+      "description": "Agricultura, silvicultura y actividades pesqueras",
+      "year": 2022,
+      "value": 4432,
+      "gpc": "I.5.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level. Figura 3 says 22% for this subsector: wrong in the source (see Q-GDL-2)."
+    },
+    {
+      "row": 6,
+      "description": "Transporte carretero",
+      "year": 2022,
+      "value": 6695502,
+      "gpc": "II.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 7,
+      "description": "Ferroviario",
+      "year": 2022,
+      "value": 19669,
+      "gpc": "II.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 8,
+      "description": "Aviación",
+      "year": 2022,
+      "value": 919302,
+      "gpc": "II.4.3",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Value (not in total)",
+      "notation": "",
+      "scored": true,
+      "note": "Q-GDL-2: printed but not in the sector total (6,715,171 = road + rail). Probably scope 3, which the report excludes."
+    },
+    {
+      "row": 9,
+      "description": "Residuos sólidos",
+      "year": 2022,
+      "value": 947369,
+      "gpc": "III.1.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 10,
+      "description": "Incineración y quema",
+      "year": 2022,
+      "value": 919,
+      "gpc": "III.3.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level. Figura 3 says 42%: wrong in the source."
+    },
+    {
+      "row": 11,
+      "description": "Aguas residuales",
+      "year": 2022,
+      "value": 250069,
+      "gpc": "III.4.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 12,
+      "description": "Residuos biológicos",
+      "year": 2022,
+      "value": 51845,
+      "gpc": "III.2.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 12 (printed 11), Figura 3",
+      "what": "Sector totals with subsector percentages that contradict the values",
+      "examples": "Agricultura 22%; Incineración 42%",
+      "numbers": [
+        22,
+        42
+      ],
+      "failureMode": "Tonnes derived from wrong percentages."
+    },
+    {
+      "where": "PDF p. 18-21, Figuras 8-12",
+      "what": "Trends 2016 and 2018",
+      "examples": "—",
+      "numbers": [],
+      "failureMode": "Wrong year."
+    },
+    {
+      "where": "PDF p. 20, text",
+      "what": "Vehicle count",
+      "examples": "2´755,862 vehículos",
+      "numbers": [
+        2,
+        755862
+      ],
+      "failureMode": "Non-emission number stored."
+    }
+  ]
+}

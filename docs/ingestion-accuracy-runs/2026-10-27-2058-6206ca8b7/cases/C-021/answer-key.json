@@ -1,0 +1,207 @@
+{
+  "id": "C-021",
+  "city": "Curitiba",
+  "country": "Brazil",
+  "year": 2020,
+  "expectedTotal": 3164591,
+  "toleranceText": "0 t",
+  "tolerance": 0,
+  "totalTolerance": 0,
+  "keyValueRows": 12,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Edificações residenciais",
+      "year": 2020,
+      "value": 285188,
+      "gpc": "I.1 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 2,
+      "description": "Edificações comerciais",
+      "year": 2020,
+      "value": 221330,
+      "gpc": "I.2 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level. Same GPC ref as the next row."
+    },
+    {
+      "row": 3,
+      "description": "Edificações institucionais",
+      "year": 2020,
+      "value": 30860,
+      "gpc": "I.2 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level. Same GPC ref as the previous row: two rows, do not merge or drop one."
+    },
+    {
+      "row": 4,
+      "description": "Indústrias da construção civil e manufatura",
+      "year": 2020,
+      "value": 206245,
+      "gpc": "I.3 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 5,
+      "description": "Agricultura, silvicultura e atividades de pesca",
+      "year": 2020,
+      "value": 72,
+      "gpc": "I.5 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 6,
+      "description": "Fontes não especificadas",
+      "year": 2020,
+      "value": 155783,
+      "gpc": "I.6 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 7,
+      "description": "Emissões fugitivas",
+      "year": 2020,
+      "value": 274,
+      "gpc": "I.8.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Assumed oil and gas (I.8); coal (I.7) unlikely in Curitiba."
+    },
+    {
+      "row": 8,
+      "description": "Transporte Rodoviário, Ferroviário e Off-road",
+      "year": 2020,
+      "value": 1899338,
+      "gpc": "II.1 + II.2 + II.5",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Three GPC subsectors combined in one row."
+    },
+    {
+      "row": 9,
+      "description": "Transporte aéreo",
+      "year": 2020,
+      "value": 5550,
+      "gpc": "II.4",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 10,
+      "description": "Disposição de resíduos sólidos",
+      "year": 2020,
+      "value": 212839,
+      "gpc": "III.1",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 11,
+      "description": "Incineração de resíduos",
+      "year": 2020,
+      "value": 529,
+      "gpc": "III.3",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 12,
+      "description": "Tratamento de efluentes",
+      "year": 2020,
+      "value": 146583,
+      "gpc": "III.4",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scopes not split in the source: compare at subsector level."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "Printed p. 57-58, Quadro 4",
+      "what": "Columns 2016-2019, with footnote digits glued to two 2016 values",
+      "examples": "3.505.0461 (= 3,505,046 + note 1); 126.9872 (= 126,987 + note 2)",
+      "numbers": [
+        3.505,
+        461,
+        3505046,
+        1,
+        126.9872,
+        126987,
+        2
+      ],
+      "failureMode": "Wrong year; footnote digit read as part of the number."
+    },
+    {
+      "where": "Printed p. 57, Quadro 4",
+      "what": "Sector totals (Energia, Transporte, Resíduos)",
+      "examples": "899.752; 1.904.888; 359.951",
+      "numbers": [
+        899.752,
+        1.904,
+        888,
+        359.951
+      ],
+      "failureMode": "Double count."
+    },
+    {
+      "where": "Printed p. 58, footnote 2",
+      "what": "Old 2016 effluent value",
+      "examples": "271.204",
+      "numbers": [
+        271.204
+      ],
+      "failureMode": "Superseded value imported."
+    }
+  ]
+}

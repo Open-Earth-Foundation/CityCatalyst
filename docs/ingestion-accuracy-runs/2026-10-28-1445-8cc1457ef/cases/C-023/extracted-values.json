@@ -1,0 +1,152 @@
+[
+  {
+    "run": 1,
+    "ok": true,
+    "message": null,
+    "extractedRows": 8,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 1510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 1613000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 668000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.6.1",
+        "scope": "1",
+        "valueT": 98000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 1384000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 257000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "IV.2",
+        "scope": "1",
+        "valueT": 393000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "ok": true,
+    "message": null,
+    "extractedRows": 6,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 1510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 1613000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 668000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 1384000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 257000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "IV.2",
+        "scope": "1",
+        "valueT": 393000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "ok": true,
+    "message": null,
+    "extractedRows": 5,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 1510000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 1613000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 668000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 1384000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 257000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  }
+]

@@ -1,0 +1,315 @@
+{
+  "id": "C-031",
+  "city": "Dunedin",
+  "country": "New Zealand",
+  "year": null,
+  "fileName": "Dunedin 2022.pdf",
+  "expectedTotal": 1049330,
+  "toleranceText": "±1 t (integers); sums ±2 t",
+  "tolerance": 1,
+  "totalTolerance": 1,
+  "keyValueRows": 18,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Stationary energy - Electricity Consumption",
+      "year": null,
+      "value": 78920,
+      "gpc": "I.x.2 (all stationary sub-sectors, scope 2)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Grid electricity = scope 2; sub-sectors not split."
+    },
+    {
+      "row": 2,
+      "description": "Stationary energy - Electricity Transmission & Distribution Losses",
+      "year": null,
+      "value": 8370,
+      "gpc": "I.x.3 (all stationary sub-sectors, scope 3)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "T&D losses = scope 3."
+    },
+    {
+      "row": 3,
+      "description": "Stationary energy - fuels (Coal 34,250; LPG 30,943; Stationary Petrol & Diesel 23,846; Biofuel/Wood 5,303; Landfill Biogas 39)",
+      "year": null,
+      "value": 94381,
+      "gpc": "I.x.1 (all stationary sub-sectors, scope 1)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Fuel combustion in the city = scope 1. Five fuel rows summed (they share one pattern; the scorer compares one sum). Landfill biogas (39 t) used for energy generation could be I.4.4 if it supplies the grid (waste-to-energy rule); too small to change the result."
+    },
+    {
+      "row": 4,
+      "description": "Transport - On-road (Diesel 175,149 + Petrol 113,362)",
+      "year": null,
+      "value": 288511,
+      "gpc": "II.1.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Fuel sales method: GPC assigns on-road fuel sold in the city to scope 1 (Q-DUN-3, reviewed 29 Oct). Table 4 prints Diesel 216,594 and Petrol 114,412 including off-road: distractors."
+    },
+    {
+      "row": 5,
+      "description": "Transport - Off-road (Diesel 41,445 + Petrol 1,050 + LPG 1,178)",
+      "year": null,
+      "value": 43673,
+      "gpc": "II.5.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Text: off-road 43,674 incl. LPG (forklifts); rows sum to 43,673 (rounding)."
+    },
+    {
+      "row": 6,
+      "description": "Transport - Marine Freight",
+      "year": null,
+      "value": 160389,
+      "gpc": "II.3.3",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Freight to and from Port Otago: transboundary, induced activity (50% per leg, Appendix) = scope 3 (Q-DUN-3, reviewed 29 Oct). Local marine diesel is row 17."
+    },
+    {
+      "row": 7,
+      "description": "Transport - Air travel: Jet Kerosene",
+      "year": null,
+      "value": 18494,
+      "gpc": "II.4.3",
+      "scope": "3",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Flights departing Dunedin, induced activity (50% per leg, Appendix) = scope 3 by GPC 7.6 (Q-DUN-3, reviewed 29 Oct). Aviation gas is row 18."
+    },
+    {
+      "row": 8,
+      "description": "Transport - Rail",
+      "year": null,
+      "value": 4218,
+      "gpc": "II.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Scope not determinable from the method: compared at sub-sector level (Q-DUN-3)."
+    },
+    {
+      "row": 9,
+      "description": "Waste - Solid waste (Open landfill sites 55,475 + Closed landfill sites 29,472)",
+      "year": null,
+      "value": 84947,
+      "gpc": "III.1.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Mostly Green Island landfill (in the city, scope 1) plus waste sent elsewhere (scope 3)."
+    },
+    {
+      "row": 10,
+      "description": "Waste - Wastewater (Treatment plants 8,901 + Septic tanks 3,720)",
+      "year": null,
+      "value": 12621,
+      "gpc": "III.4.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": ""
+    },
+    {
+      "row": 11,
+      "description": "IPPU - product use (refrigerants 34,448; aerosols 1,919; SF6 electrical 375; foam 151; SF6 other 74; fire extinguishers 59)",
+      "year": null,
+      "value": 37027,
+      "gpc": "IV.2",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "No industrial processes in Dunedin (PDF p. 16): all product use."
+    },
+    {
+      "row": 12,
+      "description": "Agriculture - Livestock (Enteric fermentation 544,475 + Managed manure 21,286)",
+      "year": null,
+      "value": 565761,
+      "gpc": "V.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "GPC V.1 covers enteric fermentation and manure management."
+    },
+    {
+      "row": 13,
+      "description": "Agriculture - Aggregate and non-CO2 sources on land (Unmanaged manure on pasture 79,987 + Leaching and deposition 52,069 + Fertilisers 11,039)",
+      "year": null,
+      "value": 143095,
+      "gpc": "V.3",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "N2O from soils and fertilisers = GPC V.3."
+    },
+    {
+      "row": 14,
+      "description": "Forestry - Harvest emissions",
+      "year": null,
+      "value": 275285,
+      "gpc": "V.2",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Forestry stored as three rows (harvest, native and exotic sequestration), not only the net (-493,170, check only). Counted in the expected total, which is net like the CityCatalyst total (TOT-3); the city's gross headline excludes them (Table 1). The scorer sums rows with the same ref and scope, so rows 14-16 are compared as one V.2 value (Q-DUN-1, reviewed 29 Oct)."
+    },
+    {
+      "row": 15,
+      "description": "Forestry - Native forest sequestration",
+      "year": null,
+      "value": -183659,
+      "gpc": "V.2",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Removal (negative). See row 14."
+    },
+    {
+      "row": 16,
+      "description": "Forestry - Exotic forest sequestration",
+      "year": null,
+      "value": -584796,
+      "gpc": "V.2",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Removal (negative). See row 14."
+    },
+    {
+      "row": 17,
+      "description": "Transport - Marine Diesel Local (port vessels, ferries)",
+      "year": null,
+      "value": 1872,
+      "gpc": "II.3.1",
+      "scope": "1",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Local marine trips inside the city = scope 1 (Q-DUN-3, reviewed 29 Oct)."
+    },
+    {
+      "row": 18,
+      "description": "Transport - Air travel: Aviation Gas",
+      "year": null,
+      "value": 223,
+      "gpc": "To confirm",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "II.4, scope not determinable (light aircraft; could be II.4.1 or II.4.3). Ref left as 'To confirm' so it matches by value: a II.4.x pattern would overlap with row 7 (Q-DUN-3)."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 13, Table 3",
+      "what": "Same agriculture total split by animal",
+      "examples": "Sheep 358,080; Dairy Cattle 191,529; Non-dairy 131,970",
+      "numbers": [
+        358080,
+        191529,
+        131970
+      ],
+      "failureMode": "Agriculture counted twice."
+    },
+    {
+      "where": "PDF p. 14, Table 4",
+      "what": "Diesel and Petrol including on-road and off-road",
+      "examples": "Diesel 216,594; Petrol 114,412; Petrol and Diesel Total 331,006",
+      "numbers": [
+        216594,
+        114412,
+        331006
+      ],
+      "failureMode": "On-road and off-road counted twice."
+    },
+    {
+      "where": "PDF p. 15, text",
+      "what": "Electricity including T&D and the 2020/21 value",
+      "examples": "87,290; 121,808",
+      "numbers": [
+        87290,
+        121808
+      ],
+      "failureMode": "Double count or wrong year."
+    },
+    {
+      "where": "PDF p. 24-30, Tables 14-24",
+      "what": "Changes from 2018/19 to 2021/22",
+      "examples": "2018/19, 2019/20 and 2020/21 columns",
+      "numbers": [
+        2018,
+        19,
+        2019,
+        20,
+        2020,
+        21
+      ],
+      "failureMode": "Wrong year."
+    },
+    {
+      "where": "PDF p. 21, Tables 12-13",
+      "what": "Biogenic CO2 (excluded) and biogenic methane",
+      "examples": "Biogenic CO2 table",
+      "numbers": [
+        2
+      ],
+      "failureMode": "Biogenic CO2 added to the total."
+    },
+    {
+      "where": "PDF p. 5, Table 1",
+      "what": "Gross total without forestry",
+      "examples": "Gross 1,542,500 or forestry net -493,170 only",
+      "numbers": [
+        1542500,
+        493170
+      ],
+      "failureMode": "Forestry left out, or stored as one net row instead of three (Q-DUN-1)."
+    }
+  ]
+}

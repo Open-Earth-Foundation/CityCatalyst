@@ -1,0 +1,53 @@
+[
+  {
+    "run": 1,
+    "ok": true,
+    "message": null,
+    "extractedRows": 3,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 4900000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 4500000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 1000000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "ok": false,
+    "message": null,
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 3,
+    "ok": true,
+    "message": null,
+    "extractedRows": 1,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 4900000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  }
+]

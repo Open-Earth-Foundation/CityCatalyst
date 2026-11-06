@@ -1,0 +1,52 @@
+[
+  {
+    "run": 1,
+    "ok": false,
+    "message": "extraction returned 0 rows",
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 2,
+    "ok": false,
+    "message": "extraction returned 0 rows",
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 3,
+    "ok": true,
+    "message": null,
+    "extractedRows": 4,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 2600300,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 2620978,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 1213124,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 2858675,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  }
+]

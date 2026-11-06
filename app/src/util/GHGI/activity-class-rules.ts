@@ -1,4 +1,8 @@
-import { normalizeSectorAndSubsector, refForScope } from "@/util/GHGI/gpc-ref-resolver";
+import {
+  normalizeSectorAndSubsector,
+  refForScope,
+  scopeFromLabel,
+} from "@/util/GHGI/gpc-ref-resolver";
 
 /**
  * What an extracted PDF row measures, decided by the model from the row label,
@@ -44,19 +48,28 @@ export function hasLossOrConsumptionLabel(
   return labels.some((label) => !!label && LOSS_OR_CONSUMPTION.test(label));
 }
 
-function gridReference(
-  row: ClassifiableRow,
-  scope: 2 | 3,
-): string | null {
+/**
+ * Reference of a grid row: its own sub-sector at the fixed scope when that is
+ * usable, else non-specified sources (I.6.2 / I.6.3). Grid use is never an
+ * energy-industry activity. T&D losses belong to stationary energy only: a
+ * transport or waste row at scope 3 (II.x.3, III.x.2) is not a loss.
+ */
+function gridReference(row: ClassifiableRow, scope: 2 | 3): string | null {
   const sector = row.sector ?? "";
   const subsector = row.subsector ?? "";
-  const { subsectorSlug } = normalizeSectorAndSubsector(sector, subsector);
+  const { sectorSlug, subsectorSlug } = normalizeSectorAndSubsector(
+    sector,
+    subsector,
+  );
   const own = refForScope(sector, subsector, scope);
   const usable =
     subsectorSlug !== "energy-industries" &&
     !row.gpcRefNo?.startsWith("I.4.") &&
+    (row.activityClass !== "td_losses" || sectorSlug === "stationary-energy") &&
     own !== null;
-  return usable ? own : refForScope("stationary-energy", "non-specified-sources", scope);
+  return usable
+    ? own
+    : refForScope("stationary-energy", "non-specified-sources", scope);
 }
 
 function applyToRow<T extends ClassifiableRow>(row: T): T {
@@ -77,7 +90,11 @@ function applyToRow<T extends ClassifiableRow>(row: T): T {
       const scope = row.activityClass === "grid_energy" ? 2 : 3;
       const ref = gridReference(row, scope);
       if (ref) {
-        set({ gpcRefNo: ref, scope: String(scope), scopeSource: "inferred" });
+        set({ gpcRefNo: ref, scope: String(scope) });
+        // Inferred only when the rule sets or changes the scope; a model scope
+        // that already matches ("2", "Scope 2") is left as the model gave it.
+        if (scopeFromLabel(row.scope) !== scope)
+          set({ scopeSource: "inferred" });
       }
       break;
     }
@@ -95,7 +112,7 @@ function applyToRow<T extends ClassifiableRow>(row: T): T {
           gpcRefNo: row.activityClass === "product_use" ? "IV.2" : "IV.1",
           scope: "1",
         });
-        if (row.scope !== "1") set({ scopeSource: "inferred" });
+        if (scopeFromLabel(row.scope) !== 1) set({ scopeSource: "inferred" });
       }
       break;
     }

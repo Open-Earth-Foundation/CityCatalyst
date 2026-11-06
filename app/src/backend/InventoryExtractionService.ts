@@ -6,6 +6,7 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
@@ -872,6 +873,17 @@ export function verifyRowProvenance(
   );
 }
 
+type SchemaState = { useSchema: boolean };
+
+/** A provider that cannot take the strict schema answers 400 and names it. */
+export function isSchemaRejection(err: unknown): boolean {
+  return (
+    err instanceof LLMError &&
+    err.code === LLMErrorCode.BAD_REQUEST &&
+    /response_format|json_schema|schema/i.test(err.message)
+  );
+}
+
 async function extractRowsFromDocument(
   documentContent: string,
   options?: ExtractOptions,
@@ -899,6 +911,8 @@ async function extractRowsFromDocument(
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  // One state per extraction: the first schema rejection switches every later call.
+  const schemaState: SchemaState = { useSchema: true };
   const pages = splitDocumentPages(documentContent).filter((p) =>
     isCandidatePage(p.text),
   );
@@ -919,7 +933,12 @@ async function extractRowsFromDocument(
         const extract = async () =>
           finalizeExtractedRows(
             normalizeExtractedRows(
-              await extractSegment(page.text, yearInstruction, false),
+              await extractSegment(
+                page.text,
+                yearInstruction,
+                false,
+                schemaState,
+              ),
             ).map((row) => ({ ...row, page: page.page })),
             year,
             { deferYearAssumption: true },
@@ -985,6 +1004,7 @@ async function extractRowsFromDocument(
         documentContent,
         yearInstruction,
         options,
+        schemaState,
         { offset: pages.length, total: progressTotal },
       );
       const result = finalizeExtractedRows(
@@ -1020,6 +1040,7 @@ async function extractRowsFromDocument(
     documentContent,
     yearInstruction,
     options,
+    schemaState,
   );
   return checkExtractionResult(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year),
@@ -1042,7 +1063,8 @@ function countChunks(documentContent: string): number {
 async function extractByChunks(
   documentContent: string,
   yearInstruction: string,
-  options?: ExtractOptions,
+  options: ExtractOptions | undefined,
+  schemaState: SchemaState,
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
@@ -1054,7 +1076,12 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(content, yearInstruction, false);
+    allRows = await extractSegment(
+      content,
+      yearInstruction,
+      false,
+      schemaState,
+    );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -1069,7 +1096,7 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegment(chunk, segmentPrefix, true),
+      async (chunk) => extractSegment(chunk, segmentPrefix, true, schemaState),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1207,22 +1234,43 @@ async function extractSegment(
   content: string,
   prefix: string,
   isSegment: boolean,
+  state: SchemaState,
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const { content: responseContent } = await client.complete({
-    // Table extraction needs a stronger model than column mapping (CC-1008:
-    // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-    model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    jsonMode: true,
-    temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
-    maxTokens: 16000,
-  });
+  const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
+  const call = (structured: boolean) =>
+    client.complete({
+      // Table extraction needs a stronger model than column mapping (CC-1008:
+      // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+      model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+      ...(structured
+        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
+        : { jsonMode: true }),
+      temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+      maxTokens: 16000,
+    });
+  let responseContent: string;
+  const structured = state.useSchema;
+  try {
+    ({ content: responseContent } = await call(structured));
+  } catch (err) {
+    if (!structured || !isSchemaRejection(err)) throw err;
+    // Concurrent chunks can all be rejected; the shared state warns once.
+    if (state.useSchema) {
+      state.useSchema = false;
+      logger.warn(
+        { model },
+        "Extraction structured output rejected; using jsonMode",
+      );
+    }
+    ({ content: responseContent } = await call(false));
+  }
 
   const truncated =
     responseContent.length > EXTRACTION_LOG_LIMIT

@@ -64,7 +64,7 @@ export const RECONCILIATION_TOLERANCE = 0.01;
 /** Totals below this share of the largest reported total are sector or part totals. */
 export const MIN_GRAND_TOTAL_SHARE = 0.5;
 
-/** Words that name forestry removals in a label, sector or sub-sector. */
+/** Words that name forestry removals in a sub-sector, category or label. */
 const REMOVALS_LABEL = /forestry|removals?|sequestration/i;
 
 /** The whole AFOLU sector contains the word "forestry" but is not the removals. */
@@ -101,20 +101,6 @@ export function isNetTotalLabel(label: string): boolean {
   if (CITY_NET_PHRASE.test(label)) return true;
   if (!/\bnet\b/i.test(label)) return false;
   return !namesRemovals(label);
-}
-
-/**
- * True for a total whose words name forestry removals (-811,512 "Forestry removals").
- * Fallback for reconciliationTargets, which first tells removals by value. Never
- * decided by the sign: a net total is negative too. A label that names the
- * city's net total ("Net emissions (including Forestry)") is a net total, not
- * removals; "Net forestry" is removals. The AFOLU sector name alone is not removals.
- */
-export function isRemovalsTotal(total: ReportedTotal): boolean {
-  if (isNetTotalLabel(total.label)) return false;
-  return [total.label, total.sector, total.subsector].some(
-    (text) => text != null && namesRemovals(text),
-  );
 }
 
 export type ReconciliationTargets = {
@@ -168,24 +154,19 @@ function netAndRemovalsByValue(
   return { net, removals };
 }
 
-/** Values at or above the share of the largest absolute value among them. */
-function aboveShare(values: number[]): number[] {
-  const largest = Math.max(0, ...values.map((value) => Math.abs(value)));
-  return values.filter(
-    (value) => Math.abs(value) >= largest * MIN_GRAND_TOTAL_SHARE,
-  );
-}
-
 /**
  * The totals an import may be reconciled against, and the forestry removals.
  * A table that adds up to a small total of its own (a council-operations table with
  * its own "Total") is not a target: it would make a wrong table look reconciled.
  *
- * Removals and the net total are found by value first (gross + removals = net), so
- * labels in any language and generic labels ("Total") work. The label is a fallback
- * for documents without a net total. Removals never count toward the largest total:
- * they can exceed the gross (Masterton: -811,512 against 785,873) and would raise the
- * share every other total is held to.
+ * Removals and the net total are found by value (gross + removals = net), so labels
+ * in any language and generic labels ("Total") work. A document without a net total
+ * has no removals: words alone ("Sequestration") do not make a total removals.
+ *
+ * The share of the largest total is taken among the positive totals when there are
+ * any: removals can exceed the gross (Masterton: -811,512 against 785,873) and would
+ * raise the share every other total is held to. For the same reason a negative total
+ * is a grand total only when the document has no positive one.
  */
 export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
@@ -201,41 +182,45 @@ export function reconciliationTargets(
       (total.year == null || targetYear == null || total.year === targetYear),
   );
   const candidates = cityTotals.filter(isGrandTotal);
-
-  // A gross total is positive; the share among the positive candidates cannot be
-  // raised by a removals value.
-  const grossCandidates = aboveShare(
-    candidates.map((total) => total.value).filter((value) => value > 0),
+  const positive = candidates.some((total) => total.value > 0);
+  const largest = Math.max(
+    0,
+    ...candidates
+      .filter((total) => !positive || total.value > 0)
+      .map((total) => Math.abs(total.value)),
   );
+  const isGrand = (value: number) =>
+    (!positive || value > 0) &&
+    Math.abs(value) >= largest * MIN_GRAND_TOTAL_SHARE;
+
   const byValue = netAndRemovalsByValue(
-    grossCandidates,
+    candidates.map((total) => total.value).filter(isGrand),
     cityTotals.map((total) => total.value),
   );
 
-  const removals = new Set(byValue.removals);
-  for (const total of cityTotals) {
-    if (!byValue.net.has(total.value) && isRemovalsTotal(total)) {
-      removals.add(total.value);
-    }
-  }
-
-  const ofYear = candidates.filter(
-    (total) => !removals.has(total.value) && !byValue.net.has(total.value),
-  );
-  const grand = new Set(aboveShare(ofYear.map((total) => total.value)));
+  const grand = new Set<number>();
   const net = new Set(byValue.net);
-  for (const total of ofYear) {
-    if (!grand.has(total.value) && isNetTotalLabel(total.label)) {
+  for (const total of candidates) {
+    if (byValue.removals.has(total.value) || byValue.net.has(total.value)) {
+      continue;
+    }
+    if (isGrand(total.value)) {
+      grand.add(total.value);
+    } else if (isNetTotalLabel(total.label)) {
       net.add(total.value);
     }
   }
-  return { grand: [...grand], net: [...net], removals: [...removals] };
+  return {
+    grand: [...grand],
+    net: [...net],
+    removals: [...byValue.removals],
+  };
 }
 
 /**
- * Values of the removals totals and subtotals of the year, scope totals left out.
- * The model often types the forestry line a subtotal ("Net Forestry Emissions",
- * Masterton); a removals subtotal still says the removals belong in the inventory.
+ * Values of the removals totals and subtotals of the year, scope totals left out
+ * (see reconciliationTargets). The model often types the forestry line a subtotal
+ * ("Net Forestry Emissions", Masterton); a removals subtotal counts too.
  */
 export function removalsTotals(
   totals: ReportedTotal[] | null | undefined,

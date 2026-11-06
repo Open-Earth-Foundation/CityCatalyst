@@ -375,6 +375,8 @@ describe("CC-1161 reconciliation targets", () => {
     expect(
       removalsTotals(
         [
+          reported(GROSS, "Total Gross Emissions"),
+          reported(NET, "Total Net Emissions"),
           reported(REMOVALS, "Net Forestry Emissions", {
             sector: AFOLU,
             level: "subtotal",
@@ -478,19 +480,28 @@ describe("CC-1161 removals by arithmetic (removals = net - gross)", () => {
     ).toEqual([]);
   });
 
-  it("falls back to the label when the document reports no net total", () => {
+  it("finds no removals without a net total, whatever the label says", () => {
+    // Seattle: "Sequestration subtotal" -139,000 and no net total in the document.
+    const totals = [
+      reported(5674100, "Total"),
+      reported(-139000, "Sequestration subtotal", { level: "subtotal" }),
+      reported(REMOVALS, "Forestry removals"),
+    ];
+    const targets = reconciliationTargets(totals, 2021);
+    expect(targets.removals).toEqual([]);
+    expect(removalsTotals(totals, 2021)).toEqual([]);
+    // A negative total does not become a grand total beside a positive one.
+    expect(targets.grand).toEqual([5674100]);
     expect(
-      removalsTotals(
-        [reported(GROSS, "Total"), reported(REMOVALS, "Total")],
-        2021,
-      ),
-    ).toEqual([]);
-    expect(
-      removalsTotals(
-        [reported(GROSS, "Total"), reported(REMOVALS, "Forestry removals")],
-        2021,
-      ),
-    ).toEqual([REMOVALS]);
+      extractionReviewNotes({
+        reportedTotals: totals,
+        droppedRows: {},
+        importedSum: 5674100,
+        yearAssumed: false,
+        targetYear: 2021,
+        orphanRemovals: removalsTotals(totals, 2021),
+      }).removalsWarning,
+    ).toBeNull();
   });
 
   it("finds no removals among positive sector subtotals", () => {

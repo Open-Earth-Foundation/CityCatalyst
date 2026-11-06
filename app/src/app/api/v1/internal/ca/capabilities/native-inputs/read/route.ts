@@ -33,7 +33,7 @@ import { requireClimateAdvisorServiceRequest } from "@/backend/agentic/ghgi/stat
 import { requireRequestUser } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
 
-export const NATIVE_INPUT_READ_CAPABILITY = "native_input.read";
+const NATIVE_INPUT_READ_CAPABILITY = "native_input.read";
 
 const selectedReadRequestSchema = z
   .object({

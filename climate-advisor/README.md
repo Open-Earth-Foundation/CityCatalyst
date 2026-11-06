@@ -2109,6 +2109,13 @@ it does not force the question tool.
 No migration or extra model call is required for choices within a normal turn.
 The standalone suggestions below are hidden while the latest message has choices.
 
+`POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
+chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
+return 1–4 questions for the gap's still-missing parts (answers accepted earlier
+in the same chapter are skipped), each with zero or two to five answer categories.
+It writes nothing; answers go through the review-only chapter-edit flow.
+Generation failures return 503; browser disconnect cancels generation.
+
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words
 and are limited to 80 characters each. The UI keeps them directly above the

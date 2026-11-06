@@ -1,4 +1,8 @@
 {
+  "chat-choices-label": "Suggested answers",
+  "chat-choices-or": "Or:",
+  "chat-choices-custom": "Write your own answer…",
+  "chat-choices-send": "Send answer",
   "chat-suggestions-title": "You could ask Clima",
   "chat-suggestion-review": "What should I improve first?",
   "chat-suggestion-gaps": "What details are missing?",
@@ -261,6 +265,9 @@
   "chat-stream-stalled": "Clima stopped responding. Check your connection, then retry.",
   "chat-overview-error": "Clima couldn't post the drafting summary.",
   "chat-retry": "Retry",
+  "chat-visual-label": "AI-generated visual",
+  "chat-visual-expand": "Expand",
+  "chat-visual-expand-label": "Expand visual: {{title}}",
   "chat-generating": "Generating response",
   "chat-progress-title": "Working on your request",
   "chat-progress-searching": "Searching the draft for the requested changes",

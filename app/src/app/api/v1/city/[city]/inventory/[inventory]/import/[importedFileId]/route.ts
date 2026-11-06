@@ -647,7 +647,11 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     rowsOutsideInventoryType = [
       ...new Set(
         preview.rows
-          .filter((row) => row.status === "not-counted")
+          .filter(
+            (row) =>
+              row.status === "not-counted" &&
+              row.issue === "outside-inventory-type",
+          )
           .map((row) => row.gpcRefNo)
           .filter((ref): ref is string => ref !== null),
       ),
@@ -696,6 +700,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       processedRowCount: importedFile.processedRowCount,
       validationResults_legacy: importedFile.validationResults,
       mappingConfiguration: importedFile.mappingConfiguration,
+      reviewHistory: importedFile.reviewHistory,
       errorLog: importedFile.errorLog,
       created: importedFile.created,
       lastUpdated: importedFile.lastUpdated,

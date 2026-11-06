@@ -418,6 +418,10 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
         "es": "Programa municipal de rehabilitación de edificios"
       },
       "sector": "stationary_energy",
+      "sector_i18n": {
+        "en": "Stationary energy",
+        "es": "Energía estacionaria"
+      },
       "jurisdiction": "Valparaíso",
       "lifecycle_stage": "implementation",
       "funding_channel": "public investment",

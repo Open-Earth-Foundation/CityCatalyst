@@ -1,7 +1,14 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Box,
@@ -38,6 +45,8 @@ import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
+import { ChatVisualFrame } from "./chat-visual-frame";
+import { ChatChoices } from "./chat-choices";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -337,6 +346,14 @@ export function ConceptNoteChatPanel({
     return () => window.cancelAnimationFrame(frame);
   }, [gapAnswer, historyLoading, messages, reasoning, threadId]);
 
+  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  const keepLatestInView = useCallback(() => {
+    const chatScroll = chatScrollRef.current;
+    if (chatScroll && followLatestRef.current) {
+      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+    }
+  }, []);
+
   useEffect(() => {
     if (!composerRequest) {
       return;
@@ -549,7 +566,7 @@ export function ConceptNoteChatPanel({
                 />
               )}
 
-            {messages.map((message) => (
+            {messages.map((message, messageIndex) => (
               <Fragment key={message.id}>
                 {message.role === "assistant" &&
                   message.id === messages.at(-1)?.id && (
@@ -560,15 +577,17 @@ export function ConceptNoteChatPanel({
                       isGenerating={isGenerating}
                     />
                   )}
-                {(message.text || message.role === "user") && (
+                {(message.text ||
+                  message.choices ||
+                  message.role === "user") && (
                   <Box
                     alignSelf={message.role === "user" ? "end" : "start"}
                     maxW="92%"
-                    border="1px solid"
+                    border={message.choices ? "none" : "1px solid"}
                     borderColor="border.neutral"
                     borderRadius="rounded"
                     bg={
-                      message.role === "user"
+                      message.choices || message.role === "user"
                         ? "background.neutral"
                         : "base.light"
                     }
@@ -592,8 +611,30 @@ export function ConceptNoteChatPanel({
                         {message.text}
                       </Text>
                     ) : null}
+                    {message.role === "assistant" && message.choices && (
+                      <ChatChoices
+                        choices={message.choices}
+                        lng={lng}
+                        disabled={chatDisabled}
+                        answered={messageIndex < messages.length - 1}
+                        onReply={async (answer) => {
+                          if (chatDisabled) return;
+                          followLatestRef.current = true;
+                          await sendChatMessage(answer);
+                        }}
+                      />
+                    )}
                   </Box>
                 )}
+                {message.visuals?.map((visual, index) => (
+                  <ChatVisualFrame
+                    key={index}
+                    html={visual.html}
+                    lng={lng}
+                    onHeightChange={keepLatestInView}
+                    title={visual.title}
+                  />
+                ))}
               </Fragment>
             ))}
 
@@ -666,21 +707,24 @@ export function ConceptNoteChatPanel({
         onSubmit={submitMessage}
       >
         <Box mb={!chatDisabled && threadId ? 3 : 0}>
-          {!gapAnswer && !chatDisabled && threadId && (
-            <ChatSuggestions
-              runId={runId}
-              threadId={threadId}
-              lng={lng}
-              tab={activeTab}
-              revision={suggestionRevision}
-              lastMessageId={messages.at(-1)?.id}
-              hasDocument={hasDocument}
-              onSelect={(question) => {
-                setInput(question);
-                inputRef.current?.focus();
-              }}
-            />
-          )}
+          {!gapAnswer &&
+            !chatDisabled &&
+            threadId &&
+            !messages.at(-1)?.choices && (
+              <ChatSuggestions
+                runId={runId}
+                threadId={threadId}
+                lng={lng}
+                tab={activeTab}
+                revision={suggestionRevision}
+                lastMessageId={messages.at(-1)?.id}
+                hasDocument={hasDocument}
+                onSelect={(question) => {
+                  setInput(question);
+                  inputRef.current?.focus();
+                }}
+              />
+            )}
         </Box>
         <Flex align="flex-end" gap={3}>
           <Textarea

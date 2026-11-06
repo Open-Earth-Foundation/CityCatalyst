@@ -16,6 +16,10 @@ import {
   sectorLabel,
   type MeedActionIndex,
 } from "./actionCatalog";
+import {
+  legalCategoryLabelKey,
+  type MeedLegalStanding,
+} from "../../regulations/legalStanding";
 
 function percent(score: number): string {
   return (score * 100).toFixed(0);
@@ -25,11 +29,14 @@ export function buildRankingCsv(
   actions: MeedRankedActionResult[],
   index: MeedActionIndex,
   t: TFunction,
+  /** When given, adds the municipal-authority column after the sector. */
+  legalFor?: (actionId: string) => MeedLegalStanding | null,
 ): { headers: string[]; rows: (string | number)[][] } {
   const headers = [
     t("csv-column-rank"),
     t("csv-column-action"),
     t("csv-column-sector"),
+    ...(legalFor ? [t("csv-column-legal")] : []),
     t("csv-column-reduction"),
     t("csv-column-impact"),
     t("csv-column-alignment"),
@@ -41,6 +48,14 @@ export function buildRankingCsv(
     action.rank,
     actionName(index, action.action_id, t),
     sectorLabel(index, action.action_id, t),
+    ...(legalFor
+      ? [
+          (() => {
+            const legal = legalFor(action.action_id);
+            return legal ? t(legalCategoryLabelKey(legal.ownership)) : "";
+          })(),
+        ]
+      : []),
     t(reductionLevelLabelKey(reductionLevel(index, action.action_id))),
     percent(action.impact_score),
     percent(action.alignment_score),

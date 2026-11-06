@@ -16,6 +16,8 @@ import {
   type ConceptNoteReasoning,
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
+  readConceptNoteToolVisual,
+  readConceptNoteChoices,
 } from "./chat-utils";
 
 // The service replaces this content with its own hidden overview trigger.
@@ -142,7 +144,33 @@ export function useConceptNoteChat({
       }
     },
     onToolResult: (result) => {
+      const choices = readConceptNoteChoices(result);
+      const assistantId = assistantMessageIdRef.current;
+      if (choices && assistantId) {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId ? { ...message, choices } : message,
+          ),
+        );
+      }
       const data = result.data;
+      const visual = readConceptNoteToolVisual(result);
+      // The done event runs tool results before onComplete, so the turn's id is still set.
+      const visualMessageId = assistantMessageIdRef.current;
+      if (visual && visualMessageId) {
+        // Identity check keeps a re-reported tool call from rendering twice.
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === visualMessageId &&
+            !message.visuals?.some(
+              (item) =>
+                item.html === visual.html && item.title === visual.title,
+            )
+              ? { ...message, visuals: [...(message.visuals ?? []), visual] }
+              : message,
+          ),
+        );
+      }
       if (
         result.action === "concept_note.edit.propose" &&
         typeof result.success === "boolean" &&
@@ -206,7 +234,7 @@ export function useConceptNoteChat({
             (message) =>
               message.id !== rejectedUserMessageId &&
               (message.id !== assistantMessageId ||
-                Boolean(message.text.trim())),
+                Boolean(message.text.trim() || message.visuals?.length)),
           ),
         );
       }
@@ -300,7 +328,12 @@ export function useConceptNoteChat({
     scope = editScope,
   ): Promise<void> {
     const normalizedContent = content.trim();
-    if (!normalizedContent || !threadId || isGenerating) {
+    if (
+      !normalizedContent ||
+      !threadId ||
+      isGenerating ||
+      currentTurnRef.current
+    ) {
       return;
     }
 
@@ -325,7 +358,7 @@ export function useConceptNoteChat({
 
   // Starts the hidden first turn that summarises a finished drafting pass.
   async function requestDraftOverview(): Promise<void> {
-    if (!threadId || isGenerating) {
+    if (!threadId || isGenerating || currentTurnRef.current) {
       return;
     }
     draftOverviewTurnRef.current = true;

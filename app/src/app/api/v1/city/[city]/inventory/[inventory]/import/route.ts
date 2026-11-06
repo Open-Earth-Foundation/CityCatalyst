@@ -228,8 +228,12 @@ async function runUploadProcessingInBackground(
         lastUpdated: new Date(),
       });
       logger.info(
-        { importedFileId: importedFile.id, rowCount: rows.length },
-        "Adapter D (near-ecrf): direct mapping completed, waiting for approval",
+        {
+          ingest: true,
+          importedFileId: importedFile.id,
+          rowCount: rows.length,
+        },
+        "[ingest] wizard upload is still ImportedInventoryFile / Adapter D. Spine logs start when you click confirm (approve).",
       );
       return;
     }
@@ -319,8 +323,12 @@ async function runUploadProcessingInBackground(
       lastUpdated: new Date(),
     });
     logger.info(
-      { importedFileId: importedFile.id, rowCount: importResult.rowCount },
-      "Tabular upload (eCRF) processed, waiting for approval",
+      {
+        ingest: true,
+        importedFileId: importedFile.id,
+        rowCount: importResult.rowCount,
+      },
+      "[ingest] wizard upload is still ImportedInventoryFile / eCRF parse. Spine logs start when you click confirm (approve).",
     );
   } catch (error) {
     logger.error(

@@ -17,6 +17,7 @@ export interface IngestItemAttributes {
   originalFileName: string;
   contentHash?: string | null;
   s3Key?: string | null;
+  documentId?: string | null;
   status: IngestItemStatus;
   stage?: IngestStage | null;
   errorCode?: string | null;
@@ -27,6 +28,7 @@ export interface IngestItemAttributes {
   coverageYears?: number[] | null;
   result?: Record<string, unknown> | null;
   reviewDraft?: Record<string, unknown> | null;
+  reviewDraftVersion?: number | null;
   reviewLockedByUserId?: string | null;
   reviewLockedAt?: Date | null;
   data?: Buffer | Uint8Array | null;
@@ -40,6 +42,7 @@ export type IngestItemOptionalAttributes =
   | "id"
   | "contentHash"
   | "s3Key"
+  | "documentId"
   | "status"
   | "stage"
   | "errorCode"
@@ -50,6 +53,7 @@ export type IngestItemOptionalAttributes =
   | "coverageYears"
   | "result"
   | "reviewDraft"
+  | "reviewDraftVersion"
   | "reviewLockedByUserId"
   | "reviewLockedAt"
   | "data"
@@ -69,6 +73,7 @@ export class IngestItem
   declare originalFileName: string;
   declare contentHash?: string | null;
   declare s3Key?: string | null;
+  declare documentId?: string | null;
   declare status: IngestItemStatus;
   declare stage?: IngestStage | null;
   declare errorCode?: string | null;
@@ -79,6 +84,7 @@ export class IngestItem
   declare coverageYears?: number[] | null;
   declare result?: Record<string, unknown> | null;
   declare reviewDraft?: Record<string, unknown> | null;
+  declare reviewDraftVersion?: number | null;
   declare reviewLockedByUserId?: string | null;
   declare reviewLockedAt?: Date | null;
   declare data?: Buffer | Uint8Array | null;
@@ -121,6 +127,12 @@ export class IngestItem
           type: DataTypes.STRING(1024),
           allowNull: true,
           field: "s3_key",
+        },
+        documentId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "document_id",
+          references: { model: "IngestDocument", key: "id" },
         },
         status: {
           type: DataTypes.STRING(32),
@@ -172,6 +184,12 @@ export class IngestItem
           type: DataTypes.JSONB,
           allowNull: true,
           field: "review_draft",
+        },
+        reviewDraftVersion: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+          field: "review_draft_version",
         },
         reviewLockedByUserId: {
           type: DataTypes.UUID,

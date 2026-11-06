@@ -71,6 +71,17 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      chapter, question, reason, severity, and state, filtered by
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
+   - When `CNB_RENDER_VISUAL_ENABLED=true`, also exposes experimental
+     `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
+     chart, diagram, or table (title at most 200 characters, HTML at most
+     200,000) and returns `concept_note.visual.render` with the title and size;
+     the HTML stays only in the call arguments. CityCatalyst strips scripts,
+     links, forms and external resources with DOMPurify and renders the rest in
+     a script-free sandboxed iframe, so a visual cannot send note context out.
+     The SSE `done` event and the stored message keep one copy of the HTML,
+     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
+     replayed history replaces it with a short placeholder. A visual-only turn
+     is saved with empty text.
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list
@@ -846,6 +857,8 @@ language, or client-side fallback behavior. The boundary is:
 - `CNB_STRUCTURED_REQUEST_MAX_BYTES` - Maximum structured JSON artifact size CA
   will accept for a new PDF upload (default `20971520`; independent of the
   Markdown limit). Oversized artifacts fail and are not truncated.
+- `CNB_RENDER_VISUAL_ENABLED` - Registers the experimental CNB chat
+  `concept_note_render_visual` tool when `true` (default `false`)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -2076,6 +2089,25 @@ See [validation and reproduction](docs/cnb-reasoning-validation.md) for focused
 checks, manual verification steps, and remaining limitations.
 
 ### Concept Note chat suggestions
+
+CNB can optionally use `concept_note_ask_question` when a short set of concrete
+choices makes a clarification or next-step decision easier for the user.
+It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
+cap, so an option can be a complete rewrite when the user asks for alternatives
+to choose from). The UI renders lettered answers and a custom-answer input
+inside that assistant bubble. Informational answers, acknowledgements, and
+open-ended questions can remain ordinary text; a previous choice does not force
+another question or set of choices.
+Clicking an option immediately sends its full text as a normal user message.
+The arrow or Enter sends a custom answer; document edits still require review.
+Older questions become read-only after a subsequent user message. Validated
+choices reload from existing `tools_used` history via the `choices` response
+field; raw tool audit data is not exposed.
+
+The drafting-overview turn may offer contextual next-step choices when helpful;
+it does not force the question tool.
+No migration or extra model call is required for choices within a normal turn.
+The standalone suggestions below are hidden while the latest message has choices.
 
 `POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to

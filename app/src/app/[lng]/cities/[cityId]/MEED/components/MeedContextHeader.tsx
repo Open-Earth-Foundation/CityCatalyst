@@ -6,6 +6,7 @@ import { BodySmall } from "@/components/package/Texts/Body";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedInventoryMenu } from "./MeedInventoryMenu";
 import { MeedBreadcrumb, type MeedCrumb } from "./MeedBreadcrumb";
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 export interface MeedContextHeaderProps {
   cityName?: string;
@@ -51,7 +52,7 @@ export function MeedContextHeader({
       borderBottomWidth="1px"
       borderColor="border.overlay"
     >
-      <Box mx="auto" w="full" maxW="1090px" px="l" py="m">
+      <Box mx="auto" w="full" maxW={MEED_CONTENT_MAX_W} px="l" py="m">
         <HStack justifyContent="space-between" alignItems="center" gap="m">
           {/* One left edge: the trail and the city name share an axis. */}
           <VStack alignItems="flex-start" gap="xs" minW="0">

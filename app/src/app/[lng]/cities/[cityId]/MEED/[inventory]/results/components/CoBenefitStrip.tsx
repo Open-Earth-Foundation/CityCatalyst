@@ -1,10 +1,9 @@
 "use client";
 import React from "react";
-import { TitleLarge } from "@/components/package/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import { LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { LabelMedium } from "@/components/package/Texts/Label";
 import { BodySmall, BodyMedium } from "@/components/package/Texts/Body";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import { coBenefitIcon, coBenefitLabel } from "./coBenefits";
@@ -85,11 +84,14 @@ function TallyBlock({
   t: TFunction;
 }) {
   return (
-    <VStack alignItems="stretch" gap="s">
+    <VStack alignItems="stretch" gap="m">
       <VStack alignItems="stretch" gap="xs">
-        <TitleLarge color="content.primary">{title}</TitleLarge>
+        <TitleMedium as="h3" color="content.primary">
+          {title}
+        </TitleMedium>
         <BodyMedium color="content.secondary">{description}</BodyMedium>
       </VStack>
+      {/* Tiles, not cards: tighter than the page's card grids on purpose. */}
       <SimpleGrid
         columns={{ base: 2, md: 3, lg: Math.min(items.length, 6) }}
         gap="m"
@@ -121,9 +123,9 @@ function TallyBlock({
                     </MeedStatusTag>
                   )}
                 </HStack>
-                <LabelMedium color="content.primary">
+                <BodySmall color="content.primary" fontWeight="semibold">
                   {coBenefitLabel(item.key, t)}
-                </LabelMedium>
+                </BodySmall>
                 <BodySmall color="content.tertiary" mt="auto">
                   {t("cobenefit-count", { count: item.count, total })}
                 </BodySmall>

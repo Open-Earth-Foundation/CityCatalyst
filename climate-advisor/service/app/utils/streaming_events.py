@@ -12,8 +12,10 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.utils.cnb_progress import emit_cnb_reasoning
+from app.utils.concept_note_context import omit_visual_html
 from app.utils.mlflow_logging import finish_tool_observation, start_tool_observation
 from app.utils.sse import format_sse
+from app.tools.concept_note_question import ConceptNoteQuestion
 
 if TYPE_CHECKING:
     # The orchestrator imports these helpers; avoid a runtime import cycle.
@@ -193,7 +195,8 @@ async def handle_tool_called(
         {
             "name": invocation.get("name", "unknown_tool"),
             "status": invocation.get("status", "executing"),
-            "arguments": invocation.get("arguments"),
+            # Visual HTML streams once, in the done event.
+            "arguments": omit_visual_html(invocation).get("arguments"),
         },
         event="tool_result",
     ).encode("utf-8")
@@ -258,6 +261,18 @@ async def handle_tool_output(
 
     # Handle token refresh and errors
     if parsed_output is not None:
+        if invocation.get("name") == "concept_note_ask_question":
+            question = ConceptNoteQuestion.model_validate(parsed_output)
+            content = ("\n\n" if handler.assistant_tokens else "") + question.message
+            handler.assistant_tokens.append(content)
+            yield format_sse(
+                {"index": handler.token_index, "content": content}, event="message"
+            ).encode("utf-8")
+            handler.token_index += 1
+            yield format_sse(
+                {"name": "concept_note_ask_question", **question.model_dump()},
+                event="tool_result",
+            ).encode("utf-8")
         async for event_bytes in handle_tool_result_metadata(handler, parsed_output):
             yield event_bytes
         stationary_energy_payload = build_stationary_energy_tool_result_payload(

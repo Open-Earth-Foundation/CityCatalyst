@@ -140,6 +140,8 @@ export interface MeedHardFilterEvidence {
   discard_reason?: string | null;
   legal_assessment_present?: boolean | null;
   legal_verdict_category?: string | null;
+  /** Whether the municipality can act on its own authority: enabled | conditional | blocked. */
+  legal_ownership_category?: string | null;
   legal_assessment_summary?: Record<string, unknown> | null;
 }
 

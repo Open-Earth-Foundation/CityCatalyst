@@ -187,6 +187,19 @@ export function resolveGpcRefNo(
   return matches[0].gpcRefNo;
 }
 
+/** References in the same sub-sector, for choosing another one in the review. */
+export function siblingReferences(gpcRefNo: string): string[] {
+  const prefix = gpcRefNo.split(".").slice(0, 2).join(".");
+  return table
+    .map((row) => row.gpcRefNo)
+    .filter((ref) => ref === prefix || ref.startsWith(`${prefix}.`));
+}
+
+/** Scope of a reference in the taxonomy; undefined when it has none. */
+export function taxonomyScope(gpcRefNo: string): number | undefined {
+  return table.find((row) => row.gpcRefNo === gpcRefNo)?.scope;
+}
+
 /**
  * Resolve a missing GPC ref from the raw sector, sub-sector, fuel, and scope
  * labels, including "On-road > Passenger car" style splits.

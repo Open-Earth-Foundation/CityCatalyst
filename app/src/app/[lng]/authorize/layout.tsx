@@ -5,6 +5,11 @@ import { languages } from "@/i18n/settings";
 import { use } from "react";
 import { Box } from "@chakra-ui/react";
 
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
+// Remove this opt-out after verifying the segment passes validation without it.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "CityCatalyst",
   description: "Make building a climate inventory a breeze",

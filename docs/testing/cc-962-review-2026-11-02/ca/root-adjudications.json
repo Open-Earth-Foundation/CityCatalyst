@@ -1,0 +1,53 @@
+{
+  "reason": "Five completeness-denominator flags are an observed UI/tool inconsistency, not proven false facts. Exclude them from confirmed GE while preserving the original judge and quality verdicts.",
+  "excludedFromConfirmedGE": [
+    {
+      "trial": "UB03-r2",
+      "turn": 3,
+      "claim": "2 z 21 wymaganych pozycji danych",
+      "reason": "Dokładny mianownik nie ma niezależnego potwierdzenia w pokazanym widoku; wynik statusu narzędzia 10% różni się od 9% w UI. Nie da się tu ustalić, czy powodem jest zaokrąglenie czy różnica zakresu.",
+      "kind": "other",
+      "origin": "upstream_payload",
+      "evidence": "inventory_status_overview: 2/21, 10%; evidence.ui final: Stationary energy 9% completed; scenariusz zabrania wywodzić procent wyłącznie z czterech zapisanych wierszy."
+    },
+    {
+      "trial": "UB03-r3",
+      "turn": 3,
+      "claim": "2 z 21 wymaganych pozycji danych",
+      "reason": "Dokładny mianownik nie ma niezależnego potwierdzenia w pokazanym widoku; wynik statusu narzędzia 10% różni się od 9% w UI. Nie da się tu ustalić, czy powodem jest zaokrąglenie czy różnica zakresu.",
+      "kind": "other",
+      "origin": "upstream_payload",
+      "evidence": "inventory_status_overview: 2/21, 10%; evidence.ui final: Stationary energy 9% completed; scenariusz zabrania wywodzić procent wyłącznie z czterech zapisanych wierszy."
+    },
+    {
+      "trial": "UB05-r1",
+      "turn": 1,
+      "claim": "19 z 21",
+      "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+      "kind": "other",
+      "origin": "upstream_payload",
+      "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+    },
+    {
+      "trial": "UB05-r2",
+      "turn": 1,
+      "claim": "19 z 21",
+      "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+      "kind": "other",
+      "origin": "upstream_payload",
+      "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+    },
+    {
+      "trial": "UB05-r3",
+      "turn": 1,
+      "claim": "19 z 21",
+      "reason": "Narzędzie podaje 19/21 i 10% dla energii, zaś widok 9%; dla odpadów narzędzie podaje 13%, widok 12%. Konkretne mianowniki nie są niezależnie potwierdzone pokazanymi szczegółami.",
+      "kind": "other",
+      "origin": "upstream_payload",
+      "evidence": "inventory_status_overview: Stationary Energy 2/21, 10%, Waste 1/8, 13%; evidence.ui final: Stationary energy 9% completed, Waste and wastewater 12% completed. Możliwe inne zaokrąglenie lub mianownik; nie ustalono, które źródło jest błędne."
+    }
+  ],
+  "changedNumericChecks": 0,
+  "changedClassificationChecks": 0,
+  "changedResponseVerdicts": 0
+}

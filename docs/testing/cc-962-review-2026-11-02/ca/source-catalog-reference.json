@@ -1,0 +1,116 @@
+[
+  {
+    "datasource_id": "54e965a4-3bd0-4f6a-a425-e843bb955712",
+    "datasource_name": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa",
+    "URL": null,
+    "dataset_description": {
+      "de": "Das System zur Schätzung der Treibhausgasemissionen (SEEG) liefert kommunale Emissionen aus der Brennstoffverbrennung in gewerblichen Gebäuden.",
+      "en": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa (SEEG) provides municipality level emissions from fuel combustion in commercial buildings.",
+      "es": "El Sistema de Estimación de Emisión de Gases de Efecto Invernadero (SEEG) proporciona datos de emisiones a nivel municipal provenientes de la combustión de combustibles en edificios comerciales.",
+      "fr": "Le Système d'Estimation des Émissions de Gaz à Effet de Serre (SEEG) fournit des données sur les émissions au niveau municipal provenant de la combustion de combustibles dans les bâtiments commerciaux.",
+      "pt": "O Sistema de Estimativa de Emissão de Gases do Efeito Estufa (SEEG) fornece dados de emissões a nível municipal provenientes da combustão de combustíveis em edifícios comerciais."
+    },
+    "access_type": "public",
+    "geographical_location": "BR",
+    "latest_accounting_year": 2022,
+    "frequency_of_update": "annual",
+    "spatial_resolution": "city",
+    "language": "pt",
+    "accessibility": null,
+    "data_quality": "medium",
+    "notes": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa by SEEG. For more details see https://seeg.eco.br/",
+    "units": "kg",
+    "methodology_url": "https://seeg.eco.br/metodologia/",
+    "publisher_id": "65cc93ec-8926-4d26-8c42-e5db012c456a",
+    "retrieval_method": "global_api",
+    "api_endpoint": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/:locode/:year/:gpcReferenceNumber",
+    "created": "2024-10-16T01:11:34.897Z",
+    "last_updated": "2026-04-29T13:08:46.160Z",
+    "source_type": "Third-party",
+    "sector_id": null,
+    "subsector_id": null,
+    "subcategory_id": "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
+    "start_year": 2015,
+    "end_year": 2022,
+    "methodology_description": {
+      "de": "Die Methodik zur Berechnung der Emissionen in Brasilien folgt den IPCC-Richtlinien und klassifiziert die Emissionen in Brennstoffverbrennung und flüchtige Emissionen. Sie verwendet einen Bottom-up-Ansatz, der Daten aus dem Nationalen Energieausgleich (BEN) und spezifische Emissionsfaktoren nutzt, um CO2-, CH4- und N2O-Emissionen in verschiedenen Sektoren zu quantifizieren, wobei staatliche Unterschiede berücksichtigt werden.",
+      "en": "The methodology for calculating emissions in Brazil adheres to IPCC guidelines, classifying emissions into fuel combustion and fugitive emissions. It employs a bottom-up approach using data from the National Energy Balance (BEN) and specific emission factors to quantify CO2, CH4, and N2O emissions across various sectors, while considering state-level variations.",
+      "es": "La metodología para calcular las emisiones en Brasil se adhiere a las directrices del IPCC, clasificando las emisiones en combustión de combustibles y emisiones fugitivas. Utiliza un enfoque de abajo hacia arriba empleando datos del Balance Energético Nacional (BEN) y factores de emisión específicos para cuantificar las emisiones de CO2, CH4 y N2O en varios sectores, considerando las variaciones a nivel estatal.",
+      "fr": "La méthodologie pour le calcul des émissions au Brésil suit les directives du GIEC, classant les émissions en combustion de combustibles et émissions fugitives. Elle utilise une approche ascendante en s'appuyant sur des données du Bilan Énergétique National (BEN) et des facteurs d'émission spécifiques pour quantifier les émissions de CO2, CH4 et N2O dans divers secteurs, tout en tenant compte des variations au niveau des États.",
+      "pt": "A metodologia para calcular as emissões no Brasil segue as diretrizes do IPCC, classificando as emissões em combustão de combustíveis e emissões fugitivas. Ela utiliza uma abordagem de baixo para cima, empregando dados do Balanço Energético Nacional (BEN) e fatores de emissão específicos para quantificar as emissões de CO2, CH4 e N2O em diversos setores, considerando as variações a nível estadual."
+    },
+    "transformation_description": {
+      "de": "Der Datentransformationsprozess umfasst die Zuordnung von IPCC-Kategorien zum Globalen Protokoll für kommunale Treibhausgasemissionsinventare (GPC). Diese Zuordnung gewährleistet eine konsistente Klassifizierung der Emissionen, während Daten basierend auf direkten kommunalen Emissionszahlen aggregiert werden. Insbesondere gibt es eine direkte Zuordnung von Kategorien im Zusammenhang mit stationärer Energie von IPCC zu den GPC Scope 1-Emissionen.",
+      "en": "The data transformation process involves mapping IPCC categories to the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) framework. This mapping ensures a consistent classification of emissions while aggregating data based on direct city-level emissions figures. Specifically, there is a direct mapping of categories related to Stationary Energy from IPCC to GPC Scope 1 emissions.",
+      "es": "El proceso de transformación de datos implica el mapeo de categorías del IPCC al Protocolo Global para Inventarios de Emisiones de Gases de Efecto Invernadero en Escala Comunitaria (GPC). Este mapeo asegura una clasificación consistente de las emisiones mientras agrega datos basados en cifras directas de emisiones a nivel municipal. Específicamente, hay un mapeo directo de las categorías relacionadas con la Energía Estacionaria del IPCC a las emisiones del GPC Alcance 1.",
+      "fr": "Le processus de transformation des données implique le mappage des catégories du GIEC au Protocole Global pour les Inventaires d'Émissions de Gaz à Effet de Serre à l'Échelle Communautaire (GPC). Ce mappage garantit une classification cohérente des émissions tout en agrégeant les données basées sur des chiffres d'émissions directs au niveau municipal. Plus précisément, il existe un mappage direct des catégories liées à l'Énergie Stationnaire du GIEC aux émissions du GPC Scope 1.",
+      "pt": "O processo de transformação de dados envolve a mapeamento das categorias do IPCC para o Protocolo Global para Inventários de Emissões de Gases de Efeito Estufa em Escala Comunitária (GPC). Este mapeamento garante uma classificação consistente das emissões enquanto agrega dados com base em números diretos de emissões a nível municipal. Especificamente, há um mapeamento direto das categorias relacionadas à Energia Estacionária do IPCC para as emissões do GPC Escopo 1."
+    },
+    "dataset_name": {
+      "de": "SEEG Brennstoffverbrennung in Gewerblichen Gebäuden",
+      "en": "SEEG Fuel Combustion in Commercial Buildings",
+      "es": "Combustión de Combustibles SEEG en Edificios Comerciales",
+      "fr": "Combustion de combustibles SEEG dans les bâtiments commerciaux",
+      "pt": "Combustão de Combustíveis SEEG em Edifícios Comerciais"
+    },
+    "priority": 1,
+    "reference_number": "I.2.1"
+  },
+  {
+    "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6",
+    "datasource_name": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa",
+    "URL": null,
+    "dataset_description": {
+      "de": "Das Sistema de Estimativa de Emissão de Gases do Efeito Estufa (SEEG) liefert Emissionen auf Gemeindeebene aus der Brennstoffverbrennung in Wohngebäuden.",
+      "en": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa (SEEG) provides municipality level emissions from fuel combustion in residential buildings.",
+      "es": "El Sistema de Estimación de Emisión de Gases de Efecto Invernadero (SEEG) proporciona emisiones a nivel municipal provenientes de la combustión de combustibles en edificios residenciales.",
+      "fr": "Le Système d'Estimation des Émissions de Gaz à Effet de Serre (SEEG) fournit des émissions au niveau municipal provenant de la combustion de carburants dans les bâtiments résidentiels.",
+      "pt": "O Sistema de Estimativa de Emissão de Gases do Efeito Estufa (SEEG) fornece emissões em nível municipal provenientes da combustão de combustíveis em edifícios residenciais."
+    },
+    "access_type": "public",
+    "geographical_location": "BR",
+    "latest_accounting_year": 2022,
+    "frequency_of_update": "annual",
+    "spatial_resolution": "city",
+    "language": "pt",
+    "accessibility": null,
+    "data_quality": "medium",
+    "notes": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa by SEEG. For more details see https://seeg.eco.br/",
+    "units": "kg",
+    "methodology_url": "https://seeg.eco.br/metodologia/",
+    "publisher_id": "65cc93ec-8926-4d26-8c42-e5db012c456a",
+    "retrieval_method": "global_api",
+    "api_endpoint": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/:locode/:year/:gpcReferenceNumber",
+    "created": "2024-10-16T01:11:34.897Z",
+    "last_updated": "2026-04-29T13:08:46.229Z",
+    "source_type": "Third-party",
+    "sector_id": null,
+    "subsector_id": null,
+    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+    "start_year": 2015,
+    "end_year": 2022,
+    "methodology_description": {
+      "de": "Die Methodik zur Berechnung der Emissionen in Brasilien folgt den IPCC-Richtlinien und klassifiziert die Emissionen in Brennstoffverbrennung und flüchtige Emissionen. Sie verwendet einen Bottom-up-Ansatz, der Daten aus dem Nationalen Energiebilanz (BEN) und spezifische Emissionsfaktoren nutzt, um CO2-, CH4- und N2O-Emissionen in verschiedenen Sektoren zu quantifizieren, wobei staatliche Unterschiede berücksichtigt werden.",
+      "en": "The methodology for calculating emissions in Brazil adheres to IPCC guidelines, classifying emissions into fuel combustion and fugitive emissions. It employs a bottom-up approach using data from the National Energy Balance (BEN) and specific emission factors to quantify CO2, CH4, and N2O emissions across various sectors, while considering state-level variations.",
+      "es": "La metodología para calcular las emisiones en Brasil se adhiere a las directrices del IPCC, clasificando las emisiones en combustión de combustibles y emisiones fugitivas. Utiliza un enfoque de abajo hacia arriba empleando datos del Balance Energético Nacional (BEN) y factores de emisión específicos para cuantificar las emisiones de CO2, CH4 y N2O en varios sectores, considerando las variaciones a nivel estatal.",
+      "fr": "La méthodologie pour le calcul des émissions au Brésil suit les directives du GIEC, classant les émissions en combustion de carburants et émissions fugitives. Elle utilise une approche ascendante en s'appuyant sur des données du Bilan Énergétique National (BEN) et des facteurs d'émission spécifiques pour quantifier les émissions de CO2, CH4 et N2O dans divers secteurs, tout en tenant compte des variations au niveau des États.",
+      "pt": "A metodologia para calcular as emissões no Brasil segue as diretrizes do IPCC, classificando as emissões em combustão de combustíveis e emissões fugitivas. Ela utiliza uma abordagem de baixo para cima, empregando dados do Balanço Energético Nacional (BEN) e fatores de emissão específicos para quantificar as emissões de CO2, CH4 e N2O em diversos setores, considerando as variações em nível estadual."
+    },
+    "transformation_description": {
+      "de": "Der Datentransformationsprozess umfasst die Zuordnung von IPCC-Kategorien zum Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) Rahmen. Diese Zuordnung gewährleistet eine konsistente Klassifizierung der Emissionen, während Daten basierend auf direkten kommunalen Emissionszahlen aggregiert werden. Insbesondere gibt es eine direkte Zuordnung von Kategorien im Zusammenhang mit stationärer Energie von IPCC zu GPC Scope 1-Emissionen.",
+      "en": "The data transformation process involves mapping IPCC categories to the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) framework. This mapping ensures a consistent classification of emissions while aggregating data based on direct city-level emissions figures. Specifically, there is a direct mapping of categories related to Stationary Energy from IPCC to GPC Scope 1 emissions.",
+      "es": "El proceso de transformación de datos implica mapear las categorías del IPCC al marco del Protocolo Global para Inventarios de Emisiones de Gases de Efecto Invernadero a Escala Comunitaria (GPC). Este mapeo asegura una clasificación consistente de las emisiones mientras agrega datos basados en cifras directas de emisiones a nivel municipal. Específicamente, hay un mapeo directo de las categorías relacionadas con la Energía Estacionaria del IPCC a las emisiones del GPC Alcance 1.",
+      "fr": "Le processus de transformation des données implique de mapper les catégories du GIEC au cadre du Protocole Global pour les Inventaires d'Émissions de Gaz à Effet de Serre à Échelle Communautaire (GPC). Ce mappage garantit une classification cohérente des émissions tout en agrégeant les données basées sur des chiffres d'émissions directs au niveau municipal. Plus précisément, il existe un mappage direct des catégories liées à l'Énergie Stationnaire du GIEC aux émissions du GPC Scope 1.",
+      "pt": "O processo de transformação de dados envolve a mapeamento das categorias do IPCC para a estrutura do Protocolo Global para Inventários de Emissões de Gases de Efeito Estufa em Escala Comunitária (GPC). Este mapeamento garante uma classificação consistente das emissões enquanto agrega dados com base em números diretos de emissões em nível municipal. Especificamente, há um mapeamento direto das categorias relacionadas à Energia Estacionária do IPCC para as emissões do GPC Escopo 1."
+    },
+    "dataset_name": {
+      "de": "SEEG Brennstoffverbrennung in Wohngebäuden",
+      "en": "SEEG Fuel Combustion in Residential Buildings",
+      "es": "SEEG Combustión de Combustibles en Edificios Residenciales",
+      "fr": "SEEG Combustion de Carburant dans les Bâtiments Résidentiels",
+      "pt": "SEEG Combustão de Combustíveis em Edifícios Residenciais"
+    },
+    "priority": 1,
+    "reference_number": "I.1.1"
+  }
+]

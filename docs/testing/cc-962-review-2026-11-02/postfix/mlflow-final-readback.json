@@ -1,0 +1,244 @@
+{
+  "experimentId": "10",
+  "runCount": 43,
+  "statuses": {
+    "FINISHED": 43
+  },
+  "runs": [
+    {
+      "id": "af225f7eb42a41fa982902becbcf2694",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "d1f8e840ccd34f2ea4e1f5caf1e0ab3f",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "738ecafce4b044068a796cd90aae7c2c",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "e8b3cbd051a54626b70ebd8a1e0b85dc",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "e0e823114e0b4612a6b4f7e2747a31bb",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "fea2bd6be30f489dbd9fee8583b90c2d",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "b0afbb8ab4a845cebe370b483f719d61",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "b77a51e24d5646cdb90f7c4504aea468",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "b5e66a2b9b9748e5abbdb2d2e5c6c6a8",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "9462d6dd9e874270ae956c9051c83474",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "9054f31aa06246b4b21803ed4d8ee431",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "d6f198b94ca84f0490ecc37a417e1b7c",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "4aeeb1f558984edaad4313074dbbc5f3",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "c7af449398804590934026e7c8d8ed9e",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "f0cd2a71ba1f4f66be0a47b06c52a0c8",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "94e26c4078ac4357bfb3e4347e11a627",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "ca43589dd6c544baa0ea111b8f5f995b",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "a2bc4aa40e314227b1e9446f64fb7974",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "c1f27df0b80041aca483f30c251b3032",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "dc79ebc5743e4c7aaa6d120f4b7405fb",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "c2e3cf05a28d44ef94d681254f548c10",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "366a8642cbb74899ad3926e7d6007c32",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "cd0b8d4dd2c24ee89ca8ba42175dff81",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "786d04ffc20345a4a279eb63fd176513",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "baf089f1b9cd49b78d123dbf64955e3d",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "26b7130654c64a4eb75e9d21abc4efc7",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "0277adcc00024a0bbf485885ecf5a064",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "c5539e75caa24dbd84b52bb86c772b8e",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "e377b29e4d8e4e28a42a12b9cbb45dee",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "f05e3971371647ebbe546b86b53db4c4",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "121916f95f7f4094b6aa55c084aae183",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "ba000416a24f4fc795bafa82d855728d",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "f0062f6b8da848adb73d5825ffafedc2",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "8af6dd7a5fcd4145a640dad6b17c4a08",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "260a5ead4c45486fa9420a023d33d710",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "cdcfb546f4a848bb994225ec211a223e",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "b6a51f37210e43079889fb2bfcf26bc7",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "5ce1db036a2f41e5b4b4641f40e01f59",
+      "name": "stationary_energy_context_chat_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "25bc8b9c01bc4ffba6574739d41788fa",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "e820783083054ee98975f777518fd2b8",
+      "name": "stationary_energy_draft_generation_background",
+      "status": "FINISHED"
+    },
+    {
+      "id": "9176e9b6eafc409c89550be7734b567c",
+      "name": "stationary_energy_draft_start_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "833e187e32bf44caa4750b225d78a97b",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    },
+    {
+      "id": "e793e316af1c45edb53590ddd0b73484",
+      "name": "climate_advisor_message_request",
+      "status": "FINISHED"
+    }
+  ],
+  "artifactReadback": [
+    {
+      "runId": "b5e66a2b9b9748e5abbdb2d2e5c6c6a8",
+      "artifact": "chat/conversation_history.json",
+      "file": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\mlflow-model-context\\conversation_history.json",
+      "bytes": 179737,
+      "mentions2022": 39,
+      "mentionsCity": 111,
+      "mentionsExactKg": 1
+    },
+    {
+      "runId": "b5e66a2b9b9748e5abbdb2d2e5c6c6a8",
+      "artifact": "request/message_payload.json",
+      "file": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-provenance-postfix-20261102\\mlflow-model-context\\message_payload.json",
+      "bytes": 57914,
+      "mentions2022": 17,
+      "mentionsCity": 50,
+      "mentionsExactKg": 1
+    }
+  ]
+}

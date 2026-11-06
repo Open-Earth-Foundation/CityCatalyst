@@ -1,0 +1,275 @@
+{
+  "revision": "conditional-review-2026-11-02",
+  "executionDate": "2026-11-01",
+  "basis": "Original recordings, frozen provider/readback evidence and actual model-input MLflow trace snapshots. No conversation or LLM rerun.",
+  "judge": {
+    "original": "gpt-6.1-terra",
+    "revision": "Parent-agent evidence-based adjudication using the user-clarified scope; no new LLM-judge run."
+  },
+  "excluded": [
+    {
+      "id": "UA01",
+      "title": "Create a new inventory for 2025",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA01-r1",
+        "UA01-r2",
+        "UA01-r3"
+      ]
+    },
+    {
+      "id": "UA03",
+      "title": "Bring an Excel inventory into CityCatalyst",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA03-r1",
+        "UA03-r2",
+        "UA03-r3"
+      ]
+    },
+    {
+      "id": "UA04",
+      "title": "Use an emissions report in PDF",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA04-r1",
+        "UA04-r2",
+        "UA04-r3"
+      ]
+    },
+    {
+      "id": "UA05",
+      "title": "Paste a table: 1,200 + 800 tonnes",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA05-r1",
+        "UA05-r2",
+        "UA05-r3"
+      ]
+    }
+  ],
+  "scenarios": 11,
+  "trials": 33,
+  "userTurns": 109,
+  "textResponses": 107,
+  "emptyResponses": 2,
+  "responseTrials": {
+    "pass": 23,
+    "partial": 10
+  },
+  "goals": {
+    "achieved": 25,
+    "assisted": 8
+  },
+  "numeric": {
+    "correct": 39,
+    "total": 39,
+    "correctPercent": 100,
+    "optionalSaveRecapsExcluded": 3,
+    "meaning": "Fixed required exact-value checks; UI display truncation is an observation. Not overall model accuracy."
+  },
+  "classification": {
+    "correct": 60,
+    "incorrect": 15,
+    "total": 75,
+    "correctPercent": 80
+  },
+  "grounding": {
+    "meaning": "End-to-end factual issues including upstream metadata; not an LLM-only hallucination rate.",
+    "withdrawnFindings": [
+      "UC02-r2: upstream UI truncation, not established LLM arithmetic",
+      "UC03-r2: unit absent from actual current model context",
+      "UB05-r2: conditional advice with explicit occurrence verification; no NO applied"
+    ],
+    "confirmedErrorAnswers": 16,
+    "textResponseDenominator": 107,
+    "errorEntries": 22,
+    "origins": {
+      "model": 4,
+      "upstream_payload": 18
+    },
+    "unresolvedStatusFlagsExcluded": 5
+  },
+  "verifiedActions": {
+    "searchAfterConfirmation": {
+      "passed": 3,
+      "total": 3,
+      "readyProposalsEach": 21,
+      "inventoryWrites": 0
+    },
+    "singleRowSave": {
+      "passed": 3,
+      "total": 3,
+      "kgCO2e": 1117504701,
+      "otherRowsChanged": 0
+    },
+    "privateAccess": {
+      "passed": 3,
+      "total": 3,
+      "disclosures": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "UA02",
+      "title": "Continue an existing inventory",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UB01",
+      "title": "Total emissions and the largest sector",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UB02",
+      "title": "Compare the 2023 and 2024 inventories",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UB03",
+      "title": "Explain Scope 1 and Scope 2 in energy",
+      "answers": [
+        "partial",
+        "pass",
+        "partial"
+      ],
+      "tasks": [
+        "assisted",
+        "achieved",
+        "assisted"
+      ]
+    },
+    {
+      "id": "UB04",
+      "title": "Calculate emissions per resident",
+      "answers": [
+        "partial",
+        "pass",
+        "partial"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UB05",
+      "title": "Find gaps before handing over the inventory",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UC01",
+      "title": "Find energy data sources for the city",
+      "answers": [
+        "partial",
+        "partial",
+        "partial"
+      ],
+      "tasks": [
+        "assisted",
+        "assisted",
+        "assisted"
+      ]
+    },
+    {
+      "id": "UC02",
+      "title": "Explain where a proposed value comes from",
+      "answers": [
+        "partial",
+        "partial",
+        "partial"
+      ],
+      "tasks": [
+        "assisted",
+        "assisted",
+        "assisted"
+      ]
+    },
+    {
+      "id": "UC03",
+      "title": "Accept one proposal and save it",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UC04",
+      "title": "Cancel before the final save",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    },
+    {
+      "id": "UC05",
+      "title": "Ask about another city's private inventory",
+      "answers": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "tasks": [
+        "achieved",
+        "achieved",
+        "achieved"
+      ]
+    }
+  ],
+  "historical": {
+    "scenarios": 15,
+    "trials": 45,
+    "metricsFile": "final-metrics.json",
+    "judgmentsFile": "consolidated-judgments.json",
+    "changed": false
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "method": "Coverage-constrained selection, not a claim that the largest scalar scores alone win. Five dimensions 0-4: riskCoverage×3 + distinctiveness×2 + userRelevance + oracleClarity×3 + repeatability, max 40. No model quotas; candidates evaluated by coverage and evidence.",
+  "selected": [
+    {
+      "id": "SC01",
+      "candidateId": "SA02",
+      "title": "Granice czatu: PDF prowadzi do importu UI",
+      "reason": "Znany punkt wyjścia CC-962; jasny brak uploadu w czacie i bezpośredni kontrakt prawdziwego routingu."
+    },
+    {
+      "id": "SC02",
+      "candidateId": "SA04",
+      "title": "Wybór właściwego inventory, roku, typu i GWP",
+      "reason": "Chroni przed odczytem niewłaściwego inventory; skupiony scenariusz rozstrzygnięcia dwóch pasujących rekordów."
+    },
+    {
+      "id": "SC03",
+      "candidateId": "SS01",
+      "title": "Suma emisji i udział sektora: kg w narzędziu, t w odpowiedzi",
+      "reason": "Najdokładniejsze oracles liczbowe i jawne rozróżnienie formatu UI od kanonicznej wartości."
+    },
+    {
+      "id": "SC04",
+      "candidateId": "SO04",
+      "title": "Pre-run SE: start i kontynuacja prośby o SEEG",
+      "reason": "Kontrola rozwiązanej regresji CC-967 z dystraktorem i rozszerzeniem o prawidłowe oznaczenie promptu w śladzie."
+    },
+    {
+      "id": "SC05",
+      "candidateId": "SS03",
+      "title": "Skalowanie populacji: preview musi równać się commit",
+      "reason": "Potwierdzony P1, obejmuje cały kontrakt od surowego źródła do readbacku zapisu i Results."
+    },
+    {
+      "id": "SC06",
+      "candidateId": "SS05",
+      "title": "Puste records z poprawnym totals",
+      "reason": "Osobny potwierdzony błąd generowania fałszywej luki; nie dubluje skalowania."
+    },
+    {
+      "id": "SC07",
+      "candidateId": "SS06",
+      "title": "Wiele rekordów i masy gazów: pełny podgląd i zapis",
+      "reason": "Pokrywa utratę dalszych rekordów oraz masę CH4/CO2e; nie traktuje odrzuconego F07 jako oczekiwanego defektu."
+    },
+    {
+      "id": "SC08",
+      "candidateId": "SS07",
+      "title": "Różne sumy źródeł mimo identycznego pierwszego rekordu",
+      "reason": "Odrębna gałąź klasyfikacji konfliktu, potwierdzona dodatkową sondą rodzica."
+    },
+    {
+      "id": "SC09",
+      "candidateId": "SO07",
+      "title": "Cancel i tekst „potwierdzam” nie zastępują kliknięcia zapisu",
+      "reason": "Najostrzejsza próba granicy zgody, z osobnym readbackiem stagingu CA i produktu CC."
+    },
+    {
+      "id": "SC10",
+      "candidateId": "SS11",
+      "title": "Edycja współpracownika i nieudana zamiana źródła",
+      "reason": "Potwierdzony P1 utraty danych, dokładna bariera awarii i porównanie tożsamości całego grafu danych."
+    },
+    {
+      "id": "SC11",
+      "candidateId": "SO13",
+      "title": "Częściowy save i jedno bezpieczne ponowienie",
+      "reason": "Potwierdzona lokalnie orkiestracja F08; kontrola rozbieżności CA/CC oraz idempotencji retry."
+    },
+    {
+      "id": "SC12",
+      "candidateId": "SO14",
+      "title": "Restart generowania i single-flight retry",
+      "reason": "Jedyny kandydat restartu; zachowany mimo niższej punktacji dla niezastępowalnego pokrycia odzyskiwania."
+    },
+    {
+      "id": "SC13",
+      "candidateId": "SS10",
+      "title": "Cudze źródła inventory: odmowa czatu i endpointu",
+      "reason": "Potwierdzony P1 odczytu bez kontroli dostępu; rozdziela wynik modelu od wycieku w tool/API."
+    },
+    {
+      "id": "SC14",
+      "candidateId": "SO12",
+      "title": "PUBLIC_READER nie może otrzymać prawa zapisu",
+      "reason": "Nowa hipoteza autora potwierdzona przez rodzica w realnym PermissionService; dodano F16 i usunięto niezweryfikowaną opcjonalną trasę diagnostyczną."
+    },
+    {
+      "id": "SC15",
+      "candidateId": "SS15",
+      "title": "Cofnięcie dostępu przed finalnym zapisem",
+      "reason": "Sprawdza rzeczywistą granicę uprawnień po przygotowaniu karty, bez założenia fikcyjnej roli viewer."
+    }
+  ],
+  "alternatives": [
+    {
+      "candidateId": "SA01",
+      "status": "deferred",
+      "reason": "Tworzenie inventory z czatu to osobny niezaimplementowany zakres; w pierwszych 15 wybrano historyczny przypadek PDF i ważniejsze potwierdzone usterki."
+    },
+    {
+      "candidateId": "SA03",
+      "status": "deferred",
+      "reason": "Odczyt joba importu jest odrębnym dobrym przypadkiem, ale przegrał z potwierdzonymi P1 i pokryciem recovery; nie uznano go za wykonany ani w pełni pokryty PDF."
+    },
+    {
+      "candidateId": "SA05",
+      "status": "duplicate",
+      "reason": "SS01 ma dokładniejszy oracle jednostek i renderowania."
+    },
+    {
+      "candidateId": "SA06",
+      "status": "deferred",
+      "reason": "Przekierowanie z general chat do SE pozostaje w kolejnej puli; start na samej powierzchni SE pokrywa SO04."
+    },
+    {
+      "candidateId": "SA07",
+      "status": "duplicate",
+      "reason": "SO04 ma dokładny zbiór SEEG/non-SEEG oraz parentowy check tagu pre-run."
+    },
+    {
+      "candidateId": "SA08",
+      "status": "duplicate",
+      "reason": "SS03 rozszerza tę samą skalę o końcowy commit/readback."
+    },
+    {
+      "candidateId": "SA09",
+      "status": "duplicate",
+      "reason": "SS06 bada pełny wielorekordowy kontrakt oraz masę gazów. F07 został odrzucony po sprawdzeniu GET enrichment."
+    },
+    {
+      "candidateId": "SA10",
+      "status": "duplicate",
+      "reason": "SS05 ma literalne records=[] i dodatni total z kontrolą NE."
+    },
+    {
+      "candidateId": "SA11",
+      "status": "duplicate",
+      "reason": "SO07 mocniej testuje Cancel oraz wpisanie tekstu przycisku bez kliknięcia."
+    },
+    {
+      "candidateId": "SA12",
+      "status": "duplicate",
+      "reason": "SS11 daje precyzyjny trigger błędu i snapshot tożsamości starej wartości."
+    },
+    {
+      "candidateId": "SA13",
+      "status": "duplicate",
+      "reason": "SS10 ma precyzyjny negatywny kontrakt datasource i oracle warstwy API."
+    },
+    {
+      "candidateId": "SA14",
+      "status": "duplicate",
+      "reason": "SO13 izoluje awarię drugiej fazy i sprawdza bezpieczne retry."
+    },
+    {
+      "candidateId": "SA15",
+      "status": "covered-by-shared-check",
+      "reason": "Główna asercja promptu pre-run dodana do SO04; MLflow readback i korelacja są obowiązkowym protokołem wszystkich 15, nie udawanym wykonaniem tego przypadku."
+    },
+    {
+      "candidateId": "SS02",
+      "status": "duplicate",
+      "reason": "SA04 jest bardziej skupiony na jednym problemie wyboru inventory; szerszy Scope 2 pozostaje poza pierwszą pulą."
+    },
+    {
+      "candidateId": "SS04",
+      "status": "overlap",
+      "reason": "Fallback jednostek jest sprawdzany w SS03/SS05. Osobny test tego samego kontraktu ustępuje unikatowemu recovery."
+    },
+    {
+      "candidateId": "SS08",
+      "status": "deferred",
+      "reason": "Pozytywna zgodność pełnych źródeł przy innym rozkładzie aktywności to dodatkowa kontrola; SS07 pokrywa negatywny potwierdzony błąd, nie cały SS08."
+    },
+    {
+      "candidateId": "SS09",
+      "status": "duplicate",
+      "reason": "SO07 ostrzej bada ten sam brak zapisu po anulowaniu."
+    },
+    {
+      "candidateId": "SS12",
+      "status": "duplicate",
+      "reason": "SO13 zapewnia izolowany fault proxy i kontrolę retry/history."
+    },
+    {
+      "candidateId": "SS13",
+      "status": "overlap",
+      "reason": "SO04 pokrywa CC-967, a dodana asercja i wspólny protokół pokrywają tagowanie; nie potrzeba drugiego startu SEEG."
+    },
+    {
+      "candidateId": "SS14",
+      "status": "duplicate",
+      "reason": "SA02 zachowuje pierwotne zgłoszenie PDF; inny format bez uploadu w czacie nie poszerza istotnie tej granicy."
+    },
+    {
+      "candidateId": "SO01",
+      "status": "deferred",
+      "reason": "Brak zapisu z general chat pozostaje ważną próbą GE; aktualny toolset jest read-only, a SO07 bada bardziej ryzykowną powierzchnię z realnym zapisem."
+    },
+    {
+      "candidateId": "SO02",
+      "status": "duplicate",
+      "reason": "SS10 ma analogiczny negatywny test z czytelniejszym podziałem model/tool/HTTP."
+    },
+    {
+      "candidateId": "SO03",
+      "status": "duplicate",
+      "reason": "SS01 używa dokładniejszych progów i jawnego kontraktu prezentacji."
+    },
+    {
+      "candidateId": "SO05",
+      "status": "duplicate",
+      "reason": "SS03 ma bardziej szczegółowy seed populacji i końcowy odczyt wartości/gazów."
+    },
+    {
+      "candidateId": "SO06",
+      "status": "duplicate",
+      "reason": "SS06 rozszerza realny kształt records o masy gazów i wyraźny horyzont GWP."
+    },
+    {
+      "candidateId": "SO08",
+      "status": "overlap",
+      "reason": "Pozytywny zapis jest w SS03/SS06; retry/history w SO13. Oddzielny seryjny re-save pozostaje do późniejszego rozszerzenia."
+    },
+    {
+      "candidateId": "SO09",
+      "status": "deferred-hypothesis",
+      "reason": "Równoległe saves są nadal niepotwierdzoną hipotezą; ustępują nowo potwierdzonemu F16 oraz odtworzonym błędom danych. Zachowane w V03."
+    },
+    {
+      "candidateId": "SO10",
+      "status": "overlap",
+      "reason": "SS11 bada tę samą nieaktualność z ostrzejszym skutkiem awarii nowego źródła; udana zamiana bez nowej zgody może być kolejnym wariantem."
+    },
+    {
+      "candidateId": "SO11",
+      "status": "overlap",
+      "reason": "SS15 lepiej oddziela finalny commit po revoke od nieustalonej polityki zachowania starego snapshotu CA. Hipoteza odczytu pozostaje w V03."
+    },
+    {
+      "candidateId": "SO15",
+      "status": "covered-by-shared-check",
+      "reason": "Traceability jest obowiązkowym protokołem wszystkich prób i dodatkową asercją SO04. Pełny osobny audit join do history nie jest udawany; ograniczenie F13/V02 pozostaje."
+    }
+  ],
+  "parentAdjustments": [
+    {
+      "candidateId": "SO04",
+      "change": "Add atomic MLflow prompt_name=stationary_energy_review assertion for the pre-run turn; record ca_agentic_flow as diagnostic pending precise semantics. This replaces a separate pre-run-only tracing candidate without pretending it was run."
+    },
+    {
+      "candidateId": "SS06",
+      "change": "Remove F07 as an unresolved defect. The GET enrichment already produces a non-null value from gases[]; keep this as a positive control and test the still-broken full aggregation F06. GWP fixture is synthetic, not a claim about IPCC factors."
+    },
+    {
+      "candidateId": "SO12",
+      "change": "Add F16 after PermissionService local reproduction. Remove optional guessed PATCH value diagnostic step/assertion; keep real SE start/review/save route contract only. Increase userRelevance score from 2 to 4 due newly confirmed grant."
+    },
+    {
+      "candidateId": "SO14",
+      "change": "Allow either 409 or idempotent reuse on second retry if no second worker starts. Treat 10 min as an explicit harness observation window, not an existing product SLA."
+    },
+    {
+      "candidateId": "all",
+      "change": "Resolve symbolic candidate IDs through the real generated UUID mapping in the seed manifest; do not send literal SSxx-candidate-n as runtime IDs. The 45 originals remain unchanged."
+    }
+  ]
+}

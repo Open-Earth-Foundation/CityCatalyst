@@ -1,0 +1,1153 @@
+{
+  "at": "2026-11-02T01:35:57.842Z",
+  "anonymous": true,
+  "method": "GET with Range bytes=0-0; GitHub redirects are signed for GET, so HEAD is not an availability oracle",
+  "checked": 143,
+  "accessible": 143,
+  "results": [
+    {
+      "id": "ca/calibration-UC01-r1-before-consent/UC01-r1",
+      "url": "https://github.com/user-attachments/assets/a726e880-3aa0-4749-97fc-5c7e6d721c16",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2560142"
+    },
+    {
+      "id": "ca/calibration-UC01-r2-before-consent/UC01-r2",
+      "url": "https://github.com/user-attachments/assets/1426cd43-1932-4edf-80ad-57043846c8c8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2834708"
+    },
+    {
+      "id": "ca/calibration-UC01-r3-before-consent/UC01-r3",
+      "url": "https://github.com/user-attachments/assets/9078cd88-c30e-4c06-af2a-c358ed0f8e15",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2777277"
+    },
+    {
+      "id": "ca/UA01-r1/UA01-r1",
+      "url": "https://github.com/user-attachments/assets/78a04d80-85c8-474c-af4b-aa1bef74ea9d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2081776"
+    },
+    {
+      "id": "ca/UA01-r2/UA01-r2",
+      "url": "https://github.com/user-attachments/assets/7eaca87a-845e-4d63-82f9-c61f0152649c",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2234875"
+    },
+    {
+      "id": "ca/UA01-r3/UA01-r3",
+      "url": "https://github.com/user-attachments/assets/a2038649-e983-4d9e-ad36-c64cef42cb2b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2278979"
+    },
+    {
+      "id": "ca/UA02-r1/UA02-r1",
+      "url": "https://github.com/user-attachments/assets/d86cc3af-2a37-4628-a76e-d6510232c38c",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1424937"
+    },
+    {
+      "id": "ca/UA02-r2/UA02-r2",
+      "url": "https://github.com/user-attachments/assets/9f1b8f1a-3e4f-493d-99a8-e7b47cd77d72",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1626310"
+    },
+    {
+      "id": "ca/UA02-r3/UA02-r3",
+      "url": "https://github.com/user-attachments/assets/0143bc9b-b041-4292-b31f-14cbf191aa58",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1424996"
+    },
+    {
+      "id": "ca/UA03-r1/UA03-r1",
+      "url": "https://github.com/user-attachments/assets/12be3270-5d75-4fe8-9a81-11f1dec0a0da",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3935291"
+    },
+    {
+      "id": "ca/UA03-r2/UA03-r2",
+      "url": "https://github.com/user-attachments/assets/79002607-eb3b-47dc-ad5a-c577d3bc3577",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3630260"
+    },
+    {
+      "id": "ca/UA03-r3/UA03-r3",
+      "url": "https://github.com/user-attachments/assets/39fcc5ce-7a45-4af4-a103-cc58596b1e8a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3418786"
+    },
+    {
+      "id": "ca/UA04-r1/UA04-r1",
+      "url": "https://github.com/user-attachments/assets/cd928a50-bc50-4902-a587-4db8abca6a00",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3249137"
+    },
+    {
+      "id": "ca/UA04-r2/UA04-r2",
+      "url": "https://github.com/user-attachments/assets/c563fe6d-4b64-4348-b84b-2515295fdc09",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3178992"
+    },
+    {
+      "id": "ca/UA04-r3/UA04-r3",
+      "url": "https://github.com/user-attachments/assets/dc780ecc-d2ac-4f1a-a2cd-df638d5000cf",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3332298"
+    },
+    {
+      "id": "ca/UA05-r1/UA05-r1",
+      "url": "https://github.com/user-attachments/assets/bedb53c6-14c8-4083-89f9-1499bf4e24d6",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2254588"
+    },
+    {
+      "id": "ca/UA05-r2/UA05-r2",
+      "url": "https://github.com/user-attachments/assets/b1bcfedf-0a67-4981-8a9d-66d8aeca76e9",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2434653"
+    },
+    {
+      "id": "ca/UA05-r3/UA05-r3",
+      "url": "https://github.com/user-attachments/assets/1eb3622a-96a3-4491-a1c5-b231c788fc17",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2583311"
+    },
+    {
+      "id": "ca/UB01-r1/UB01-r1",
+      "url": "https://github.com/user-attachments/assets/f9a461b3-fc5a-441f-a3cf-fdf6affc09c8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1614329"
+    },
+    {
+      "id": "ca/UB01-r2/UB01-r2",
+      "url": "https://github.com/user-attachments/assets/09a2f747-3ebb-4911-8f10-1cb55f392bd4",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1503672"
+    },
+    {
+      "id": "ca/UB01-r3/UB01-r3",
+      "url": "https://github.com/user-attachments/assets/74cf9702-261f-419a-a66b-6877a1bf08f0",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1636069"
+    },
+    {
+      "id": "ca/UB02-r1/UB02-r1",
+      "url": "https://github.com/user-attachments/assets/93aeda0e-8a02-4a98-90f3-71e23f2ca2fb",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2165490"
+    },
+    {
+      "id": "ca/UB02-r2/UB02-r2",
+      "url": "https://github.com/user-attachments/assets/b1ef567f-acbc-4535-b3f8-51bf78cbcf7f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2260745"
+    },
+    {
+      "id": "ca/UB02-r3/UB02-r3",
+      "url": "https://github.com/user-attachments/assets/9b1d8927-5112-492e-b802-c2a1da4f1082",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2072689"
+    },
+    {
+      "id": "ca/UB03-r1/UB03-r1",
+      "url": "https://github.com/user-attachments/assets/65acbf12-eae3-4c89-87a1-b21841a98257",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1839648"
+    },
+    {
+      "id": "ca/UB03-r2/UB03-r2",
+      "url": "https://github.com/user-attachments/assets/c5b83e50-a67f-4d4f-b66b-aed571c17bf8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2071184"
+    },
+    {
+      "id": "ca/UB03-r3/UB03-r3",
+      "url": "https://github.com/user-attachments/assets/9eb1b824-e82d-4233-9cb8-3ef90094a5a5",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1965253"
+    },
+    {
+      "id": "ca/UB04-r1/UB04-r1",
+      "url": "https://github.com/user-attachments/assets/9438fd34-8312-4903-ac04-325ec87bdf22",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2495633"
+    },
+    {
+      "id": "ca/UB04-r2/UB04-r2",
+      "url": "https://github.com/user-attachments/assets/c9d6de26-975c-4499-9a51-7786627fe69a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2394006"
+    },
+    {
+      "id": "ca/UB04-r3/UB04-r3",
+      "url": "https://github.com/user-attachments/assets/6ecbfbbd-e15a-4b98-aeeb-18c192defedd",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2083849"
+    },
+    {
+      "id": "ca/UB05-r1/UB05-r1",
+      "url": "https://github.com/user-attachments/assets/4070f8e5-98d7-4fc4-a0a2-f9e829778999",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3734714"
+    },
+    {
+      "id": "ca/UB05-r2/UB05-r2",
+      "url": "https://github.com/user-attachments/assets/26fa62cc-260e-4531-aa9c-c9f95f10aafb",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4356185"
+    },
+    {
+      "id": "ca/UB05-r3/UB05-r3",
+      "url": "https://github.com/user-attachments/assets/dc70b5d3-12ea-4c6f-8540-703f151312c8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4128842"
+    },
+    {
+      "id": "ca/UC01-r1/UC01-r1",
+      "url": "https://github.com/user-attachments/assets/bb0044d6-7978-4890-aa44-798e72718196",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6199935"
+    },
+    {
+      "id": "ca/UC01-r2/UC01-r2",
+      "url": "https://github.com/user-attachments/assets/a2e4571d-20ba-48a9-91e2-fe9386db33ab",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5845101"
+    },
+    {
+      "id": "ca/UC01-r3/UC01-r3",
+      "url": "https://github.com/user-attachments/assets/1df35530-687f-4981-9872-2bde9170b4d2",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6762875"
+    },
+    {
+      "id": "ca/UC02-r1/UC02-r1",
+      "url": "https://github.com/user-attachments/assets/b1d7bf44-addd-4d63-9348-611fe9c8d159",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3284413"
+    },
+    {
+      "id": "ca/UC02-r2/UC02-r2",
+      "url": "https://github.com/user-attachments/assets/101a1e55-cb1a-4aba-8759-4f987683ce94",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3274645"
+    },
+    {
+      "id": "ca/UC02-r3/UC02-r3",
+      "url": "https://github.com/user-attachments/assets/8de26817-ea0e-4a32-9650-4bfe5f100d20",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2674135"
+    },
+    {
+      "id": "ca/UC03-r1-continuation/UC03-r1-continuation",
+      "url": "https://github.com/user-attachments/assets/6dd4c81d-9bd5-4af6-85e5-290cb8dc4004",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2910047"
+    },
+    {
+      "id": "ca/UC03-r1/UC03-r1",
+      "url": "https://github.com/user-attachments/assets/30d362af-4866-456e-9804-916b3b46cf38",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3345330"
+    },
+    {
+      "id": "ca/UC03-r1/UC03-r1-complete",
+      "url": "https://github.com/user-attachments/assets/01032ff5-573d-4895-9d0d-8cee204b51f8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6255327"
+    },
+    {
+      "id": "ca/UC03-r2/UC03-r2",
+      "url": "https://github.com/user-attachments/assets/9a0496dd-a8ac-4bb6-92aa-d16898f203f2",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4036920"
+    },
+    {
+      "id": "ca/UC03-r3/UC03-r3",
+      "url": "https://github.com/user-attachments/assets/9fd0c646-c703-4654-983b-7305ec8ab475",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4063050"
+    },
+    {
+      "id": "ca/UC04-r1-recovery/UC04-r1-recovery",
+      "url": "https://github.com/user-attachments/assets/3185adf3-d2a6-43c1-b22e-e23e464b5527",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2857050"
+    },
+    {
+      "id": "ca/UC04-r1/UC04-r1",
+      "url": "https://github.com/user-attachments/assets/718fc80f-8302-4456-908f-0a6d5f45a75e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5259587"
+    },
+    {
+      "id": "ca/UC04-r1/UC04-r1-complete",
+      "url": "https://github.com/user-attachments/assets/c8a2c9aa-b6ba-4551-b0d6-22aa40e2f755",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/8116841"
+    },
+    {
+      "id": "ca/UC04-r2-recovery/UC04-r2-recovery",
+      "url": "https://github.com/user-attachments/assets/cc5e96e0-ffe9-4290-9609-30eba527ea8b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3103615"
+    },
+    {
+      "id": "ca/UC04-r2/UC04-r2",
+      "url": "https://github.com/user-attachments/assets/0940870c-68dc-4594-a6bf-ea3214b450b3",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1733352"
+    },
+    {
+      "id": "ca/UC04-r2/UC04-r2-complete",
+      "url": "https://github.com/user-attachments/assets/a342574a-0f25-4415-b612-792d1298347e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4836864"
+    },
+    {
+      "id": "ca/UC04-r3-initial-availability/UC04-r3",
+      "url": "https://github.com/user-attachments/assets/71d4fcc3-c56d-45f9-9526-94408119538b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/164072"
+    },
+    {
+      "id": "ca/UC04-r3/UC04-r3",
+      "url": "https://github.com/user-attachments/assets/18167d37-3bbf-45eb-86de-74a626fe38c7",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3238335"
+    },
+    {
+      "id": "ca/UC05-r1/UC05-r1",
+      "url": "https://github.com/user-attachments/assets/48ef59f0-bfe7-4cb0-ab5c-51bd33c61956",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1599926"
+    },
+    {
+      "id": "ca/UC05-r2/UC05-r2",
+      "url": "https://github.com/user-attachments/assets/40d4d294-20a6-48ab-83ac-d4798a703904",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1724265"
+    },
+    {
+      "id": "ca/UC05-r3/UC05-r3",
+      "url": "https://github.com/user-attachments/assets/ac284308-1d73-4073-a3c6-0e27295daa74",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1445775"
+    },
+    {
+      "id": "postfix/UC01-r1/UC01-r1",
+      "url": "https://github.com/user-attachments/assets/d05d904e-0760-4bf2-b2fc-5bf95cba6377",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5316516"
+    },
+    {
+      "id": "postfix/UC01-r1/UC01-r1-continuation",
+      "url": "https://github.com/user-attachments/assets/dbf5f9e0-6a59-4e16-8346-e618a656e647",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1737798"
+    },
+    {
+      "id": "postfix/UC01-r2/UC01-r2",
+      "url": "https://github.com/user-attachments/assets/4c7fa2b4-4ac4-47a1-ac9d-d244ad185176",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6396255"
+    },
+    {
+      "id": "postfix/UC01-r3/UC01-r3",
+      "url": "https://github.com/user-attachments/assets/a66de374-6742-4bb8-ac13-e64a96b2ae52",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6512617"
+    },
+    {
+      "id": "postfix/UC01-r4/UC01-r4",
+      "url": "https://github.com/user-attachments/assets/63fb98fa-7805-4d31-abf8-ba45f58ca67c",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/7260061"
+    },
+    {
+      "id": "postfix/UC02-r1/UC02-r1",
+      "url": "https://github.com/user-attachments/assets/9c43835d-8d53-41ca-bd8a-e5b4696b886f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5277968"
+    },
+    {
+      "id": "postfix/UC02-r2/UC02-r2",
+      "url": "https://github.com/user-attachments/assets/48ce80c6-626f-45b1-bf96-39e214f9676e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4150555"
+    },
+    {
+      "id": "postfix/UC02-r3/UC02-r3",
+      "url": "https://github.com/user-attachments/assets/2e0b0c89-b7ab-43cc-b060-bf1f75b25226",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5476461"
+    },
+    {
+      "id": "technical/SC01-r1-results/SC01-r1",
+      "url": "https://github.com/user-attachments/assets/e654cac3-303c-4b9f-9b3c-624878264f1b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/239940"
+    },
+    {
+      "id": "technical/SC01-r1-take2/SC01-r1",
+      "url": "https://github.com/user-attachments/assets/ffbe8557-cbcf-4945-863a-32dde7d46488",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1340373"
+    },
+    {
+      "id": "technical/SC01-r1/SC01-r1",
+      "url": "https://github.com/user-attachments/assets/7b47d17c-2c73-489a-b2a9-67c38f454439",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/732814"
+    },
+    {
+      "id": "technical/SC01-r2-results/SC01-r2",
+      "url": "https://github.com/user-attachments/assets/22057e9f-06fc-4736-b2b1-d2b8e1a11394",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/243239"
+    },
+    {
+      "id": "technical/SC01-r2/SC01-r2",
+      "url": "https://github.com/user-attachments/assets/f58ecc8b-41b9-4804-b6b5-b83fa151c6b6",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1408249"
+    },
+    {
+      "id": "technical/SC01-r3-results/SC01-r3",
+      "url": "https://github.com/user-attachments/assets/084da330-fe93-497a-8517-bb903eaee9d1",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/256619"
+    },
+    {
+      "id": "technical/SC01-r3/SC01-r3",
+      "url": "https://github.com/user-attachments/assets/c2ff86fe-5b76-40ab-b737-d722d7aa30d6",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1570119"
+    },
+    {
+      "id": "technical/SC02-r1/SC02-r1",
+      "url": "https://github.com/user-attachments/assets/47f874af-a4dc-4fed-b243-8caa50763c91",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1460839"
+    },
+    {
+      "id": "technical/SC02-r2/SC02-r2",
+      "url": "https://github.com/user-attachments/assets/1f45d2e9-4177-4853-9fa5-cff669a1a4cd",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1516413"
+    },
+    {
+      "id": "technical/SC02-r3/SC02-r3",
+      "url": "https://github.com/user-attachments/assets/b1bb45e6-30ea-4732-86e0-7719e43fcaaf",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1400924"
+    },
+    {
+      "id": "technical/SC03-r1-results/SC03-r1",
+      "url": "https://github.com/user-attachments/assets/6d682eba-e6e9-49d0-a298-6b0047c377c5",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/290497"
+    },
+    {
+      "id": "technical/SC03-r1/SC03-r1",
+      "url": "https://github.com/user-attachments/assets/f1b06232-5ced-4771-9002-1bfe8fe37011",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/922099"
+    },
+    {
+      "id": "technical/SC03-r2-results/SC03-r2",
+      "url": "https://github.com/user-attachments/assets/2fadecd5-b34b-4a78-afc2-8d284f8c5378",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/319608"
+    },
+    {
+      "id": "technical/SC03-r2/SC03-r2",
+      "url": "https://github.com/user-attachments/assets/0138fa40-8f16-431d-9817-9fc70033bbfe",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1215329"
+    },
+    {
+      "id": "technical/SC03-r3-results/SC03-r3",
+      "url": "https://github.com/user-attachments/assets/c0475dea-cdb9-4219-a65f-473530212edd",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/272952"
+    },
+    {
+      "id": "technical/SC03-r3/SC03-r3",
+      "url": "https://github.com/user-attachments/assets/a9d70dfe-e30c-4483-8a8b-a50209e0b6f7",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1086426"
+    },
+    {
+      "id": "technical/SC04-r1-take2/SC04-r1",
+      "url": "https://github.com/user-attachments/assets/74ae3744-0977-485b-9874-4f30a1b722be",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3523744"
+    },
+    {
+      "id": "technical/SC04-r1/SC04-r1",
+      "url": "https://github.com/user-attachments/assets/2c8ddcc2-0bf1-44fd-bdd8-7976edd073ba",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/6043177"
+    },
+    {
+      "id": "technical/SC04-r2-take2/SC04-r2",
+      "url": "https://github.com/user-attachments/assets/22de6acf-3a6d-4e96-b056-41e3659560c7",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3391870"
+    },
+    {
+      "id": "technical/SC04-r2/SC04-r2",
+      "url": "https://github.com/user-attachments/assets/378e5483-6eee-46a0-9e14-79fd5ccf741d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4729373"
+    },
+    {
+      "id": "technical/SC04-r3-take2/SC04-r3",
+      "url": "https://github.com/user-attachments/assets/19f89de2-f859-4341-929a-72289782dd5e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2693122"
+    },
+    {
+      "id": "technical/SC04-r3/SC04-r3",
+      "url": "https://github.com/user-attachments/assets/935f2517-8413-4022-87e4-339c882464ab",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5689069"
+    },
+    {
+      "id": "technical/SC05-r1-results/SC05-r1",
+      "url": "https://github.com/user-attachments/assets/8e35c963-9cdd-44be-a1d6-103803450e9b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/232373"
+    },
+    {
+      "id": "technical/SC05-r1/SC05-r1",
+      "url": "https://github.com/user-attachments/assets/4c7ebb72-dfaa-47b2-ad70-257ad8d066a3",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3626381"
+    },
+    {
+      "id": "technical/SC05-r2-results/SC05-r2",
+      "url": "https://github.com/user-attachments/assets/96850b6e-ada3-4083-a94e-23a5eb705c2a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/267464"
+    },
+    {
+      "id": "technical/SC05-r2/SC05-r2",
+      "url": "https://github.com/user-attachments/assets/1f1a6e5d-372c-4575-8ac0-8fe95a005a7c",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4648828"
+    },
+    {
+      "id": "technical/SC05-r3-results/SC05-r3",
+      "url": "https://github.com/user-attachments/assets/39cd6160-bf1a-408d-bf69-d9cd24c0c745",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/317664"
+    },
+    {
+      "id": "technical/SC05-r3/SC05-r3",
+      "url": "https://github.com/user-attachments/assets/5a4a71e0-5d95-45f3-b956-8399283ef36c",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5190191"
+    },
+    {
+      "id": "technical/SC06-r1/SC06-r1",
+      "url": "https://github.com/user-attachments/assets/46aef48f-9765-4274-8764-c6835f6ad674",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4607176"
+    },
+    {
+      "id": "technical/SC06-r2/SC06-r2",
+      "url": "https://github.com/user-attachments/assets/e9c14f93-f9c6-4402-a98b-e44e7feb200b",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4018944"
+    },
+    {
+      "id": "technical/SC06-r3/SC06-r3",
+      "url": "https://github.com/user-attachments/assets/1b1b188a-408c-4d57-a589-5f2fb4187a44",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2076908"
+    },
+    {
+      "id": "technical/SC07-r1-results/SC07-r1",
+      "url": "https://github.com/user-attachments/assets/5aa5625e-00a9-4adc-8621-8607a34775f8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/313767"
+    },
+    {
+      "id": "technical/SC07-r1/SC07-r1",
+      "url": "https://github.com/user-attachments/assets/4d929b95-f8a5-4e84-ae6f-61c80f4c3d7f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3843580"
+    },
+    {
+      "id": "technical/SC07-r2-results/SC07-r2",
+      "url": "https://github.com/user-attachments/assets/75caaf1e-d061-4439-b1e5-e919008ec4c5",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/286323"
+    },
+    {
+      "id": "technical/SC07-r2/SC07-r2",
+      "url": "https://github.com/user-attachments/assets/3f547f65-21af-463c-b815-df21fe0d4ca9",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3645545"
+    },
+    {
+      "id": "technical/SC07-r3-results/SC07-r3",
+      "url": "https://github.com/user-attachments/assets/8e9e935c-141e-450a-bed4-0d9e63b8129a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/273725"
+    },
+    {
+      "id": "technical/SC07-r3/SC07-r3",
+      "url": "https://github.com/user-attachments/assets/d1eb2a94-743d-4f89-96c9-7e83168cc929",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3041479"
+    },
+    {
+      "id": "technical/SC08-r1/SC08-r1",
+      "url": "https://github.com/user-attachments/assets/516dbed8-b701-4c94-ae16-889ea196cc24",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1316829"
+    },
+    {
+      "id": "technical/SC08-r2/SC08-r2",
+      "url": "https://github.com/user-attachments/assets/2c4f611c-eb3c-4c6c-b6e1-c5add5380a02",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1647433"
+    },
+    {
+      "id": "technical/SC08-r3/SC08-r3",
+      "url": "https://github.com/user-attachments/assets/7e7ae283-030d-4b87-ae4f-34beec533412",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1670352"
+    },
+    {
+      "id": "technical/SC09-r1-take2/SC09-r1",
+      "url": "https://github.com/user-attachments/assets/7dafbf2b-1e64-4ce2-b6fe-9228fbf84d08",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3159843"
+    },
+    {
+      "id": "technical/SC09-r1/SC09-r1",
+      "url": "https://github.com/user-attachments/assets/4f568292-85c2-4396-9e81-b6b582f1a1f0",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2154901"
+    },
+    {
+      "id": "technical/SC09-r2-take2/SC09-r2",
+      "url": "https://github.com/user-attachments/assets/46ab89bc-ffbc-49ec-aa59-c8e82c0ed55a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3167735"
+    },
+    {
+      "id": "technical/SC09-r2/SC09-r2",
+      "url": "https://github.com/user-attachments/assets/4bd3c5d2-47d8-427d-b9bd-796e6c628eda",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2272025"
+    },
+    {
+      "id": "technical/SC09-r3-take2/SC09-r3",
+      "url": "https://github.com/user-attachments/assets/5ea45590-f61e-4fa4-a2d1-7a1321676f32",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3260673"
+    },
+    {
+      "id": "technical/SC09-r3/SC09-r3",
+      "url": "https://github.com/user-attachments/assets/fc469465-86e6-49b9-8da9-29099b20fb08",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1912125"
+    },
+    {
+      "id": "technical/SC10-r1-take2/SC10-r1",
+      "url": "https://github.com/user-attachments/assets/6b2c0098-9494-458e-b012-523c68d05ae2",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/5003223"
+    },
+    {
+      "id": "technical/SC10-r1/SC10-r1",
+      "url": "https://github.com/user-attachments/assets/21c2e875-176b-4dfc-9f8e-0ae9adc20ec8",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/10529581"
+    },
+    {
+      "id": "technical/SC10-r2-take2/SC10-r2",
+      "url": "https://github.com/user-attachments/assets/b94e60ae-0e91-4bfc-9cde-a7d20e8b577d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4772698"
+    },
+    {
+      "id": "technical/SC10-r2/SC10-r2",
+      "url": "https://github.com/user-attachments/assets/e6768727-e933-451f-8e9f-dc429f49aead",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/10460747"
+    },
+    {
+      "id": "technical/SC10-r3/SC10-r3",
+      "url": "https://github.com/user-attachments/assets/27de99d6-8339-47fa-8de7-8794a271ab4d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/4828477"
+    },
+    {
+      "id": "technical/SC11-r1-take2/SC11-r1",
+      "url": "https://github.com/user-attachments/assets/e849129e-2b68-4f97-9efc-e7dfae724cd5",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3486326"
+    },
+    {
+      "id": "technical/SC11-r1/SC11-r1",
+      "url": "https://github.com/user-attachments/assets/54631cdb-3842-4bd0-bef0-7478a6b53f57",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3890466"
+    },
+    {
+      "id": "technical/SC11-r2-take2/SC11-r2",
+      "url": "https://github.com/user-attachments/assets/0588cedb-c483-4cf7-87c8-b3fa1f010e7e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3330945"
+    },
+    {
+      "id": "technical/SC11-r2/SC11-r2",
+      "url": "https://github.com/user-attachments/assets/a9fc1abe-fcee-4ab7-a57f-491c7e47a554",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3944815"
+    },
+    {
+      "id": "technical/SC11-r3/SC11-r3",
+      "url": "https://github.com/user-attachments/assets/140bd5ea-3923-4807-87f0-74a431371c31",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3394003"
+    },
+    {
+      "id": "technical/SC12-r1-results/SC12-r1",
+      "url": "https://github.com/user-attachments/assets/f39b2892-00ae-466d-b45a-1520f6a39e6e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1157407"
+    },
+    {
+      "id": "technical/SC12-r1-take2/SC12-r1",
+      "url": "https://github.com/user-attachments/assets/e42260de-6420-4b06-978f-2525304a2965",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/15076625"
+    },
+    {
+      "id": "technical/SC12-r1/SC12-r1",
+      "url": "https://github.com/user-attachments/assets/1297bff8-0820-418d-9cb1-01e9ea8c29de",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/186983"
+    },
+    {
+      "id": "technical/SC12-r2-results/SC12-r2",
+      "url": "https://github.com/user-attachments/assets/5006263f-1982-4080-9fee-1a31bff6dc1f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1175091"
+    },
+    {
+      "id": "technical/SC12-r2-take2/SC12-r2",
+      "url": "https://github.com/user-attachments/assets/c913f595-416e-4cf9-8d88-7f1962eaf344",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/12612974"
+    },
+    {
+      "id": "technical/SC12-r2/SC12-r2",
+      "url": "https://github.com/user-attachments/assets/5cde5827-b4a6-4e35-bedd-39e09742450f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/179298"
+    },
+    {
+      "id": "technical/SC12-r3-results/SC12-r3",
+      "url": "https://github.com/user-attachments/assets/36f45c45-ec4e-4df9-b830-3449fe20ad5a",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1154422"
+    },
+    {
+      "id": "technical/SC12-r3-take2/SC12-r3",
+      "url": "https://github.com/user-attachments/assets/fc2235ff-5cd6-4060-b0fe-9a60d6f0749d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/12475076"
+    },
+    {
+      "id": "technical/SC12-r3/SC12-r3",
+      "url": "https://github.com/user-attachments/assets/0cdfc335-46f9-48c3-b79a-0b639aaff81d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/188487"
+    },
+    {
+      "id": "technical/SC13-r1-take2/SC13-r1",
+      "url": "https://github.com/user-attachments/assets/264efa75-8ee7-4b64-aa16-66bacdf29ea3",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1186008"
+    },
+    {
+      "id": "technical/SC13-r1/SC13-r1",
+      "url": "https://github.com/user-attachments/assets/42e77519-0086-478a-bb04-346d3dc5b033",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1536550"
+    },
+    {
+      "id": "technical/SC13-r2-take2/SC13-r2",
+      "url": "https://github.com/user-attachments/assets/cc7cd0e3-187c-434e-a645-183e79831b18",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/987405"
+    },
+    {
+      "id": "technical/SC13-r2/SC13-r2",
+      "url": "https://github.com/user-attachments/assets/cfca2d5c-3497-46bd-8b48-23f3fd375072",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1270879"
+    },
+    {
+      "id": "technical/SC13-r3-take2/SC13-r3",
+      "url": "https://github.com/user-attachments/assets/81819a50-5ec8-4c41-accd-baf2bd4abcca",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/946474"
+    },
+    {
+      "id": "technical/SC13-r3/SC13-r3",
+      "url": "https://github.com/user-attachments/assets/1acf6292-e5f2-4c14-a9be-906a4a11b0af",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1519448"
+    },
+    {
+      "id": "technical/SC14-r1-take2/SC14-r1",
+      "url": "https://github.com/user-attachments/assets/415c3515-f313-4390-891d-059f6eacfccf",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/966640"
+    },
+    {
+      "id": "technical/SC14-r1/SC14-r1",
+      "url": "https://github.com/user-attachments/assets/26b41dc6-e44d-48d8-bcb6-98ad1fb5926d",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/1163947"
+    },
+    {
+      "id": "technical/SC14-r2-take2/SC14-r2",
+      "url": "https://github.com/user-attachments/assets/22761914-52a0-45ae-9b7c-16003fd1c75e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/967531"
+    },
+    {
+      "id": "technical/SC14-r2/SC14-r2",
+      "url": "https://github.com/user-attachments/assets/4f77f826-6352-44bf-bf61-4a49707e838f",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/723797"
+    },
+    {
+      "id": "technical/SC14-r3-take2/SC14-r3",
+      "url": "https://github.com/user-attachments/assets/01ec0a75-4fbf-4e92-a60e-7a8183311de4",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/769499"
+    },
+    {
+      "id": "technical/SC14-r3/SC14-r3",
+      "url": "https://github.com/user-attachments/assets/3a5e5761-6d24-4dbb-bb51-463a2b477275",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/684937"
+    },
+    {
+      "id": "technical/SC15-r1/SC15-r1",
+      "url": "https://github.com/user-attachments/assets/86135065-4312-43fc-9978-3fe67d3e786e",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3306707"
+    },
+    {
+      "id": "technical/SC15-r2/SC15-r2",
+      "url": "https://github.com/user-attachments/assets/924a9de6-9e4d-4c7b-90cf-59ab4ec6d2cf",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/3136711"
+    },
+    {
+      "id": "technical/SC15-r3/SC15-r3",
+      "url": "https://github.com/user-attachments/assets/23ba0abf-9c61-467d-bf8e-970f999f1605",
+      "status": 206,
+      "contentType": "video/mp4",
+      "contentLength": "1",
+      "contentRange": "bytes 0-0/2886947"
+    }
+  ]
+}

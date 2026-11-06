@@ -1,0 +1,323 @@
+{
+  "group": "analysis",
+  "sourceLanguage": "pl",
+  "language": "en",
+  "translation": true,
+  "trials": [
+    {
+      "key": "UB01-r1",
+      "assessmentSummary": "Correct figures and sector; the limitation was communicated separately from the ready-to-use text containing the figures.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "I am preparing a short briefing for my supervisor. What are the emissions in our inventory for 2024, and which sector has the largest share?",
+          "assistant": "In the inventory for 2024, total emissions are **1 800 000 tCO₂e**.\n\nThe **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of total emissions.  \nFor comparison: transport accounts for 33,3%, and waste for 16,7%."
+        },
+        {
+          "turn": 2,
+          "user": "Can you give the size of that sector and turn this into two sentences for the note?",
+          "assistant": "The stationary energy sector emitted **900 000 tCO₂e**, which represents **50%** of total emissions in the inventory for 2024.  \n\nTotal emissions were **1 800 000 tCO₂e**, and stationary energy was the largest emissions sector."
+        },
+        {
+          "turn": 3,
+          "user": "Can I write that this is a complete picture of the city's emissions?",
+          "assistant": "Not quite. The inventory includes data for stationary energy, transport and waste, but the **IPPU** and **AFOLU** sectors have no data filled in.  \n\nYou can write: “The results presented cover the emissions included in the inventory for 2024; they do not yet constitute a complete picture of the city's emissions, because data for the IPPU and AFOLU sectors are missing.”"
+        }
+      ]
+    },
+    {
+      "key": "UB01-r2",
+      "assessmentSummary": "Correct figures and sector; the limitation was communicated separately from the ready-to-use text containing the figures.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "I am preparing a short briefing for my supervisor. What are the emissions in our inventory for 2024, and which sector has the largest share?",
+          "assistant": "In the inventory for 2024 for Brzeg Nadziei, total emissions are **1 800 000 tCO₂e**.\n\nThe **stationary energy** sector has the largest share: **900 000 tCO₂e (50%)**.  \nThe next sectors are transport: 600 000 tCO₂e (33,3%) and waste: 300 000 tCO₂e (16,7%)."
+        },
+        {
+          "turn": 2,
+          "user": "Can you give the size of that sector and turn this into two sentences for the note?",
+          "assistant": "Total emissions in the inventory for 2024 are **1 800 000 tCO₂e**. The stationary energy sector has the largest share, accounting for **900 000 tCO₂e**, or **50%** of all emissions."
+        },
+        {
+          "turn": 3,
+          "user": "Can I write that this is a complete picture of the city's emissions?",
+          "assistant": "Not fully. The inventory includes emissions from stationary energy, transport and waste, but the **IPPU** and **AFOLU** sectors have no data filled in.\n\nIt is safer to write: “The results presented show emissions in the sectors included in the inventory for 2024; they do not cover sectors for which no data have been collected.”"
+        }
+      ]
+    },
+    {
+      "key": "UB01-r3",
+      "assessmentSummary": "Correct figures and sector; the limitation was communicated separately from the ready-to-use text containing the figures.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "I am preparing a short briefing for my supervisor. What are the emissions in our inventory for 2024, and which sector has the largest share?",
+          "assistant": "In the inventory for 2024, total emissions are **1 800 000 tCO₂e**.\n\nThe **stationary energy** sector has the largest share: **900 000 tCO₂e**, or **50%** of all emissions.  \nFor comparison: transport accounts for 33,3%, and waste for 16,7%."
+        },
+        {
+          "turn": 2,
+          "user": "Can you give the size of that sector and turn this into two sentences for the note?",
+          "assistant": "The largest sector, stationary energy, accounts for **900 000 tCO₂e**.\n\n**For the note:** “Total emissions in the inventory for 2024 are 1,8 million tCO₂e. The stationary energy sector has the largest share — 900 thousand tCO₂e, or 50% of total emissions.”"
+        },
+        {
+          "turn": 3,
+          "user": "Can I write that this is a complete picture of the city's emissions?",
+          "assistant": "Not directly. It is safer to write that this is a **picture of the emissions included in the inventory for 2024** — because the IPPU and AFOLU sectors have no data filled in.\n\nSuggested wording:  \n“The inventory for 2024 presents emissions recorded for the stationary energy, transport and waste sectors, with a total of 1,8 million tCO₂e.”"
+        }
+      ]
+    },
+    {
+      "key": "UB02-r1",
+      "assessmentSummary": "The numerical comparison and distinction regarding the cause are correct; r1 has an overly general ready-to-use quotation.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "My supervisor is asking how our city's emissions changed between the 2023 and 2024 inventories. Can you compare them?",
+          "assistant": "Yes. For **Brzeg Nadziei**, total emissions increased from **1,50 MtCO₂e in 2023** to **1,80 MtCO₂e in 2024** — that is, by **0,30 MtCO₂e (300 thousand tCO₂e), +20%**.\n\n| Sector | 2023 | 2024 | Change |\n|---|---:|---:|---:|\n| Stationary energy | 0,75 MtCO₂e | 0,90 MtCO₂e | +0,15 MtCO₂e |\n| Transport | 0,50 MtCO₂e | 0,60 MtCO₂e | +0,10 MtCO₂e |\n| Waste | 0,25 MtCO₂e | 0,30 MtCO₂e | +0,05 MtCO₂e |\n\nThe emissions structure did not change: stationary energy accounted for **50%**, transport **33,3%**, and waste **16,7%** in both years. The largest sources in 2024 were emissions from residential buildings (scope 1: 0,60 MtCO₂e) and road transport (0,60 MtCO₂e).\n\nImportant caveat: both sets of figures have the same coverage and GWP factors (GPC Basic+, AR6), and the data were entered manually or imported. IPPU and AFOLU have no data filled in for either of these years."
+        },
+        {
+          "turn": 2,
+          "user": "By how much did this change in tonnes and as a percentage relative to 2023?",
+          "assistant": "Emissions increased by **300 000 tCO₂e** — from **1 500 000 tCO₂e in 2023** to **1 800 000 tCO₂e in 2024**.\n\nThis means an increase of **20% relative to 2023**.  \n\\[\n\\frac{1{,}800{,}000 - 1{,}500{,}000}{1{,}500{,}000} \\times 100\\% = 20\\%\n\\]"
+        },
+        {
+          "turn": 3,
+          "user": "Can I conclude from this that residents used more energy? What should I mention in the note?",
+          "assistant": "No — emissions alone do not allow you to conclude unequivocally that residents used more energy.\n\nYou can, however, write that **emissions from stationary energy increased by 150 000 tCO₂e** (from 750 000 to 900 000 tCO₂e, or by **20%**). Among the largest sources, emissions associated with residential buildings increased:\n- scope 1: from 500 000 to 600 000 tCO₂e,\n- scope 2: from 250 000 to 300 000 tCO₂e.\n\n**Suggested wording for the note:**\n\n> Between 2023 and 2024, the city's total emissions increased by 300 000 tCO₂e (+20%). Emissions from stationary energy increased by 150 000 tCO₂e (+20%), including an increase in emissions attributed to residential buildings. This result may indicate greater energy consumption, but does not confirm it unequivocally. The change may also have been influenced by, among other things, the fuel mix, electricity emission factors, weather conditions, the number of consumers or data completeness.\n\nIt is worth adding that both years have the same inventory coverage (GPC Basic+, AR6), but the sector data were entered manually or imported. To confirm an increase in energy consumption, electricity, gas and fuel consumption data would need to be compared — preferably also per capita and taking heating degree days into account."
+        }
+      ]
+    },
+    {
+      "key": "UB02-r2",
+      "assessmentSummary": "Correct comparison between years and cautious interpretation.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "My supervisor is asking how our city's emissions changed between the 2023 and 2024 inventories. Can you compare them?",
+          "assistant": "I compared the inventories for Brzeg Nadziei for 2023 and 2024 (both: GPC Basic+ with AR6 GWP values).\n\n**Total emissions increased from 1,50 million tCO₂e in 2023 to 1,80 million tCO₂e in 2024.**  \nThis is an increase of **300 thousand tCO₂e**, or **20%**.\n\n| Sector | 2023 | 2024 | Change |\n|---|---:|---:|---:|\n| Stationary energy | 750 thousand tCO₂e | 900 thousand tCO₂e | +150 thousand tCO₂e (+20%) |\n| Transport | 500 thousand tCO₂e | 600 thousand tCO₂e | +100 thousand tCO₂e (+20%) |\n| Waste | 250 thousand tCO₂e | 300 thousand tCO₂e | +50 thousand tCO₂e (+20%) |\n\nThe emissions structure did not change: stationary energy still accounts for **50%** of the total, transport **33,3%**, and waste **16,7%**. The largest individual sources in 2024 were emissions from residential buildings (scope 1) and road transport — **600 thousand tCO₂e** each.\n\nIt is worth noting that in both years the data were entered manually or imported; the IPPU and AFOLU sectors have no data filled in."
+        },
+        {
+          "turn": 2,
+          "user": "By how much did this change in tonnes and as a percentage relative to 2023?",
+          "assistant": "Total emissions increased by **300 000 tCO₂e** — from **1 500 000 tCO₂e** in 2023 to **1 800 000 tCO₂e** in 2024.\n\nThis means an increase of **20% relative to 2023**.\n\nThe increase was also 20% in each sector:\n- **Stationary energy:** +150 000 tCO₂e\n- **Transport:** +100 000 tCO₂e\n- **Waste:** +50 000 tCO₂e"
+        },
+        {
+          "turn": 3,
+          "user": "Can I conclude from this that residents used more energy? What should I mention in the note?",
+          "assistant": "Not directly. Based on these data, you can state that **reported emissions from stationary energy increased by 150 000 tCO₂e (20%)** — from 750 000 to 900 000 tCO₂e.\n\nHowever, it is not safe to state that residents definitely used more energy. The increase in emissions may result from, among other things:\n- greater energy consumption,\n- a change in fuels or the emissions intensity of electricity,\n- changes in data coverage, calculation method or data quality,\n- an increase in the number of residents or heated floor area.\n\n**Suggested wording for the note:**\n\n> Between the 2023 and 2024 inventories, the city's total emissions increased by 300 000 tCO₂e, i.e. by 20%. Emissions in the stationary energy sector increased by 150 000 tCO₂e (20%) and remained the largest emissions category. This result indicates an increase in reported energy-related emissions, but does not in itself allow a definitive conclusion that residents' energy consumption increased. Data on fuel and electricity consumption, the number of consumers and the emission factors used are needed to confirm the reasons for the change.\n\nIt is also worth noting a limitation of the comparison: both inventories have the same **GPC Basic+** coverage and **AR6** factors, but the data were entered manually or imported, and the IPPU and AFOLU sectors remain unfilled."
+        }
+      ]
+    },
+    {
+      "key": "UB02-r3",
+      "assessmentSummary": "Correct comparison between years and cautious interpretation.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "My supervisor is asking how our city's emissions changed between the 2023 and 2024 inventories. Can you compare them?",
+          "assistant": "I compared the inventories for Brzeg Nadziei for 2023 and 2024 (both GPC Basic+ and AR6 GWP factors).\n\n**Total emissions increased from 1,5 million tCO₂e to 1,8 million tCO₂e** — by **300 thousand tCO₂e**, or **20%**.\n\n| Sector | 2023 | 2024 | Change |\n|---|---:|---:|---:|\n| Stationary energy | 750 thousand tCO₂e | 900 thousand tCO₂e | +150 thousand tCO₂e (+20%) |\n| Transport | 500 thousand tCO₂e | 600 thousand tCO₂e | +100 thousand tCO₂e (+20%) |\n| Waste | 250 thousand tCO₂e | 300 thousand tCO₂e | +50 thousand tCO₂e (+20%) |\n\nThe emissions structure remained the same: stationary energy accounts for **50%**, transport for **33,3%**, and waste for **16,7%** of total emissions. The largest items in 2024 were emissions from residential buildings (scope 1: 600 thousand tCO₂e; scope 2: 300 thousand tCO₂e) and road transport (600 thousand tCO₂e).\n\nIt is worth noting that in both years the data were entered manually or uploaded, and the IPPU and AFOLU sectors have no data filled in."
+        },
+        {
+          "turn": 2,
+          "user": "By how much did this change in tonnes and as a percentage relative to 2023?",
+          "assistant": "Total emissions **increased by 300 000 tCO₂e**, from 1 500 000 tCO₂e in 2023 to 1 800 000 tCO₂e in 2024.\n\nThis means an increase of **20% relative to 2023**."
+        },
+        {
+          "turn": 3,
+          "user": "Can I conclude from this that residents used more energy? What should I mention in the note?",
+          "assistant": "Not directly. Based on these data, you can state that **emissions attributed to stationary energy increased by 150 000 tCO₂e (20%)**. In particular, emissions from residential buildings increased:\n\n- **scope 1:** by 100 000 tCO₂e (from 500 000 to 600 000),\n- **scope 2:** by 50 000 tCO₂e (from 250 000 to 300 000).\n\nThis **may** indicate greater energy or fuel consumption by residents, but the emissions inventory alone does not confirm this. The increase may also result from, among other things, changes in electricity or fuel emission factors, data coverage, methodology or reporting completeness.\n\n**Suggested wording for the note:**\n\n> Between 2023 and 2024, emissions from stationary energy increased by 150 thousand tCO₂e, i.e. by 20%. The increase primarily concerns residential buildings, both direct emissions (scope 1) and indirect emissions associated with purchased electricity (scope 2). However, the result alone does not allow a definitive conclusion that residents' energy consumption increased. It requires verification of fuel and energy consumption data, emission factors and the comparability of the methodology between years.\n\nIt is also worth noting that both sets of data were entered manually or uploaded, and the IPPU and AFOLU sectors are not filled in."
+        }
+      ]
+    },
+    {
+      "key": "UB03-r1",
+      "assessmentSummary": "The figures and sum are correct; misleading description of completeness.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "In the results for 2024, I want to understand stationary energy better. How much falls under scope 1, and how much under scope 2?",
+          "assistant": "In the inventory for 2024, stationary energy totals **900 000 tCO₂e** (50% of the city's total emissions):\n\n- **Scope 1:** **600 000 tCO₂e**\n- **Scope 2:** **300 000 tCO₂e**\n\nBoth values primarily concern residential buildings. Scope 1 is therefore twice as large as scope 2."
+        },
+        {
+          "turn": 2,
+          "user": "How can I explain the difference between these scopes to my supervisor in plain language?",
+          "assistant": "Most simply:\n\n- **Scope 1** means emissions generated **directly on site** — for example, when residents heat their homes with gas, coal or heating oil. In stationary energy, this is **600 thousand tCO₂e**.\n- **Scope 2** means emissions associated with **purchased electricity or heat**, which are generated elsewhere but consumed in the city. This is **300 thousand tCO₂e**.\n\nYou can tell your supervisor:\n\n> “In scope 1, we count fuel combustion in buildings, for example in furnaces and boilers. In scope 2, we count emissions from the production of electricity or heat purchased by residents and businesses. Scope 1 therefore shows local fuel combustion, and scope 2 — the emissions footprint of energy supplied from outside.”\n\nIn the results for 2024, **scope 1** is the bigger problem — it is twice as high as scope 2."
+        },
+        {
+          "turn": 3,
+          "user": "Do these figures add up to the entire energy result, and does that mean we are not missing any data there?",
+          "assistant": "Yes — for stationary energy, these two values add up to the reported result:\n\n- Scope 1: **600 thousand tCO₂e**\n- Scope 2: **300 thousand tCO₂e**\n- **Total: 900 thousand tCO₂e**\n\nThis corresponds to the entire result for the stationary energy sector in the 2024 inventory.\n\nHowever, this does not allow an unequivocal conclusion that no source data are missing in this sector. In the inventory summary, stationary energy is filled in, and the missing sectors are indicated elsewhere: **IPPU and AFOLU**. The stationary energy values come from data entered manually or uploaded, so their completeness depends on the coverage of those data."
+        }
+      ]
+    },
+    {
+      "key": "UB03-r2",
+      "assessmentSummary": "The figures and sum are correct; the status percentage conflicts with the UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "In the results for 2024, I want to understand stationary energy better. How much falls under scope 1, and how much under scope 2?",
+          "assistant": "For the inventory for 2024, stationary energy totals **900 000 tCO₂e** (50% of the city's total emissions).\n\n- **Scope 1:** **600 000 tCO₂e** — 66,7% of stationary energy emissions  \n- **Scope 2:** **300 000 tCO₂e** — 33,3% of stationary energy emissions  \n\nThe visible emissions in both scopes primarily concern residential buildings."
+        },
+        {
+          "turn": 2,
+          "user": "How can I explain the difference between these scopes to my supervisor in plain language?",
+          "assistant": "Most simply:\n\n- **Scope 1** means emissions generated **directly on site** — for example, when residents burn gas, coal or heating oil to heat buildings.\n- **Scope 2** means emissions associated with **energy purchased from outside**, mainly electricity and district heat. The emissions physically occur at a power plant or heating plant, but are attributed to the consumers of that energy.\n\nYou can tell your supervisor:\n\n> “In stationary energy, scope 1 shows emissions from fuels burned directly in buildings, and scope 2 — emissions associated with purchased electricity and heat. In 2024, the larger share of stationary energy emissions came from fuel combustion on site: 600 thousand tCO₂e, compared with 300 thousand tCO₂e from purchased energy.”"
+        },
+        {
+          "turn": 3,
+          "user": "Do these figures add up to the entire energy result, and does that mean we are not missing any data there?",
+          "assistant": "Yes — **600 thousand tCO₂e in scope 1 + 300 thousand tCO₂e in scope 2 = 900 thousand tCO₂e**, which is the entire currently reported result for stationary energy.\n\nHowever, this does not mean the sector is complete. In stationary energy, **2 of 21 required data items** have been filled in (approx. **10%**); **19 items remain missing**. The current result is based on data entered manually or uploaded, concerning residential buildings.\n\nYou can therefore say: *“Scopes 1 and 2 add up to the entire result we currently have in the system, but not to a complete picture of stationary energy — the missing categories still need to be filled in.”*"
+        }
+      ]
+    },
+    {
+      "key": "UB03-r3",
+      "assessmentSummary": "The figures and sum are correct; unjustified narrowing of the energy carrier and a status percentage that conflicts with the UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "In the results for 2024, I want to understand stationary energy better. How much falls under scope 1, and how much under scope 2?",
+          "assistant": "In the inventory for 2024, stationary energy totals **900 000 tCO₂e** (50% of the city's total emissions):\n\n- **Scope 1:** **600 000 tCO₂e** — **66,7%** of stationary energy emissions  \n- **Scope 2:** **300 000 tCO₂e** — **33,3%** of stationary energy emissions  \n\nBoth values primarily concern residential buildings."
+        },
+        {
+          "turn": 2,
+          "user": "How can I explain the difference between these scopes to my supervisor in plain language?",
+          "assistant": "Most simply:\n\n- **Scope 1** means emissions generated **on site**, for example when gas, coal or heating oil is burned in buildings for heating and hot water.  \n- **Scope 2** means emissions associated with **energy purchased from outside** — mainly electricity (and sometimes also purchased heat or cooling). The emissions physically occur at the energy producer, but we attribute them to the consumer who uses that energy.\n\nYou can tell your supervisor:\n\n> “In stationary energy, scope 1 shows fuels burned directly in buildings, and scope 2 — emissions associated with electricity and other energy that buildings purchase. In 2024, about two thirds of these emissions came from fuel combustion on site, and one third from purchased electricity.”\n\nIn figures: **600 thousand tCO₂e in scope 1** and **300 thousand tCO₂e in scope 2**."
+        },
+        {
+          "turn": 3,
+          "user": "Do these figures add up to the entire energy result, and does that mean we are not missing any data there?",
+          "assistant": "Yes — **600 thousand tCO₂e (scope 1) + 300 thousand tCO₂e (scope 2) = 900 thousand tCO₂e**, which is the entire currently reported result for the stationary energy sector.\n\nHowever, this does not mean the sector is complete. For stationary energy, **2 of 21 required data items** have been filled in (about **10%**), and **19 items are still missing**. These two entered items are data added manually or imported.\n\nSo: the sum of the scopes matches the current sector result, but the result may change once the missing categories are filled in."
+        }
+      ]
+    },
+    {
+      "key": "UB04-r1",
+      "assessmentSummary": "18 and 15 t/person are correct; the first response incorrectly claims that population is not in the product data.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "For the note, I need emissions per resident for 2024, with the unit. Can you calculate this and tell me which data you are using?",
+          "assistant": "For the inventory **Brzeg Nadziei (test), 2024**, total emissions are **1 800 000 000 kg CO₂e**, or **1 800 000 t CO₂e**.\n\nTo calculate emissions per resident, I still lack the **number of residents in 2024**. The formula is as follows:\n\n**per capita emissions = 1 800 000 t CO₂e ÷ number of residents**  \nResult: **t CO₂e/resident/year**.\n\nI am using:\n- total emissions from the GPC Basic+ inventory for 2024 (GWP: AR6),\n- data entered manually or uploaded to the inventory,\n- the population for 2024 — I need this from you, because it is not available in the inventory data.\n\nNote: the inventory is currently 8% filled in (4 of 48 required items), so the indicator will be based on an incomplete dataset. Provide the number of residents, and I will calculate the exact value."
+        },
+        {
+          "turn": 2,
+          "user": "In the city data, I have 100 thousand residents. Can you recalculate the result using this number and show the calculation?",
+          "assistant": "Yes.\n\n**Calculation:**\n\n- Total emissions in 2024: **1 800 000 000 kg CO₂e**\n- Number of residents: **100 000**\n\n\\[\n\\frac{1\\,800\\,000\\,000\\ \\text{kg CO₂e}}{100\\,000\\ \\text{residents}}\n= 18\\,000\\ \\text{kg CO₂e/resident/year}\n\\]\n\nthat is:\n\n\\[\n\\mathbf{18\\ t\\ CO₂e/resident/year}\n\\]\n\n**Result for the note:** in 2024, emissions were **18 t CO₂e per resident per year**.\n\nData used: total emissions from the GPC Basic+ inventory for 2024 (GWP AR6) and the number of **100 000 residents** you provided. Bear in mind that the inventory is currently 8% filled in, so the indicator refers to emissions reported so far."
+        },
+        {
+          "turn": 3,
+          "user": "And what was this indicator in 2023 with the same number of residents? Can I treat it as the complete result for the city?",
+          "assistant": "For 2023, total emissions are **1 500 000 000 kg CO₂e** (or **1 500 000 t CO₂e**).\n\nWith the same number of **100 000 residents**:\n\n\\[\n\\frac{1\\,500\\,000\\,000\\ \\text{kg CO₂e}}{100\\,000\\ \\text{residents}}\n= 15\\,000\\ \\text{kg CO₂e/resident/year}\n\\]\n\nthat is **15 t CO₂e/resident/year**.\n\nHowever, this should not be treated as the complete result for the city. The inventory for 2023 is only **8%** filled in: 4 of 48 required items have been completed. It currently includes some emissions from:\n- stationary energy,\n- transport,\n- waste,\n\nwhile the **IPPU** and **AFOLU** sectors have no data entered, and many items are also missing in the sectors above.\n\nIt is best to describe this indicator as a **preliminary result based on the data currently entered**, rather than the city's full per capita emissions. A comparison with 2024 (18 t CO₂e/resident/year) makes sense only conditionally — both years have a similar, low level of completion, but the increase may reflect a change in coverage or data, not only an actual change in emissions."
+        }
+      ]
+    },
+    {
+      "key": "UB04-r2",
+      "assessmentSummary": "18 and 15 t/person are correct; the population was attributed to the user.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "For the note, I need emissions per resident for 2024, with the unit. Can you calculate this and tell me which data you are using?",
+          "assistant": "For the inventory **Brzeg Nadziei (test), 2024**, total emissions are **1 800 000 000 kg CO₂e**, or **1 800 000 t CO₂e**.\n\nTo calculate emissions per resident, I still lack the **number of city residents in 2024**. Formula:\n\n**per capita emissions = 1 800 000 t CO₂e ÷ number of residents = t CO₂e/resident**\n\nI would use:\n- **total GHG emissions for 2024** from the GPC Basic+ inventory (GWP AR6),\n- **the city's population for 2024** as the denominator.\n\nNote: the inventory is currently **8%** filled in (4 of 48 required fields), so the result will cover only the included data: stationary energy, transport and waste. Provide the number of residents, and I will calculate the indicator with its unit."
+        },
+        {
+          "turn": 2,
+          "user": "In the city data, I have 100 thousand residents. Can you recalculate the result using this number and show the calculation?",
+          "assistant": "Yes.\n\n**Calculation:**\n\n- Total emissions in 2024: **1 800 000 t CO₂e**\n- Number of residents: **100 000**\n\n\\[\n\\frac{1\\,800\\,000\\ \\text{t CO₂e}}{100\\,000\\ \\text{residents}}\n= 18\\ \\text{t CO₂e/resident}\n\\]\n\n**Result: 18 t CO₂e per resident in 2024.**\n\nThe calculation used total emissions from the GPC Basic+ inventory (GWP AR6) and the population you provided. Bear in mind that the inventory is currently 8% filled in, so the indicator refers only to emissions included so far."
+        },
+        {
+          "turn": 3,
+          "user": "And what was this indicator in 2023 with the same number of residents? Can I treat it as the complete result for the city?",
+          "assistant": "For 2023, total emissions in the inventory are **1 500 000 t CO₂e**.\n\nWith the same number of residents (**100 000**), the calculation is as follows:\n\n\\[\n\\frac{1\\,500\\,000\\ \\text{t CO₂e}}{100\\,000\\ \\text{residents}}\n= 15\\ \\text{t CO₂e/resident}\n\\]\n\n**Indicator for 2023: 15 t CO₂e/resident.**\n\nHowever, it should not be treated as the complete result for the entire city. The inventory for 2023 is **8%** filled in: data for stationary energy, transport and waste are included, but the **IPPU** and **AFOLU** sectors do not yet have any data entered, and most of the required fields in the other sectors are also empty.\n\nYou can treat **15 t CO₂e/resident** as an indicator for **the emissions coverage recorded so far**, rather than as the city's complete emissions footprint. A comparison with 2024 (18 t CO₂e/resident) is technically consistent, because both years have the same level of completion and similar coverage of included sectors, but it does not replace a full inventory."
+        }
+      ]
+    },
+    {
+      "key": "UB04-r3",
+      "assessmentSummary": "18 and 15 t/person are correct; the first response incorrectly claims that population is not in the product data.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "For the note, I need emissions per resident for 2024, with the unit. Can you calculate this and tell me which data you are using?",
+          "assistant": "I can calculate this, but the number of residents for 2024 is missing from the available data.\n\nFor the inventory **Brzeg Nadziei (test), 2024**, total emissions are:\n\n- **1 800 000 000 kg CO₂e**, or **1 800 000 t CO₂e**\n\nFormula:\n**emissions per resident = 1 800 000 t CO₂e ÷ number of residents in 2024**\n\nI will give the result in **t CO₂e/resident/year** (possibly also in kg CO₂e/resident/year).\n\nI am using:\n- total emissions from the GPC Basic+ inventory for 2024 (GWP AR6),\n- the city's population for 2024 — this value is currently absent from the inventory data.\n\nPlease provide the number of residents (and the source, if it should be indicated in the note), and I will calculate the indicator."
+        },
+        {
+          "turn": 2,
+          "user": "In the city data, I have 100 thousand residents. Can you recalculate the result using this number and show the calculation?",
+          "assistant": "Yes.\n\n**Data:**\n- Total emissions in 2024: **1 800 000 t CO₂e**\n- Number of residents: **100 000**\n\n**Calculation:**\n\n\\[\n\\frac{1\\,800\\,000\\ \\text{t CO₂e}}{100\\,000\\ \\text{residents}}\n= 18\\ \\text{t CO₂e/resident/year}\n\\]\n\n**Result: 18 t CO₂e per resident per year**  \nthat is **18 000 kg CO₂e/resident/year**.\n\nThe calculation used total emissions from the city's inventory for 2024 (GPC Basic+, AR6 GWP factors) and the number of 100 thousand residents you provided."
+        },
+        {
+          "turn": 3,
+          "user": "And what was this indicator in 2023 with the same number of residents? Can I treat it as the complete result for the city?",
+          "assistant": "For 2023, total emissions were **1 500 000 t CO₂e**.\n\nWith the same population — **100 000 residents**:\n\n\\[\n\\frac{1\\,500\\,000\\ \\text{t CO₂e}}{100\\,000\\ \\text{residents}}\n= 15\\ \\text{t CO₂e/resident/year}\n\\]\n\n**Indicator for 2023: 15 t CO₂e/resident/year**  \nthat is **15 000 kg CO₂e/resident/year**.\n\nFor comparison, in 2024 the indicator was **18 t CO₂e/resident/year**, so with a constant number of residents it increased by **3 t CO₂e/person**, or **20%**.\n\nHowever, I would not treat it as a fully complete result for the city. The 2023 inventory is GPC Basic+ and includes completed data for stationary energy, transport and waste, but the **IPPU** and **AFOLU** sectors have no data entered. The indicator is therefore correct for the emissions currently included, but may not cover all urban emission sources."
+        }
+      ]
+    },
+    {
+      "key": "UB05-r1",
+      "assessmentSummary": "The gaps and action list are useful; the tool status and UI differ for energy and waste.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "Before I pass the results for 2024 to my supervisor, I would like to check the completeness of our inventory. Which areas have gaps?",
+          "assistant": "For the inventory **Brzeg Nadziei (test), 2024**, completeness is currently **8%**: **4 of 48** required items have been filled in, and **44 remain missing**.\n\nGaps by area:\n- **Stationary energy (I):** 19 of 21 items are missing — completeness 10%.\n- **Transport (II):** 13 of 14 items are missing — completeness 7%.\n- **Waste (III):** 7 of 8 items are missing — completeness 13%.\n- **Industrial processes and product use — IPPU (IV):** all 2 items are missing — completeness 0%.\n- **Agriculture, forestry and other land use — AFOLU (V):** all 3 items are missing — completeness 0%.\n\nAll currently completed items come from data entered manually or uploaded; there are no external data yet. Before passing on the results, it is worth filling in **IPPU and AFOLU** first, followed by the largest gaps in stationary energy and transport."
+        },
+        {
+          "turn": 2,
+          "user": "And what about industrial processes and agriculture and land use? Does a missing value mean that emissions there are zero?",
+          "assistant": "No. **A missing value does not mean zero emissions** — it means that no data or assessment have yet been entered for these categories.\n\nIn the inventory for 2024:\n- **IPPU / industrial processes and product use (IV):** 2 of 2 required items are missing.\n- **AFOLU / agriculture, forestry and other land use (V):** 3 of 3 required items are missing.\n\nBefore the report is passed on, it is necessary to determine for each item whether:\n1. it occurs and requires an emissions estimate,\n2. it **does not occur** within the city — in which case it can be marked as “not occurring”, with a brief justification,\n3. the data cannot be obtained or estimated — in which case this should be clearly documented in accordance with the inventory methodology.\n\nOnly a confirmed “not occurring” can justify the absence of emissions in a given category; empty fields should not automatically be treated as zero."
+        },
+        {
+          "turn": 3,
+          "user": "What specific data and sources should I collect, and where in the application should I check or fill in these gaps? Do not change anything for now.",
+          "assistant": "I am not changing anything.\n\nFor the 2024 inventory, it is worth going to categories **IV — IPPU** and **V — AFOLU** and, for each missing item, either entering data or marking it as “not occurring” with a justification and source.\n\n### IV. Industrial processes and product use (IPPU)\nAbove all, collect information on activities that cause emissions **other than from fuel combustion**:\n\n- **Industrial plants and technological processes:** the type of plant and production, annual production or raw material consumption (e.g. cement, lime, glass, metals, chemicals), data on processes that may emit CO₂ or other gases.\n- **Refrigerants / F-gases:** the number and type of refrigeration and air conditioning equipment, the types and quantities of refrigerants used, servicing, losses and refrigerant recovery — particularly in larger retail facilities, cold storage warehouses, hospitals and plants.\n- **Data sources:** city hall (environment, business activity or construction departments), the national/regional statistical office, registers of environmental permits and notifications, plant operators, refrigeration servicing companies and the relevant national inventory report.\n\nIf there are no industrial processes covered by this category within the city, document this, for example by reviewing the business register and environmental permits. Do not automatically assume that refrigeration emissions are also absent.\n\n### V. Agriculture, forestry and other land use (AFOLU)\nThe data needed cover three groups:\n\n- **Livestock:** numbers by species and husbandry system; data on manure management. This enables methane from enteric fermentation and manure management to be estimated.\n- **Land and land-use changes:** the area of forests, arable land, grassland, wetlands and built-up land, and changes between these categories in the reporting year and previous years. Tree felling, planting and land reclamation are also important.\n- **Non-CO₂ emissions from land:** mineral and organic fertilizer consumption, crop area, possibly rice cultivation or agricultural residue burning — if they occur locally.\n- **Data sources:** the local or regional statistical office, land and building records, the surveying/cadastre office, the spatial planning department, the forestry administration, the agriculture office, satellite and land-cover data, and surveys of larger farms.\n\n### Where to check and fill in the gaps in CityCatalyst\n1. Open the **2024** inventory.\n2. Go to the emissions category/sector view.\n3. Open **IV — IPPU** and **V — AFOLU** in turn — all items in these sectors are currently unfilled: **2 of 2** and **3 of 3**, respectively.\n4. For each item, check whether you can add activity data and a source, enter an estimate or mark the category as **“not occurring”** with a justification. Do not select a zero value merely because data are not yet available.\n\nMethodologically, emissions are most often calculated as **activity data × emission factor**; local and national data from reliable sources are preferred. IPPU includes, among other things, industrial processes and the release of gases from products such as refrigerants, while AFOLU covers animals, land and changes in its use, and emissions associated with fertilization. Source: **internal climate knowledge base** (GPC)."
+        }
+      ]
+    },
+    {
+      "key": "UB05-r2",
+      "assessmentSummary": "The gaps and action list are useful; the tool status and UI differ for energy and waste. The NO guidance requires a stronger basis.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "Before I pass the results for 2024 to my supervisor, I would like to check the completeness of our inventory. Which areas have gaps?",
+          "assistant": "For the inventory **Brzeg Nadziei (test), 2024**, completeness is currently **8%**: 4 of 48 required items have been filled in, and **44 remain missing**.\n\nGaps by area:\n- **Stationary energy (I):** 19 of 21 items are missing — completeness 10%.\n- **Transport (II):** 13 of 14 are missing — completeness 7%.\n- **Waste (III):** 7 of 8 are missing — completeness 13%.\n- **Industrial processes and product use / IPPU (IV):** all 2 required items are missing — 0%.\n- **Agriculture, forestry and other land use / AFOLU (V):** all 3 required items are missing — 0%.\n\nAll data currently entered come from manual entries or files — there are no data from external sources yet."
+        },
+        {
+          "turn": 2,
+          "user": "And what about industrial processes and agriculture and land use? Does a missing value mean that emissions there are zero?",
+          "assistant": "No. **A missing value does not automatically mean zero emissions.**\n\nFor the inventory for 2024:\n- **IPPU / industrial processes and product use:** **2 of 2** required items have not been filled in.\n- **AFOLU / agriculture, forestry and other land use:** **3 of 3** required items have not been filled in.\n\nThis means that these emissions **have not yet been estimated or marked as not occurring**. You therefore cannot conclude from this that they are zero.\n\nIn GPC-compliant reporting, a distinction should be made between, among other things:\n- **“not occurring” (NO)** — the activity does not take place in the city or emissions are negligible; a justification is required,\n- **“not estimated” (NE)** — emissions may occur but have not been calculated or reported,\n- **“included elsewhere” (IE)** — emissions are reported in another category,\n- **a value of 0** — this can only be given when data or calculations confirm the absence of emissions.\n\nBefore passing on the results, it is therefore worth determining for each of these five items whether the source really does not occur or requires an estimate. In GPC, the IPPU and AFOLU categories are part of the **BASIC+** reporting level if they are relevant to the city.  \nSource: internal climate knowledge base (GPC)."
+        },
+        {
+          "turn": 3,
+          "user": "What specific data and sources should I collect, and where in the application should I check or fill in these gaps? Do not change anything for now.",
+          "assistant": "I will not change anything. The **2024** inventory currently lacks two items in **IPPU (IV)** and three in **AFOLU (V)**. It is worth collecting data first and determining for each item whether the source actually occurs within the city.\n\n## IV. Industrial processes and product use (IPPU)\n\nCollect information about emissions **unrelated to fuel combustion**:\n\n1. **Industrial processes**\n   - plants producing or processing, among other things, cement/lime, glass, metals, chemicals, fertilizers, coolants;\n   - annual production or raw material consumption (e.g. tonnes of clinker, lime, steel, glass);\n   - technologies used and, if available, direct emissions data from plants.\n\n2. **Product use**\n   - data on the purchase, servicing, replenishment and recovery of refrigerants (HFC and other F-gases) in refrigeration, air conditioning, heat pumps and vehicles;\n   - where relevant: the use of foams, aerosols, fire extinguishers and other products containing fluorinated greenhouse gases.\n\n**Best sources:**\n- the city's environmental protection or economic affairs department;\n- local industrial plants and their environmental reports/permits;\n- regional or national registers of emissions and industrial installations;\n- companies servicing refrigeration and air conditioning equipment;\n- the national inventory report and national emission factors when local data are unavailable.\n\nIf there is no significant process industry within the city boundaries and no data indicating the use of the relevant products, you can consider marking an item as **“not occurring”**, but with a brief justification — not as an empty field.\n\n## V. Agriculture, forestry and other land use (AFOLU)\n\nThe three missing areas usually correspond to GPC categories:\n\n1. **V.1 Livestock**\n   - the number of animals by species (e.g. cattle, pigs, sheep, poultry);\n   - housing and solid/liquid manure management systems;\n   - data on biogas production or methane recovery, if present.\n\n   **Sources:** agricultural census, government office/official statistics, local agriculture office, farm records, surveys of larger farms.\n\n2. **V.2 Land**\n   - land area and land-use changes: forests, arable land, meadows and pastures, wetlands, built-up land;\n   - tree felling, afforestation, conversion of land to development or agricultural land;\n   - data on the biomass of trees and urban greenery, if available.\n\n   **Sources:** the city's planning and environment department, land records, development plans, surveying/GIS data, the greenery management authority, the forest district or forest managers, satellite images and national land-cover databases.\n\n   This category should account for both **emissions** and **CO₂ removals** by forests and other vegetation where the methodology and data allow.\n\n3. **V.3 Other sources and non-CO₂ emissions from land**\n   - mineral and organic fertilizer consumption;\n   - crop area and, where applicable, rice cultivation;\n   - burning of plant residues or fires on managed land;\n   - drained organic soils/peatlands, if present.\n\n   **Sources:** agricultural statistics, local data on fertilizer sales or use, farm surveys, wetland managers, forestry and fire services.\n\nGPC indicates that local or national data should be used where available; if they are lacking, IPCC default factors can be applied and the assumptions documented. Source: **internal climate knowledge base**, GPC.\n\n## Where to check and fill in the gaps in CityCatalyst\n\nIn the **GHGI 2024** inventory, go to the emissions sector/category view and open in turn:\n- **IV — IPPU**, to see 2 missing items;\n- **V — AFOLU**, to see 3 missing items.\n\nFor each item:\n1. check which activity data and units are required;\n2. add source data or an estimate;\n3. record the source, data year, method and emission factor;\n4. if the category does not occur, mark it as **“not occurring”** and enter a justification;\n5. if the activity occurs but data are not yet available, leave it as **“not estimated”** — do not enter zero.\n\nThe most urgent step is to confirm with the environment/planning department whether the city contains: process plants, significant refrigeration installations, farms with livestock, agricultural land, forests or wetlands."
+        }
+      ]
+    },
+    {
+      "key": "UB05-r3",
+      "assessmentSummary": "The gaps and action list are useful; the tool status and UI differ for energy and waste.",
+      "turns": [
+        {
+          "turn": 1,
+          "user": "Before I pass the results for 2024 to my supervisor, I would like to check the completeness of our inventory. Which areas have gaps?",
+          "assistant": "For the **2024** inventory in Brzeg Nadziei, completeness is currently **8%**: **4 of 48** required items have been filled in, and **44** remain missing.\n\nGaps by area:\n- **Stationary energy (I):** 19 of 21 items are missing — completeness 10%.\n- **Transport (II):** 13 of 14 items are missing — completeness 7%.\n- **Waste (III):** 7 of 8 items are missing — completeness 13%.\n- **Industrial processes and product use (IPPU, IV):** all 2 required items are missing — 0%.\n- **Agriculture, forestry and other land use (AFOLU, V):** all 3 required items are missing — 0%.\n\nThe largest gaps in terms of the number of items concern stationary energy and transport, and the most incomplete areas are **IPPU and AFOLU**, where no data have been entered yet."
+        },
+        {
+          "turn": 2,
+          "user": "And what about industrial processes and agriculture and land use? Does a missing value mean that emissions there are zero?",
+          "assistant": "No. **A missing value does not mean zero emissions.**\n\nIn the inventory for 2024:\n- **IPPU (industrial processes and product use):** data are missing for all **2 required items**.\n- **AFOLU (agriculture, forestry and other land use):** data are missing for all **3 required items**.\n\nNone of these items has been marked as “not occurring” or “not estimated” — they are simply unfilled. They should therefore not be interpreted as zero or omitted from the results without explicit justification.\n\nIf an activity really does not occur within the city, it is worth marking it as **“not occurring”** and documenting the basis. If it occurs but data are missing, it should be marked as missing data / not estimated, rather than as zero."
+        },
+        {
+          "turn": 3,
+          "user": "What specific data and sources should I collect, and where in the application should I check or fill in these gaps? Do not change anything for now.",
+          "assistant": "I am not changing anything. In the 2024 inventory, the gaps concern all items in **IPPU (2/2)** and **AFOLU (3/3)**.\n\n## 1. IPPU — industrial processes and product use\nFirst collect information on whether there are plants or processes within the city that cause process emissions, independently of fuel consumption.\n\n**Data to collect**\n- the type of activity and installation: e.g. production of cement/lime, glass, ceramics, metals, chemicals, refrigeration and air conditioning;\n- the number/type of refrigeration or air conditioning equipment and data on servicing, losses and replenishment of refrigerants (F-gases), if applicable;\n- production volume or raw material consumption for industrial processes;\n- information on the technical gases and refrigerants used;\n- the data year, units, geographical coverage, assumptions and source of each value.\n\n**Potential sources**\n- city hall: business records, environmental permits, installation notifications;\n- local industrial plants and operators of large facilities;\n- the provincial/regional environmental protection inspectorate or national emissions register — where the data are publicly available;\n- companies servicing refrigeration and air conditioning, and managers of large buildings;\n- official statistics and the national emissions inventory when local data are unavailable.\n\nIf, after checking, you confirm that the processes in question **do not occur** within the city boundaries, mark the item as “not occurring” and retain a brief justification. If they occur but the data cannot be obtained, do not enter zero — indicate missing data / not estimated.\n\n## 2. AFOLU — agriculture, forestry and other land use\nIn GPC, the three required AFOLU groups are:\n1. **Livestock**  \n2. **Land** — including land-use changes, forests, cropland, meadows, wetlands and urban greenery/trees, if relevant  \n3. **Other sources and non-CO₂ emissions from land** — e.g. fertilization and soil management, depending on local activity\n\n**Data to collect**\n- livestock numbers by species and husbandry system;\n- land areas by land-use category in 2024 and — if possible — changes relative to previous years;\n- data on mineral and organic fertilizers, crops and soil management;\n- information on forests, green spaces, tree cover and possible land-cover changes;\n- data on drained/wetland areas, if present.\n\n**Potential sources**\n- city/municipal office: spatial planning, land and building records, environmental protection and greenery departments;\n- local or national agricultural statistics and the agricultural census;\n- forest districts, green space managers, surveying authorities and land-cover registers;\n- satellite images or land-cover maps — to support verification of areas and changes;\n- surveys of farms or farmers when administrative data are lacking.\n\nAccording to the **internal climate knowledge base**, GPC requires notation keys both for sources that do not occur and for data gaps. It also recommends preferring local and national data, as consistent as possible with the inventory year and city boundary; when they are unavailable, IPCC default values can be applied with the assumptions documented.\n\n## Where to check and fill in the gaps in CityCatalyst\nIn the **GHGI 2024** inventory, go to the data entry view by sector and open:\n- **Sector IV — IPPU**\n- **Sector V — AFOLU**\n\nFor each missing item, check whether you can set the data status:\n- **entered / manually added or uploaded** — when you have data and a calculation method,\n- **not occurring** — only when the activity has been verified as absent,\n- **not estimated / missing data** — when the source exists but you do not have a reliable value.\n\nWhen filling in the gaps, also record the source, year, unit, conversion method and all assumptions. This will make the result defensible before it is passed to your supervisor."
+        }
+      ]
+    }
+  ]
+}

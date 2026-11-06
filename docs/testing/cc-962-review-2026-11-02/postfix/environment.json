@@ -1,0 +1,10 @@
+{
+  "app": "http://localhost:3407",
+  "ca": "http://127.0.0.1:8088",
+  "commit": "5c04cc616466cdc1b0f550588cd00f4f252b5106",
+  "ccDatabase": "dev via own port-forward",
+  "caDatabase": "own disposable PostgreSQL",
+  "source": "real Global API",
+  "modelConfiguration": "unmodified climate-advisor/llm_config.yaml",
+  "mlflowExperiment": "CC962-provenance-postfix-20261102"
+}

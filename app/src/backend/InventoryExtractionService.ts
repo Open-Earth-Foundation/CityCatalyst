@@ -232,7 +232,11 @@ export type ExtractedRow = {
    * `null`); a stored row without the key predates this field.
    */
   activityClass?: ActivityClass | null;
-  /** Where the scope came from; nothing sets it yet. */
+  /**
+   * Where the scope came from. `inferred` when an activity-class rule set or
+   * changed the scope; `document` when the row's reference is printed in the
+   * document. Unset when the scope is the model's own and no rule changed it.
+   */
   scopeSource?: "document" | "inferred" | null;
   /** Short verbatim quote the model gives for a III.x.3, in any language. */
   directionEvidence?: string | null;
@@ -793,9 +797,14 @@ export async function extractInventoryFromDocument(
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
   const result = await extractRowsFromDocument(documentContent, options);
+  const rows = verifyRowProvenance(result.rows, documentContent);
+  // The activity-class rules can move a row onto or off a reference left out
+  // of the total (I.4.4), so the reconciliation sum is taken after them.
+  // Mismatch and deviation are derived from it on read (reconcileExtraction).
   return {
     ...result,
-    rows: verifyRowProvenance(result.rows, documentContent),
+    rows,
+    summary: { ...result.summary, importedSum: sumImported(rows) },
   };
 }
 

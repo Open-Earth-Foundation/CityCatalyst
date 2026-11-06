@@ -42,6 +42,7 @@ const { extractInventoryFromDocument, sumImported } =
 const { default: ECRFImportService } =
   await import("@/backend/ECRFImportService");
 const { previewImportRows } = await import("@/backend/ImportRowPreviewService");
+const { reconcileExtraction } = await import("@/util/GHGI/extraction-summary");
 
 const fixtureText = readFileSync(
   path.join(process.cwd(), "tests/fixtures/masterton-no-scope-excerpt.md"),
@@ -94,6 +95,7 @@ function mockRun(
   td: Variation,
   refrigerants: Variation,
   tdClass: Record<string, unknown> = { activityClass: "td_losses" },
+  extraRows: Record<string, unknown>[] = [],
 ) {
   const energySubsector = (v: Variation) =>
     v.gpcRefNo?.startsWith("I.4.") ? ENERGY_INDUSTRIES : NON_SPECIFIED;
@@ -120,12 +122,12 @@ function mockRun(
     }),
   ];
   complete.mockResolvedValueOnce({
-    content: JSON.stringify({ rows: [...rows, totalRow] }),
+    content: JSON.stringify({ rows: [...rows, ...extraRows, totalRow] }),
   });
 }
 
 async function runPipeline() {
-  const { rows } = await extractInventoryFromDocument(fixtureText, {
+  const { rows, summary } = await extractInventoryFromDocument(fixtureText, {
     targetYear: 2022,
   });
   const lineItems = rows.filter((row) => row.rowType !== "total");
@@ -133,7 +135,7 @@ async function runPipeline() {
   // The import builder flags every PDF result so held rows are reviewed.
   result.requiresReferenceReview = true;
   const preview = await previewImportRows(result, undefined);
-  return { rows: lineItems, result, preview };
+  return { rows: lineItems, summary, result, preview };
 }
 
 const byCategory = <T extends { category?: string | null }>(
@@ -192,7 +194,7 @@ describe("Masterton without a scope column", () => {
     async (_run, [grid, td, refrigerants]) => {
       mockRun(grid, td, refrigerants);
 
-      const { rows, result, preview } = await runPipeline();
+      const { rows, summary, result, preview } = await runPipeline();
 
       expect(byCategory(rows, "Electricity Consumption (grid)").gpcRefNo).toBe(
         "I.6.2",
@@ -202,6 +204,9 @@ describe("Masterton without a scope column", () => {
         byCategory(rows, "Refrigerants and Air Conditioning").gpcRefNo,
       ).toBe("IV.2");
       expect(sumImported(rows)).toBe(29422);
+      // The stored reconciliation sum is the one after the rules.
+      expect(summary.importedSum).toBe(29422);
+      expect(reconcileExtraction(summary)?.mismatch).toBe(false);
       expect(result.errors).toEqual([]);
       expect(preview.reviewRows).toEqual([]);
       expect(preview.pendingRows).toBe(0);
@@ -234,4 +239,103 @@ describe("Masterton without a scope column", () => {
       expect(preview.pendingRows).toBe(1);
     },
   );
+
+  it("reconciles once T&D losses move off I.4.4", async () => {
+    mockRun(
+      { gpcRefNo: "I.6.2", scope: "2" },
+      { gpcRefNo: "I.4.4", scope: null },
+      { gpcRefNo: "IV.2", scope: "1" },
+    );
+
+    const { rows, summary } = await runPipeline();
+
+    expect(byCategory(rows, "Electricity T&D Losses").gpcRefNo).toBe("I.6.3");
+    expect(summary.importedSum).toBe(29422);
+    expect(reconcileExtraction(summary)).toMatchObject({
+      reportedTotal: 29422,
+      mismatch: false,
+    });
+  });
+
+  it("reconciles once grid supply moves onto I.4.4", async () => {
+    mockRun(
+      { gpcRefNo: "I.6.2", scope: "2" },
+      { gpcRefNo: "I.6.3", scope: "3" },
+      { gpcRefNo: "IV.2", scope: "1" },
+      undefined,
+      [
+        lineItem(
+          "Electricity supplied to grid",
+          5000,
+          STATIONARY,
+          ENERGY_INDUSTRIES,
+          {
+            activityClass: "grid_supply",
+            gpcRefNo: "I.4.1",
+            scope: "1",
+          },
+        ),
+      ],
+    );
+
+    const { rows, summary } = await runPipeline();
+
+    expect(byCategory(rows, "Electricity supplied to grid").gpcRefNo).toBe(
+      "I.4.4",
+    );
+    expect(summary.importedSum).toBe(29422);
+    expect(reconcileExtraction(summary)?.mismatch).toBe(false);
+  });
+});
+
+describe("grid scope the model already gave", () => {
+  const gridRow = <T extends { gpcRefNo?: string | null }>(rows: T[]) =>
+    rows.filter((row) => row.gpcRefNo === "I.6.2");
+
+  it.each(["2", "Scope 2"])(
+    "keeps model scope %s on I.6.2 without marking it inferred",
+    async (scope) => {
+      mockRun(
+        { gpcRefNo: "I.6.1", scope },
+        { gpcRefNo: "I.6.3", scope: "3" },
+        { gpcRefNo: "IV.2", scope: "1" },
+      );
+
+      const { rows, preview } = await runPipeline();
+
+      const [grid] = gridRow(rows);
+      expect(grid.scope).toBe("2");
+      expect(grid.scopeSource).not.toBe("inferred");
+      expect(gridRow(preview.inferredScopeRows ?? [])).toEqual([]);
+      expect(preview.reviewRows).toEqual([]);
+    },
+  );
+
+  it("lists a changed model scope with the original scope", async () => {
+    mockRun(
+      { gpcRefNo: "I.6.1", scope: "1" },
+      { gpcRefNo: "I.6.3", scope: "3" },
+      { gpcRefNo: "IV.2", scope: "1" },
+    );
+
+    const { preview } = await runPipeline();
+
+    expect(gridRow(preview.inferredScopeRows ?? [])).toEqual([
+      expect.objectContaining({ scope: "2", originalScope: "1" }),
+    ]);
+  });
+
+  it("lists a missing model scope without an original scope", async () => {
+    mockRun(
+      { gpcRefNo: "I.6.1", scope: null },
+      { gpcRefNo: "I.6.3", scope: "3" },
+      { gpcRefNo: "IV.2", scope: "1" },
+    );
+
+    const { preview } = await runPipeline();
+
+    expect(gridRow(preview.inferredScopeRows ?? [])).toEqual([
+      expect.objectContaining({ scope: "2", originalScope: null }),
+    ]);
+  });
 });

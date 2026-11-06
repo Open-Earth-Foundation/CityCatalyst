@@ -1079,6 +1079,14 @@ export interface ImportRowPreview {
     gpcRefNo: string;
     scope: string | null;
   }>;
+  /** Imported rows whose scope was set from the activity type, not the document. */
+  inferredScopeRows?: Array<{
+    rowNumber: number;
+    gpcRefNo: string;
+    scope: string | null;
+    /** The extraction's own scope, only when it differs from `scope`. */
+    originalScope: string | null;
+  }>;
 }
 
 /** A row the import cannot complete without a user decision. */

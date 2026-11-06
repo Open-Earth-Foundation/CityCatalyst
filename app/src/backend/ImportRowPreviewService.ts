@@ -268,6 +268,22 @@ export async function previewImportRows(
         gpcRefNo: row.gpcRefNo,
         scope: row.review?.scope ?? null,
       })),
+    // Rows held for a decision are listed in reviewRows, not here.
+    inferredScopeRows: importedRows
+      .filter(
+        (row) =>
+          row.review?.scopeSource === "inferred" && !pending.has(row.rowIndex),
+      )
+      .map((row) => {
+        const scope = row.review?.scope ?? null;
+        const original = row.review?.originalScope ?? null;
+        return {
+          rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+          gpcRefNo: row.gpcRefNo,
+          scope,
+          originalScope: original !== scope ? original : null,
+        };
+      }),
     omittedFromTotalTonnes,
     rows: outcomes,
   };

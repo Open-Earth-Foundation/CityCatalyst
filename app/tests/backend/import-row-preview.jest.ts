@@ -487,6 +487,46 @@ describe("excluded reference needs a decision (Net 1)", () => {
       "reference-conflict",
     );
   });
+
+  it("lists imported rows whose scope was inferred from the activity type", async () => {
+    const result = await preview([
+      {
+        ...reviewed("I.1.2", { scope: "2", scopeSource: "inferred" }),
+        rowIndex: 0,
+      },
+      {
+        ...reviewed("I.1.2", {
+          scope: "2",
+          scopeSource: "inferred",
+          originalScope: "1",
+        }),
+        rowIndex: 1,
+        sourceRowNumber: 3,
+      },
+      {
+        ...reviewed("I.1.1", { scope: "1", scopeSource: "document" }),
+        rowIndex: 2,
+        sourceRowNumber: 4,
+      },
+    ]);
+    expect(result.inferredScopeRows).toHaveLength(2);
+    expect(result.inferredScopeRows).toEqual([
+      { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
+      { rowNumber: 3, gpcRefNo: "I.1.2", scope: "2", originalScope: "1" },
+    ]);
+  });
+
+  it("leaves an inferred row held for review out of inferredScopeRows", async () => {
+    const result = await preview([
+      reviewed("I.4.4", {
+        activityClass: "other",
+        scope: "2",
+        scopeSource: "inferred",
+      }),
+    ]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.inferredScopeRows).toEqual([]);
+  });
 });
 
 describe("decisions on held rows (applyReviewedRows)", () => {

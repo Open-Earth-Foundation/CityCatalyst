@@ -101,3 +101,57 @@ describe("ECRFImportService.fromExtractedRows", () => {
     expect(result.rows[0].totalCO2e).toBeUndefined();
   });
 });
+
+describe("fromExtractedRows review data", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  function mockLookup() {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector",
+      subsectorId: "subsector",
+      subcategoryId: "sub",
+      scopeId: "scope-3-id",
+    });
+  }
+
+  it("carries activity class and the inferred scope onto review", async () => {
+    mockLookup();
+    const result = await ECRFImportService.fromExtractedRows([
+      {
+        year: 2021,
+        sector: "Stationary Energy",
+        subsector: "Energy generation",
+        scope: "3",
+        category: "Electricity T&D Losses",
+        gpcRefNo: "I.6.3",
+        totalCO2e: 100,
+        activityClass: "td_losses",
+        scopeSource: "inferred",
+        originalScope: "1",
+      },
+    ]);
+    expect(result.rows[0].review).toMatchObject({
+      activityClass: "td_losses",
+      scopeSource: "inferred",
+      originalScope: "1",
+      scope: "3",
+    });
+  });
+
+  it("leaves activityClass off review for a row that has none", async () => {
+    mockLookup();
+    const result = await ECRFImportService.fromExtractedRows([
+      {
+        year: 2021,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        scope: "1",
+        category: "Residential Buildings",
+        totalCO2e: 10,
+      },
+    ]);
+    expect("activityClass" in result.rows[0].review!).toBe(false);
+  });
+});

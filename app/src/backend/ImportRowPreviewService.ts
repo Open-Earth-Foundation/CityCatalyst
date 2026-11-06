@@ -2,6 +2,7 @@ import {
   isImportedWasteRef,
   isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
+import { hasLossOrConsumptionLabel } from "@/util/GHGI/activity-class-rules";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import {
   importRowSkipReason,
@@ -58,12 +59,32 @@ function finalPairConflict(row: ImportRow): boolean {
   );
 }
 
+/**
+ * A valued row the model placed on a reference left out of the total, without
+ * the document naming that reference. Genuine grid supply (I.4.4) may stay
+ * there; anything else, or a label about losses or consumption, needs a
+ * decision. Rows without an activity class are legacy and are not held.
+ */
+function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
+  const review = row.review;
+  const ref = review?.suggestedRefNo ?? row.gpcRefNo;
+  if (!review || !isOmittedGPCReference(ref)) return false;
+  if (row.totalCO2e == null || review.refSource === "document") return false;
+  if (!("activityClass" in review)) return false;
+  return (
+    review.activityClass !== "grid_supply" ||
+    hasLossOrConsumptionLabel(review.category, review.subsector)
+  );
+}
+
 function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
   if (row.review?.refSource === "document") return null;
+  if (isExcludedReferenceUnconfirmed(row))
+    return "excluded-reference-unconfirmed";
   return isImportedWasteRef(ref) ? "direction-unconfirmed" : null;
 }
 
@@ -93,7 +114,14 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     page: review.page,
     source: review.source,
     decision: review.decision,
-    referenceOptions: siblingReferences(suggestedRefNo),
+    referenceOptions: Array.from(
+      new Set([
+        ...siblingReferences(suggestedRefNo),
+        ...(issue === "excluded-reference-unconfirmed"
+          ? ["I.6.2", "I.6.3"]
+          : []),
+      ]),
+    ),
   };
 }
 

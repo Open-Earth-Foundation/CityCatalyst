@@ -364,3 +364,123 @@ describe("ECRFImportService.processECRFFile", () => {
     });
   });
 });
+
+describe("excluded reference needs a decision (Net 1)", () => {
+  function reviewed(
+    ref: string,
+    review: Record<string, unknown>,
+    fields: Partial<ECRFRowData> = {},
+  ): ECRFRowData {
+    return row(0, {
+      gpcRefNo: ref,
+      totalCO2e: 1710,
+      review: {
+        sector: "Stationary Energy",
+        subsector: "Energy generation",
+        category: null,
+        scope: null,
+        refSource: "inferred",
+        directionEvidence: null,
+        directionEvidenceFound: null,
+        page: 1,
+        source: null,
+        decision: null,
+        suggestedRefNo: ref,
+        ...review,
+      } as ECRFRowData["review"],
+      ...fields,
+    });
+  }
+
+  function reviewResult(rows: ECRFRowData[]): ECRFImportResult {
+    return { ...importResult(rows), requiresReferenceReview: true };
+  }
+
+  beforeEach(() => {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+  });
+
+  async function preview(rows: ECRFRowData[]) {
+    return previewImportRows(
+      reviewResult(rows),
+      InventoryTypeEnum.GPC_BASIC_PLUS,
+    );
+  }
+
+  it.each([
+    ["no activity class", { activityClass: null }],
+    ["activity class other", { activityClass: "other" }],
+    [
+      "grid supply labelled as losses",
+      { activityClass: "grid_supply", category: "Electricity T&D Losses" },
+    ],
+    [
+      "grid supply labelled as losses in Portuguese",
+      { activityClass: "grid_supply", category: "Perdas de distribuição" },
+    ],
+  ])("holds a valued I.4.4 row with %s", async (_name, review) => {
+    const result = await preview([reviewed("I.4.4", review)]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.reviewRows[0].issue).toBe("excluded-reference-unconfirmed");
+    expect(result.rows[0]).toMatchObject({
+      status: "pending",
+      issue: "excluded-reference-unconfirmed",
+    });
+    expect(result.reviewRows[0].referenceOptions).toEqual(
+      expect.arrayContaining(["I.4.3", "I.6.2", "I.6.3"]),
+    );
+  });
+
+  it("does not hold genuine grid supply", async () => {
+    const result = await preview([
+      reviewed("I.4.4", {
+        activityClass: "grid_supply",
+        category: "Electricity supplied to grid",
+      }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+    expect(result.rows[0]).toMatchObject({
+      status: "not-counted",
+      issue: "reported-apart-from-total",
+    });
+  });
+
+  it("does not hold a reference the document printed", async () => {
+    const result = await preview([
+      reviewed("I.4.4", { activityClass: null, refSource: "document" }),
+    ]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("does not hold a legacy row without an activity class", async () => {
+    const result = await preview([reviewed("I.4.4", {})]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("does not hold a notation key row", async () => {
+    const result = await preview([
+      reviewed(
+        "I.4.4",
+        { activityClass: null },
+        { totalCO2e: undefined, notationKey: "IE" },
+      ),
+    ]);
+    expect(result.pendingRows).toBe(0);
+  });
+
+  it("does not flag a corrected row as a reference conflict", async () => {
+    const result = await preview([
+      reviewed("I.6.2", {
+        activityClass: "td_losses",
+        scope: "2",
+        scopeSource: "inferred",
+        originalScope: "1",
+      }),
+    ]);
+    expect(result.reviewRows.map((r) => r.issue)).not.toContain(
+      "reference-conflict",
+    );
+  });
+});

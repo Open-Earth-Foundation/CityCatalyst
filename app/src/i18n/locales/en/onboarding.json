@@ -323,6 +323,7 @@
   "import-row-issue-direction-unconfirmed": "Needs your decision before the import can finish.",
   "import-row-issue-reference-conflict": "The document states this reference, but other data on the row disagrees.",
   "import-row-issue-skipped-in-review": "Skipped in the review.",
+  "import-row-issue-excluded-reference-unconfirmed": "Left out of BASIC and BASIC+ totals, but the row looks like energy use or losses. Needs your decision before the import can finish.",
   "import-row-issue-reported-apart-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals.",
   "not-specified": "Not specified",
   "upload-failed": "Upload failed",

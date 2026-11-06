@@ -13,6 +13,7 @@ import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 import type { ImportRowIssue } from "@/util/types";
+import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
 
 /**
  * When activity_name holds a notation-key label (e.g. "Not Occuring") and
@@ -95,6 +96,10 @@ export interface ECRFRowReviewData {
   catalogueScope?: number | null;
   finalCatalogueScope?: number | null;
   suggestedRefNo: string | null;
+  /** Present only on PDF rows extracted after activity classes existed. */
+  activityClass?: ActivityClass | null;
+  scopeSource?: "document" | "inferred" | null;
+  originalScope?: string | null;
 }
 
 export interface ECRFImportResult {
@@ -868,7 +873,10 @@ export default class ECRFImportService {
           sector: row.sector ?? null,
           subsector: row.subsector ?? null,
           category: row.category ?? null,
-          scope: row.originalScope ?? row.scope ?? null,
+          scope:
+            row.scopeSource === "inferred"
+              ? (row.scope ?? null)
+              : (row.originalScope ?? row.scope ?? null),
           finalScope: scopeById.has(resolvedScopeId)
             ? String(scopeById.get(resolvedScopeId))
             : null,
@@ -885,6 +893,11 @@ export default class ECRFImportService {
           source: row.source ?? null,
           decision: row.reviewDecision ?? null,
           suggestedRefNo: row.suggestedRefNo ?? null,
+          ...("activityClass" in row
+            ? { activityClass: row.activityClass ?? null }
+            : {}),
+          scopeSource: row.scopeSource ?? null,
+          originalScope: row.originalScope ?? null,
         },
         co2: num(row.co2),
         ch4: num(row.ch4),

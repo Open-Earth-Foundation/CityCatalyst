@@ -1042,6 +1042,7 @@ export type ImportRowIssue =
   | "omitted-from-total"
   | "reported-apart-from-total"
   | "direction-unconfirmed"
+  | "excluded-reference-unconfirmed"
   | "reference-conflict"
   | "skipped-in-review";
 

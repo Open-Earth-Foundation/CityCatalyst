@@ -13,7 +13,7 @@ import {
   LIFECYCLE_KEYS,
   lifecycleTone,
   projectName,
-  SECTOR_KEYS,
+  projectSector,
 } from "../labels";
 import type { Project } from "../types";
 import { FieldGrid, type Field } from "./FieldGrid";
@@ -36,15 +36,9 @@ export function ProjectCard({ proj, t, lng }: ProjectCardProps) {
 
   const fields: Field[] = [];
   if (cost) fields.push({ label: t("field-cost"), value: cost });
-  // The feed's own localized sector wins; the label map covers the GPC keys.
-  const localizedSector =
-    (lng ? proj.sector_i18n?.[lng as "en" | "es"] : undefined) ||
-    proj.sector_i18n?.en;
-  if (localizedSector || proj.sector) {
-    fields.push({
-      label: t("field-sector"),
-      value: localizedSector || enumLabel(SECTOR_KEYS, proj.sector, t),
-    });
+  const sector = projectSector(proj, lng, t);
+  if (sector) {
+    fields.push({ label: t("field-sector"), value: sector });
   }
   if (proj.funding_channel) {
     fields.push({

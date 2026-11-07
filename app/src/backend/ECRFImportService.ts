@@ -1,7 +1,7 @@
 import { db } from "@/models";
-import { Op } from "sequelize";
 import {
   resolveGpcRefFromLabels,
+  scopeFromLabel,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
 import {
@@ -75,10 +75,32 @@ export interface ECRFRowData {
   issue?: ImportRowIssue;
   errors?: string[];
   warnings?: string[];
+  /** What the import review needs; extracted rows only. */
+  review?: ECRFRowReviewData;
+}
+
+export interface ECRFRowReviewData {
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  scope: string | null;
+  refSource: "document" | "inferred" | null;
+  directionEvidence: string | null;
+  directionEvidenceFound: boolean | null;
+  page: number | null;
+  source: string | null;
+  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  finalScope?: string | null;
+  decisionToken?: string;
+  catalogueScope?: number | null;
+  finalCatalogueScope?: number | null;
+  suggestedRefNo: string | null;
 }
 
 export interface ECRFImportResult {
   rows: ECRFRowData[];
+  /** PDF rows come from a model, so held rows need a user decision. */
+  requiresReferenceReview?: boolean;
   errors: string[];
   warnings: string[];
   rowCount: number;
@@ -158,6 +180,12 @@ export default class ECRFImportService {
       };
     }
 
+    const catalogueScopes = new Map(
+      (
+        await db.models.Scope.findAll({ attributes: ["scopeId", "scopeName"] })
+      ).map((scope) => [scope.scopeId, scopeFromLabel(scope.scopeName)]),
+    );
+
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
@@ -184,6 +212,10 @@ export default class ECRFImportService {
         ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
         : undefined;
       if (gpcRefNo === "") gpcRefNo = undefined;
+      const statedReference = gpcRefNo;
+      const statedScope = scopeHeader
+        ? row[scopeHeader]?.toString()
+        : undefined;
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
         const rawSector = hasSectorColumn
@@ -551,6 +583,31 @@ export default class ECRFImportService {
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
         scopeId: gpcMapping.scopeId,
+        review: {
+          sector: hasSectorColumn
+            ? (row[headers[detectedColumns.sector!]]?.toString() ?? null)
+            : null,
+          subsector: hasSubsectorColumn
+            ? (row[headers[detectedColumns.subsector!]]?.toString() ?? null)
+            : null,
+          category: activityType ?? null,
+          scope: statedScope || null,
+          catalogueScope: catalogueScopes.has(gpcMapping.scopeId)
+            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId)
+            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          refSource: statedReference
+            ? ("document" as const)
+            : ("inferred" as const),
+          directionEvidence: null,
+          directionEvidenceFound: null,
+          page: null,
+          source: null,
+          decision: null,
+          suggestedRefNo: statedReference ?? gpcRefNo,
+        },
         co2,
         ch4,
         n2o,
@@ -589,9 +646,7 @@ export default class ECRFImportService {
         row.issue === "no-value-or-notation-key" ||
         row.warnings?.some((message) => /No gas values/i.test(message))
       ) {
-        warnings.push(
-          `Row ${n}: Skipped - no emission values or notation key`,
-        );
+        warnings.push(`Row ${n}: Skipped - no emission values or notation key`);
       } else if (row.errors?.length) {
         warnings.push(`Row ${n}: ${row.errors[0]}`);
       }
@@ -603,6 +658,7 @@ export default class ECRFImportService {
 
     return {
       rows,
+      requiresReferenceReview: true,
       errors,
       warnings,
       rowCount: rows.length,
@@ -717,12 +773,13 @@ export default class ECRFImportService {
     let inferredYear: number | undefined;
 
     const scopeByName = new Map<string, string>();
+    const scopeById = new Map<string, number | undefined>();
     const scopeRecords = await db.models.Scope.findAll({
       attributes: ["scopeId", "scopeName"],
-      where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
     });
     for (const scope of scopeRecords) {
       if (scope.scopeName) scopeByName.set(scope.scopeName, scope.scopeId);
+      scopeById.set(scope.scopeId, scopeFromLabel(scope.scopeName));
     }
 
     for (let i = 0; i < extractedRows.length; i++) {
@@ -794,12 +851,41 @@ export default class ECRFImportService {
         inferredYear = inferredYear ?? (row.year as number);
       }
 
+      const skippedInReview = row.reviewDecision === "skip";
       rows.push({
         gpcRefNo,
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
         scopeId: resolvedScopeId,
+        ...(skippedInReview
+          ? {
+              issue: "skipped-in-review" as const,
+              errors: ["Skipped in the import review"],
+            }
+          : {}),
+        review: {
+          sector: row.sector ?? null,
+          subsector: row.subsector ?? null,
+          category: row.category ?? null,
+          scope: row.originalScope ?? row.scope ?? null,
+          finalScope: scopeById.has(resolvedScopeId)
+            ? String(scopeById.get(resolvedScopeId))
+            : null,
+          catalogueScope: scopeById.has(gpcMapping.scopeId)
+            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          finalCatalogueScope: scopeById.has(gpcMapping.scopeId)
+            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          refSource: row.refSource ?? null,
+          directionEvidence: row.directionEvidence ?? null,
+          directionEvidenceFound: row.directionEvidenceFound ?? null,
+          page: row.page ?? null,
+          source: row.source ?? null,
+          decision: row.reviewDecision ?? null,
+          suggestedRefNo: row.suggestedRefNo ?? null,
+        },
         co2: num(row.co2),
         ch4: num(row.ch4),
         n2o: num(row.n2o),

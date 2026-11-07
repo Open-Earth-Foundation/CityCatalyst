@@ -1,7 +1,13 @@
+export interface ConceptNoteChatVisual {
+  title: string;
+  html: string;
+}
+
 export interface ConceptNoteChatMessage {
   id: string;
   role: "assistant" | "user";
   text: string;
+  visuals?: ConceptNoteChatVisual[];
   choices?: string[];
 }
 
@@ -74,6 +80,37 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** Model-authored HTML; render it only through the sandboxed visual frame. */
+export function readConceptNoteVisual(
+  value: unknown,
+): ConceptNoteChatVisual | null {
+  if (
+    !isRecord(value) ||
+    typeof value.title !== "string" ||
+    typeof value.html !== "string" ||
+    !value.html
+  )
+    return null;
+  return { title: value.title, html: value.html };
+}
+
+/** A live render result keeps only the title; the HTML is in the call arguments. */
+export function readConceptNoteToolVisual(
+  result: Record<string, unknown>,
+): ConceptNoteChatVisual | null {
+  if (
+    result.action !== "concept_note.visual.render" ||
+    result.success !== true ||
+    !isRecord(result.data) ||
+    !isRecord(result.arguments)
+  )
+    return null;
+  return readConceptNoteVisual({
+    title: result.data.title,
+    html: result.arguments.html,
+  });
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -90,6 +127,9 @@ export function readConceptNoteThreadMessages(
     if ((role !== "assistant" && role !== "user") || typeof text !== "string") {
       return [];
     }
+    const visuals = Array.isArray(message.visuals)
+      ? message.visuals.flatMap((visual) => readConceptNoteVisual(visual) ?? [])
+      : [];
     return [
       {
         id:
@@ -98,6 +138,7 @@ export function readConceptNoteThreadMessages(
             : crypto.randomUUID(),
         role,
         text,
+        ...(visuals.length > 0 ? { visuals } : {}),
         ...(role === "assistant" && message.choices
           ? {
               choices: readConceptNoteChoices({

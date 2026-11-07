@@ -1,7 +1,14 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Box,
@@ -37,6 +44,7 @@ import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
+import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
@@ -327,6 +335,14 @@ export function ConceptNoteChatPanel({
     return () => window.cancelAnimationFrame(frame);
   }, [historyLoading, messages, reasoning, threadId]);
 
+  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  const keepLatestInView = useCallback(() => {
+    const chatScroll = chatScrollRef.current;
+    if (chatScroll && followLatestRef.current) {
+      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+    }
+  }, []);
+
   useEffect(() => {
     if (!composerRequest) {
       return;
@@ -551,6 +567,15 @@ export function ConceptNoteChatPanel({
                 )}
               </Box>
             )}
+            {message.visuals?.map((visual, index) => (
+              <ChatVisualFrame
+                key={index}
+                html={visual.html}
+                lng={lng}
+                onHeightChange={keepLatestInView}
+                title={visual.title}
+              />
+            ))}
           </Fragment>
         ))}
 

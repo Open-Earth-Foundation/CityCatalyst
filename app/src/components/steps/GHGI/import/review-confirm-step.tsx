@@ -31,7 +31,7 @@ interface ReviewConfirmStepProps {
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
-  mappingOverrides?: Record<string, string>;
+  mappingOverrides?: Record<string, unknown>;
   onEditMapping?: () => void;
 }
 

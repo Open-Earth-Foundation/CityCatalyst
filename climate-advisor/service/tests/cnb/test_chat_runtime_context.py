@@ -217,6 +217,19 @@ def test_cnb_history_preserves_real_instructions_and_tool_protocol() -> None:
     assert messages == original
 
 
+def test_cnb_history_drops_empty_visual_only_assistant_text() -> None:
+    messages = [
+        {"role": "user", "content": "Chart the emissions."},
+        {"role": "assistant", "content": ""},
+        {"role": "system", "content": 'INTERNAL_TOOL_OUTPUT_JSON\n{"tools_used":[]}'},
+    ]
+
+    cleaned = clean_cnb_history(messages)
+
+    assert [message["role"] for message in cleaned] == ["user", "user"]
+    assert cleaned[1]["content"].startswith("INTERNAL_TOOL_OUTPUT_JSON\n")
+
+
 PLAN_DOCUMENT = {
     "source_label": "Plan",
     "filename": "plan.pdf",

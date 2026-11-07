@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+import json
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
+from types import SimpleNamespace
 from uuid import uuid4
 
+from agents.tool import ToolContext
 from app.models.requests import MessageCreateRequest
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.utils.chat_workflow_context import ChatWorkflowContext
+from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.utils.sse import format_sse
+from app.utils.streaming_events import handle_tool_called, handle_tool_output
 from app.utils.streaming_context import (
     native_input_catalog_request,
     resolve_workflow_context,
 )
+from app.utils.concept_note_context import rendered_visuals
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.streaming_runner import build_stream_run_config
 from tests.streaming_fixtures import _parse_sse_payload
@@ -186,6 +192,107 @@ class StreamingHandlerTests(unittest.IsolatedAsyncioTestCase):
         agent_service_kwargs = mock_agent_service.call_args.kwargs
         self.assertNotIn("native_input_selection", agent_service_kwargs)
         self.assertIsNone(agent_service_kwargs["native_input_catalog_context"])
+
+    def test_format_sse_keeps_unicode_line_separators_in_one_data_line(
+        self,
+    ) -> None:
+        payload = {"html": "a b c\x85d"}
+
+        lines = format_sse(payload, event="done").split("\n")
+
+        data_lines = [line for line in lines if line.startswith("data: ")]
+        self.assertEqual(len(data_lines), 1)
+        self.assertEqual(json.loads(data_lines[0][len("data: ") :]), payload)
+
+    async def test_visual_only_turn_is_persisted_with_empty_text(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1", user_id="user-1", session_factory=MagicMock()
+        )
+        visual = {
+            "name": "concept_note_render_visual",
+            "status": "success",
+            "arguments": {"title": "Chart", "html": "<html></html>"},
+            "result_json": {
+                "action": "concept_note.visual.render",
+                "success": True,
+                "data": {"title": "Chart", "html_chars": 13},
+                "error_code": None,
+            },
+        }
+        handler.tool_invocations = [visual]
+
+        with patch(
+            "app.utils.streaming_handler.persist_assistant_message",
+            AsyncMock(return_value=True),
+        ) as persist:
+            self.assertTrue(await handler.persist_message())
+
+        self.assertEqual(persist.await_args.kwargs["assistant_content"], "")
+        self.assertEqual(persist.await_args.kwargs["tool_invocations"], [visual])
+
+    async def test_visual_html_is_streamed_and_stored_once(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1", user_id="user-1", session_factory=MagicMock()
+        )
+        html = "<html><body><svg>" + "x" * 500 + "</svg></body></html>"
+        arguments = json.dumps({"title": "Chart", "html": html})
+        output = await concept_note_render_visual.on_invoke_tool(
+            ToolContext(
+                context=None,
+                tool_call_id="call-1",
+                tool_name=concept_note_render_visual.name,
+                tool_arguments=arguments,
+            ),
+            arguments,
+        )
+        called = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                name="concept_note_render_visual",
+                call_id="call-1",
+                arguments=arguments,
+            )
+        )
+        finished = SimpleNamespace(
+            raw_item=SimpleNamespace(call_id="call-1"), output=output
+        )
+
+        chunks = [chunk async for chunk in handle_tool_called(handler, called)]
+        chunks += [chunk async for chunk in handle_tool_output(handler, finished)]
+        chunks.append(handler._format_completion_event("req-1", ok=True))
+        streamed = b"".join(chunks).decode("utf-8")
+
+        self.assertEqual(streamed.count(html), 1)
+        stored = json.dumps(handler._tool_invocations_for_persistence())
+        self.assertEqual(stored.count(html), 1)
+        self.assertEqual(
+            rendered_visuals(handler.tool_invocations),
+            [{"title": "Chart", "html": html}],
+        )
+
+    async def test_tool_only_turn_without_visual_is_not_persisted(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1", user_id="user-1", session_factory=MagicMock()
+        )
+        handler.tool_invocations = [
+            {
+                "name": "concept_note_render_visual",
+                "result_json": {
+                    "action": "concept_note.visual.render",
+                    "success": False,
+                    "data": None,
+                    "error_code": "visual_invalid_input",
+                },
+            },
+            {"name": "concept_note_gaps", "result_json": {"success": True}},
+        ]
+
+        with patch(
+            "app.utils.streaming_handler.persist_assistant_message",
+            AsyncMock(return_value=True),
+        ) as persist:
+            self.assertFalse(await handler.persist_message())
+
+        persist.assert_not_awaited()
 
     async def test_persist_refreshed_token_from_agent_service(self) -> None:
         handler = StreamingHandler(

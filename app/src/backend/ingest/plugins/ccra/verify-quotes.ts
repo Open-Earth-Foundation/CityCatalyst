@@ -19,6 +19,17 @@ export function normalizeForQuoteMatch(text: string): string {
     .trim();
 }
 
+/** Whether a quote occurs in normalized text; null when too short to tell. */
+export function isQuoteInText(
+  quote: string,
+  normalizedText: string,
+): boolean | null {
+  const normalizedQuote = normalizeForQuoteMatch(quote);
+  return normalizedQuote.length < MIN_QUOTE_CHARS
+    ? null
+    : normalizedText.includes(normalizedQuote);
+}
+
 export function verifyQuotes(
   values: CrvaDraftValue[],
   pages: ReadonlyMap<number, string>,

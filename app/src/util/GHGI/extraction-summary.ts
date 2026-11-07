@@ -106,14 +106,30 @@ export function isNetTotalLabel(label: string): boolean {
 export type ReconciliationTargets = {
   /** City totals: at least the share of the largest reported total of the year. */
   grand: number[];
-  /** Net totals: gross plus removals by value, or below the share and labeled as net. */
+  /** Net totals: gross plus removals by value, or labeled as net (zero included). */
   net: number[];
   /**
    * Totals and subtotals of forestry removals. Never a target: they stand for a part
    * of the city.
    */
   removals: number[];
+  /** Largest grand total, in absolute value: the scale of a deviation from a zero net. */
+  scale: number;
 };
+
+/**
+ * Relative distance of `value` from a target. A net total can be zero; the distance
+ * from it is then measured against the largest grand total (`scale`).
+ */
+export function targetDeviation(
+  value: number,
+  target: number,
+  scale: number,
+): number {
+  const denominator = target !== 0 ? Math.abs(target) : Math.abs(scale);
+  if (denominator === 0) return value === target ? 0 : Infinity;
+  return Math.abs(value - target) / denominator;
+}
 
 /** True when `value` is within the reconciliation tolerance of `expected`. */
 function withinTolerance(value: number, expected: number): boolean {
@@ -163,38 +179,48 @@ function netAndRemovalsByValue(
  * in any language and generic labels ("Total") work. A document without a net total
  * has no removals: words alone ("Sequestration") do not make a total removals.
  *
- * The share of the largest total is taken among the positive totals when there are
- * any: removals can exceed the gross (Masterton: -811,512 against 785,873) and would
- * raise the share every other total is held to. For the same reason a negative total
- * is a grand total only when the document has no positive one.
+ * A total labeled as the city net ("Total net emissions", zero included) is a net
+ * total whatever its size: a net 80% of the gross is still the net.
+ *
+ * The share of the largest total is taken among the positive totals that are not
+ * labeled net when there are any: removals can exceed the gross (Masterton: -811,512
+ * against 785,873) and would raise the share every other total is held to. For the
+ * same reason a negative total is a grand total only when the document has no
+ * positive one.
  */
 export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
   targetYear?: number | null,
 ): ReconciliationTargets {
-  // Totals and subtotals of the year without a scope: the city-wide parts.
-  const cityTotals = (totals ?? []).filter(
+  const ofYear = (totals ?? []).filter(
     (total) =>
       !total.scope &&
       Number.isFinite(total.value) &&
-      total.value !== 0 &&
       // A total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );
+  const labeledNet = (total: ReportedTotal) =>
+    isGrandTotal(total) && isNetTotalLabel(total.label);
+  // Totals and subtotals without a scope: the city-wide parts. Zero only as a net.
+  const cityTotals = ofYear.filter(
+    (total) => total.value !== 0 || labeledNet(total),
+  );
   const candidates = cityTotals.filter(isGrandTotal);
-  const positive = candidates.some((total) => total.value > 0);
+  const others = candidates.filter((total) => !labeledNet(total));
+  const positive = others.some((total) => total.value > 0);
   const largest = Math.max(
     0,
-    ...candidates
+    ...others
       .filter((total) => !positive || total.value > 0)
       .map((total) => Math.abs(total.value)),
   );
   const isGrand = (value: number) =>
+    value !== 0 &&
     (!positive || value > 0) &&
     Math.abs(value) >= largest * MIN_GRAND_TOTAL_SHARE;
 
   const byValue = netAndRemovalsByValue(
-    candidates.map((total) => total.value).filter(isGrand),
+    others.map((total) => total.value).filter(isGrand),
     cityTotals.map((total) => total.value),
   );
 
@@ -204,16 +230,17 @@ export function reconciliationTargets(
     if (byValue.removals.has(total.value) || byValue.net.has(total.value)) {
       continue;
     }
-    if (isGrand(total.value)) {
-      grand.add(total.value);
-    } else if (isNetTotalLabel(total.label)) {
+    if (labeledNet(total)) {
       net.add(total.value);
+    } else if (isGrand(total.value)) {
+      grand.add(total.value);
     }
   }
   return {
     grand: [...grand],
     net: [...net],
     removals: [...byValue.removals],
+    scale: Math.max(0, ...[...grand].map((value) => Math.abs(value))),
   };
 }
 
@@ -261,8 +288,11 @@ export function reconcileExtraction(
   let best = candidates[0];
   let bestDeviation = Infinity;
   for (const candidate of candidates) {
-    const deviation =
-      Math.abs(summary.importedSum - candidate) / Math.abs(candidate);
+    const deviation = targetDeviation(
+      summary.importedSum,
+      candidate,
+      targets.scale,
+    );
     if (deviation < bestDeviation) {
       best = candidate;
       bestDeviation = deviation;
@@ -330,6 +360,27 @@ export type RemovalsWarning =
   | { kind: "gross-only"; net: number };
 
 /**
+ * One removals figure out of several that match the same gross and net (the same total
+ * repeated on two pages, or rounded differently): they are alternative estimates, not
+ * parts to add. Takes the one closest to net - gross; without a net, the largest.
+ */
+function oneRemovals(
+  orphans: number[],
+  targets: ReconciliationTargets,
+): number {
+  const expected = targets.net.flatMap((net) =>
+    targets.grand.map((gross) => net - gross),
+  );
+  const distance = (value: number) =>
+    expected.length > 0
+      ? Math.min(...expected.map((e) => Math.abs(value - e)))
+      : -Math.abs(value);
+  return orphans.reduce((best, value) =>
+    distance(value) < distance(best) ? value : best,
+  );
+}
+
+/**
  * Warn when removals may be missing. Both causes can hold at once; then the orphan
  * warning wins, because it names the removals total. It informs and never blocks.
  */
@@ -344,15 +395,11 @@ export function removalsWarning(
   const net = targets.net[0] ?? null;
   const orphans = summary.orphanRemovals ?? [];
   if (orphans.length > 0) {
-    return {
-      kind: "orphan",
-      removals: orphans.reduce((sum, value) => sum + value, 0),
-      net,
-    };
+    return { kind: "orphan", removals: oneRemovals(orphans, targets), net };
   }
   if (net == null) return null;
   const reaches = (target: number) =>
-    Math.abs(summary.importedSum - target) / Math.abs(target) <=
+    targetDeviation(summary.importedSum, target, targets.scale) <=
     RECONCILIATION_TOLERANCE;
   if (targets.grand.some(reaches) && !targets.net.some(reaches)) {
     return { kind: "gross-only", net };

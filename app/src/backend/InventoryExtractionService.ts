@@ -16,6 +16,7 @@ import {
   namesRemovals,
   reconciliationTargets,
   removalsTotals,
+  targetDeviation,
   type DroppedRowReason,
   type ExtractionSummary,
   type ReportedTotal,
@@ -599,8 +600,8 @@ function selectPages(
       rowCount += fresh.length;
       structured += fresh.filter((r) => r.scope && r.gpcRefNo).length;
       if (rowCount === 0) continue;
-      const deviations = allTotals.map(
-        (total) => Math.abs(sum - total) / Math.abs(total),
+      const deviations = allTotals.map((total) =>
+        targetDeviation(sum, total, targets.scale),
       );
       const eligible = allTotals.map(
         (total) =>
@@ -675,9 +676,8 @@ function selectPages(
     // whole document reconciles with a reported total.
     const fallback = buildFallback();
     const wholeDeviation = Math.min(
-      ...allTotals.map(
-        (total) =>
-          Math.abs(fallback.summary.importedSum - total) / Math.abs(total),
+      ...allTotals.map((total) =>
+        targetDeviation(fallback.summary.importedSum, total, targets.scale),
       ),
     );
     logger.info(
@@ -732,17 +732,20 @@ function selectPages(
 const REMOVALS_GPC_REF = /^V\.2(\.|$)/i;
 
 /**
- * True when the rows hold a removals line item: a V.2 reference, or a sub-sector or
- * category that names forestry or removals. The sector alone does not count: the
- * livestock rows sit under "Agriculture, Forestry And Other Land Use" too.
+ * True when the rows hold a removals line item with a value: a V.2 reference, or a
+ * sub-sector or category that names forestry or removals. The sector alone does not
+ * count: the livestock rows sit under "Agriculture, Forestry And Other Land Use" too.
+ * A notation key (NE, NO) imports no amount, so it does not cover the removals.
  */
 function hasRemovalsLineItem(rows: ExtractedRow[]): boolean {
   return rows.some(
     (row) =>
-      (row.gpcRefNo != null && REMOVALS_GPC_REF.test(row.gpcRefNo)) ||
-      [row.subsector, row.category].some(
-        (text) => text != null && namesRemovals(text),
-      ),
+      row.totalCO2e != null &&
+      row.totalCO2e !== 0 &&
+      ((row.gpcRefNo != null && REMOVALS_GPC_REF.test(row.gpcRefNo)) ||
+        [row.subsector, row.category].some(
+          (text) => text != null && namesRemovals(text),
+        )),
   );
 }
 

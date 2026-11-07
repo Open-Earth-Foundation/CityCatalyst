@@ -547,3 +547,131 @@ describe("CC-1161 removals by arithmetic (removals = net - gross)", () => {
     expect(notes.removalsWarning).toEqual({ kind: "gross-only", net: NET });
   });
 });
+
+describe("CC-1161 PR review 2026-11-07 (Piotr)", () => {
+  const reported = (
+    value: number,
+    label: string,
+    extra: Partial<ReportedTotal> = {},
+  ): ReportedTotal => ({
+    label,
+    value,
+    year: 2021,
+    scope: null,
+    sector: null,
+    subsector: null,
+    level: "total",
+    ...extra,
+  });
+  const summaryOf = (
+    reportedTotals: ReportedTotal[],
+    importedSum: number,
+    orphanRemovals?: number[],
+  ) => ({
+    reportedTotals,
+    droppedRows: {},
+    importedSum,
+    yearAssumed: false,
+    targetYear: 2021,
+    pageSelection: "reconciled" as const,
+    selectedPages: [1],
+    ...(orphanRemovals ? { orphanRemovals } : {}),
+  });
+
+  it.each([800, 500, 499])(
+    "keeps a labelled net total of %d out of the grand totals and warns gross-only",
+    (net) => {
+      const totals = [
+        reported(1000, "Total gross emissions"),
+        reported(net, "Total net emissions"),
+      ];
+      const targets = reconciliationTargets(totals, 2021);
+      expect(targets.grand).toEqual([1000]);
+      expect(targets.net).toEqual([net]);
+      const notes = extractionReviewNotes(summaryOf(totals, 1000));
+      expect(notes.removalsWarning).toEqual({ kind: "gross-only", net });
+      expect(notes.reconciledPages).toEqual([]);
+    },
+  );
+
+  it("keeps a labelled net total of zero and compares against it", () => {
+    const totals = [
+      reported(1000, "Total gross emissions"),
+      reported(0, "Net emissions"),
+    ];
+    expect(reconciliationTargets(totals, 2021).net).toEqual([0]);
+    expect(
+      extractionReviewNotes(summaryOf(totals, 1000)).removalsWarning,
+    ).toEqual({ kind: "gross-only", net: 0 });
+    // A sum at the net zero reaches it: no warning, and no NaN deviation.
+    const atNet = extractionReviewNotes(summaryOf(totals, 3));
+    expect(atNet.removalsWarning).toBeNull();
+    expect(Number.isFinite(atNet.reconciliation?.deviation)).toBe(true);
+  });
+
+  it("does not take a labelled net total for the gross in the arithmetic", () => {
+    const targets = reconciliationTargets(
+      [
+        reported(1000, "Total gross emissions"),
+        reported(800, "Total net emissions"),
+        reported(-200, "Total", { level: "subtotal" }),
+      ],
+      2021,
+    );
+    expect(targets.grand).toEqual([1000]);
+    expect(targets.net).toEqual([800]);
+    expect(targets.removals).toEqual([-200]);
+  });
+
+  it("still warns orphan when the only forestry row is a notation key", () => {
+    const pages = (withNotation: boolean) => [
+      pageOf(5, [
+        total(1000, "Total gross emissions"),
+        total(800, "Total net emissions"),
+        row(null, null, -200, {
+          ...CITY,
+          rowType: "subtotal",
+          category: "Forestry",
+        }),
+      ]),
+      pageOf(12, [sectorRow("Stationary Energy", "Electricity", 500)]),
+      pageOf(13, [sectorRow("Transportation", "Diesel", 300)]),
+      pageOf(14, [
+        sectorRow("Waste", "Landfill", 185),
+        ...(withNotation
+          ? [
+              row("V.2.1", "1", null, {
+                sector: AFOLU,
+                subsector: "Land",
+                category: "Forest land",
+                notationKey: "NE",
+              }),
+            ]
+          : []),
+      ]),
+    ];
+    for (const withNotation of [false, true]) {
+      const result = selectReconciledPages(pages(withNotation), 2021);
+      expect(result.summary.orphanRemovals).toEqual([-200]);
+      expect(extractionReviewNotes(result.summary).removalsWarning).toEqual({
+        kind: "orphan",
+        removals: -200,
+        net: 800,
+      });
+    }
+  });
+
+  it("shows one removals figure, not the sum of alternative estimates", () => {
+    const totals = [
+      reported(1000, "Total gross emissions"),
+      reported(800, "Total net emissions"),
+      reported(-200, "Forestry", { level: "subtotal" }),
+      reported(-201, "Forestry (rounded)", { level: "subtotal" }),
+    ];
+    expect(removalsTotals(totals, 2021)).toEqual([-200, -201]);
+    expect(
+      extractionReviewNotes(summaryOf(totals, 1000, [-200, -201]))
+        .removalsWarning,
+    ).toEqual({ kind: "orphan", removals: -200, net: 800 });
+  });
+});

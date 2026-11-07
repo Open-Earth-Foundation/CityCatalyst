@@ -138,3 +138,14 @@ it("keeps the reconciled note and shows no removals warning without a net total"
   expect(text).toContain("import-pages-reconciled");
   expect(text).not.toContain("import-removals-title");
 });
+
+it("names the removals figure in the English orphan copy", async () => {
+  const { readFileSync } = await import("node:fs");
+  const en = JSON.parse(
+    readFileSync("src/i18n/locales/en/onboarding.json", "utf8"),
+  ) as Record<string, string>;
+  const copy = en["import-removals-orphan"].replace("{{removals}}", "811,512");
+  expect(copy).toBe(
+    "The document reports forestry removals of 811,512 tCO2e and totals with and without them. This import has no line items for the removals, so it matches the total without them. Confirm this is intended.",
+  );
+});

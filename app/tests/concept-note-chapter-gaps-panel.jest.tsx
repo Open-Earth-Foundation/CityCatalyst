@@ -224,6 +224,8 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
           number={4}
           onAnswerGap={onAnswerGap}
         />
+        {/* Stand-in for the answer form heading that opens in the chat panel. */}
+        <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
       </ChakraProvider>,
     ),
   );
@@ -253,4 +255,11 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
     expect.objectContaining({ id: "b" }),
   );
   expect(marker.getAttribute("aria-expanded")).toBe("false");
+  // Closing hands keyboard focus to the opened form, not back to the marker.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  });
+  expect(document.activeElement?.getAttribute("data-testid")).toBe(
+    "concept-note-gap-answer-heading",
+  );
 });

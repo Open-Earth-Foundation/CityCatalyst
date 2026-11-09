@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Flex, Icon, Text, chakra } from "@chakra-ui/react";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { LuArrowLeft, LuChevronRight, LuMessageSquare } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import {
@@ -217,6 +217,17 @@ function GapPopoverContent({
   );
 }
 
+/** After "Answer in chat", focus the opened answer form instead of the gap. */
+function answerFormFocus(answering: { current: boolean }) {
+  return () => {
+    if (!answering.current) return null;
+    answering.current = false;
+    return document.querySelector<HTMLElement>(
+      '[data-testid="concept-note-gap-answer-heading"]',
+    );
+  };
+}
+
 export function ChapterGapMarker({
   chapter,
   lng,
@@ -226,6 +237,7 @@ export function ChapterGapMarker({
 }: GapDetailProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
+  const answering = useRef(false);
   const critical = row.severity === "critical";
   return (
     <chakra.span
@@ -239,6 +251,7 @@ export function ChapterGapMarker({
         lazyMount
         open={open}
         onOpenChange={(details) => setOpen(details.open)}
+        finalFocusEl={answerFormFocus(answering)}
         positioning={{
           placement: "left-start",
           flip: true,
@@ -300,6 +313,7 @@ export function ChapterGapMarker({
             onAnswer={
               onAnswerGap &&
               (() => {
+                answering.current = true;
                 setOpen(false);
                 onAnswerGap(chapter, row);
               })
@@ -323,6 +337,7 @@ export function ChapterGapsPanel({
   const [selectedId, setSelected] = useState<string | null>(null);
   // Keyboard focus returns to the row whose details were just closed.
   const [returnId, setReturnId] = useState<string | null>(null);
+  const answering = useRef(false);
   const selected = rows.find((row) => row.id === selectedId);
   if (!rows.length) return null;
   const required = rows.filter((row) => row.severity === "critical").length;
@@ -351,6 +366,7 @@ export function ChapterGapsPanel({
           }
         }}
         positioning={{ placement: "bottom-end" }}
+        finalFocusEl={answerFormFocus(answering)}
       >
         <PopoverTrigger asChild>
           <Button
@@ -400,6 +416,7 @@ export function ChapterGapsPanel({
                 onAnswer={
                   onAnswerGap &&
                   (() => {
+                    answering.current = true;
                     setOpen(false);
                     setSelected(null);
                     onAnswerGap(chapter, selected);

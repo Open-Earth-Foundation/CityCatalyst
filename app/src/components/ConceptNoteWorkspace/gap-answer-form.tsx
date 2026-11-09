@@ -29,6 +29,8 @@ interface GapAnswerFormProps {
   request: GapAnswerRequest;
   lng: string;
   disabled: boolean;
+  /** Characters the combined answer may use within the edit request limit. */
+  answerLimit: number;
   /**
    * complete is true when every question has a substantive answer. Returns
    * false when the request is too long to send, so the form keeps the answers.
@@ -75,6 +77,7 @@ export function GapAnswerForm({
   request,
   lng,
   disabled,
+  answerLimit,
   onAnswer,
   onClose,
   onAddSource,
@@ -118,6 +121,19 @@ export function GapAnswerForm({
   // The unavailable fallback asks the original gap itself, so its answer covers it.
   const complete = request.row.gap !== null && answers.every(Boolean);
   const answered = answers.some(Boolean);
+  const answerText = [
+    ...questions.map(
+      ({ question: text }, index) =>
+        `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
+    ),
+    details.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  const charsLeft = answerLimit - answerText.length;
+  // Fields stop accepting text once the shared limit is used up.
+  const fieldMax = (value: string) =>
+    Math.min(2000, value.length + Math.max(0, charsLeft));
 
   useEffect(() => {
     // Reopening a saved draft keeps its questions, so its answers still match.
@@ -193,18 +209,7 @@ export function GapAnswerForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (disabled || loading || !answered) return;
-        const sent = onAnswer(
-          [
-            ...questions.map(
-              ({ question: text }, index) =>
-                `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
-            ),
-            details.trim(),
-          ]
-            .filter(Boolean)
-            .join("\n\n"),
-          complete,
-        );
+        const sent = onAnswer(answerText, complete);
         setTooLong(!sent);
         if (sent) saveDraft(draftKey, null);
       }}
@@ -231,6 +236,7 @@ export function GapAnswerForm({
             <Text
               ref={headingRef}
               tabIndex={-1}
+              data-testid="concept-note-gap-answer-heading"
               fontFamily="heading"
               fontSize="body.lg"
               fontWeight="semibold"
@@ -380,7 +386,7 @@ export function GapAnswerForm({
                   aria-label={text}
                   placeholder={t("gap-answer-placeholder")}
                   data-testid="concept-note-gap-custom-answer"
-                  maxLength={2000}
+                  maxLength={fieldMax(customAnswers[answerKey(index)] ?? "")}
                   rows={2}
                   fontSize="body.sm"
                 />
@@ -394,7 +400,7 @@ export function GapAnswerForm({
               onChange={(event) => setDetails(event.target.value)}
               placeholder={t("gap-details-placeholder")}
               data-testid="concept-note-gap-details"
-              maxLength={2000}
+              maxLength={fieldMax(details)}
               rows={2}
               fontSize="body.sm"
             />
@@ -409,26 +415,60 @@ export function GapAnswerForm({
             {t("gap-answer-later")}
           </Button>
         </HStack>
-        {tooLong && (
-          <Text
-            role="alert"
-            fontSize="body.sm"
-            color="sentiment.negativeDefault"
-          >
-            {t("gap-answer-too-long")}
-          </Text>
-        )}
-        <Button
-          type="submit"
-          bg="content.link"
-          disabled={disabled || loading || !answered}
-          data-testid="concept-note-gap-preview"
+        {/* Stays in view while the questions scroll, as the form's only submit. */}
+        <VStack
+          align="stretch"
+          gap={2}
+          position="sticky"
+          bottom={-4}
+          mx={-4}
+          px={4}
+          pt={3}
+          pb={4}
+          bg="base.light"
+          borderTop="1px solid"
+          borderColor="border.neutral"
         >
-          {t("gap-preview-change")}
-        </Button>
-        <Text fontSize="label.sm" color="content.tertiary" textAlign="center">
-          {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
-        </Text>
+          {tooLong && (
+            <Text
+              role="alert"
+              fontSize="body.sm"
+              color="sentiment.negativeDefault"
+            >
+              {t("gap-answer-too-long")}
+            </Text>
+          )}
+          {!loading && charsLeft < 2000 && (
+            <Text
+              aria-live="polite"
+              fontSize="label.sm"
+              textAlign="center"
+              color={
+                charsLeft > 0
+                  ? "content.secondary"
+                  : "sentiment.negativeDefault"
+              }
+              data-testid="concept-note-gap-chars-left"
+            >
+              {charsLeft > 0
+                ? t("gap-characters-left", {
+                    left: charsLeft.toLocaleString(lng),
+                  })
+                : t("gap-characters-full")}
+            </Text>
+          )}
+          <Button
+            type="submit"
+            bg="content.link"
+            disabled={disabled || loading || !answered || charsLeft < 0}
+            data-testid="concept-note-gap-preview"
+          >
+            {t("gap-preview-change")}
+          </Button>
+          <Text fontSize="label.sm" color="content.tertiary" textAlign="center">
+            {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
+          </Text>
+        </VStack>
       </VStack>
     </chakra.form>
   );

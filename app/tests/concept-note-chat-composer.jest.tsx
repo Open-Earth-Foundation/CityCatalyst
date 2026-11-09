@@ -520,7 +520,7 @@ it("falls back to free text on failure and drops it when a retry changes the que
   expect(previewButton().disabled).toBe(true);
 });
 
-it("keeps the form and answers when the request exceeds the edit limit", async () => {
+it("counts down the shared edit limit and stops answers before it is exceeded", async () => {
   fetchQuestion.mockResolvedValue({
     ok: true,
     json: async () => ({
@@ -532,18 +532,28 @@ it("keeps the form and answers when the request exceeds the edit limit", async (
     }),
   } as Response);
   await renderPanel(contextStatus, "thread", gapAnswer);
-  for (const index of [0, 1, 2, 3]) await writeAnswer(index, "x".repeat(2000));
-  await act(async () => previewButton().click());
+  // The form replaces the chat box, so Preview is its only submit.
+  expect(
+    container.querySelector('[data-testid="concept-note-chat-input"]'),
+  ).toBeNull();
+  const field = (index: number) =>
+    subQuestion(index).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!;
+  const charsLeft = () =>
+    container.querySelector('[data-testid="concept-note-gap-chars-left"]');
+  for (const index of [0, 1, 2]) await writeAnswer(index, "x".repeat(2000));
+  expect(charsLeft()?.textContent).toBe("gap-characters-left");
+  // The last field may only take what is left of the shared limit.
+  expect(field(3).maxLength).toBeLessThan(2000);
+  // Text set past the limit (the browser would refuse to type it) blocks Preview.
+  await writeAnswer(3, "x".repeat(2000));
+  expect(charsLeft()?.textContent).toBe("gap-characters-full");
+  expect(previewButton().disabled).toBe(true);
+  await act(async () => previewButton().form!.requestSubmit());
   expect(sendMessage).not.toHaveBeenCalled();
   expect(closeGap).not.toHaveBeenCalled();
-  expect(container.querySelector('[role="alert"]')?.textContent).toBe(
-    "gap-answer-too-long",
-  );
-  expect(
-    subQuestion(3).querySelector<HTMLTextAreaElement>(
-      '[data-testid="concept-note-gap-custom-answer"]',
-    )!.value,
-  ).toHaveLength(2000);
+  expect(field(3).value).toHaveLength(2000);
 });
 
 it("keeps an undecided answer explicit instead of selecting an invented fact", async () => {
@@ -599,8 +609,8 @@ it("preserves apostrophes, ampersands and source URLs in the plain-text gap answ
   await renderPanel(contextStatus, "thread", gapAnswer);
   const answer =
     "EIB's PPP & financing details: https://www.eib.org/en/projects";
-  await type(answer);
-  await pressEnter();
+  await writeAnswer(1, answer);
+  await act(async () => previewButton().click());
   expect(sendMessage.mock.calls[0][0]).toContain(answer);
   expect(sendMessage.mock.calls[0][0]).not.toContain("&#");
   expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");

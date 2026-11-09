@@ -376,7 +376,8 @@ export function ConceptNoteChatPanel({
     composer.style.height = `${height}px`;
     composer.style.overflowY =
       composer.scrollHeight > COMPOSER_MAX_HEIGHT_PX ? "auto" : "hidden";
-  }, [input]);
+    // The composer remounts when a gap form closes.
+  }, [input, gapAnswer]);
 
   async function submitMessage(
     event: FormEvent<HTMLFormElement>,
@@ -386,18 +387,13 @@ export function ConceptNoteChatPanel({
     if (chatDisabled || !content) {
       return;
     }
-    if (gapAnswer) {
-      // Keep the typed text when the gap request would be too long to send.
-      if (answerGap(content)) setInput("");
-      return;
-    }
     setInput("");
     followLatestRef.current = true;
     await sendChatMessage(content);
   }
 
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
-  function answerGap(answer: string, complete = false): boolean {
+  function answerGap(answer: string, complete: boolean): boolean {
     if (!gapAnswer || chatDisabled) return false;
     // Only a complete answer may replace the marker; that is what closes the gap.
     const content = t(
@@ -420,6 +416,22 @@ export function ConceptNoteChatPanel({
     void sendChatMessage(content, scope);
     return true;
   }
+
+  // Answers share the edit request limit with the request text that wraps them.
+  const gapAnswerLimit = gapAnswer
+    ? EDIT_INSTRUCTION_MAX_CHARS -
+      Math.max(
+        ...["gap-answer-request", "gap-answer-complete-request"].map(
+          (key) =>
+            t(key, {
+              chapter: gapAnswer.chapterTitle,
+              question: gapAnswer.row.question,
+              answer: "",
+              interpolation: { escapeValue: false },
+            }).length,
+        ),
+      )
+    : 0;
 
   return (
     <VStack
@@ -521,6 +533,7 @@ export function ConceptNoteChatPanel({
             request={gapAnswer}
             lng={lng}
             disabled={chatDisabled}
+            answerLimit={gapAnswerLimit}
             onAnswer={answerGap}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
@@ -698,19 +711,18 @@ export function ConceptNoteChatPanel({
         )}
       </VStack>
 
-      <chakra.form
-        ref={formRef}
-        borderTop="1px solid"
-        borderColor="border.neutral"
-        p={4}
-        flexShrink={0}
-        onSubmit={submitMessage}
-      >
-        <Box mb={!chatDisabled && threadId ? 3 : 0}>
-          {!gapAnswer &&
-            !chatDisabled &&
-            threadId &&
-            !messages.at(-1)?.choices && (
+      {/* The gap form has its own submit, so the chat box would be a second one. */}
+      {!gapAnswer && (
+        <chakra.form
+          ref={formRef}
+          borderTop="1px solid"
+          borderColor="border.neutral"
+          p={4}
+          flexShrink={0}
+          onSubmit={submitMessage}
+        >
+          <Box mb={!chatDisabled && threadId ? 3 : 0}>
+            {!chatDisabled && threadId && !messages.at(-1)?.choices && (
               <ChatSuggestions
                 runId={runId}
                 threadId={threadId}
@@ -725,91 +737,86 @@ export function ConceptNoteChatPanel({
                 }}
               />
             )}
-        </Box>
-        <Flex align="flex-end" gap={3}>
-          <Textarea
-            data-testid="concept-note-chat-input"
-            aria-label={t("chat-input-placeholder")}
-            ref={inputRef}
-            value={input}
-            rows={1}
-            resize="none"
-            disabled={composerDisabled}
-            aria-describedby={
-              contextBlocked ? "concept-note-chat-blocked" : undefined
-            }
-            placeholder={
-              threadId
-                ? t(
-                    gapAnswer
-                      ? "gap-chat-placeholder"
-                      : "chat-input-placeholder",
-                  )
-                : t("chat-unavailable")
-            }
-            bg="base.light"
-            borderColor="border.neutral"
-            minH="52px"
-            minW={0}
-            flex={1}
-            py="15px"
-            fontSize="14px"
-            lineHeight="20px"
-            borderRadius="rounded"
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={submitOnEnter}
-          />
-          <Button
-            type="submit"
-            data-testid="concept-note-chat-send"
-            boxSize="48px"
-            minW="48px"
-            flexShrink={0}
-            bg="interactive.primary"
-            _hover={{
-              bg: "interactive.primary",
-              color: "base.light",
-              opacity: 0.9,
-            }}
-            _disabled={{
-              bg: "interactive.primary",
-              color: "base.light",
-              opacity: 1,
-              cursor: "not-allowed",
-              _hover: {
+          </Box>
+          <Flex align="flex-end" gap={3}>
+            <Textarea
+              data-testid="concept-note-chat-input"
+              aria-label={t("chat-input-placeholder")}
+              ref={inputRef}
+              value={input}
+              rows={1}
+              resize="none"
+              disabled={composerDisabled}
+              aria-describedby={
+                contextBlocked ? "concept-note-chat-blocked" : undefined
+              }
+              placeholder={
+                threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+              }
+              bg="base.light"
+              borderColor="border.neutral"
+              minH="52px"
+              minW={0}
+              flex={1}
+              py="15px"
+              fontSize="14px"
+              lineHeight="20px"
+              borderRadius="rounded"
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={submitOnEnter}
+            />
+            <Button
+              type="submit"
+              data-testid="concept-note-chat-send"
+              boxSize="48px"
+              minW="48px"
+              flexShrink={0}
+              bg="interactive.primary"
+              _hover={{
+                bg: "interactive.primary",
+                color: "base.light",
+                opacity: 0.9,
+              }}
+              _disabled={{
                 bg: "interactive.primary",
                 color: "base.light",
                 opacity: 1,
-              },
-            }}
-            p={0}
-            disabled={chatDisabled || !input.trim()}
-            loading={isGenerating}
-            size="xs"
-            variant="solid"
-            aria-label={t("send-message")}
-          >
-            <Icon as={LuArrowUp} boxSize={5} />
-          </Button>
-        </Flex>
-        {contextBlocked && (
-          <Text
-            id="concept-note-chat-blocked"
-            mt={2}
-            fontSize="label.sm"
-            color="content.secondary"
-          >
-            {contextState === "failed"
-              ? t("chat-context-failed-help")
-              : t("chat-waiting-for-context-help")}
-          </Text>
-        )}
-        {!threadId && (
-          <Text mt={2} fontSize="label.sm" color="content.tertiary">
-            {t("chat-thread-unavailable")}
-          </Text>
-        )}
-      </chakra.form>
+                cursor: "not-allowed",
+                _hover: {
+                  bg: "interactive.primary",
+                  color: "base.light",
+                  opacity: 1,
+                },
+              }}
+              p={0}
+              disabled={chatDisabled || !input.trim()}
+              loading={isGenerating}
+              size="xs"
+              variant="solid"
+              aria-label={t("send-message")}
+            >
+              <Icon as={LuArrowUp} boxSize={5} />
+            </Button>
+          </Flex>
+          {contextBlocked && (
+            <Text
+              id="concept-note-chat-blocked"
+              mt={2}
+              fontSize="label.sm"
+              color="content.secondary"
+            >
+              {contextState === "failed"
+                ? t("chat-context-failed-help")
+                : t("chat-waiting-for-context-help")}
+            </Text>
+          )}
+          {!threadId && (
+            <Text mt={2} fontSize="label.sm" color="content.tertiary">
+              {t("chat-thread-unavailable")}
+            </Text>
+          )}
+        </chakra.form>
+      )}
     </VStack>
   );
 }

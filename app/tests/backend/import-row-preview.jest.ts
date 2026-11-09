@@ -174,7 +174,7 @@ describe("previewImportRows", () => {
     expect(preview).toMatchObject({ importedRows: 1, rows: [] });
   });
 
-  it("falls back to the extracted row position when there is no file row number", async () => {
+  it("falls back to Excel row index+2 when there is no file row number", async () => {
     jest
       .spyOn(InventoryProgressService, "getSortedInventoryStructure")
       .mockResolvedValue(STRUCTURE);
@@ -184,7 +184,46 @@ describe("previewImportRows", () => {
       InventoryTypeEnum.GPC_BASIC,
     );
 
-    expect(preview.rows[0].rowNumber).toBe(5);
+    expect(preview.rows[0].rowNumber).toBe(6);
+  });
+});
+
+describe("ECRFImportService.fromExtractedRows empty rows", () => {
+  it("keeps empty extracted rows as skipped with the Excel row number", async () => {
+    jest.spyOn(db.models.Scope, "findAll").mockResolvedValue([
+      { scopeId: "scope-1", scopeName: "1" },
+    ] as never);
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector-I",
+      subsectorId: "subsector-I.1",
+      subcategoryId: "subcategory-I.1.1",
+      scopeId: "scope-1",
+    } as Awaited<ReturnType<typeof ECRFImportService.lookupGPCReference>>);
+
+    const result = await ECRFImportService.fromExtractedRows([
+      {
+        year: null,
+        sector: null,
+        subsector: null,
+        category: null,
+        totalCO2e: null,
+        sourceRowNumber: 11,
+      },
+      {
+        year: 2021,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        scope: "1",
+        category: "Residential Buildings",
+        totalCO2e: 10,
+        sourceRowNumber: 12,
+      },
+    ]);
+
+    expect(result.rowCount).toBe(2);
+    expect(result.rows[0].issue).toBe("no-value-or-notation-key");
+    expect(result.rows[0].sourceRowNumber).toBe(11);
+    expect(result.warnings[0]).toMatch(/^Row 11:/);
   });
 });
 

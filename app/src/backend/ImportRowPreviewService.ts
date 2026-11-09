@@ -20,6 +20,7 @@ import type {
   ImportRowPreview,
   ImportRowReview,
 } from "@/util/types";
+import { excelRowNumber } from "@/util/excel-row-number";
 
 type ImportRow = ECRFImportResult["rows"][number];
 
@@ -149,7 +150,7 @@ export async function previewImportRows(
 
   for (const row of importResult.rows) {
     const outcome = {
-      rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+      rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
       gpcRefNo: row.gpcRefNo || null,
       sourceLabel: row.sourceLabel ?? null,
       notationKey: row.notationKey ?? null,
@@ -182,7 +183,7 @@ export async function previewImportRows(
     const held = pending.get(row.rowIndex);
     if (held) {
       outcomes.push({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
@@ -207,7 +208,7 @@ export async function previewImportRows(
         : null;
       if (tonnes != null) omittedFromTotalTonnes += tonnes;
       outcomes.push({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
@@ -236,7 +237,7 @@ export async function previewImportRows(
     scopeWarnings: importedRows
       .filter((row) => row.review && scopeFromLabel(row.review.scope) == null)
       .map((row) => ({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         scope: row.review?.scope ?? null,
       })),

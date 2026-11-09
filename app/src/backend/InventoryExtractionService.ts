@@ -19,6 +19,11 @@ import {
 } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
+  detectNumberStyle,
+  parseNumberString,
+  type NumberStyle,
+} from "@/util/GHGI/source-text";
+import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
   namesRemovals,
@@ -1104,6 +1109,7 @@ async function extractByChunks(
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
+  const style = detectNumberStyle(documentContent);
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -1112,7 +1118,7 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(content, yearInstruction, false);
+    allRows = await extractSegment(content, yearInstruction, false, style);
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -1127,7 +1133,7 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegment(chunk, segmentPrefix, true),
+      async (chunk) => extractSegment(chunk, segmentPrefix, true, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1265,6 +1271,7 @@ async function extractSegment(
   content: string,
   prefix: string,
   isSegment: boolean,
+  style: NumberStyle = detectNumberStyle(content),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
@@ -1294,7 +1301,7 @@ async function extractSegment(
   logger.debug({ extractionResponse: truncated }, "Extraction LLM output");
 
   const parsed = parseExtractionResponse(responseContent);
-  return normalizeRows(parsed);
+  return normalizeRows(parsed, style);
 }
 
 /**
@@ -1541,11 +1548,6 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   );
 }
 
-/** Strip commas and spaces used as thousands separators so "48,000" and "48 000" parse correctly. */
-function normalizeNumberString(s: string): string {
-  return String(s).replace(/,/g, "").replace(/\s+/g, "").trim();
-}
-
 /** Treat "-", "N/A", empty as missing (model sometimes outputs these instead of null). */
 function isPlaceholderOrEmpty(s: string): boolean {
   const t = s.trim().toLowerCase();
@@ -1561,7 +1563,10 @@ function normalizeScopeString(s: string): "1" | "2" | "3" | null {
   return null;
 }
 
-function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
+function normalizeRows(
+  raw: Record<string, unknown>[],
+  style: NumberStyle,
+): ExtractedRow[] {
   return raw.map((row) => {
     const out: ExtractedRow = {
       year: null,
@@ -1588,7 +1593,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
       out.totalCO2e = row.totalCO2e;
     } else if (typeof row.totalCO2e === "string") {
-      const n = parseFloat(normalizeNumberString(row.totalCO2e));
+      const n = parseNumberString(row.totalCO2e, style);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
     if (row.refSource === "document" || row.refSource === "inferred") {
@@ -1625,19 +1630,19 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
-      const n = parseFloat(normalizeNumberString(row.co2));
+      const n = parseNumberString(row.co2, style);
       if (Number.isFinite(n)) out.co2 = n;
     }
     if (typeof row.ch4 === "number" && Number.isFinite(row.ch4)) {
       out.ch4 = row.ch4;
     } else if (typeof row.ch4 === "string") {
-      const n = parseFloat(normalizeNumberString(row.ch4));
+      const n = parseNumberString(row.ch4, style);
       if (Number.isFinite(n)) out.ch4 = n;
     }
     if (typeof row.n2o === "number" && Number.isFinite(row.n2o)) {
       out.n2o = row.n2o;
     } else if (typeof row.n2o === "string") {
-      const n = parseFloat(normalizeNumberString(row.n2o));
+      const n = parseNumberString(row.n2o, style);
       if (Number.isFinite(n)) out.n2o = n;
     }
     if (typeof row.source === "string" && !isPlaceholderOrEmpty(row.source))
@@ -1676,7 +1681,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       typeof row.activityAmount === "string" &&
       !isPlaceholderOrEmpty(row.activityAmount)
     ) {
-      const n = parseFloat(normalizeNumberString(row.activityAmount));
+      const n = parseNumberString(row.activityAmount, style);
       if (Number.isFinite(n)) out.activityAmount = n;
     }
     return out;

@@ -63,3 +63,18 @@ describe("parseArgs", () => {
     ).toBe(true);
   });
 });
+
+describe("parseArgs --rescore", () => {
+  it("takes the results file and needs no selection", () => {
+    const options = parseArgs(["--rescore", "runs/x/results.json"]);
+    expect(options.rescore).toBe("runs/x/results.json");
+    expect(parseArgs(["--cases", "C-004"]).rescore).toBeUndefined();
+  });
+
+  it("needs a value and never updates the baseline", () => {
+    expect(() => parseArgs(["--rescore"])).toThrow(/needs a value/);
+    expect(() =>
+      parseArgs(["--rescore", "results.json", "--update-baseline"]),
+    ).toThrow("a rescore cannot update the baseline");
+  });
+});

@@ -3,6 +3,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  writeFileSync,
   rmSync,
   existsSync,
 } from "node:fs";
@@ -15,6 +16,8 @@ import {
   costUsd,
   groupSummary,
   totalUsage,
+  appendIndexLine,
+  INDEX_HEADER,
   renderIndexLine,
   renderReport,
   runFolderName,
@@ -367,6 +370,43 @@ describe("report", () => {
     const line = renderIndexLine(s, [block({})], "folder");
     expect(line).toContain("68%");
     expect(line).toContain("[folder](./folder/report.md)");
+  });
+
+  it("marks a rescore in the header and names the source run", () => {
+    const rescoredFrom = {
+      measuredAt: "2026-10-31T04:18:42.240Z",
+      commit: "34131e4ec",
+    };
+    const s = { ...summary([result("A", 0.5)]), rescoredFrom };
+    const report = render(s);
+    expect(report.split("\n")[0]).toContain("(rescore)");
+    expect(report).toContain(
+      "Rescored from the run of 2026-10-31 04:18 UTC (`34131e4ec`)",
+    );
+    expect(renderIndexLine(s, [block({})], "folder")).toContain("(rescore)");
+  });
+
+  it("appends index lines under the new table, below earlier content", () => {
+    const path = join(tmp(), "INDEX.md");
+    const earlier = "# Runs\n\n## Earlier runs\n\n| a |\n| --- |\n| 1 |\n";
+    writeFileSync(path, earlier);
+    appendIndexLine(path, "| first |");
+    appendIndexLine(path, "| second |");
+    const text = readFileSync(path, "utf8");
+    expect(text.startsWith(earlier)).toBe(true);
+    expect(text.split(INDEX_HEADER)).toHaveLength(2);
+    expect(text.indexOf("| first |")).toBeGreaterThan(
+      text.indexOf(INDEX_HEADER),
+    );
+    expect(text.indexOf("| second |")).toBeGreaterThan(
+      text.indexOf("| first |"),
+    );
+  });
+
+  it("creates the index with the header when it does not exist", () => {
+    const path = join(tmp(), "sub", "INDEX.md");
+    appendIndexLine(path, "| only |");
+    expect(readFileSync(path, "utf8")).toBe(`${INDEX_HEADER}| only |\n`);
   });
 
   it("names the folder from date, time and sha", () => {

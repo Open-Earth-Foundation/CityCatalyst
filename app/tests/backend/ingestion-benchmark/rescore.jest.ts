@@ -94,4 +94,16 @@ describe("rescoreCase", () => {
     expect(rescored.runs[1]).toBe(failed);
     expect(rescored.stableTotal).toBe(false);
   });
+
+  it("scores a total-only case on the total, not row by row", () => {
+    const stored = [
+      { gpc: "I.1.1", scope: "1", valueT: 100, omit: false, notation: null },
+    ];
+    const rescored = rescoreCase(
+      { ...result([run(1, { stored })]), totalOnly: true },
+      key,
+    );
+    expect(rescored.runs[0].score?.rowRecall).toBeNull();
+    expect(rescored.runs[0].score?.totalWithinTolerance).toBe(true);
+  });
 });

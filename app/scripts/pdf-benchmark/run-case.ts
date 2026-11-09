@@ -23,6 +23,7 @@ import {
   scoreFile,
   type StoredValue,
 } from "@/backend/ingestion-benchmark/score";
+import { scoringKey } from "@/backend/ingestion-benchmark/rescore";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import { Auth, type AppSession } from "@/lib/auth";
 import {
@@ -595,7 +596,7 @@ export async function runAttempt(
 
     stage = "readback";
     const back = await readBack(ctx, ids.inventory);
-    const score = scoreFile(key, back.stored);
+    const score = scoreFile(scoringKey(key, entry.totalOnly), back.stored);
     const hitLimit = (usage.lengthStops ?? 0) > 0;
     const truncated = hitLimit || failedPages.length > 0;
     return finish({

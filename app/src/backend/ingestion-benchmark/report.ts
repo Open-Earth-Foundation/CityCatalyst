@@ -6,8 +6,14 @@
  * One folder per run, named `<UTC date>-<UTC time>-<short sha>`.
  */
 import { execFileSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
 import type { CaseGate } from "@/backend/ingestion-benchmark/gate";
 import type {
   BlockSummary,
@@ -117,6 +123,8 @@ export type RunSummary = {
   dirty: boolean;
   mlflowRunUrl: string | null;
   mlflowNote: string | null;
+  /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
+  rescoredFrom?: { measuredAt: string; commit: string };
 };
 
 export type CaseMetrics = {
@@ -356,7 +364,7 @@ export function renderReport(
   const gateById = new Map(gates.map((g) => [g.id, g]));
   const usage = totalUsage(summary.results);
   const cost = costUsd(usage, summary.prices);
-  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}`;
+  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}`;
   const lines: string[] = [
     title,
     "",
@@ -366,6 +374,11 @@ export function renderReport(
     `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
     `- Test-set version: ${summary.testSetVersion}`,
     `- Attempts per case: ${summary.runsPerFile}`,
+    ...(summary.rescoredFrom
+      ? [
+          `- Rescored from the run of ${summary.rescoredFrom.measuredAt.slice(0, 16).replace("T", " ")} UTC (\`${summary.rescoredFrom.commit}\`) with the current scorer and answer keys; no OCR or LLM call was made`,
+        ]
+      : []),
     `- Selection: ${summary.selection.length ? summary.selection.join(", ") : "none"}`,
     `- MLflow: ${summary.mlflowRunUrl ?? summary.mlflowNote ?? "not logged"}`,
     "",
@@ -483,7 +496,7 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}`;
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md) |`;
 }
@@ -497,6 +510,20 @@ export const INDEX_HEADER = [
   "| --- | --- | --- | --- | --- | --- | --- |",
   "",
 ].join("\n");
+
+/**
+ * Appends one run line to INDEX.md. The new table (INDEX_HEADER) is added at
+ * the end of the file when missing, so earlier tables above it stay untouched.
+ */
+export function appendIndexLine(indexPath: string, line: string): void {
+  mkdirSync(dirname(indexPath), { recursive: true });
+  const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  if (!current.includes(INDEX_HEADER)) {
+    const gap = current === "" || current.endsWith("\n") ? "" : "\n";
+    appendFileSync(indexPath, `${gap}${INDEX_HEADER}`);
+  }
+  appendFileSync(indexPath, `${line}\n`);
+}
 
 export function gitInfo(): { commit: string; branch: string } {
   const git = (...args: string[]) => {

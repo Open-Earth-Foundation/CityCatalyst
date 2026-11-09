@@ -11,13 +11,7 @@
  */
 import env from "@next/env";
 import { execFileSync } from "node:child_process";
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import {
   loadAnswerKeys,
@@ -49,8 +43,14 @@ import {
   mlflowConfigFromEnv,
 } from "@/backend/ingestion-benchmark/mlflow";
 import {
-  INDEX_HEADER,
+  adaptLegacySummary,
+  type LegacySummary,
+} from "@/backend/ingestion-benchmark/legacy-results";
+import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import {
   ZERO_TOKENS,
+  appendIndexLine,
+  caseMetrics,
   caseUsage,
   costUsd,
   gitInfo,
@@ -94,11 +94,11 @@ function readJson<T>(path: string, what: string): T {
   }
 }
 
-function loadConfig(path: string): LocalConfig {
+function loadConfig(path: string, needPdfDir = true): LocalConfig {
   const raw = readJson<Partial<LocalConfig>>(path, "Local config");
-  if (!raw.pdfDir || !raw.answerKeys) {
+  if ((needPdfDir && !raw.pdfDir) || !raw.answerKeys) {
     throw new ConfigError(
-      `Local config ${path} needs "pdfDir" and "answerKeys" (see benchmarks/pdf/config.example.json)`,
+      `Local config ${path} needs ${needPdfDir ? '"pdfDir" and ' : ""}"answerKeys" (see benchmarks/pdf/config.example.json)`,
     );
   }
   return { ...raw, outRoot: raw.outRoot ?? DEFAULT_OUT_ROOT } as LocalConfig;
@@ -200,6 +200,120 @@ function missingInputs(
   return missing;
 }
 
+/**
+ * Rescores the stored values of an earlier run with the current scorer and
+ * answer keys. Needs no database, LLM, OCR or PDF, and never touches the
+ * baseline.
+ */
+async function rescoreRun(options: CliOptions): Promise<number> {
+  let config: LocalConfig;
+  let manifest: CaseManifestEntry[];
+  let keys: Record<string, KeyFile>;
+  let allPrices: Record<string, Prices>;
+  let old: LegacySummary;
+  try {
+    config = loadConfig(resolve(options.configPath), false);
+    manifest = loadManifest(MANIFEST_PATH);
+    keys = loadAnswerKeys(config.answerKeys);
+    allPrices = readJson<Record<string, Prices>>(PRICES_PATH, "Prices file");
+    old = readJson<LegacySummary>(resolve(options.rescore!), "Results file");
+    if (!Array.isArray(old.results)) {
+      throw new ConfigError(
+        `Results file has no "results": ${options.rescore}`,
+      );
+    }
+  } catch (error) {
+    console.error((error as Error).message);
+    return 2;
+  }
+  const outRoot = resolve(config.outRoot);
+  const before = adaptLegacySummary(old, manifest).filter(
+    (result) =>
+      keys[result.id] &&
+      manifest.some((e) => e.id.toLowerCase() === result.id.toLowerCase()),
+  );
+  const missingKeys = old.results
+    .map((result) => result.id)
+    .filter((id) => !before.some((result) => result.id === id));
+  if (missingKeys.length) {
+    console.warn(
+      `No answer key or manifest entry for ${missingKeys.join(", ")}: left out of the rescore`,
+    );
+  }
+  const results = before.map((result) => rescoreCase(result, keys[result.id]));
+  const extractionModel = old.extractionModel ?? old.llmModel;
+  const prices =
+    old.prices ?? (extractionModel ? allPrices[extractionModel] : undefined);
+
+  const caseVersions = results.map((result) =>
+    caseTestSetVersion(
+      manifest.find((e) => e.id.toLowerCase() === result.id.toLowerCase())!,
+      keys[result.id],
+    ),
+  );
+  const verdicts = results.map((result) =>
+    caseVerdict(result, keys[result.id], prices),
+  );
+  const manifestCounts = (["validated", "held-out", "dev"] as Block[]).reduce(
+    (acc, block) => ({
+      ...acc,
+      [block]: manifest.filter((entry) => entry.block === block).length,
+    }),
+    {} as Record<Block, number>,
+  );
+  const blocks = blockSummaries(verdicts, manifestCounts);
+  const summary: RunSummary = {
+    measuredAt: new Date().toISOString(),
+    ...gitInfo(),
+    llmModel: old.llmModel,
+    extractionModel: old.extractionModel,
+    reasoningEffort: old.reasoningEffort,
+    ocrModel: old.ocrModel,
+    prices,
+    runsPerFile: old.runsPerFile ?? 3,
+    heldOut: old.heldOut,
+    results,
+    selection: results.map((result) => result.id),
+    exploratory: (old.runsPerFile ?? 3) !== 3,
+    interrupted: false,
+    promptHash: old.promptHash ?? null,
+    inputRepresentation: old.inputRepresentation ?? null,
+    testSetVersion: combinedTestSetVersion(caseVersions),
+    dirty: dirty(),
+    mlflowRunUrl: null,
+    mlflowNote: "not logged (rescore)",
+    rescoredFrom: { measuredAt: old.measuredAt, commit: old.commit },
+  };
+  const runFolder = writeRunArtifact({
+    outRoot,
+    summary,
+    verdicts,
+    blocks,
+    gates: [],
+  });
+  appendIndexLine(
+    join(outRoot, "INDEX.md"),
+    renderIndexLine(
+      summary,
+      blocks,
+      runFolderName(summary.measuredAt, summary.commit),
+    ),
+  );
+
+  const pct = (value: number | null) =>
+    value === null ? "n/a" : `${Math.round(value * 100)}%`;
+  console.log("case\trecall old -> new\tvalue accuracy old -> new");
+  before.forEach((result, index) => {
+    const was = caseMetrics(result);
+    const now = caseMetrics(results[index]);
+    console.log(
+      `${result.id}\t${pct(was.rowRecall)} -> ${pct(now.rowRecall)}\t${pct(was.valueAccuracy)} -> ${pct(now.valueAccuracy)}`,
+    );
+  });
+  console.log(`Rescore folder: ${runFolder}`);
+  return 0;
+}
+
 export async function main(argv: string[]): Promise<number> {
   let options: CliOptions;
   try {
@@ -208,6 +322,8 @@ export async function main(argv: string[]): Promise<number> {
     console.error((error as Error).message);
     return 2;
   }
+
+  if (options.rescore) return rescoreRun(options);
 
   // Environment first: product modules read it when they load.
   env.loadEnvConfig(process.cwd());
@@ -463,12 +579,9 @@ export async function main(argv: string[]): Promise<number> {
     }
 
     const folderName = runFolderName(summary.measuredAt, summary.commit);
-    mkdirSync(outRoot, { recursive: true });
-    const indexPath = join(outRoot, "INDEX.md");
-    if (!existsSync(indexPath)) writeFileSync(indexPath, INDEX_HEADER);
-    appendFileSync(
-      indexPath,
-      `${renderIndexLine(summary, blocks, folderName)}\n`,
+    appendIndexLine(
+      join(outRoot, "INDEX.md"),
+      renderIndexLine(summary, blocks, folderName),
     );
 
     if (options.updateBaseline) {

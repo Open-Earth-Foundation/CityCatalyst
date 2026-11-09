@@ -15,10 +15,18 @@ export function stableTotal(result: CaseResult): boolean {
   return totals.length > 1 && new Set(totals).size === 1;
 }
 
+/** Total-only cases are scored on the total: the scorer reads that from `nonGpc`. */
+export function scoringKey(key: KeyFile, totalOnly: boolean): KeyFile {
+  return totalOnly ? { ...key, nonGpc: true } : key;
+}
+
 export function rescoreCase(result: CaseResult, key: KeyFile): CaseResult {
   const runs = result.runs.map((entry) =>
     entry.ok && entry.stored
-      ? { ...entry, score: scoreFile(key, entry.stored) }
+      ? {
+          ...entry,
+          score: scoreFile(scoringKey(key, result.totalOnly), entry.stored),
+        }
       : entry,
   );
   const rescored = { ...result, keyId: key.id, runs };

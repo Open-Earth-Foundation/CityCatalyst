@@ -10,6 +10,8 @@ export type CliOptions = {
   updateBaseline: boolean;
   noMlflow: boolean;
   configPath: string;
+  /** Results file of an earlier run to rescore with the current scorer and keys. */
+  rescore?: string;
 };
 
 export const DEFAULT_CONFIG_PATH = "benchmarks/pdf/config.local.json";
@@ -59,6 +61,9 @@ export function parseArgs(argv: string[]): CliOptions {
       case "--config":
         options.configPath = valueOf(flag, i++);
         break;
+      case "--rescore":
+        options.rescore = valueOf(flag, i++);
+        break;
       case "--eligible":
         options.eligible = true;
         break;
@@ -81,6 +86,9 @@ export function parseArgs(argv: string[]): CliOptions {
 
   if (options.updateBaseline && options.runs !== REQUIRED_RUNS) {
     throw new Error("exploratory runs cannot update the baseline");
+  }
+  if (options.updateBaseline && options.rescore) {
+    throw new Error("a rescore cannot update the baseline");
   }
   return options;
 }

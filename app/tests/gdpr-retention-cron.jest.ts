@@ -9,13 +9,19 @@ import {
 import { NextRequest } from "next/server";
 
 const enforceRetentionPolicies = jest.fn<() => Promise<{ runId: string }>>();
+const purgeWithdrawnDocumentBytes =
+  jest.fn<() => Promise<{ matched: number; applied: number; failed: number }>>();
 const initialize = jest.fn<() => Promise<void>>();
+const emptyBytePurge = { matched: 0, applied: 0, failed: 0 };
 
 jest.unstable_mockModule("@/models", () => ({
   db: { initialized: false, initialize },
 }));
 jest.unstable_mockModule("@/backend/gdpr/RetentionService", () => ({
   enforceRetentionPolicies,
+}));
+jest.unstable_mockModule("@/backend/ingest/document-retention", () => ({
+  purgeWithdrawnDocumentBytes,
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
@@ -33,6 +39,7 @@ describe("retention cron authentication", () => {
     jest.clearAllMocks();
     process.env.CC_CRON_JOB_API_KEY = "cron-secret";
     enforceRetentionPolicies.mockResolvedValue({ runId: "run-1" });
+    purgeWithdrawnDocumentBytes.mockResolvedValue(emptyBytePurge);
   });
 
   it.each([undefined, "Bearer wrong"])("rejects %s", async (authorization) => {
@@ -45,6 +52,7 @@ describe("retention cron authentication", () => {
     );
     expect((await POST(request, routeContext)).status).toBe(401);
     expect(enforceRetentionPolicies).not.toHaveBeenCalled();
+    expect(purgeWithdrawnDocumentBytes).not.toHaveBeenCalled();
   });
 
   it("runs retention for a valid secret", async () => {
@@ -57,7 +65,11 @@ describe("retention cron authentication", () => {
     );
     const response = await POST(request, routeContext);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ runId: "run-1" });
+    expect(await response.json()).toEqual({
+      runId: "run-1",
+      withdrawnDocumentBytes: emptyBytePurge,
+    });
     expect(enforceRetentionPolicies).toHaveBeenCalled();
+    expect(purgeWithdrawnDocumentBytes).toHaveBeenCalled();
   });
 });

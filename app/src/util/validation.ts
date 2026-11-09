@@ -518,6 +518,8 @@ export const withdrawIngestDocumentRequest = z.object({
   withdrawExtractsFor: z
     .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
     .optional(),
+  /** Explicit confirmation. Removes inventory values tagged with this document. */
+  deleteImportedData: z.literal(true).optional(),
 });
 
 export const supersedeIngestDocumentRequest = z.object({

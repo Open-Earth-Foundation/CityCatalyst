@@ -93,6 +93,31 @@ describe("Ingest document withdraw/supersede (CC-958)", () => {
     expect(byModule.test).toBeUndefined();
   });
 
+  it("withdraws extracts on a later delete-including-data after a plain withdraw", async () => {
+    const { documentPool, runner, documentId } = await storeCityDocument(
+      "cap.csv",
+      "then delete data\n",
+    );
+    const job = await runner.enqueueFromDocument({
+      moduleId: "ccra",
+      documentId,
+      scope: { cityId: CITY_ID },
+    });
+    await runner.run(job.id, new TestIngestPlugin("ccra"));
+    await documentPool.withdraw(documentId);
+    await documentPool.withdraw(documentId, {
+      withdrawExtractsFor: ["ccra"],
+    });
+    const extracts = documentPool.extractsByDocumentId.get(documentId) ?? [];
+    expect(
+      extracts.some(
+        (row) =>
+          row.owningModule === "ccra" &&
+          (row as { availability?: string }).availability === "withdrawn",
+      ),
+    ).toBe(true);
+  });
+
   it("is idempotent for a second withdraw", async () => {
     const { documentPool, documentId } = await storeCityDocument(
       "cap.csv",

@@ -32,6 +32,10 @@ export interface InventoryValueAttributes {
   datasourceId?: string | null; // TODO remove
   /** Stored, but left out of BASIC and BASIC+ totals. */
   omitFromTotal?: boolean;
+  /** Pool document that last created this row. Delete-including-data uses it. */
+  sourceDocumentId?: string | null;
+  /** Every pool document that contributed to this GPC total. */
+  sourceDocumentIds?: string[] | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -53,6 +57,8 @@ export type InventoryValueOptionalAttributes =
   | "inventoryId"
   | "datasourceId"
   | "omitFromTotal"
+  | "sourceDocumentId"
+  | "sourceDocumentIds"
   | "created"
   | "lastUpdated";
 export type InventoryValueCreationAttributes = Optional<
@@ -81,6 +87,8 @@ export class InventoryValue
   declare inventoryId?: string;
   declare datasourceId?: string | null;
   declare omitFromTotal?: boolean;
+  declare sourceDocumentId?: string | null;
+  declare sourceDocumentIds?: string[] | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -287,6 +295,16 @@ export class InventoryValue
           allowNull: false,
           defaultValue: false,
           field: "omit_from_total",
+        },
+        sourceDocumentId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "source_document_id",
+        },
+        sourceDocumentIds: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "source_document_ids",
         },
       },
       {

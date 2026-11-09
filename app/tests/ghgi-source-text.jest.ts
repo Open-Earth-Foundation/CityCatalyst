@@ -133,6 +133,16 @@ describe("yearEvidence", () => {
       "target",
     );
   });
+  it.each([
+    ["FY2021", 2020, "target"],
+    ["FY2021", 2021, "target"],
+    ["FY21", 2020, "target"],
+    ["FY21", 2022, "other"],
+  ])("%s with target %i is %s", (form, year, kind) => {
+    expect(yearEvidence(`Table 4 Emissions ${form}`, year, 2026).kind).toBe(
+      kind,
+    );
+  });
   it("figure captions are left out", () => {
     expect(yearEvidence("Figure 2 Emissions 2019", 2021, 2026).kind).toBe(
       "none",

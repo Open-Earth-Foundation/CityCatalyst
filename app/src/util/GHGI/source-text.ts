@@ -268,7 +268,7 @@ function yearsInLine(line: string): number[] {
   );
   // Fiscal forms: 2021/22, 2021-22 (second part is first + 1), FY21.
   rest = rest.replace(
-    /(?<!\d)(\d{4})\s*[/\u2013-]\s*(\d{2})(?!\d)/g,
+    /(?<!\d)(\d{4})\s*[/\u2013\u2014-]\s*(\d{2})(?!\d)/g,
     (m, a, b) => {
       const first = Number(a);
       if (Number(b) !== (first + 1) % 100) return m;
@@ -276,8 +276,9 @@ function yearsInLine(line: string): number[] {
       return " ";
     },
   );
-  rest = rest.replace(/\bFY\s?(\d{2})(?!\d)/gi, (_m, yy) => {
-    years.push(2000 + Number(yy));
+  rest = rest.replace(/\bFY\s?(\d{4}|\d{2})(?!\d)/gi, (_m, yy: string) => {
+    const end = yy.length === 2 ? 2000 + Number(yy) : Number(yy);
+    years.push(end - 1, end);
     return " ";
   });
   for (const m of rest.matchAll(/(?<!\d)(\d{4})(?!\d)/g)) {

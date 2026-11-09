@@ -239,6 +239,30 @@ describe("yearEvidence: comparison and publication lines", () => {
       "other",
     );
   });
+  it("from before a noun governs no year", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions from transport 2019", 2021, 2026),
+    ).toEqual({ kind: "other", years: [2019] });
+  });
+  it("from a range is a range", () => {
+    expect(
+      yearEvidence("Table 5 Emissions from 2016 to 2019", 2021, 2026).kind,
+    ).toBe("none");
+  });
+  it("the table year before a comparison counts", () => {
+    expect(
+      yearEvidence("Table 6 2021 emissions compared with 2016", 2021, 2026),
+    ).toEqual({ kind: "target", years: [] });
+  });
+  it.each([
+    ["Table 6 Change since the 2016 inventory", "none"],
+    ["Table 6 Emissions relative to 2018", "none"],
+    ["Table 6 Emissions 2019 versus 2016", "other"],
+    ["Table 6 Change (%) 2019", "other"],
+    ["Table 6 2016 base year, emissions for the 2019 inventory", "other"],
+  ])("%j is %s for 2021", (text, kind) => {
+    expect(yearEvidence(text, 2021, 2026).kind).toBe(kind);
+  });
   it("other-year caption still counts", () => {
     expect(
       yearEvidence("Table A-3 GHG emissions for 2019", 2021, 2026).kind,

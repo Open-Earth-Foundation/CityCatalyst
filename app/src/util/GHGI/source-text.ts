@@ -267,22 +267,73 @@ const MIN_YEAR = 1990;
 const MAX_YEAR = 2100;
 const PROJECTION_WORDS =
   /target|projection|goal|forecast|scenario|pathway|\bby\s+20\d\d/i;
+/** A line dated by the report itself: every year on it but the target is ignored. */
+const DATE_LINE_WORDS = /\b(?:published|prepared|updated|revised)\b/i;
+
+/** A range with a 4-digit second year: `2005–2019`, `2016 to 2019`. */
+const YEAR_RANGE = /(?<!\d)\d{4}\s*(?:[–—-]|to)\s*\d{4}(?!\d)/gi;
+
+/** One word before the year (optionally then "the") that makes it a comparison year. */
+const GOVERNING_WORDS = new Set(["since", "from", "vs", "versus"]);
+/** Two words before the year (optionally then "the"). */
+const GOVERNING_PAIRS = new Set([
+  "compared with",
+  "compared to",
+  "relative to",
+]);
+/** A baseline year is any year within this many words of "baseline" or "base year". */
+const BASELINE_WINDOW = 3;
+
 /**
- * Words that name a year other than the table's own: a comparison or baseline
- * year, or the date the report was published or revised.
+ * Blanks the years a comparison word governs, so they are not read as the table
+ * year: a year right after since, from, vs, versus, compared with/to or relative
+ * to (optionally after "the"), and a year within 3 words of "baseline" or "base
+ * year". "Emissions from transport 2019" keeps its year. Ranges are blanked
+ * first, so "from 2016 to 2019" stays a range.
  */
-const NOT_TABLE_YEAR_WORDS =
-  /\b(?:since|from|changes?|compared|comparison|baseline|base\s+year|vs|versus|published|prepared|updated|revised)\b/i;
+function blankGovernedYears(line: string): string {
+  const text = line.replace(YEAR_RANGE, (m) => " ".repeat(m.length));
+  const words = [...text.matchAll(/\p{L}+|\d+/gu)].map((m) => ({
+    word: m[0].toLowerCase(),
+    index: m.index ?? 0,
+  }));
+  const anchors: { start: number; end: number }[] = [];
+  words.forEach((w, i) => {
+    if (w.word === "baseline") anchors.push({ start: i, end: i });
+    if (w.word === "base" && words[i + 1]?.word === "year") {
+      anchors.push({ start: i, end: i + 1 });
+    }
+  });
+  const governed = (i: number): boolean => {
+    let j = i - 1;
+    if (words[j]?.word === "the") j--;
+    if (j >= 0 && GOVERNING_WORDS.has(words[j].word)) return true;
+    if (
+      j >= 1 &&
+      GOVERNING_PAIRS.has(`${words[j - 1].word} ${words[j].word}`)
+    ) {
+      return true;
+    }
+    return anchors.some(
+      (a) =>
+        (i < a.start && a.start - i <= BASELINE_WINDOW) ||
+        (i > a.end && i - a.end <= BASELINE_WINDOW),
+    );
+  };
+  let out = text;
+  words.forEach((w, i) => {
+    if (!/^\d{4}$/.test(w.word) || !governed(i)) return;
+    out = out.slice(0, w.index) + "    " + out.slice(w.index + w.word.length);
+  });
+  return out;
+}
 
 /** Years named on one caption line, fiscal forms counting for both years. */
 function yearsInLine(line: string): number[] {
   const years: number[] = [];
   let rest = line;
   // A range with a 4-digit second year is a trend, not the table year.
-  rest = rest.replace(
-    /(?<!\d)\d{4}\s*(?:[\u2013\u2014-]|to)\s*\d{4}(?!\d)/gi,
-    " ",
-  );
+  rest = rest.replace(YEAR_RANGE, " ");
   // Fiscal forms: 2021/22, 2021-22 (second part is first + 1), FY21.
   rest = rest.replace(
     /(?<!\d)(\d{4})\s*[/\u2013\u2014-]\s*(\d{2})(?!\d)/g,
@@ -309,9 +360,9 @@ function yearsInLine(line: string): number[] {
  * target year (a fiscal form counts for both its years). `other`: captions name
  * years, none is the target; `years` lists them in order of appearance. `none`:
  * no year in captions. Year ranges, projection years on target/goal/forecast
- * lines and years after `currentYear` are ignored. On a line with since, from,
- * change, compared, baseline, vs, published, updated, revised or the like, only
- * the target year counts: "Change since 2016" names no table year.
+ * lines and years after `currentYear` are ignored. So are years a comparison
+ * word governs ("since 2016", "compared with 2016", "the 2016 baseline"), and,
+ * on a published/prepared/updated/revised line, every year but the target.
  */
 export function yearEvidence(
   text: string,
@@ -321,9 +372,9 @@ export function yearEvidence(
   const kept: number[] = [];
   for (const line of tableCaptionLines(text)) {
     const projection = PROJECTION_WORDS.test(line);
-    const notTableYear = NOT_TABLE_YEAR_WORDS.test(line);
-    for (const y of yearsInLine(line)) {
-      if (y !== targetYear && notTableYear) continue;
+    const dated = DATE_LINE_WORDS.test(line);
+    for (const y of yearsInLine(blankGovernedYears(line))) {
+      if (y !== targetYear && dated) continue;
       if (y > targetYear && projection) continue;
       if (y > currentYear && y !== targetYear) continue;
       if (!kept.includes(y)) kept.push(y);

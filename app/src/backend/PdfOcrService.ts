@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { sourceMetadataSchema } from "@/util/GHGI/source-metadata";
 import { literal, Op } from "sequelize";
 import { db } from "@/models";
 import type {
@@ -128,6 +129,7 @@ class PdfSourceError extends Error {
 const EXTRACTION_ERROR_KEYS: Record<string, string> = {
   "Inventory not found for the target year":
     "i18n:inventory-not-found-for-target-year",
+  "PDF pages not found": "i18n:pdf-pages-not-found",
 };
 
 function sanitizedMessage(error: unknown): string {
@@ -688,8 +690,12 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
+    const storedMetadata = sourceMetadataSchema.safeParse(
+      importedFile.mappingConfiguration?.sourceMetadata,
+    );
     const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
+      sourceMetadata: storedMetadata.success ? storedMetadata.data : null,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
         if (!renewed) throw new Error("PDF extraction lease was lost");

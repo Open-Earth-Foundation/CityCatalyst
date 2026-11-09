@@ -21,6 +21,7 @@
   "pdf-extraction-only-totals": "This document only states totals, with no breakdown by sector or sub-sector, so there is nothing to import yet.",
   "pdf-extraction-unsupported-units": "The emission values in this document use units that cannot be converted to tonnes of CO2e (for example percentages).",
   "pdf-extraction-no-data": "No emission values were found in this document. The values may be inside images or charts, which cannot be read yet.",
+  "pdf-pages-not-found": "None of the pages you listed exist in this document. Check the page numbers and try again.",
   "file-year-mismatch-title": "File year does not match inventory",
   "file-year-mismatch": "This file is for {{fileYear}}. The inventory year is {{year}}. Upload a file for {{year}}.",
   "inventory-has-data-replace-title": "This inventory already contains data",

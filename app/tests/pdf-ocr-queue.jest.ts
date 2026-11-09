@@ -543,14 +543,17 @@ describe("PdfOcrJob queue", () => {
     expect(convertPdfUrlToMarkdown).not.toHaveBeenCalled();
   });
 
-  const runStoredExtraction = async () => {
+  const runStoredExtraction = async (
+    extraConfiguration: Record<string, unknown> = {},
+  ) => {
     const importedFile = {
       inventoryId: "inventory-id",
       importStatus: "extracting",
-      mappingConfiguration: { keep: true, rows: [{ sector: "Old" }] } as Record<
-        string,
-        unknown
-      >,
+      mappingConfiguration: {
+        keep: true,
+        rows: [{ sector: "Old" }],
+        ...extraConfiguration,
+      } as Record<string, unknown>,
       update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
     };
     const job = {
@@ -624,6 +627,36 @@ describe("PdfOcrJob queue", () => {
     expect(importedFile.importStatus).toBe("failed");
     expect(importedFile.errorLog).toBe(
       "i18n:inventory-not-found-for-target-year",
+    );
+  });
+
+  it("translates the pages-not-found error into an i18n reason", async () => {
+    extractRows.mockRejectedValueOnce(new Error("PDF pages not found"));
+
+    const importedFile = await runStoredExtraction();
+
+    expect(importedFile.importStatus).toBe("failed");
+    expect(importedFile.errorLog).toBe("i18n:pdf-pages-not-found");
+  });
+
+  it("passes the stored source metadata to extraction, null when invalid", async () => {
+    extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
+    const metadata = {
+      numberFormat: "european",
+      numberFormatSource: "user",
+      reportedTotal: 100,
+      reportedTotalKind: "net",
+      pages: [3],
+    };
+    await runStoredExtraction({ sourceMetadata: metadata });
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({ sourceMetadata: metadata }),
+    );
+    await runStoredExtraction({ sourceMetadata: { numberFormat: "european" } });
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({ sourceMetadata: null }),
     );
   });
 

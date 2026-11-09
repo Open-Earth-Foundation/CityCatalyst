@@ -320,6 +320,7 @@ const LARGE_UNIT_PATTERNS: RegExp[] = [
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
   /\bGg\b/,

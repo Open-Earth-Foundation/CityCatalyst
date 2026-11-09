@@ -193,6 +193,8 @@ describe("namesLargeUnit", () => {
     "Table 5 Mt CO2-e",
     "Table 7 thousand tonnes CO2e",
     "Table 8 (Gg)",
+    "Table 9 Emissions (million tonnes CO2e)",
+    "Table 9 million tons",
   ])("is true for %j", (text) => {
     expect(namesLargeUnit(text)).toBe(true);
   });

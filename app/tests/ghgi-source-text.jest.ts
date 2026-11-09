@@ -6,6 +6,7 @@ import {
   captionLines,
   tableCaptionLines,
   yearEvidence,
+  namesLargeUnit,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle } from "@/util/GHGI/source-text";
 
@@ -181,5 +182,28 @@ describe("yearEvidence", () => {
     expect(yearEvidence("Table 1 Emissions 2018 and 2019", 2021, 2026)).toEqual(
       { kind: "other", years: [2018, 2019] },
     );
+  });
+});
+
+describe("namesLargeUnit", () => {
+  it.each([
+    "Table 2 Emissions (kt CO2e)",
+    "| Sector | ktCO2e |\n| --- | --- |",
+    "Table 5 (Mt CO2e)",
+    "Table 5 Mt CO2-e",
+    "Table 7 thousand tonnes CO2e",
+    "Table 8 (Gg)",
+  ])("is true for %j", (text) => {
+    expect(namesLargeUnit(text)).toBe(true);
+  });
+
+  it.each([
+    "Total GHGs (metric tonnes CO2e)",
+    "Table 3 (t CO2e)",
+    "Table 4 (mt CO2e)",
+    "about 3 kt of waste",
+    "Table 6 Emissions at Mt Eden and Mt Wellington (t CO2e)",
+  ])("is false for %j", (text) => {
+    expect(namesLargeUnit(text)).toBe(false);
   });
 });

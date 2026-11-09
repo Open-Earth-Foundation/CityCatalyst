@@ -314,3 +314,39 @@ describe("CC-1163 check 2: year evidence", () => {
     expect(selected.summary.selectedPages).toEqual([1, 2]);
   });
 });
+
+describe("CC-1163 check 3: missing unit", () => {
+  const noUnitRows = () =>
+    fiveMillionRows().map((r) => ({ ...r, unit: null })) as ExtractedRow[];
+  const body =
+    "Residential buildings 3,000,000\nOn-road 2,000,000\nTOTAL 5,000,000\n";
+
+  it("drops unitless rows on a kt page", () => {
+    const rows = noUnitRows();
+    const result = finalizeExtractedRows(rows, 2021, {
+      source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "page" },
+    });
+    expect(result.rows).toHaveLength(0);
+    expect(result.summary.droppedRows.unsupported_unit).toBe(rows.length);
+    expect(result.summary.reportedTotals).toHaveLength(0);
+    expect(extractionReviewNotes(result.summary).droppedReasons).toContain(
+      "unsupported_unit",
+    );
+  });
+
+  it("keeps unitless rows on a tonnes page", () => {
+    const result = finalizeExtractedRows(noUnitRows(), 2021, {
+      source: { text: "Table 2 Emissions (t CO2e)\n" + body, kind: "page" },
+    });
+    expect(result.rows.map((r) => r.totalCO2e)).toEqual([3000000, 2000000]);
+    expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
+  });
+
+  it("keeps unitless rows on a document source", () => {
+    const result = finalizeExtractedRows(noUnitRows(), 2021, {
+      source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "document" },
+    });
+    expect(result.rows.map((r) => r.totalCO2e)).toEqual([3000000, 2000000]);
+    expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
+  });
+});

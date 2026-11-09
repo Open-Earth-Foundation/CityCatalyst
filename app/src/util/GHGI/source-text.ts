@@ -313,3 +313,29 @@ export function yearEvidence(
   if (kept.length > 0) return { kind: "other", years };
   return { kind: "none", years };
 }
+
+const LARGE_UNIT_PATTERNS: RegExp[] = [
+  /\bktCO2/i,
+  /\bkt\b/i,
+  /\bkilotonnes?\b/i,
+  /\bkilotons?\b/i,
+  /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  /\bmegatonnes?\b/i,
+  /\bmegatons?\b/i,
+  /\bGg\b/,
+  /\bgigagrams?\b/i,
+  // `Mt` is case-sensitive ("Mt Eden" is a place) and counts only before a
+  // CO2 or tonnes word, or alone in parentheses.
+  /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
+  /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+];
+
+/**
+ * True when a caption line of the page names kt, Mt, Gg or an equivalent large
+ * unit. Prose is ignored, so "about 3 kt of waste" does not count.
+ */
+export function namesLargeUnit(text: string): boolean {
+  return captionLines(text).some((line) =>
+    LARGE_UNIT_PATTERNS.some((re) => re.test(line)),
+  );
+}

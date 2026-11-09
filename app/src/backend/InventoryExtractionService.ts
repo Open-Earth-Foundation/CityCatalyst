@@ -23,6 +23,7 @@ import {
   isValueInText,
   parseNumberString,
   yearEvidence,
+  namesLargeUnit,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
 import {
@@ -1989,7 +1990,15 @@ export function finalizeExtractedRows(
     return { inText: found };
   };
 
+  // On a page whose captions name kt or Mt, a row without a unit is unknown,
+  // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
+  const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
+
   for (const row of rows) {
+    if (unitRequired && row.unit == null) {
+      drop("unsupported_unit");
+      continue;
+    }
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");

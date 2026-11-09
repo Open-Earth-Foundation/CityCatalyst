@@ -58,6 +58,7 @@ export default class FileParserService {
         lastUsedRow = Math.max(lastUsedRow, row.number);
       });
 
+      // Data starts at Excel row 2 (row 1 is the header; exceljs is 1-based).
       for (let rowNum = 2; rowNum <= lastUsedRow; rowNum++) {
         const row = worksheet.getRow(rowNum);
         const rowData: Record<string, string | number | null> = {};

@@ -241,4 +241,20 @@ describe("page filter", () => {
       }),
     ).rejects.toThrow("PDF pages not found");
   });
+
+  it("one-page document with a page list extracts, or rejects a missing page", async () => {
+    mockByPage({ 1: [row(1500)] });
+    const text = onePage(1, manyNumbers("english", "PAGE_1"));
+    const ok = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+      sourceMetadata: meta({ pages: [1] }),
+    });
+    expect(ok.rows).toHaveLength(1);
+    await expect(
+      extractInventoryFromDocument(text, {
+        targetYear: 2021,
+        sourceMetadata: meta({ pages: [2] }),
+      }),
+    ).rejects.toThrow("PDF pages not found");
+  });
 });

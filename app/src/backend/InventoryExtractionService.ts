@@ -1047,8 +1047,21 @@ async function extractRowsFromDocument(
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
   const metadata = options?.sourceMetadata;
-  const allPages = splitDocumentPages(documentContent);
   const listed = listedPagesOf(metadata);
+  let allPages = splitDocumentPages(documentContent);
+  if (listed && allPages.length === 0) {
+    // splitDocumentPages needs two markers; a one-page OCR output has one.
+    const single = [...documentContent.matchAll(/<!--\s*page:\s*(\d+)\s*-->/g)];
+    if (single.length === 1) {
+      const m = single[0];
+      allPages = [
+        {
+          page: Number(m[1]),
+          text: documentContent.slice((m.index ?? 0) + m[0].length),
+        },
+      ];
+    }
+  }
   let pages = allPages.filter((p) => isCandidatePage(p.text));
   let listedSet: Set<number> | null = null;
   let pageSummary: Pick<ExtractionSummary, "requestedPages" | "ignoredPages"> =

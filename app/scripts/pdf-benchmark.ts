@@ -22,6 +22,7 @@ import {
   combinedTestSetVersion,
   compareWithBaseline,
   loadBaseline,
+  runnerFailedCases,
   saveBaseline,
   updateBaseline,
   type Baseline,
@@ -520,6 +521,26 @@ export async function main(argv: string[]): Promise<number> {
     const blocks = blockSummaries(verdicts, manifestCounts);
 
     const git = gitInfo();
+    const folderName = runFolderName(measuredAt, git.commit);
+    const baselineEntries: Record<string, BaselineEntry> = Object.fromEntries(
+      verdicts.map((verdict) => [
+        verdict.id,
+        {
+          verdict,
+          commit: git.commit,
+          extractionModel: extractionModel ?? null,
+          ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+          promptHash: promptHash(),
+          testSetVersion: caseVersions.get(verdict.id)!,
+          runFolder: folderName,
+          date: measuredAt,
+        },
+      ]),
+    );
+    const baselineNotRecorded =
+      options.updateBaseline && options.runs === 3 && !interrupted
+        ? runnerFailedCases(baselineEntries)
+        : [];
     const summary: RunSummary = {
       measuredAt,
       ...git,
@@ -541,6 +562,7 @@ export async function main(argv: string[]): Promise<number> {
       dirty: dirty(),
       mlflowRunUrl: null,
       mlflowNote: null,
+      ...(baselineNotRecorded.length ? { baselineNotRecorded } : {}),
     };
 
     const runFolder = writeRunArtifact({
@@ -578,31 +600,15 @@ export async function main(argv: string[]): Promise<number> {
       writeFileSync(join(dir, "ocr.md"), text);
     }
 
-    const folderName = runFolderName(summary.measuredAt, summary.commit);
     appendIndexLine(
       join(outRoot, "INDEX.md"),
       renderIndexLine(summary, blocks, folderName),
     );
 
     if (options.updateBaseline) {
-      const entries: Record<string, BaselineEntry> = Object.fromEntries(
-        verdicts.map((verdict) => [
-          verdict.id,
-          {
-            verdict,
-            commit: summary.commit,
-            extractionModel: extractionModel ?? null,
-            ocrModel: summary.ocrModel ?? null,
-            promptHash: summary.promptHash,
-            testSetVersion: caseVersions.get(verdict.id)!,
-            runFolder: folderName,
-            date: measuredAt,
-          },
-        ]),
-      );
       const updated = updateBaseline({
         baseline,
-        entries,
+        entries: baselineEntries,
         exploratory: summary.exploratory,
         interrupted,
       });
@@ -611,6 +617,11 @@ export async function main(argv: string[]): Promise<number> {
         console.log(`Baseline updated: ${BASELINE_PATH}`);
       } else {
         console.log("Baseline not updated (exploratory or interrupted run).");
+      }
+      for (const skipped of baselineNotRecorded) {
+        console.log(
+          `Not recorded in the baseline: ${skipped.id} (${skipped.modes.join(", ")})`,
+        );
       }
     }
 

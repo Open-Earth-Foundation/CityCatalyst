@@ -251,6 +251,17 @@ describe("caseVerdict", () => {
   });
 });
 
+describe("setup_error", () => {
+  it("is counted as its own failure mode", () => {
+    const verdict = caseVerdict(
+      result([failed(1, "setup_error"), entry(2), entry(3)]),
+      key,
+    );
+    expect(verdict.failureModes.setup_error).toBe(1);
+    expect(verdict.failureModes.extraction_error).toBe(0);
+  });
+});
+
 describe("blockSummaries", () => {
   const verdictFor = (
     id: string,
@@ -288,6 +299,37 @@ describe("blockSummaries", () => {
     expect(v.attemptPassShare).toBe(1);
     expect(v.tenXAttempts).toBe(0);
     expect(v.warningShare).toBeNull();
+  });
+
+  it("averages the headline over cases that have a recall and counts them", () => {
+    const totalOnlyCase = (id: string) =>
+      verdictFor(id, "validated", true, true, 0);
+    const verdicts = [
+      verdictFor("A", "validated", true, false, 0.6),
+      verdictFor("B", "validated", true, false, 1),
+      totalOnlyCase("C"),
+      totalOnlyCase("D"),
+    ];
+    const v = blockSummaries(verdicts, {
+      validated: 4,
+      "held-out": 0,
+      dev: 0,
+    })[0];
+    expect(v.casesInRun).toBe(4);
+    expect(v.headlineRecall).toBeCloseTo((0.6 + 1 + 1 + 1 + 1 + 1) / 6);
+    expect(v.headlineRecallCases).toBe(2);
+    expect(v.recallScoredOnly).not.toBeNull();
+    expect(v.recallScoredOnlyCases).toBe(2);
+  });
+
+  it("counts zero cases when every case is total-only", () => {
+    const v = blockSummaries([verdictFor("C", "validated", true, true, 0)], {
+      validated: 1,
+      "held-out": 0,
+      dev: 0,
+    })[0];
+    expect(v.headlineRecall).toBeNull();
+    expect(v.headlineRecallCases).toBe(0);
   });
 
   it("warning share is warned over wrong-total attempts", () => {

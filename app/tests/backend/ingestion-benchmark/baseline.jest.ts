@@ -15,6 +15,7 @@ import {
   compareWithBaseline,
   loadBaseline,
   saveBaseline,
+  runnerFailedCases,
   updateBaseline,
   type Baseline,
   type BaselineEntry,
@@ -91,6 +92,7 @@ const verdict = (partial: Partial<CaseVerdict> = {}): CaseVerdict => ({
     zero_rows: 0,
     approve_error: 0,
     readback_error: 0,
+    setup_error: 0,
   },
   costUsd: null,
   seconds: 3,
@@ -355,5 +357,58 @@ describe("updateBaseline", () => {
     expect(Object.keys(next).sort()).toEqual(["C-001", "C-002"]);
     expect(next["C-001"].commit).toBe("old");
     expect(next["C-002"].commit).toBe("new");
+  });
+
+  it("does not record a case when an attempt failed on the runner side", () => {
+    const failing = (mode: keyof CaseVerdict["failureModes"]) =>
+      entryOf({
+        verdict: verdict({
+          failureModes: { ...verdict().failureModes, scored: 2, [mode]: 1 },
+        }),
+      });
+    const entries = {
+      "C-010": failing("approve_error"),
+      "C-011": failing("readback_error"),
+      "C-012": failing("ocr_error"),
+      "C-013": failing("setup_error"),
+      "C-014": failing("extraction_error"),
+      "C-015": failing("zero_rows"),
+      "C-016": failing("truncated"),
+      "C-017": entryOf(),
+    };
+    const next = updateBaseline({
+      baseline: {},
+      entries,
+      exploratory: false,
+      interrupted: false,
+    });
+    expect(Object.keys(next).sort()).toEqual([
+      "C-014",
+      "C-015",
+      "C-016",
+      "C-017",
+    ]);
+    expect(runnerFailedCases(entries)).toEqual([
+      { id: "C-010", modes: ["approve_error"] },
+      { id: "C-011", modes: ["readback_error"] },
+      { id: "C-012", modes: ["ocr_error"] },
+      { id: "C-013", modes: ["setup_error"] },
+    ]);
+  });
+
+  it("keeps the earlier baseline entry of a case that now fails on the runner side", () => {
+    const next = updateBaseline({
+      baseline: { "C-010": entryOf({ commit: "old" }) },
+      entries: {
+        "C-010": entryOf({
+          verdict: verdict({
+            failureModes: { ...verdict().failureModes, approve_error: 3 },
+          }),
+        }),
+      },
+      exploratory: false,
+      interrupted: false,
+    });
+    expect(next["C-010"].commit).toBe("old");
   });
 });

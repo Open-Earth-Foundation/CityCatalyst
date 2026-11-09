@@ -132,6 +132,7 @@ function verdict(result: CaseResult): CaseVerdict {
       zero_rows: 0,
       approve_error: 0,
       readback_error: 0,
+      setup_error: 0,
     },
     costUsd: null,
     seconds: 1,
@@ -144,7 +145,9 @@ function block(partial: Partial<BlockSummary>): BlockSummary {
     casesInRun: 1,
     casesInManifest: 1,
     headlineRecall: 0.68,
+    headlineRecallCases: 1,
     recallScoredOnly: 0.7,
+    recallScoredOnlyCases: 1,
     casesTotalWithinTolerance: 0,
     attemptPassShare: 0,
     tenXAttempts: 0,
@@ -317,10 +320,47 @@ describe("report", () => {
 
   it("headline line shows recall next to totals within tolerance", () => {
     const report = render(summary([result("A", 0.5)]), [
-      block({ headlineRecall: 0.68, casesTotalWithinTolerance: 4 }),
+      block({
+        headlineRecall: 0.68,
+        headlineRecallCases: 7,
+        casesTotalWithinTolerance: 4,
+      }),
     ]);
     expect(report).toContain(
-      "Headline recall (failed attempts count as 0): 68%; cases with totals within tolerance: 4",
+      "Headline recall (failed attempts count as 0): 68% (7 cases counted; total-only cases have no row recall); cases with totals within tolerance: 4",
+    );
+    expect(report).toContain(
+      "Recall over scored attempts only: 70% (1 case counted)",
+    );
+  });
+
+  it("says why the headline is n/a when no case has a row recall", () => {
+    const report = render(summary([result("A", 0.5)]), [
+      block({
+        headlineRecall: null,
+        headlineRecallCases: 0,
+        recallScoredOnly: null,
+        recallScoredOnlyCases: 0,
+      }),
+    ]);
+    expect(report).toContain(
+      "Headline recall (failed attempts count as 0): n/a (0 cases counted; only eligible cases with row recall count)",
+    );
+    expect(report).toContain(
+      "Recall over scored attempts only: n/a (0 cases counted)",
+    );
+  });
+
+  it("notes cases left out of the baseline and held rows included at approve", () => {
+    const s = summary([result("C-017", 0.5), result("C-018", 0.5)]);
+    s.baselineNotRecorded = [{ id: "C-017", modes: ["approve_error"] }];
+    s.results[1].runs[0].heldRowsIncluded = 4;
+    const report = render(s);
+    expect(report).toContain(
+      "- Not recorded in the baseline: C-017 (approve_error)",
+    );
+    expect(report).toContain(
+      "- Held rows included automatically at approve: C-018 (4)",
     );
   });
 

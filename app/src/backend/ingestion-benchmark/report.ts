@@ -50,7 +50,8 @@ export type FailureMode =
   | "truncated"
   | "zero_rows"
   | "approve_error"
-  | "readback_error";
+  | "readback_error"
+  | "setup_error";
 
 export type Block = "validated" | "held-out" | "dev";
 
@@ -71,6 +72,8 @@ export type RunEntry = {
   ms: number;
   message?: string;
   extractedRows?: number;
+  /** Held rows the runner included at approve (the review screen asks for a decision on them). */
+  heldRowsIncluded?: number;
   stored?: StoredValue[];
   score?: FileScore | null;
   total?: number;
@@ -123,6 +126,8 @@ export type RunSummary = {
   dirty: boolean;
   mlflowRunUrl: string | null;
   mlflowNote: string | null;
+  /** Cases left out of the baseline because an attempt failed on the runner side. */
+  baselineNotRecorded?: { id: string; modes: string[] }[];
   /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
   rescoredFrom?: { measuredAt: string; commit: string };
 };
@@ -346,6 +351,9 @@ function stageSeconds(result: CaseResult): string {
   return `ocr ${sum((s) => s.ocr)}, extraction ${sum((s) => s.extraction)}, import ${sum((s) => s.import)}`;
 }
 
+const counted = (n: number, why?: string) =>
+  `${n} case${n === 1 ? "" : "s"} counted${why ? `; ${why}` : ""}`;
+
 function failureModesText(verdict: CaseVerdict | undefined): string {
   if (!verdict) return "n/a";
   const parts = Object.entries(verdict.failureModes)
@@ -395,8 +403,8 @@ export function renderReport(
       `## Block: ${block.block}`,
       "",
       `- ${block.casesInRun} of ${block.casesInManifest} cases in this run`,
-      `- Headline recall (failed attempts count as 0): ${pct(block.headlineRecall)}; cases with totals within tolerance: ${block.casesTotalWithinTolerance}`,
-      `- Recall over scored attempts only: ${pct(block.recallScoredOnly)}`,
+      `- Headline recall (failed attempts count as 0): ${pct(block.headlineRecall)} (${counted(block.headlineRecallCases, block.headlineRecall === null ? "only eligible cases with row recall count" : "total-only cases have no row recall")}); cases with totals within tolerance: ${block.casesTotalWithinTolerance}`,
+      `- Recall over scored attempts only: ${pct(block.recallScoredOnly)} (${counted(block.recallScoredOnlyCases)})`,
       `- Attempts passing: ${pct(block.attemptPassShare)}`,
       `- Attempts 10x or more off the expected total: ${block.tenXAttempts}`,
       `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,
@@ -475,6 +483,15 @@ export function renderReport(
   const unknownTables = summary.results
     .filter((result) => result.eligible === null)
     .map((result) => result.id);
+  const heldRows = summary.results
+    .map((result) => ({
+      id: result.id,
+      rows: result.runs.reduce(
+        (sum, run) => sum + (run.heldRowsIncluded ?? 0),
+        0,
+      ),
+    }))
+    .filter((c) => c.rows > 0);
   lines.push(
     "",
     `Estimated cost of this run: ${money(cost)}`,
@@ -484,6 +501,16 @@ export function renderReport(
     "- C-028 and C-031 are not fully held out.",
     `- Cases using the legacy tolerance: ${legacy.length ? legacy.join(", ") : "none"}`,
     `- Cases where \`textTables\` is unknown: ${unknownTables.length ? unknownTables.join(", ") : "none"}`,
+    ...(summary.baselineNotRecorded?.length
+      ? [
+          `- Not recorded in the baseline: ${summary.baselineNotRecorded.map((c) => `${c.id} (${c.modes.join(", ")})`).join(", ")}`,
+        ]
+      : []),
+    ...(heldRows.length
+      ? [
+          `- Held rows included automatically at approve: ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,
+        ]
+      : []),
     "",
   );
   return lines.join("\n");

@@ -13,7 +13,11 @@ import {
   caseVerdict,
   type CaseVerdict,
 } from "@/backend/ingestion-benchmark/metrics";
-import type { Prices, RunSummary } from "@/backend/ingestion-benchmark/report";
+import type {
+  FailureMode,
+  Prices,
+  RunSummary,
+} from "@/backend/ingestion-benchmark/report";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 
@@ -121,6 +125,25 @@ export function compareWithBaseline(args: {
   }
 }
 
+/** Failures of the benchmark itself, not of the model: such a case says nothing about extraction. */
+const RUNNER_FAILURES: FailureMode[] = [
+  "approve_error",
+  "readback_error",
+  "ocr_error",
+  "setup_error",
+];
+
+export function runnerFailedCases(
+  entries: Record<string, BaselineEntry>,
+): { id: string; modes: string[] }[] {
+  return Object.entries(entries).flatMap(([id, entry]) => {
+    const modes = RUNNER_FAILURES.filter(
+      (mode) => (entry.verdict.failureModes[mode] ?? 0) > 0,
+    );
+    return modes.length ? [{ id, modes }] : [];
+  });
+}
+
 export function updateBaseline(args: {
   baseline: Baseline;
   entries: Record<string, BaselineEntry>;
@@ -129,9 +152,11 @@ export function updateBaseline(args: {
 }): Baseline {
   const { baseline, entries, exploratory, interrupted } = args;
   if (exploratory || interrupted) return baseline;
+  const skipped = new Set(runnerFailedCases(entries).map((c) => c.id));
   const complete = Object.fromEntries(
     Object.entries(entries).filter(
-      ([, entry]) => entry.verdict.attempts >= REQUIRED_ATTEMPTS,
+      ([id, entry]) =>
+        entry.verdict.attempts >= REQUIRED_ATTEMPTS && !skipped.has(id),
     ),
   );
   return { ...baseline, ...complete };

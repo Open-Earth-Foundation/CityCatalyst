@@ -27,6 +27,7 @@ const FAILURE_MODES: FailureMode[] = [
   "zero_rows",
   "approve_error",
   "readback_error",
+  "setup_error",
 ];
 
 const BLOCK_ORDER: Block[] = ["validated", "held-out", "dev"];
@@ -144,7 +145,11 @@ export type BlockSummary = {
   casesInRun: number;
   casesInManifest: number;
   headlineRecall: number | null;
+  /** Eligible cases with a recall that went into the headline (total-only cases have none). */
+  headlineRecallCases: number;
   recallScoredOnly: number | null;
+  /** Eligible cases with a scored-attempt recall that went into the figure above. */
+  recallScoredOnlyCases: number;
   casesTotalWithinTolerance: number;
   attemptPassShare: number | null;
   tenXAttempts: number;
@@ -153,6 +158,9 @@ export type BlockSummary = {
 
 const meanOf = (values: (number | null)[]): number | null =>
   mean(values.filter((v): v is number => v !== null));
+
+const countOf = (values: (number | null)[]): number =>
+  values.filter((v) => v !== null).length;
 
 export function blockSummaries(
   verdicts: CaseVerdict[],
@@ -174,7 +182,9 @@ export function blockSummaries(
         casesInRun: cases.length,
         casesInManifest: manifestCounts[block],
         headlineRecall: meanOf(eligible.map((v) => v.recallFailedAsZero)),
+        headlineRecallCases: countOf(eligible.map((v) => v.recallFailedAsZero)),
         recallScoredOnly: meanOf(eligible.map((v) => v.recallScoredOnly)),
+        recallScoredOnlyCases: countOf(eligible.map((v) => v.recallScoredOnly)),
         casesTotalWithinTolerance: cases.filter(
           (v) => v.totalWithinToleranceAll === true,
         ).length,

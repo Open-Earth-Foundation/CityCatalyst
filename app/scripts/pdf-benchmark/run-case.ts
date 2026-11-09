@@ -13,6 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
+import { heldRowDecisions } from "@/backend/ingestion-benchmark/held-rows";
 import {
   ZERO_TOKENS,
   type FailureMode,
@@ -402,6 +403,17 @@ async function ingestItemWarnings(
   }
 }
 
+/** Include decisions for the rows the review would hold back, built the way the review screen sends them. */
+async function includeHeldRows(ctx: RunContext, importedFileId: string) {
+  const { buildImportResult } = await import("@/backend/ImportResultBuilder");
+  const { findPendingRows } = await import("@/backend/ImportRowPreviewService");
+  const file =
+    await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
+  if (!file) return { decisions: {}, included: 0, unresolved: 0 };
+  const { importResult } = await buildImportResult(file);
+  return heldRowDecisions(findPendingRows(importResult), importedFileId);
+}
+
 type Stage = "setup" | "upload" | "job" | "approve" | "readback";
 
 export async function runAttempt(
@@ -438,7 +450,7 @@ export async function runAttempt(
   const pdfPath = pdfPathFor(ctx.config, entry);
   if (!pdfPath) {
     return finish({
-      failureMode: "extraction_error",
+      failureMode: "setup_error",
       message: `PDF not found: ${entry.fileName}`,
     });
   }
@@ -451,6 +463,7 @@ export async function runAttempt(
   let ocrOk = false;
   let warnings: string[] = [];
   let extractedRows = 0;
+  let heldRowsIncluded = 0;
   let failedPages: number[] = [];
   try {
     const city = await ctx.db.models.City.create({
@@ -546,6 +559,7 @@ export async function runAttempt(
     ];
     extractedRows = Number(state.json?.data?.rowCount ?? 0);
     const base = { warnings, failedPages, extractedRows };
+    const withHeld = () => ({ ...base, heldRowsIncluded });
 
     if (state.importStatus === "failed") {
       const errorLog =
@@ -576,11 +590,30 @@ export async function runAttempt(
 
     stage = "approve";
     const importStarted = Date.now();
+    // Held rows block approval until they have a decision. The benchmark
+    // measures what the model extracted, so every held row is included.
+    const held = await includeHeldRows(ctx, importedFileId);
+    heldRowsIncluded = held.included;
     const approved = await ctx.routes.approve.POST(
-      mockRequest({ importedFileId }),
+      mockRequest({
+        importedFileId,
+        ...(held.included > 0
+          ? {
+              mappingOverrides: {
+                columnMappings: {},
+                rowDecisions: held.decisions,
+              },
+            }
+          : {}),
+      }),
       { params: Promise.resolve(ids) },
     );
-    if (approved.status >= 300) throw new Error(`approve ${approved.status}`);
+    if (approved.status >= 300) {
+      const detail = await approved.json().catch(() => null);
+      throw new Error(
+        `approve ${approved.status}${(detail?.error?.message ?? detail?.message) ? `: ${String(detail?.error?.message ?? detail.message).slice(0, 160)}` : ""}${held.unresolved ? ` (${held.unresolved} held row(s) cannot be included)` : ""}`,
+      );
+    }
     const done = await pollStatus(ctx, ids, importedFileId, [
       "completed",
       "failed",
@@ -589,6 +622,7 @@ export async function runAttempt(
     if (done.importStatus !== "completed") {
       return finish({
         ...base,
+        ...withHeld(),
         failureMode: "approve_error",
         message: `import ended ${done.importStatus}`,
       });
@@ -600,7 +634,7 @@ export async function runAttempt(
     const hitLimit = (usage.lengthStops ?? 0) > 0;
     const truncated = hitLimit || failedPages.length > 0;
     return finish({
-      ...base,
+      ...withHeld(),
       failureMode: truncated ? "truncated" : "scored",
       stored: back.stored,
       score,
@@ -619,16 +653,19 @@ export async function runAttempt(
         ? "approve_error"
         : stage === "readback"
           ? "readback_error"
-          : stage === "job" &&
-              !ocrOk &&
-              !/^extract \d/.test((error as Error).message)
-            ? "ocr_error"
-            : "extraction_error";
+          : stage === "setup" || stage === "upload"
+            ? "setup_error"
+            : stage === "job" &&
+                !ocrOk &&
+                !/^extract \d/.test((error as Error).message)
+              ? "ocr_error"
+              : "extraction_error";
     return finish({
       failureMode,
       warnings,
       failedPages,
       extractedRows,
+      heldRowsIncluded,
       message: (error as Error).message,
     });
   }

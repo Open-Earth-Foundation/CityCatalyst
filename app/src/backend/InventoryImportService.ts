@@ -19,6 +19,7 @@ import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { withIncomingSourceDocument } from "@/backend/ingest/source-document-ids";
 
 /**
  * Total CO2e (tonnes) that importECRFData stores for a row: the file total when
@@ -70,6 +71,11 @@ export type ImportECRFDataOptions = {
   versionLabel?: string;
   /** Outer transaction (e.g. shared with a replace); otherwise the import runs in its own. */
   transaction?: Transaction;
+  /**
+   * Pool document that created or added to the row. A later file that
+   * accumulates into an existing GPC ref is appended to sourceDocumentIds.
+   */
+  sourceDocumentId?: string;
 };
 
 type RowOutcome = "imported" | "skipped";
@@ -564,6 +570,12 @@ export default class InventoryImportService {
                     subSectorId: row.subsectorId,
                     subCategoryId: row.subcategoryId ?? undefined,
                     lastUpdated: new Date(),
+                    ...(options?.sourceDocumentId
+                      ? withIncomingSourceDocument(
+                          existingValue,
+                          options.sourceDocumentId,
+                        )
+                      : {}),
                   },
                   { transaction: rowTransaction },
                 );
@@ -581,6 +593,12 @@ export default class InventoryImportService {
                     co2eqYears: 100, // Default value
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
+                    ...(options?.sourceDocumentId
+                      ? withIncomingSourceDocument(
+                          {},
+                          options.sourceDocumentId,
+                        )
+                      : {}),
                   },
                   { transaction: rowTransaction },
                 );
@@ -944,6 +962,12 @@ export default class InventoryImportService {
                       subSectorId: row.subsectorId,
                       subCategoryId: row.subcategoryId ?? undefined,
                       lastUpdated: new Date(),
+                      ...(options?.sourceDocumentId
+                        ? withIncomingSourceDocument(
+                            existingValue,
+                            options.sourceDocumentId,
+                          )
+                        : {}),
                     },
                     { transaction: rowTransaction },
                   )
@@ -959,6 +983,12 @@ export default class InventoryImportService {
                       unavailableReason,
                       unavailableExplanation,
                       lastUpdated: new Date(),
+                      ...(options?.sourceDocumentId
+                        ? withIncomingSourceDocument(
+                            {},
+                            options.sourceDocumentId,
+                          )
+                        : {}),
                     },
                     { transaction: rowTransaction },
                   );

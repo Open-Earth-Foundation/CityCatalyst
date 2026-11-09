@@ -123,6 +123,7 @@ import {
   callConceptNoteApi,
   readConceptNoteApiPayload,
 } from "@/backend/concept-notes";
+import { registerConceptNoteOnDocumentPool } from "@/backend/ingest/cnb-path-b";
 import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "@/backend/inventory-import-file-limits";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
@@ -224,6 +225,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
   const fileBuffer = Buffer.from(await fileEntry.arrayBuffer());
+  const contentHash = createHash("sha256").update(fileBuffer).digest("hex");
   if (isPdf) {
     if (fileEntry.type !== "application/pdf") {
       throw new createHttpError.UnsupportedMediaType(
@@ -266,8 +268,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     requestedUploadId !== null &&
     (!initialUpload ||
       initialUpload.filename !== filename ||
-      initialUpload.sha256 !==
-        createHash("sha256").update(fileBuffer).digest("hex"))
+      initialUpload.sha256 !== contentHash)
   ) {
     throw new createHttpError.Conflict(
       "Select the original source file to retry this upload",
@@ -343,6 +344,18 @@ export const POST = apiHandler(async (req, { session, params }) => {
     if (normalizeConceptNotePdfOcrStatus(job).status === "failed") {
       await retryConceptNotePdfOcr(job);
     }
+    // Path B only after CA accepted the id and the bytes are stored.
+    failureCode = "path_b_registration_failed";
+    await registerConceptNoteOnDocumentPool({
+      uploadId,
+      cityId,
+      userId,
+      filename,
+      contentHash,
+      buffer: fileBuffer,
+      s3Key: isPdf ? conceptNotePdfSourceKey(uploadId) : null,
+      markdownReady: isMarkdown,
+    });
   } catch (error) {
     if (createHttpError.isHttpError(error)) {
       throw error;

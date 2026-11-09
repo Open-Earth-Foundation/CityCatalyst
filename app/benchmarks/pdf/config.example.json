@@ -1,0 +1,5 @@
+{
+  "pdfDir": "<absolute path to local PDF folder>",
+  "answerKeys": "<absolute path to answer-keys.json exported from the workbook>",
+  "outRoot": "../docs/ingestion-accuracy-runs"
+}

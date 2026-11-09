@@ -35,6 +35,13 @@ interface ReviewConfirmStepProps {
   onEditMapping?: () => void;
 }
 
+function numberFormatLabel(
+  t: TFunction,
+  style: "european" | "english" | "unknown",
+): string {
+  return style === "unknown" ? "unknown" : t(`pdf-number-format-${style}`);
+}
+
 export default function ReviewConfirmStep({
   t,
   cityId,
@@ -126,6 +133,8 @@ export default function ReviewConfirmStep({
     failedPages,
     droppedReasons,
     removalsWarning,
+    userTotalNote,
+    numberFormatConflict,
   } = extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
@@ -271,17 +280,66 @@ export default function ReviewConfirmStep({
               {t("import-reconciliation-title")}
             </Text>
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
-              {t("import-reconciliation-detail", {
-                imported: Math.round(
-                  reconciliation.importedSum,
-                ).toLocaleString(),
-                reported: Math.round(
-                  reconciliation.reportedTotal,
-                ).toLocaleString(),
-                deviation: (reconciliation.deviation * 100).toFixed(1),
-              })}
+              {t(
+                reconciliation.source === "user"
+                  ? "import-reconciliation-user-detail"
+                  : "import-reconciliation-detail",
+                {
+                  imported: Math.round(
+                    reconciliation.importedSum,
+                  ).toLocaleString(),
+                  reported: Math.round(
+                    reconciliation.reportedTotal,
+                  ).toLocaleString(),
+                  deviation: (reconciliation.deviation * 100).toFixed(1),
+                },
+              )}
             </Text>
           </Box>
+        </Box>
+      )}
+      {userTotalNote && (
+        <Box
+          bg="background.neutral"
+          border="1px solid"
+          borderColor="border.neutral"
+          borderRadius="md"
+          p={4}
+          mb={8}
+        >
+          <Text fontSize="body.sm" color="content.secondary">
+            {t("import-user-total-other-document-total", {
+              matched: Math.round(userTotalNote.matched).toLocaleString(),
+              entered: Math.round(userTotalNote.entered).toLocaleString(),
+            })}
+          </Text>
+        </Box>
+      )}
+      {numberFormatConflict && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
+        >
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Text fontSize="body.sm" color="content.secondary">
+            {t("import-number-format-conflict", {
+              chosen: numberFormatLabel(t, numberFormatConflict.chosen),
+              detected: numberFormatLabel(t, numberFormatConflict.detected),
+            })}
+          </Text>
         </Box>
       )}
       {removalsWarning && (

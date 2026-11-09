@@ -409,5 +409,22 @@
   "invite-collaborators-info": "Press enter between each email to add members.",
   "invite-collaborators-select-project-to-share": "Select which project you want to share",
   "projects-label": "Projects",
-  "invite-collaborators-select-project-first": "Select a project above to see available cities."
+  "invite-collaborators-select-project-first": "Select a project above to see available cities.",
+  "pdf-source-metadata-title": "About this report (optional)",
+  "pdf-number-format-label": "Number format",
+  "pdf-number-format-european": "1.234,5 (comma decimal)",
+  "pdf-number-format-english": "1,234.5 (dot decimal)",
+  "pdf-number-format-unknown": "I don't know",
+  "pdf-reported-total-label": "Total emissions in the report",
+  "pdf-reported-total-help": "In tCO2e. A report in kt: multiply by 1,000 (7,453 kt = 7,453,000 tCO2e).",
+  "pdf-reported-total-preview": "= {{value}} tCO2e",
+  "pdf-reported-total-kind-gross": "Gross (before removals)",
+  "pdf-reported-total-kind-net": "Net (after removals)",
+  "pdf-reported-total-invalid": "Enter a positive number in the chosen format.",
+  "pdf-table-pages-label": "Pages with the inventory table",
+  "pdf-table-pages-help": "PDF page numbers as shown by your PDF viewer, not the numbers printed on the pages. Example: 40-55 or 40-45, 52.",
+  "pdf-table-pages-invalid": "Use page numbers and ranges such as 40-55 or 40-45, 52.",
+  "import-reconciliation-user-detail": "Imported rows add up to {{imported}} tCO2e, but the total you entered is {{reported}} tCO2e ({{deviation}}% off).",
+  "import-user-total-other-document-total": "The imported sum matches the document total {{matched}} tCO2e, not the total you entered ({{entered}} tCO2e).",
+  "import-number-format-conflict": "You chose {{chosen}} number format, but most numbers in the document look {{detected}}. Check the imported values."
 }

@@ -823,9 +823,9 @@
     ]
   },
   "approval": {
-    "status": "pending",
-    "reviewer": null,
-    "reviewed_at": null,
+    "status": "approved",
+    "reviewer": "Piotr Nowakowski",
+    "reviewed_at": "2026-11-09",
     "source_sha256": "524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28",
     "template_sha256": "ff4acfabce5077cdb0bc6f7edf390a90c18a0d1f7fe9b5df73241044313f3d3a",
     "requirements_sha256": "95eb056ee9a716d03e606c837969719668df35126da9accd1411f9bb56844de2"

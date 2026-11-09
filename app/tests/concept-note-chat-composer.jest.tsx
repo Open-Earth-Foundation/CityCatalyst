@@ -467,8 +467,8 @@ it("falls back to free text on failure and drops it when a retry changes the que
     "gap-question-unavailable",
   );
   await writeAnswer(0, "Loan");
-  // Without generated questions, nothing shows that every part is covered.
-  expect(container.textContent).toContain("gap-acceptance-hint");
+  // The fallback asks the recorded gap itself, so its answer can close it.
+  expect(container.textContent).toContain("gap-complete-hint");
   fetchQuestion.mockResolvedValueOnce({
     ok: true,
     json: async () => ({

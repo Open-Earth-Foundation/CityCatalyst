@@ -1,5 +1,6 @@
 import json
 from datetime import UTC, datetime
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
@@ -181,6 +182,20 @@ async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
     run_id, chapter_id = uuid4(), uuid4()
     accepted, rejected = str(uuid4()), str(uuid4())
     question = "What is the requested instrument?"
+    # The app's real request templates, so their prose never counts as an answer.
+    templates = json.loads(
+        (
+            Path(__file__).parents[4] / "app/src/i18n/locales/en/concept-notes.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    def request(key, answer):
+        return (
+            templates[key]
+            .replace("{{chapter}}", "Financing plan")
+            .replace("{{question}}", question)
+            .replace("{{answer}}", answer)
+        )
 
     def proposal(minute, status, instruction, chapter=chapter_id, **values):
         return ConceptNoteEditProposal(
@@ -199,7 +214,19 @@ async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
         async with factory() as session, session.begin():
             session.add_all(
                 [
-                    proposal(1, "applied", f"{question}\n1. Instrument?\nLoan"),
+                    proposal(
+                        0,
+                        "applied",
+                        request("gap-answer-request", "1. Amount?\nEUR 1m"),
+                    ),
+                    proposal(
+                        1,
+                        "applied",
+                        request(
+                            "gap-answer-complete-request",
+                            "1. Instrument?\nLoan\n\nPaid back over ten years.",
+                        ),
+                    ),
                     proposal(2, "applied", f"{question}\nBond", chapter=uuid4()),
                     proposal(3, "rejected", f"{question}\nGuarantee"),
                     proposal(4, "applied", "Another gap\nGrant"),
@@ -221,8 +248,12 @@ async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
                 run_id=run_id,
                 chapter_id=chapter_id,
                 question=question,
-                limit=5,
+                limit=6,
             )
     # The rejected amount is asked again; the same question in another chapter
     # does not count as answered here.
-    assert answers == ["Grant", "1. Instrument?\nLoan"]
+    assert answers == [
+        "Grant",
+        "1. Instrument?\nLoan\n\nPaid back over ten years.",
+        "1. Amount?\nEUR 1m",
+    ]

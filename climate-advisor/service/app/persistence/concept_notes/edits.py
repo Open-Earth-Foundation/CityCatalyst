@@ -799,7 +799,10 @@ async def applied_gap_answers(
     answers: list[str] = []
     for row in rows:
         if row.status == "applied":
-            answer = row.instruction.replace(question, "").strip()
+            # The UI request reads "<question>\n\n<label>:\n<answers>\n\n<instructions>";
+            # keep only the answers so the planner never sees the request prose.
+            paragraphs = row.instruction.partition(question)[2].strip().split("\n\n")
+            answer = "\n\n".join(paragraphs[:-1]).partition("\n")[2].strip()
         else:
             accepted = set((row.applied_result or {}).get("accepted_change_ids", []))
             answer = "\n\n".join(

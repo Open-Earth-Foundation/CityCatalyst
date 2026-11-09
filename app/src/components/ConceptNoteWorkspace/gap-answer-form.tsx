@@ -83,9 +83,8 @@ export function GapAnswerForm({
   });
   // Edit validation only lets a marker be replaced for a recorded open gap, so
   // legacy inline markers (no gap record) are answered without replacing them.
-  // Without generated questions nothing shows which parts an answer covers.
-  const complete =
-    question !== null && request.row.gap !== null && answers.every(Boolean);
+  // The unavailable fallback asks the original gap itself, so its answer covers it.
+  const complete = request.row.gap !== null && answers.every(Boolean);
   const answered = answers.some(Boolean);
 
   useEffect(() => {

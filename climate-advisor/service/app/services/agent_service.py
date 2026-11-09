@@ -480,8 +480,7 @@ class AgentService:
                         user_id=str(self.cc_user_id),
                     )
                 )
-                if self.settings.cnb_render_visual_enabled:
-                    tools.append(concept_note_render_visual)
+                tools.append(concept_note_render_visual)
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")

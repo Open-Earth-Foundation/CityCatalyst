@@ -264,6 +264,8 @@ export type ExtractedRow = {
   emissionFactorCH4?: number | null;
   emissionFactorN2O?: number | null;
   emissionFactorTotalCO2e?: number | null;
+  /** 1-based Excel row in the source sheet, when the file was parsed from xlsx. */
+  sourceRowNumber?: number | null;
 };
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>

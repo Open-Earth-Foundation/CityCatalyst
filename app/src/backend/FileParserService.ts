@@ -50,8 +50,15 @@ export default class FileParserService {
         headers[colNumber] = headerValue;
       });
 
-      // Parse data rows (starting from row 2)
-      for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+      // exceljs rowCount follows the template dimension (eCRF_3 goes to ~500).
+      // Stop at the last row that actually has a cell, but keep empty rows
+      // between the header and that last row so Excel numbering stays aligned.
+      let lastUsedRow = 1;
+      worksheet.eachRow({ includeEmpty: false }, (row) => {
+        lastUsedRow = Math.max(lastUsedRow, row.number);
+      });
+
+      for (let rowNum = 2; rowNum <= lastUsedRow; rowNum++) {
         const row = worksheet.getRow(rowNum);
         const rowData: Record<string, string | number | null> = {};
 
@@ -62,7 +69,6 @@ export default class FileParserService {
           }
         });
 
-        // Keep blank data rows so "rows in file" and skip counts match the sheet.
         rows.push(rowData);
         rowNumbers.push(rowNum);
       }
@@ -72,7 +78,7 @@ export default class FileParserService {
         headers: headers.filter(Boolean),
         rows,
         rowNumbers,
-        rowCount: worksheet.rowCount,
+        rowCount: lastUsedRow,
         columnCount: worksheet.columnCount,
       });
     });

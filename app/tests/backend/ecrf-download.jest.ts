@@ -158,4 +158,22 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     expect(i11?.getCell(7).value).toBe("NE");
     expect(i11?.getCell(28).value).toBe("");
   });
+
+  it("does not invent NE for GPC refs the inventory never reported (CC-1153)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(baseInventory([]));
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+
+    const sheet3 = workbook.getWorksheet(3);
+    let i12Notation: Excel.CellValue | undefined;
+    sheet3?.eachRow((row) => {
+      if (row.getCell(2).value === "I.1.2") {
+        i12Notation = row.getCell(7).value;
+      }
+    });
+    expect(i12Notation).not.toBe("NE");
+    expect(i12Notation).not.toMatch(/\{\{/);
+  });
 });

@@ -78,6 +78,21 @@ describe("FormatAdapterService Adapter D removals", () => {
     expect(rows[0]?.totalCO2e).toBe(0);
   });
 
+  it("keeps blank data rows and the Excel row number (CC-1153)", () => {
+    const parsed = nearEcrfFile(12);
+    const blank = Object.fromEntries(
+      parsed.primarySheet!.headers.map((header) => [header, null]),
+    ) as Record<string, string | number | null>;
+    parsed.primarySheet!.rows = [blank, parsed.primarySheet!.rows[0]];
+    parsed.primarySheet!.rowNumbers = [2, 3];
+    const rows = FormatAdapterService.toExtractedRows(parsed);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].totalCO2e).toBeNull();
+    expect(rows[0].sourceRowNumber).toBe(2);
+    expect(rows[1].totalCO2e).toBe(12);
+    expect(rows[1].sourceRowNumber).toBe(3);
+  });
+
   it("detects Chile MEED CSVs (GPC ref + totals, no notation) as near-ecrf", () => {
     const headers = [
       "Inventory Reference",

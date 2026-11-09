@@ -44,8 +44,6 @@ export type LocalConfig = {
   outRoot: string;
 };
 
-export const DEFAULT_OUT_ROOT = "../docs/ingestion-accuracy-runs";
-
 export type OcrRun = {
   ok: boolean;
   code: string | null;
@@ -74,6 +72,10 @@ export type RunContext = {
   cityIds: string[];
   importedFileIds: string[];
   restoreAuth: () => void;
+  /** Set once cleanup has started; a second call returns the same promise. */
+  disposing?: Promise<void>;
+  /** True when every test city was removed. */
+  cleanedUp: boolean;
 };
 
 export function pdfPathFor(
@@ -190,6 +192,7 @@ export async function createContext(config: LocalConfig): Promise<RunContext> {
     uploadedKeys: [],
     cityIds: [],
     importedFileIds: [],
+    cleanedUp: false,
     restoreAuth: () => {
       Auth.getServerSession = original;
     },
@@ -197,7 +200,13 @@ export async function createContext(config: LocalConfig): Promise<RunContext> {
 }
 
 /** Removes test cities, inventories, jobs and bucket objects, restores auth and closes the pool. */
-export async function disposeContext(ctx: RunContext): Promise<void> {
+export function disposeContext(ctx: RunContext): Promise<void> {
+  ctx.disposing ??= doDispose(ctx);
+  return ctx.disposing;
+}
+
+async function doDispose(ctx: RunContext): Promise<void> {
+  let clean = true;
   try {
     for (const key of ctx.uploadedKeys) {
       try {
@@ -206,25 +215,47 @@ export async function disposeContext(ctx: RunContext): Promise<void> {
         // a missing object is not worth failing the cleanup
       }
     }
-    await ctx.db.models.PdfOcrJob.destroy({
-      where: { sourceType: "inventory_import", sourceId: ctx.importedFileIds },
-      force: true,
-    });
-    for (const cityId of ctx.cityIds) {
-      await ctx.db.models.ImportedInventoryFile.destroy({
-        where: { cityId },
+    try {
+      await ctx.db.models.PdfOcrJob.destroy({
+        where: {
+          sourceType: "inventory_import",
+          sourceId: ctx.importedFileIds,
+        },
         force: true,
       });
-      await ctx.db.sequelize!.query(
-        `DELETE FROM "InventoryValue" WHERE inventory_id IN (SELECT inventory_id FROM "Inventory" WHERE city_id = :cityId)`,
-        { replacements: { cityId } },
+    } catch (error) {
+      clean = false;
+      console.error(
+        `Cleanup: OCR jobs not removed: ${(error as Error).message}`,
       );
-      await ctx.db.models.Inventory.destroy({ where: { cityId } });
-      await ctx.db.models.City.destroy({ where: { cityId } });
+    }
+    for (const cityId of ctx.cityIds) {
+      try {
+        await ctx.db.models.ImportedInventoryFile.destroy({
+          where: { cityId },
+          force: true,
+        });
+        await ctx.db.sequelize!.query(
+          `DELETE FROM "InventoryValue" WHERE inventory_id IN (SELECT inventory_id FROM "Inventory" WHERE city_id = :cityId)`,
+          { replacements: { cityId } },
+        );
+        await ctx.db.models.Inventory.destroy({ where: { cityId } });
+        await ctx.db.models.City.destroy({ where: { cityId } });
+      } catch (error) {
+        clean = false;
+        console.error(
+          `Cleanup: test city ${cityId} not removed: ${(error as Error).message}`,
+        );
+      }
     }
   } finally {
-    ctx.restoreAuth();
-    await ctx.db.sequelize?.close();
+    ctx.cleanedUp = clean;
+    try {
+      ctx.restoreAuth();
+      await ctx.db.sequelize?.close();
+    } catch {
+      // cleanup errors never change the exit code
+    }
   }
 }
 
@@ -370,7 +401,7 @@ async function ingestItemWarnings(
   }
 }
 
-type Stage = "upload" | "job" | "approve" | "readback";
+type Stage = "setup" | "upload" | "job" | "approve" | "readback";
 
 export async function runAttempt(
   ctx: RunContext,
@@ -414,31 +445,35 @@ export async function runAttempt(
   const ocrRuns = ctx.ocrRuns.get(entry.id) ?? [];
   ctx.ocrRuns.set(entry.id, ocrRuns);
 
-  const city = await ctx.db.models.City.create({
-    cityId: randomUUID(),
-    name: `Ingestion accuracy ${entry.id} r${attempt}`,
-    country: "Test",
-    locode: `XX_IA_${entry.id}_${attempt}`.slice(0, 32),
-  });
-  ctx.cityIds.push(city.cityId);
-  await city.addUser(TEST_USER_ID);
-  const inventory = await ctx.db.models.Inventory.create({
-    inventoryId: randomUUID(),
-    cityId: city.cityId,
-    inventoryName: `IA_${entry.id}_${attempt}`,
-    year: entry.year,
-    totalEmissions: 0,
-    inventoryType: InventoryTypeEnum.GPC_BASIC,
-    globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-  });
-  const ids = { city: city.cityId, inventory: inventory.inventoryId };
-
-  let stage: Stage = "upload";
+  let stage: Stage = "setup";
+  let ids = { city: "", inventory: "" };
   let ocrOk = false;
   let warnings: string[] = [];
   let extractedRows = 0;
   let failedPages: number[] = [];
   try {
+    const city = await ctx.db.models.City.create({
+      cityId: randomUUID(),
+      name: `Ingestion accuracy ${entry.id} r${attempt}`,
+      country: "Test",
+      locode: `XX_IA_${entry.id}_${attempt}_${randomUUID().slice(0, 6)}`.slice(
+        0,
+        32,
+      ),
+    });
+    ctx.cityIds.push(city.cityId);
+    await city.addUser(TEST_USER_ID);
+    const inventory = await ctx.db.models.Inventory.create({
+      inventoryId: randomUUID(),
+      cityId: city.cityId,
+      inventoryName: `IA_${entry.id}_${attempt}`,
+      year: entry.year,
+      totalEmissions: 0,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+    });
+    ids = { city: city.cityId, inventory: inventory.inventoryId };
+    stage = "upload";
     const form = new FormData();
     form.append("file", new File([buffer], basename(pdfPath)));
     const request = mockRequest();
@@ -583,7 +618,9 @@ export async function runAttempt(
         ? "approve_error"
         : stage === "readback"
           ? "readback_error"
-          : stage === "job" && !ocrOk
+          : stage === "job" &&
+              !ocrOk &&
+              !/^extract d/.test((error as Error).message)
             ? "ocr_error"
             : "extraction_error";
     return finish({

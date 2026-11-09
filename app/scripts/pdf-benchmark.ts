@@ -290,8 +290,21 @@ export async function main(argv: string[]): Promise<number> {
   let interrupted = false;
   const onSigint = () => {
     if (interrupted) {
-      console.error("Second interrupt: exiting now.");
-      process.exit(130);
+      console.error(
+        "Second interrupt: cleaning up (up to 15 s), then exiting.",
+      );
+      void Promise.race([
+        disposeContext(ctx).catch(() => undefined),
+        new Promise((resolve) => setTimeout(resolve, 15_000)),
+      ]).then(() => {
+        if (!ctx.cleanedUp) {
+          console.error(
+            `Cleanup incomplete. Leftover test city ids: ${ctx.cityIds.join(", ")}`,
+          );
+        }
+        process.exit(130);
+      });
+      return;
     }
     interrupted = true;
     console.error(

@@ -1,6 +1,7 @@
 import {
   detectNumberStyle,
   isValueInText,
+  isValueInNumbers,
   numbersInText,
   parseNumberString,
   captionLines,
@@ -207,5 +208,81 @@ describe("namesLargeUnit", () => {
     "Table 6 Emissions at Mt Eden and Mt Wellington (t CO2e)",
   ])("is false for %j", (text) => {
     expect(namesLargeUnit(text)).toBe(false);
+  });
+});
+
+describe("yearEvidence: comparison and publication lines", () => {
+  it.each([
+    "| Sector | tCO2e | Change since 2016 (%) |\n| --- | --- | --- |",
+    "## Comparison with the 2016 baseline",
+    "# Report published June 2023",
+    "Table 6 Emissions compared with 2016",
+    "Table 6 Changes from 2018",
+    "Table 6 Emissions vs. 2019",
+    "Table 6 Base year 2016 emissions",
+    "## Revised 2024",
+  ])("%j is none for 2021", (text) => {
+    expect(yearEvidence(text, 2021, 2026).kind).toBe("none");
+  });
+  it("a comparison line that names the target is target", () => {
+    expect(
+      yearEvidence(
+        "| Sector | 2021 tCO2e | Change since 2016 (%) |\n| --- | --- | --- |",
+        2021,
+        2026,
+      ),
+    ).toEqual({ kind: "target", years: [] });
+  });
+  it("whole words only", () => {
+    // "Fromage" and "prepared" inside other words do not count.
+    expect(yearEvidence("Table 2 Fromagerie 2019", 2021, 2026).kind).toBe(
+      "other",
+    );
+  });
+  it("other-year caption still counts", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions for 2019", 2021, 2026).kind,
+    ).toBe("other");
+  });
+});
+
+describe("namesLargeUnit: table lines over figures", () => {
+  it("a kt figure does not void a tonnes table header", () => {
+    expect(
+      namesLargeUnit(
+        "Figure 3: Emissions by sector (kt CO2e)\n| Sector | tCO2e |\n| --- | --- |",
+      ),
+    ).toBe(false);
+  });
+  it("a kt figure counts when no table line names tonnes", () => {
+    expect(
+      namesLargeUnit("Figure 3 (kt CO2e)\n| Sector | Emissions |\n| --- | --- |"),
+    ).toBe(true);
+  });
+  it("a kt unit line does not void a tonnes caption", () => {
+    expect(namesLargeUnit("Table 4 Emissions (tonnes CO2e)\n(kt CO2e)")).toBe(
+      false,
+    );
+  });
+  it("a kt table header wins over a tonnes caption", () => {
+    expect(
+      namesLargeUnit("Table 4 Emissions (t CO2e)\n| Sector | kt CO2e |\n| --- | --- |"),
+    ).toBe(true);
+  });
+});
+
+describe("isValueInNumbers", () => {
+  it.each<[number, string]>([
+    [9559215, "| TOTAL | 9,559,215 |"],
+    [9559215, "Total 9,559,215.4"],
+    [9559215, "(kt CO2e) Total 9,559.2"],
+    [-811512, "Forestry (811,512)"],
+    [-603983, "AFOLU −603,983"],
+    [5000000, "Total 4,876,120"],
+    [9559215, "about 9.56 million"],
+    [2000000, "CO2e emissions"],
+  ])("agrees with isValueInText for %s in %j", (raw, text) => {
+    const numbers = numbersInText(text, detectNumberStyle(text));
+    expect(isValueInNumbers(raw, numbers)).toBe(isValueInText(raw, text));
   });
 });

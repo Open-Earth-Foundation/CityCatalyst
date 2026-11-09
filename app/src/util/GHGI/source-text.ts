@@ -179,8 +179,19 @@ export function isValueInText(
   text: string,
   style: NumberStyle = detectNumberStyle(text),
 ): boolean {
+  return isValueInNumbers(raw, numbersInText(text, style));
+}
+
+/**
+ * isValueInText against numbers already read with `numbersInText`, so a caller
+ * checking many values reads the text once.
+ */
+export function isValueInNumbers(
+  raw: number,
+  numbers: { value: number; step: number }[],
+): boolean {
   const target = Math.abs(raw);
-  return numbersInText(text, style).some(
+  return numbers.some(
     ({ value, step }) =>
       Math.abs(target - value) <= Math.max(0.5, step / 2) ||
       (significantDigits(value, step) >= MIN_SCALED_DIGITS &&
@@ -256,6 +267,12 @@ const MIN_YEAR = 1990;
 const MAX_YEAR = 2100;
 const PROJECTION_WORDS =
   /target|projection|goal|forecast|scenario|pathway|\bby\s+20\d\d/i;
+/**
+ * Words that name a year other than the table's own: a comparison or baseline
+ * year, or the date the report was published or revised.
+ */
+const NOT_TABLE_YEAR_WORDS =
+  /\b(?:since|from|changes?|compared|comparison|baseline|base\s+year|vs|versus|published|prepared|updated|revised)\b/i;
 
 /** Years named on one caption line, fiscal forms counting for both years. */
 function yearsInLine(line: string): number[] {
@@ -292,7 +309,9 @@ function yearsInLine(line: string): number[] {
  * target year (a fiscal form counts for both its years). `other`: captions name
  * years, none is the target; `years` lists them in order of appearance. `none`:
  * no year in captions. Year ranges, projection years on target/goal/forecast
- * lines and years after `currentYear` are ignored.
+ * lines and years after `currentYear` are ignored. On a line with since, from,
+ * change, compared, baseline, vs, published, updated, revised or the like, only
+ * the target year counts: "Change since 2016" names no table year.
  */
 export function yearEvidence(
   text: string,
@@ -302,7 +321,9 @@ export function yearEvidence(
   const kept: number[] = [];
   for (const line of tableCaptionLines(text)) {
     const projection = PROJECTION_WORDS.test(line);
+    const notTableYear = NOT_TABLE_YEAR_WORDS.test(line);
     for (const y of yearsInLine(line)) {
+      if (y !== targetYear && notTableYear) continue;
       if (y > targetYear && projection) continue;
       if (y > currentYear && y !== targetYear) continue;
       if (!kept.includes(y)) kept.push(y);
@@ -331,12 +352,34 @@ const LARGE_UNIT_PATTERNS: RegExp[] = [
   /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
 ];
 
+/** A tonne unit: t, tCO2e, tCO2-e, tonnes, tons, metric tonnes (not kt or Mt). */
+const TONNE_UNIT_PATTERNS: RegExp[] = [
+  /(?<![\w.])t(?:\s*CO(?:2|₂)(?:-?e)?)?\b/,
+  /\b(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+];
+
+function namesUnit(line: string, patterns: RegExp[]): boolean {
+  return patterns.some((re) => re.test(line));
+}
+
 /**
- * True when a caption line of the page names kt, Mt, Gg or an equivalent large
- * unit. Prose is ignored, so "about 3 kt of waste" does not count.
+ * True when the page names kt, Mt, Gg or an equivalent large unit on a caption
+ * line. A Table caption, heading or table header row counts on its own. A Figure
+ * caption or a short unit line counts only when no Table caption, heading or
+ * header row names a tonne unit: a figure in kt beside a table in tonnes leaves
+ * the table in tonnes. Prose is ignored, so "about 3 kt of waste" does not count.
  */
 export function namesLargeUnit(text: string): boolean {
-  return captionLines(text).some((line) =>
-    LARGE_UNIT_PATTERNS.some((re) => re.test(line)),
+  const lines = classifyCaptionLines(text);
+  const tableLines = lines.filter((l) => l.table).map((l) => l.text);
+  if (tableLines.some((line) => namesUnit(line, LARGE_UNIT_PATTERNS))) {
+    return true;
+  }
+  const otherLarge = lines.some(
+    (l) => !l.table && namesUnit(l.text, LARGE_UNIT_PATTERNS),
+  );
+  return (
+    otherLarge &&
+    !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
   );
 }

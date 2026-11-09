@@ -1,191 +1,229 @@
 import { describe, expect, it } from "@jest/globals";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import type { Comparison } from "@/backend/ingestion-benchmark/baseline";
 import {
+  BUDGET_FACTOR,
+  RECALL_DROP,
+  exitCode,
   forecastUsd,
-  gateCase,
-  renderGate,
-  spendUnder,
+  gateAgainstBaseline,
 } from "@/backend/ingestion-benchmark/gate";
+import type { CaseVerdict } from "@/backend/ingestion-benchmark/metrics";
 import type {
   CaseResult,
   Prices,
   RunEntry,
-  RunSummary,
 } from "@/backend/ingestion-benchmark/report";
-import type { FileScore } from "@/backend/ingestion-benchmark/score";
 
-const PRICES: Prices = {
-  llmInputPerMTok: 1,
-  llmOutputPerMTok: 5,
-  ocrPerPage: 0.002,
-};
-
-const score = (partial: Partial<FileScore>): FileScore => ({
-  keyValueRows: 10,
-  storedGroups: 10,
-  matchedRows: 10,
-  rowRecall: 1,
-  rowPrecision: 1,
-  subsectorRecall: 1,
-  valueAccuracy: 1,
-  classificationAccuracy: 1,
-  expectedTotal: 1000,
-  storedTotal: 1000,
-  totalDiffPct: 0,
-  totalWithinTolerance: true,
-  notationScored: 0,
-  notationRecovered: 0,
-  distractorsStored: [],
-  unexpectedStored: [],
-  missingRows: [],
-  ...partial,
-});
-
-const run = (n: number, partial: Partial<RunEntry> = {}): RunEntry => ({
-  run: n,
-  failureMode: "scored",
-  warnings: [],
-  stageMs: { ocr: null, extraction: null, import: null, total: 30_000 },
-  ok: true,
-  ms: 30_000,
-  extractedRows: 10,
-  stored: [],
-  score: score({}),
-  usage: { calls: 10, promptTokens: 100_000, completionTokens: 10_000 },
-  ...partial,
-});
-
-const result = (runs: RunEntry[], pages = 10): CaseResult => ({
-  id: "C-010",
-  file: "Toronto - 2020.pdf",
-  kind: "pdf",
-  targetYear: 2020,
-  keyId: "C-010",
-  ocr: { ok: true, code: null },
-  productFlowFailsAtOcr: false,
-  runs,
-  stableTotal: true,
+const verdict = (partial: Partial<CaseVerdict> = {}): CaseVerdict => ({
+  id: "C-001",
   block: "validated",
   eligible: true,
-  totalOnly: false,
-  ocrUsage: { calls: 0, promptTokens: 0, completionTokens: 0, pages },
+  attempts: 3,
+  attemptsPassed: 3,
+  casePasses: true,
+  exploratory: false,
+  recallFailedAsZero: 0.9,
+  recallScoredOnly: 0.9,
+  totalWithinToleranceAll: true,
+  tenXAttempts: 0,
+  wrongTotalAttempts: 0,
+  warnedWrongTotalAttempts: 0,
+  failureModes: {
+    scored: 3,
+    ocr_error: 0,
+    extraction_error: 0,
+    truncated: 0,
+    zero_rows: 0,
+    approve_error: 0,
+    readback_error: 0,
+  },
+  costUsd: null,
+  seconds: 3,
+  ...partial,
 });
 
-const before = () => result([run(1), run(2), run(3)]);
+const compared = (baseline: CaseVerdict): Comparison => ({
+  id: "C-001",
+  status: "compared",
+  baseline,
+  rescored: false,
+});
+
+describe("gateAgainstBaseline", () => {
+  it("is ok when nothing changed", () => {
+    const g = gateAgainstBaseline(verdict(), compared(verdict()), null);
+    expect(g.verdict).toBe("ok");
+    expect(g.reasons).toEqual([]);
+  });
+
+  it("regression: passed before and fails now", () => {
+    const g = gateAgainstBaseline(
+      verdict({ casePasses: false, attemptsPassed: 2 }),
+      compared(verdict()),
+      null,
+    );
+    expect(g.verdict).toBe("regression");
+    expect(g.reasons).toHaveLength(1);
+  });
+
+  it("regression: recall drops more than the threshold", () => {
+    expect(RECALL_DROP).toBe(0.05);
+    const drop = gateAgainstBaseline(
+      verdict({ recallFailedAsZero: 0.8 }),
+      compared(verdict({ recallFailedAsZero: 0.9 })),
+      null,
+    );
+    expect(drop.verdict).toBe("regression");
+    const small = gateAgainstBaseline(
+      verdict({ recallFailedAsZero: 0.86 }),
+      compared(verdict({ recallFailedAsZero: 0.9 })),
+      null,
+    );
+    expect(small.verdict).toBe("ok");
+  });
+
+  it("regression: more 10x attempts than the baseline", () => {
+    const g = gateAgainstBaseline(
+      verdict({ tenXAttempts: 1 }),
+      compared(verdict({ tenXAttempts: 0 })),
+      null,
+    );
+    expect(g.verdict).toBe("regression");
+    const same = gateAgainstBaseline(
+      verdict({ tenXAttempts: 1 }),
+      compared(verdict({ tenXAttempts: 1 })),
+      null,
+    );
+    expect(same.verdict).toBe("ok");
+  });
+
+  it("error: a non-scored failure appears where the baseline had none", () => {
+    const failing = verdict({
+      failureModes: { ...verdict().failureModes, scored: 2, truncated: 1 },
+    });
+    expect(
+      gateAgainstBaseline(failing, compared(verdict()), null).verdict,
+    ).toBe("error");
+    const baselineAlsoFailed = verdict({
+      failureModes: { ...verdict().failureModes, scored: 2, truncated: 1 },
+    });
+    expect(
+      gateAgainstBaseline(failing, compared(baselineAlsoFailed), null).verdict,
+    ).toBe("ok");
+  });
+
+  it("error without a baseline when an attempt did not score", () => {
+    const failing = verdict({
+      failureModes: { ...verdict().failureModes, scored: 2, ocr_error: 1 },
+    });
+    const g = gateAgainstBaseline(
+      failing,
+      { id: "C-001", status: "no baseline", baseline: null, rescored: false },
+      null,
+    );
+    expect(g.verdict).toBe("error");
+  });
+
+  it("over budget when cost exceeds the factor times the forecast", () => {
+    expect(BUDGET_FACTOR).toBe(3);
+    const g = gateAgainstBaseline(
+      verdict({ costUsd: 0.31 }),
+      compared(verdict()),
+      0.1,
+    );
+    expect(g.verdict).toBe("over budget");
+    expect(g.forecastUsd).toBe(0.1);
+    expect(
+      gateAgainstBaseline(verdict({ costUsd: 0.3 }), compared(verdict()), 0.1)
+        .verdict,
+    ).toBe("ok");
+  });
+
+  it("reports the most severe verdict and lists every reason", () => {
+    const g = gateAgainstBaseline(
+      verdict({
+        casePasses: false,
+        costUsd: 1,
+        failureModes: { ...verdict().failureModes, scored: 2, truncated: 1 },
+      }),
+      compared(verdict()),
+      0.1,
+    );
+    expect(g.verdict).toBe("error");
+    expect(g.reasons).toHaveLength(3);
+  });
+
+  it("stale baseline is ok with a reason", () => {
+    const g = gateAgainstBaseline(
+      verdict(),
+      {
+        id: "C-001",
+        status: "baseline stale",
+        baseline: null,
+        rescored: false,
+      },
+      null,
+    );
+    expect(g.verdict).toBe("ok");
+    expect(g.reasons).toEqual(["baseline stale"]);
+  });
+
+  it("no baseline is ok with a reason", () => {
+    const g = gateAgainstBaseline(
+      verdict(),
+      { id: "C-001", status: "no baseline", baseline: null, rescored: false },
+      null,
+    );
+    expect(g.verdict).toBe("ok");
+    expect(g.reasons).toEqual(["no baseline"]);
+  });
+});
+
+describe("exitCode", () => {
+  const gate = (verdict: "ok" | "regression" | "error" | "over budget") => ({
+    id: "C-001",
+    verdict,
+    reasons: [],
+    costUsd: null,
+    forecastUsd: null,
+    lines: [] as [string, string, string][],
+  });
+
+  it("is 1 on regression or error and 0 on ok and over budget", () => {
+    expect(exitCode([gate("ok"), gate("regression")])).toBe(1);
+    expect(exitCode([gate("error")])).toBe(1);
+    expect(exitCode([gate("ok"), gate("over budget")])).toBe(0);
+    expect(exitCode([])).toBe(0);
+  });
+});
 
 describe("forecastUsd", () => {
-  it("prices the mean Before tokens of one run plus OCR", () => {
-    // 100k in at $1 + 10k out at $5 + 10 pages at $0.002
-    expect(forecastUsd(before(), PRICES)).toBeCloseTo(0.1 + 0.05 + 0.02);
-  });
-});
+  const PRICES: Prices = {
+    llmInputPerMTok: 1,
+    llmOutputPerMTok: 5,
+    ocrPerPage: 0.002,
+  };
 
-describe("gateCase", () => {
-  it("is ok when nothing changed", () => {
-    const gate = gateCase(result([run(1)]), before(), PRICES);
-    expect(gate.verdict).toBe("ok");
-    expect(gate.reasons).toEqual([]);
-  });
-
-  it("is a regression when recall drops more than 5 points", () => {
-    const after = result([run(1, { score: score({ rowRecall: 0.9 }) })]);
-    expect(gateCase(after, before(), PRICES).verdict).toBe("regression");
-  });
-
-  it("is a regression when the total leaves the tolerance it met", () => {
-    const after = result([
-      run(1, {
-        score: score({ totalDiffPct: 2, totalWithinTolerance: false }),
-      }),
-    ]);
-    expect(gateCase(after, before(), PRICES).verdict).toBe("regression");
-  });
-
-  it("is an error on a failed page or a call cut at the limit", () => {
-    expect(
-      gateCase(result([run(1, { failedPages: [12] })]), before(), PRICES)
-        .verdict,
-    ).toBe("error");
-    expect(
-      gateCase(
-        result([
-          run(1, {
-            usage: {
-              calls: 10,
-              promptTokens: 100_000,
-              completionTokens: 10_000,
-              lengthStops: 1,
-            },
-          }),
-        ]),
-        before(),
-        PRICES,
-      ).verdict,
-    ).toBe("error");
-  });
-
-  it("is over budget above 3 times the forecast", () => {
-    const after = result([
-      run(1, {
-        usage: { calls: 10, promptTokens: 100_000, completionTokens: 200_000 },
-      }),
-    ]);
-    const gate = gateCase(after, before(), PRICES);
-    expect(gate.verdict).toBe("over budget");
-    expect(gate.costUsd).toBeCloseTo(0.1 + 1 + 0.02);
-  });
-
-  it("reports the most severe verdict and every reason", () => {
-    const after = result([
-      run(1, {
-        failedPages: [3],
-        score: score({ rowRecall: 0.5 }),
-      }),
-    ]);
-    const gate = gateCase(after, before(), PRICES);
-    expect(gate.verdict).toBe("error");
-    expect(gate.reasons).toHaveLength(2);
-  });
-});
-
-describe("renderGate and spendUnder", () => {
-  const summary = (results: CaseResult[], runsPerFile: number): RunSummary => ({
-    measuredAt: "2026-10-29T13:00:00.000Z",
-    commit: "abc1234",
-    branch: "test",
-    extractionModel: "openai/gpt-6.1-terra",
-    prices: PRICES,
-    runsPerFile,
-    results,
-  });
-
-  it("renders one section per case with the spend", () => {
-    const { text, gates } = renderGate({
-      after: summary([result([run(1)])], 1),
-      before: summary([before()], 3),
-      spentUsd: 1.5,
-      capUsd: 40,
-    });
-    expect(gates[0].verdict).toBe("ok");
-    expect(text).toContain("## C-010: ok");
-    expect(text).toContain("$1.500 of the $40 cap");
-  });
-
-  it("adds up the cost of every run folder", () => {
-    const root = mkdtempSync(join(tmpdir(), "gate-"));
-    try {
-      for (const name of ["a", "b"]) {
-        mkdirSync(join(root, name));
-        writeFileSync(
-          join(root, name, "results.json"),
-          JSON.stringify(summary([result([run(1)])], 1)),
-        );
-      }
-      expect(spendUnder(root)).toBeCloseTo(2 * (0.1 + 0.05 + 0.02));
-    } finally {
-      rmSync(root, { recursive: true, force: true });
-    }
+  it("prices the mean tokens of one run", () => {
+    const run = (n: number): RunEntry =>
+      ({
+        run: n,
+        ok: true,
+        failureMode: "scored",
+        warnings: [],
+        ms: 1,
+        stageMs: { ocr: 0, extraction: 0, import: 0, total: 1 },
+        usage: {
+          calls: 1,
+          promptTokens: 1_000_000,
+          completionTokens: 200_000,
+          reasoningTokens: 0,
+          lengthStops: 0,
+          maxCompletionTokens: 0,
+        },
+      }) as unknown as RunEntry;
+    const before = { runs: [run(1), run(2)] } as unknown as CaseResult;
+    // Per run: 1M in at $1 + 0.2M out at $5 = $2.
+    expect(forecastUsd(before, PRICES)).toBeCloseTo(2, 5);
   });
 });

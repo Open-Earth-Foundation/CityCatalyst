@@ -16,6 +16,10 @@ import type {
   KeyFile,
   KeyRow,
 } from "@/backend/ingestion-benchmark/answer-keys";
+import {
+  PDF_PROFILE,
+  type ScoringProfile,
+} from "@/backend/ingestion-benchmark/profiles";
 
 export type StoredValue = {
   gpc: string;
@@ -72,8 +76,12 @@ export function parseRefs(gpc: string): ParsedRefs {
 /** A subsector-level ref such as "I.1": its stored refs are "I.1.1", "I.1.2", ... */
 const SUBSECTOR_REF = /^(?:I|II|III)\.\d+$/;
 
-function refMatches(pattern: string, ref: string): boolean {
-  if (SUBSECTOR_REF.test(pattern)) {
+function refMatches(
+  pattern: string,
+  ref: string,
+  parentRefMatchesChildren = true,
+): boolean {
+  if (parentRefMatchesChildren && SUBSECTOR_REF.test(pattern)) {
     return pattern === ref || ref.startsWith(`${pattern}.`);
   }
   if (!pattern.includes(".x")) return pattern === ref;
@@ -101,20 +109,29 @@ export function isGpcExcluded(ref: string): boolean {
 const ratio = (num: number, den: number): number | null =>
   den > 0 ? num / den : null;
 
-export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
-  // The sources print whole tonnes; keep half a tonne of slack for the kg to t conversion.
-  const tol = Math.max(file.tolerance, 0.5);
+export function scoreFile(
+  file: KeyFile,
+  stored: StoredValue[],
+  profile: ScoringProfile = PDF_PROFILE,
+): FileScore {
+  const tolOf = (value: number | null) =>
+    profile.valueTolerance(file, value ?? 0);
+  const matchesRef = (pattern: string, ref: string) =>
+    refMatches(pattern, ref, profile.parentRefMatchesChildren);
   const allValueRows = file.rows.filter(
     (row) => row.rowType.startsWith("Value") && row.value !== null,
   );
   // Rows the Product key marks "Scored = No" (inferred or illustrative) are not measured.
-  const valueRows = allValueRows.filter((row) => row.scored);
+  const valueRows = profile.skipUnscoredRows
+    ? allValueRows.filter((row) => row.scored)
+    : allValueRows;
   // A key with Value rows but none scored (for example Seattle) is scored on the total only.
   const totalOnly =
     !!file.nonGpc || (allValueRows.length > 0 && valueRows.length === 0);
 
   const valueStored = stored.filter(
-    (item) => !item.notation && item.valueT !== 0,
+    (item) =>
+      !item.notation && (item.valueT !== 0 || !profile.zeroRowMatchesAbsent),
   );
   const groups = new Map<
     string,
@@ -141,23 +158,34 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
   const missingRows: FileScore["missingRows"] = [];
 
   // Strict rows: one ref, no wildcard, with a scope. Grouped by ref and scope.
-  const strict = new Map<string, KeyRow[]>();
+  const strict: [string, KeyRow[]][] = [];
+  const strictIndex = new Map<string, KeyRow[]>();
+  const addStrict = (key: string, row: KeyRow) => {
+    const existing = strictIndex.get(key);
+    if (existing && profile.sumSameRefScope) {
+      existing.push(row);
+      return;
+    }
+    const rows = [row];
+    strictIndex.set(key, rows);
+    strict.push([key, rows]);
+  };
   const aggregate: KeyRow[] = [];
   for (const row of valueRows) {
     const parsed = parseRefs(row.gpc);
     const exactRef =
       parsed.refs.length === 1 &&
       !parsed.refs[0].includes(".x") &&
-      !SUBSECTOR_REF.test(parsed.refs[0]);
+      !(profile.parentRefMatchesChildren && SUBSECTOR_REF.test(parsed.refs[0]));
     const single =
       exactRef && normalizeScope(row.scope) !== "" && !row.ambiguous;
     if (single) {
       const key = `${parsed.refs[0]}|${normalizeScope(row.scope)}`;
-      strict.set(key, [...(strict.get(key) ?? []), row]);
+      addStrict(key, row);
     } else if (exactRef && normalizeScope(row.scope) !== "") {
       // Ambiguous flag on a single ref: still compared per ref and scope.
       const key = `${parsed.refs[0]}|${normalizeScope(row.scope)}`;
-      strict.set(key, [...(strict.get(key) ?? []), row]);
+      addStrict(key, row);
     } else {
       aggregate.push(row);
     }
@@ -165,10 +193,11 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
 
   for (const [key, rows] of strict) {
     const expected = rows.reduce((sum, row) => sum + (row.value ?? 0), 0);
-    const slack = tol * rows.length;
+    const slack = rows.reduce((sum, row) => sum + tolOf(row.value), 0);
     const group = groups.get(key);
-    // A key row of 0 matches a stored zero or no stored row (stored zeros are dropped above).
-    const zeroMatch = !group && Math.abs(expected) <= slack;
+    // A key row of 0 matches a stored zero or no stored row (stored zeros are dropped above unless the profile needs them).
+    const zeroMatch =
+      profile.zeroRowMatchesAbsent && !group && Math.abs(expected) <= slack;
     if (group || zeroMatch) foundByRef += rows.length;
     const exact =
       zeroMatch || (!!group && Math.abs(group.valueT - expected) <= slack);
@@ -201,7 +230,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     if (parsed.refs.length === 0) {
       // No ref known ("to confirm"): value-only match, no classification.
       const hit = [...groups.entries()].find(
-        ([, g]) => Math.abs(g.valueT - (row.value ?? 0)) <= tol,
+        ([, g]) => Math.abs(g.valueT - (row.value ?? 0)) <= tolOf(row.value),
       );
       if (hit) {
         matchedRows += 1;
@@ -216,11 +245,11 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
       continue;
     }
     const under = [...groups.entries()].filter(([, g]) =>
-      patterns.some((pattern) => refMatches(pattern, g.gpc)),
+      patterns.some((pattern) => matchesRef(pattern, g.gpc)),
     );
     const sum = under.reduce((acc, [, g]) => acc + g.valueT, 0);
     if (under.length > 0) foundByRef += 1;
-    if (Math.abs(sum - (row.value ?? 0)) <= tol) {
+    if (Math.abs(sum - (row.value ?? 0)) <= tolOf(row.value)) {
       matchedRows += 1;
       valueRight += 1;
       classDen += 1;
@@ -233,7 +262,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
         value: row.value,
       });
       const anywhere = [...groups.values()].find(
-        (g) => Math.abs(g.valueT - (row.value ?? 0)) <= tol,
+        (g) => Math.abs(g.valueT - (row.value ?? 0)) <= tolOf(row.value),
       );
       if (anywhere) classDen += 1;
     }
@@ -242,7 +271,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
   // Diagnostic view that ignores the scope split: sum per subsector (I.1, II.2, IV.1 ...).
   const subsector = (ref: string) => ref.split(".").slice(0, 2).join(".");
   const subsectorKeyRows = new Map<string, KeyRow[]>();
-  for (const rows of strict.values()) {
+  for (const [, rows] of strict) {
     for (const row of rows) {
       const key = subsector(parseRefs(row.gpc).refs[0]);
       subsectorKeyRows.set(key, [...(subsectorKeyRows.get(key) ?? []), row]);
@@ -256,7 +285,8 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     const actual = [...groups.values()]
       .filter((group) => subsector(group.gpc) === key)
       .reduce((sum, group) => sum + group.valueT, 0);
-    if (Math.abs(actual - expected) <= tol * rows.length) {
+    const slack = rows.reduce((sum, row) => sum + tolOf(row.value), 0);
+    if (Math.abs(actual - expected) <= slack) {
       subsectorMatched += rows.length;
     }
   }
@@ -270,7 +300,10 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
 
   // Notation keys: scored keys only; the wildcard and multi-ref patterns apply.
   const notationRows = file.rows.filter(
-    (row) => row.rowType === "Notation key" && row.scored && row.notation,
+    (row) =>
+      row.rowType === "Notation key" &&
+      (row.scored || !profile.skipUnscoredRows) &&
+      row.notation,
   );
   let notationRecovered = 0;
   for (const row of notationRows) {
@@ -281,7 +314,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
       (item) =>
         !!item.notation &&
         item.notation === canonical &&
-        all.some((pattern) => refMatches(pattern, item.gpc)),
+        all.some((pattern) => matchesRef(pattern, item.gpc)),
     );
     if (hit) notationRecovered += 1;
   }
@@ -292,7 +325,7 @@ export function scoreFile(file: KeyFile, stored: StoredValue[]): FileScore {
     for (const number of distractor.numbers) {
       if (keyNumbers.has(number)) continue;
       for (const group of groups.values()) {
-        if (Math.abs(group.valueT - number) <= tol) {
+        if (Math.abs(group.valueT - number) <= tolOf(number)) {
           distractorsStored.push({
             valueT: group.valueT,
             gpc: group.gpc,

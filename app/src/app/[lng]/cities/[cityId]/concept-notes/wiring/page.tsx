@@ -13,7 +13,7 @@ export default async function ConceptNoteWiringPage({
   params: Promise<{ lng: string; cityId: string }>;
   searchParams: Promise<{ runId?: string | string[] }>;
 }) {
-  requireConceptNoteBuilderPageEnabled();
+  await requireConceptNoteBuilderPageEnabled();
 
   const [{ cityId, lng }, query] = await Promise.all([params, searchParams]);
   const initialRunId =

@@ -17,7 +17,7 @@ export default async function ConceptNoteWorkspacePage({
     uploadId?: string | string[];
   }>;
 }) {
-  requireConceptNoteBuilderPageEnabled();
+  await requireConceptNoteBuilderPageEnabled();
 
   const [{ cityId, lng, runId }, query] = await Promise.all([
     params,

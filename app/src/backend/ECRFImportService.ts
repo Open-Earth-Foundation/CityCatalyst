@@ -14,6 +14,7 @@ import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
 import type { ImportRowIssue } from "@/util/types";
 import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
+import { excelRowNumber } from "@/util/excel-row-number";
 
 /**
  * When activity_name holds a notation-key label (e.g. "Not Occuring") and
@@ -194,7 +195,7 @@ export default class ECRFImportService {
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
-      const sourceRowNumber = sheet.rowNumbers?.[i];
+      const sourceRowNumber = excelRowNumber(i, sheet.rowNumbers?.[i]);
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
 
@@ -646,7 +647,7 @@ export default class ECRFImportService {
 
     // Review banner reads these stored "Row N:" strings (same shape as Adapter D).
     for (const row of rows) {
-      const n = row.sourceRowNumber ?? row.rowIndex + 1;
+      const n = excelRowNumber(row.rowIndex, row.sourceRowNumber);
       if (
         row.issue === "no-value-or-notation-key" ||
         row.warnings?.some((message) => /No gas values/i.test(message))
@@ -789,6 +790,33 @@ export default class ECRFImportService {
 
     for (let i = 0; i < extractedRows.length; i++) {
       const row = extractedRows[i];
+      const sourceRowNumber = excelRowNumber(i, row.sourceRowNumber);
+      const isEmpty =
+        !hasSignedNumericValue(row.totalCO2e) &&
+        !hasSignedNumericValue(row.co2) &&
+        !hasSignedNumericValue(row.ch4) &&
+        !hasSignedNumericValue(row.n2o) &&
+        !row.notationKey;
+      if (isEmpty) {
+        rows.push({
+          gpcRefNo: row.gpcRefNo?.trim() ?? "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          sourceLabel:
+            [row.sector, row.subsector].filter(Boolean).join(" / ") ||
+            undefined,
+          issue: "no-value-or-notation-key",
+          errors: ["No gas values or notation key found"],
+        });
+        warnings.push(
+          `Row ${sourceRowNumber}: Skipped - no emission values or notation key`,
+        );
+        continue;
+      }
       const { sector, subsector } = splitSectorSubsectorLabels(
         row.sector?.trim() ?? "",
         row.subsector?.trim() ?? "",
@@ -807,7 +835,7 @@ export default class ECRFImportService {
 
       if (!gpcRefNo) {
         errors.push(
-          `Row ${i + 1}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
+          `Row ${sourceRowNumber}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
         );
         rows.push({
           gpcRefNo: "",
@@ -816,6 +844,7 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceRowNumber,
           sourceLabel:
             [sector, subsector].filter(Boolean).join(" / ") || undefined,
           issue: "gpc-reference-unresolved",
@@ -829,7 +858,7 @@ export default class ECRFImportService {
       const gpcMapping = await this.lookupGPCReference(gpcRefNo);
       if (!gpcMapping) {
         errors.push(
-          `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
+          `Row ${sourceRowNumber}: GPC reference "${gpcRefNo}" not in taxonomy`,
         );
         rows.push({
           gpcRefNo,
@@ -838,6 +867,7 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceRowNumber,
           issue: "gpc-reference-unknown",
           errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
         });
@@ -906,6 +936,7 @@ export default class ECRFImportService {
         year:
           row.year != null && Number.isFinite(row.year) ? row.year : undefined,
         rowIndex: i,
+        sourceRowNumber,
         methodology: row.methodology?.trim() || undefined,
         activityAmount:
           row.activityAmount != null && Number.isFinite(row.activityAmount)

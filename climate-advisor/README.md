@@ -71,8 +71,7 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      chapter, question, reason, severity, and state, filtered by
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
-   - When `CNB_RENDER_VISUAL_ENABLED=true`, also exposes experimental
-     `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
+   - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
      chart, diagram, or table (title at most 200 characters, HTML at most
      200,000) and returns `concept_note.visual.render` with the title and size;
      the HTML stays only in the call arguments. CityCatalyst strips scripts,
@@ -857,8 +856,6 @@ language, or client-side fallback behavior. The boundary is:
 - `CNB_STRUCTURED_REQUEST_MAX_BYTES` - Maximum structured JSON artifact size CA
   will accept for a new PDF upload (default `20971520`; independent of the
   Markdown limit). Oversized artifacts fail and are not truncated.
-- `CNB_RENDER_VISUAL_ENABLED` - Registers the experimental CNB chat
-  `concept_note_render_visual` tool when `true` (default `false`)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`

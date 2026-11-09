@@ -1,5 +1,8 @@
 {
-  "pdfDir": "<absolute path to local PDF folder>",
+  "pdfDir": [
+    "<absolute path to local PDF folder>",
+    "<optional second folder, searched in order>"
+  ],
   "answerKeys": "<absolute path to answer-keys.json exported from the workbook>",
   "outRoot": "../docs/ingestion-accuracy-runs"
 }

@@ -270,7 +270,7 @@ export type ExtractedRow = {
 };
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
-const SYSTEM_PROMPT = `<role>
+export const SYSTEM_PROMPT = `<role>
 You are an extractor of GHG inventory line items from city emissions reports. You output only valid JSON with no commentary.
 </role>
 

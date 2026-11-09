@@ -188,3 +188,6 @@ load-test/results/
 
 # Benchmark OCR text (third-party documents)
 docs/ingestion-accuracy-runs/.ocr-text/
+
+# Benchmark OCR text per attempt (third-party documents)
+docs/ingestion-accuracy-runs/**/ocr.md

@@ -8,7 +8,7 @@ interface BodyProps extends TextProps {
 
 export const BodyXLarge = ({ text, children, color = "content.tertiary", ...props }: BodyProps) => (
   <Text
-    fontFamily="Open Sans"
+    fontFamily="body"
     fontWeight={400}
     fontSize="body.xl"
     lineHeight="32px"
@@ -23,7 +23,7 @@ export const BodyXLarge = ({ text, children, color = "content.tertiary", ...prop
 
 export const BodyLarge = ({ text, children, color = "content.tertiary", ...props }: BodyProps) => (
   <Text
-    fontFamily="Open Sans"
+    fontFamily="body"
     fontWeight={400}
     fontSize="body.lg"
     lineHeight="24px"
@@ -38,7 +38,7 @@ export const BodyLarge = ({ text, children, color = "content.tertiary", ...props
 
 export const BodyMedium = ({ text, children, color = "content.tertiary", ...props }: BodyProps) => (
   <Text
-    fontFamily="Open Sans"
+    fontFamily="body"
     fontWeight={400}
     fontSize="body.md"
     lineHeight="20px"
@@ -53,7 +53,7 @@ export const BodyMedium = ({ text, children, color = "content.tertiary", ...prop
 
 export const BodySmall = ({ text, children, color = "content.tertiary", ...props }: BodyProps) => (
   <Text
-    fontFamily="Open Sans"
+    fontFamily="body"
     fontWeight={400}
     fontSize="body.sm"
     lineHeight="16px"

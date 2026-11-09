@@ -10,7 +10,8 @@ import { MeedBreadcrumb } from "@/app/[lng]/cities/[cityId]/MEED/components/Meed
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import type { CityFixture, DemoTrack } from "../_lib/types";
-import { demoHome, trackHref } from "../_lib/hrefs";
+import { demoHome } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { useDemoT } from "../_lib/useDemoT";
 import { CitySwitcher } from "./CitySwitcher";
 import { ConceptNotice } from "./ConceptNotice";
@@ -33,6 +34,8 @@ export interface DemoShellProps {
   /** Output areas show a way back instead of a footer. */
   backLabel?: string;
   headerFacts?: string;
+  /** Where "back" and the breadcrumb lead; defaults to the track home. */
+  homeHref?: string;
   /**
    * Decisions still open for this screen (already translated). They render
    * in the corner notice rather than in the layout, so the screen reads as
@@ -61,11 +64,13 @@ export function DemoShell({
   forward,
   backLabel,
   headerFacts,
+  homeHref,
   openPoints,
   children,
 }: DemoShellProps) {
+  const trackHrefIn = useTrackHref();
   const { t } = useDemoT(lng);
-  const home = trackHref(lng, city.slug, track);
+  const home = homeHref ?? trackHrefIn(lng, city.slug, track);
   return (
     <Box
       h="full"
@@ -126,14 +131,16 @@ export function DemoShell({
         />
       )}
 
+      {/* Props in the order the server serialises them, so the class
+          hashes match on hydration (the client kept JSX order). */}
       <Box
-        display="flex"
         mx="auto"
-        pt="xxl"
-        pb="xxl-6"
-        px="l"
         w="full"
         maxW="1090px"
+        px="l"
+        pt="xxl"
+        pb="xxl-6"
+        display="flex"
         flexDirection="column"
         gap="xl"
       >
@@ -156,7 +163,9 @@ export function DemoShell({
           </Link>
         )}
         <VStack alignItems="stretch" gap="m">
-          <HeadlineSmall color="content.primary">{title}</HeadlineSmall>
+          <HeadlineSmall as="h1" color="content.primary">
+            {title}
+          </HeadlineSmall>
           {description && (
             <BodyLarge color="content.secondary">{description}</BodyLarge>
           )}
@@ -185,7 +194,7 @@ export function DemoShell({
                 href={
                   step === "preferences"
                     ? home
-                    : trackHref(lng, city.slug, track, "preferences")
+                    : trackHrefIn(lng, city.slug, track, "preferences")
                 }
               >
                 {step === "preferences"

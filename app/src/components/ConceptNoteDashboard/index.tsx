@@ -36,6 +36,7 @@ import type { ConceptNoteRun } from "@/util/types";
 
 import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
+import { getRunClimateActionPlanState } from "./climate-action-plan-status";
 import {
   contextSourceHelpKey,
   contextSourceStatusKey,
@@ -91,11 +92,21 @@ export function ConceptNoteDashboard({
   const [duplicatingRunId, setDuplicatingRunId] = useState<string | null>(null);
   const duplicateKeysRef = useRef(new Map<string, string>());
   const [duplicateConceptNote] = api.useDuplicateConceptNoteRunMutation();
+  // Reading cached state lets polling stop as soon as every plan is settled.
+  const { data: cachedRunList } =
+    api.endpoints.getConceptNoteRuns.useQueryState(cityId);
+  const pollPlans = (cachedRunList?.runs ?? []).some(
+    (run) => getRunClimateActionPlanState(run) === "processing",
+  );
   const {
     data: runList,
     isError: runsFailed,
     isLoading: runsLoading,
-  } = api.useGetConceptNoteRunsQuery(cityId);
+  } = api.useGetConceptNoteRunsQuery(cityId, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: pollPlans ? 5_000 : 0,
+    skipPollingIfUnfocused: true,
+  });
   const { data: city, isLoading: cityLoading } = api.useGetCityQuery(cityId);
   const {
     data: population,
@@ -405,6 +416,7 @@ export function ConceptNoteDashboard({
                   run.status,
                   run.workflow_step,
                   run.progress_summary,
+                  Boolean(run.funder_id),
                 );
 
                 return (

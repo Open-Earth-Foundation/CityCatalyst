@@ -443,7 +443,6 @@ async function collectHIAPPage(
       if (!ranking) throw new Error("Selected HIAP action has no ranking");
       const scope = await resolveHIAPCatalogScope({
         inventoryId: ranking.inventoryId,
-        userId: ranking.userId,
       });
       addCandidate(
         candidates,

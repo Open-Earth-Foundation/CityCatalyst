@@ -15,6 +15,8 @@ import {
 import { MdError, MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
+import ImportRowIssues from "./import-row-issues";
+import type { ImportRowDecision } from "./import-row-decisions";
 
 const MANDATORY_KEYS = new Set([
   "gpcRefNo",
@@ -37,6 +39,9 @@ interface InventoryMappingStepProps {
   inventoryId: string;
   importedFileId: string;
   mappingOverrides: Record<string, string>;
+  /** Per-row decisions on rows held for review. */
+  rowDecisions: Record<string, ImportRowDecision>;
+  onRowDecision: (rowIndex: number, decision: ImportRowDecision | null) => void;
   onMappingChange: (columnName: string, mappedKey: string) => void;
   canContinue: boolean;
 }
@@ -48,6 +53,8 @@ export default function InventoryMappingStep({
   inventoryId,
   importedFileId,
   mappingOverrides,
+  rowDecisions,
+  onRowDecision,
   onMappingChange,
   canContinue,
 }: InventoryMappingStepProps) {
@@ -234,6 +241,17 @@ export default function InventoryMappingStep({
             </Text>
           </Box>
         </Box>
+      )}
+
+      {canContinue && (
+        <ImportRowIssues
+          t={t}
+          cityId={cityId}
+          inventoryId={inventoryId}
+          importedFileId={importedFileId}
+          mappingOverrides={{ columnMappings: mappingOverrides, rowDecisions }}
+          onRowDecision={onRowDecision}
+        />
       )}
 
       <Card.Root

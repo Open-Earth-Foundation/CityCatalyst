@@ -6,6 +6,8 @@ export interface ParsedSheet {
   name: string;
   headers: string[];
   rows: Record<string, string | number | null>[];
+  /** 1-based row number in the source file for each entry in `rows` (xlsx only). */
+  rowNumbers?: number[];
   rowCount: number;
   columnCount: number;
 }
@@ -39,6 +41,7 @@ export default class FileParserService {
     workbook.worksheets.forEach((worksheet) => {
       const headers: string[] = [];
       const rows: Record<string, string | number | null>[] = [];
+      const rowNumbers: number[] = [];
 
       // Get headers from first row
       const headerRow = worksheet.getRow(1);
@@ -59,16 +62,16 @@ export default class FileParserService {
           }
         });
 
-        // Only add row if it has at least one non-null value
-        if (Object.values(rowData).some((val) => val !== null && val !== "")) {
-          rows.push(rowData);
-        }
+        // Keep blank data rows so "rows in file" and skip counts match the sheet.
+        rows.push(rowData);
+        rowNumbers.push(rowNum);
       }
 
       sheets.push({
         name: worksheet.name,
         headers: headers.filter(Boolean),
         rows,
+        rowNumbers,
         rowCount: worksheet.rowCount,
         columnCount: worksheet.columnCount,
       });
@@ -99,8 +102,10 @@ export default class FileParserService {
     if (value instanceof Date) return value.toISOString();
     if (typeof value === "object") {
       const o = value as Record<string, unknown>;
-      if (typeof o.error === "string" && o.error) return `#${o.error.toUpperCase()}!`;
-      if (typeof o.result !== "undefined") return this.normalizeCellValue(o.result) ?? null;
+      if (typeof o.error === "string" && o.error)
+        return `#${o.error.toUpperCase()}!`;
+      if (typeof o.result !== "undefined")
+        return this.normalizeCellValue(o.result) ?? null;
       if (typeof o.richText === "string") return o.richText;
       if (Array.isArray(o.richText)) {
         const text = (o.richText as { text?: string }[])
@@ -127,7 +132,7 @@ export default class FileParserService {
       const parser = stream.pipe(
         parse({
           columns: true, // Use first line as column names
-          skip_empty_lines: true,
+          skip_empty_lines: false,
           trim: true,
         }),
       );
@@ -229,13 +234,31 @@ export default class FileParserService {
       }
     }
 
-    // Third pass: Fallback to reverse contains (term contains header)
+    // Third pass: reverse contains (term contains header). Require a
+    // substantial header so short gas names like "co2" do not match
+    // "emission factor - co2" / "ef co2" and steal EF column bindings.
     for (let i = 0; i < normalizedHeaders.length; i++) {
       const header = normalizedHeaders[i];
+      if (header.length < 4) {
+        continue;
+      }
       for (const term of sortedTerms) {
-        if (term.includes(header)) {
-          return i;
+        if (!term.includes(header)) {
+          continue;
         }
+        // Emission-factor terms must only reverse-match EF-looking headers
+        if (
+          (term.includes("emission factor") ||
+            term.startsWith("ef ") ||
+            term.startsWith("ef_")) &&
+          !header.includes("emission factor") &&
+          !header.startsWith("ef ") &&
+          !header.startsWith("ef_") &&
+          !/^ef[\s_-]/.test(header)
+        ) {
+          continue;
+        }
+        return i;
       }
     }
 

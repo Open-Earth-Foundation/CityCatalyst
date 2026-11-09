@@ -8,7 +8,7 @@ interface CaptionProps extends TextProps {
 
 export const Caption = ({ text, children, ...props }: CaptionProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={400}
     fontSize="12px"
     lineHeight="16px"

@@ -48,6 +48,7 @@ describe("HIAP catalog backfill runner", () => {
       },
       actionPlans: { cursor: null, completed: false },
       meedRankings: { cursor: null, completed: false },
+      meedOutputPlans: { cursor: null, completed: false },
     };
     const deps: HIAPCatalogBackfillRunnerDeps = {
       acquireLock: jest.fn().mockResolvedValue({ connectionId: "lock-1" }),
@@ -67,6 +68,9 @@ describe("HIAP catalog backfill runner", () => {
       processMeedRankingsPage: jest
         .fn()
         .mockResolvedValue(page({ scanned: 4, repaired: 4 })),
+      processMeedOutputPlansPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 5, repaired: 5 })),
     };
 
     await expect(
@@ -76,10 +80,11 @@ describe("HIAP catalog backfill runner", () => {
       ),
     ).resolves.toEqual({
       skipped: false,
-      pages: 3,
+      pages: 4,
       rankings: { scanned: 2, repaired: 2, failed: 0 },
       actionPlans: { scanned: 3, repaired: 3, failed: 0 },
       meedRankings: { scanned: 4, repaired: 4, failed: 0 },
+      meedOutputPlans: { scanned: 5, repaired: 5, failed: 0 },
     });
     expect(rankingPages).toEqual([
       {
@@ -95,6 +100,7 @@ describe("HIAP catalog backfill runner", () => {
       rankings: { cursor: null, completed: true },
       actionPlans: { cursor: null, completed: true },
       meedRankings: { cursor: null, completed: false },
+      meedOutputPlans: { cursor: null, completed: false },
     });
   });
 
@@ -107,6 +113,7 @@ describe("HIAP catalog backfill runner", () => {
       processRankingsPage: jest.fn().mockResolvedValue(page()),
       processActionPlansPage: jest.fn().mockResolvedValue(page()),
       processMeedRankingsPage: jest.fn().mockResolvedValue(page()),
+      processMeedOutputPlansPage: jest.fn().mockResolvedValue(page()),
     };
 
     await expect(
@@ -114,7 +121,7 @@ describe("HIAP catalog backfill runner", () => {
         { batchSize: 10, maxBatchesPerType: 1, dryRun: true },
         deps,
       ),
-    ).resolves.toMatchObject({ skipped: false, pages: 3 });
+    ).resolves.toMatchObject({ skipped: false, pages: 4 });
 
     expect(deps.loadCheckpoint).not.toHaveBeenCalled();
     expect(deps.saveCheckpoint).not.toHaveBeenCalled();
@@ -129,6 +136,7 @@ describe("HIAP catalog backfill runner", () => {
         rankings: { cursor: null, completed: false },
         actionPlans: { cursor: null, completed: true },
         meedRankings: { cursor: null, completed: true },
+        meedOutputPlans: { cursor: null, completed: true },
       }),
       saveCheckpoint: jest.fn(async (checkpoint) => {
         savedCheckpoints.push(checkpoint);
@@ -144,6 +152,9 @@ describe("HIAP catalog backfill runner", () => {
       processMeedRankingsPage: jest
         .fn()
         .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
+      processMeedOutputPlansPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
     };
 
     await expect(
@@ -156,11 +167,13 @@ describe("HIAP catalog backfill runner", () => {
       rankings: { failed: 1 },
       actionPlans: { scanned: 0, repaired: 0, failed: 0 },
       meedRankings: { scanned: 0, repaired: 0, failed: 0 },
+      meedOutputPlans: { scanned: 0, repaired: 0, failed: 0 },
     });
     expect(savedCheckpoints.at(-1)).toEqual({
       rankings: { cursor: null, completed: false },
       actionPlans: { cursor: null, completed: true },
       meedRankings: { cursor: null, completed: false },
+      meedOutputPlans: { cursor: null, completed: false },
     });
   });
 
@@ -212,6 +225,7 @@ describe("HIAP catalog backfill runner", () => {
       processRankingsPage: jest.fn(),
       processActionPlansPage: jest.fn(),
       processMeedRankingsPage: jest.fn(),
+      processMeedOutputPlansPage: jest.fn(),
     };
 
     await expect(
@@ -237,11 +251,15 @@ describe("HIAP catalog backfill runner", () => {
         rankings: { cursor: null, completed: true },
         actionPlans: { cursor: null, completed: true },
         meedRankings: { cursor: null, completed: false },
+        meedOutputPlans: { cursor: null, completed: true },
       }),
       saveCheckpoint: jest.fn(),
       processRankingsPage: jest.fn(),
       processActionPlansPage: jest.fn(),
       processMeedRankingsPage,
+      processMeedOutputPlansPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
     } as unknown as HIAPCatalogBackfillRunnerDeps & {
       processMeedRankingsPage: jest.Mock;
     };
@@ -253,7 +271,7 @@ describe("HIAP catalog backfill runner", () => {
       ),
     ).resolves.toMatchObject({
       skipped: false,
-      pages: 1,
+      pages: 2,
       meedRankings: { scanned: 4, repaired: 3, failed: 0 },
     });
     expect(processMeedRankingsPage).toHaveBeenCalledWith({
@@ -280,6 +298,7 @@ describe("HIAP catalog backfill runner", () => {
         rankings: { cursor: null, completed: true },
         actionPlans: { cursor: null, completed: true },
         meedRankings: { cursor: meedCursor, completed: true },
+        meedOutputPlans: { cursor: null, completed: true },
       }),
       saveCheckpoint: jest.fn(async (checkpoint) => {
         savedCheckpoints.push(checkpoint);
@@ -293,6 +312,9 @@ describe("HIAP catalog backfill runner", () => {
           nextCursor: newRankingCursor,
         }),
       ),
+      processMeedOutputPlansPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
     };
 
     await runHIAPCatalogBackfill(
@@ -324,6 +346,7 @@ describe("HIAP catalog backfill runner", () => {
       rankings: { cursor: null, completed: true },
       actionPlans: { cursor: null, completed: true },
       meedRankings: { cursor: previousCursor, completed: true },
+      meedOutputPlans: { cursor: null, completed: true },
     };
     const meedPages = [
       page({
@@ -349,6 +372,9 @@ describe("HIAP catalog backfill runner", () => {
       processRankingsPage: jest.fn(),
       processActionPlansPage: jest.fn(),
       processMeedRankingsPage,
+      processMeedOutputPlansPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
     };
     const config = { batchSize: 10, maxBatchesPerType: 1, dryRun: false };
 
@@ -368,6 +394,99 @@ describe("HIAP catalog backfill runner", () => {
     expect(checkpoint.meedRankings).toEqual({
       cursor: failedRankingCursor,
       completed: false,
+    });
+  });
+
+  it("advances the output-plan cursor past a permanently failing row", async () => {
+    const failedCursor = {
+      created: "2026-01-02T00:00:00.000Z",
+      id: "report-bad",
+    };
+    const laterCursor = {
+      created: "2026-01-03T00:00:00.000Z",
+      id: "report-later",
+    };
+    let checkpoint: HIAPCatalogBackfillCheckpoint = {
+      rankings: { cursor: null, completed: true },
+      actionPlans: { cursor: null, completed: true },
+      meedRankings: { cursor: null, completed: true },
+      meedOutputPlans: { cursor: null, completed: false },
+    };
+    const pages = [
+      page({ repaired: 0, failed: 1, hasMore: true, nextCursor: failedCursor }),
+      page({ repaired: 1, nextCursor: laterCursor }),
+    ];
+    const processMeedOutputPlansPage = jest
+      .fn()
+      .mockImplementation(async () => pages.shift());
+    const deps: HIAPCatalogBackfillRunnerDeps = {
+      acquireLock: jest.fn().mockResolvedValue({ connectionId: "lock-1" }),
+      releaseLock: jest.fn().mockResolvedValue(undefined),
+      loadCheckpoint: jest.fn(async () => checkpoint),
+      saveCheckpoint: jest.fn(async (next) => {
+        checkpoint = next;
+      }),
+      processRankingsPage: jest.fn(),
+      processActionPlansPage: jest.fn(),
+      processMeedRankingsPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
+      processMeedOutputPlansPage,
+    };
+
+    await runHIAPCatalogBackfill(
+      { batchSize: 1, maxBatchesPerType: 2, dryRun: false },
+      deps,
+    );
+
+    expect(processMeedOutputPlansPage).toHaveBeenNthCalledWith(2, {
+      limit: 1,
+      dryRun: false,
+      cursor: failedCursor,
+    });
+    expect(checkpoint.meedOutputPlans).toEqual({
+      cursor: laterCursor,
+      completed: false,
+    });
+  });
+
+  it("processes MEED output plans after rankings", async () => {
+    const processMeedOutputPlansPage = jest
+      .fn()
+      .mockResolvedValue(page({ scanned: 2, repaired: 2 }));
+    const deps = {
+      acquireLock: jest.fn().mockResolvedValue({ connectionId: "lock-1" }),
+      releaseLock: jest.fn().mockResolvedValue(undefined),
+      loadCheckpoint: jest.fn().mockResolvedValue({
+        rankings: { cursor: null, completed: true },
+        actionPlans: { cursor: null, completed: true },
+        meedRankings: { cursor: null, completed: true },
+        meedOutputPlans: { cursor: null, completed: false },
+      }),
+      saveCheckpoint: jest.fn(),
+      processRankingsPage: jest.fn(),
+      processActionPlansPage: jest.fn(),
+      processMeedRankingsPage: jest
+        .fn()
+        .mockResolvedValue(page({ scanned: 0, repaired: 0 })),
+      processMeedOutputPlansPage,
+    } as unknown as HIAPCatalogBackfillRunnerDeps & {
+      processMeedOutputPlansPage: jest.Mock;
+    };
+
+    await expect(
+      runHIAPCatalogBackfill(
+        { batchSize: 10, maxBatchesPerType: 1, dryRun: false },
+        deps,
+      ),
+    ).resolves.toMatchObject({
+      skipped: false,
+      meedOutputPlans: { scanned: 2, repaired: 2, failed: 0 },
+    });
+    expect(processMeedOutputPlansPage).toHaveBeenCalledWith({
+      limit: 10,
+      dryRun: false,
+      cursor: undefined,
     });
   });
 });

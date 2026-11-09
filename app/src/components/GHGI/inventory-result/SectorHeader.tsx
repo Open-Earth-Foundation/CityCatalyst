@@ -2,7 +2,11 @@ import { IconBaseProps } from "react-icons";
 import type { TFunction } from "i18next";
 import { SectorEmission } from "@/util/types";
 import { HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import { capitalizeFirstLetter, formatEmissionsOrRemoval } from "@/util/helpers";
+import {
+  capitalizeFirstLetter,
+  formatEmissionsOrRemoval,
+  formatShareOfTotalEmissions,
+} from "@/util/helpers";
 
 export const SectorHeader = ({
   icon,
@@ -25,11 +29,21 @@ export const SectorHeader = ({
     <HStack alignItems={"start"}>
       <Icon as={icon} height="24px" w="24px" color="interactive.secondary" />
       <VStack alignItems={"start"} gap={0}>
-        <Text fontSize="14px" fontWeight="500" fontStyle="normal">
+        <Text
+          fontFamily="heading"
+          fontSize="14px"
+          fontWeight="500"
+          fontStyle="normal"
+        >
           {capitalizeFirstLetter(t("sector"))} -{" "}
           {capitalizeFirstLetter(t(sectorName))}
         </Text>
-        <Text fontWeight={"600"} fontSize={"28px"} color={"content.secondary"}>
+        <Text
+          fontFamily="heading"
+          fontWeight={"600"}
+          fontSize={"28px"}
+          color={"content.secondary"}
+        >
           {dataForSector?.co2eq
             ? formatEmissionsOrRemoval(
                 dataForSector.co2eq,
@@ -39,6 +53,7 @@ export const SectorHeader = ({
             : t("N/A")}
         </Text>
         <Text
+          fontFamily="heading"
           fontWeight={"400"}
           fontSize={"16px"}
           color={"content.secondary"}
@@ -46,9 +61,15 @@ export const SectorHeader = ({
         >
           {isNetRemoval
             ? t("net-removal")
-            : (dataForSector?.percentage || t("N/A") + " ") +
-              "% " +
-              t("of-total-emissions")}
+            : formatShareOfTotalEmissions({
+                percentage: dataForSector?.percentage,
+                // Prefer gross; fall back to net (already non-negative here).
+                grossCo2eqKg:
+                  dataForSector?.grossCo2eq ?? dataForSector?.co2eq,
+                notAvailableLabel: t("N/A"),
+                lessThanOnePercentLabel: t("less-than-one-percent"),
+                ofTotalEmissionsLabel: t("of-total-emissions"),
+              })}
         </Text>
       </VStack>
     </HStack>

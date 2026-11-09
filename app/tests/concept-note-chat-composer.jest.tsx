@@ -26,7 +26,11 @@ jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-chat",
   () => ({
     useConceptNoteChat: () => ({
+      connection: "connected",
       error: null,
+      canRetry: false,
+      overviewFailed: false,
+      retry: jest.fn(),
       historyLoading: false,
       isGenerating,
       progress: null,
@@ -48,6 +52,14 @@ for (const [path, name] of [
     [name]: () => null,
   }));
 }
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/chat-threads",
+  () => ({
+    ChatThreadSwitcher: () => null,
+    OlderChatNotice: () => null,
+    useConceptNoteChatThreads: () => ({}),
+  }),
+);
 
 let ConceptNoteChatPanel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
 let root: Root;
@@ -102,18 +114,22 @@ afterEach(async () => {
   container.remove();
 });
 
-async function renderPanel(): Promise<void> {
+async function renderPanel(
+  status = contextStatus,
+  threadId: string | null = "thread",
+): Promise<void> {
   await act(async () => {
     root.render(
       <ChakraProvider value={defaultSystem}>
         <ConceptNoteChatPanel
-          contextStatus={contextStatus}
+          cityId="city"
+          contextStatus={status}
           composerRequest={null}
           draftOverviewPending={false}
           lng="en"
           onOpenContext={() => {}}
           runId="run"
-          threadId="thread"
+          threadId={threadId}
           editScope={{ kind: "document" } as never}
           edits={edits}
         />
@@ -142,18 +158,63 @@ async function type(value: string): Promise<void> {
   });
 }
 
-async function pressEnter(shiftKey = false): Promise<void> {
-  await act(async () => {
-    composer().dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "Enter",
-        shiftKey,
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+async function pressEnter(shiftKey = false): Promise<KeyboardEvent> {
+  const event = new KeyboardEvent("keydown", {
+    key: "Enter",
+    shiftKey,
+    bubbles: true,
+    cancelable: true,
   });
+  await act(async () => {
+    composer().dispatchEvent(event);
+  });
+  return event;
 }
+
+it.each(["uploading", "processing", "preparing"] as const)(
+  "allows typing while context is %s, but waits for readiness before sending",
+  async (state) => {
+    await renderPanel();
+    await type("A draft before processing");
+    await renderPanel({ ...contextStatus, state, blocked: true });
+
+    expect(composer().disabled).toBe(false);
+    expect(composer().value).toBe("A draft before processing");
+    expect(composer().placeholder).toBe("chat-input-placeholder");
+    expect(composer().getAttribute("aria-describedby")).toBe(
+      "concept-note-chat-blocked",
+    );
+    await type("A draft edited during processing");
+    const send = container.querySelector<HTMLButtonElement>(
+      '[data-testid="concept-note-chat-send"]',
+    )!;
+    expect(send.disabled).toBe(true);
+    await act(async () => send.click());
+    await pressEnter();
+    // Submission stays guarded even when the disabled button is bypassed.
+    await act(async () => composer().form!.requestSubmit());
+    expect(sendMessage).not.toHaveBeenCalled();
+    expect(composer().value).toBe("A draft edited during processing");
+    expect((await pressEnter(true)).defaultPrevented).toBe(false);
+
+    await renderPanel({ ...contextStatus, state: "ready", blocked: false });
+    expect(sendMessage).not.toHaveBeenCalled();
+    expect(composer().value).toBe("A draft edited during processing");
+    expect(send.disabled).toBe(false);
+    await act(async () => send.click());
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+    expect(sendMessage).toHaveBeenCalledWith(
+      "A draft edited during processing",
+    );
+    expect(composer().value).toBe("");
+  },
+);
+
+it("keeps the composer unavailable when the run has no chat thread", async () => {
+  await renderPanel(contextStatus, null);
+  expect(composer().disabled).toBe(true);
+  expect(composer().placeholder).toBe("chat-unavailable");
+});
 
 it("keeps the composer editable while Clima responds but holds the send", async () => {
   isGenerating = true;

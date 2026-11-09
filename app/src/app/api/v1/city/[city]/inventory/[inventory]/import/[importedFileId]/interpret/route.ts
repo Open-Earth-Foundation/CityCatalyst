@@ -504,6 +504,7 @@ async function runInterpretationInBackground(
         processingResults: {
           rowCount: importResult.rowCount,
           validRowCount: importResult.validRowCount,
+          rowsSkippedEmptyEmissions: importResult.rowsSkippedEmptyEmissions,
           errors: importResult.errors,
           warnings: importResult.warnings,
         },

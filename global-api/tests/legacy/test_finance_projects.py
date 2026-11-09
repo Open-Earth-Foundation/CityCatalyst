@@ -26,6 +26,7 @@ _PROJECT_ROW = {
     "project_name": "Programa de Resiliencia Urbana Santiago",
     "project_name_i18n": {"en": "Santiago Urban Resilience Program"},
     "sector": "transportation",
+    "sector_i18n": {"en": "Transportation", "es": "Transporte"},
     "jurisdiction": "Región Metropolitana",
     "actor_id": "CL SCL",
     "lifecycle_stage": "implementation",
@@ -95,6 +96,7 @@ def test_get_finance_projects_success(monkeypatch):
     proj = body["data"][0]
     assert proj["project_name"] == "Programa de Resiliencia Urbana Santiago"
     assert proj["sector"] == "transportation"
+    assert proj["sector_i18n"] == {"en": "Transportation", "es": "Transporte"}
     assert proj["cost_total"] == 1500000              # Decimal -> int
     assert proj["action_matches"] == [{"action_id": "C40_2", "confidence": "strong"}]
     assert proj["datasource_name"] == "cl-gcf-projects"

@@ -61,7 +61,10 @@ export const GET = apiHandler(async (_req: Request, context) => {
   // Validate that the user has access to this project
   // They must be either an admin or have access to the organization/project
   try {
-    UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+    await UserService.validateIsAdminOrOrgAdmin(
+      session,
+      project.organizationId,
+    );
   } catch {
     // If they're not an admin or org admin, check if they have access to the project
     if (session) {
@@ -170,7 +173,10 @@ export const POST = apiHandler(async (_req: Request, context) => {
   // Validate that the user has access to this project
   // They must be either an admin or have access to the organization/project
   try {
-    UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+    await UserService.validateIsAdminOrOrgAdmin(
+      session,
+      project.organizationId,
+    );
   } catch {
     throw new createHttpError.Forbidden("Access denied");
   }
@@ -251,7 +257,10 @@ export const DELETE = apiHandler(async (_req: Request, context) => {
     throw new createHttpError.NotFound("Project not found");
   }
   try {
-    UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+    await UserService.validateIsAdminOrOrgAdmin(
+      session,
+      project.organizationId,
+    );
   } catch {
     throw new createHttpError.Forbidden("Access denied");
   }

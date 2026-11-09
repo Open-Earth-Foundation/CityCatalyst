@@ -158,17 +158,6 @@ jobs:
           echo "::error::Test coverage has decreased. Please add tests to maintain or improve coverage."
           exit 1
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         if: always()
@@ -180,8 +169,89 @@ jobs:
       - name: Shut down database
         run: docker stop github_action_postgresql
 
+  # Playwright runs in its own job, in parallel with runTests, on the official
+  # Playwright image. The image already has the browsers and their system
+  # dependencies, so the job skips `npx playwright install --with-deps`, which
+  # sometimes hangs for 30 minutes on hosted runners.
+  # Keep the image tag equal to the @playwright/test version in app/package-lock.json.
+  e2eTests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      # Run as the runner user so files in the checked-out workspace stay writable.
+      options: --user 1001
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: citycatalyst
+          POSTGRES_DB: citycatalyst
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
+      NEXTAUTH_URL: "http://localhost:3000"
+      CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
+      CDP_MODE: "test"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC"
+      # Inside a container job the database is reached by its service name.
+      # Process env wins over the DATABASE_HOST="localhost" copied from env.example.
+      DATABASE_HOST: postgres
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up database
+        env:
+          GLOBAL_API_URL: https://ccglobal.openearth.dev
+        run: |
+          cp env.example .env
+          npm run db:migrate
+          npm run db:seed
+          npm run sync-catalogue
+          npm run sync-emissions-factors
+
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
+          echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
+
+      - name: Run NextJS build
+        run: npm run build
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: app/playwright-report/
+          retention-days: 30
+
   pushToGHCR:
-    needs: runTests
+    needs: [runTests, e2eTests]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
@@ -456,7 +526,13 @@ jobs:
         if: steps.run_migrations.outputs.status == 'success'
         run: |
           kubectl create -f k8s/cc-seed.yml -n default
+          # Batch every cc-web change below into a single rollout; resume even if a later command fails
+          kubectl rollout pause deployment/cc-web-deploy -n default
+          trap 'kubectl rollout resume deployment/cc-web-deploy -n default 2>/dev/null || true' EXIT
           kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl set image deployment/cc-web-deploy \
+            cc-web=ghcr.io/open-earth-foundation/citycatalyst-web:${{ github.sha }} \
+            -n default
           kubectl apply -f k8s/cc-web-pdb.yml -n default || echo "PDB apply skipped (requires policy API permissions)"
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
@@ -468,6 +544,7 @@ jobs:
             MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
+            LLM_EXTRACTION_MODEL=gpt-5.6-luna \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
@@ -517,8 +594,15 @@ jobs:
           kubectl apply -f k8s/cc-process-bulk-inventory-import.yml -n default
           kubectl set env cronjob/citycatalyst-process-bulk-inventory-import \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
-          kubectl rollout restart deployment cc-web-deploy -n default
-          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+          kubectl rollout resume deployment/cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=600s
+
+      - name: Rollout diagnostics
+        if: failure()
+        run: |
+          # No `describe pods`, logs or `-o yaml`: they print env values set via `kubectl set env` (secrets) in plain text
+          kubectl get rs,pods -l app=cc-web -n default -o wide || true
+          kubectl get events -n default --sort-by=.lastTimestamp | grep 'cc-web-deploy' | tail -60 || true
 
   ccCaPostDeploySmoke:
     name: CA/CC post-deploy smoke
@@ -542,11 +626,11 @@ jobs:
           bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
-    needs: [runTests, pushToGHCR, deployToEKS, ccCaPostDeploySmoke]
+    needs: [runTests, e2eTests, pushToGHCR, deployToEKS, ccCaPostDeploySmoke]
     runs-on: ubuntu-latest
     if: |
       always() &&
-      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure' || needs.ccCaPostDeploySmoke.result == 'failure') &&
+      (needs.runTests.result == 'failure' || needs.e2eTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure' || needs.ccCaPostDeploySmoke.result == 'failure') &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop'
 
@@ -558,6 +642,8 @@ jobs:
         run: |
           if [ "${{ needs.runTests.result }}" == "failure" ]; then
             echo "stage=Tests" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.e2eTests.result }}" == "failure" ]; then
+            echo "stage=E2E tests" >> $GITHUB_OUTPUT
           elif [ "${{ needs.pushToGHCR.result }}" == "failure" ]; then
             echo "stage=Docker Build" >> $GITHUB_OUTPUT
           elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then

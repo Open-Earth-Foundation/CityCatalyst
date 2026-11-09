@@ -14,7 +14,8 @@ const inventoryValueModel = { findAll: jest.fn() };
 const rankingModel = { findOne: jest.fn(), create: jest.fn() };
 const rankedModel = { bulkCreate: jest.fn(), findAll: jest.fn() };
 const removedModel = { bulkCreate: jest.fn(), findAll: jest.fn() };
-const snapshotModel = { destroy: jest.fn(), create: jest.fn() };
+const snapshotModel = { destroy: jest.fn(), create: jest.fn(), findOne: jest.fn() };
+const reportModel = { findOne: jest.fn(), create: jest.fn() };
 const mockTransaction = {};
 const sequelize = {
   transaction: jest.fn(async (callback: (transaction: unknown) => unknown) =>
@@ -31,6 +32,7 @@ const mockDb = {
     MeedActionRanked: rankedModel,
     MeedActionRemoved: removedModel,
     MeedRankSnapshot: snapshotModel,
+    MeedActionReport: reportModel,
     City: {},
     Population: {},
     ActivityValue: {},
@@ -56,10 +58,12 @@ jest.unstable_mockModule(
   "@/backend/meed/MeedNativeInputCatalogService",
   () => ({
     registerMEEDRanking: jest.fn(),
+    registerMEEDOutputPlan: jest.fn(),
   }),
 );
 jest.mock("@/backend/meed/MeedNativeInputCatalogService", () => ({
   registerMEEDRanking: jest.fn(),
+  registerMEEDOutputPlan: jest.fn(),
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { error: jest.fn(), info: jest.fn() },
@@ -69,7 +73,7 @@ jest.mock("@/services/logger", () => ({
 }));
 
 const populationService = (await import("@/backend/PopulationService")).default;
-const { registerMEEDRanking } =
+const { registerMEEDRanking, registerMEEDOutputPlan } =
   await import("@/backend/meed/MeedNativeInputCatalogService");
 const MeedApiService = (await import("@/backend/MeedApiService")).default;
 
@@ -136,7 +140,14 @@ beforeEach(() => {
   removedModel.findAll.mockResolvedValue([]);
   snapshotModel.destroy.mockResolvedValue(1);
   snapshotModel.create.mockImplementation(async (attributes) => attributes);
+  snapshotModel.findOne.mockResolvedValue({ request: {}, response: {} });
+  reportModel.findOne.mockResolvedValue(null);
+  reportModel.create.mockImplementation(async (attributes) => attributes);
   registerMEEDRanking.mockResolvedValue({
+    catalog: {},
+    created: true,
+  } as never);
+  registerMEEDOutputPlan.mockResolvedValue({
     catalog: {},
     created: true,
   } as never);
@@ -271,6 +282,88 @@ describe("MeedApiService versioned persistence", () => {
     ).resolves.toEqual({
       rankedActions: [{ id: "legacy-ranked" }],
       removedActions: [{ id: "legacy-removed" }],
+    });
+  });
+});
+
+describe("MeedApiService output plan versioning", () => {
+  function planResponse(actionId: string) {
+    return {
+      status: 200,
+      json: async () => ({
+        action_id: actionId,
+        language: ["en"],
+        chapters: [
+          { key: "legal", markdown: { en: "Body" }, limitations: { en: [] } },
+        ],
+        metadata: { required_sources_ok: true },
+      }),
+    };
+  }
+
+  it("creates a new report row for every successful generation and registers it", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(planResponse("action-1"));
+
+    const first = await MeedApiService.generatePlan(
+      "inventory-1",
+      ["en"],
+      "action-1",
+      false,
+    );
+    const second = await MeedApiService.generatePlan(
+      "inventory-1",
+      ["en"],
+      "action-1",
+      false,
+    );
+
+    expect(reportModel.create).toHaveBeenCalledTimes(2);
+    expect(reportModel.create).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ catalogEligible: true }),
+    );
+    expect(first.id).not.toBe(second.id);
+    expect(reportModel.findOne).not.toHaveBeenCalled();
+    expect(registerMEEDOutputPlan).toHaveBeenCalledTimes(2);
+    expect(registerMEEDOutputPlan).toHaveBeenNthCalledWith(1, first.id);
+    expect(registerMEEDOutputPlan).toHaveBeenNthCalledWith(2, second.id);
+  });
+
+  it("does not store or register debug generations", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(planResponse("action-1"));
+
+    await MeedApiService.generatePlan("inventory-1", ["en"], "action-1", true);
+
+    expect(reportModel.create).not.toHaveBeenCalled();
+    expect(registerMEEDOutputPlan).not.toHaveBeenCalled();
+  });
+
+  it("does not fail the request when catalog registration fails", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(planResponse("action-1"));
+    registerMEEDOutputPlan.mockRejectedValueOnce(new Error("catalog down"));
+
+    await expect(
+      MeedApiService.generatePlan("inventory-1", ["en"], "action-1", false),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        inventoryId: "inventory-1",
+        actionId: "action-1",
+      }),
+    );
+  });
+
+  it("reads the newest plan by created and id", async () => {
+    reportModel.findOne.mockResolvedValueOnce({ id: "report-newest" });
+
+    await expect(
+      MeedApiService.getPlan("inventory-1", "action-1"),
+    ).resolves.toEqual({ id: "report-newest" });
+    expect(reportModel.findOne).toHaveBeenCalledWith({
+      where: { inventoryId: "inventory-1", actionId: "action-1" },
+      order: [
+        ["created", "DESC"],
+        ["id", "DESC"],
+      ],
     });
   });
 });

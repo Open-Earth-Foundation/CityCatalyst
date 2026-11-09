@@ -26,7 +26,7 @@ from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
     SourcePage,
-    _run_agent,
+    run_agent,
     analyze_document,
     gather_all_or_raise,
     parse_markdown_blocks,
@@ -52,7 +52,7 @@ async def test_source_worker_uses_live_stream_and_validates_result(
     }))
     monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
     with bind_cnb_progress(AsyncMock()):
-        result = await _run_agent(
+        result = await run_agent(
             name="Source reader",
             prompt="Read source",
             model_config=settings.llm.models.cnb_source_reader,
@@ -482,7 +482,7 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
         base_url="https://openrouter.ai/api/v1",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
     ) as client:
-        result = await _run_agent(
+        result = await run_agent(
             name="Source model compatibility test",
             prompt=settings.llm.prompts.get_prompt(
                 "cnb_source_question_reading"

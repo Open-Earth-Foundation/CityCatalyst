@@ -3,7 +3,7 @@
  * /api/v1/concept-notes/{runId}/application-context:
  *   patch:
  *     operationId: updateConceptNoteFundingSelection
- *     summary: Save a compatible funder and programme selection
+ *     summary: Save a compatible funder and programme, or the note's own template
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -22,6 +22,14 @@
  *               selected_funding_opportunity_id: { type: string, format: uuid, nullable: true }
  *               expected_funder_id: { type: string, format: uuid, nullable: true }
  *               expected_funding_opportunity_id: { type: string, format: uuid, nullable: true }
+ *               custom_template:
+ *                 type: object
+ *                 nullable: true
+ *                 description: The note's own template; requires funder_id null and replaces any funder.
+ *                 properties:
+ *                   template: { type: object }
+ *                   import_id: { type: string, format: uuid, nullable: true }
+ *               expected_custom_template_id: { type: string, format: uuid, nullable: true }
  *               acknowledge_draft_review: { type: boolean }
  *     responses:
  *       200: { description: Selection saved }

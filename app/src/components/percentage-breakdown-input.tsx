@@ -34,7 +34,7 @@ import {
   WoodIcon,
 } from "./icons";
 import type { TFunction } from "i18next";
-import { Field } from "./ui/field";
+import { ModalField as Field } from "./Modals/activity-modal/sections/ModalField";
 import { InputGroup } from "@/components/ui/input-group";
 import {
   NumberInputField,
@@ -179,6 +179,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
       flexDirection="column"
       invalid={!!error}
       label={label}
+      required
       labelInfo={tooltipInfo}
     >
       {defaultMode ? (
@@ -427,7 +428,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
         </Box>
       )}
       {error?.message && (
-        <Text color="sentiment.negativeDefault" fontSize="sm">
+        <Text data-modal-error color="sentiment.negativeDefault" fontSize="sm">
           {t(error.message)}
         </Text>
       )}

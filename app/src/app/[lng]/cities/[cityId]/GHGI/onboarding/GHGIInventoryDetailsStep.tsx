@@ -7,7 +7,7 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { GHGIFormInputs } from "@/util/GHGI/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   createListCollection,
@@ -65,12 +65,8 @@ export default function GHGIInventoryDetailsStep({
     GlobalWarmingPotentialTypeEnum.ar6,
   ];
 
-  // Handle inventory Goal Radio Input
-  // Set default inventory goal form value
-  useEffect(() => {
-    setValue("inventoryGoal", InventoryTypeEnum.GPC_BASIC);
-    setValue("globalWarmingPotential", GlobalWarmingPotentialTypeEnum.ar6);
-  }, [setValue]);
+  // Defaults live on the parent form. Do not reset here: remounting this
+  // step (go back, React Strict Mode) would overwrite BASIC+ with BASIC.
 
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
@@ -239,7 +235,9 @@ export default function GHGIInventoryDetailsStep({
                             field={field}
                             key={value}
                             value={value}
-                            inputValue={selectedInventoryGoalValue}
+                            inputValue={
+                              field.value || selectedInventoryGoalValue
+                            }
                             inputValueFunction={setSelectedInventoryGoalValue}
                             t={t}
                           />

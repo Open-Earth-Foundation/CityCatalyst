@@ -1,3 +1,4 @@
+import { conceptNoteCustomTemplateRequest } from "./concept-note-funder";
 import { z } from "zod";
 import {
   GlobalWarmingPotentialTypeEnum,
@@ -467,6 +468,9 @@ export const conceptNoteFundingSelectionRequest = z
     selected_funding_opportunity_id: z.string().uuid().nullable(),
     expected_funder_id: z.string().uuid().nullable(),
     expected_funding_opportunity_id: z.string().uuid().nullable(),
+    // An own template replaces the funder and programme.
+    custom_template: conceptNoteCustomTemplateRequest.nullable().default(null),
+    expected_custom_template_id: z.string().uuid().nullable().default(null),
     acknowledge_draft_review: z.boolean().default(false),
   })
   .strict()
@@ -475,8 +479,19 @@ export const conceptNoteFundingSelectionRequest = z
       value.funder_id !== null ||
       value.selected_funding_opportunity_id === null,
     { message: "A funding opportunity requires a funder" },
+  )
+  .refine(
+    (value) => value.custom_template === null || value.funder_id === null,
+    { message: "An own template replaces the funder selection" },
   );
 
+export const conceptNoteFunderImportStartRequest = z
+  .object({
+    uploadId: z.string().uuid(),
+    /** Read a catalogue funder (default) or only a note's own template. */
+    kind: z.enum(["funder", "template"]).default("funder"),
+  })
+  .strict();
 export const recordConsentRequest = z.object({
   consentType: z.enum(["analytics", "marketing"]),
   granted: z.boolean(),
@@ -485,3 +500,50 @@ export const recordConsentRequest = z.object({
 });
 
 export type RecordConsentRequest = z.infer<typeof recordConsentRequest>;
+
+export const patchIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  payload: z.unknown(),
+});
+
+export const ingestFromDocumentRequest = z.object({
+  inventoryId: z.string().uuid().optional(),
+  cityId: z.string().uuid().optional(),
+  projectId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional(),
+  dryRun: z.boolean().optional(),
+});
+
+export const withdrawIngestDocumentRequest = z.object({
+  withdrawExtractsFor: z
+    .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
+    .optional(),
+  /** Explicit confirmation. Removes inventory values tagged with this document. */
+  deleteImportedData: z.literal(true).optional(),
+});
+
+export const supersedeIngestDocumentRequest = z.object({
+  replacementDocumentId: z.string().uuid(),
+});
+
+export const approveIngestReviewDraftRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  targetBinding: z
+    .object({
+      cityId: z.string().uuid().nullable().optional(),
+      inventoryId: z.string().uuid().nullable().optional(),
+    })
+    .optional(),
+});
+
+export const confirmIngestColumnMapRequest = z.object({
+  reviewDraftVersion: z.number().int().positive(),
+  mappings: z
+    .array(
+      z.object({
+        sourceColumn: z.string().min(1),
+        taxonomyField: z.string().min(1),
+      }),
+    )
+    .min(1),
+});

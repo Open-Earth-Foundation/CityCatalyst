@@ -34,18 +34,25 @@ const ProjectList: React.FC<ProjectListProps> = ({
     useState<ProjectWithCities[]>(projects);
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value.trim());
+    const trimmed = value.trim();
+    setSearchTerm(trimmed);
 
-    if (!value.trim()) {
+    if (!trimmed) {
       setFilteredProjects(projects);
       return;
     }
 
+    const query = trimmed.toLowerCase();
     const result = projects.filter((project) => {
-      return project.name.toLowerCase().includes(value.toLowerCase());
+      const projectMatches = project.name.toLowerCase().includes(query);
+      const cityMatches = project.cities.some((city) =>
+        city.name.toLowerCase().includes(query),
+      );
+      return projectMatches || cityMatches;
     });
 
     setFilteredProjects(result);
+    setExpandedProjectId(result.map((project) => project.projectId));
   };
 
   return (

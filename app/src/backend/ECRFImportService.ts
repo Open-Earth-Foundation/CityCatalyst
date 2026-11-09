@@ -1,15 +1,44 @@
 import { db } from "@/models";
-import { Op } from "sequelize";
 import {
-  resolveGpcRefNo,
+  resolveGpcRefFromLabels,
+  scopeFromLabel,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
 import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
+import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
+import type { ImportRowIssue } from "@/util/types";
+
+/**
+ * When activity_name holds a notation-key label (e.g. "Not Occuring") and
+ * there is no dedicated notation column, treat it as the notation key and
+ * clear the activity type so it is not stored as a fuel.
+ */
+function resolveNotationFromActivity(args: {
+  notationKey?: string;
+  activityType?: string;
+}): { notationKey?: string; activityType?: string } {
+  if (args.notationKey) {
+    return { notationKey: args.notationKey, activityType: args.activityType };
+  }
+  if (args.activityType && toCanonical(args.activityType)) {
+    return { notationKey: args.activityType, activityType: undefined };
+  }
+  return { notationKey: undefined, activityType: args.activityType };
+}
+
+function isBlankParsedRow(
+  row: Record<string, string | number | null>,
+): boolean {
+  return !Object.values(row).some(
+    (value) => value != null && String(value).trim() !== "",
+  );
+}
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -38,18 +67,63 @@ export interface ECRFRowData {
   emissionFactorTotalCO2e?: number;
   year?: number;
   rowIndex: number;
+  /** 1-based row number in the uploaded file, when known. */
+  sourceRowNumber?: number;
+  /** Sector / subsector text for rows whose GPC reference could not be resolved. */
+  sourceLabel?: string;
+  /** Why the row is rejected; set together with `errors`. */
+  issue?: ImportRowIssue;
   errors?: string[];
   warnings?: string[];
+  /** What the import review needs; extracted rows only. */
+  review?: ECRFRowReviewData;
+}
+
+export interface ECRFRowReviewData {
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  scope: string | null;
+  refSource: "document" | "inferred" | null;
+  directionEvidence: string | null;
+  directionEvidenceFound: boolean | null;
+  page: number | null;
+  source: string | null;
+  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  finalScope?: string | null;
+  decisionToken?: string;
+  catalogueScope?: number | null;
+  finalCatalogueScope?: number | null;
+  suggestedRefNo: string | null;
 }
 
 export interface ECRFImportResult {
   rows: ECRFRowData[];
+  /** PDF rows come from a model, so held rows need a user decision. */
+  requiresReferenceReview?: boolean;
   errors: string[];
   warnings: string[];
   rowCount: number;
   validRowCount: number;
+  /**
+   * Rows kept in the parse but dropped at import: no signed CO2, CH4, N2O,
+   * or total CO2e, and no notation key. Zero counts as empty.
+   */
+  rowsSkippedEmptyEmissions: number;
   /** First non-null year from file when a year column is mapped (inventory year). */
   inferredYearFromFile?: number;
+}
+
+/** Same rule InventoryImportService uses when it skips a row at commit. */
+export function countRowsSkippedEmptyEmissions(rows: ECRFRowData[]): number {
+  return rows.filter(
+    (row) =>
+      !hasSignedNumericValue(row.co2) &&
+      !hasSignedNumericValue(row.ch4) &&
+      !hasSignedNumericValue(row.n2o) &&
+      !hasSignedNumericValue(row.totalCO2e) &&
+      !row.notationKey,
+  ).length;
 }
 
 /**
@@ -78,6 +152,7 @@ export default class ECRFImportService {
         warnings: [],
         rowCount: 0,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
 
@@ -86,6 +161,10 @@ export default class ECRFImportService {
     const hasGpcRefNoColumn = detectedColumns.gpcRefNo !== undefined;
     const hasSectorColumn = detectedColumns.sector !== undefined;
     const hasSubsectorColumn = detectedColumns.subsector !== undefined;
+    const scopeHeader =
+      detectedColumns.scope !== undefined
+        ? headers[detectedColumns.scope]
+        : this.findHeader(headers, ["scope"]);
 
     if (!hasGpcRefNoColumn && (!hasSectorColumn || !hasSubsectorColumn)) {
       errors.push(
@@ -97,101 +176,115 @@ export default class ECRFImportService {
         warnings,
         rowCount: sheet.rows.length,
         validRowCount: 0,
+        rowsSkippedEmptyEmissions: 0,
       };
     }
+
+    const catalogueScopes = new Map(
+      (
+        await db.models.Scope.findAll({ attributes: ["scopeId", "scopeName"] })
+      ).map((scope) => [scope.scopeId, scopeFromLabel(scope.scopeName)]),
+    );
 
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
+      const sourceRowNumber = sheet.rowNumbers?.[i];
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
+
+      if (isBlankParsedRow(row)) {
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          issue: "no-value-or-notation-key",
+          errors: ["No gas values or notation key found"],
+        });
+        continue;
+      }
 
       let gpcRefNo: string | undefined = hasGpcRefNoColumn
         ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
         : undefined;
       if (gpcRefNo === "") gpcRefNo = undefined;
+      const statedReference = gpcRefNo;
+      const statedScope = scopeHeader
+        ? row[scopeHeader]?.toString()
+        : undefined;
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
-        let rawSector = hasSectorColumn
+        const rawSector = hasSectorColumn
           ? row[headers[detectedColumns.sector!]]?.toString().trim()
           : "";
-        let rawSubsector = hasSubsectorColumn
+        const rawSubsector = hasSubsectorColumn
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
-        // Preserve the left parts of " > " splits for fallback resolution
-        // e.g. "On-road > Other/uncategorized" → right = "Other/uncategorized", leftFallback = "On-road"
-        let sectorLeftFallback: string | undefined;
-        let subsectorLeftFallback: string | undefined;
-        if (rawSector && rawSector.includes(" > ")) {
-          const [left, right] = rawSector
-            .split(" > ")
-            .map((s: string) => s.trim());
-          if (left && right) {
-            sectorLeftFallback = left;
-            rawSector = left;
-            if (!rawSubsector) rawSubsector = right;
-          }
-        }
-        if (rawSubsector && rawSubsector.includes(" > ")) {
-          const [left, right] = rawSubsector
-            .split(" > ")
-            .map((s: string) => s.trim());
-          if (left && right) {
-            subsectorLeftFallback = left;
-            if (!rawSector) rawSector = left;
-            rawSubsector = right;
-          }
-        }
-        if (rawSector && rawSubsector) {
-          const activityHeader = this.findHeader(headers, [
-            "activity type",
-            "activity_type",
-            "fuel type",
-            "fuel_type",
-          ]);
-          const activityType = activityHeader
-            ? row[activityHeader]?.toString().trim()
-            : undefined;
-          let resolved = resolveGpcRefNo(rawSector, rawSubsector, activityType);
-          // Fallback: if the right side of " > " didn't resolve, try the left side
-          // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
-          if (!resolved && subsectorLeftFallback) {
-            resolved = resolveGpcRefNo(
-              rawSector,
-              subsectorLeftFallback,
-              activityType,
-            );
-          }
-          if (!resolved && sectorLeftFallback) {
-            resolved = resolveGpcRefNo(
-              sectorLeftFallback,
-              rawSubsector,
-              activityType,
-            );
-          }
-          if (resolved) {
-            gpcRefNo = resolved;
-          } else {
-            rowErrors.push(
-              `Could not resolve GPC ref from sector "${rawSector}" and subsector "${rawSubsector}"`,
-            );
-            rows.push({
-              gpcRefNo: "",
-              sectorId: "",
-              subsectorId: "",
-              subcategoryId: null,
-              scopeId: "",
-              rowIndex: i,
-              errors: rowErrors,
-              warnings: rowWarnings,
-            });
-            continue;
-          }
+        const activityHeader =
+          detectedColumns.activityType !== undefined
+            ? headers[detectedColumns.activityType]
+            : this.findHeader(headers, [
+                "fuel type or activity",
+                "activity_name",
+                "activity name",
+                "activity type",
+                "activity_type",
+                "fuel type",
+                "fuel_type",
+                "fuel",
+              ]);
+        const activityType = activityHeader
+          ? row[activityHeader]?.toString().trim()
+          : undefined;
+        const scopeLabel = scopeHeader
+          ? row[scopeHeader]?.toString().trim()
+          : undefined;
+        const resolved = resolveGpcRefFromLabels({
+          sector: rawSector,
+          subsector: rawSubsector,
+          fuelTypeOrActivity: activityType,
+          scopeLabel,
+        });
+        if (resolved) {
+          gpcRefNo = resolved;
+        } else if (rawSector || rawSubsector) {
+          rowErrors.push(
+            `Could not resolve GPC ref from sector "${rawSector}" and subsector "${rawSubsector}"`,
+          );
+          rows.push({
+            gpcRefNo: "",
+            sectorId: "",
+            subsectorId: "",
+            subcategoryId: null,
+            scopeId: "",
+            rowIndex: i,
+            sourceRowNumber,
+            sourceLabel: `${rawSector} / ${rawSubsector}`,
+            issue: "gpc-reference-unresolved",
+            errors: rowErrors,
+            warnings: rowWarnings,
+          });
+          continue;
         }
       }
 
       if (!gpcRefNo) {
-        rowWarnings.push("No GPC reference number found");
+        // Keep the row (as rejected) so the mapping step can show why it is skipped.
+        rows.push({
+          gpcRefNo: "",
+          sectorId: "",
+          subsectorId: "",
+          subcategoryId: null,
+          scopeId: "",
+          rowIndex: i,
+          sourceRowNumber,
+          issue: "missing-gpc-reference",
+          errors: ["No GPC reference number found"],
+        });
         continue;
       }
 
@@ -208,6 +301,8 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceRowNumber,
+          issue: "gpc-reference-unknown",
           errors: rowErrors,
           warnings: rowWarnings,
         });
@@ -275,7 +370,7 @@ export default class ECRFImportService {
               "notation_key",
               "notation",
             ]);
-      const notationKey = notationKeyHeader
+      const notationKeyFromColumn = notationKeyHeader
         ? row[notationKeyHeader]?.toString().trim()
         : undefined;
 
@@ -300,16 +395,27 @@ export default class ECRFImportService {
         }
       }
 
-      // Extract activity data fields (optional)
-      const activityTypeHeader = this.findHeader(headers, [
-        "activity type",
-        "activity_type",
-        "fuel type",
-        "fuel_type",
-      ]);
-      const activityType = activityTypeHeader
+      // Prefer the validator / mapping override index so activity_name is kept
+      const activityTypeHeader =
+        detectedColumns.activityType !== undefined
+          ? headers[detectedColumns.activityType]
+          : this.findHeader(headers, [
+              "activity_name",
+              "activity name",
+              "activity type",
+              "activity_type",
+              "fuel type",
+              "fuel_type",
+              "fuel",
+            ]);
+      const activityTypeRaw = activityTypeHeader
         ? row[activityTypeHeader]?.toString().trim()
         : undefined;
+
+      const { notationKey, activityType } = resolveNotationFromActivity({
+        notationKey: notationKeyFromColumn || undefined,
+        activityType: activityTypeRaw || undefined,
+      });
 
       // Get activity amount header name (using detectedColumns index or findHeader)
       const activityAmountHeader =
@@ -351,6 +457,8 @@ export default class ECRFImportService {
 
       const methodologyHeader = this.findHeader(headers, [
         "activity data - description and methodology",
+        "activity data - description",
+        "activity data description",
         "methodology",
         "input methodology",
         "input_methodology",
@@ -426,69 +534,37 @@ export default class ECRFImportService {
         ? row[emissionFactorUnitHeader]?.toString().trim()
         : undefined;
 
-      const emissionFactorCO2Idx =
-        detectedColumns.emissionFactorCO2 ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - co2",
-            "emission factor co2",
-            "ef co2",
-            "ef_co2",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorCO2 =
-        emissionFactorCO2Idx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorCO2Idx)
-          : undefined;
-
-      const emissionFactorCH4Idx =
-        detectedColumns.emissionFactorCH4 ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - ch4",
-            "emission factor ch4",
-            "ef ch4",
-            "ef_ch4",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorCH4 =
-        emissionFactorCH4Idx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorCH4Idx)
-          : undefined;
-
-      const emissionFactorN2OIdx =
-        detectedColumns.emissionFactorN2O ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - n2o",
-            "emission factor n2o",
-            "ef n2o",
-            "ef_n2o",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorN2O =
-        emissionFactorN2OIdx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorN2OIdx)
-          : undefined;
-
-      const emissionFactorTotalCO2eIdx =
-        detectedColumns.emissionFactorTotalCO2e ??
-        (() => {
-          const h = this.findHeader(headers, [
-            "emission factor - total co2e",
-            "emission factor total co2e",
-            "ef total co2e",
-            "ef_total co2e",
-          ]);
-          return h ? headers.indexOf(h) : undefined;
-        })();
-      const emissionFactorTotalCO2e =
-        emissionFactorTotalCO2eIdx !== undefined
-          ? this.extractGasValue(row, headers, emissionFactorTotalCO2eIdx)
-          : undefined;
+      // Only read EF columns when the header itself looks like an EF column.
+      // detectedColumns can still carry a bad index from older validations.
+      const emissionFactorCO2 = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorCO2,
+        ["emission factor - co2", "emission factor co2", "ef co2", "ef_co2"],
+      );
+      const emissionFactorCH4 = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorCH4,
+        ["emission factor - ch4", "emission factor ch4", "ef ch4", "ef_ch4"],
+      );
+      const emissionFactorN2O = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorN2O,
+        ["emission factor - n2o", "emission factor n2o", "ef n2o", "ef_n2o"],
+      );
+      const emissionFactorTotalCO2e = this.extractEmissionFactorValue(
+        row,
+        headers,
+        detectedColumns.emissionFactorTotalCO2e,
+        [
+          "emission factor - total co2e",
+          "emission factor total co2e",
+          "ef total co2e",
+          "ef_total co2e",
+        ],
+      );
 
       // 0 is empty (notation-key behaviour); negatives are real removals
       if (
@@ -507,6 +583,31 @@ export default class ECRFImportService {
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
         scopeId: gpcMapping.scopeId,
+        review: {
+          sector: hasSectorColumn
+            ? (row[headers[detectedColumns.sector!]]?.toString() ?? null)
+            : null,
+          subsector: hasSubsectorColumn
+            ? (row[headers[detectedColumns.subsector!]]?.toString() ?? null)
+            : null,
+          category: activityType ?? null,
+          scope: statedScope || null,
+          catalogueScope: catalogueScopes.has(gpcMapping.scopeId)
+            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId)
+            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          refSource: statedReference
+            ? ("document" as const)
+            : ("inferred" as const),
+          directionEvidence: null,
+          directionEvidenceFound: null,
+          page: null,
+          source: null,
+          decision: null,
+          suggestedRefNo: statedReference ?? gpcRefNo,
+        },
         co2,
         ch4,
         n2o,
@@ -527,6 +628,7 @@ export default class ECRFImportService {
         emissionFactorN2O,
         emissionFactorTotalCO2e,
         rowIndex: i,
+        sourceRowNumber,
         errors: rowErrors.length > 0 ? rowErrors : undefined,
         warnings: rowWarnings.length > 0 ? rowWarnings : undefined,
       });
@@ -537,14 +639,31 @@ export default class ECRFImportService {
       errors.push("No valid rows found in file");
     }
 
-    const inferredYearFromFile = rows.find((r) => r.year != null)?.year;
+    // Review banner reads these stored "Row N:" strings (same shape as Adapter D).
+    for (const row of rows) {
+      const n = row.sourceRowNumber ?? row.rowIndex + 1;
+      if (
+        row.issue === "no-value-or-notation-key" ||
+        row.warnings?.some((message) => /No gas values/i.test(message))
+      ) {
+        warnings.push(`Row ${n}: Skipped - no emission values or notation key`);
+      } else if (row.errors?.length) {
+        warnings.push(`Row ${n}: ${row.errors[0]}`);
+      }
+    }
+
+    const inferredYearFromFile =
+      rows.find((r) => r.year != null)?.year ??
+      inferInventoryYearFromSheets(parsedData.sheets);
 
     return {
       rows,
+      requiresReferenceReview: true,
       errors,
       warnings,
       rowCount: rows.length,
       validRowCount: validRows.length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile,
     };
   }
@@ -654,12 +773,13 @@ export default class ECRFImportService {
     let inferredYear: number | undefined;
 
     const scopeByName = new Map<string, string>();
+    const scopeById = new Map<string, number | undefined>();
     const scopeRecords = await db.models.Scope.findAll({
       attributes: ["scopeId", "scopeName"],
-      where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
     });
     for (const scope of scopeRecords) {
       if (scope.scopeName) scopeByName.set(scope.scopeName, scope.scopeId);
+      scopeById.set(scope.scopeId, scopeFromLabel(scope.scopeName));
     }
 
     for (let i = 0; i < extractedRows.length; i++) {
@@ -670,19 +790,15 @@ export default class ECRFImportService {
       );
       const activityHint =
         row.activityType?.trim() || row.category?.trim() || undefined;
-      let gpcRefNo =
+      const gpcRefNo =
         row.gpcRefNo?.trim() ||
-        resolveGpcRefNo(sector, subsector, activityHint) ||
+        resolveGpcRefFromLabels({
+          sector: row.sector,
+          subsector: row.subsector,
+          fuelTypeOrActivity: activityHint,
+          scopeLabel: row.scope,
+        }) ||
         null;
-      if (!gpcRefNo) {
-        const rawSub = row.subsector?.trim() ?? "";
-        if (rawSub.includes(" > ")) {
-          const leftPart = rawSub.split(" > ")[0].trim();
-          if (leftPart && leftPart !== subsector) {
-            gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
-          }
-        }
-      }
 
       if (!gpcRefNo) {
         errors.push(
@@ -695,6 +811,9 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          sourceLabel:
+            [sector, subsector].filter(Boolean).join(" / ") || undefined,
+          issue: "gpc-reference-unresolved",
           errors: [
             `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
           ],
@@ -714,6 +833,7 @@ export default class ECRFImportService {
           subcategoryId: null,
           scopeId: "",
           rowIndex: i,
+          issue: "gpc-reference-unknown",
           errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
         });
         continue;
@@ -731,12 +851,41 @@ export default class ECRFImportService {
         inferredYear = inferredYear ?? (row.year as number);
       }
 
+      const skippedInReview = row.reviewDecision === "skip";
       rows.push({
         gpcRefNo,
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
         scopeId: resolvedScopeId,
+        ...(skippedInReview
+          ? {
+              issue: "skipped-in-review" as const,
+              errors: ["Skipped in the import review"],
+            }
+          : {}),
+        review: {
+          sector: row.sector ?? null,
+          subsector: row.subsector ?? null,
+          category: row.category ?? null,
+          scope: row.originalScope ?? row.scope ?? null,
+          finalScope: scopeById.has(resolvedScopeId)
+            ? String(scopeById.get(resolvedScopeId))
+            : null,
+          catalogueScope: scopeById.has(gpcMapping.scopeId)
+            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          finalCatalogueScope: scopeById.has(gpcMapping.scopeId)
+            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+            : undefined,
+          refSource: row.refSource ?? null,
+          directionEvidence: row.directionEvidence ?? null,
+          directionEvidenceFound: row.directionEvidenceFound ?? null,
+          page: row.page ?? null,
+          source: row.source ?? null,
+          decision: row.reviewDecision ?? null,
+          suggestedRefNo: row.suggestedRefNo ?? null,
+        },
         co2: num(row.co2),
         ch4: num(row.ch4),
         n2o: num(row.n2o),
@@ -750,10 +899,25 @@ export default class ECRFImportService {
             ? row.activityAmount
             : undefined,
         activityUnit: row.activityUnit?.trim() || undefined,
-        activityType:
-          row.category?.trim() || row.activityType?.trim() || undefined,
+        // Fuel/activity wins over category. Category used to be the sub-sector name.
+        ...(() => {
+          const activityType =
+            row.activityType?.trim() || row.category?.trim() || undefined;
+          return resolveNotationFromActivity({
+            notationKey: row.notationKey?.trim() || undefined,
+            activityType,
+          });
+        })(),
         activityDataSource: row.activityDataSource?.trim() || undefined,
         activityDataQuality: row.activityDataQuality?.trim() || undefined,
+        emissionFactorUnit: row.emissionFactorUnit?.trim() || undefined,
+        emissionFactorSource: row.emissionFactorSource?.trim() || undefined,
+        emissionFactorDescription:
+          row.emissionFactorDescription?.trim() || undefined,
+        emissionFactorCO2: num(row.emissionFactorCO2),
+        emissionFactorCH4: num(row.emissionFactorCH4),
+        emissionFactorN2O: num(row.emissionFactorN2O),
+        emissionFactorTotalCO2e: num(row.emissionFactorTotalCO2e),
       });
     }
 
@@ -763,6 +927,7 @@ export default class ECRFImportService {
       warnings,
       rowCount: extractedRows.length,
       validRowCount: rows.filter((r) => !r.errors?.length).length,
+      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
       inferredYearFromFile: inferredYear,
     };
   }
@@ -785,22 +950,102 @@ export default class ECRFImportService {
     return parseNumericCell(value);
   }
 
+  /** True when a header name is an emission-factor column, not a gas amount. */
+  private static isEmissionFactorHeader(header: string): boolean {
+    const h = header.toLowerCase().trim();
+    return (
+      h.includes("emission factor") ||
+      h.startsWith("ef ") ||
+      h.startsWith("ef_") ||
+      /^ef[\s_-]/.test(h)
+    );
+  }
+
   /**
-   * Find header by name (case-insensitive)
+   * Read an EF value only from a column whose header looks like an EF column.
+   * Rejects gas columns (co2, ch4, …) that older detectors may have bound.
+   */
+  private static extractEmissionFactorValue(
+    row: Record<string, unknown>,
+    headers: string[],
+    detectedIndex: number | undefined,
+    searchTerms: string[],
+  ): number | undefined {
+    if (
+      detectedIndex !== undefined &&
+      this.isEmissionFactorHeader(headers[detectedIndex] ?? "")
+    ) {
+      return this.extractGasValue(row, headers, detectedIndex);
+    }
+    const h = this.findHeader(headers, searchTerms, {
+      requireEmissionFactorHeader: true,
+    });
+    return h
+      ? this.extractGasValue(row, headers, headers.indexOf(h))
+      : undefined;
+  }
+
+  /**
+   * Find header by name (case-insensitive). Exact and "header contains term"
+   * first; reverse contains only for headers of length ≥ 4 so short names
+   * like "co2" do not match "emission factor - co2".
    */
   private static findHeader(
     headers: string[],
     searchTerms: string[],
+    options: { requireEmissionFactorHeader?: boolean } = {},
   ): string | undefined {
     const normalizedHeaders = headers.map((h) => h.toLowerCase().trim());
     const normalizedSearchTerms = searchTerms.map((t) =>
       t.toLowerCase().trim(),
     );
+    const sortedTerms = [...normalizedSearchTerms].sort(
+      (a, b) => b.length - a.length,
+    );
 
     for (let i = 0; i < normalizedHeaders.length; i++) {
       const header = normalizedHeaders[i];
+      if (
+        options.requireEmissionFactorHeader &&
+        !this.isEmissionFactorHeader(header)
+      ) {
+        continue;
+      }
       for (const term of normalizedSearchTerms) {
-        if (header.includes(term) || term.includes(header)) {
+        if (header === term) {
+          return headers[i];
+        }
+      }
+    }
+
+    for (const term of sortedTerms) {
+      for (let i = 0; i < normalizedHeaders.length; i++) {
+        const header = normalizedHeaders[i];
+        if (
+          options.requireEmissionFactorHeader &&
+          !this.isEmissionFactorHeader(header)
+        ) {
+          continue;
+        }
+        if (header.includes(term)) {
+          return headers[i];
+        }
+      }
+    }
+
+    for (let i = 0; i < normalizedHeaders.length; i++) {
+      const header = normalizedHeaders[i];
+      if (header.length < 4) {
+        continue;
+      }
+      if (
+        options.requireEmissionFactorHeader &&
+        !this.isEmissionFactorHeader(header)
+      ) {
+        continue;
+      }
+      for (const term of sortedTerms) {
+        if (term.includes(header)) {
           return headers[i];
         }
       }

@@ -13,9 +13,11 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { MdOutlineClose } from "react-icons/md";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { getAnalyticsConsent, setAnalyticsConsent } from "@/lib/analytics";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { isDashboardRoute } from "@/util/iframe-routes";
 
 interface CookieConsentProps {
   lng: string;
@@ -25,6 +27,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation(lng, "cookie-consent");
+  const pathname = usePathname();
 
   // Use hasServerFeatureFlag which uses process.env directly (no caching issues)
   const analyticsEnabled = hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED);
@@ -57,7 +60,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
     handleDecline();
   };
 
-  if (isLoading || !showBanner) {
+  if (isLoading || !showBanner || isDashboardRoute(pathname)) {
     return null;
   }
 

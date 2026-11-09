@@ -1,20 +1,114 @@
 // backend/ccra/CcraApiService.ts
 import { logger } from "@/services/logger";
-import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
+import type {
+  CCRATopRisksData,
+  CCRATopRisksDataAdaptaBrazil,
+  Indicator,
+  IndicatorAdaptaBrazil,
+  RiskAssessment,
+  RiskAssessmentAdaptaBrazil,
+} from "@/util/types";
 
-const CCRA_API_URL =
-  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v0";
+const CCRA_API_URL = (process.env.GLOBAL_API_URL || "http://ccra-service") + "";
 
 class CCRAApiService {
   /**
    * Fetch risk assessment data for current scenario
    */
-  public static async getRiskAssessment(
+  public static async getRiskAssessmentFromAdaptaBrazil(
+    actorId: string,
+  ): Promise<RiskAssessmentAdaptaBrazil[]> {
+    try {
+      const response = await fetch(
+        `${CCRA_API_URL}/api/v1/cities/${actorId}/climate-risk/adapta?scenario=current`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch risk assessment: ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+      return Array.isArray(data) ? data : data.data || [];
+    } catch (error) {
+      logger.error({ error, actorId }, "Error fetching risk assessment");
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch indicator details for vulnerability calculations
+   */
+  public static async getIndicatorDetailsFromAdaptaBrazil(
+    actorId: string,
+  ): Promise<IndicatorAdaptaBrazil[]> {
+    try {
+      const response = await fetch(
+        `${CCRA_API_URL}/api/v1/cities/${actorId}/climate-risk/adapta?scenario=current&level=chain`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch indicators: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return Array.isArray(data) ? data : data.data || [];
+    } catch (error) {
+      logger.error({ error, actorId }, "Error fetching indicators:");
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch CCRA data for top risks display
+   */
+  public static async fetchCCRATopRisksDataFromAdaptaBrazil(
+    actorId: string,
+  ): Promise<CCRATopRisksDataAdaptaBrazil> {
+    try {
+      logger.info(`Fetching CCRA top risks data for actor ${actorId}`);
+
+      // Fetch risk assessment and indicators in parallel
+      const [riskAssessment, indicators] = await Promise.all([
+        // TODO use adapta brazil route instead
+        this.getRiskAssessmentFromAdaptaBrazil(actorId),
+        this.getIndicatorDetailsFromAdaptaBrazil(actorId),
+      ]);
+
+      logger.info(`Successfully fetched CCRA data for actor ${actorId}`);
+
+      return {
+        riskAssessment,
+        indicators,
+      };
+    } catch (error) {
+      logger.error({ error, actorId }, "Error fetching CCRA data:");
+      throw error;
+    }
+  }
+
+  /// LEGACY FUNCTIONS FOR IMPACT CHAIN DATAImpactChain
+
+  /**
+   * Fetch risk assessment data for current scenario
+   */
+  public static async getRiskAssessmentFromImpactChain(
     actorId: string,
   ): Promise<RiskAssessment[]> {
     try {
       const response = await fetch(
-        `${CCRA_API_URL}/ccra/risk_assessment/city/${actorId}/current`,
+        `${CCRA_API_URL}/api/v0/ccra/risk_assessment/city/${actorId}/current`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -39,12 +133,12 @@ class CCRAApiService {
   /**
    * Fetch indicator details for vulnerability calculations
    */
-  public static async getIndicatorDetails(
+  public static async getIndicatorDetailsFromImpactChain(
     actorId: string,
   ): Promise<Indicator[]> {
     try {
       const response = await fetch(
-        `${CCRA_API_URL}/ccra/impactchain_indicators/city/${actorId}/current`,
+        `${CCRA_API_URL}/api/v0/ccra/impactchain_indicators/city/${actorId}/current`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -67,7 +161,7 @@ class CCRAApiService {
   /**
    * Fetch CCRA data for top risks display
    */
-  public static async fetchCCRATopRisksData(
+  public static async fetchCCRATopRisksDataFromImpactChain(
     actorId: string,
   ): Promise<CCRATopRisksData> {
     try {
@@ -75,8 +169,9 @@ class CCRAApiService {
 
       // Fetch risk assessment and indicators in parallel
       const [riskAssessment, indicators] = await Promise.all([
-        this.getRiskAssessment(actorId),
-        this.getIndicatorDetails(actorId),
+        // TODO use adapta brazil route instead
+        this.getRiskAssessmentFromImpactChain(actorId),
+        this.getIndicatorDetailsFromImpactChain(actorId),
       ]);
 
       logger.info(`Successfully fetched CCRA data for actor ${actorId}`);
@@ -92,6 +187,9 @@ class CCRAApiService {
   }
 }
 
-// Export the main fetch function
-export const fetchCCRATopRisksData = (actorId: string) =>
-  CCRAApiService.fetchCCRATopRisksData(actorId);
+// Export the main fetch functions
+export const fetchCCRATopRisksDataFromAdaptaBrazil = (actorId: string) =>
+  CCRAApiService.fetchCCRATopRisksDataFromAdaptaBrazil(actorId);
+
+export const fetchCCRATopRisksDataFromImpactChain = (actorId: string) =>
+  CCRAApiService.fetchCCRATopRisksDataFromImpactChain(actorId);

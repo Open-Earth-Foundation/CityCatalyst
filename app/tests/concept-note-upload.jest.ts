@@ -8,17 +8,16 @@ import {
 } from "@jest/globals";
 
 const runId = "11111111-1111-4111-8111-111111111111";
-const loadRunCity =
-  jest.fn<
-    () => Promise<{
-      cityId: string;
-      initialUploads: Array<{
-        upload_id: string;
-        filename: string;
-        sha256: string;
-      }>;
-    }>
-  >();
+const loadRunCity = jest.fn<
+  () => Promise<{
+    cityId: string;
+    initialUploads: Array<{
+      upload_id: string;
+      filename: string;
+      sha256: string;
+    }>;
+  }>
+>();
 const updateUpload = jest.fn<() => Promise<void>>();
 const putFile = jest.fn<() => Promise<void>>();
 const enqueue =
@@ -44,6 +43,7 @@ const normalizeStatus = jest.fn<
 const callConceptNoteApi =
   jest.fn<(request: { body?: { upload_id?: string } }) => Promise<Response>>();
 const canAccessCity = jest.fn<() => Promise<void>>();
+const registerOnPool = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteUploadRun: loadRunCity,
@@ -74,6 +74,9 @@ jest.unstable_mockModule("@/backend/concept-notes", () => ({
 jest.unstable_mockModule("@/backend/permissions/PermissionService", () => ({
   PermissionService: { canAccessCity },
 }));
+jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
+  registerConceptNoteOnDocumentPool: registerOnPool,
+}));
 jest.unstable_mockModule("@/util/api", () => ({
   apiHandler: (handler: unknown) => handler,
 }));
@@ -87,7 +90,7 @@ beforeAll(async () => {
 
 function requestWithFile(
   bytes: string | Uint8Array,
-  options: { name?: string; type?: string } = {},
+  options: { name?: string; type?: string; role?: string } = {},
 ): Request {
   const form = new FormData();
   form.set(
@@ -97,6 +100,7 @@ function requestWithFile(
     }),
   );
   form.set("sourceLabel", "Climate plan");
+  if (options.role) form.set("sourceRole", options.role);
   return new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
     method: "POST",
     body: form,
@@ -109,6 +113,45 @@ const context = {
 };
 
 describe("Concept Note source upload route", () => {
+  it("processes plan PDFs through the standard CC storage and OCR pipeline", async () => {
+    const response = await uploadHandler(
+      requestWithFile("%PDF-1.7\nplan", { role: "climate_action_plan" }),
+      context,
+    );
+    expect(response.status).toBe(202);
+    const result = await response.json();
+    expect(result.sourceRole).toBe("climate_action_plan");
+    expect(callConceptNoteApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          source_role: "climate_action_plan",
+          source_format: "pdf",
+        }),
+      }),
+    );
+    expect(putFile).toHaveBeenCalledTimes(1);
+    expect(enqueue).toHaveBeenCalledWith(result.uploadId);
+    expect(registerOnPool).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uploadId: result.uploadId,
+        cityId: "33333333-3333-4333-8333-333333333333",
+        markdownReady: false,
+      }),
+    );
+    expect(triggerProcessing).toHaveBeenCalledTimes(1);
+    expect(registerMarkdown).not.toHaveBeenCalled();
+  });
+
+  it("rejects an undocumented role before registering an upload or storing bytes", async () => {
+    await expect(
+      uploadHandler(
+        requestWithFile("%PDF-1.7\nplan", { role: "unknown" }),
+        context,
+      ),
+    ).rejects.toThrow();
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
+    expect(putFile).not.toHaveBeenCalled();
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     loadRunCity.mockResolvedValue({
@@ -116,6 +159,7 @@ describe("Concept Note source upload route", () => {
       initialUploads: [],
     });
     canAccessCity.mockResolvedValue(undefined);
+    registerOnPool.mockResolvedValue(undefined);
     callConceptNoteApi.mockImplementation(async (request) =>
       Response.json({
         upload_id: request.body?.upload_id,
@@ -358,6 +402,7 @@ describe("Concept Note source upload route", () => {
       canRetry: false,
       filename: "plan.pdf",
       sourceLabel: "Climate plan",
+      sourceRole: "reference",
     });
     expect(payload.uploadId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
@@ -371,6 +416,9 @@ describe("Concept Note source upload route", () => {
           source_format: "pdf",
         }),
       }),
+    );
+    expect(callConceptNoteApi.mock.calls[0][0].body).not.toHaveProperty(
+      "source_role",
     );
     expect(putFile).toHaveBeenCalledWith(
       `pdf-ocr/sources/concept_note_upload/${payload.uploadId}/source.pdf`,
@@ -419,6 +467,7 @@ describe("Concept Note source upload route", () => {
       canRetry: false,
       filename: "plan.md",
       sourceLabel: "Climate plan",
+      sourceRole: "reference",
     });
     expect(putFile).not.toHaveBeenCalled();
     expect(registerMarkdown).toHaveBeenCalledWith(
@@ -494,6 +543,7 @@ describe("Concept Note source upload route", () => {
     expect(response.status).toBe(404);
     expect(putFile).not.toHaveBeenCalled();
     expect(enqueue).not.toHaveBeenCalled();
+    expect(registerOnPool).not.toHaveBeenCalled();
   });
 
   it("forwards the CA upload-limit conflict with its code and stores nothing", async () => {
@@ -514,6 +564,7 @@ describe("Concept Note source upload route", () => {
     await expect(response.json()).resolves.toEqual(problem);
     expect(putFile).not.toHaveBeenCalled();
     expect(enqueue).not.toHaveBeenCalled();
+    expect(registerOnPool).not.toHaveBeenCalled();
     expect(updateUpload).not.toHaveBeenCalled();
   });
 
@@ -523,6 +574,7 @@ describe("Concept Note source upload route", () => {
     await expect(
       uploadHandler(requestWithFile("%PDF-1.7\ncontent"), context),
     ).rejects.toMatchObject({ statusCode: 503 });
+    expect(registerOnPool).not.toHaveBeenCalled();
 
     expect(updateUpload).toHaveBeenCalledWith(
       expect.objectContaining({

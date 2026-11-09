@@ -67,15 +67,19 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
   const isBuilding = props.contextStatus.busy;
   const isFailed = props.contextStatus.state === "failed";
   const status = props.contextStatus;
-  const requirements = [
-    !props.applicationContext?.funder ? t("drafting-requirement-funder") : null,
-    !props.applicationContext?.opportunity
-      ? t("drafting-requirement-programme")
-      : null,
-    !props.applicationContext?.template
-      ? t("drafting-requirement-template")
-      : null,
-  ].filter((requirement): requirement is string => Boolean(requirement));
+  // A template comes from a programme or is the note's own, so with one
+  // neither a funder nor a programme is still missing.
+  const requirements = props.applicationContext?.template
+    ? []
+    : [
+        !props.applicationContext?.funder
+          ? t("drafting-requirement-funder")
+          : null,
+        !props.applicationContext?.opportunity
+          ? t("drafting-requirement-programme")
+          : null,
+        t("drafting-requirement-template"),
+      ].filter((requirement): requirement is string => Boolean(requirement));
   const setupBlocked =
     !props.canStartDrafting &&
     draft?.status !== "complete" &&

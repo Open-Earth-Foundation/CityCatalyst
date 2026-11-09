@@ -2,14 +2,14 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { LuSparkles } from "react-icons/lu";
 import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { ContextCardGrid } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/components/ContextCardGrid";
 import { formatEmissions } from "@/util/helpers";
 import type { DemoTrack } from "../_lib/types";
 import { useTrack } from "../_lib/useTrack";
 import { useDemoT, useTrackT } from "../_lib/useDemoT";
-import { SCREEN_IDS, trackHref } from "../_lib/hrefs";
+import { SCREEN_IDS } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import { RISK_CELLS } from "../_lib/riskCells";
 import { DemoHero } from "./DemoHero";
 import { TrackTabs } from "./TrackTabs";
@@ -32,6 +32,7 @@ export function TrackHome({
   citySlug: string;
   track: DemoTrack;
 }) {
+  const trackHrefIn = useTrackHref();
   const data = useTrack(lng, citySlug, track);
   const { city, ranked, state, isReady } = data;
   const { t } = useDemoT(lng);
@@ -102,13 +103,12 @@ export function TrackHome({
             bg="base.light"
             color="content.link"
             _hover={{ bg: "background.neutral" }}
-            leftIcon={<LuSparkles size={16} />}
             disabled={!isReady}
             onClick={() =>
-              router.push(trackHref(lng, city.slug, track, "preferences"))
+              router.push(trackHrefIn(lng, city.slug, track, "preferences"))
             }
           >
-            {hasRanking ? tMeed("ranking-rerun") : tMeed("get-recommendations")}
+            {hasRanking ? tMeed("ranking-rerun") : t("cta-set-preferences")}
           </MeedButton>
         }
       />

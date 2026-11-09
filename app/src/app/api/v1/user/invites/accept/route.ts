@@ -47,10 +47,13 @@ import { NextResponse } from "next/server";
 import { ProjectAdmin } from "@/models/ProjectAdmin";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  logger.info({
-    params,
-    session: session?.user?.id,
-  }, "[UserInviteAccept] PATCH start");
+  logger.info(
+    {
+      params,
+      session: session?.user?.id,
+    },
+    "[UserInviteAccept] PATCH start",
+  );
   if (!session) {
     logger.error("[UserInviteAccept] No session");
     throw new createHttpError.Unauthorized("Unauthorized");
@@ -65,51 +68,60 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   logger.info({ email, cityIds }, "[UserInviteAccept] Token verified");
   const tokenContent = {
     email: (verifiedToken as JwtPayload).email,
-    cities: (verifiedToken as JwtPayload).cities,
-    role: (verifiedToken as JwtPayload).role as "admin" | "collaborator" | undefined,
+    inviteId: (verifiedToken as JwtPayload).inviteId,
+    role: (verifiedToken as JwtPayload).role as
+      "admin" | "collaborator" | undefined,
     projectId: (verifiedToken as JwtPayload).projectId as string | undefined,
   };
 
   const difference = (setA: string[], setB: string[]) =>
     setA.filter((x) => !setB.includes(x));
 
-  if (
-    tokenContent.email !== email ||
-    difference(cityIds, tokenContent.cities).length > 0
-  ) {
-    logger.error({
-      tokenContent,
-      email,
-      cityIds,
-    }, "[UserInviteAccept] Email or city mismatch");
+  if (tokenContent.email !== email) {
+    logger.error(
+      {
+        tokenContent,
+        email,
+      },
+      "[UserInviteAccept] Email mismatch",
+    );
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
   if (session.user.email?.toLowerCase() !== email.toLowerCase()) {
-    logger.error({
-      sessionEmail: session.user.email,
-      inviteEmail: email,
-    }, "[UserInviteAccept] Logged-in user does not match invited email");
+    logger.error(
+      {
+        sessionEmail: session.user.email,
+        inviteEmail: email,
+      },
+      "[UserInviteAccept] Logged-in user does not match invited email",
+    );
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
   const invites = await db.models.CityInvite.findAll({
     where: {
-      cityId: { [Op.in]: cityIds },
+      inviteId: tokenContent.inviteId,
       email,
       status: InviteStatus.PENDING,
     },
   });
-  logger.info({
-    count: invites.length,
-    cityIds,
-  }, "[UserInviteAccept] Found invites");
+  logger.info(
+    {
+      count: invites.length,
+      cityIds,
+    },
+    "[UserInviteAccept] Found invites",
+  );
   const inviteCityIds = invites.map((i) => i.cityId!);
   const citiesNotFound = difference(cityIds, inviteCityIds);
   if (citiesNotFound.length > 0) {
-    logger.error({
-      citiesNotFound,
-    }, "[UserInviteAccept] City not found in invites");
+    logger.error(
+      {
+        citiesNotFound,
+      },
+      "[UserInviteAccept] City not found in invites",
+    );
     throw createHttpError.Unauthorized("Unauthorized");
   }
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
@@ -135,7 +147,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     );
     await Promise.all(
       invites.map((invite) =>
-        invite.update({ status: InviteStatus.ACCEPTED, userId: session.user.id }),
+        invite.update({
+          status: InviteStatus.ACCEPTED,
+          userId: session.user.id,
+        }),
       ),
     );
   } else {
@@ -167,7 +182,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
           status: InviteStatus.ACCEPTED,
           userId: session.user.id,
         });
-        logger.info({ cityId: invite.cityId }, "[UserInviteAccept] Updated invite status to ACCEPTED");
+        logger.info(
+          { cityId: invite.cityId },
+          "[UserInviteAccept] Updated invite status to ACCEPTED",
+        );
         return cityUser;
       }),
     );
@@ -175,7 +193,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
   const user = await db.models.User.findByPk(session.user.id);
   if (!user) {
-    logger.error({ userId: session.user.id }, "[UserInviteAccept] No user found");
+    logger.error(
+      { userId: session.user.id },
+      "[UserInviteAccept] No user found",
+    );
     throw new createHttpError.InternalServerError("No user found");
   }
   if (!user.defaultInventoryId) {
@@ -194,10 +215,13 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       defaultInventoryId: inventory.inventoryId,
       defaultCityId: inventory.cityId,
     });
-    logger.info({
-      userId: user.userId,
-      inventoryId: inventory.inventoryId,
-    }, "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId");
+    logger.info(
+      {
+        userId: user.userId,
+        inventoryId: inventory.inventoryId,
+      },
+      "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
+    );
   }
 
   // Look up the accepted cities directly (not scoped to CityUser membership,
@@ -206,7 +230,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     where: { cityId: { [Op.in]: cityIds } },
   });
 
-  logger.info({ failedInvites: failedInvites.length }, "[UserInviteAccept] PATCH complete");
+  logger.info(
+    { failedInvites: failedInvites.length },
+    "[UserInviteAccept] PATCH complete",
+  );
   return NextResponse.json({
     success: failedInvites.length === 0,
     cities: acceptedCities.map((city) => ({

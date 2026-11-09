@@ -19,9 +19,11 @@ import {
   useGetYearOverYearResultsQuery,
 } from "@/services/api";
 import ByScopeView from "@/components/GHGI/inventory-result/ByScopeView";
+import OtherScope3Section from "@/components/GHGI/inventory-result/OtherScope3Section";
 import { SectorHeader } from "@/components/GHGI/inventory-result/SectorHeader";
 import { ByActivityView } from "@/components/GHGI/inventory-result/ByActivityView";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
+import { isBreakdownEmpty } from "@/util/GHGI/reported-totals";
 import { EmptyStateCardContent } from "@/components/GHGI/inventory-result/EmptyStateCardContent";
 import { Trans } from "react-i18next/TransWithoutContext";
 import ButtonGroupToggle from "@/components/button-group-toggle";
@@ -94,9 +96,7 @@ function SectorTabs({
     refetch().finally(() => setIsLoadingNewData(false));
   }, [selectedTab, refetch]);
 
-  const isEmptyInventory =
-    Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
-    Object.entries(sectorBreakdown?.byScope || {}).length === 0;
+  const isEmptyInventory = isBreakdownEmpty(sectorBreakdown);
 
   return (
     <Tabs.Root
@@ -112,6 +112,7 @@ function SectorTabs({
               value={name}
               minWidth="200px"
               height="64px"
+              fontFamily="heading"
             >
               <Icon
                 as={icon}
@@ -122,6 +123,7 @@ function SectorTabs({
                 }
               />
               <Text
+                fontFamily="heading"
                 fontSize="16"
                 lineClamp={2}
                 wordBreak="keep-all"
@@ -214,6 +216,7 @@ function SectorTabs({
                       inventoryId={inventory.inventoryId}
                       inventoryType={inventory.inventoryType}
                       data={sectorBreakdown!.byScope}
+                      omittedFromTotal={sectorBreakdown!.omittedFromTotal}
                       grossTotalEmissions={
                         new Decimal(sectorBreakdown!.grossTotalEmissions)
                       }
@@ -257,6 +260,7 @@ function EmissionsBreakdown({
         />
       </Heading>
       <Text
+        fontFamily="heading"
         fontWeight="regular"
         fontSize="body.lg"
         color="interactive.control"
@@ -269,6 +273,11 @@ function EmissionsBreakdown({
         inventory={inventory}
         lng={lng}
         isPublic={isPublic}
+        numberFormat={numberFormat}
+      />
+      <OtherScope3Section
+        t={t}
+        inventoryId={inventory.inventoryId}
         numberFormat={numberFormat}
       />
     </>
@@ -398,7 +407,14 @@ export function EmissionPerSectors({
     },
   ];
 
-  const containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+  // Placeholder only - `ref={containerRef}` below overwrites `.current` with
+  // the real DOM node on mount. `document` isn't defined during SSR, so this
+  // can't call `document.createElement` unconditionally (CC-835).
+  const containerRef = useRef<HTMLDivElement>(
+    typeof document === "undefined"
+      ? (null as unknown as HTMLDivElement)
+      : document.createElement("div"),
+  );
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">

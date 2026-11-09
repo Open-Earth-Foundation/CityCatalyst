@@ -45,7 +45,6 @@ import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
 import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
 import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
 import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
-import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
@@ -56,6 +55,7 @@ import {
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
+import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
@@ -93,13 +93,8 @@ export function ConceptNoteWorkspace({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
-  const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
   const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
-  const [resetThread, setResetThread] = useState<{
-    previousThreadId: string | null;
-    threadId: string;
-  } | null>(null);
   const [editScope, setEditScope] = useState<EditScope>({
     kind: "auto",
   });
@@ -183,6 +178,9 @@ export function ConceptNoteWorkspace({
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  // Kept here so a funder document keeps converting after the dialog closes.
+  const funderImport = useFunderImport({ cityId, runId });
+  const templateImport = useFunderImport({ cityId, runId, kind: "template" });
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
@@ -409,16 +407,13 @@ export function ConceptNoteWorkspace({
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
-  const activeThreadId =
-    resetThread?.previousThreadId === run.thread_id
-      ? resetThread.threadId
-      : run.thread_id;
 
   return (
     <Box
+      data-testid="concept-note-workspace"
       h="calc(100dvh - 80px)"
       minH={0}
-      overflow="hidden"
+      overflowY="auto"
       bg="background.alternativeLight"
     >
       <motion.main
@@ -430,8 +425,9 @@ export function ConceptNoteWorkspace({
         <VStack
           align="stretch"
           gap={4}
-          h="full"
-          minH={0}
+          h={{ base: "auto", md: "full" }}
+          // Keep the panels usable when zoom or a short window reduces height.
+          minH={{ base: "full", md: "640px" }}
           maxW="1800px"
           mx="auto"
           px={{ base: 2, md: 5 }}
@@ -483,7 +479,7 @@ export function ConceptNoteWorkspace({
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"
-            minH={0}
+            minH={{ base: "auto", md: 0 }}
             overflow="hidden"
             gap={2.5}
             alignItems="stretch"
@@ -492,11 +488,13 @@ export function ConceptNoteWorkspace({
               md: "minmax(280px, 31%) minmax(0, 1fr)",
             }}
             gridTemplateRows={{
-              base: "repeat(2, minmax(0, 1fr))",
+              // Stacked panes must not compete for half of a phone viewport.
+              base: "minmax(420px, 60dvh) minmax(640px, 85dvh)",
               md: "minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
+              cityId={cityId}
               contextStatus={contextStatus}
               contextBuildId={bundle.buildId}
               contextChanges={bundle.contextChanges}
@@ -510,9 +508,8 @@ export function ConceptNoteWorkspace({
                   setUploadPickerRequest((value) => value + 1);
                 }
               }}
-              onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}
-              threadId={activeThreadId}
+              threadId={run.thread_id}
               editScope={editScope}
               edits={edits}
               draft={draft ?? null}
@@ -900,28 +897,13 @@ export function ConceptNoteWorkspace({
           busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
+          funderImport={funderImport}
+          templateImport={templateImport}
           onClose={() => setFundingOpen(false)}
           onSaved={() => {
             setTab("draft");
             setNextStep("start-drafting");
             setHighlightStartDrafting(true);
-          }}
-        />
-      )}
-      {startNewChatOpen && (
-        <StartNewChatDialog
-          cityId={cityId}
-          lng={lng}
-          runId={runId}
-          onClose={() => setStartNewChatOpen(false)}
-          onReset={(updatedRun) => {
-            if (updatedRun.thread_id) {
-              setResetThread({
-                previousThreadId: run.thread_id,
-                threadId: updatedRun.thread_id,
-              });
-            }
-            void refetchRun();
           }}
         />
       )}

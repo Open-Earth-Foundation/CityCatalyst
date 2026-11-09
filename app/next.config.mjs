@@ -8,7 +8,10 @@ const uploadProxyBodyLimitBytes = 22 * 1024 * 1024;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactCompiler: true,
   trailingSlash: true,
+  cacheComponents: true,
+  partialPrefetching: true,
   serverExternalPackages: ["sequelize"],
   turbopack: {
     rules: {},

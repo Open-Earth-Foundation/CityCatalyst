@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState, use } from "react";
+import { useEffect, useRef, useState, use } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { api, useAcceptInviteMutation } from "@/services/api";
+import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
 import { AcceptInviteResponse } from "@/util/types";
@@ -29,7 +29,7 @@ type ValidatedInviteRequest =
       type: InviteType.CITY;
       token: string;
       email: string;
-      cityIds: string;
+      cityIds: string[];
     }
   | {
       type: InviteType.ORGANIZATION;
@@ -38,7 +38,10 @@ type ValidatedInviteRequest =
       organizationId: string;
     };
 
-const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAcceptancePageProps) => {
+const UnifiedInviteAcceptancePage = ({
+  params,
+  inviteType,
+}: UnifiedInviteAcceptancePageProps) => {
   const { lng } = use(params);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -47,6 +50,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   const { t } = useTranslation(lng, "auth");
 
   const queryParams = Object.fromEntries(searchParams.entries());
+  const inviteId = queryParams.inviteId;
   const calledOnce = useRef(false);
 
   // State management
@@ -65,9 +69,28 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     }>;
   } | null>(null);
 
+  // Auto-detect invite type from URL parameters
+  const detectInviteType = (): InviteType => {
+    if (inviteType) return inviteType;
+
+    const { inviteType: inviteTypeParam, organizationId } = queryParams;
+
+    if (organizationId) return InviteType.ORGANIZATION;
+    if (inviteTypeParam === "city") return InviteType.CITY;
+
+    return InviteType.CITY; // default fallback
+  };
+
+  const currentInviteType = detectInviteType();
+
   // API hooks
-  const [acceptCityInvite] = useAcceptInviteMutation();
+  const [acceptCityInvite] = api.useAcceptInviteMutation();
   const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
+  const { data: cityInvites } = api.useGetCityInvitesQuery(
+    { inviteId },
+    { skip: !inviteId || currentInviteType !== InviteType.CITY },
+  );
+  const cityIds = cityInvites ? cityInvites.map((invite) => invite.cityId) : [];
 
   // Toast notification
   const { showSuccessToast } = UseSuccessToast({
@@ -76,28 +99,17 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     duration: 5000,
   });
 
-  // Auto-detect invite type from URL parameters
-  const detectInviteType = (): InviteType => {
-    if (inviteType) return inviteType;
-
-    const { cityIds, organizationId } = queryParams;
-
-    if (organizationId) return InviteType.ORGANIZATION;
-    if (cityIds) return InviteType.CITY;
-
-    return InviteType.CITY; // default fallback
-  };
-
-  const currentInviteType = detectInviteType();
-
-  const validateInput = (token: string, email: string, extraParam: string) => {
+  const validateInput = (
+    token: string,
+    email: string,
+    extraParam: string = "",
+  ) => {
     const isValidToken = tokenRegex.test(token);
     const isValidEmail = emailPattern.test(email);
 
     switch (currentInviteType) {
       case InviteType.CITY:
-        const cityIdsArray = extraParam.split(",");
-        return isValidToken && isValidEmail && cityIdsArray.every((id) => uuidRegex.test(id));
+        return isValidToken && isValidEmail;
       case InviteType.ORGANIZATION:
         return isValidToken && isValidEmail && uuidRegex.test(extraParam);
       default:
@@ -123,21 +135,21 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   // derived value, not state, so it renders the error view directly below
   // without ever needing an effect or a setState call.
   const validatedRequest = ((): ValidatedInviteRequest | null => {
-    const { token, email, cityIds, organizationId } = queryParams;
+    const { token, email, organizationId } = queryParams;
     const cleanedEmail = email?.split(" ").join("+").replace(/%40/g, "@");
 
     if (!token || !cleanedEmail) return null;
 
     switch (currentInviteType) {
       case InviteType.CITY: {
-        if (!cityIds || !validateInput(token, cleanedEmail, cityIds)) {
+        if (!cityIds || !validateInput(token, cleanedEmail)) {
           return null;
         }
         return {
           type: InviteType.CITY,
           token: sanitizeInput(token),
           email: sanitizeInput(cleanedEmail),
-          cityIds: sanitizeInput(cityIds),
+          cityIds, // comes from API instead of URL param, no need to sanitize
         };
       }
       case InviteType.ORGANIZATION: {
@@ -184,13 +196,13 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
         if (validatedRequest.type === InviteType.CITY) {
           result = await acceptCityInvite({
             token: validatedRequest.token,
-            cityIds: validatedRequest.cityIds.split(","),
+            cityIds: validatedRequest.cityIds,
             email: validatedRequest.email,
           });
           trackingData = {
             event: "collaborator_invitation_accepted",
             properties: {
-              num_cities: validatedRequest.cityIds.split(",").length,
+              num_cities: validatedRequest.cityIds.length,
             },
           };
         } else {
@@ -241,9 +253,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
             cities: acceptedCities.map((city) => ({
               cityId: city.cityId,
               cityName: city.name || "Unknown City",
-              countryCode: city.countryLocode
-                ?.substring(0, 2)
-                .toLowerCase(),
+              countryCode: city.countryLocode?.substring(0, 2).toLowerCase(),
             })),
           };
         }
@@ -277,14 +287,15 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   if (!validatedRequest) return <InviteErrorView lng={lng} />;
   if (isLoading) return <ProgressLoader />;
   if (error) return <InviteErrorView lng={lng} />;
-  if (success) return (
-    <InviteSuccessModal
-      isOpen={success}
-      onClose={handleSuccessClose}
-      inviteData={inviteData}
-      lng={lng}
-    />
-  );
+  if (success)
+    return (
+      <InviteSuccessModal
+        isOpen={success}
+        onClose={handleSuccessClose}
+        inviteData={inviteData}
+        lng={lng}
+      />
+    );
 
   return null;
 };

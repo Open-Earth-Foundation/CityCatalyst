@@ -220,7 +220,7 @@ visualization library to migrate.
 
 | Concern | Prototype | CityCatalyst |
 |---|---|---|
-| Build | Vite 7 | Next.js 15 (App Router) |
+| Build | Vite 7 | Next.js 16 (App Router) |
 | Routing | `wouter` | App Router file-based, `[lng]/cities/[cityId]/MEED/[inventory]/…` |
 | Server state | `@tanstack/react-query` | RTK Query (`services/api.ts`) — new tags `Meed`, `MeedRanking`, `MeedPreferences` |
 | Client state | `localStorage` | Server persistence + Redux slices where needed |

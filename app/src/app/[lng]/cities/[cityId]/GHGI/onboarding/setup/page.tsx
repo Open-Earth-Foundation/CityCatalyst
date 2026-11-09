@@ -53,7 +53,12 @@ export default function OnboardingSetup(props: {
     watch,
     control,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      inventoryGoal: "gpc_basic",
+      globalWarmingPotential: "ar6",
+    },
+  });
 
   const params = useSearchParams();
 
@@ -184,13 +189,31 @@ export default function OnboardingSetup(props: {
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
 
-  // Check if the selected year already has an inventory
+  // An existing inventory for this year is reused. Without upload, a year that
+  // already has data is blocked; in upload mode the import replaces that data
+  // after the user confirms it in the wizard.
   const selectedYear =
     selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
-  const yearAlreadyExists = useMemo(() => {
-    if (!selectedYear || !existingInventories) return false;
-    return existingInventories.some((inv) => inv.year === selectedYear);
+  const existingInventoryForYear = useMemo(() => {
+    if (!selectedYear || !existingInventories) return undefined;
+    return existingInventories.find((inv) => inv.year === selectedYear);
   }, [selectedYear, existingInventories]);
+  // `data` keeps the previous year's progress when this query is skipped or
+  // its inventory changes; `currentData` belongs to the selected year only.
+  const {
+    currentData: existingInventoryProgress,
+    isFetching: existingProgressLoading,
+  } = api.useGetInventoryProgressQuery(
+    existingInventoryForYear?.inventoryId ?? "",
+    { skip: !existingInventoryForYear?.inventoryId },
+  );
+  const existingInventoryHasData = useMemo(() => {
+    if (!existingInventoryProgress?.totalProgress) return false;
+    const { thirdParty, uploaded, reasonNE, reasonNO } =
+      existingInventoryProgress.totalProgress;
+    return thirdParty + uploaded + reasonNE + reasonNO > 0;
+  }, [existingInventoryProgress]);
+  const isYearBlocked = !isUploadMode && existingInventoryHasData;
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
@@ -199,16 +222,6 @@ export default function OnboardingSetup(props: {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
-
-  // Show error toast when user selects a year that already has an inventory
-  useEffect(() => {
-    if (yearAlreadyExists && selectedYear) {
-      makeErrorToast(
-        t("inventory-year-already-exists-title"),
-        t("inventory-year-already-exists-description", { year: selectedYear }),
-      );
-    }
-  }, [yearAlreadyExists, selectedYear]);
 
   // Population data
 
@@ -267,8 +280,9 @@ export default function OnboardingSetup(props: {
         year: typeof data.year === "string" ? parseInt(data.year) : data.year,
         inventoryName: `${data.name} - ${data.year}`,
         totalCountryEmissions: getValues("totalCountryEmissions"),
-        inventoryType: inventoryGoal,
-        globalWarmingPotentialType: globalWarmingPotential,
+        inventoryType: data.inventoryGoal || inventoryGoal,
+        globalWarmingPotentialType:
+          data.globalWarmingPotential || globalWarmingPotential,
       }).unwrap();
       await setUserInfo({
         defaultInventoryId: inventory.inventoryId,
@@ -307,6 +321,7 @@ export default function OnboardingSetup(props: {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
+    if (isYearBlocked) return;
     setData({
       ...data,
       ...formData,
@@ -400,6 +415,9 @@ export default function OnboardingSetup(props: {
               setSelectedGlobalWarmingPotentialValue={
                 setSelectedGlobalWarmingPotentialValue
               }
+              yearAlreadyExists={existingInventoryHasData}
+              replaceOnImport={isUploadMode}
+              selectedYear={selectedYear}
             />
           )}
           {activeStep === 1 && (
@@ -459,6 +477,10 @@ export default function OnboardingSetup(props: {
                   onClick={handleSubmit(onSubmit)}
                   h="64px"
                   type="submit"
+                  disabled={
+                    isYearBlocked ||
+                    (!!existingInventoryForYear && existingProgressLoading)
+                  }
                 >
                   <Text
                     fontFamily="button.md"
@@ -475,9 +497,7 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={
-                    isUploadMode ? onConfirm : handleSubmit(onSubmit)
-                  }
+                  onClick={isUploadMode ? onConfirm : handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
                   loading={isUploadMode && isConfirming}

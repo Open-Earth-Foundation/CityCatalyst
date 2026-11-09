@@ -9,7 +9,7 @@ alwaysApply: true
 
 ```
 CityCatalyst/
-├── app/                    # Next.js 15 (App Router) — main product
+├── app/                    # Next.js 16 (App Router) — main product
 │   ├── src/app/            # Pages & API routes (locale: [lng])
 │   ├── src/components/     # React components (Chakra UI v3)
 │   ├── src/services/       # RTK Query API, logger, PDF
@@ -34,7 +34,7 @@ CityCatalyst/
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | UI | Chakra UI v3 + Emotion + next-themes |
 | State | Redux Toolkit + RTK Query |
 | Auth | NextAuth v4 (credentials, JWT) |

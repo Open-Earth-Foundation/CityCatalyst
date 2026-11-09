@@ -22,7 +22,7 @@ import path from "path";
 interface Template2Entry {
   "notation-key"?: string;
   explanation?: string;
-  total: bigint;
+  total?: bigint;
   [key: string]: bigint | string | undefined;
 }
 
@@ -35,16 +35,16 @@ interface DataSection {
 export default class ECRFDownloadService {
   public static async downloadECRF(
     output: InventoryWithInventoryValuesAndActivityValues,
-    lng: string,
   ) {
-    return await this.writeToECRFFILE(output, lng);
+    return await this.writeToECRFFILE(output);
   }
 
   private static async writeToECRFFILE(
     output: InventoryWithInventoryValuesAndActivityValues,
-    lng: string,
   ) {
-    const t = i18next.getFixedT(lng, "data");
+    // eCRF is an English GPC template. Always write English labels into cells
+    // even when the user is viewing the app in another language (CC-1153).
+    const t = i18next.getFixedT("en", "data");
     const workbook = new Excel.Workbook();
     try {
       // Load the workbook
@@ -200,9 +200,12 @@ export default class ECRFDownloadService {
 
             // build up the justification string for each row
             if (targetIdentifier === "notation-key") {
-              justificationString +=
-                (justificationString ? `, ` : "") +
+              const explanation =
                 updatedDataDictionary[referenceNoIdentifier]?.["explanation"];
+              if (explanation) {
+                justificationString +=
+                  (justificationString ? `, ` : "") + explanation;
+              }
             }
             // build up the totals for each sector scope combo
             if (
@@ -223,7 +226,34 @@ export default class ECRFDownloadService {
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }
-          cell.value = replacementValue?.toString() ?? "";
+          const entry = updatedDataDictionary[referenceNoIdentifier];
+          const hasNotationKey = Boolean(entry?.["notation-key"]);
+          // A GPC row is either a notation key or a value, never both.
+          if (targetIdentifier === "total" && hasNotationKey) {
+            cell.value = "";
+            return;
+          }
+          if (
+            targetIdentifier === "notation-key" &&
+            entry &&
+            !hasNotationKey &&
+            entry.total != null
+          ) {
+            cell.value = "";
+            return;
+          }
+          // Inventory co2eq is stored in kg; eCRF_2 expects tCO2e.
+          if (
+            (targetIdentifier === "total" ||
+              targetIdentifier === "full-total") &&
+            replacementValue != null &&
+            replacementValue !== ""
+          ) {
+            const kg = this.toNullableBigInt(replacementValue) ?? 0n;
+            cell.value = Number(kg) / 1000;
+          } else {
+            cell.value = replacementValue?.toString() ?? "";
+          }
         }
       });
     });
@@ -249,34 +279,47 @@ export default class ECRFDownloadService {
 
     const visitedScopes = {};
 
-    worksheet?.eachRow((row, rowNumber) => {
-      // maintain the styling
-      row.eachCell((cell) => {
-        cell.style = { ...cell.style };
-      });
+    // Walk bottom → top so inserting extra activity rows does not shift
+    // unprocessed template GPC refs (which left III.4.x etc. as NE).
+    if (worksheet) {
+      for (let rowNumber = worksheet.rowCount; rowNumber >= 2; rowNumber--) {
+        const row = worksheet.getRow(rowNumber);
+        row.eachCell((cell) => {
+          cell.style = { ...cell.style };
+        });
 
-      if (rowNumber === 1) return; // Skip the first row (contains the header)
+        const referenceNumberCell = row.getCell(2);
+        const referenceNumberValue = referenceNumberCell.value;
 
-      const referenceNumberCell = row.getCell(2);
-      const referenceNumberValue = referenceNumberCell.value;
-
-      if (referenceNumberCell && typeof referenceNumberValue === "string") {
-        const dataSection = dataDictionary[referenceNumberValue];
-        // if the activityValues > 1, then we need to add rows
-        if (dataSection) {
-          this.replacePlaceholdersInRow(
-            row,
-            dataSection,
-            rowNumber,
-            visitedScopes,
-            worksheet,
-          );
+        if (referenceNumberCell && typeof referenceNumberValue === "string") {
+          const dataSection = dataDictionary[referenceNumberValue];
+          if (dataSection) {
+            this.replacePlaceholdersInRow(
+              row,
+              dataSection,
+              rowNumber,
+              visitedScopes,
+              worksheet,
+            );
+          } else {
+            this.markRowAsNotEstimated(row, {
+              inventoryYear: output.year as number,
+            });
+          }
         } else {
-          this.markRowAsNotEstimated(row);
+          this.markRowAsNotEstimated(row, {
+            inventoryYear: output.year as number,
+          });
         }
       }
-      this.markRowAsNotEstimated(row);
-    });
+
+      // Clear leftover {{…}} without turning value rows into NE.
+      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+        this.clearLeftoverPlaceholders(worksheet.getRow(rowNumber), {
+          inventoryYear: output.year as number,
+        });
+      }
+    }
   }
 
   private static groupFugitiveEmissionData(
@@ -325,13 +368,14 @@ export default class ECRFDownloadService {
     const dataDictionary: Record<string, Template2Entry> = {};
 
     output.inventoryValues.map((inventoryValue) => {
+      const notationKey =
+        toShort(inventoryValue.unavailableReason) ?? undefined;
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
-        "notation-key":
-          toShort(inventoryValue.unavailableReason) ?? undefined,
+        "notation-key": notationKey,
         explanation: inventoryValue.unavailableExplanation ?? undefined,
-        total: inventoryValue.unavailableReason
-          ? 0n
-          : BigInt(inventoryValue.co2eq ?? 0),
+        total: notationKey
+          ? undefined
+          : (this.toNullableBigInt(inventoryValue.co2eq) ?? 0n),
       };
     });
 
@@ -383,18 +427,13 @@ export default class ECRFDownloadService {
         );
         const activityKey = methodology?.activityTypeField as string;
 
-        dataDictionary[gpcRefNo as string] = {
-          // InventoryValue fields
-          inventory_year: inventoryYear,
-          gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key:
-            toShort(inventoryValue.unavailableReason) ?? undefined,
-          input_methodology: t(inventoryValue.inputMethodology ?? ""),
-          activityValues: activityValues.map((activityValue) => {
+        const mappedActivities = activityValues.map((activityValue) => {
             const activityTitleKey =
               activityValue.metadata?.activityTitle?.toString() ?? "";
             const dataQuality = activityValue.metadata?.dataQuality;
-            const dataSource = activityValue.activityData?.["data-source"];
+            const dataSource =
+              activityValue.activityData?.["data-source"] ??
+              activityValue.metadata?.sourceExplanation;
             const activityAmount =
               activityValue.activityData?.[activityTitleKey];
             const activityUnit = t(
@@ -403,36 +442,53 @@ export default class ECRFDownloadService {
                   "",
               ),
             );
-            let emission_co2 = null;
-            let emission_ch4 = null;
-            let emission_n2o = null;
-            let ghg_co2 = null;
-            let ghg_ch4 = null;
-            let ghg_n2o = null;
+            // eCRF imports often have empty gasValues on the ActivityValue
+            // (gases live on InventoryValue / activityData). Treat missing
+            // gases and missing emissions factors as null — never BigInt(undefined).
+            const gasValues = activityValue.gasValues ?? [];
+            const co2_gas = gasValues.find((g) => g.gas === "CO2");
+            const ch4_gas = gasValues.find((g) => g.gas === "CH4");
+            const n2o_gas = gasValues.find((g) => g.gas === "N2O");
 
-            if (activityValue.gasValues) {
-              const co2_gas = activityValue.gasValues.find(
-                (g) => g.gas === "CO2",
-              );
-              const ch4_gas = activityValue.gasValues.find(
-                (g) => g.gas === "CH4",
-              );
-              const n2o_gas = activityValue.gasValues.find(
-                (g) => g.gas === "N2O",
-              );
+            const emission_co2 =
+              co2_gas?.emissionsFactor?.emissionsPerActivity ?? null;
+            const emission_ch4 =
+              ch4_gas?.emissionsFactor?.emissionsPerActivity ?? null;
+            const emission_n2o =
+              n2o_gas?.emissionsFactor?.emissionsPerActivity ?? null;
 
-              emission_co2 = co2_gas?.emissionsFactor.emissionsPerActivity;
-              emission_ch4 = ch4_gas?.emissionsFactor.emissionsPerActivity;
-              emission_n2o = n2o_gas?.emissionsFactor.emissionsPerActivity;
+            let ghg_co2_kg = this.toNullableBigInt(co2_gas?.gasAmount);
+            let ghg_ch4_kg = this.toNullableBigInt(ch4_gas?.gasAmount);
+            let ghg_n2o_kg = this.toNullableBigInt(n2o_gas?.gasAmount);
 
-              ghg_co2 = BigInt(co2_gas?.gasAmount as bigint);
-              ghg_ch4 = BigInt(ch4_gas?.gasAmount as bigint) * BigInt(28);
-              ghg_n2o = BigInt(n2o_gas?.gasAmount as bigint) * BigInt(265);
+            // Fallback: eCRF import stores tonnes on activityData without
+            // attaching GasValue rows to the activity.
+            const activityData = activityValue.activityData ?? {};
+            if (ghg_co2_kg == null) {
+              ghg_co2_kg = this.tonnesFieldToKg(activityData.co2_amount);
             }
+            if (ghg_ch4_kg == null) {
+              ghg_ch4_kg = this.tonnesFieldToKg(activityData.ch4_amount);
+            }
+            if (ghg_n2o_kg == null) {
+              ghg_n2o_kg = this.tonnesFieldToKg(activityData.n2o_amount);
+            }
+
+            // Template columns are "GHGs (metric tonnes CO2e)" — convert kg → t.
             return {
-              ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
-              ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
-              ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
+              ghg_co2:
+                ghg_co2_kg != null
+                  ? bigIntToDecimal(ghg_co2_kg).div(1000).toNumber()
+                  : null,
+              // AR5 GWP factors (same as pre-fix export behaviour)
+              ghg_ch4:
+                ghg_ch4_kg != null
+                  ? bigIntToDecimal(ghg_ch4_kg * 28n).div(1000).toNumber()
+                  : null,
+              ghg_n2o:
+                ghg_n2o_kg != null
+                  ? bigIntToDecimal(ghg_n2o_kg * 265n).div(1000).toNumber()
+                  : null,
               activity_type: t(
                 String(activityValue.activityData?.[activityKey] ?? ""),
               ),
@@ -453,7 +509,37 @@ export default class ECRFDownloadService {
                 ?.div(new Decimal("1e3"))
                 .toNumber(),
             };
-          }),
+          });
+
+        // No activity rows: still emit inventory total so sheet 3 is not NE-only.
+        const activityRows =
+          mappedActivities.length > 0
+            ? mappedActivities
+            : [
+                {
+                  activity_type: null,
+                  emission_factor_unit: null,
+                  emission_co2: null,
+                  emission_ch4: null,
+                  emission_n2o: null,
+                  activity_amount: null,
+                  activity_unit: null,
+                  activity_data_quality: null,
+                  activity_data_source: null,
+                  methodology: t(methodologyDescription ?? ""),
+                  total_co2e: toDecimal(inventoryValue.co2eq as bigint)
+                    ?.div(new Decimal("1e3"))
+                    .toNumber(),
+                },
+              ];
+
+        dataDictionary[gpcRefNo as string] = {
+          inventory_year: inventoryYear,
+          gpc_reference_number: inventoryValue.gpcReferenceNumber,
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
+          input_methodology: t(inventoryValue.inputMethodology ?? ""),
+          activityValues: activityRows,
         };
       }
     });
@@ -470,12 +556,24 @@ export default class ECRFDownloadService {
     const referenceCell = row.getCell(2);
     const referenceValue = referenceCell.value;
 
+    const inventoryYear =
+      typeof dataSection.inventory_year === "number"
+        ? dataSection.inventory_year
+        : undefined;
+    this.writeInventoryYear(row, inventoryYear);
+
     if (typeof referenceValue == "string" && referenceValue in visitedScopes) {
+      // Extra template rows for the same GPC ref (e.g. I.4.4 CHP/heat) after
+      // multi-activity insert — clear placeholders rather than leave {{…}}.
+      this.markRowAsNotEstimated(row, { inventoryYear });
       return;
     }
 
     if (dataSection.notation_key) {
-      this.markRowAsNotEstimated(row, dataSection.notation_key);
+      this.markRowAsNotEstimated(row, {
+        notation: dataSection.notation_key,
+        inventoryYear,
+      });
       return;
     }
 
@@ -526,7 +624,20 @@ export default class ECRFDownloadService {
     visitedScopes[referenceValue as string] = true;
   }
 
-  private static markRowAsNotEstimated(row: Excel.Row, notation?: string) {
+  private static writeInventoryYear(
+    row: Excel.Row,
+    inventoryYear?: number,
+  ) {
+    if (inventoryYear == null) return;
+    // eCRF_3 column A is a year dropdown seeded with "Please select", not {{inventory_year}}.
+    row.getCell(1).value = inventoryYear;
+  }
+
+  private static markRowAsNotEstimated(
+    row: Excel.Row,
+    options?: { notation?: string; inventoryYear?: number },
+  ) {
+    this.writeInventoryYear(row, options?.inventoryYear);
     row.eachCell((cell) => {
       if (cell.value && typeof cell.value === "string") {
         const cellValue = cell.value as string;
@@ -534,13 +645,63 @@ export default class ECRFDownloadService {
         if (placeholderMatch) {
           const fieldName = placeholderMatch[1];
           if (fieldName === "no_key") {
-            cell.value = notation || "NE"; // Not Estimated
+            cell.value = options?.notation || "NE";
+          } else if (
+            fieldName === "inventory_year" &&
+            options?.inventoryYear != null
+          ) {
+            cell.value = options.inventoryYear;
           } else {
-            cell.value = ""; // remove the placeholder when
+            cell.value = "";
           }
         }
       }
     });
+  }
+
+  /** Strip leftover placeholders after fill. Never default leftover no_key to NE. */
+  private static clearLeftoverPlaceholders(
+    row: Excel.Row,
+    options?: { inventoryYear?: number },
+  ) {
+    this.writeInventoryYear(row, options?.inventoryYear);
+    row.eachCell((cell) => {
+      if (cell.value && typeof cell.value === "string") {
+        const cellValue = cell.value as string;
+        const placeholderMatch = cellValue.match(/{{(.*?)}}/);
+        if (placeholderMatch) {
+          const fieldName = placeholderMatch[1];
+          if (
+            fieldName === "inventory_year" &&
+            options?.inventoryYear != null
+          ) {
+            cell.value = options.inventoryYear;
+          } else {
+            cell.value = "";
+          }
+        }
+      }
+    });
+  }
+
+  /** Safe BigInt for optional gas amounts — never throw on null/undefined. */
+  private static toNullableBigInt(value: unknown): bigint | null {
+    if (value == null || value === "") return null;
+    try {
+      return BigInt(value as bigint | number | string);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Convert activityData tonne fields (eCRF import) to kg bigint. */
+  private static tonnesFieldToKg(value: unknown): bigint | null {
+    if (typeof value !== "number" || Number.isNaN(value)) return null;
+    try {
+      return BigInt(new Decimal(value).mul(1000).trunc().toString());
+    } catch {
+      return null;
+    }
   }
 
   private static cloneRowAndInsertInWorkSheet(

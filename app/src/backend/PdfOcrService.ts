@@ -23,8 +23,9 @@ import {
   getPdfOcrConfig,
   getPdfOcrRetryDelayMs,
 } from "@/backend/pdf-ocr-config";
-import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
+import { extractInventoryFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
+import { zeroRowReason } from "@/util/GHGI/extraction-summary";
 import { logger } from "@/services/logger";
 import {
   syncGHGIImportedInventorySource,
@@ -122,6 +123,12 @@ class PdfSourceError extends Error {
     super(message);
   }
 }
+
+/** Extraction errors the import wizard can show in the user's language. */
+const EXTRACTION_ERROR_KEYS: Record<string, string> = {
+  "Inventory not found for the target year":
+    "i18n:inventory-not-found-for-target-year",
+};
 
 function sanitizedMessage(error: unknown): string {
   return error instanceof Error
@@ -681,7 +688,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const rows = await extractInventoryRowsFromDocument(markdown, {
+    const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
@@ -694,13 +701,33 @@ export async function extractInventoryRowsFromStoredMarkdown(
         });
       },
     });
-    if (!rows.length)
-      throw new Error("PDF does not contain extractable inventory data");
+    if (!rows.length) {
+      // Keep the summary so the reason (e.g. totals only) can be checked later.
+      const failed = await finalizeInventoryExtraction(job, owner, {
+        importStatus: ImportStatusEnum.FAILED,
+        mappingConfiguration: {
+          ...(importedFile.mappingConfiguration || {}),
+          rows: undefined,
+          extractionSummary: summary,
+          extractionProgress: undefined,
+        },
+        errorLog: `i18n:${zeroRowReason(summary)}`,
+        lastUpdated: new Date(),
+      });
+      if (!failed) {
+        logger.warn(
+          { sourceId: job.sourceId },
+          "Inventory extraction lease was lost before failure registration",
+        );
+      }
+      return;
+    }
     const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       mappingConfiguration: {
         ...(importedFile.mappingConfiguration || {}),
         rows,
+        extractionSummary: summary,
         extractionProgress: undefined,
       },
       rowCount: rows.length,
@@ -718,9 +745,12 @@ export async function extractInventoryRowsFromStoredMarkdown(
       { error, sourceId: job.sourceId },
       "Inventory extraction from OCR Markdown failed",
     );
+    const message = sanitizedMessage(error);
     const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.FAILED,
-      errorLog: sanitizedMessage(error),
+      errorLog: Object.hasOwn(EXTRACTION_ERROR_KEYS, message)
+        ? EXTRACTION_ERROR_KEYS[message]
+        : message,
       lastUpdated: new Date(),
     });
     if (!finalized) {

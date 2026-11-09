@@ -85,9 +85,7 @@ jest.unstable_mockModule(
         applicationContextLoading: false,
         hasApplicationTemplate: Boolean(applicationContext?.template),
         canStartDrafting: Boolean(
-          applicationContext?.funder &&
-          applicationContext.opportunity &&
-          applicationContext.template?.chapter_schema.length,
+          applicationContext?.template?.chapter_schema.length,
         ),
         isDraftRunning: workspaceState.draftStatus === "running",
         draft: workspaceState.draftStatus
@@ -131,6 +129,12 @@ jest.unstable_mockModule(
   }),
 );
 jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/use-funder-import",
+  () => ({
+    useFunderImport: () => ({ phase: "idle", filename: null }),
+  }),
+);
+jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-inline-review-decisions",
   () => ({
     useInlineReviewDecisions: () => ({ decisions: {} }),
@@ -167,7 +171,6 @@ for (const [path, name] of [
   ["context-tab", "ContextTab"],
   ["structure-tab", "StructureTab"],
   ["export-dialog", "ExportDialog"],
-  ["start-new-chat-dialog", "StartNewChatDialog"],
 ]) {
   jest.unstable_mockModule(`@/components/ConceptNoteWorkspace/${path}`, () => ({
     [name]: () => null,

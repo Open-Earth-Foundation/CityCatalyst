@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
+import { getConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 import { editApi } from "@/services/concept-note-edit-api";
 import { logger } from "@/services/logger";
 import type { ConceptNoteWorkspaceSnapshot } from "@/util/types";
@@ -154,6 +155,7 @@ export function useConceptNoteWorkspaceEvents({
 
     let reconciledUpload = false;
     let reconciledDraft = false;
+    let reconciledBundle: string | null = null;
     function updateCaches(snapshot: ConceptNoteWorkspaceSnapshot): void {
       if (
         snapshot.edits &&
@@ -170,6 +172,24 @@ export function useConceptNoteWorkspaceEvents({
         );
       }
       if (snapshot.run?.run_id === runId) {
+        const bundle = getConceptNoteBundleProgress(
+          snapshot.run.progress_summary,
+        );
+        if (bundle.status === "ready" || bundle.status === "failed") {
+          const completion = JSON.stringify([
+            bundle.buildId,
+            bundle.status,
+            bundle.includedUploadIds,
+          ]);
+          if (completion !== reconciledBundle) {
+            reconciledBundle = completion;
+            dispatch(
+              api.util.invalidateTags([
+                { type: "ConceptNoteRuns", id: cityId },
+              ]),
+            );
+          }
+        }
         dispatch(
           api.util.upsertQueryEntries([
             {

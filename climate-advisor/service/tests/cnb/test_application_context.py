@@ -30,6 +30,7 @@ def _run(*, with_funding: bool) -> ConceptNoteRun:
             selected_funding_opportunity_id=(
                 OPPORTUNITY_ID if with_funding else None
             ),
+            custom_template=None,
         ),
     )
 
@@ -66,6 +67,7 @@ async def test_skips_reference_database_when_run_has_no_funder() -> None:
         "funder": None,
         "opportunity": None,
         "template": None,
+        "template_source": None,
         "included_sources": {
             "city": False,
             "project": False,
@@ -141,6 +143,7 @@ async def test_maps_selected_funder_programme_and_template() -> None:
             ],
             "required_fields": ["project_summary"],
         },
+        "template_source": None,
         "included_sources": {
             "city": True,
             "project": False,

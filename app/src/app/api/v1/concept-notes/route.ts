@@ -95,6 +95,7 @@ import {
   readConceptNoteApiPayload,
 } from "@/backend/concept-notes";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { conceptNoteUploadStatusWireSchema } from "@/backend/ConceptNoteUploadService";
 import { apiHandler } from "@/util/api";
 
 const uuidSchema = z.string().uuid();
@@ -113,6 +114,7 @@ const runListItemSchema = z.object({
   status: z.string().min(1),
   workflow_step: z.string().min(1),
   progress_summary: z.record(z.string(), z.unknown()),
+  uploads: z.array(conceptNoteUploadStatusWireSchema).optional(),
   created_at: timestampSchema,
   updated_at: timestampSchema,
 });

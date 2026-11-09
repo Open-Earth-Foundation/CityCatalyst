@@ -34,6 +34,9 @@ let renameRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").PATCH;
 let updatePopulation: typeof import("@/app/api/v1/concept-notes/[runId]/population/route").PATCH;
 let deleteRun: typeof import("@/app/api/v1/concept-notes/[runId]/route").DELETE;
 let duplicateRun: typeof import("@/app/api/v1/concept-notes/[runId]/duplicate/route").POST;
+let listChats: typeof import("@/app/api/v1/concept-notes/[runId]/chat/threads/route").GET;
+let activateChat: typeof import("@/app/api/v1/concept-notes/[runId]/chat/threads/[threadId]/activate/route").POST;
+const threadId = "55555555-5555-4555-8555-555555555555";
 
 const context: RouteContext = {
   session: { user: { id: ownerId } },
@@ -51,6 +54,10 @@ beforeAll(async () => {
     await import("@/app/api/v1/concept-notes/[runId]/duplicate/route"));
   ({ PATCH: updatePopulation } =
     await import("@/app/api/v1/concept-notes/[runId]/population/route"));
+  ({ GET: listChats } =
+    await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route"));
+  ({ POST: activateChat } =
+    await import("@/app/api/v1/concept-notes/[runId]/chat/threads/[threadId]/activate/route"));
 });
 
 describe("Concept Note lifecycle proxy routes", () => {
@@ -203,6 +210,63 @@ describe("Concept Note lifecycle proxy routes", () => {
       searchParams: { user_id: ownerId },
       session: context.session,
     });
+  });
+
+  it("lists attached chats and preserves the upstream payload and status", async () => {
+    const payload = {
+      active_thread_id: threadId,
+      threads: [{ thread_id: threadId, message_count: 2 }],
+    };
+    callAuthorizedConceptNoteApi.mockResolvedValueOnce(Response.json(payload));
+
+    const response = await listChats(
+      new Request("http://localhost", {
+        headers: { "x-request-id": "request-2" },
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(payload);
+    expect(callAuthorizedConceptNoteApi).toHaveBeenCalledWith({
+      cityId,
+      path: `/v1/concept-notes/${runId}/chat/threads`,
+      requestId: "request-2",
+      searchParams: { user_id: ownerId },
+      session: context.session,
+    });
+  });
+
+  it("forwards chat activation for a validated thread and keeps a 404", async () => {
+    callAuthorizedConceptNoteApi.mockResolvedValueOnce(
+      Response.json({ detail: "Chat thread not found" }, { status: 404 }),
+    );
+
+    const response = await activateChat(
+      new Request("http://localhost", { method: "POST" }),
+      { ...context, params: { runId, threadId } },
+    );
+
+    expect(response.status).toBe(404);
+    expect(callAuthorizedConceptNoteApi).toHaveBeenCalledWith({
+      cityId,
+      path: `/v1/concept-notes/${runId}/chat/threads/${threadId}/activate`,
+      method: "POST",
+      requestId: undefined,
+      searchParams: { user_id: ownerId },
+      session: context.session,
+    });
+  });
+
+  it("rejects an invalid thread before activating", async () => {
+    await expect(
+      activateChat(new Request("http://localhost", { method: "POST" }), {
+        ...context,
+        params: { runId, threadId: "not-a-uuid" },
+      }),
+    ).rejects.toBeInstanceOf(ZodError);
+
+    expect(callAuthorizedConceptNoteApi).not.toHaveBeenCalled();
   });
 
   it("rejects an invalid city before proxying", async () => {

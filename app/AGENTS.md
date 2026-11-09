@@ -40,7 +40,7 @@ npm run i18n:update             # Auto-translate EN keys to de, es, pt
 
 ```
 app/src/
-├── app/                        # Next.js 15 App Router
+├── app/                        # Next.js 16 App Router
 │   ├── [lng]/                  # Locale-prefixed pages (en, de, es, fr, pt)
 │   │   ├── auth/               # Login, signup, password reset, invite acceptance
 │   │   ├── admin/              # OEF admin panel
@@ -436,7 +436,7 @@ _This file is for agentic coding agents. Follow these rules for consistency and 
 
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 

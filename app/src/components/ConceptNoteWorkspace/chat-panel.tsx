@@ -1,7 +1,14 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Box,
@@ -15,7 +22,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
-import { LuArrowUp, LuCircleAlert, LuMessageSquarePlus } from "react-icons/lu";
+import { LuArrowUp, LuCircleAlert, LuRotateCw } from "react-icons/lu";
 import { BsStars } from "react-icons/bs";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -24,11 +31,21 @@ import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-
 import { useEnterSubmit } from "@/hooks/useEnterSubmit";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
-import { useConceptNoteChat } from "./use-concept-note-chat";
+import {
+  useConceptNoteChat,
+  type ChatConnectionState,
+} from "./use-concept-note-chat";
+import {
+  ChatThreadSwitcher,
+  OlderChatNotice,
+  useConceptNoteChatThreads,
+} from "./chat-threads";
 import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { ChatSuggestions } from "./chat-suggestions";
+import { ChatVisualFrame } from "./chat-visual-frame";
+import { ChatChoices } from "./chat-choices";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -39,7 +56,18 @@ import type { ConceptNoteDraftState } from "@/util/types";
 // About eight lines of composer text before it scrolls.
 const COMPOSER_MAX_HEIGHT_PX = 190;
 
+const CONNECTION_BADGE: Record<
+  ChatConnectionState,
+  { color: string; label: string }
+> = {
+  connecting: { color: "content.tertiary", label: "connection-connecting" },
+  connected: { color: "sentiment.positiveDefault", label: "connected" },
+  retrying: { color: "sentiment.warningDefault", label: "connection-retrying" },
+  error: { color: "sentiment.negativeDefault", label: "connection-error" },
+};
+
 interface ConceptNoteChatPanelProps {
+  cityId: string;
   contextStatus: ConceptNoteContextPresentation;
   contextBuildId?: string | null;
   contextChanges?: ConceptNoteContextChange[];
@@ -47,7 +75,6 @@ interface ConceptNoteChatPanelProps {
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
-  onStartNewChat?: () => void;
   runId: string;
   threadId: string | null;
   editScope: EditScope;
@@ -200,6 +227,7 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 });
 
 export function ConceptNoteChatPanel({
+  cityId,
   contextStatus,
   contextBuildId = null,
   contextChanges = [],
@@ -207,7 +235,6 @@ export function ConceptNoteChatPanel({
   draftOverviewPending,
   lng,
   onOpenContext,
-  onStartNewChat,
   runId,
   threadId,
   editScope,
@@ -228,7 +255,10 @@ export function ConceptNoteChatPanel({
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
   const {
+    connection,
     error: chatError,
+    canRetry,
+    overviewFailed,
     historyLoading,
     isGenerating,
     reasoning,
@@ -236,6 +266,7 @@ export function ConceptNoteChatPanel({
     messages,
     sendMessage: sendChatMessage,
     requestDraftOverview,
+    retry,
   } = useConceptNoteChat({
     lng,
     runId,
@@ -243,6 +274,12 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
+  });
+  const chatThreads = useConceptNoteChatThreads({
+    cityId,
+    lng,
+    runId,
+    threadId,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
@@ -252,8 +289,12 @@ export function ConceptNoteChatPanel({
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
-  // Typing stays open while Clima responds; only sending waits for it.
-  const composerDisabled = contextBlocked || !threadId;
+  // Switching chats mid-turn or mid-drafting would strand the reply.
+  const threadSwitchDisabled =
+    historyLoading || isGenerating || draft?.status === "running";
+  // Typing stays open while context is processing or Clima responds.
+  // Only submission waits for context readiness and the current turn.
+  const composerDisabled = !threadId;
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
@@ -293,6 +334,14 @@ export function ConceptNoteChatPanel({
     });
     return () => window.cancelAnimationFrame(frame);
   }, [historyLoading, messages, reasoning, threadId]);
+
+  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  const keepLatestInView = useCallback(() => {
+    const chatScroll = chatScrollRef.current;
+    if (chatScroll && followLatestRef.current) {
+      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+    }
+  }, []);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -362,7 +411,7 @@ export function ConceptNoteChatPanel({
         >
           <Icon as={BsStars} boxSize={6} />
         </Flex>
-        <Box flex={1}>
+        <Box flex={1} minW={0}>
           <Text
             fontFamily="heading"
             fontSize="18px"
@@ -371,37 +420,40 @@ export function ConceptNoteChatPanel({
           >
             {t("clima")}
           </Text>
-          <Text fontSize="label.sm" color="content.tertiary">
+          {/* One line, so the header keeps its height as the badge label changes. */}
+          <Text fontSize="label.sm" color="content.tertiary" truncate>
             {t("concept-note-copilot")}
           </Text>
         </Box>
         <HStack
           gap={1.5}
-          color={threadId ? "sentiment.positiveDefault" : "content.tertiary"}
+          flexShrink={0}
+          whiteSpace="nowrap"
+          color={CONNECTION_BADGE[connection].color}
+          role="status"
+          aria-live="polite"
+          data-testid="concept-note-connection-status"
+          data-state={connection}
         >
-          <Box
-            boxSize="7px"
-            borderRadius="full"
-            bg={threadId ? "sentiment.positiveDefault" : "content.tertiary"}
-          />
+          {connection === "connecting" || connection === "retrying" ? (
+            <Spinner size="xs" boxSize="9px" borderWidth="1.5px" />
+          ) : (
+            <Box
+              boxSize="7px"
+              borderRadius="full"
+              bg={CONNECTION_BADGE[connection].color}
+            />
+          )}
           <Text fontSize="label.sm">
-            {threadId ? t("connected") : t("not-connected")}
+            {t(CONNECTION_BADGE[connection].label)}
           </Text>
         </HStack>
-        {onStartNewChat && (
-          <Button
-            size="xs"
-            variant="ghost"
-            px={2}
-            aria-label={t("start-new-chat")}
-            title={t("start-new-chat")}
-            data-testid="concept-note-start-new-chat"
-            disabled={!threadId || historyLoading || isGenerating}
-            onClick={onStartNewChat}
-          >
-            <Icon as={LuMessageSquarePlus} boxSize={4} />
-          </Button>
-        )}
+        <ChatThreadSwitcher
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+          threadId={threadId}
+        />
       </Flex>
 
       <VStack
@@ -420,6 +472,11 @@ export function ConceptNoteChatPanel({
         bg="base.light"
         p={4}
       >
+        <OlderChatNotice
+          controller={chatThreads}
+          disabled={threadSwitchDisabled}
+          lng={lng}
+        />
         <ContextStatusNotice
           key={contextState}
           busy={contextBlocked && contextState !== "failed"}
@@ -452,7 +509,7 @@ export function ConceptNoteChatPanel({
             />
           )}
 
-        {messages.map((message) => (
+        {messages.map((message, messageIndex) => (
           <Fragment key={message.id}>
             {message.role === "assistant" &&
               message.id === messages.at(-1)?.id && (
@@ -463,15 +520,17 @@ export function ConceptNoteChatPanel({
                   isGenerating={isGenerating}
                 />
               )}
-            {(message.text || message.role === "user") && (
+            {(message.text || message.choices || message.role === "user") && (
               <Box
                 alignSelf={message.role === "user" ? "end" : "start"}
                 maxW="92%"
-                border="1px solid"
+                border={message.choices ? "none" : "1px solid"}
                 borderColor="border.neutral"
                 borderRadius="rounded"
                 bg={
-                  message.role === "user" ? "background.neutral" : "base.light"
+                  message.choices || message.role === "user"
+                    ? "background.neutral"
+                    : "base.light"
                 }
                 px={3}
                 py={2.5}
@@ -493,8 +552,30 @@ export function ConceptNoteChatPanel({
                     {message.text}
                   </Text>
                 ) : null}
+                {message.role === "assistant" && message.choices && (
+                  <ChatChoices
+                    choices={message.choices}
+                    lng={lng}
+                    disabled={chatDisabled}
+                    answered={messageIndex < messages.length - 1}
+                    onReply={async (answer) => {
+                      if (chatDisabled) return;
+                      followLatestRef.current = true;
+                      await sendChatMessage(answer);
+                    }}
+                  />
+                )}
               </Box>
             )}
+            {message.visuals?.map((visual, index) => (
+              <ChatVisualFrame
+                key={index}
+                html={visual.html}
+                lng={lng}
+                onHeightChange={keepLatestInView}
+                title={visual.title}
+              />
+            ))}
           </Fragment>
         ))}
 
@@ -504,6 +585,7 @@ export function ConceptNoteChatPanel({
             lng={lng}
             startedAt={draftStartedAt}
             completedAt={draftCompletedAt}
+            summaryFailed={overviewFailed && !isGenerating}
           />
         )}
 
@@ -533,9 +615,24 @@ export function ConceptNoteChatPanel({
             align="start"
             gap={2}
             color="sentiment.negativeDefault"
+            data-testid="concept-note-chat-error"
           >
             <Icon as={LuCircleAlert} mt={0.5} />
-            <Text fontSize="label.sm">{chatError}</Text>
+            <Text fontSize="label.sm" flex={1}>
+              {chatError}
+            </Text>
+            {canRetry && (
+              <Button
+                size="xs"
+                variant="outline"
+                flexShrink={0}
+                data-testid="concept-note-chat-retry"
+                onClick={() => void retry()}
+              >
+                <Icon as={LuRotateCw} boxSize={3.5} />
+                {t("chat-retry")}
+              </Button>
+            )}
           </HStack>
         )}
       </VStack>
@@ -549,7 +646,7 @@ export function ConceptNoteChatPanel({
         onSubmit={submitMessage}
       >
         <Box mb={!chatDisabled && threadId ? 3 : 0}>
-          {!chatDisabled && threadId && (
+          {!chatDisabled && threadId && !messages.at(-1)?.choices && (
             <ChatSuggestions
               runId={runId}
               threadId={threadId}
@@ -578,11 +675,7 @@ export function ConceptNoteChatPanel({
               contextBlocked ? "concept-note-chat-blocked" : undefined
             }
             placeholder={
-              contextBlocked
-                ? t("chat-waiting-for-context")
-                : threadId
-                  ? t("chat-input-placeholder")
-                  : t("chat-unavailable")
+              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
             }
             bg="base.light"
             borderColor="border.neutral"

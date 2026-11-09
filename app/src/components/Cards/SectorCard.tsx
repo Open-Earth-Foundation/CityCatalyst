@@ -99,13 +99,14 @@ export function SectorCard({
         <Box display="flex" alignItems="flex-start" mt={2}>
           <Icon color="content.link" boxSize={8} as={sectorIcon} />
         </Box>
-        <Box w="full">
+        <Box w="full" minW={0}>
           <Box
             display="flex"
             alignItems="center"
             justifyContent="space-between"
+            flexWrap="wrap"
           >
-            <Box display="flex" flexDirection="column">
+            <Box display="flex" flexDirection="column" minW={0}>
               <Box display="flex" gap={2} py={1}>
                 <Heading
                   fontSize="title.lg"
@@ -139,16 +140,22 @@ export function SectorCard({
                 {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
-            <Box display="flex" flexDirection="column" gap={3}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={3}
+              w={{ base: "full", md: "auto" }}
+              minW={0}
+            >
               <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
                   borderWidth={2}
-                  w="256px"
+                  w={{ base: "full", md: "256px" }}
                   h="48px"
                   py="16px"
                   gap={2}
-                  ml={2}
+                  ml={{ base: 0, md: 2 }}
                 >
                   <BsPlus />
                   <Text fontFamily="heading" fontSize="button.md">
@@ -166,11 +173,11 @@ export function SectorCard({
                     <Button
                       data-testid="stationary-energy-agentic-cta"
                       variant="solid"
-                      w="256px"
+                      w={{ base: "full", md: "256px" }}
                       h="48px"
                       py="16px"
                       gap={2}
-                      ml={2}
+                      ml={{ base: 0, md: 2 }}
                     >
                       <MdAutoAwesome />
                       <Text fontFamily="heading" fontSize="button.md">

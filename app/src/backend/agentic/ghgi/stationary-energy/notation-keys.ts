@@ -8,6 +8,7 @@ import { db } from "@/models";
 import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { InventoryTypeEnum } from "@/util/constants";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 
 const STATIONARY_ENERGY_SECTOR_REFERENCE = "I";
@@ -170,12 +171,17 @@ export async function listNotationKeyCandidateGroups(params: {
 
       return [
         sector.referenceNumber,
-        entries.filter(({ inventoryValue }) => {
+        entries.filter(({ inventoryValue, subCategory }) => {
           const isFilled = inventoryValue != null;
           const hasEmissionsData =
             inventoryValue?.co2eq != null ||
             inventoryValue?.co2eqYears != null;
           const hasNotationKey = inventoryValue?.unavailableReason != null;
+          // III.x.3 is optional, so it is not a row to complete. A saved notation
+          // key stays listed so it can still be edited.
+          if (isImportedWasteRef(subCategory.referenceNumber)) {
+            return hasNotationKey && !hasEmissionsData;
+          }
           // a lingering notation key from before real data was entered
           // shouldn't keep a subsector on this screen
           return !isFilled || (hasNotationKey && !hasEmissionsData);

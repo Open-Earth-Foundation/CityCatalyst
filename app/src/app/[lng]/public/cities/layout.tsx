@@ -1,14 +1,16 @@
-"use client";
-
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
-import { use } from "react";
 
-export default function DataLayout(props: {
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
+// Remove this opt-out after verifying the segment passes validation without it.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
+export default async function DataLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = use(props.params);
+  const { lng } = await props.params;
 
   return (
     <Box

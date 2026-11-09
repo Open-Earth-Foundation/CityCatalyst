@@ -50,11 +50,17 @@ let container: HTMLDivElement;
 let root: Root;
 const originalFetch = globalThis.fetch;
 
-function Harness({ upload = false }: { upload?: boolean }): null {
+function Harness({
+  upload = false,
+  run = false,
+}: {
+  upload?: boolean;
+  run?: boolean;
+}): null {
   useConceptNoteWorkspaceEvents({
     cityId: "city-1",
     observeDraft: !upload,
-    observeRun: false,
+    observeRun: run,
     observeUpload: upload,
     runId: "run-1",
     uploadId: upload ? "upload-1" : null,
@@ -132,6 +138,52 @@ describe("useConceptNoteWorkspaceEvents", () => {
     expect(updateQueryData).not.toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+  it.each(["ready", "failed"])(
+    "refreshes the city list once when a bundle becomes %s",
+    async (status) => {
+      const run = {
+        run_id: "run-1",
+        progress_summary: {
+          context_bundle: {
+            status,
+            build_id: "build-1",
+            included_upload_ids: ["plan-1"],
+          },
+        },
+      };
+      const frames =
+        [1, 2]
+          .map(
+            (sequence) =>
+              `event: snapshot\ndata: ${JSON.stringify({ sequence, run })}\n\n`,
+          )
+          .join("") + "event: done\ndata: {}\n\n";
+      let delivered = false;
+      globalThis.fetch = jest.fn(async () => ({
+        ok: true,
+        status: 200,
+        body: {
+          getReader: () => ({
+            read: async () => {
+              if (delivered) return { done: true };
+              delivered = true;
+              return { done: false, value: new TextEncoder().encode(frames) };
+            },
+            releaseLock: jest.fn(),
+          }),
+        },
+      })) as unknown as typeof fetch;
+      await act(async () => {
+        root.render(<Harness run />);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(invalidateTags).toHaveBeenCalledTimes(1);
+      expect(invalidateTags).toHaveBeenCalledWith([
+        { type: "ConceptNoteRuns", id: "city-1" },
+      ]);
+    },
+  );
+
   it("updates the draft cache and does not reconnect after terminal state", async () => {
     const payload =
       [

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -30,6 +30,13 @@ class ApplicationContextTemplate(BaseModel):
     required_fields: list[str] = Field(default_factory=list)
 
 
+class FundingAddedFrom(BaseModel):
+    """How a user-added programme or a note's own template was entered."""
+
+    kind: Literal["document", "manual"]
+    filename: str | None = None
+
+
 class ApplicationContextIncludedSources(BaseModel):
     """Presence of CityCatalyst sections in the persisted run bundle."""
 
@@ -48,6 +55,8 @@ class ConceptNoteApplicationContextResponse(BaseModel):
     funder: ApplicationContextFunder | None = None
     opportunity: ApplicationContextOpportunity | None = None
     template: ApplicationContextTemplate | None = None
+    # Set only when the note uses its own template instead of a funder's.
+    template_source: FundingAddedFrom | None = None
     included_sources: ApplicationContextIncludedSources = Field(
         default_factory=ApplicationContextIncludedSources
     )

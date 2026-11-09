@@ -6,6 +6,10 @@ import { ForeignKeyConstraintError, ValidationError } from "sequelize";
 import { ZodError } from "zod";
 
 import "@/util/big_int_json";
+import {
+  IngestItemError,
+  ingestItemErrorStatus,
+} from "@/backend/ingest/types";
 import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
 import { AppSession, Auth } from "@/lib/auth";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
@@ -504,6 +508,11 @@ function errorHandler(err: unknown) {
     err instanceof CustomInviteError
   ) {
     return NextResponse.json(err.data, { status: 409 });
+  } else if (err instanceof IngestItemError) {
+    return NextResponse.json(
+      { error: { message: err.message, code: err.code } },
+      { status: ingestItemErrorStatus(err) },
+    );
   } else if (createHttpError.isHttpError(err) && err.expose) {
     const details = err as typeof err & {
       code?: unknown;

@@ -10,6 +10,7 @@ export type ContextSourceState =
   | "selected"
   | "processing"
   | "included"
+  | "included-with-failures"
   | "partial"
   | "failed";
 
@@ -70,6 +71,7 @@ const HELP_KEYS: Record<
   selected: "source-help-selected",
   processing: "source-help-processing",
   included: "source-help-included",
+  "included-with-failures": "plan-upload-partial-help",
   partial: "inventory-partial",
   failed: "source-help-failed",
 };
@@ -80,6 +82,7 @@ const STATUS_KEYS: Record<ContextSourceState, string> = {
   selected: "selected-for-run",
   processing: "status-processing",
   included: "included-in-run",
+  "included-with-failures": "plan-included-with-failures",
   partial: "included-partial",
   failed: "status-failed",
   unavailable: "not-available",
@@ -107,7 +110,12 @@ export function contextSourceTone(
   if (state === "available" || state === "selected" || state === "included") {
     return "positive";
   }
-  if (state === "failed" || state === "empty" || state === "partial") {
+  if (
+    state === "failed" ||
+    state === "empty" ||
+    state === "partial" ||
+    state === "included-with-failures"
+  ) {
     return "warning";
   }
   return "neutral";

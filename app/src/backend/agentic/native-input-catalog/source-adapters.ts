@@ -8,10 +8,22 @@ import {
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import { buildHiapInventoryContext } from "@/backend/agentic/hiap/context";
+import { buildHiapActionPlanContext } from "@/backend/agentic/hiap/plan-context";
 import {
+  HIAP_ACTION_PLAN_CONTEXT_CAPABILITY,
   HIAP_INVENTORY_CONTEXT_CAPABILITY,
   hiapInventoryContextInputSchema,
 } from "@/backend/agentic/hiap/registry";
+import {
+  buildMeedOutputPlanContext,
+  buildMeedRankingContext,
+} from "@/backend/agentic/hiap-meed/context";
+import {
+  HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY,
+  HIAP_MEED_RANKING_CONTEXT_CAPABILITY,
+  hiapMeedOutputPlanInputSchema,
+  hiapMeedRankingInputSchema,
+} from "@/backend/agentic/hiap-meed/registry";
 import {
   getNativeInputCapabilityDefinition,
   type NativeInputCapabilityId,
@@ -105,7 +117,50 @@ const hiapInventoryAdapter = createNativeInputSourceAdapter({
       return buildHiapInventoryContext(
         entry.inventoryId,
         parsed.language ?? LANGUAGES.en,
+        {
+          scope: parsed.scope,
+          type: parsed.type,
+          limit: parsed.limit,
+          offset: parsed.offset,
+        },
       );
+    }
+    if (
+      capabilityId === HIAP_ACTION_PLAN_CONTEXT_CAPABILITY &&
+      entry.sourceId
+    ) {
+      return buildHiapActionPlanContext(entry.sourceId);
+    }
+    return null;
+  },
+});
+
+const hiapMeedAdapter = createNativeInputSourceAdapter({
+  async probeReadiness(entry) {
+    if (
+      entry.owningModule !== "hiap_meed" ||
+      !entry.sourceId ||
+      !entry.inventoryId ||
+      !getNativeInputCapabilityDefinition(entry)
+    ) {
+      return false;
+    }
+    return inventoryExists(entry.inventoryId);
+  },
+  async executeSelected({ entry, capabilityId, input }) {
+    if (!entry.sourceId) return null;
+    if (capabilityId === HIAP_MEED_RANKING_CONTEXT_CAPABILITY) {
+      const parsed = hiapMeedRankingInputSchema.parse(input);
+      return buildMeedRankingContext(entry.sourceId, parsed.language, {
+        limit: parsed.limit,
+        offset: parsed.offset,
+      });
+    }
+    if (capabilityId === HIAP_MEED_OUTPUT_PLAN_CONTEXT_CAPABILITY) {
+      const parsed = hiapMeedOutputPlanInputSchema.parse(input);
+      return buildMeedOutputPlanContext(entry.sourceId, parsed.language, {
+        chapters: parsed.chapters,
+      });
     }
     return null;
   },
@@ -121,6 +176,8 @@ const nativeInputSourceAdapters: Record<string, NativeInputSourceAdapter> = {
   "hiap|hiap_selection|hiap_ranked_selection": hiapInventoryAdapter,
   "hiap|hiap_selection|hiap_unranked_selection": hiapInventoryAdapter,
   "hiap|hiap_action_plan|action_plan": hiapInventoryAdapter,
+  "hiap_meed|hiap_meed_ranking|hiap_meed_ranking": hiapMeedAdapter,
+  "hiap_meed|hiap_meed_output_plan|hiap_meed_output_plan": hiapMeedAdapter,
 };
 
 export function getNativeInputSourceAdapter(

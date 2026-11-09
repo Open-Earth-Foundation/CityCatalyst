@@ -33,6 +33,7 @@ const stopStream = jest.fn();
 const startStream = jest.fn(async () => undefined);
 let streamOptions: { onError?: (message: string, code?: string) => void };
 jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
+  STREAM_STALLED_CODE: "stream_stalled",
   useSSEStream: (options: typeof streamOptions) => {
     streamOptions = options;
     return { startStream, stopStream };
@@ -132,6 +133,15 @@ jest.unstable_mockModule("@/services/api", () => ({
     util: { upsertQueryEntries },
     useGetCityQuery: () => ({ data: { name: "Test City" } }),
     useGetConceptNoteApplicationContextQuery: getApplicationContext,
+    useGetConceptNoteChatThreadsQuery: () => ({
+      data: undefined,
+      refetch: jest.fn(),
+    }),
+    useStartConceptNoteChatMutation: () => [jest.fn(), { isLoading: false }],
+    useActivateConceptNoteChatThreadMutation: () => [
+      jest.fn(),
+      { isLoading: false },
+    ],
     useGetConceptNoteDraftQuery: getDraftQuery,
     useGetConceptNoteRunQuery: getRunQuery,
     useGetConceptNoteUploadStatusQuery: getUploadQuery,
@@ -192,6 +202,7 @@ function ChatHarness() {
   return (
     <ChakraProvider value={defaultSystem}>
       <Panel
+        cityId="city-1"
         contextStatus={contextStatus}
         composerRequest={composerRequest}
         draftOverviewPending={false}
@@ -621,13 +632,17 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(container.textContent).toBe("1,000,000 residents · 2025");
   });
 
-  it("enables the real chat composer after failed A is superseded by ready B, including reload", async () => {
+  it("enables sending after failed A is superseded by ready B, including reload", async () => {
     contextScenario = {
       progress_summary: {},
       uploads: [source("failed", "A")],
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("textarea")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
+    expect(
+      container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+        .disabled,
+    ).toBe(true);
 
     contextScenario = {
       uploads: [source("ready", "B"), source("failed", "A")],
@@ -676,7 +691,7 @@ describe("useConceptNoteWorkspaceData", () => {
     expect(container.querySelector("textarea")!.disabled).toBe(false);
   });
 
-  it("keeps pending uploads and the latest failed upload blocked", async () => {
+  it("allows composing but blocks sending for pending uploads and the latest failed upload", async () => {
     contextScenario = {
       uploads: [source("ready", "B"), source("processing", "A")],
       progress_summary: {
@@ -688,10 +703,22 @@ describe("useConceptNoteWorkspaceData", () => {
       },
     };
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("textarea")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
+    expect(
+      container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+        .disabled,
+    ).toBe(true);
+    await act(async () => container.querySelector("form")!.requestSubmit());
+    expect(startStream).not.toHaveBeenCalled();
     contextScenario.uploads = [source("failed", "B"), source("ready", "A")];
     await act(async () => root.render(<ChatHarness />));
-    expect(container.querySelector("textarea")!.disabled).toBe(true);
+    expect(container.querySelector("textarea")!.disabled).toBe(false);
+    expect(
+      container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+        .disabled,
+    ).toBe(true);
+    await act(async () => container.querySelector("form")!.requestSubmit());
+    expect(startStream).not.toHaveBeenCalled();
   });
 
   it("blocks chat until upload processing and the context bundle are both ready", async () => {

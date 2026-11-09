@@ -12,8 +12,10 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.utils.cnb_progress import emit_cnb_reasoning
+from app.utils.concept_note_context import omit_visual_html
 from app.utils.mlflow_logging import finish_tool_observation, start_tool_observation
 from app.utils.sse import format_sse
+from app.tools.concept_note_question import ConceptNoteQuestion
 
 if TYPE_CHECKING:
     # The orchestrator imports these helpers; avoid a runtime import cycle.
@@ -105,8 +107,38 @@ async def handle_run_item(
         async for event_bytes in handle_tool_output(handler, run_item):
             yield event_bytes
 
+    elif event_name == "message_output_created" and run_item is not None:
+        async for event_bytes in handle_partial_answer(handler, run_item):
+            yield event_bytes
+
     else:
         logger.debug("Unhandled run item event: %s", event_name)
+
+
+async def handle_partial_answer(
+    handler: StreamingHandler, run_item: Any
+) -> AsyncIterator[bytes]:
+    """Forward the turn-limit partial answer, which the SDK emits as a run item.
+
+    Normal assistant text already streamed as deltas, so only the message that
+    matches the stored partial answer is emitted here, once.
+    """
+    expected = handler.partial_answer_text
+    if not expected:
+        return
+    raw_item = getattr(run_item, "raw_item", None)
+    parts = getattr(raw_item, "content", None) or []
+    text = "".join(getattr(part, "text", "") or "" for part in parts)
+    if text != expected:
+        return
+    handler.partial_answer_text = None
+    handler.assistant_tokens.append(text)
+    yield format_sse(
+        {"index": handler.token_index, "content": text},
+        event="message",
+        id=str(handler.token_index),
+    ).encode("utf-8")
+    handler.token_index += 1
 
 
 async def handle_tool_called(
@@ -163,7 +195,8 @@ async def handle_tool_called(
         {
             "name": invocation.get("name", "unknown_tool"),
             "status": invocation.get("status", "executing"),
-            "arguments": invocation.get("arguments"),
+            # Visual HTML streams once, in the done event.
+            "arguments": omit_visual_html(invocation).get("arguments"),
         },
         event="tool_result",
     ).encode("utf-8")
@@ -228,6 +261,18 @@ async def handle_tool_output(
 
     # Handle token refresh and errors
     if parsed_output is not None:
+        if invocation.get("name") == "concept_note_ask_question":
+            question = ConceptNoteQuestion.model_validate(parsed_output)
+            content = ("\n\n" if handler.assistant_tokens else "") + question.message
+            handler.assistant_tokens.append(content)
+            yield format_sse(
+                {"index": handler.token_index, "content": content}, event="message"
+            ).encode("utf-8")
+            handler.token_index += 1
+            yield format_sse(
+                {"name": "concept_note_ask_question", **question.model_dump()},
+                event="tool_result",
+            ).encode("utf-8")
         async for event_bytes in handle_tool_result_metadata(handler, parsed_output):
             yield event_bytes
         stationary_energy_payload = build_stationary_energy_tool_result_payload(

@@ -7,7 +7,10 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
+from app.models.cnb.concept_note_draft import (
+    ConceptNoteChapterDraftOutput,
+    ConceptNoteDraftGapOutput,
+)
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteGap,
@@ -209,6 +212,39 @@ def _dropped_unanswered_gaps(
         and gap.field_key not in output_keys
         and gap.gap_id not in answered_gap_ids
     ]
+
+
+def _restore_dropped_gaps(
+    generated: ConceptNoteChapterDraftOutput,
+    dropped: list[ConceptNoteGap],
+) -> ConceptNoteChapterDraftOutput:
+    """Keep a redraft, but put back each unanswered gap it left out.
+
+    Each dropped question is appended to the chapter as its marker and kept in
+    the gap list, so the gap stays open and visible instead of losing the
+    whole redraft.
+    """
+    markers = "\n\n".join(f"[Information needed: {gap.question}]" for gap in dropped)
+    return ConceptNoteChapterDraftOutput.model_validate(
+        {
+            "body_markdown": f"{generated.body_markdown.rstrip()}\n\n{markers}",
+            "missing_information": [
+                *generated.missing_information,
+                *(
+                    ConceptNoteDraftGapOutput.model_validate(
+                        {
+                            "field_key": gap.field_key,
+                            "question": gap.question,
+                            "why_asking": gap.why_asking,
+                            "severity": gap.severity,
+                            "suggestions": gap.suggestions or [],
+                        }
+                    )
+                    for gap in dropped
+                ),
+            ],
+        }
+    )
 
 
 def _reconcile_evidence_gaps(

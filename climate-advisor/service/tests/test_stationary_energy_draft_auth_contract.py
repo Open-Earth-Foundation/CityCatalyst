@@ -28,7 +28,7 @@ from app.services.stationary_energy.stationary_energy_draft_service import (
     COMMIT_ACCEPTED_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
 )
-from tests.test_stationary_energy_drafts import (
+from tests.stationary_energy.fixtures import (
     _active_jwt,
     _auth_headers,
     _context_payload,

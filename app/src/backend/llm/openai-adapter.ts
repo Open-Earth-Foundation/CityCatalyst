@@ -12,7 +12,20 @@ import type {
 } from "./types";
 import { LLMError, LLMErrorCode } from "./types";
 
-function toOpenAIRole(role: LLMMessage["role"]): "system" | "user" | "assistant" {
+/**
+ * Reasoning models (gpt-5 family, o-series) accept only the default temperature and
+ * answer 400 "temperature does not support 0 with this model" to any other value.
+ * OpenRouter drops the parameter silently, the OpenAI API does not. The provider
+ * prefix (`openai/gpt-5.6-luna`) is ignored.
+ */
+export function supportsCustomTemperature(model: string): boolean {
+  const name = model.split("/").pop() ?? model;
+  return !/^(gpt-5|o\d)/i.test(name);
+}
+
+function toOpenAIRole(
+  role: LLMMessage["role"],
+): "system" | "user" | "assistant" {
   return role;
 }
 
@@ -21,7 +34,11 @@ function toOpenAIRole(role: LLMMessage["role"]): "system" | "user" | "assistant"
  */
 function normalizeError(err: unknown): LLMError {
   if (err instanceof LLMError) return err;
-  const openaiError = err as { status?: number; message?: string; code?: string };
+  const openaiError = err as {
+    status?: number;
+    message?: string;
+    code?: string;
+  };
   const status = openaiError?.status;
   const message = openaiError?.message ?? String(err);
   if (status === 401) {
@@ -56,7 +73,9 @@ export async function openaiComplete(
   const model = options.model ?? config.model;
   // Some models (e.g. gpt-4o-mini) only support default temperature (1); omit when 0.1 to avoid 400
   const sendTemperature =
-    options.temperature !== undefined && options.temperature !== 0.1;
+    options.temperature !== undefined &&
+    options.temperature !== 0.1 &&
+    supportsCustomTemperature(model);
 
   const body: OpenAI.Chat.ChatCompletionCreateParams = {
     model,

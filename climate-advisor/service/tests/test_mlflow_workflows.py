@@ -192,7 +192,13 @@ def test_cnb_interaction_uses_visible_workflow_tag_on_run_and_trace(
         finally:
             span_active = False
 
-    def fake_run_streamed(agent: object, runner_input: object, run_config: object):
+    def fake_run_streamed(
+        agent: object,
+        runner_input: object,
+        run_config: object,
+        max_turns: object = None,
+        error_handlers: object = None,
+    ):
         recorded["run_config"] = run_config
         return FakeStreamResult()
 

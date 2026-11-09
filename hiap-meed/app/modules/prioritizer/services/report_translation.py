@@ -44,13 +44,19 @@ def translate_output_plan(
     *,
     canonical_chapters: list[ReportChapterDraft],
     target_chapter_inputs: dict[str, list[ReportChapterInput]],
+    canonical_chapter_inputs: list[ReportChapterInput] | None = None,
 ) -> tuple[dict[str, list[ReportChapterDraft]], dict[str, object]]:
     """
     Translate all canonical chapters into every target language in one call.
 
     The target chapter inputs provide deterministic localized titles and
-    terminology. The returned drafts retain canonical source references and
-    fail closed when language, chapter coverage, order, or URLs drift.
+    terminology. When the canonical (English) chapter inputs are also given,
+    source-localized proper names (comparable project names) are paired with
+    their target-language form: the pairs are shown to the model and applied
+    deterministically afterwards, so a Spanish report never keeps the English
+    name of a project whose catalogue entry carries a Spanish one. The returned
+    drafts retain canonical source references and fail closed when language,
+    chapter coverage, order, or URLs drift.
     """
     if not target_chapter_inputs:
         return {}, {"status": "skipped", "reason": "no_target_languages"}
@@ -60,10 +66,15 @@ def translate_output_plan(
         canonical_chapters=canonical_chapters,
         target_chapter_inputs=target_chapter_inputs,
     )
+    proper_names_by_language = _localized_proper_names(
+        canonical_chapter_inputs=canonical_chapter_inputs,
+        target_chapter_inputs=target_chapter_inputs,
+    )
     protected_chapters, url_placeholders_by_chapter = _protect_urls(canonical_chapters)
     translation_payload = _build_translation_payload(
         canonical_chapters=protected_chapters,
         target_chapter_inputs=target_chapter_inputs,
+        proper_names_by_language=proper_names_by_language,
     )
     prompt = _build_prompt(translation_payload)
     system_prompt = SYSTEM_PROMPT_FILE_PATH.read_text(encoding="utf-8").strip()
@@ -116,6 +127,7 @@ def translate_output_plan(
                 canonical_chapters=canonical_chapters,
                 target_chapter_inputs=target_chapter_inputs,
                 url_placeholders_by_chapter=url_placeholders_by_chapter,
+                proper_names_by_language=proper_names_by_language,
             )
         except ValueError as error:
             attempts.append({"attempt": attempt, "validation_error": str(error)})
@@ -134,10 +146,63 @@ def translate_output_plan(
         "provider": "openai",
         "model": model_name,
         "target_languages": target_languages,
+        "proper_names_by_language": proper_names_by_language,
         "prompt_text": prompt,
         "parsed": parsed.model_dump(mode="json"),
         "attempts": attempts,
     }
+
+
+def _localized_proper_names(
+    *,
+    canonical_chapter_inputs: list[ReportChapterInput] | None,
+    target_chapter_inputs: dict[str, list[ReportChapterInput]],
+) -> dict[str, list[dict[str, str]]]:
+    """
+    Pair each source-localized proper name with its target-language form.
+
+    Comparable projects come from the catalogue with `project_name_i18n`; the
+    English chapter inputs carry the English name and each target-language
+    chapter input carries the localized one at the same row position. Only
+    names that actually differ are returned, longest first so that nested
+    names are substituted safely.
+    """
+    if not canonical_chapter_inputs:
+        return {}
+    canonical_by_key = {chapter.key: chapter for chapter in canonical_chapter_inputs}
+    pairs_by_language: dict[str, list[dict[str, str]]] = {}
+    for language, chapter_inputs in target_chapter_inputs.items():
+        seen: dict[str, str] = {}
+        for target_chapter in chapter_inputs:
+            canonical_chapter = canonical_by_key.get(target_chapter.key)
+            if canonical_chapter is None:
+                continue
+            source_rows = canonical_chapter.facts.get("comparable_projects")
+            target_rows = target_chapter.facts.get("comparable_projects")
+            if not isinstance(source_rows, list) or not isinstance(target_rows, list):
+                continue
+            for source_row, target_row in zip(source_rows, target_rows):
+                if not isinstance(source_row, dict) or not isinstance(target_row, dict):
+                    continue
+                source = str(source_row.get("project_name") or "").strip()
+                target = str(target_row.get("project_name") or "").strip()
+                if source and target and source != target:
+                    seen.setdefault(source, target)
+        if seen:
+            pairs_by_language[language] = [
+                {"source": source, "target": target}
+                for source, target in sorted(
+                    seen.items(), key=lambda item: len(item[0]), reverse=True
+                )
+            ]
+    return pairs_by_language
+
+
+def _apply_proper_names(text: str, pairs: list[dict[str, str]]) -> str:
+    """Replace every source proper name left in translated text by its target form."""
+    for pair in pairs:
+        text = text.replace(pair["source"], pair["target"])
+    return text
 
 
 def _validate_target_inputs(
@@ -160,6 +225,7 @@ def _build_translation_payload(
     *,
     canonical_chapters: list[ReportChapterDraft],
     target_chapter_inputs: dict[str, list[ReportChapterInput]],
+    proper_names_by_language: dict[str, list[dict[str, str]]] | None = None,
 ) -> dict[str, object]:
     """Build the model-visible canonical report and localized terminology payload."""
     return {
@@ -179,6 +245,7 @@ def _build_translation_payload(
             ]
             for language, chapter_inputs in target_chapter_inputs.items()
         },
+        "proper_names_by_language": proper_names_by_language or {},
     }
 
 
@@ -297,6 +364,7 @@ def _build_translated_drafts(
     canonical_chapters: list[ReportChapterDraft],
     target_chapter_inputs: dict[str, list[ReportChapterInput]],
     url_placeholders_by_chapter: dict[str, dict[str, str]],
+    proper_names_by_language: dict[str, list[dict[str, str]]] | None = None,
 ) -> dict[str, list[ReportChapterDraft]]:
     """Validate the translation batch and build localized report drafts."""
     expected_languages = set(target_chapter_inputs)
@@ -330,6 +398,13 @@ def _build_translated_drafts(
                 placeholders=url_placeholders_by_chapter[canonical.key],
                 chapter_key=canonical.key,
             )
+            name_pairs = (proper_names_by_language or {}).get(language, [])
+            if name_pairs:
+                translated_markdown = _apply_proper_names(translated_markdown, name_pairs)
+                translated_limitations = [
+                    _apply_proper_names(limitation, name_pairs)
+                    for limitation in translated_limitations
+                ]
             _validate_translated_content(
                 canonical=canonical,
                 translated_markdown=translated_markdown,

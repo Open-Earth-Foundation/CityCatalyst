@@ -1,6 +1,12 @@
 // backend/ccra/CcraService.ts
 import { logger } from "@/services/logger";
-import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
+import { groupBy } from "@/util/helpers";
+import {
+  CCRATopRisksData,
+  CCRATopRisksDataAdaptaBrazil,
+  Indicator,
+  RiskAssessment,
+} from "@/util/types";
 
 export interface TopRisksResult {
   topRisks: RiskAssessment[];
@@ -100,7 +106,7 @@ export class CcraService {
   /**
    * Process and get top risks with all necessary data
    */
-  public static processTopRisks(
+  public static processTopRisksFromImpactChain(
     data: CCRATopRisksData,
     count: number = 3,
     resilienceScore: number | null = null,
@@ -132,6 +138,78 @@ export class CcraService {
           resilienceScore,
           indicatorCount,
         );
+      });
+
+      // Sort by risk score and get top N
+      const topRisks = processedRisks
+        .sort((a, b) => b.risk_score - a.risk_score)
+        .slice(0, count);
+
+      logger.info(`Successfully processed ${topRisks.length} top risks`);
+
+      return {
+        topRisks,
+        cityName: data.cityName,
+        region: data.region,
+      };
+    } catch (error) {
+      logger.error({ error }, "Error processing top risks");
+      throw error;
+    }
+  }
+
+  /**
+   * Process and get top risks with all necessary data
+   */
+  public static processTopRisksFromAdaptaBrazil(
+    data: CCRATopRisksDataAdaptaBrazil,
+    count: number = 3,
+    _resilienceScore: number | null = null,
+  ): TopRisksResult {
+    try {
+      logger.info(`Processing top ${count} risks`);
+
+      if (!data.riskAssessment || data.riskAssessment.length === 0) {
+        logger.warn("No risk assessment data available");
+        return {
+          topRisks: [],
+          cityName: data.cityName,
+          region: data.region,
+        };
+      }
+
+      // resilience won't be applied to risk for the Adapta Brazil data source since it doesn't provide the weights needed to recalculate the risk score
+
+      // group risk assessment entries by risk_id to get the different component values for each risk
+      const groupedRisks = Object.values(
+        groupBy(data.riskAssessment, (risk) => risk.risk_id.toString()),
+      );
+
+      // remap to existing data schema from Impact Chain for compatibility
+      const processedRisks = groupedRisks.map((risks) => {
+        const risk = risks[0];
+        const risksByComponent = groupBy(
+          risks,
+          (risk) => risk.risk_component_name,
+        );
+        const hazard_score =
+          risksByComponent["Hazard"]?.[0]?.risk_component_value_numeric ?? 0;
+        const exposure_score =
+          risksByComponent["Exposure"]?.[0]?.risk_component_value_numeric ?? 0;
+        const vulnerability_score =
+          risksByComponent["Vulnerability"]?.[0]
+            ?.risk_component_value_numeric ?? 0;
+
+        return {
+          hazard: risk.risk_name,
+          keyimpact: risk.sector_name,
+          risk_score: risk.risk_value_numeric,
+          original_risk_score: risk.risk_value_numeric,
+          hazard_score,
+          exposure_score,
+          vulnerability_score,
+          original_vulnerability_score: vulnerability_score,
+        };
       });
 
       // Sort by risk score and get top N

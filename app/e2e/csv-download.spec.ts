@@ -1,10 +1,11 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
 import { parse } from "csv-parse/sync";
 import {
-  createCityAndInventoryThroughOnboarding,
+  createCityAndInventoryViaApi,
   dismissCookieConsent,
   dismissToasts,
   navigateToDataPage,
+  openAddEmissionModal,
 } from "./helpers";
 import * as fs from "fs";
 
@@ -195,11 +196,14 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal
     .getByLabel(/Select emission factor type/i)
     .selectOption("custom");
-  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  await addEmissionModal.getByLabel("CO₂ emission factor").fill("10");
+  await addEmissionModal.getByLabel("N₂O emission factor").fill("10");
+  await addEmissionModal.getByLabel("CH₄ emission factor").fill("1");
   await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByTestId("data-provider-input").fill("test");
+  await addEmissionModal
+    .getByLabel(/Data year/i)
+    .selectOption(String(new Date().getFullYear()));
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
@@ -247,9 +251,7 @@ async function addScope1ResidentialEmissions(
 
   await ensureMethodologySelected(page, scopeOnePanel);
 
-  await addActivityButton(page, scopeOnePanel).click();
-  const addEmissionModal = page.getByTestId("add-emission-modal");
-  await expect(addEmissionModal).toBeVisible();
+  const addEmissionModal = await openAddEmissionModal(page, scopeOnePanel);
 
   await addEmissionModal
     .getByLabel(/Building type/i)
@@ -273,20 +275,18 @@ test.describe("CSV Download", () => {
   test.setTimeout(120000);
 
   let cityId: string;
+  let cityName: string;
   let inventoryId: string;
 
+  // A fresh inventory per run (and per retry) keeps the downloads independent
+  // of data other specs add to a shared onboarding city.
   test.beforeAll(async ({ browser }) => {
-    test.setTimeout(180000);
-
     const context = await browser.newContext({
       storageState: "playwright/.auth/user.json",
     });
-    const page = await context.newPage();
-
-    const result = await createCityAndInventoryThroughOnboarding(page);
-    cityId = result.cityId;
-    inventoryId = result.inventoryId;
-
+    ({ cityId, cityName, inventoryId } = await createCityAndInventoryViaApi(
+      context.request,
+    ));
     await context.close();
   });
 
@@ -298,7 +298,7 @@ test.describe("CSV Download", () => {
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
-    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
+    await expect(heroCityName).toHaveText(cityName, { timeout: 10000 });
 
     const downloadActionCard = page.getByTestId("download-action-card");
     await expect(downloadActionCard).toBeVisible({ timeout: 60000 });

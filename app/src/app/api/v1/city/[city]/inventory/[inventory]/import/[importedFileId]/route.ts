@@ -35,6 +35,12 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *       - in: query
+ *         name: mappingOverrides
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: JSON-encoded mapping overrides, with the same shape as approval. Used to preview the current unsaved edits without persisting them.
  *     responses:
  *       200:
  *         description: Import file status and mappings.
@@ -151,6 +157,14 @@
  *                         Calendar year inferred from the uploaded file's tabular/eCRF data (first row with a year).
  *                         Omitted when processing has not run yet or no year could be inferred.
  *                         Clients may compare this with the inventory target year before continuing import.
+ *                     rowsOutsideInventoryType:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: |
+ *                         Distinct GPC reference numbers in the file that the inventory type does not
+ *                         require (e.g. Scope 3 rows in GPC BASIC). They are still imported but do not
+ *                         count toward completion. Empty unless the import is waiting for approval.
  *                     rowCount:
  *                       type: integer
  *                     processedRowCount:
@@ -176,8 +190,16 @@
 
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
+import { buildImportResult } from "@/backend/ImportResultBuilder";
+import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
+import {
+  exampleValuesFromRecord,
+  exampleValuesFromSingleRow,
+} from "@/util/example-values-from-source-row";
+import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import FileValidatorService from "@/backend/FileValidatorService";
 import {
   syncGHGIImportedInventorySource,
@@ -187,6 +209,7 @@ import { getInventoryPdfOcrStatus } from "@/backend/PdfOcrService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -364,6 +387,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
 
   // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
   let validationStepData = null;
+  let parsedSheets: { headers: string[]; rows: Record<string, unknown>[] }[] =
+    [];
   const pdfExtractedRows = Array.isArray(
     importedFile.mappingConfiguration?.rows,
   )
@@ -380,36 +405,17 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     if (useExtractedRowsDisplay) {
       // PDF or key-value shaped: use row keys as Field Name; label = Interpreted As / Map To
       const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
-      const toDisplayValue = (raw: unknown): string | null => {
-        if (raw == null || raw === "") return null;
-        if (typeof raw === "number" && Number.isFinite(raw)) return String(raw);
-        if (typeof raw === "string") return raw;
-        if (typeof raw === "boolean") return raw ? "TRUE" : "FALSE";
-        if (typeof raw === "object") {
-          const o = raw as Record<string, unknown>;
-          if (typeof o.error === "string" && o.error)
-            return `#${o.error.toUpperCase()}!`;
-          if (o.result !== undefined) return toDisplayValue(o.result);
-        }
-        return null;
-      };
+      const examples = exampleValuesFromRecord(
+        first,
+        PDF_IMPORT_FIELD_DEFS.map(({ key }) => key),
+      );
       const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(
         ({ key, label }) => {
-          const raw = first[key];
-          let exampleValue: string | null = toDisplayValue(raw);
-          if (exampleValue != null && exampleValue.length > 50)
-            exampleValue = exampleValue.substring(0, 50);
-          const hasMultipleValues = pdfExtractedRows.some(
-            (row) => row[key] != null && row[key] !== "" && row[key] !== raw,
-          );
-          if (exampleValue && hasMultipleValues) {
-            exampleValue = exampleValue + " (and others)";
-          }
           return {
             columnName: key,
             interpretedAs: label,
             status: "detected" as const,
-            exampleValue: exampleValue || "-",
+            exampleValue: examples[key] || "-",
           };
         },
       );
@@ -417,8 +423,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         totalColumnsDetected: detectedColumnsList.length,
         columns: detectedColumnsList,
         requiredMappings,
-        errors: [],
-        warnings: [],
+        errors: importedFile.validationResults?.errors || [],
+        warnings: importedFile.validationResults?.warnings || [],
       };
     } else if (importedFile.validationResults?.detectedColumns) {
       let detectedColumnsList: DetectedColumnRow[] = [];
@@ -440,10 +446,15 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             fileBuffer,
             importedFile.fileType,
           );
+          parsedSheets = parsedData.sheets;
 
           if (parsedData.primarySheet) {
             const headers = parsedData.primarySheet.headers;
             const rows = parsedData.primarySheet.rows || [];
+            const { values: exampleValues } = exampleValuesFromSingleRow(
+              headers,
+              rows,
+            );
 
             // Re-run detection live so fixes to aliases are immediately reflected
             // without needing to re-upload the file.
@@ -466,28 +477,11 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
                 }
               }
 
-              // Example value: first non-empty value in this column across rows (so totalCO2e etc. show when not in row 0)
-              let exampleValue: string | null = null;
-              for (const row of rows) {
-                const raw = row[header];
-                if (raw == null || raw === "") continue;
-                const display =
-                  typeof raw === "object"
-                    ? (raw as Record<string, unknown>).error
-                      ? `#${String((raw as Record<string, unknown>).error).toUpperCase()}!`
-                      : null
-                    : String(raw);
-                if (display != null && display !== "[object Object]") {
-                  exampleValue = display.substring(0, 50);
-                  break;
-                }
-              }
-
               detectedColumnsList.push({
                 columnName: header,
                 interpretedAs,
                 status,
-                exampleValue,
+                exampleValue: exampleValues[header],
               });
             }
           }
@@ -606,12 +600,23 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           }
         }
 
+        const detectedColumns = (importedFile.validationResults
+          ?.detectedColumns ?? {}) as Record<string, number | undefined>;
+        const sheet = parsedData.primarySheet;
+
         reviewStepData = {
           importSummary: {
             sourceFile: importedFile.originalFileName,
             formatDetected: importedFile.fileType.toUpperCase(),
-            rowsFound: importedFile.rowCount || 0,
+            rowsFound: sheet?.rows.length || importedFile.rowCount || 0,
             fieldsMapped: fieldMappings.length,
+            rowsSkippedEmptyEmissions: sheet
+              ? countRowsWithEmptyEmissionCells(
+                  sheet.headers,
+                  sheet.rows,
+                  detectedColumns,
+                )
+              : 0,
           },
           fieldMappings,
           mappingPreview,
@@ -622,9 +627,43 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     }
   }
 
+  // Rows the inventory type will not count (e.g. Scope 3 in GPC BASIC), so the
+  // review step can offer switching to GPC BASIC+ before approval.
+  let rowsOutsideInventoryType: string[] = [];
+  if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
+    const overridesParam = req.nextUrl.searchParams.get("mappingOverrides");
+    const mappingOverrides = overridesParam
+      ? z.record(z.unknown()).parse(JSON.parse(overridesParam))
+      : (importedFile.mappingConfiguration?.overrides as
+          Record<string, unknown> | undefined);
+    const { importResult } = await buildImportResult(
+      importedFile,
+      mappingOverrides,
+    );
+    const preview = await previewImportRows(
+      importResult,
+      inventory.inventoryType,
+    );
+    rowsOutsideInventoryType = [
+      ...new Set(
+        preview.rows
+          .filter(
+            (row) =>
+              row.status === "not-counted" &&
+              row.issue === "outside-inventory-type",
+          )
+          .map((row) => row.gpcRefNo)
+          .filter((ref): ref is string => ref !== null),
+      ),
+    ];
+  }
+
   const legacyValidation = importedFile.validationResults as {
     inferredYearFromFile?: number;
   } | null;
+  const inferredYearFromFile =
+    legacyValidation?.inferredYearFromFile ??
+    inferInventoryYearFromSheets(parsedSheets);
   const pdfOcr =
     importedFile.fileType === "pdf"
       ? await getInventoryPdfOcrStatus(
@@ -654,12 +693,14 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       // Step 4: Review and Confirm
       reviewData: reviewStepData,
       // Year inferred from file data (eCRF); used for target-year mismatch check
-      inferredYearFromFile: legacyValidation?.inferredYearFromFile ?? undefined,
+      inferredYearFromFile,
+      rowsOutsideInventoryType,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,
       processedRowCount: importedFile.processedRowCount,
       validationResults_legacy: importedFile.validationResults,
       mappingConfiguration: importedFile.mappingConfiguration,
+      reviewHistory: importedFile.reviewHistory,
       errorLog: importedFile.errorLog,
       created: importedFile.created,
       lastUpdated: importedFile.lastUpdated,

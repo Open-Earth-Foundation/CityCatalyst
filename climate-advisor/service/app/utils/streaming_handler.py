@@ -25,6 +25,7 @@ from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.cnb_progress import emit_cnb_progress, stream_cnb_events
 from app.utils.concept_note_context import (
     clean_cnb_history,
+    rendered_visuals,
 )
 from app.utils.conversation_observability import conversation_trace
 from app.utils.history_manager import load_conversation_history
@@ -102,6 +103,7 @@ class StreamingHandler:
 
         # Response state
         self.assistant_tokens: List[str] = []
+        self.partial_answer_text: Optional[str] = None
         self.tool_invocations: List[dict] = []
         self._pending_tool_observations: dict[str, Any] = {}
         self._tool_observation_records: List[dict] = []
@@ -421,8 +423,14 @@ class StreamingHandler:
         return format_sse(event_data, event="done").encode("utf-8")
 
     async def persist_message(self) -> bool:
-        """Persist the assistant message to database."""
-        if self.streaming_error or not self.assistant_tokens:
+        """Persist the assistant message to database.
+
+        A turn whose only output is a rendered visual is saved with empty text so
+        thread reload can still show the visual.
+        """
+        if self.streaming_error or not (
+            self.assistant_tokens or rendered_visuals(self.tool_invocations)
+        ):
             return False
 
         assistant_content = "".join(self.assistant_tokens)

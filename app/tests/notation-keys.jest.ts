@@ -27,6 +27,12 @@ describe("notation-keys", () => {
       ["reason-C", "confidential-information"],
       ["reason-IE", "included-elsewhere"],
       ["REASON-NE", "not-estimated"],
+      ["Not Occurring", "no-occurrance"],
+      ["Not Occuring", "no-occurrance"],
+      ["not estimated", "not-estimated"],
+      ["Included Elsewhere", "included-elsewhere"],
+      ["Confidential", "confidential-information"],
+      ["Confidential Information", "confidential-information"],
     ] as const)("maps %s → %s", (input, expected) => {
       expect(toCanonical(input)).toBe(expected);
     });

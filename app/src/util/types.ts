@@ -1,5 +1,6 @@
 import type Decimal from "decimal.js";
 import type { GeoJSON } from "geojson";
+import type { z } from "zod";
 import type {
   DataSourceWithRelations,
   GlobalAPISourceResponse,
@@ -17,6 +18,11 @@ import {
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import type {
+  conceptNoteCustomTemplateRequest,
+  conceptNoteFunderCreateRequest,
+} from "@/util/concept-note-funder";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -26,6 +32,7 @@ import type {
 import type { ActivityValue } from "@/models/ActivityValue";
 import {
   GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
   OrganizationPlanType,
 } from "@/util/enums";
 import type {
@@ -204,7 +211,14 @@ export interface InventoryDeleteQuery {
 
 export interface InventoryUpdateQuery {
   inventoryId: string;
-  data: { isPublic: boolean };
+  data:
+    | { isPublic: boolean }
+    | {
+        inventoryName: string;
+        year: number;
+        inventoryType: InventoryTypeEnum;
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum;
+      };
 }
 
 export type EmissionsFactorWithDataSources = EmissionsFactorAttributes & {
@@ -343,6 +357,8 @@ export interface UsersInvitesResponse {
   success: boolean;
   /** email -> invitation URL (returned so admins can copy if email delivery fails) */
   inviteUrls: Record<string, string>;
+  /** emails of invitees whose invitation email could not be sent */
+  emailFailures?: string[];
 }
 
 export interface OrganizationInviteResponse {
@@ -454,7 +470,14 @@ export interface ActivityDataByScope {
   percentage: number | null;
   datasource_id: string;
   datasource_name: string;
+  /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
+  datasource_source_type: string | null;
   activities?: ActivityValue[];
+}
+
+/** A stored value left out of BASIC/BASIC+ totals: percentage is always null */
+export interface OmittedActivityData extends ActivityDataByScope {
+  gpcReferenceNumber: string | null;
 }
 
 export type SectorBreakdownResponse = BreakdownByActivity & {
@@ -462,6 +485,8 @@ export type SectorBreakdownResponse = BreakdownByActivity & {
   byScope: ActivityDataByScope[];
   /** sum of non-negative (emissions-only) totalEmissions across byScope - % denominator */
   grossTotalEmissions: Decimal;
+  /** values shown apart from byScope; never part of a total or percentage */
+  omittedFromTotal: OmittedActivityData[];
 };
 
 export type InventoryValueWithActivityValues = InventoryValue & {
@@ -879,6 +904,64 @@ export interface CCRATopRisksData {
   region?: string;
 }
 
+export interface RiskAssessmentAdaptaBrazil {
+  timeframe: number;
+  sector_id: number;
+  sector_name: string;
+  risk_id: number;
+  risk_name: string;
+  risk_component_id: number;
+  risk_component_name: string;
+  risk_value_numeric: number;
+  risk_value_string: string;
+  risk_component_value_numeric: number;
+  risk_component_value_string: string;
+  null_type: string;
+  value_status: string;
+  spatial_support_level: string;
+}
+
+export interface IndicatorAdaptaBrazil {
+  timeframe: number;
+  sector_id: number;
+  sector_name: string;
+  risk_id: number;
+  risk_name: string;
+  risk_component_id: number;
+  risk_component_name: string;
+  risk_value_numeric: number;
+  risk_value_string: string;
+  risk_component_value_numeric: number;
+  risk_component_value_string: string;
+  null_type: string;
+  value_status: string;
+  spatial_support_level: string;
+  impact_chain_id_1: number;
+  impact_chain_name_1: string;
+  impact_chain_id_2: number;
+  impact_chain_name_2: string;
+  impact_chain_id_3: number;
+  impact_chain_name_3: string;
+  base_indicator_id: number;
+  base_indicator_name: string;
+  base_indicator_level: number;
+  impact_chain_1_value_numeric: number;
+  impact_chain_1_value_string: string;
+  impact_chain_2_value_numeric: number;
+  impact_chain_2_value_string: string;
+  impact_chain_3_value_numeric: number;
+  impact_chain_3_value_string: string;
+  base_indicator_value_numeric: number;
+  base_indicator_value_string: string;
+}
+
+export interface CCRATopRisksDataAdaptaBrazil {
+  riskAssessment: RiskAssessmentAdaptaBrazil[];
+  indicators?: IndicatorAdaptaBrazil[];
+  cityName?: string;
+  region?: string;
+}
+
 export interface ImportedFileResponse {
   id: string;
   userId: string;
@@ -934,11 +1017,99 @@ export interface ImportSummary {
   formatDetected: string;
   rowsFound: number;
   fieldsMapped: number;
+  /**
+   * Rows in the file that will not be imported because CO2, CH4, N2O, and
+   * total CO2e are empty and there is no notation key.
+   */
+  rowsSkippedEmptyEmissions?: number;
 }
 
 export interface FieldMapping {
   sourceColumn: string;
   mappedField: string;
+  sampleValue?: string | null;
+}
+
+/** Why an uploaded row is skipped on import, or imported without counting. */
+export type ImportRowIssue =
+  | "missing-gpc-reference"
+  | "gpc-reference-unresolved"
+  | "gpc-reference-unknown"
+  | "unknown-notation-key"
+  | "no-value-or-notation-key"
+  | "invalid-row"
+  | "outside-inventory-type"
+  | "omitted-from-total"
+  | "reported-apart-from-total"
+  | "direction-unconfirmed"
+  | "reference-conflict"
+  | "skipped-in-review";
+
+export interface ImportRowOutcome {
+  /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
+  rowNumber: number;
+  gpcRefNo: string | null;
+  /** Sector / subsector text when no GPC reference could be resolved. */
+  sourceLabel: string | null;
+  /** Notation key as written in the file, for unknown-notation-key rows. */
+  notationKey: string | null;
+  status: "skipped" | "not-counted" | "pending";
+  issue: ImportRowIssue;
+  /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
+  tonnes?: number | null;
+}
+
+export interface ImportRowPreview {
+  totalRows: number;
+  importedRows: number;
+  skippedRows: number;
+  /** Counts of skipped rows by reason, for the review summary line. */
+  skippedByIssue: Partial<Record<ImportRowIssue, number>>;
+  /** Tonnes CO2e of imported rows left out of BASIC and BASIC+ totals. */
+  omittedFromTotalTonnes: number;
+  /** Only rows that are skipped, held, or will not count toward completion. */
+  rows: ImportRowOutcome[];
+  /** Rows with no user decision yet. Approval is rejected while above zero. */
+  pendingRows: number;
+  /** Every row held for a decision, decided or not. */
+  reviewRows: ImportRowReview[];
+  scopeWarnings?: Array<{
+    rowNumber: number;
+    gpcRefNo: string;
+    scope: string | null;
+  }>;
+}
+
+/** A row the import cannot complete without a user decision. */
+export interface ImportRowReview {
+  /** Key of the row in `mappingConfiguration.overrides`. */
+  rowIndex: number;
+  issue: ImportRowIssue;
+  /** Tonnes CO2e; null on a notation key row. */
+  value: number | null;
+  notationKey: string | null;
+  suggestedRefNo: string;
+  chosenRefNo: string;
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  /** Scope stated on the row. */
+  scope: string | null;
+  /** Taxonomy scope of the reference, when the row states another one. */
+  expectedScope: number | null;
+  quote: string | null;
+  /**
+   * Found in the extracted text, or null when too short to check. Says nothing
+   * about what the quote means.
+   */
+  quoteFound: boolean | null;
+  page: number | null;
+  source: string | null;
+  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  finalScope?: string | null;
+  decisionToken?: string;
+  finalCatalogueScope?: number | null;
+  referenceOptions: string[];
 }
 
 export interface ReviewData {
@@ -962,12 +1133,16 @@ export interface ImportStatusResponse {
   reviewData: ReviewData | null;
   /** Year inferred from file data (eCRF); used to check match with inventory target year. */
   inferredYearFromFile?: number;
+  /** GPC references in the file the inventory type does not require (e.g. Scope 3 in GPC BASIC). */
+  rowsOutsideInventoryType?: string[];
   /**
    * Full mapping payload from the imported file (Path B/C).
    * Includes `extractionProgress` while AI chunk work is in flight.
    */
   mappingConfiguration?: {
     extractionProgress?: { current: number; total?: number };
+    /** Totals and dropped-row counts from PDF extraction; drives the review warning. */
+    extractionSummary?: ExtractionSummary;
     [key: string]: unknown;
   } | null;
   rowCount: number;
@@ -1088,6 +1263,7 @@ export interface ConceptNoteRun {
     status: ConceptNoteUploadStatus;
     filename: string;
     source_label?: string | null;
+    source_role?: ConceptNoteSourceRole;
     source_format: "pdf" | "markdown";
     page_count?: number | null;
     error_code?: string | null;
@@ -1102,11 +1278,26 @@ export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
 }
 
+export interface ConceptNoteChatThread {
+  thread_id: string;
+  title: string | null;
+  created_at: string;
+  last_message_at: string | null;
+  message_count: number;
+  preview: string | null;
+}
+
+export interface ConceptNoteChatThreadListResponse {
+  active_thread_id: string | null;
+  threads: ConceptNoteChatThread[];
+}
+
 export interface ConceptNoteTemplateChapter {
   chapter_ref: string;
   title: string;
   description?: string | null;
   required?: boolean | null;
+  required_fields?: string[] | null;
 }
 
 export interface ConceptNoteApplicationContext {
@@ -1127,6 +1318,8 @@ export interface ConceptNoteApplicationContext {
     chapter_schema: ConceptNoteTemplateChapter[];
     required_fields: string[];
   } | null;
+  /** Set only when the note uses its own template instead of a funder's. */
+  template_source?: ConceptNoteFundingAddedFrom | null;
   included_sources: {
     city: boolean;
     project: boolean;
@@ -1153,7 +1346,63 @@ export interface ConceptNoteFundingOpportunity {
   hazards: string[];
   interventions: string[];
   known_gaps: string[];
+  /** Set for programmes a user added from a document or by hand. */
+  added_from?: ConceptNoteFundingAddedFrom | null;
   template: ConceptNoteApplicationContext["template"];
+}
+
+export interface ConceptNoteFundingAddedFrom {
+  kind: "document" | "manual";
+  filename: string | null;
+}
+
+/** Reviewed funder, programme and template; see `conceptNoteFunderCreateRequest`. */
+export type ConceptNoteFunderCreateRequest = z.infer<
+  typeof conceptNoteFunderCreateRequest
+>;
+/** Reviewable `funders` columns. */
+export type ConceptNoteFunderFields = ConceptNoteFunderCreateRequest["funder"];
+/** Reviewable `funding_opportunities` columns. */
+export type ConceptNoteProgrammeFields =
+  ConceptNoteFunderCreateRequest["opportunity"];
+/** Reviewable `funder_templates` columns; `required_fields` is derived. */
+export type ConceptNoteTemplateFields =
+  ConceptNoteFunderCreateRequest["template"];
+
+/** A note's own template; see `conceptNoteCustomTemplateRequest`. */
+export type ConceptNoteCustomTemplateRequest = z.infer<
+  typeof conceptNoteCustomTemplateRequest
+>;
+
+/** Values extracted from a funder document, awaiting review. */
+export interface ConceptNoteFunderImportDraft extends Omit<
+  ConceptNoteFunderCreateRequest,
+  "import_id"
+> {
+  /** Field paths the document did not state, e.g. `funder.region`. */
+  missing: string[];
+}
+
+export interface ConceptNoteFunderImport {
+  import_id: string;
+  upload_id: string;
+  filename: string;
+  /** A funder import fills every section; a template import only `template`. */
+  kind: "funder" | "template";
+  status: "processing" | "ready" | "failed";
+  /** While processing: whether the upload is still converting to text. */
+  stage?: "converting" | "reading" | null;
+  error_code: string | null;
+  draft: ConceptNoteFunderImportDraft | null;
+}
+
+export interface ConceptNoteFunderImportResponse {
+  funder_import: ConceptNoteFunderImport | null;
+}
+
+export interface ConceptNoteFunderCreateResponse {
+  funder_id: string;
+  funding_opportunity_id: string;
 }
 
 export interface ConceptNoteFunder {
@@ -1171,6 +1420,9 @@ export interface ConceptNoteFundingSelection {
   selected_funding_opportunity_id: string | null;
   expected_funder_id: string | null;
   expected_funding_opportunity_id: string | null;
+  /** The note's own template; replaces the funder and programme. */
+  custom_template: ConceptNoteCustomTemplateRequest | null;
+  expected_custom_template_id: string | null;
   acknowledge_draft_review: boolean;
 }
 
@@ -1327,6 +1579,7 @@ export interface StartConceptNoteRunRequest {
 
 export type ConceptNoteUploadStatus =
   "queued" | "processing" | "ready" | "failed";
+export type ConceptNoteSourceRole = "reference" | "climate_action_plan";
 
 export interface ConceptNoteUploadResponse {
   uploadId: string;
@@ -1339,6 +1592,7 @@ export interface ConceptNoteUploadResponse {
   retryKind?: string | null;
   filename?: string;
   sourceLabel?: string | null;
+  sourceRole?: ConceptNoteSourceRole;
   receivedAt?: string;
   completedAt?: string | null;
 }

@@ -149,6 +149,37 @@ describe("Concept Note chat helpers", () => {
     ]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
   });
+
+  it("keeps valid stored visuals, including on a visual-only reply", () => {
+    const chart = { title: "Emissions", html: "<svg></svg>" };
+    expect(
+      readConceptNoteThreadMessages({
+        messages: [
+          {
+            message_id: "message-1",
+            role: "assistant",
+            text: "",
+            visuals: [
+              chart,
+              { title: "No html", html: "" },
+              { title: 3, html: "<p></p>" },
+              "<script></script>",
+              null,
+            ],
+          },
+          {
+            message_id: "message-2",
+            role: "assistant",
+            text: "Plain",
+            visuals: "not-a-list",
+          },
+        ],
+      }),
+    ).toEqual([
+      { id: "message-1", role: "assistant", text: "", visuals: [chart] },
+      { id: "message-2", role: "assistant", text: "Plain" },
+    ]);
+  });
 });
 
 describe("uploaded file rows", () => {
@@ -184,4 +215,27 @@ describe("uploaded file rows", () => {
       getConceptNoteUploadRowPresentation("failed", readyBundle, 2),
     ).toEqual({ labelKey: "status-failed", tone: "warning" });
   });
+});
+
+it("restores valid choices but ignores malformed and user-supplied choices", () => {
+  const messages = readConceptNoteThreadMessages({
+    messages: [
+      {
+        message_id: "1",
+        role: "assistant",
+        text: "Which?",
+        choices: ["Budget", "Scope"],
+      },
+      {
+        message_id: "2",
+        role: "assistant",
+        text: "Broken",
+        choices: ["Budget", " budget "],
+      },
+      { message_id: "3", role: "user", text: "Budget", choices: ["A", "B"] },
+    ],
+  });
+  expect(messages[0].choices).toEqual(["Budget", "Scope"]);
+  expect(messages[1].choices).toBeUndefined();
+  expect(messages[2].choices).toBeUndefined();
 });

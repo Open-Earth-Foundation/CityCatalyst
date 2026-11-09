@@ -1,4 +1,7 @@
 {
+  "page-not-found": "Page not found",
+  "page-not-found-description": "The page you’re looking for doesn’t exist or may have been moved. Check the address, or go back to your city to continue your work.",
+  "back-to-city": "Back to your city",
   "back-to-tools": "Back to tools",
   "invite-not-valid": "This invitation is not valid",
   "invite-not-valid-description": "The link you are using is either expired, claimed or you do not have permission to access it.\n Please ask the inviter to resend it to you.\n If you think this is a mistake, please",

@@ -1,4 +1,4 @@
-import { Box, Grid, HStack, Icon } from "@chakra-ui/react";
+import { Grid, HStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React from "react";
 import {
@@ -9,14 +9,8 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
-import { Field } from "@/components/ui/field";
-import { MdWarning } from "react-icons/md";
-import { BodyMedium } from "@/components/package/Texts/Body";
-import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
 import { Inputs } from "../activity-modal-body";
+import { ModalField, ModalFieldError, ModalSelect } from "./ModalField";
 
 interface DirectMeasureSectionProps {
   t: TFunction;
@@ -26,16 +20,20 @@ interface DirectMeasureSectionProps {
   setValue: UseFormSetValue<Inputs>;
 }
 
+const GASES = [
+  { gas: "CO2", label: "emissions-value-co2", testId: "co2-emission-factor" },
+  { gas: "N2O", label: "emissions-value-n2o", testId: "n2o-emission-factor" },
+  { gas: "CH4", label: "emissions-value-ch4", testId: "ch4-emission-factor" },
+] as const;
+
 export const DirectMeasureSection = ({
   t,
   control,
   errors,
   isDirectMeasure,
-  setValue,
 }: DirectMeasureSectionProps) => {
   const activityErrors = errors?.activity as
-    | Record<string, { message?: string } | undefined>
-    | undefined;
+    Record<string, { message?: string } | undefined> | undefined;
 
   if (!isDirectMeasure) {
     return null;
@@ -43,240 +41,61 @@ export const DirectMeasureSection = ({
 
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={5}>
-      <Field w="full" label={t("emissions-value-co2")}>
-        <HStack>
-          <FormattedNumberInput
-            testId="co2-emission-factor"
-            t={t}
-            control={control}
-            miniAddon
-            name="activity.CO2EmissionFactor"
-            defaultValue="0"
-            flex={2}
-          />
-          <Controller
-            rules={{ required: t("option-required") }}
-            control={control}
-            name="activity.co2EmissionFactorUnit"
-            render={({ field }) => (
-              <NativeSelectRoot
-                {...field}
-                borderRadius="4px"
-                borderWidth={
-                  activityErrors?.["co2EmissionFactorUnit"] ? "1px" : 0
-                }
-                border="inputBox"
-                h="42px"
-                shadow="1dp"
-                borderColor={
-                  activityErrors?.["co2EmissionFactorUnit"]
-                    ? "sentiment.negativeDefault"
-                    : ""
-                }
-                background={
-                  activityErrors?.["co2EmissionFactorUnit"]
-                    ? "sentiment.negativeOverlay"
-                    : ""
-                }
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-                bgColor="base.light"
-                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
-                  const value = (e.target as unknown as HTMLSelectElement).value;
-                  field.onChange(value);
-                  setValue("activity.co2EmissionFactorUnit", value);
-                }}
-              >
-                <NativeSelectField
-                  placeholder={t("select-unit")}
-                  defaultValue={field.value}
-                >
-                  <option value="units-kilograms">
-                    {t("units-kilograms")}
-                  </option>
-                  <option value="units-tonnes">{t("units-tonnes")}</option>
-                </NativeSelectField>
-              </NativeSelectRoot>
+      {GASES.map(({ gas, label, testId }) => {
+        const amountKey = `${gas}EmissionFactor`;
+        const unitKey = `${gas.toLowerCase()}EmissionFactorUnit`;
+        return (
+          <ModalField key={gas} w="full" label={t(label)} required>
+            <HStack>
+              <FormattedNumberInput
+                inputHeight="48px"
+                testId={testId}
+                t={t}
+                control={control}
+                miniAddon
+                name={`activity.${amountKey}`}
+                placeholder={t("input-emissions")}
+                invalid={!!activityErrors?.[amountKey]}
+                rules={{ required: t("emissions-value-required") }}
+                flex={2}
+              />
+              <Controller
+                rules={{ required: t("unit-required") }}
+                control={control}
+                name={`activity.${unitKey}`}
+                render={({ field }) => (
+                  <ModalSelect
+                    placeholder={t("select-unit")}
+                    invalid={!!activityErrors?.[unitKey]}
+                    name={field.name}
+                    value={field.value ?? ""}
+                    onBlur={field.onBlur}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      field.onChange(e.target.value)
+                    }
+                  >
+                    <option value="units-kilograms">
+                      {t("units-kilograms")}
+                    </option>
+                    <option value="units-tonnes">{t("units-tonnes")}</option>
+                  </ModalSelect>
+                )}
+              />
+            </HStack>
+            {(activityErrors?.[amountKey] || activityErrors?.[unitKey]) && (
+              <ModalFieldError
+                message={t(
+                  activityErrors?.[amountKey] && activityErrors?.[unitKey]
+                    ? "emissions-value-and-unit-required"
+                    : activityErrors?.[amountKey]
+                      ? "emissions-value-required"
+                      : "unit-required",
+                )}
+              />
             )}
-          />
-        </HStack>
-        {activityErrors?.["CO2EmissionFactor"] && (
-          <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <Icon as={MdWarning} color="sentiment.negativeDefault" />
-            <BodyMedium>
-              {t(activityErrors?.["CO2EmissionFactor"]?.message as string)}
-            </BodyMedium>
-          </Box>
-        )}
-        {activityErrors?.["co2EmissionFactorUnit"] &&
-          !activityErrors?.["CO2EmissionFactor"] && (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium>
-                {activityErrors?.["co2EmissionFactorUnit"]?.message}
-              </BodyMedium>
-            </Box>
-          )}
-      </Field>
-      <Field w="full" label={t("emissions-value-n2o")}>
-        <HStack>
-          <FormattedNumberInput
-            testId="n2o-emission-factor"
-            t={t}
-            control={control}
-            miniAddon
-            name="activity.N2OEmissionFactor"
-            defaultValue="0"
-            flex={2}
-          />
-          <Controller
-            rules={{ required: t("option-required") }}
-            control={control}
-            name="activity.n2oEmissionFactorUnit"
-            render={({ field }) => (
-              <NativeSelectRoot
-                {...field}
-                borderRadius="4px"
-                borderWidth={
-                  activityErrors?.["n2oEmissionFactorUnit"] ? "1px" : 0
-                }
-                border="inputBox"
-                h="42px"
-                shadow="1dp"
-                borderColor={
-                  activityErrors?.["n2oEmissionFactorUnit"]
-                    ? "sentiment.negativeDefault"
-                    : ""
-                }
-                background={
-                  activityErrors?.["n2oEmissionFactorUnit"]
-                    ? "sentiment.negativeOverlay"
-                    : ""
-                }
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-                bgColor="base.light"
-                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
-                  const value = (e.target as unknown as HTMLSelectElement).value;
-                  field.onChange(value);
-                  setValue("activity.n2oEmissionFactorUnit", value);
-                }}
-              >
-                <NativeSelectField
-                  placeholder={t("select-unit")}
-                  defaultValue={field.value}
-                >
-                  <option value="units-kilograms">
-                    {t("units-kilograms")}
-                  </option>
-                  <option value="units-tonnes">{t("units-tonnes")}</option>
-                </NativeSelectField>
-              </NativeSelectRoot>
-            )}
-          />
-        </HStack>
-        {activityErrors?.["N2OEmissionFactor"] && (
-          <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <Icon as={MdWarning} color="sentiment.negativeDefault" />
-            <BodyMedium>
-              {activityErrors?.["N2OEmissionFactor"]?.message}
-            </BodyMedium>
-          </Box>
-        )}
-        {activityErrors?.["n2oEmissionFactorUnit"] &&
-          !activityErrors?.["N2OEmissionFactor"] && (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium>
-                {activityErrors?.["n2oEmissionFactorUnit"]?.message}
-              </BodyMedium>
-            </Box>
-          )}
-      </Field>
-      <Field w="full" label={t("emissions-value-ch4")}>
-        <HStack>
-          <FormattedNumberInput
-            testId="ch4-emission-factor"
-            t={t}
-            control={control}
-            miniAddon
-            name="activity.CH4EmissionFactor"
-            defaultValue="0"
-            flex={2}
-          />
-          <Controller
-            rules={{ required: t("option-required") }}
-            control={control}
-            name="activity.ch4EmissionFactorUnit"
-            render={({ field }) => (
-              <NativeSelectRoot
-                {...field}
-                borderRadius="4px"
-                borderWidth={
-                  activityErrors?.["ch4EmissionFactorUnit"] ? "1px" : 0
-                }
-                border="inputBox"
-                h="42px"
-                shadow="1dp"
-                borderColor={
-                  activityErrors?.["ch4EmissionFactorUnit"]
-                    ? "sentiment.negativeDefault"
-                    : ""
-                }
-                background={
-                  activityErrors?.["ch4EmissionFactorUnit"]
-                    ? "sentiment.negativeOverlay"
-                    : ""
-                }
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-                bgColor="base.light"
-                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
-                  const value = (e.target as unknown as HTMLSelectElement).value;
-                  field.onChange(value);
-                  setValue("activity.ch4EmissionFactorUnit", value);
-                }}
-              >
-                <NativeSelectField
-                  placeholder={t("select-unit")}
-                  defaultValue={field.value}
-                >
-                  <option value="units-kilograms">
-                    {t("units-kilograms")}
-                  </option>
-                  <option value="units-tonnes">{t("units-tonnes")}</option>
-                </NativeSelectField>
-              </NativeSelectRoot>
-            )}
-          />
-        </HStack>
-        {activityErrors?.["CH4EmissionFactor"] && (
-          <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <Icon as={MdWarning} color="sentiment.negativeDefault" />
-            <BodyMedium>
-              {activityErrors?.["CH4EmissionFactor"]?.message}
-            </BodyMedium>
-          </Box>
-        )}
-        {activityErrors?.["ch4EmissionFactorUnit"] &&
-          !activityErrors?.["CH4EmissionFactor"] && (
-            <Box display="flex" gap="6px" alignItems="center" mt="6px">
-              <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium>
-                {activityErrors?.["ch4EmissionFactorUnit"]?.message}
-              </BodyMedium>
-            </Box>
-          )}
-      </Field>
+          </ModalField>
+        );
+      })}
     </Grid>
   );
 };

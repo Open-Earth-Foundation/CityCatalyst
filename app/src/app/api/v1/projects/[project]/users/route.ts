@@ -98,7 +98,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  UserService.validateIsAdminOrOrgAdmin(session, project?.organizationId);
+  await UserService.validateIsAdminOrOrgAdmin(session, project?.organizationId);
 
   // Fetch users associated with the project
   const users = await UserService.findUsersInProject(projectId as string);
@@ -120,7 +120,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
+  await UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
 
   if (!email) {
     throw new createHttpError.BadRequest("user-not-found");

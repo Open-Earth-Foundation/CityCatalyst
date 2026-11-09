@@ -278,6 +278,40 @@ it("retries a failed drafting overview as an overview turn", async () => {
   expect(refreshDraft).toHaveBeenCalledTimes(1);
 });
 
+it("attaches a rendered visual once to the reply, even without text", async () => {
+  await act(async () => chat.sendMessage("Chart the emissions"));
+  // The done event's merged tool payload; re-reporting it must not duplicate.
+  const toolResult = {
+    name: "concept_note_render_visual",
+    status: "success",
+    tool_call_id: "call-1",
+    // The HTML arrives only in the call arguments, not in the result.
+    arguments: { title: "Emissions", html: "<svg></svg>" },
+    action: "concept_note.visual.render",
+    success: true,
+    data: { title: "Emissions", html_chars: 11 },
+    error_code: null,
+  };
+  await act(async () => {
+    streamOptions.onToolResult?.(toolResult);
+    streamOptions.onToolResult?.(toolResult);
+    streamOptions.onToolResult?.({
+      ...toolResult,
+      arguments: { title: "Failed", html: "<p></p>" },
+      success: false,
+      data: null,
+    });
+    streamOptions.onComplete?.();
+  });
+
+  expect(chat.messages.at(-1)).toMatchObject({
+    role: "assistant",
+    text: "",
+    visuals: [{ title: "Emissions", html: "<svg></svg>" }],
+  });
+  expect(chat.messages.at(-1)?.visuals).toHaveLength(1);
+});
+
 it("reloads a failed history on retry", async () => {
   await act(async () => root.unmount());
   historyOk = false;

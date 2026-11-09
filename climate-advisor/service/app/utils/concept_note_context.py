@@ -1,4 +1,7 @@
-"""Resolve backend Concept Note scope and project identifier-free model context."""
+"""Resolve backend Concept Note scope and project identifier-free model context.
+
+Also reads rendered chat visuals from stored tool calls and compacts them for replay.
+"""
 
 from __future__ import annotations
 
@@ -103,6 +106,9 @@ def clean_cnb_history(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     cleaned = []
     for message in messages:
         content = message.get("content")
+        # A visual-only turn is stored with empty text; its tool output follows.
+        if message.get("role") == "assistant" and content == "":
+            continue
         if (
             message.get("role") == "system"
             and isinstance(content, str)
@@ -135,6 +141,74 @@ def clean_cnb_history(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
             }
         cleaned.append(message)
     return cleaned
+
+
+RENDER_VISUAL_TOOL_NAME = "concept_note_render_visual"
+VISUAL_RENDER_ACTION = "concept_note.visual.render"
+
+
+def rendered_visuals(tools_used: Any) -> list[dict[str, str]]:
+    """Return the title and HTML of each successful visual in stored tool calls.
+
+    The HTML is read from the call arguments, its only stored copy; earlier
+    results also carried it in `data.html`.
+    """
+    visuals = []
+    for invocation in tools_used if isinstance(tools_used, list) else []:
+        if (
+            not isinstance(invocation, dict)
+            or invocation.get("name") != RENDER_VISUAL_TOOL_NAME
+        ):
+            continue
+        result = invocation.get("result_json")
+        if not isinstance(result, dict) or result.get("action") != VISUAL_RENDER_ACTION:
+            continue
+        data = result.get("data")
+        arguments = invocation.get("arguments")
+        html = arguments.get("html") if isinstance(arguments, dict) else None
+        if not isinstance(html, str) and isinstance(data, dict):
+            html = data.get("html")
+        if (
+            result.get("success") is True
+            and isinstance(data, dict)
+            and isinstance(data.get("title"), str)
+            and isinstance(html, str)
+            and html
+        ):
+            visuals.append({"title": data["title"], "html": html})
+    return visuals
+
+
+def omit_visual_html(invocation: dict[str, Any]) -> dict[str, Any]:
+    """Copy a replayed visual tool call with its HTML replaced by a placeholder.
+
+    Used for the model-facing replay and the live tool_called event; the stored
+    message row and the SSE done event keep the HTML in the arguments for the
+    chat to render. The result branch covers rows saved before results dropped it.
+    """
+    if invocation.get("name") != RENDER_VISUAL_TOOL_NAME:
+        return invocation
+    compact = dict(invocation)
+
+    # The model already wrote this HTML once; never replay it as arguments.
+    arguments = invocation.get("arguments")
+    if isinstance(arguments, dict) and isinstance(arguments.get("html"), str):
+        compact["arguments"] = {
+            **arguments,
+            "html": f"[{len(arguments['html'])} chars omitted]",
+        }
+    elif isinstance(arguments, str):
+        compact["arguments"] = f"[{len(arguments)} chars omitted]"
+
+    result = invocation.get("result")
+    data = result.get("data") if isinstance(result, dict) else None
+    if isinstance(data, dict) and isinstance(data.get("html"), str):
+        placeholder = (
+            f"[visual '{data.get('title')}' rendered, "
+            f"{len(data['html'])} chars omitted]"
+        )
+        compact["result"] = {**result, "data": {**data, "html": placeholder}}
+    return compact
 
 
 def extract_concept_note_run_id(*containers: Any) -> str | None:

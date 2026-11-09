@@ -532,7 +532,7 @@ describe("8. reference against the scope column", () => {
     expect(canonicalGpcRefNo("I.4.4", "1")).toBe("I.4.4");
   });
 
-  it("resolves the dropped reference from sub-sector and scope", async () => {
+  it("preserves a conflicting extracted reference for human review", async () => {
     complete.mockResolvedValue({
       content: JSON.stringify({
         rows: [
@@ -552,7 +552,8 @@ describe("8. reference against the scope column", () => {
     const { rows } = await extractInventoryFromDocument("Table A-1 only", {
       targetYear: 2021,
     });
-    expect(rows[0].gpcRefNo).toBe("I.1.2");
+    expect(rows[0].gpcRefNo).toBe("I.1.1");
+    expect(rows[0].scope).toBe("2");
   });
 });
 

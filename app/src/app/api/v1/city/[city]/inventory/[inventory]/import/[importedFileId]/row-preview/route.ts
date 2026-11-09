@@ -91,6 +91,9 @@
  *                               - outside-inventory-type
  *                               - omitted-from-total
  *                               - reported-apart-from-total
+ *                               - direction-unconfirmed
+ *                               - reference-conflict
+ *                               - skipped-in-review
  *       400:
  *         description: File is not waiting for approval.
  *       401:

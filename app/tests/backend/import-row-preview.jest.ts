@@ -1,4 +1,12 @@
-import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import { db } from "@/models";
 import ECRFImportService, {
   countRowsSkippedEmptyEmissions,
   type ECRFImportResult,
@@ -181,6 +189,11 @@ describe("previewImportRows", () => {
 });
 
 describe("ECRFImportService.processECRFFile", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(db.models.Scope, "findAll")
+      .mockResolvedValue([{ scopeId: "scope-1", scopeName: "1" }] as never);
+  });
   it("reads activity_name as fuel and ignores gas columns as emission factors", async () => {
     jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
       sectorId: "sector-I",

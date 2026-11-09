@@ -2295,7 +2295,7 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          mappingOverrides: Record<string, string>;
+          mappingOverrides: Record<string, unknown>;
         }
       >({
         query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({

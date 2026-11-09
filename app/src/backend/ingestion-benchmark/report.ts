@@ -42,8 +42,30 @@ export type Prices = {
   ocrPerPage?: number;
 };
 
+export type FailureMode =
+  | "scored"
+  | "ocr_error"
+  | "extraction_error"
+  | "truncated"
+  | "zero_rows"
+  | "approve_error"
+  | "readback_error";
+
+export type Block = "validated" | "held-out" | "dev";
+
+export type StageMs = {
+  ocr: number | null;
+  extraction: number | null;
+  import: number | null;
+  total: number;
+};
+
 export type RunEntry = {
   run: number;
+  failureMode: FailureMode;
+  zeroRowsReason?: string;
+  warnings: string[];
+  stageMs: StageMs;
   ok: boolean;
   ms: number;
   message?: string;
@@ -67,6 +89,11 @@ export type CaseResult = {
   productFlowFailsAtOcr: boolean;
   runs: RunEntry[];
   stableTotal: boolean;
+  block: Block;
+  /** Counts toward the headline recall; null when the key is not a value-row case. */
+  eligible: boolean | null;
+  /** Scored on the total only, not row by row. */
+  totalOnly: boolean;
   /** OCR runs in every PDF run (each run is a new upload); pages are summed over the runs. */
   ocrUsage?: Tokens & { pages: number | null };
 };

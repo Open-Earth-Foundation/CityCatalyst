@@ -40,6 +40,9 @@ const key: KeyFile = {
 
 const run = (n: number, partial: Partial<RunEntry> = {}): RunEntry => ({
   run: n,
+  failureMode: "scored",
+  warnings: [],
+  stageMs: { ocr: null, extraction: null, import: null, total: 1000 },
   ok: true,
   ms: 1000,
   total: 100,
@@ -56,6 +59,9 @@ const result = (runs: RunEntry[]): CaseResult => ({
   productFlowFailsAtOcr: false,
   runs,
   stableTotal: false,
+  block: "validated",
+  eligible: true,
+  totalOnly: false,
 });
 
 describe("stableTotal", () => {

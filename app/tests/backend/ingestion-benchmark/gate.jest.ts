@@ -45,6 +45,9 @@ const score = (partial: Partial<FileScore>): FileScore => ({
 
 const run = (n: number, partial: Partial<RunEntry> = {}): RunEntry => ({
   run: n,
+  failureMode: "scored",
+  warnings: [],
+  stageMs: { ocr: null, extraction: null, import: null, total: 30_000 },
   ok: true,
   ms: 30_000,
   extractedRows: 10,
@@ -64,6 +67,9 @@ const result = (runs: RunEntry[], pages = 10): CaseResult => ({
   productFlowFailsAtOcr: false,
   runs,
   stableTotal: true,
+  block: "validated",
+  eligible: true,
+  totalOnly: false,
   ocrUsage: { calls: 0, promptTokens: 0, completionTokens: 0, pages },
 });
 

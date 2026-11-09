@@ -56,9 +56,15 @@ function result(id: string, recall: number, ocrFails = false): CaseResult {
     ocr: { ok: !ocrFails, code: ocrFails ? "malformed_response" : null },
     productFlowFailsAtOcr: ocrFails,
     stableTotal: true,
+    block: "validated",
+    eligible: true,
+    totalOnly: false,
     runs: [
       {
         run: 1,
+        failureMode: "scored" as const,
+        warnings: [] as string[],
+        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
         ok: true,
         ms: 20_000,
         extractedRows: 10,
@@ -91,6 +97,9 @@ describe("validated and held-out groups", () => {
     runs: [
       {
         run: 1,
+        failureMode: "scored" as const,
+        warnings: [] as string[],
+        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
         ok: false,
         ms: 1,
         extractedRows: 0,
@@ -110,8 +119,24 @@ describe("validated and held-out groups", () => {
     const within = score({ totalWithinTolerance: true });
     const outside = score({ totalWithinTolerance: false });
     const runs = (first: FileScore, second: FileScore) => [
-      { run: 1, ok: true, ms: 1, score: first },
-      { run: 2, ok: true, ms: 1, score: second },
+      {
+        run: 1,
+        failureMode: "scored" as const,
+        warnings: [] as string[],
+        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
+        ok: true,
+        ms: 1,
+        score: first,
+      },
+      {
+        run: 2,
+        failureMode: "scored" as const,
+        warnings: [] as string[],
+        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
+        ok: true,
+        ms: 1,
+        score: second,
+      },
     ];
     const group = groupSummary([
       { ...result("A", 0.5), runs: runs(within, within) },

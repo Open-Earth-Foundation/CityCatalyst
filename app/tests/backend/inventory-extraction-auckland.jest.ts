@@ -217,6 +217,10 @@ describe("Auckland 2021 extraction", () => {
     const reconciliation = reconcileExtraction(summary);
     expect(reconciliation?.reportedTotal).toBe(9559215);
     expect(reconciliation?.mismatch).toBe(false);
+    // CC-1163: the fixture prints the total.
+    expect(
+      summary.reportedTotals.find((t) => t.value === 9559215)?.inText,
+    ).toBe(true);
   });
 
   it("keeps scope 1, 2 and 3 on their own GPC references", async () => {
@@ -605,10 +609,12 @@ describe("references copied from the real model output (CC-1008 live run)", () =
 describe("page-by-page extraction with reconciliation (CC-1008 amendment)", () => {
   const numbers = (n: number) =>
     Array.from({ length: n }, (_, i) => `${100 + i},${100 + i}`).join(" ");
+  // CC-1163: a total is a target only when the page prints it; table pages print
+  // the Auckland total, as the real report does.
   const page = (n: number, title: string, withNumbers = true) =>
     `<!-- page: ${n} -->
 ${title}
-${withNumbers ? numbers(10) : "Prose only."}
+${withNumbers ? `${numbers(10)}\nTOTAL 9,559,215` : "Prose only."}
 `;
 
   const grandTotal = {

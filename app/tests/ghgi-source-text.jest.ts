@@ -1,4 +1,9 @@
-import { detectNumberStyle, parseNumberString } from "@/util/GHGI/source-text";
+import {
+  detectNumberStyle,
+  isValueInText,
+  numbersInText,
+  parseNumberString,
+} from "@/util/GHGI/source-text";
 import type { NumberStyle } from "@/util/GHGI/source-text";
 
 describe("parseNumberString", () => {
@@ -38,5 +43,35 @@ describe("detectNumberStyle", () => {
   });
   it("is unknown on a tie", () => {
     expect(detectNumberStyle("1.234.567 and 1,234,567")).toBe("unknown");
+  });
+});
+
+describe("isValueInText", () => {
+  it.each<[number, string, boolean]>([
+    [9559215, "| TOTAL | 9,559,215 |", true],
+    [9559215, "Total 9,559,215.4", true],
+    // Scaled: the model converted kt to tonnes itself.
+    [9559215, "(kt CO2e) Total 9,559.2", true],
+    [-811512, "Forestry (811,512)", true],
+    [-603983, "AFOLU −603,983", true],
+    [5000000, "Total 4,876,120", false],
+    [9559215, "about 9.56 million", false],
+    // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.
+    [2000000, "CO2e emissions", false],
+  ])("finds %s in %j: %s", (raw, text, expected) => {
+    expect(isValueInText(raw, text)).toBe(expected);
+  });
+});
+
+describe("numbersInText", () => {
+  it("reads a space-grouped number merged and token by token", () => {
+    const values = numbersInText("9 559 215", "unknown").map((n) => n.value);
+    expect(values).toEqual(expect.arrayContaining([9559215, 9, 559, 215]));
+  });
+
+  it("gives the place value of the last digit as step", () => {
+    expect(numbersInText("9,559.2", "english")).toEqual([
+      { value: 9559.2, step: 0.1 },
+    ]);
   });
 });

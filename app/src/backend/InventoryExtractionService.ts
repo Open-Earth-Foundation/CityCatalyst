@@ -20,6 +20,7 @@ import {
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
+  isValueInText,
   parseNumberString,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
@@ -482,8 +483,9 @@ const EMPTY_RESULT: ExtractionResult = {
  */
 function ownTotalDeviation({ rows, summary }: ExtractionResult): number | null {
   if (!rows.some((row) => row.scope && row.gpcRefNo)) return null;
+  // A total not printed on the page is no reason to ask again (CC-1163).
   const totals = summary.reportedTotals.filter(
-    (t) => isGrandTotal(t) && t.value !== 0,
+    (t) => isGrandTotal(t) && t.value !== 0 && t.inText !== false,
   );
   if (totals.length === 0) return null;
   return Math.min(
@@ -985,7 +987,10 @@ async function extractRowsFromDocument(
               await extractSegment(page.text, yearInstruction, false),
             ).map((row) => ({ ...row, page: page.page })),
             year,
-            { deferYearAssumption: true },
+            {
+              deferYearAssumption: true,
+              source: { text: page.text, kind: "page" },
+            },
           );
         let result: ExtractionResult;
         try {
@@ -1053,6 +1058,7 @@ async function extractRowsFromDocument(
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
+        { source: { text: documentContent, kind: "document" } },
       );
       return checkExtractionResult(
         withFailed({
@@ -1085,7 +1091,9 @@ async function extractRowsFromDocument(
     options,
   );
   return checkExtractionResult(
-    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
+      source: { text: documentContent, kind: "document" },
+    }),
     allRows.length,
     targetYear,
   );
@@ -1906,12 +1914,20 @@ function repeatKey(row: ExtractedRow): string {
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
  */
+/** The text the model read: one page, or the whole document on the chunk path. */
+export type FinalizeSource = { text: string; kind: "page" | "document" };
+
 export type FinalizeOptions = {
   /**
    * Keep year-less rows as they are when no row names a year, instead of assigning
    * the target year. Page selection decides later, with every page in view.
    */
   deferYearAssumption?: boolean;
+  /**
+   * Source text of the rows. When set, each reported total records whether its
+   * value is printed there (`inText`).
+   */
+  source?: FinalizeSource;
 };
 
 export function finalizeExtractedRows(
@@ -1925,6 +1941,27 @@ export function finalizeExtractedRows(
   };
   const reportedTotals: ReportedTotal[] = [];
   const converted: ExtractedRow[] = [];
+  const source = options?.source;
+  const sourceStyle = source ? detectNumberStyle(source.text) : undefined;
+  // Raw totalCO2e (before the unit multiplier) of each converted row, for the
+  // in-text check of hidden row totals.
+  const rawValues = new Map<ExtractedRow, number | null>();
+  const inText = (
+    raw: number | null | undefined,
+    label: string,
+    value: number,
+    page: number | null | undefined,
+  ): { inText?: boolean } => {
+    if (!source || raw == null) return {};
+    const found = isValueInText(raw, source.text, sourceStyle);
+    if (!found) {
+      logger.warn(
+        { label, value, page: page ?? null },
+        "Reported total not found in source text",
+      );
+    }
+    return { inText: found };
+  };
 
   for (const row of rows) {
     const multiplier = tonnesMultiplier(row.unit);
@@ -1962,22 +1999,25 @@ export function finalizeExtractedRows(
         scaled.totalCO2e != null &&
         reportedTotals.length < MAX_REPORTED_TOTALS
       ) {
+        const label =
+          scaled.category?.trim() ||
+          scaled.subsector?.trim() ||
+          scaled.sector?.trim() ||
+          rowType;
         reportedTotals.push({
-          label:
-            scaled.category?.trim() ||
-            scaled.subsector?.trim() ||
-            scaled.sector?.trim() ||
-            rowType,
+          label,
           value: scaled.totalCO2e,
           year: scaled.year,
           scope: scaled.scope ?? null,
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
+          ...inText(row.totalCO2e, label, scaled.totalCO2e, row.page),
         });
       }
       continue;
     }
+    rawValues.set(scaled, row.totalCO2e ?? null);
     converted.push(scaled);
   }
 
@@ -1993,7 +2033,11 @@ export function finalizeExtractedRows(
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {
-      yearFiltered = converted.map((row) => ({ ...row, year: targetYear }));
+      yearFiltered = converted.map((row) => {
+        const copy = { ...row, year: targetYear };
+        rawValues.set(copy, rawValues.get(row) ?? null);
+        return copy;
+      });
       yearAssumed = yearFiltered.length > 0;
     }
   }
@@ -2005,14 +2049,17 @@ export function finalizeExtractedRows(
   for (const row of hiddenTotals) {
     drop("subtotal_or_total");
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
+      const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
+      const value = row.totalCO2e as number;
       reportedTotals.push({
-        label: row.category?.trim() || row.subsector?.trim() || "subtotal",
-        value: row.totalCO2e as number,
+        label,
+        value,
         year: row.year,
         scope: null,
         sector: row.sector,
         subsector: row.subsector,
         level: "subtotal",
+        ...inText(rawValues.get(row), label, value, row.page),
       });
     }
   }

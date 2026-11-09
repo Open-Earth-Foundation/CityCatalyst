@@ -78,9 +78,7 @@ export default function ReviewConfirmStep({
             <Trans
               i18nKey="review-confirm-description"
               t={t}
-              components={[
-                <Text as="span" fontWeight="bold" key="0" />,
-              ]}
+              components={[<Text as="span" fontWeight="bold" key="0" />]}
             />
           </Text>
         </Box>
@@ -122,8 +120,13 @@ export default function ReviewConfirmStep({
   ].filter((warning, index, all) => all.indexOf(warning) === index);
 
   const extractionSummary = data?.mappingConfiguration?.extractionSummary;
-  const { reconciliation, reconciledPages, failedPages, droppedReasons } =
-    extractionReviewNotes(extractionSummary ?? null);
+  const {
+    reconciliation,
+    reconciledPages,
+    failedPages,
+    droppedReasons,
+    removalsWarning,
+  } = extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
@@ -173,9 +176,7 @@ export default function ReviewConfirmStep({
           <Trans
             i18nKey="review-confirm-description"
             t={t}
-            components={[
-              <Text as="span" fontWeight="bold" key="0" />,
-            ]}
+            components={[<Text as="span" fontWeight="bold" key="0" />]}
           />
         </Text>
       </Box>
@@ -279,6 +280,47 @@ export default function ReviewConfirmStep({
                 ).toLocaleString(),
                 deviation: (reconciliation.deviation * 100).toFixed(1),
               })}
+            </Text>
+          </Box>
+        </Box>
+      )}
+      {removalsWarning && (
+        <Box
+          bg="sentiment.warningOverlay"
+          border="1px solid"
+          borderColor="sentiment.warningDefault"
+          borderRadius="md"
+          p={4}
+          mb={8}
+          display="flex"
+          alignItems="flex-start"
+          gap="12px"
+        >
+          <Icon
+            as={MdWarning}
+            boxSize={5}
+            color="sentiment.warningDefault"
+            mt="2px"
+            flexShrink={0}
+          />
+          <Box>
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
+              {t("import-removals-title")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary" mt={1}>
+              {removalsWarning.kind === "orphan"
+                ? t("import-removals-orphan", {
+                    removals: Math.round(
+                      Math.abs(removalsWarning.removals),
+                    ).toLocaleString(),
+                  })
+                : t("import-removals-gross-only", {
+                    net: Math.round(removalsWarning.net).toLocaleString(),
+                  })}
             </Text>
           </Box>
         </Box>

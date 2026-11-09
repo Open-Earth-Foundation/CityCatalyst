@@ -38,16 +38,6 @@ Each directory has:
   contract. Richfield's certifying engineer, licence number, and private email
   correspondents are redacted; the Kraków plan is an official document and
   contains no personal data.
-- `source.pdf` (PDF fixtures only, **not in git**): the document `source.md` was
-  produced from, pinned by `source.original_pdf` (path, SHA-256, URL, notes).
-  Place the file in the fixture folder to use it; `fixture_problems` rejects a
-  copy whose SHA-256 differs, and a missing copy only makes the PDF path
-  unavailable. The `--input-path pdf` run converts these pinned bytes with the
-  production CNB `visual_context` converter; the default path uses fixed
-  Markdown. Both judge against the independent approved source reference. The
-  Kraków copy is the unmodified public annex at its `url`. The Richfield copy is
-  truly redacted (text and signature removed, not covered) to match `source.md`,
-  so it cannot be re-downloaded; get it from the benchmark maintainers.
 - `golden.json`: expectations for every stage (see below).
 - `drafting_input.json`: funder, opportunity, application template, and
   authoritative city context. Every template field is owned by at least one
@@ -64,7 +54,7 @@ English for a Polish source; the judge compares meaning across languages.
 ### golden.json sections
 
 - `approval`: review status, reviewer/date, and source/template/requirements
-  fingerprints (including the original PDF digest where present). Approved
+  fingerprints. Approved
   records require an actual review date, never a future date. All shipped
   requirements are **pending Product review**.
 - `extraction`: facts defined once (stable ID, statement, exact evidence with
@@ -94,8 +84,7 @@ Project analysis). Product must verify both the placement and priority; these
 mappings are not human-approved by this migration.
 
 `ground_truth_fingerprints(loaded)` hashes the actual source Markdown, normalized
-complete drafting input, and normalized four-stage requirements, and includes
-the pinned original PDF digest when present. Changing source,
+complete drafting input, and normalized four-stage requirements. Changing source,
 template, fact meaning/evidence, chapter assignment, priority, or scoring policy
 invalidates prior approval. Pending or stale approvals prevent the fixture and
 run from passing as approved, while individual stage metrics and raw judgments
@@ -196,17 +185,12 @@ each open question that another chapter already answers.
 From `climate-advisor/`:
 
 ```bash
-# Deterministic tests: contracts, seeding, plumbing, prompt examples; no model calls.
-uv run pytest benchmark/cnb/tests -q
-
 # Every stage for every fixture, once; the label is shown in the viewer.
 uv run python -m benchmark.cnb.scripts.evaluate --label baseline
 
 # Selected stages or fixtures (repeat either flag).
-uv run python -m benchmark.cnb.scripts.evaluate \
-  --fixture krakow-flood-drainage-plan --stage chapter_writing
-uv run python -m benchmark.cnb.scripts.evaluate \
-  --fixture richfield-flood-risk --stage verification --stage editing
+uv run python -m benchmark.cnb.scripts.evaluate --fixture krakow-flood-drainage-plan --stage chapter_writing
+uv run python -m benchmark.cnb.scripts.evaluate --fixture richfield-flood-risk --stage verification --stage editing
 
 # Rebuild the viewer from saved runs (no model calls).
 uv run python -m benchmark.cnb.scripts.publish
@@ -216,13 +200,12 @@ uv run python -m benchmark.cnb.scripts.publish
 folder. `--parallel` evaluates the fixtures concurrently in one process (about
 the slowest fixture's time instead of the sum); by default they run one at a
 time to keep provider load bounded. `--run-id` names the run folder (default: UTC time plus the label); an
-existing run is never overwritten. There is no `--repeats` flag; run again to
-measure variance and compare the runs in the viewer. A full run makes one
+existing run is never overwritten. There is no `--repeats` flag; run again and
+compare the runs with `benchmark.cnb.scripts.compare`. A full run makes one
 extraction, one draft per chapter, two or more validator passes per chapter, up
-to four edit plans with review per fixture, and four judge calls per fixture. The
-advisory live workflow runs the fixed-Markdown and PDF paths as parallel jobs on
-manual dispatch. Missing credentials are reported as unavailable.
-See [delivery and approval](../DELIVERY.md) for setup and baseline review.
+to four edit plans with review per fixture, and four judge calls per fixture. Nothing runs it automatically; the advisory workflow runs only on manual
+dispatch. See [benchmark.md](../benchmark.md) for comparing runs and
+[DELIVERY.md](../DELIVERY.md) for CI and baseline approval.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
 settings. `llm_config.yaml` configures `models.cnb_golden_set_judge`
@@ -250,9 +233,8 @@ output/cnb_golden_set/
 └── runs/
     ├── index.js            # summary of every run, for the run picker and comparison
     └── <run-id>/           # one evaluator invocation
-        ├── report.md, report.json, outputs/...
+        ├── report.md, report.json, llm_config.json, outputs/...
         ├── viewer.js       # immutable fixture and judgment snapshot
-        ├── pdf/<fixture>.pdf # matching original PDFs for this run
         └── review-bundle.zip # candidate, approved baseline and viewer
 ```
 
@@ -265,7 +247,8 @@ return exit code 3. The viewer shows any run (picker in the top bar) by stage an
 and **Compare runs** shows the run history, headline metrics over time, and for
 any two runs: what changed in models, prompts, sources and expectations, the
 stage results A → B, and every expectation whose verdict changed. Reports
-record the run ID, label, and git commit (`-dirty` for uncommitted changes).
+record the run ID, label, git commit (`-dirty-<diff hash>` for uncommitted
+changes), every configured prompt's hash, and the LLM config and `uv.lock` hashes.
 
 Each run folder contains:
 
@@ -280,8 +263,7 @@ Each run folder contains:
   shows time and cost A → B and where the money goes. Runs saved before usage
   recording show no time or cost.
 - `cost_complete` and `unpriced_requests` distinguish reported totals from missing
-  billing evidence. PDF conversion time is reported separately with unavailable
-  cost; it is excluded from the reported model total.
+  billing evidence.
 - `delivery.json`, `comparison.json/.md` and `review-bundle.zip`: execution and
   publication status, an explicitly approved baseline comparison when available,
   and an extract-and-open review package with matching immutable evidence.
@@ -302,7 +284,7 @@ even when another stage is unavailable.
 ## Add or change a fixture
 
 1. Add non-sensitive source Markdown in the production artifact format (for a
-   PDF, CityCatalyst's Mistral OCR assembly). Pin its SHA-256, format, language,
+   PDF source, CityCatalyst's Mistral OCR assembly). Pin its SHA-256, format, language,
    and page count in `golden.json`.
 2. Write extraction facts with exact evidence and valid locators, and topics.
    Define every receiving chapter and its mandatory/desirable priority explicitly.
@@ -318,11 +300,10 @@ even when another stage is unavailable.
    template. Record the actual reviewer and ISO review date, set `approval.status`
    to `approved`, and copy `ground_truth_fingerprints(loaded)` from
    `benchmark.cnb.golden_set.core`. Never infer approval from a passing run.
-7. Run the deterministic tests and the live evaluation. Inspect the outputs,
+7. Run the live evaluation. Inspect the outputs,
    the original evidence, and the judge explanations; explain intentional
    baseline, prompt, or threshold changes in review.
 
 Model, reasoning, source prompt, tokenizer, or partition/excerpt/topic limit
 changes invalidate production cached source analyses through
-`source_analysis_contract_version`; the existing tests verify this independently
-of the judge.
+`source_analysis_contract_version`.

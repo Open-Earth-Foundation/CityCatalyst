@@ -1,119 +1,127 @@
 # CNB golden-set benchmark
 
-Everything for the Concept Note Builder benchmark lives in this folder. The
-benchmark runs three fixture documents (Harbor Point, Kraków, Richfield) through
-the real production pipeline in four stages — extraction, chapter writing,
-verification, editing — and an LLM judge scores each stage against the golden
-expectations. Production code never imports anything from here, and the
-service's Docker image does not include it.
+This is the developer guide for the Concept Note Builder benchmark: how to run
+it, compare runs and approve a baseline. The benchmark runs three Markdown
+fixture documents (Harbor Point, Kraków, Richfield) through the real production
+pipeline in four stages — extraction, chapter writing, verification, editing —
+and an LLM judge scores each stage against the golden expectations. Production
+code never imports anything from here, and the service's Docker image does not
+include it.
 
-## What is here
+Nothing runs the benchmark automatically. Run it yourself, or dispatch the
+manual workflow described in [DELIVERY.md](DELIVERY.md).
 
-| Folder | Contents |
-| --- | --- |
-| `fixtures/` | The three documents with their golden expectations, drafting inputs, and reference drafts. [`fixtures/README.md`](fixtures/README.md) explains the format and gates. |
-| `prompts/` | The four judge prompts, one per stage, with their few-shot examples. |
-| `golden_set/` | The Python code that runs the stages and scores them (below). |
-| `scripts/` | `evaluate.py` runs the benchmark; `publish.py` rebuilds the website. |
-| `viewer/` | The website source: `index.html` and `app.js`. |
-| `tests/` | Offline tests for all of the above; no model calls. |
-| `results/` | Committed runs and the published website. |
-| `calibration/` | Proposed held-out candidates and private human verdicts; approval is required before judge calls. |
+## Run it
 
-The code in `golden_set/`:
+From `climate-advisor/`, with `OPENROUTER_API_KEY` in `climate-advisor/.env`:
 
-| File | What it does |
-| --- | --- |
-| `models.py` | CNB fixture, judge and report contracts, including chapter requirements and approval. |
-| `core.py` | Loads and checks the fixtures; stage 1 (extraction) judge input and scoring; shared scoring helpers. |
-| `chapters.py` | Stage 2: runs the production drafter and support check per chapter, then scores. |
-| `verification.py` | Stage 3: plants defects in the reference draft, runs the production validator, then scores. |
-| `editing.py` | Stage 4: runs the production edit planner on each editing case, then scores. |
-| `workspace.py` | Builds the in-memory workspace the pipeline normally reads from the database. |
-| `judge.py` | Calls the judge model with a stage's judge prompt. |
-| `../utils/usage.py` | Shared OpenRouter usage attribution; unavailable cost is explicit. |
-| `viewer.py` | Writes each run's website data and the run index. |
-| `pdf.py` | Runs or validates production PDF conversion without changing the authoritative reference. |
-| `baseline.py` | Validates a reviewed baseline and generates comparable results. |
-| `calibration.py` | Blinds human labels and scores judge agreement and serious false passes. |
+```bash
+uv sync --locked
+uv run python -m benchmark.cnb.scripts.evaluate --label my-change
+```
 
-The judge model (`models.cnb_golden_set_judge`) and the judge prompt paths are
-configured in `climate-advisor/llm_config.yaml`.
+A full run calls the configured producer and judge models, takes about 15–35
+minutes and costs a few dollars. `--parallel` runs the three fixtures at once;
+`--fixture <id>` and `--stage <name>` (repeatable) select part of the corpus.
+The run is saved in `output/cnb_golden_set/runs/<run-id>/` (git-ignored) and
+compared with the approved baseline in `baseline.json`.
 
-Committed run: `results/runs/20261014-232449-five-fixes` (commit `0026fa7b2`;
-producers `openai/gpt-5.6-terra`, judge and edit planner `openai/gpt-6-sol`). Its
-recorded cost ($7.03) misses about $0.78 of streamed edit-planner calls, which
-later runs record.
+Each run records everything except the models' own output, so two runs with
+the same recorded inputs differ only by LLM variation: git commit (plus a diff
+hash when the tree is dirty), hashes of every configured prompt, the full LLM
+configuration (`llm_config.json`), the `uv.lock` hash, the fixtures and the
+judge policy.
 
-## Open the website
+Exit codes: `0` passing against an approved baseline; `1` quality failure; `2`
+the run ID already exists; `3` evaluation, approval, baseline comparison or
+publication unavailable.
 
-The site is generated, not committed. From `climate-advisor/`, build it from
-`viewer/` and the saved runs (no model calls, no network):
+## Compare two runs
+
+```bash
+uv run python -m benchmark.cnb.scripts.compare --baseline-run benchmark/cnb/results/runs/<run-a> --candidate-run output/cnb_golden_set/runs/<run-b>
+```
+
+Any two run folders work, including an extracted CI artifact. The command writes
+`output/cnb_compare/<run-a>__<run-b>/` with `comparison.md`, `comparison.json`
+and `index.html`, which opens on the A → B comparison. Score deltas, new and
+resolved failures appear only when both runs used the same fixtures, golden
+expectations and judge policy. Otherwise the runs are shown side by side with
+the reason, and the command exits `3`.
+
+## Open the viewer
+
+The viewer is a static site generated from saved runs; it is not committed:
 
 ```bash
 uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results
+start benchmark/cnb/results/index.html
 ```
 
-Then open `benchmark/cnb/results/index.html` in a browser (no server needed):
-
-```bash
-start benchmark/cnb/results/index.html      # Windows
-open benchmark/cnb/results/index.html       # macOS
-xdg-open benchmark/cnb/results/index.html   # Linux
-```
-
-Or serve it and open http://127.0.0.1:8765:
-
-```bash
-python -m http.server 8765 --directory benchmark/cnb/results
-```
-
-The "Open original PDF" buttons also need the PDFs, which are kept out of git:
-place each pinned `source.pdf` in its fixture folder (see `fixtures/README.md`)
-before running `publish`. Rerun `publish` after pulling viewer or run changes.
+Use `open` on macOS or `xdg-open` on Linux. Every evaluation also refreshes
+`output/cnb_golden_set/index.html` and writes a self-contained
+`review-bundle.zip` into its run folder.
 
 Pages:
 
 - **Overview** — pass/fail per document and stage for the selected run.
 - **1 · Extraction … 4 · Editing** — every judge verdict with the quoted evidence.
-- **Harbor Point / Kraków / Richfield** — one document: golden expectations, each
-  stage's output, the reference draft, and **Source document** with the golden
-  facts listed on the left; click a fact to jump to its passage.
-- **Compare runs** — pick run A and run B to see what changed (models, prompts,
-  scores, time and cost, individual verdicts) and the history of all runs.
-- **Run** (top right) — switch the run every page shows.
+- **Harbor Point / Kraków / Richfield** — one document: golden expectations,
+  each stage's output, the reference draft and the source with its golden facts.
+- **Compare runs** — run A against run B: what changed (code, prompts, LLM
+  config, dependencies, models, fixtures), stage results, time and cost, and
+  changed verdicts, plus the history of all runs.
 
-## Run the benchmark
+## Approve a baseline
 
-From `climate-advisor/`:
+When a run should become the reference for later runs:
 
 ```bash
-# Offline tests, no model calls.
-uv run pytest benchmark/cnb/tests -q
-
-# Full run: calls the configured models; runtime and cost depend on configuration.
-# Needs OPENROUTER_API_KEY in climate-advisor/.env.
-uv run python -m benchmark.cnb.scripts.evaluate --parallel --label my-change
-
-# Fresh pinned PDF -> production visual_context conversion -> extraction.
-# Needs the pinned source.pdf files placed locally (they are not in git).
-uv run python -m benchmark.cnb.scripts.evaluate --input-path pdf --baseline-manifest benchmark/cnb/baseline-pdf.json
-
-# Judge-only calibration; unapproved cases are reported without model calls.
-uv run python -m benchmark.cnb.scripts.calibrate
-
-# Save the run with the committed ones instead of output/cnb_golden_set/.
-uv run python -m benchmark.cnb.scripts.evaluate --parallel --results-dir benchmark/cnb/results --label my-change
+uv run python -m benchmark.cnb.scripts.propose_baseline --run output/cnb_golden_set/runs/<run-id> --reviewer "Your Name" --reference <approval-PR-URL>
 ```
 
-Runs go to `climate-advisor/output/cnb_golden_set/` by default, which git
-ignores; open its `index.html` the same way. A run saved in `results/` updates
-the website there; commit the new `results/runs/<run-id>/` folder together with
-`results/runs/index.js`. `--fixture` and `--stage` select single documents or
-stages; see `uv run python -m benchmark.cnb.scripts.evaluate --help`.
+It copies the run's durable files into `results/runs/<run-id>/`, writes
+`baseline.json` with the run's hashes and fingerprints, and checks them with the
+evaluator's own baseline loader. Commit both in a PR; that review is the
+approval. A run can only become a baseline when it completed, every fixture's
+ground truth is approved and every stage has a valid judgment. See
+[DELIVERY.md](DELIVERY.md) for the manifest rules.
 
-See [DELIVERY.md](DELIVERY.md) for non-required live CI, provider/storage setup,
-partial-report behavior and downloadable baseline/candidate bundles. Both
-baseline manifests and the fixture approvals are pending: draft measurements
-must not be presented as approved quality results. [Calibration approval](calibration/README.md)
-is separate from source ground-truth approval.
+## Judge calibration
+
+```bash
+uv run python -m benchmark.cnb.scripts.calibrate
+```
+
+Scores the judge against human-labelled candidates; see
+[calibration/README.md](calibration/README.md).
+
+## What is here
+
+| Path | Contents |
+| --- | --- |
+| `fixtures/` | The three documents with golden expectations, drafting inputs and reference drafts. [`fixtures/README.md`](fixtures/README.md) explains the format, gates and approval. |
+| `prompts/` | The four judge prompts, one per stage, with few-shot examples. |
+| `golden_set/` | Stage execution and scoring (below). |
+| `scripts/` | `evaluate`, `compare`, `propose_baseline`, `publish`, `calibrate`. |
+| `viewer/` | The static site source: `index.html` and `app.js`. |
+| `results/` | Committed runs; the approved baseline lives here. |
+| `calibration/` | Human-labelled judge calibration cases. |
+| `baseline.json` | The reviewed baseline manifest. |
+
+| `golden_set/` file | What it does |
+| --- | --- |
+| `models.py` | Fixture, judge and report contracts, including chapter requirements and approval. |
+| `core.py` | Loads and checks fixtures; stage 1 (extraction) judge input and scoring. |
+| `chapters.py` | Stage 2: production drafter and support check per chapter, then scoring. |
+| `verification.py` | Stage 3: seeds defects in the reference draft, runs the production validator, then scores. |
+| `editing.py` | Stage 4: production edit planner on each editing case, then scoring. |
+| `workspace.py` | The in-memory workspace the pipeline normally reads from the database. |
+| `judge.py` | Calls the judge model with a stage's judge prompt. |
+| `baseline.py` | Baseline validation, run compatibility and comparison summaries. |
+| `viewer.py` | Run snapshots, the run index and review sites. |
+| `calibration.py` | Blinds human labels and scores judge agreement. |
+| `../../utils/usage.py` | OpenRouter usage and cost attribution; unavailable cost stays explicit. |
+
+The judge model (`models.cnb_golden_set_judge`) and the judge prompt paths are
+configured in `climate-advisor/llm_config.yaml`.

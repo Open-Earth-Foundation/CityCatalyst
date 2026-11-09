@@ -3,7 +3,8 @@
 The `CNB live benchmark (advisory)` workflow runs only on manual dispatch
 (`workflow_dispatch`), with no automatic PR, push, merge or scheduled trigger.
 Repeated full producer and judge evaluations on PR updates would consume provider
-usage too quickly. Offline tests remain automatic. After changing prompts, models
+usage too quickly. No workflow runs the benchmark or its offline tests automatically;
+run them locally or dispatch this workflow. After changing prompts, models
 or the extraction/PDF pipeline, agents should suggest a manual benchmark run before
 opening or updating a PR and wait for the user's authorization to spend that usage.
 Its checks, `CNB quality report (non-required, markdown)` and

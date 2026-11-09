@@ -21,18 +21,14 @@ def content_digest(value: Any) -> str:
 
 
 def artifact_digest(directory: Path) -> str:
-    """Bind an approved run to all its reports, raw outputs and snapshot.
-
-    Local PDF copies under ``pdf/`` are kept out of git, so they are excluded;
-    the fixture's ``original_pdf_sha256`` fingerprint already pins their bytes.
-    """
+    """Bind an approved run to all its reports, raw outputs and snapshot."""
     return content_digest(
         {
             path.relative_to(directory).as_posix(): hashlib.sha256(
                 path.read_bytes()
             ).hexdigest()
             for path in sorted(directory.rglob("*"))
-            if path.is_file() and path.relative_to(directory).parts[0] != "pdf"
+            if path.is_file()
         }
     )
 
@@ -41,7 +37,6 @@ def evaluation_fingerprints(
     fixtures: list[Any],
     report: dict[str, Any],
     stages: list[str],
-    input_path: str = "markdown",
 ) -> dict[str, str]:
     """Separate producer changes from the corpus and judge policy that must match."""
     corpus = [
@@ -64,7 +59,6 @@ def evaluation_fingerprints(
                 "prompts": report.get("judge_prompt_versions"),
                 "judge": report.get("models", {}).get("judge"),
                 "stages": stages,
-                "input_path": input_path,
                 "comparison_policy": 1,
                 "scorers": {
                     name: hashlib.sha256(
@@ -162,10 +156,9 @@ def load_approved_baseline(
             or set(stages) - set(STAGES)
         ):
             raise ValueError("Baseline report scope is incomplete")
-        applicable = [item for item in fixtures if not item.get("inapplicable_reason")]
-        if not applicable:
-            raise ValueError("Baseline has no applicable fixtures")
-        for fixture in applicable:
+        if not fixtures:
+            raise ValueError("Baseline has no fixtures")
+        for fixture in fixtures:
             if fixture.get("approval_status") != "approved" or fixture.get(
                 "approval_errors"
             ):
@@ -180,7 +173,7 @@ def load_approved_baseline(
         if manifest.get("fingerprints") != fingerprints:
             return None, {
                 "status": "incompatible",
-                "reason": "Corpus, stages, input path or judge policy changed",
+                "reason": "Corpus, stages or judge policy changed",
                 "baseline_run_id": run_id,
             }
         if not (directory / "viewer.js").is_file():
@@ -207,8 +200,6 @@ def compare_reports(
         old.keys() | new.keys() | set(candidate.get("expected_fixture_ids", []))
     )
     for fid in sorted(fixture_ids):
-        if new.get(fid, {}).get("inapplicable_reason"):
-            continue
         for stage in STAGES:
             before, after = old.get(fid, {}).get(stage), new.get(fid, {}).get(stage)
             if (

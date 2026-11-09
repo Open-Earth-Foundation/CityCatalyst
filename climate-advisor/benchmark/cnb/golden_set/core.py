@@ -172,8 +172,6 @@ def ground_truth_fingerprints(loaded: LoadedFixture) -> dict[str, str]:
             json.dumps(requirements, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         ).hexdigest(),
     }
-    if loaded.fixture.source.original_pdf is not None:
-        fingerprints["original_pdf_sha256"] = loaded.fixture.source.original_pdf.sha256
     return fingerprints
 
 
@@ -218,13 +216,6 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
     """
     problems = golden_evidence_problems(loaded)
     fixture = loaded.fixture
-    original = fixture.source.original_pdf
-    if original is not None:
-        # PDFs are kept out of git: a missing local copy only makes the PDF
-        # input path unavailable, but a present copy must match its pin.
-        pdf = loaded.directory / original.path
-        if pdf.exists() and hashlib.sha256(pdf.read_bytes()).hexdigest() != original.sha256:
-            problems.append(f"original PDF digest mismatch: {original.path}")
     writing, template = fixture.chapter_writing, loaded.drafting_input
     if writing is None or template is None:
         if fixture.verification or fixture.editing:
@@ -345,10 +336,10 @@ def source_evidence(loaded: LoadedFixture) -> list[TextUnit]:
 
 
 def extraction_judge_input(
-    loaded: LoadedFixture, source: SelectedSource, *, candidate: LoadedFixture | None = None
+    loaded: LoadedFixture, source: SelectedSource
 ) -> tuple[JudgeInput, list[str]]:
     """Judge each chapter-fact pair against that chapter's retained quotations."""
-    failures, retained = verify_excerpts(candidate or loaded, source)
+    failures, retained = verify_excerpts(loaded, source)
     golden = loaded.fixture.extraction
     return JudgeInput(
         stage="extraction",

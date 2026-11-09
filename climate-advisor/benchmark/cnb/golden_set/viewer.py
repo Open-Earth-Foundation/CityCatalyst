@@ -5,9 +5,8 @@ run snapshots everything the viewer needs for it (fixtures, judge prompts,
 few-shot examples, outputs, judgments, and scored reports) into that run's
 ``viewer.js``, so a run stays readable after fixtures or prompts change. The
 results folder also gets the static viewer from ``benchmark/cnb/viewer/``
-(``index.html``, ``app.js``), the fixtures' original
-PDFs under each run's ``pdf/``, and ``runs/index.js`` summarising every run for the run
-picker and run comparison. Nothing here calls a model or the network.
+(``index.html``, ``app.js``) and ``runs/index.js`` summarising every run for the
+run picker and run comparison. Nothing here calls a model or the network.
 """
 
 from __future__ import annotations
@@ -103,21 +102,8 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR, *, rebui
                 "report": stage_report,
                 **{key: _read_json(out / rel) for key, rel in ARTEFACTS[stage].items()},
             }
-        original = loaded.fixture.source.original_pdf
-        pdf_ref = None
-        if original:
-            target = run_dir / "pdf" / f"{fid}.pdf"
-            # PDFs are kept out of git; without a local copy the run has no PDF link.
-            if not target.exists() and (loaded.directory / original.path).is_file():
-                target.parent.mkdir(exist_ok=True)
-                shutil.copyfile(loaded.directory / original.path, target)
-            if target.exists():
-                if hashlib.sha256(target.read_bytes()).hexdigest() != original.sha256:
-                    raise ValueError(f"Snapshot PDF digest mismatch: {fid}")
-                pdf_ref = f"runs/{run_dir.name}/pdf/{fid}.pdf"
         fixtures.append(
             {
-                "pdf": pdf_ref,
                 "golden": loaded.fixture.model_dump(mode="json"),
                 "units": [{"anchor": u.anchor, "text": u.text} for u in loaded.units],
                 "drafting_input": loaded.drafting_input.model_dump(mode="json")
@@ -132,7 +118,6 @@ def build_run_payload(run_dir: Path, fixtures_dir: Path = FIXTURES_DIR, *, rebui
                 "input_provenance": reports[fid].get("input_provenance") or {},
                 "approval_status": reports[fid].get("approval_status", "pending"),
                 "approval_errors": reports[fid].get("approval_errors", []),
-                "inapplicable_reason": reports[fid].get("inapplicable_reason"),
             }
         )
     settings = get_settings()
@@ -217,43 +202,8 @@ def run_summary(run_dir: Path) -> dict[str, Any] | None:
     }
 
 
-def _preserve_snapshot_pdfs(run_dir: Path, destination: Path, fixtures_dir: Path = FIXTURES_DIR) -> None:
-    """Copy only PDF bytes matching a snapshot, including existing legacy root paths."""
-    body = (run_dir / "viewer.js").read_text(encoding="utf-8")
-    payload = json.loads(body.split("] = ", 1)[1].rstrip(";\n"))
-    source_root = run_dir.parent.parent
-    for fixture in payload.get("fixtures", []):
-        reference = fixture.get("pdf")
-        original = fixture.get("golden", {}).get("source", {}).get("original_pdf")
-        if not reference or not original:
-            continue
-        target = (destination / reference).resolve()
-        if not target.is_relative_to(destination.resolve()):
-            raise ValueError("Snapshot PDF escapes review directory")
-        source = (source_root / reference).resolve()
-        if not source.is_relative_to(source_root.resolve()):
-            raise ValueError("Snapshot PDF escapes source directory")
-        if not source.is_file():
-            fid = fixture["golden"]["fixture_id"]
-            source = (fixtures_dir / fid / original["path"]).resolve()
-            if not source.is_relative_to(fixtures_dir.resolve()):
-                raise ValueError("Snapshot PDF escapes fixture directory")
-        if not source.is_file():
-            # PDFs are kept out of git; the link works once the pinned file is placed.
-            continue
-        data = source.read_bytes()
-        if hashlib.sha256(data).hexdigest() != original["sha256"]:
-            raise ValueError("Historical snapshot PDF bytes are unavailable or changed")
-        if target.exists():
-            if target.read_bytes() != data:
-                raise ValueError("Historical snapshots require different PDFs at the same path")
-        else:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(data)
-
-
 def publish_viewer(results_dir: Path, *, rebuild: bool = False, fixtures_dir: Path = FIXTURES_DIR) -> Path:
-    """Refresh the viewer, PDFs, missing run snapshots, and the run index."""
+    """Refresh the viewer, missing run snapshots, and the run index."""
     runs_dir = results_dir / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(VIEWER_DIR / "app.js", results_dir / "app.js")
@@ -263,7 +213,6 @@ def publish_viewer(results_dir: Path, *, rebuild: bool = False, fixtures_dir: Pa
             continue
         if rebuild or not (run_dir / "viewer.js").exists():
             write_run_viewer(run_dir, build_run_payload(run_dir, fixtures_dir, rebuilt=True), rebuilt=True)
-        _preserve_snapshot_pdfs(run_dir, results_dir, fixtures_dir)
         summary = run_summary(run_dir)
         if summary is not None:
             summaries.append(summary)
@@ -299,7 +248,6 @@ def publish_bundle(candidate_dir: Path, results_dir: Path, *, baseline_dir: Path
             if not (directory / "viewer.js").is_file():
                 raise ValueError(f"Missing immutable viewer snapshot: {directory.name}")
             shutil.copytree(directory, root / "runs" / directory.name, ignore=shutil.ignore_patterns("review-bundle.zip"))
-            _preserve_snapshot_pdfs(directory, root)
         for name in ("comparison.json", "comparison.md"):
             if (candidate_dir / name).exists():
                 shutil.copyfile(candidate_dir / name, root / name)

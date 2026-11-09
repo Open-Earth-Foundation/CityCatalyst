@@ -24,7 +24,6 @@ Inputs:
 - --label: optional short note shown in the viewer, for example "pr-3295".
 - --baseline-manifest / --baseline-results-dir: reviewed baseline manifest and durable run store.
 - --timeout-seconds: evaluation deadline (default 3600); finalization follows timeout.
-- --input-path: markdown (default) or pdf; --pdf-artifacts-dir optionally reuses validated conversions.
 - --parallel: evaluate fixtures concurrently in one process (faster; default is
   one fixture at a time to keep provider load bounded).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
@@ -57,11 +56,9 @@ import asyncio
 import json
 import logging
 import re
-import shutil
 import subprocess
 import sys
 import time
-from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -173,17 +170,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Maximum evaluation wall time; preserve partial reports on timeout",
     )
     parser.add_argument(
-        "--input-path",
-        choices=("markdown", "pdf"),
-        default="markdown",
-        help="Frozen Markdown or fresh production PDF conversion",
-    )
-    parser.add_argument(
-        "--pdf-artifacts-dir",
-        type=Path,
-        help="Validated precomputed conversions, one directory per fixture",
-    )
-    parser.add_argument(
         "--run-id", help="Run folder name (default: UTC timestamp plus label)"
     )
     parser.add_argument("--label", help="Short note shown in the viewer")
@@ -264,7 +250,6 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
     report = args.report
     report.requested_stages = stages
     report.expected_fixture_ids = [item.fixture.fixture_id for item in fixtures]
-    report.input_path = args.input_path
     models = settings.llm.models
     report.analysis_contract_version = source_analysis_contract_version(settings)
     report.judge_prompt_versions = judge_prompt_versions(settings, stages)
@@ -286,7 +271,7 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         "judge": _model_summary(models.cnb_golden_set_judge),
     }
     args.delivery["fingerprints"] = evaluation_fingerprints(
-        fixtures, report.model_dump(mode="json"), stages, args.input_path
+        fixtures, report.model_dump(mode="json"), stages
     )
     report.corpus_fingerprint = args.delivery["fingerprints"]["corpus"]
     report.evaluator_fingerprint = args.delivery["fingerprints"]["judge_policy"]
@@ -312,46 +297,16 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         report.wall_seconds = round(time.monotonic() - started, 1)
         _write_report(args, report)
 
-    async def run(loaded: LoadedFixture) -> None:
-        """Prepare candidate input and preserve conversion failures as unavailable."""
-        output = args.output_dir / "outputs" / loaded.fixture.fixture_id
-        candidate = None
-        if args.input_path == "pdf":
-            from benchmark.cnb.golden_set.pdf import (
-                convert_pdf_fixture,
-                load_pdf_conversion,
-            )
-
-            conversion_dir = output / "conversion"
-            if loaded.fixture.source.original_pdf is None:
-                candidate = load_pdf_conversion(loaded, conversion_dir)
-            elif args.pdf_artifacts_dir:
-                origin = args.pdf_artifacts_dir / loaded.fixture.fixture_id
-                shutil.copytree(origin, conversion_dir)
-                candidate = load_pdf_conversion(loaded, conversion_dir)
-            else:
-                candidate = await convert_pdf_fixture(loaded, conversion_dir)
-            if candidate.status == "not_applicable":
-                args.delivery.setdefault("not_applicable", []).append(
-                    loaded.fixture.fixture_id
-                )
-                checkpoint(
-                    FixtureReport(
-                        fixture_id=loaded.fixture.fixture_id,
-                        source_sha256=loaded.fixture.source.sha256,
-                        source_format=loaded.fixture.source.source_format,
-                        inapplicable_reason=candidate.reason or "No pinned PDF",
-                    )
-                )
-                return
-        await _evaluate_fixture(
-            loaded, settings, stages, output, checkpoint=checkpoint, candidate=candidate
-        )
-
     async def retain_failure(loaded: LoadedFixture) -> None:
         """Isolate a failed fixture in either execution mode and keep completed stages."""
         try:
-            await run(loaded)
+            await _evaluate_fixture(
+                loaded,
+                settings,
+                stages,
+                args.output_dir / "outputs" / loaded.fixture.fixture_id,
+                checkpoint=checkpoint,
+            )
         except Exception as exc:
             fid = loaded.fixture.fixture_id
             message = f"fixture_unavailable: {type(exc).__name__}"
@@ -394,7 +349,6 @@ async def _evaluate_fixture(
     output_dir: Path,
     *,
     checkpoint: Callable[[FixtureReport], None] | None = None,
-    candidate: Any = None,
 ) -> FixtureReport:
     """Run each enabled stage; extraction output feeds chapter writing."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -409,12 +363,7 @@ async def _evaluate_fixture(
     approval = evaluated_approval(loaded)
     report.approval_status = approval["approval_status"]
     report.approval_errors = approval["approval_errors"]
-    report.input_provenance = {
-        "ground_truth": approval["fingerprints"],
-        "input_path": "pdf" if candidate else "markdown",
-    }
-    if candidate is not None:
-        report.input_provenance["conversion"] = candidate.metadata
+    report.input_provenance = {"ground_truth": approval["fingerprints"]}
     if checkpoint:
         checkpoint(report)
     problems = fixture_problems(loaded)
@@ -434,14 +383,9 @@ async def _evaluate_fixture(
     source = None
     if "extraction" in stages:
         with measure(usage("extraction")):
-            if candidate is None:
-                report.extraction, source = await _evaluate_extraction(
-                    loaded, settings, output_dir
-                )
-            else:
-                report.extraction, source = await _evaluate_extraction(
-                    loaded, settings, output_dir, candidate=candidate
-                )
+            report.extraction, source = await _evaluate_extraction(
+                loaded, settings, output_dir
+            )
         if checkpoint:
             checkpoint(report)
     if "chapter_writing" in stages and fixture.chapter_writing:
@@ -461,7 +405,6 @@ async def _evaluate_fixture(
                     if isinstance(extraction, JudgeEvaluation)
                     and not report.extraction.evaluation_errors
                     else None,
-                    producer_input=_candidate_fixture(loaded, candidate),
                 )
         if checkpoint:
             checkpoint(report)
@@ -486,44 +429,21 @@ async def _evaluate_fixture(
     return report
 
 
-def _candidate_fixture(loaded: LoadedFixture, candidate: Any) -> LoadedFixture:
-    """Give producers fresh OCR while preserving the independent judging reference."""
-    if candidate is None:
-        return loaded
-    artifact = candidate.artifact
-    source = loaded.fixture.source.model_copy(
-        update={
-            "sha256": artifact.sha256,
-            "page_count": artifact.page_count,
-            "source_format": artifact.source_format,
-        }
-    )
-    return replace(
-        loaded,
-        fixture=loaded.fixture.model_copy(update={"source": source}),
-        markdown=candidate.markdown,
-        units=candidate.units,
-    )
-
-
 async def _evaluate_extraction(
     loaded: LoadedFixture,
     settings: Settings,
     output_dir: Path,
-    *,
-    candidate: Any = None,
 ) -> tuple[StageReport, SelectedSource | None]:
-    """Analyze current input; judge its meaning against the independent reference."""
+    """Analyze the pinned Markdown; judge its meaning against the full source."""
     fixture = loaded.fixture
-    extraction_input = _candidate_fixture(loaded, candidate)
     try:
         source = await analyze_document(
             upload_id=golden_id(fixture.fixture_id, "upload"),
             filename=fixture.source.filename,
             source_label=fixture.source.source_label,
-            sha256=extraction_input.fixture.source.sha256,
-            source_format=extraction_input.fixture.source.source_format,
-            pages=extraction_input.units,
+            sha256=fixture.source.sha256,
+            source_format=fixture.source.source_format,
+            pages=loaded.units,
             settings=settings,
             reader_limit=asyncio.Semaphore(
                 settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
@@ -539,7 +459,7 @@ async def _evaluate_extraction(
             chapter_excerpts = await extract_chapter_evidence(
                 source_label=source.source_label,
                 source_format=source.source_format,
-                pages=extraction_input.units,
+                pages=loaded.units,
                 chapters=chapters,
                 settings=settings,
                 reader_limit=asyncio.Semaphore(
@@ -561,9 +481,7 @@ async def _evaluate_extraction(
     (output_dir / "analysis.json").write_text(
         source.model_dump_json(), encoding="utf-8"
     )
-    payload, integrity = extraction_judge_input(
-        loaded, source, candidate=extraction_input
-    )
+    payload, integrity = extraction_judge_input(loaded, source)
     judgment = await _judge(payload, settings, output_dir / "extraction")
     if isinstance(judgment, StageReport):
         judgment.integrity_failures = integrity
@@ -577,14 +495,10 @@ async def _evaluate_chapter_writing(
     output_dir: Path,
     source: SelectedSource,
     extraction: JudgeEvaluation | None,
-    *,
-    producer_input: LoadedFixture | None = None,
 ) -> StageReport:
     """Draft from fresh extraction, then judge transfer, support, and gap handling."""
     try:
-        drafted, supplied = await write_chapters(
-            producer_input or loaded, settings, source
-        )
+        drafted, supplied = await write_chapters(loaded, settings, source)
     except ChapterDraftingError:
         return StageReport(evaluation_errors=["drafting_failed"])
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -635,13 +549,6 @@ def render_markdown(report: GoldenSetReport) -> str:
         lines.append(f"- {stage} judge prompt SHA-256: `{digest}`")
     lines += _render_usage(report)
     for fixture in report.fixtures:
-        if fixture.inapplicable_reason:
-            lines += [
-                "",
-                f"## {fixture.fixture_id}: NOT APPLICABLE",
-                fixture.inapplicable_reason,
-            ]
-            continue
         lines += [
             "",
             f"## {fixture.fixture_id}: {'PASS' if fixture.passed else 'FAIL'}",
@@ -662,12 +569,7 @@ def _render_usage(report: GoldenSetReport) -> list[str]:
         for fixture in report.fixtures
         for stage, usage in fixture.usage.items()
     ]
-    conversions = [
-        (fixture.fixture_id, fixture.input_provenance["conversion"])
-        for fixture in report.fixtures
-        if "conversion" in fixture.input_provenance
-    ]
-    if not rows and not conversions:
+    if not rows:
         return []
     lines = [
         "",
@@ -684,18 +586,10 @@ def _render_usage(report: GoldenSetReport) -> list[str]:
     ]
     total = sum(u.cost_usd for _, _, u in rows)
     wall = f"{report.wall_seconds:.0f} s wall time, " if report.wall_seconds else ""
-    completeness = (
-        "complete"
-        if all(u.cost_complete for _, _, u in rows) and not conversions
-        else "partial"
-    )
+    completeness = "complete" if all(u.cost_complete for _, _, u in rows) else "partial"
     lines.append(
         f"\nReported total: {wall}{sum(u.requests for _, _, u in rows)} model requests, USD {total:.2f} ({completeness})."
     )
-    for fixture, conversion in conversions:
-        lines.append(
-            f"- {fixture} PDF conversion: {conversion.get('elapsed_seconds', 'unavailable')} s; cost unavailable (excluded from reported total)."
-        )
     return lines
 
 
@@ -789,12 +683,10 @@ def main(argv: list[str] | None = None) -> int:
         models={},
         fixtures=[],
         completed=False,
-        input_path=args.input_path,
     )
     args.delivery = {
         "execution": "running",
         "errors": [],
-        "input_path": args.input_path,
         "fingerprints": {},
     }
     _write_report(args, args.report)
@@ -822,9 +714,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args.delivery["baseline"] = selection
     args.delivery["approval_pending"] = [
-        f.fixture_id
-        for f in args.report.fixtures
-        if not f.inapplicable_reason and f.approval_status != "approved"
+        f.fixture_id for f in args.report.fixtures if f.approval_status != "approved"
     ]
     baseline_report = (
         json.loads((baseline_dir / "report.json").read_text(encoding="utf-8"))
@@ -832,9 +722,7 @@ def main(argv: list[str] | None = None) -> int:
         else None
     )
     comparison = compare_reports(args.report.model_dump(mode="json"), baseline_report)
-    if args.delivery["execution"] != "complete" or not any(
-        not f.inapplicable_reason for f in args.report.fixtures
-    ):
+    if args.delivery["execution"] != "complete" or not args.report.fixtures:
         comparison["evaluation_unavailable"] = True
     comparison["baseline"] = selection
     (args.output_dir / "comparison.json").write_text(

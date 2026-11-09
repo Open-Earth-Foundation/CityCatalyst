@@ -339,7 +339,6 @@
   const extractionGate = (f) => f.golden.extraction.facts.some((x) => x.requirements) ? 1 : f.golden.extraction.thresholds.min_required_fact_coverage;
 
   function approvalNote(f) {
-    if (f.inapplicable_reason) return `<div class="callout">Not applicable: ${esc(f.inapplicable_reason)}</div>`;
     return `<div class="callout">Ground-truth approval: <b>${esc(f.approval_status || "not recorded")}</b>.
       ${(f.approval_errors || []).map(esc).join(" · ")}</div>`;
   }
@@ -403,7 +402,7 @@
   const METHOD = {
     extraction: {
       question: "Do the quotations that production source analysis keeps preserve the facts a reviewer needs?",
-      input: ["Pinned source Markdown, or fresh production conversion of the pinned PDF. Judgments always use the independent approved reference."],
+      input: ["Pinned source Markdown. Judgments always use the independent approved reference."],
       production: ["Source analysis: reader and synthesizer agents partition the document, keep exact quotations with page or heading anchors, and label topics."],
       python: ["Every quotation is an exact substring at a valid page or heading.", "The generated summary is saved for diagnosis but never sent to the judge."],
       judge: ["Expected fact → retained quotations: covered, partial, missing or contradicted.", "Expected topic → topic labels.", "Retained quotation → complete source: misleading, or missing a qualifier?"],
@@ -529,17 +528,14 @@
       <dl class="kv small" style="margin-top:12px">
         <dt>Drafted into</dt><dd>${esc(d?.funder || "–")}: ${esc(d?.template_name || "")}</dd>
         <dt>Expectations</dt><dd>${g.extraction.facts.length} extraction facts · ${g.chapter_writing?.facts.length || 0} draft facts · ${g.chapter_writing?.gaps.length || 0} expected gaps</dd>
-        <dt>Approval</dt><dd>${esc(f.approval_status || "not recorded")}${f.inapplicable_reason ? " · not applicable" : ""}</dd>
-        ${f.input_provenance?.conversion ? `<dt>PDF conversion</dt><dd>${fmtTime(f.input_provenance.conversion.elapsed_seconds)} · cost unavailable</dd>` : ""}
+        <dt>Approval</dt><dd>${esc(f.approval_status || "not recorded")}</dd>
         <dt>Seeded · edits</dt><dd>${g.verification?.defects.length || 0} defects · ${g.editing?.cases.length || 0} edit cases</dd>
       </dl>
       <div class="row small" style="margin-top:12px">
         <a class="pill" href="#/f/${fid}/golden">Golden set</a>
         <a class="pill" href="#/f/${fid}/source">source.md</a>
-        ${f.pdf ? `<a class="pill" href="${esc(f.pdf)}" target="_blank" rel="noopener">Original PDF ↗</a>` : `<span class="pill muted">native Markdown</span>`}
         <a class="pill" href="#/f/${fid}/reference">Reference draft</a>
       </div>
-      ${g.source.original_pdf?.notes ? `<p class="muted small" style="margin-top:10px">${esc(g.source.original_pdf.notes)}</p>` : ""}
     </div>`;
   }
 
@@ -805,7 +801,6 @@
         <span class="pill">${g.source.page_count ? `${g.source.page_count} pages` : `${f.units.length} blocks`}</span>
         <span class="pill mono">sha256 ${esc(short(g.source.sha256, 12))}</span>
         <span class="pill">${esc(g.source.filename)}</span>
-        ${f.pdf ? `<a class="pill" href="${esc(f.pdf)}" target="_blank" rel="noopener">Open original PDF ↗</a>` : ""}
       </div>
       <p class="muted small" style="max-width:110ch;margin-top:10px">${esc(g.source.provenance)}</p>
       <nav class="tabs">${tabs.map(([k, text, st]) => `<a href="#/f/${fid}/${k}" class="${k === tab ? "active" : ""}">${st ? `<span class="mini" style="background:var(--${cls(st)})" aria-hidden="true"></span>` : ""}${esc(text)}</a>`).join("")}</nav>
@@ -1381,22 +1376,16 @@
   const costText = (u) => !u ? "–" : `${fmtCost(u.cost ?? u.cost_usd)} (${u.cost_complete === true ? "complete"
     : u.cost_complete === false ? `partial${u.unpriced_requests ? `: ${u.unpriced_requests} unpriced requests` : ""}`
     : "completeness not recorded"})`;
-  const conversionNote = (u) => u?.conversion_count
-    ? `<div class="muted small">PDF conversion: ${fmtTime(u.conversion_seconds)} · cost unavailable, excluded from total</div>` : "";
-  // Reported model charges exclude unpriced requests and PDF conversion charges.
-  function usageTotals(usageByFixture, conversions = []) {
+  // Reported model charges exclude unpriced requests.
+  function usageTotals(usageByFixture) {
     const stages = Object.values(usageByFixture).flatMap((u) => Object.values(u || {}));
-    if (!stages.length && !conversions.length) return null;
+    if (!stages.length) return null;
     const sum = (key) => stages.reduce((n, s) => n + (s[key] || 0), 0);
-    const conversionSeconds = conversions.reduce((n, c) => n + (c.elapsed_seconds || 0), 0);
-    return { seconds: sum("seconds") + conversionSeconds, requests: sum("requests"), cost: sum("cost_usd"),
-      cost_complete: conversions.length ? false : costComplete(stages), unpriced_requests: sum("unpriced_requests"),
-      conversion_count: conversions.length, conversion_seconds: conversionSeconds };
+    return { seconds: sum("seconds"), requests: sum("requests"), cost: sum("cost_usd"),
+      cost_complete: costComplete(stages), unpriced_requests: sum("unpriced_requests") };
   }
-  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])),
-    Object.values(r.fixtures).map((f) => f.input_provenance?.conversion).filter(Boolean));
-  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])),
-    run.fixtures.map((f) => f.input_provenance?.conversion).filter(Boolean));
+  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])));
+  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])));
 
   function loadRun(id) {
     return new Promise((resolve, reject) => {
@@ -1456,7 +1445,7 @@
             <div class="muted small">${esc(r.generated_at ? new Date(r.generated_at).toLocaleString() : "")} · ${esc(r.code_version || "unknown commit")}</div></td>
           <td class="nowrap">${(() => {
             const u = indexTotals(r);
-            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${costText(u)} · ${u.requests} requests</div>${conversionNote(u)}` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
+            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${costText(u)} · ${u.requests} requests</div>` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
           })()}</td>
           ${fids.map((fid) => {
             const fx = r.fixtures[fid];
@@ -1510,7 +1499,7 @@
         <div class="muted small">${esc(run.run.generated_at ? new Date(run.run.generated_at).toLocaleString() : "")}${run.run.snapshot === "rebuilt_with_current_fixtures" ? " · snapshot rebuilt with later fixtures" : ""}</div>
         <div class="small" style="margin-top:6px">${(() => {
           const u = runTotals(run);
-          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${costText(u)}</b> · ${u.requests} model requests${conversionNote(u)}` : `<span class="muted">Time and cost not recorded for this run</span>`;
+          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${costText(u)}</b> · ${u.requests} model requests` : `<span class="muted">Time and cost not recorded for this run</span>`;
         })()}</div>
         <a class="small" href="?run=${enc(run.run.id)}#/">Open this run →</a></div>`).join("")}</div>
       ${reviewSummary()}
@@ -1601,13 +1590,6 @@
         <td class="nowrap">${costChange(a, b)}</td>
         <td class="nowrap">${a?.requests ?? "–"} → ${b?.requests ?? "–"}</td></tr>`;
     }));
-    for (const fid of fids) {
-      const conversion = (run) => run.fixtures.find((f) => f.golden.fixture_id === fid)?.input_provenance?.conversion;
-      const a = conversion(A), b = conversion(B);
-      if (a || b) rows.push(`<tr><td>${esc(shortFixture(fid))} · PDF conversion</td>
-        <td>${change(a?.elapsed_seconds, b?.elapsed_seconds, fmtTime)}</td>
-        <td>Cost unavailable · excluded from total</td><td>–</td></tr>`);
-    }
     const ta = runTotals(A), tb = runTotals(B);
     const agents = {};
     for (const [tag, run] of [["a", A], ["b", B]])
@@ -1625,7 +1607,7 @@
       `<tr><td class="mono small">${esc(name)}</td><td class="nowrap">${costText(u.a)} · ${u.a?.requests ?? "–"}</td><td class="nowrap">${costText(u.b)} · ${u.b?.requests ?? "–"}</td>
         <td>${tb?.cost && tb.cost_complete === true && u.b?.cost_complete === true ? `${Math.round((u.b.cost_usd / tb.cost) * 100)}%` : "–"}</td></tr>`).join("");
     return `<h2>Time and cost, A → B</h2>
-      <p class="sub">Wall time and reported model cost. Cost comparisons require complete prices in both runs; older runs with no completeness record are unknown. PDF conversion cost is unavailable and excluded. Stage times overlap when documents run in parallel.</p>
+      <p class="sub">Wall time and reported model cost. Cost comparisons require complete prices in both runs; older runs with no completeness record are unknown. Stage times overlap when documents run in parallel.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Document · stage</th><th>Time</th><th>Reported cost · coverage</th><th>Requests</th></tr></thead>
         <tbody>${rows.join("")}

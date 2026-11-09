@@ -322,23 +322,9 @@ class EditingGolden(GoldenContract):
     cases: list[EditCase] = Field(min_length=1)
 
 
-class OriginalPdf(GoldenContract):
-    """The pinned PDF used for fresh conversion and source review.
-
-    ``notes`` records any redaction applied to the public original; conversion
-    always uses these local bytes rather than downloading the original URL.
-    """
-
-    path: str = Field(default="source.pdf", min_length=1)
-    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    url: str | None = None
-    notes: str | None = None
-
-
 class GoldenSourceFile(GoldenContract):
     """Checked-in, non-sensitive Markdown in the same shape CC delivers to CA."""
 
-    original_pdf: OriginalPdf | None = None
     path: str = Field(default="source.md", min_length=1)
     filename: str = Field(min_length=1)
     source_label: str = Field(min_length=1)
@@ -356,7 +342,6 @@ class GroundTruthApproval(GoldenContract):
     reviewer: str | None = Field(default=None, min_length=1)
     reviewed_at: date | None = None
     source_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
-    original_pdf_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     template_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     requirements_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
 
@@ -677,13 +662,10 @@ class FixtureReport(GoldenContract):
     editing: StageReport | None = None
     usage: dict[str, StageUsage] = Field(default_factory=dict)
     input_provenance: dict[str, Any] = Field(default_factory=dict)
-    inapplicable_reason: str | None = None
 
     @property
     def passed(self) -> bool:
         """Require current approved ground truth and successful evaluated stages."""
-        if self.inapplicable_reason:
-            return True
         stages = [getattr(self, stage) for stage in STAGES if getattr(self, stage)]
         return (
             self.approval_status == "approved" and not self.approval_errors
@@ -711,7 +693,6 @@ class GoldenSetReport(GoldenContract):
     fixtures: list[FixtureReport]
     requested_stages: list[str] = Field(default_factory=list)
     expected_fixture_ids: list[str] = Field(default_factory=list)
-    input_path: Literal["markdown", "pdf"] = "markdown"
     corpus_fingerprint: str | None = None
     evaluator_fingerprint: str | None = None
     completed: bool = True
@@ -742,10 +723,7 @@ class GoldenSetReport(GoldenContract):
             return True
         if set(self.expected_fixture_ids) - {f.fixture_id for f in self.fixtures}:
             return True
-        applicable = [f for f in self.fixtures if not f.inapplicable_reason]
-        if not applicable:
-            return True
-        for fixture in applicable:
+        for fixture in self.fixtures:
             if fixture.approval_status != "approved" or fixture.approval_errors:
                 return True
             names = self.requested_stages or [s for s in STAGES if getattr(fixture, s)]

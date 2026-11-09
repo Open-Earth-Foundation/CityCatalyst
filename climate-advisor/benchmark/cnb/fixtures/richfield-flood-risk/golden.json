@@ -2,12 +2,6 @@
   "fixture_id": "richfield-flood-risk",
   "description": "PDF-derived Markdown of the public August 2025 City of Richfield, Minnesota stormwater model update and flood-risk prioritization study, drafted into an eight-section Minnesota DNR Flood Hazard Mitigation application, then verified and edited.",
   "source": {
-    "original_pdf": {
-      "path": "source.pdf",
-      "sha256": "c1e7d50fdd151ec3576edfa6fcf00909e2e1939eb6b6231e8f13e0d68520e33c",
-      "url": null,
-      "notes": "Public August 2025 Barr Engineering report for the City of Richfield. Redacted copy: the certifying engineer's name, signature and licence number (page 2) and the named City of Minneapolis correspondents (page 50) were removed with true PDF redaction, matching source.md."
-    },
     "path": "source.md",
     "filename": "Richfield_FloodRiskPrioritization.pdf",
     "source_label": "Richfield Flood Risk Prioritization",
@@ -801,7 +795,6 @@
     "reviewed_at": null,
     "source_sha256": "4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977",
     "template_sha256": "19140e268b6e598577547e101657b407cf3b24d9c75d0bb226faa6123a43cbe5",
-    "requirements_sha256": "f8283e6f072da21a4d2dd3431227b7a0ba226863263f8143e9301f0ff8aeb700",
-    "original_pdf_sha256": "c1e7d50fdd151ec3576edfa6fcf00909e2e1939eb6b6231e8f13e0d68520e33c"
+    "requirements_sha256": "f8283e6f072da21a4d2dd3431227b7a0ba226863263f8143e9301f0ff8aeb700"
   }
 }

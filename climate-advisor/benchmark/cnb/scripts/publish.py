@@ -10,7 +10,7 @@ Inputs:
   (default: only runs without ``viewer.js``; those are marked as rebuilt).
 
 Outputs (no model calls, no network, no database):
-- <results-dir>/index.html and app.js, runs/<run-id>/pdf/<fixture>.pdf, runs/index.js, and
+- <results-dir>/index.html and app.js, runs/index.js, and
   runs/<run-id>/viewer.js for each run.
 - With --candidate, recompute comparison.json/.md against the selected approved
   baseline, update delivery.json, and package review-bundle.zip. The saved report
@@ -104,10 +104,7 @@ def main(argv: list[str] | None = None) -> int:
             else None
         )
         comparison = compare_reports(report, baseline_report)
-        if delivery.get("execution") != "complete" or not any(
-            not fixture.get("inapplicable_reason")
-            for fixture in report.get("fixtures", [])
-        ):
+        if delivery.get("execution") != "complete" or not report.get("fixtures"):
             comparison["evaluation_unavailable"] = True
         comparison["baseline"] = selection
         delivery["baseline"] = selection

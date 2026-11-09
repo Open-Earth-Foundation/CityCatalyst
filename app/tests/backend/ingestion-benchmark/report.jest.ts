@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it } from "@jest/globals";
 import {
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
-  writeFileSync,
   existsSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,12 +15,18 @@ import {
   costUsd,
   groupSummary,
   totalUsage,
+  renderIndexLine,
   renderReport,
   runFolderName,
   writeRunArtifact,
   type CaseResult,
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
+import type {
+  BlockSummary,
+  CaseVerdict,
+} from "@/backend/ingestion-benchmark/metrics";
+import type { CaseGate } from "@/backend/ingestion-benchmark/gate";
 import type { FileScore } from "@/backend/ingestion-benchmark/score";
 
 function score(partial: Partial<FileScore>): FileScore {
@@ -88,8 +94,67 @@ function summary(
     ocrModel: "o",
     runsPerFile: 1,
     results,
+    selection: results.map((r) => r.id),
+    exploratory: false,
+    interrupted: false,
+    promptHash: "hash123",
+    inputRepresentation: "ocr-text",
+    testSetVersion: "tsv1",
+    dirty: false,
+    mlflowRunUrl: null,
+    mlflowNote: null,
   };
 }
+
+function verdict(result: CaseResult): CaseVerdict {
+  return {
+    id: result.id,
+    block: result.block,
+    eligible: result.eligible,
+    attempts: result.runs.length,
+    attemptsPassed: 0,
+    casePasses: false,
+    exploratory: true,
+    recallFailedAsZero: 0.5,
+    recallScoredOnly: 0.5,
+    totalWithinToleranceAll: false,
+    tenXAttempts: 0,
+    wrongTotalAttempts: 1,
+    warnedWrongTotalAttempts: 0,
+    failureModes: {
+      scored: 1,
+      ocr_error: 0,
+      extraction_error: 0,
+      truncated: 0,
+      zero_rows: 0,
+      approve_error: 0,
+      readback_error: 0,
+    },
+    costUsd: null,
+    seconds: 1,
+  };
+}
+
+function block(partial: Partial<BlockSummary>): BlockSummary {
+  return {
+    block: "validated",
+    casesInRun: 1,
+    casesInManifest: 1,
+    headlineRecall: 0.68,
+    recallScoredOnly: 0.7,
+    casesTotalWithinTolerance: 0,
+    attemptPassShare: 0,
+    tenXAttempts: 0,
+    warningShare: null,
+    ...partial,
+  };
+}
+
+const render = (
+  s: RunSummary,
+  blocks: BlockSummary[] = [block({})],
+  gates: CaseGate[] = [],
+) => renderReport(s, s.results.map(verdict), blocks, gates);
 
 describe("validated and held-out groups", () => {
   const failed = (id: string): CaseResult => ({
@@ -155,12 +220,17 @@ describe("validated and held-out groups", () => {
     expect(group.totalRunsWithin).toBe(3);
   });
 
-  it("prints the two sets only when the run has held-out cases", () => {
+  it("validated and held-out are separate sections and never merged", () => {
     const results = [result("A", 0.8), result("B", 0.4)];
-    const split = renderReport({ ...summary(results), heldOut: ["B"] }, null);
-    expect(split).toContain("| Validated | 1 | 1 | 80%");
-    expect(split).toContain("| Held-out | 1 | 1 | 40%");
-    expect(renderReport(summary(results), null)).not.toContain("Held-out");
+    const split = render(summary(results), [
+      block({ block: "validated", headlineRecall: 0.8 }),
+      block({ block: "held-out", headlineRecall: 0.4 }),
+    ]);
+    expect(split).toContain("## Block: validated");
+    expect(split).toContain("## Block: held-out");
+    expect(split.indexOf("## Block: validated")).toBeLessThan(
+      split.indexOf("## Block: held-out"),
+    );
   });
 });
 
@@ -196,13 +266,11 @@ describe("usage and cost", () => {
     expect(costUsd(usage)).toBeNull();
   });
 
-  it("flags unknown OCR pages and renders the cost section", () => {
+  it("renders the cost of the run", () => {
     const run = summary([withUsage("A", null)]);
     run.prices = prices;
-    const report = renderReport(run, null);
-    expect(report).toContain("## Cost of this run");
-    expect(report).toContain("0+ pages");
-    expect(report).toContain("Estimated cost: $4.00");
+    const report = render(run);
+    expect(report).toContain("Estimated cost of this run: $4.00");
   });
 });
 
@@ -237,17 +305,68 @@ describe("report", () => {
     expect(total.rowRecall).toBeCloseTo(0.4);
   });
 
-  it("renders the table and the change vs the previous run", () => {
-    const previous = summary(
-      [result("A", 0.2)],
-      "2026-10-26T10:00:00.000Z",
-      "old1234",
+  it('partial block shows "3 of 22 cases in this run"', () => {
+    const report = render(summary([result("A", 0.5)]), [
+      block({ casesInRun: 3, casesInManifest: 22 }),
+    ]);
+    expect(report).toContain("3 of 22 cases in this run");
+  });
+
+  it("headline line shows recall next to totals within tolerance", () => {
+    const report = render(summary([result("A", 0.5)]), [
+      block({ headlineRecall: 0.68, casesTotalWithinTolerance: 4 }),
+    ]);
+    expect(report).toContain(
+      "Headline recall (failed attempts count as 0): 68%; cases with totals within tolerance: 4",
     );
-    const report = renderReport(summary([result("A", 0.7)]), previous);
-    expect(report).toContain("| A | A.pdf | ok |");
-    expect(report).toContain("70% (+50 pts)");
-    expect(report).toContain("Compared with: previous run `old1234`");
-    expect(report).toContain("Missing rows (first run)");
+  });
+
+  it("legacy tolerance cases are listed in notes", () => {
+    const legacy = result("C-007", 0.5);
+    legacy.runs[0].score = score({ toleranceSource: "legacy" });
+    const modern = result("C-008", 0.5);
+    modern.runs[0].score = score({ toleranceSource: "rule" });
+    const unknown = { ...result("C-009", 0.5), eligible: null };
+    const report = render(summary([legacy, modern, unknown]));
+    expect(report).toContain("Cases using the legacy tolerance: C-007");
+    expect(report).toContain("`textTables` is unknown: C-009");
+    expect(report).toContain("C-028 and C-031 are not fully held out");
+  });
+
+  it("interrupted run shows INTERRUPTED in the header", () => {
+    const report = render({
+      ...summary([result("A", 0.5)]),
+      interrupted: true,
+    });
+    expect(report.split(/\r?\n/)[0]).toContain("INTERRUPTED");
+  });
+
+  it("MLflow note shown when not logged", () => {
+    const report = render({
+      ...summary([result("A", 0.5)]),
+      mlflowNote: "MLFLOW_TRACKING_URI not set",
+    });
+    expect(report).toContain("MLflow: MLFLOW_TRACKING_URI not set");
+  });
+
+  it("renders regressions, warnings and the index line", () => {
+    const run = result("A", 0.5);
+    run.runs[0].warnings = ["total looks off"];
+    const gate: CaseGate = {
+      id: "A",
+      verdict: "regression",
+      reasons: ["recall dropped 10 pts"],
+      costUsd: null,
+      forecastUsd: null,
+      lines: [],
+    };
+    const s = summary([run]);
+    const report = render(s, [block({})], [gate]);
+    expect(report).toContain("| A | regression | recall dropped 10 pts |");
+    expect(report).toContain("A: total looks off");
+    const line = renderIndexLine(s, [block({})], "folder");
+    expect(line).toContain("68%");
+    expect(line).toContain("[folder](./folder/report.md)");
   });
 
   it("names the folder from date, time and sha", () => {
@@ -256,35 +375,35 @@ describe("report", () => {
     );
   });
 
-  it("writes the run folder, the index, and compares with the newest sibling", () => {
-    const root = tmp();
-    const input = join(tmp(), "a.pdf");
-    writeFileSync(input, "pdf");
-    const key = { id: "A" } as never;
-    const first = writeRunArtifact({
-      root,
-      summary: summary(
-        [result("A", 0.2)],
-        "2026-10-26T10:00:00.000Z",
-        "old1234",
+  it("writeRunArtifact writes no answer-key.json and no ocr text", () => {
+    const outRoot = tmp();
+    const r = result("A", 0.5);
+    r.runs[0].stored = [{ gpc: "I.1.1" } as never];
+    const s = summary([r]);
+    const dir = writeRunArtifact({
+      outRoot,
+      summary: s,
+      verdicts: [verdict(r)],
+      blocks: [block({})],
+      gates: [],
+    });
+    expect(dir).toBe(join(outRoot, "2026-10-27-1530-abc1234"));
+    expect(existsSync(join(dir, "report.md"))).toBe(true);
+    const results = JSON.parse(readFileSync(join(dir, "results.json"), "utf8"));
+    expect(results.results[0].runs[0].stored).toEqual([{ gpc: "I.1.1" }]);
+    expect(results.verdicts).toHaveLength(1);
+    expect(results.blocks).toHaveLength(1);
+    expect(
+      JSON.parse(
+        readFileSync(
+          join(dir, "cases", "A", "attempt-1", "extracted-values.json"),
+          "utf8",
+        ),
       ),
-      inputs: [{ id: "A", path: input, key }],
-      publishInputs: false,
-    });
-    expect(existsSync(join(first, "cases", "A", "original.pdf"))).toBe(false);
-    expect(existsSync(join(first, "cases", "A", "answer-key.json"))).toBe(true);
-
-    const second = writeRunArtifact({
-      root,
-      summary: summary([result("A", 0.7)]),
-      inputs: [{ id: "A", path: input, key }],
-      publishInputs: true,
-    });
-    expect(existsSync(join(second, "cases", "A", "original.pdf"))).toBe(true);
-    expect(readFileSync(join(second, "report.md"), "utf8")).toContain(
-      "+50 pts",
-    );
-    const index = readFileSync(join(root, "INDEX.md"), "utf8");
-    expect(index.match(/\| `/g)).toHaveLength(2);
+    ).toEqual([{ gpc: "I.1.1" }]);
+    const files = readdirSync(dir, { recursive: true }) as string[];
+    expect(
+      files.filter((f) => /answer-key|ocr|original|INDEX/i.test(f)),
+    ).toEqual([]);
   });
 });

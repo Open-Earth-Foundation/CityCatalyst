@@ -1,23 +1,18 @@
 /**
- * Turns the output of the GHGI import benchmark into a folder the whole team
- * can read without running anything: a markdown report, the raw results, and
- * per case the original file, the answer key and the extracted values.
+ * Turns the output of the PDF extraction benchmark into a folder the whole
+ * team can read: a markdown report, the full results and, per attempt, the
+ * values the import stored. Inputs, answer keys and OCR text are never copied.
  *
- * One folder per run, named `<UTC date>-<UTC time>-<short sha>`, plus an
- * INDEX.md with one line per run so progress across fixes stays visible.
+ * One folder per run, named `<UTC date>-<UTC time>-<short sha>`.
  */
 import { execFileSync } from "node:child_process";
-import {
-  appendFileSync,
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
-import { extname, join } from "node:path";
-import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import type { CaseGate } from "@/backend/ingestion-benchmark/gate";
+import type {
+  BlockSummary,
+  CaseVerdict,
+} from "@/backend/ingestion-benchmark/metrics";
 import type {
   FileScore,
   StoredValue,
@@ -112,6 +107,16 @@ export type RunSummary = {
   /** Cases kept out of rule writing; reported apart from the validated set. */
   heldOut?: string[];
   results: CaseResult[];
+  selection: string[];
+  /** Attempts other than 3 per case. */
+  exploratory: boolean;
+  interrupted: boolean;
+  promptHash: string | null;
+  inputRepresentation: string | null;
+  testSetVersion: string;
+  dirty: boolean;
+  mlflowRunUrl: string | null;
+  mlflowNote: string | null;
 };
 
 export type CaseMetrics = {
@@ -237,32 +242,6 @@ export function groupSummary(results: CaseResult[]): GroupSummary {
   };
 }
 
-function groupLines(summary: RunSummary): string[] {
-  if (!summary.heldOut?.length) return [];
-  const heldOut = new Set(summary.heldOut);
-  const row = (name: string, results: CaseResult[]) => {
-    const group = groupSummary(results);
-    return `| ${name} | ${group.cases} | ${group.scored} | ${pct(group.rowRecall)} | ${pct(group.valueAccuracy)} | ${pct(group.rowRecallWithFailed)} | ${pct(group.valueAccuracyWithFailed)} | ${group.totalCasesWithin}/${group.totalCases} | ${group.totalRunsWithin}/${group.totalRuns} |`;
-  };
-  return [
-    "## Validated and held-out cases",
-    "",
-    'Means are over the cases scored row by row. The "with failed" columns count a failed run as 0. A case has its total within tolerance only when every run does.',
-    "",
-    "| Set | Cases | Scored by row | Recall | Value acc. | Recall with failed | Value acc. with failed | Totals within tolerance (cases) | (runs) |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-    row(
-      "Validated",
-      summary.results.filter((result) => !heldOut.has(result.id)),
-    ),
-    row(
-      "Held-out",
-      summary.results.filter((result) => heldOut.has(result.id)),
-    ),
-    "",
-  ];
-}
-
 export const ZERO_TOKENS: Tokens = {
   calls: 0,
   promptTokens: 0,
@@ -336,133 +315,186 @@ const tokensText = (usage: CaseUsage) =>
 const pct = (ratio: number | null) =>
   ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
 
-const signedPct = (value: number | null) =>
-  value === null ? "n/a" : `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+const cell = (text: string) => text.replace(/\|/g, "\\|");
 
-/** Change in percentage points, empty when either side is missing. */
-function delta(now: number | null, before: number | null | undefined) {
-  if (now === null || before === null || before === undefined) return "";
-  const points = Math.round((now - before) * 100);
-  return points === 0 ? " (=)" : ` (${points > 0 ? "+" : ""}${points} pts)`;
+/** Tolerance rule of the first scored attempt, or "n/a" when no attempt was scored. */
+function toleranceSourceOf(result: CaseResult): string {
+  return (
+    result.runs.find((run) => run.failureMode === "scored" && run.score)?.score
+      ?.toleranceSource ?? "n/a"
+  );
 }
 
-const cell = (text: string) => text.replace(/\|/g, "\\|");
+/** Seconds spent in each stage, summed over the attempts. */
+function stageSeconds(result: CaseResult): string {
+  const sum = (pick: (stage: StageMs) => number | null) => {
+    const values = result.runs
+      .map((run) => pick(run.stageMs))
+      .filter((v): v is number => v !== null);
+    return values.length
+      ? `${Math.round(values.reduce((a, b) => a + b, 0) / 1000)} s`
+      : "n/a";
+  };
+  return `ocr ${sum((s) => s.ocr)}, extraction ${sum((s) => s.extraction)}, import ${sum((s) => s.import)}`;
+}
+
+function failureModesText(verdict: CaseVerdict | undefined): string {
+  if (!verdict) return "n/a";
+  const parts = Object.entries(verdict.failureModes)
+    .filter(([mode, count]) => mode !== "scored" && count > 0)
+    .map(([mode, count]) => `${mode} ${count}`);
+  return parts.length ? parts.join(", ") : "none";
+}
 
 export function renderReport(
   summary: RunSummary,
-  previous: RunSummary | null,
+  verdicts: CaseVerdict[],
+  blocks: BlockSummary[],
+  gates: CaseGate[],
 ): string {
-  const total = aggregate(summary.results);
-  const before = previous ? aggregate(previous.results) : null;
-  const previousById = new Map(
-    (previous?.results ?? []).map((result) => [result.id, caseMetrics(result)]),
-  );
+  const verdictById = new Map(verdicts.map((v) => [v.id, v]));
+  const gateById = new Map(gates.map((g) => [g.id, g]));
   const usage = totalUsage(summary.results);
   const cost = costUsd(usage, summary.prices);
-  const beforeCost = previous
-    ? costUsd(totalUsage(previous.results), previous.prices)
-    : null;
+  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}`;
   const lines: string[] = [
-    `# Ingestion accuracy run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC`,
+    title,
     "",
-    `- Commit: \`${summary.commit}\` on \`${summary.branch}\``,
-    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}${summary.reasoningEffort ? ` (reasoning effort ${summary.reasoningEffort})` : ""}; OCR model: ${summary.ocrModel ?? "default"}`,
-    `- Runs per file: ${summary.runsPerFile}`,
-    `- Compared with: ${previous ? `previous run \`${previous.commit}\` (${previous.measuredAt.slice(0, 10)})` : "no previous run"}`,
+    `- Commit: \`${summary.commit}\` on \`${summary.branch}\`${summary.dirty ? " (dirty working tree)" : ""}`,
+    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+    `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
+    `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+    `- Test-set version: ${summary.testSetVersion}`,
+    `- Attempts per case: ${summary.runsPerFile}`,
+    `- Selection: ${summary.selection.length ? summary.selection.join(", ") : "none"}`,
+    `- MLflow: ${summary.mlflowRunUrl ?? summary.mlflowNote ?? "not logged"}`,
     "",
-    "## Summary",
-    "",
-    `- Cases: ${total.cases} (${total.scored} scored row by row)`,
-    `- Cases a user would see fail at OCR: ${total.ocrFailures}${before ? ` (before: ${before.ocrFailures})` : ""}`,
-    `- Mean row recall: ${pct(total.rowRecall)}${delta(total.rowRecall, before?.rowRecall)}`,
-    `- Mean row precision: ${pct(total.rowPrecision)}${delta(total.rowPrecision, before?.rowPrecision)}`,
-    `- Mean value accuracy: ${pct(total.valueAccuracy)}${delta(total.valueAccuracy, before?.valueAccuracy)}`,
-    `- Mean classification accuracy: ${pct(total.classificationAccuracy)}${delta(total.classificationAccuracy, before?.classificationAccuracy)}`,
-    "",
-    ...groupLines(summary),
-    "## Cost of this run",
-    "",
-    `- LLM: ${usage.calls} calls, ${usage.promptTokens.toLocaleString("en-US")} input and ${usage.completionTokens.toLocaleString("en-US")} output tokens (${(usage.reasoningTokens ?? 0).toLocaleString("en-US")} of them reasoning); largest output of one call ${(usage.maxCompletionTokens ?? 0).toLocaleString("en-US")}; calls cut off at the token limit: ${usage.lengthStops ?? 0}`,
-    `- OCR: ${usage.ocrPagesKnown ? `${usage.ocrPages} pages` : `${usage.ocrPages}+ pages (some OCR calls failed before reporting pages)`}`,
-    `- Estimated cost: ${money(cost)}${beforeCost !== null && cost !== null ? ` (previous run: ${money(beforeCost)})` : ""}${cost === null ? " (set llmInputPerMTok, llmOutputPerMTok and ocrPerPage under `prices` in the config to get a dollar figure)" : ""}`,
-    "",
-    "## Per case",
-    "",
-    "Recall, precision and accuracies are means over the runs that finished. Change vs the previous run is in points.",
-    "",
-    "| Case | File | OCR | Rows | Recall | Precision | Value acc. | Class. acc. | Notation keys | Total vs key | Stable total | Time | Tokens in / out | OCR pages | Est. cost |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
-  for (const result of summary.results) {
-    const m = caseMetrics(result);
-    const old = previousById.get(result.id);
-    const ocr =
-      m.ocrOk === null ? "n/a" : m.ocrOk ? "ok" : `fails ${m.ocrCode ?? ""}`;
+  if (summary.interrupted) {
     lines.push(
-      `| ${cell(result.keyId ?? result.id)} | ${cell(result.file)} | ${ocr.trim()} | ${m.extractedRows === null ? "n/a" : Math.round(m.extractedRows)} | ${pct(m.rowRecall)}${delta(m.rowRecall, old?.rowRecall)} | ${pct(m.rowPrecision)}${delta(m.rowPrecision, old?.rowPrecision)} | ${pct(m.valueAccuracy)}${delta(m.valueAccuracy, old?.valueAccuracy)} | ${pct(m.classificationAccuracy)} | ${m.notationRecovered}/${m.notationScored} | ${signedPct(m.totalDiffPct)}${m.totalWithinTolerance === null ? "" : m.totalWithinTolerance ? " (within tolerance)" : " (outside tolerance)"} | ${m.stableTotal ? "yes" : "no"} | ${m.seconds === null ? "n/a" : `${Math.round(m.seconds)} s`} | ${tokensText(caseUsage(result))} | ${result.ocrUsage?.pages ?? "n/a"} | ${money(costUsd(caseUsage(result), summary.prices))} |`,
+      "**INTERRUPTED**: the run stopped before every case finished; numbers cover the finished cases only.",
+      "",
     );
   }
 
-  const weakest = summary.results
-    .map((result) => ({ result, m: caseMetrics(result) }))
-    .filter(({ m }) => m.rowRecall !== null)
-    .sort((a, b) => (a.m.rowRecall ?? 0) - (b.m.rowRecall ?? 0))
-    .slice(0, 3);
-  if (weakest.length) {
-    lines.push("", "## Lowest recall: what is missing", "");
-    for (const { result, m } of weakest) {
-      const score = result.runs.find((entry) => entry.ok && entry.score)?.score;
-      lines.push(
-        `### ${result.keyId ?? result.id} (${pct(m.rowRecall)} recall)`,
-        "",
-      );
-      const missing = (score?.missingRows ?? []).slice(0, 8);
-      lines.push(
-        missing.length
-          ? "Missing rows (first run):"
-          : "No missing rows listed.",
-      );
-      for (const row of missing) {
-        lines.push(
-          `- ${row.gpc || "no ref"}: ${row.description}${row.value === null ? "" : ` (${row.value} t)`}`,
-        );
-      }
-      const unexpected = (score?.unexpectedStored ?? []).slice(0, 5);
-      if (unexpected.length) {
-        lines.push("", "Stored but not in the key:");
-        for (const row of unexpected) {
-          lines.push(`- ${row.gpc} scope ${row.scope ?? "?"}: ${row.valueT} t`);
-        }
-      }
-      lines.push("");
-    }
+  for (const block of blocks) {
+    lines.push(
+      `## Block: ${block.block}`,
+      "",
+      `- ${block.casesInRun} of ${block.casesInManifest} cases in this run`,
+      `- Headline recall (failed attempts count as 0): ${pct(block.headlineRecall)}; cases with totals within tolerance: ${block.casesTotalWithinTolerance}`,
+      `- Recall over scored attempts only: ${pct(block.recallScoredOnly)}`,
+      `- Attempts passing: ${pct(block.attemptPassShare)}`,
+      `- Attempts 10x or more off the expected total: ${block.tenXAttempts}`,
+      `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,
+      "",
+    );
   }
 
+  const tenX = verdicts.reduce((sum, v) => sum + v.tenXAttempts, 0);
+  const warnings = summary.results.flatMap((result) =>
+    [...new Set(result.runs.flatMap((run) => run.warnings))].map((text) => ({
+      id: result.id,
+      text,
+    })),
+  );
   lines.push(
-    "## Files in this folder",
+    "## Guardrails",
     "",
-    "- `results.json`: full output of every run",
-    "- `cases/<id>/answer-key.json`: expected rows from the Product workbook",
-    "- `cases/<id>/extracted-values.json`: values stored by the import, per run",
-    "- `cases/<id>/original.*`: the input file, when `publishInputs` is set in the config",
+    `- 10x guardrail: ${tenX} attempt${tenX === 1 ? "" : "s"} with a stored total 10x or more off the expected total`,
+    warnings.length
+      ? `- Warnings:\n${warnings.map((w) => `  - ${w.id}: ${cell(w.text)}`).join("\n")}`
+      : "- Warnings: none",
+    "",
+    "## Regressions against the baseline",
+    "",
+  );
+  if (gates.length === 0) {
+    lines.push("No baseline comparison in this run.", "");
+  } else {
+    lines.push("| Case | Verdict | Reasons |", "| --- | --- | --- |");
+    for (const gate of gates) {
+      lines.push(
+        `| ${cell(gate.id)} | ${gate.verdict} | ${cell(gate.reasons.join("; ") || "-")} |`,
+      );
+    }
+    lines.push("");
+  }
+
+  const modeTotals = new Map<string, number>();
+  for (const verdict of verdicts) {
+    for (const [mode, count] of Object.entries(verdict.failureModes)) {
+      if (mode !== "scored" && count > 0) {
+        modeTotals.set(mode, (modeTotals.get(mode) ?? 0) + count);
+      }
+    }
+  }
+  lines.push(
+    "## Failure modes",
+    "",
+    modeTotals.size
+      ? [...modeTotals].map(([mode, count]) => `- ${mode}: ${count}`).join("\n")
+      : "No failed attempts.",
+    "",
+    "## Per case",
+    "",
+    "Recall counts failed attempts as 0. Runtime is summed over the attempts.",
+    "",
+    "| Case | Block | Verdict | Attempts passed | Recall | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+  );
+  for (const result of summary.results) {
+    const v = verdictById.get(result.id);
+    const within =
+      v?.totalWithinToleranceAll == null
+        ? "n/a"
+        : v.totalWithinToleranceAll
+          ? "yes"
+          : "no";
+    lines.push(
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+    );
+  }
+
+  const legacy = summary.results
+    .filter((result) => toleranceSourceOf(result) === "legacy")
+    .map((result) => result.id);
+  const unknownTables = summary.results
+    .filter((result) => result.eligible === null)
+    .map((result) => result.id);
+  lines.push(
+    "",
+    `Estimated cost of this run: ${money(cost)}`,
+    "",
+    "## Notes",
+    "",
+    "- C-028 and C-031 are not fully held out.",
+    `- Cases using the legacy tolerance: ${legacy.length ? legacy.join(", ") : "none"}`,
+    `- Cases where \`textTables\` is unknown: ${unknownTables.length ? unknownTables.join(", ") : "none"}`,
     "",
   );
   return lines.join("\n");
 }
 
-export function renderIndexLine(summary: RunSummary, folder: string): string {
-  const total = aggregate(summary.results);
+export function renderIndexLine(
+  summary: RunSummary,
+  blocks: BlockSummary[],
+  folder: string,
+): string {
+  const recall = (block: Block) =>
+    pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
-  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")} | \`${summary.commit}\` | ${total.cases} | ${total.ocrFailures} | ${pct(total.rowRecall)} | ${pct(total.valueAccuracy)} | ${money(cost)} | [${folder}](./${folder}/report.md) |`;
+  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md) |`;
 }
 
-const INDEX_HEADER = [
-  "# Ingestion accuracy runs",
+export const INDEX_HEADER = [
+  "# PDF benchmark runs",
   "",
-  "One line per benchmark run, oldest first. Open the report for per-case numbers and the change vs the previous run.",
+  "One line per benchmark run, oldest first. Open the report for per-case numbers and regressions.",
   "",
-  "| Run (UTC) | Commit | Cases | OCR failures | Mean recall | Mean value acc. | Est. cost | Report |",
-  "| --- | --- | --- | --- | --- | --- | --- | --- |",
+  "| Run (UTC) | Commit | Cases | Validated recall | Held-out recall | Est. cost | Report |",
+  "| --- | --- | --- | --- | --- | --- | --- |",
   "",
 ].join("\n");
 
@@ -485,79 +517,39 @@ export function runFolderName(measuredAt: string, commit: string): string {
   return `${stamp}-${commit}`;
 }
 
-export type CaseInput = {
-  id: string;
-  /** Path of the input file. Copied only when publishInputs is true. */
-  path: string;
-  key: KeyFile | null;
-};
-
 /**
- * Writes the run folder under `root` and appends to `root/INDEX.md`. Returns
- * the folder path. The previous run is the newest sibling folder that has a
- * results.json.
+ * Writes the run folder under `outRoot` and returns its path. Holds the report,
+ * the full results (including the stored values a later baseline rescore
+ * needs) and each attempt's extracted values. Never copies inputs, answer keys
+ * or OCR text.
  */
 export function writeRunArtifact(args: {
-  root: string;
+  outRoot: string;
   summary: RunSummary;
-  inputs: CaseInput[];
-  publishInputs: boolean;
+  verdicts: CaseVerdict[];
+  blocks: BlockSummary[];
+  gates: CaseGate[];
 }): string {
-  const { root, summary, inputs, publishInputs } = args;
-  const folder = runFolderName(summary.measuredAt, summary.commit);
-  const dir = join(root, folder);
+  const { outRoot, summary, verdicts, blocks, gates } = args;
+  const dir = join(outRoot, runFolderName(summary.measuredAt, summary.commit));
   mkdirSync(dir, { recursive: true });
-
-  let previous: RunSummary | null = null;
-  if (existsSync(root)) {
-    const siblings = readdirSync(root)
-      .filter(
-        (name) =>
-          name !== folder && existsSync(join(root, name, "results.json")),
-      )
-      .sort();
-    const newest = siblings[siblings.length - 1];
-    if (newest) {
-      previous = JSON.parse(
-        readFileSync(join(root, newest, "results.json"), "utf8"),
-      ) as RunSummary;
-    }
-  }
-
-  writeFileSync(join(dir, "results.json"), JSON.stringify(summary, null, 2));
-  writeFileSync(join(dir, "report.md"), renderReport(summary, previous));
-
-  for (const input of inputs) {
-    const caseDir = join(dir, "cases", input.id);
-    mkdirSync(caseDir, { recursive: true });
-    if (input.key) {
+  writeFileSync(
+    join(dir, "results.json"),
+    JSON.stringify({ ...summary, verdicts, blocks, gates }, null, 2),
+  );
+  writeFileSync(
+    join(dir, "report.md"),
+    renderReport(summary, verdicts, blocks, gates),
+  );
+  for (const result of summary.results) {
+    for (const run of result.runs) {
+      const attemptDir = join(dir, "cases", result.id, `attempt-${run.run}`);
+      mkdirSync(attemptDir, { recursive: true });
       writeFileSync(
-        join(caseDir, "answer-key.json"),
-        JSON.stringify(input.key, null, 2),
+        join(attemptDir, "extracted-values.json"),
+        JSON.stringify(run.stored ?? [], null, 2),
       );
     }
-    const result = summary.results.find((entry) => entry.id === input.id);
-    writeFileSync(
-      join(caseDir, "extracted-values.json"),
-      JSON.stringify(
-        (result?.runs ?? []).map((entry) => ({
-          run: entry.run,
-          ok: entry.ok,
-          message: entry.message ?? null,
-          extractedRows: entry.extractedRows ?? null,
-          stored: entry.stored ?? [],
-        })),
-        null,
-        2,
-      ),
-    );
-    if (publishInputs) {
-      copyFileSync(input.path, join(caseDir, `original${extname(input.path)}`));
-    }
   }
-
-  const indexPath = join(root, "INDEX.md");
-  if (!existsSync(indexPath)) writeFileSync(indexPath, INDEX_HEADER);
-  appendFileSync(indexPath, `${renderIndexLine(summary, folder)}\n`);
   return dir;
 }

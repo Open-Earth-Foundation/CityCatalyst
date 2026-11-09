@@ -20,7 +20,8 @@ import {
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
-  isValueInText,
+  isValueInNumbers,
+  numbersInText,
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
@@ -1998,7 +1999,10 @@ function finalizeRows(
   const reportedTotals: ReportedTotal[] = [];
   const converted: ExtractedRow[] = [];
   const source = options?.source;
-  const sourceStyle = source ? detectNumberStyle(source.text) : undefined;
+  // Every number printed in the source, read once for all the in-text checks.
+  const sourceNumbers = source
+    ? numbersInText(source.text, detectNumberStyle(source.text))
+    : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2009,7 +2013,7 @@ function finalizeRows(
     page: number | null | undefined,
   ): { inText?: boolean } => {
     if (!source || raw == null) return {};
-    const found = isValueInText(raw, source.text, sourceStyle);
+    const found = isValueInNumbers(raw, sourceNumbers);
     if (!found) {
       logger.warn(
         { label, value, page: page ?? null },

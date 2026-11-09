@@ -3,6 +3,9 @@ import {
   isValueInText,
   numbersInText,
   parseNumberString,
+  captionLines,
+  tableCaptionLines,
+  yearEvidence,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle } from "@/util/GHGI/source-text";
 
@@ -73,5 +76,100 @@ describe("numbersInText", () => {
     expect(numbersInText("9,559.2", "english")).toEqual([
       { value: 9559.2, step: 0.1 },
     ]);
+  });
+});
+
+describe("captionLines", () => {
+  const text = [
+    "Intro prose that mentions Table 3 in the middle.",
+    "**Table 2: Emissions (kt CO2e)**",
+    "Figure 4 Emissions by sector",
+    "## Summary",
+    "(kt CO2e)",
+    "Total GHGs (metric tonnes CO2e)",
+    "| Sector | 2019 |",
+    "| :--- | ---: |",
+    "| Energy | 5 (approx) |",
+  ].join("\n");
+
+  it("lists tables, figures, headings, unit lines and header rows", () => {
+    expect(captionLines(text)).toEqual([
+      "**Table 2: Emissions (kt CO2e)**",
+      "Figure 4 Emissions by sector",
+      "## Summary",
+      "(kt CO2e)",
+      "Total GHGs (metric tonnes CO2e)",
+      "| Sector | 2019 |",
+    ]);
+  });
+
+  it("tableCaptionLines leaves out figures and unit lines", () => {
+    expect(tableCaptionLines(text)).toEqual([
+      "**Table 2: Emissions (kt CO2e)**",
+      "## Summary",
+      "| Sector | 2019 |",
+    ]);
+  });
+});
+
+describe("yearEvidence", () => {
+  it("other year in a table caption", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions for 2019\n1,000 2,000", 2021, 2026),
+    ).toEqual({ kind: "other", years: [2019] });
+  });
+  it("target year", () => {
+    expect(
+      yearEvidence("Table 3-1 Emissions summary for 2021", 2021, 2026).kind,
+    ).toBe("target");
+  });
+  it.each([2021, 2022])("fiscal 2021/22 is target for %i", (year) => {
+    expect(yearEvidence("Table 4 Emissions 2021/22", year, 2026).kind).toBe(
+      "target",
+    );
+  });
+  it.each(["2020-21", "FY2021", "FY21", "2021-22"])("fiscal %s", (form) => {
+    expect(yearEvidence(`Table 4 Emissions ${form}`, 2021, 2026).kind).toBe(
+      "target",
+    );
+  });
+  it("figure captions are left out", () => {
+    expect(yearEvidence("Figure 2 Emissions 2019", 2021, 2026).kind).toBe(
+      "none",
+    );
+  });
+  it.each(["2005–2019", "2005-2019", "2005 to 2019"])(
+    "range %s is ignored",
+    (range) => {
+      expect(yearEvidence(`Table 9 Trend ${range}`, 2021, 2026).kind).toBe(
+        "none",
+      );
+    },
+  );
+  it("projection year is ignored", () => {
+    expect(yearEvidence("## Targets to 2050", 2021, 2026).kind).toBe("none");
+  });
+  it("year after the current year is ignored", () => {
+    expect(yearEvidence("Table 5 Outlook 2030", 2021, 2026).kind).toBe("none");
+  });
+  it("prose is not a caption", () => {
+    expect(yearEvidence("In 2019 the council grew.", 2021, 2026).kind).toBe(
+      "none",
+    );
+  });
+  // Review Focus 3
+  it("markdown header row names the target", () => {
+    expect(
+      yearEvidence(
+        "| Sector | 2019 | 2021 |\n| --- | --- | --- |\n| A | 1 | 2 |",
+        2021,
+        2026,
+      ).kind,
+    ).toBe("target");
+  });
+  it("several other years in order", () => {
+    expect(yearEvidence("Table 1 Emissions 2018 and 2019", 2021, 2026)).toEqual(
+      { kind: "other", years: [2018, 2019] },
+    );
   });
 });

@@ -22,6 +22,7 @@ import {
   detectNumberStyle,
   isValueInText,
   parseNumberString,
+  yearEvidence,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
 import {
@@ -748,7 +749,10 @@ function selectPages(
   }
 
   if (best) {
-    const chosen = sorted.slice(best.start, best.end + 1);
+    // Pages without rows (another year's table, dropped) lead no run.
+    let first = best.start;
+    while (first < best.end && sorted[first].result.rows.length === 0) first++;
+    const chosen = sorted.slice(first, best.end + 1);
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
@@ -1928,13 +1932,35 @@ export type FinalizeOptions = {
    * value is printed there (`inText`).
    */
   source?: FinalizeSource;
+  /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
+  currentYear?: number;
 };
 
 export function finalizeExtractedRows(
-  rows: ExtractedRow[],
+  inputRows: ExtractedRow[],
   targetYear?: number,
   options?: FinalizeOptions,
 ): ExtractionResult {
+  let rows = inputRows;
+  // Year evidence from the page's table captions: when they name only other
+  // years, rows the model labeled with the target year (or none) belong to that
+  // table's year. The year filter then drops them, and their totals stop being
+  // targets. Runs before hidden row totals are found so those inherit the year.
+  if (options?.source?.kind === "page" && targetYear != null) {
+    const evidence = yearEvidence(
+      options.source.text,
+      targetYear,
+      options.currentYear ?? new Date().getUTCFullYear(),
+    );
+    if (evidence.kind === "other") {
+      const relabel = evidence.years[0];
+      rows = rows.map((row) =>
+        row.year == null || row.year === targetYear
+          ? { ...row, year: relabel }
+          : row,
+      );
+    }
+  }
   const droppedRows: ExtractionSummary["droppedRows"] = {};
   const drop = (reason: DroppedRowReason) => {
     droppedRows[reason] = (droppedRows[reason] ?? 0) + 1;

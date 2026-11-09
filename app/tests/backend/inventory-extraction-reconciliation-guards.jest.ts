@@ -237,3 +237,80 @@ describe("CC-1163 check 1: total in text", () => {
     });
   });
 });
+
+describe("CC-1163 check 2: year evidence", () => {
+  const body =
+    "Residential buildings 3,000,000\nOn-road 2,000,000\nTOTAL 5,000,000\n";
+  const page = (caption: string) => `${caption}\n${body}`;
+
+  it("rows of a 2019 table labeled 2021 are dropped", () => {
+    const rows = fiveMillionRows();
+    const result = finalizeExtractedRows(rows, 2021, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: {
+        text: page("Table A-3 GHG emissions for 2019"),
+        kind: "page",
+      },
+    });
+    expect(result.rows).toEqual([]);
+    expect(result.summary.droppedRows.other_year).toBe(2);
+    expect(result.summary.reportedTotals[0].year).toBe(2019);
+    expect(
+      reconciliationTargets(result.summary.reportedTotals, 2021).grand,
+    ).toEqual([]);
+  });
+
+  it("selection takes the 2021 page", () => {
+    const opts = (caption: string) => ({
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: { text: page(caption), kind: "page" as const },
+    });
+    const p2019 = finalizeExtractedRows(
+      fiveMillionRows(),
+      2021,
+      opts("Table A-3 GHG emissions for 2019"),
+    );
+    const p2021 = finalizeExtractedRows(
+      fiveMillionRows(),
+      2021,
+      opts("Table A-4 GHG emissions for 2021"),
+    );
+    const selected = selectReconciledPages(
+      [
+        { page: 1, result: p2019 },
+        { page: 2, result: p2021 },
+      ],
+      2021,
+    );
+    expect(selected.summary.pageSelection).toBe("reconciled");
+    expect(selected.summary.selectedPages).toEqual([2]);
+  });
+
+  it("continuation page without caption year joins the run", () => {
+    const [residential, onRoad, total] = fiveMillionRows();
+    const first = finalizeExtractedRows([residential, total], 2021, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: {
+        text: "Table A-1 GHG emissions for 2021\nResidential buildings 3,000,000\nTOTAL 5,000,000\n",
+        kind: "page",
+      },
+    });
+    const second = finalizeExtractedRows([onRoad], 2021, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: { text: "On-road 2,000,000\n", kind: "page" },
+    });
+    expect(second.rows).toHaveLength(1);
+    const selected = selectReconciledPages(
+      [
+        { page: 1, result: first },
+        { page: 2, result: second },
+      ],
+      2021,
+    );
+    expect(selected.summary.selectedPages).toEqual([1, 2]);
+  });
+});

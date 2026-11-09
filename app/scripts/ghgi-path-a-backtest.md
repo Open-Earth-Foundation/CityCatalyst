@@ -30,7 +30,7 @@ From `app/` in Command Prompt:
 npx tsx scripts/ghgi-path-a-backtest.ts --files "C:\Users\frank\Desktop\ingestion-script-files"
 ```
 
-`--files` is the folder of inventories. If you omit it, the same Desktop path is used.
+`--files` is the folder of inventories. If omitted, the script looks for `./ingestion-script-files` relative to `app/`.
 
 Output:
 
@@ -39,7 +39,7 @@ app\reports\ghgi-path-a\<timestamp>\report.md
 app\reports\ghgi-path-a\<timestamp>\report.json
 ```
 
-Attach `report.md` to the ticket. A committed sample is `app/reports/ghgi-path-a/2026-11-06T08-26-56-998Z/` (later local runs stay untracked).
+Attach `report.md` to the ticket. Reports are local and gitignored.
 
 ## Folder layout
 

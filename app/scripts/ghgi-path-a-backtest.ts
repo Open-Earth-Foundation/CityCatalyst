@@ -4,9 +4,10 @@
  *
  * Does not use the Excel/CSV export. CIRIS is out of scope until CC-1217.
  *
- *   npx tsx scripts/ghgi-path-a-backtest.ts --files "C:\Users\frank\Desktop\ingestion-script-files"
+ *   npx tsx scripts/ghgi-path-a-backtest.ts --files ./ingestion-script-files
  */
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
@@ -37,8 +38,7 @@ import { hasSignedNumericValue } from "@/util/parse-numeric-cell";
 import { toCanonical } from "@/util/notation-keys";
 import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 
-const DEFAULT_FILES =
-  "C:\\Users\\frank\\Desktop\\ingestion-script-files";
+const DEFAULT_FILES = "./ingestion-script-files";
 const VALUE_TOLERANCE = 0.001;
 const RECALL_BAR = 0.99;
 const PRECISION_BAR = 0.99;
@@ -114,10 +114,6 @@ function slug(name: string): string {
     .replace(/\(1\)/g, "")
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_|_$/g, "");
-}
-
-function citySlug(city: string): string {
-  return slug(city).replace(/^sao_/, "sao_");
 }
 
 function withinTol(actual: number, expected: number): boolean {
@@ -209,7 +205,7 @@ function matchFiles(
   key: AnswerKeyRow,
 ): { file: string; family: Family }[] {
   const target = slug(key.file).replace(/_xlsx$/, "");
-  const city = citySlug(key.city);
+  const city = slug(key.city);
   const hits: { file: string; family: Family }[] = [];
   for (const file of files) {
     const s = slug(file);
@@ -247,7 +243,7 @@ async function ensureInventory(input: {
   year: number;
   userId: string;
 }): Promise<{ cityId: string; inventoryId: string }> {
-  const locode = `XX P950 ${citySlug(input.cityName).slice(0, 18)}`.trim();
+  const locode = `XX P950 ${slug(input.cityName).slice(0, 18)}`.trim();
   let city = await db.models.City.findOne({ where: { locode } });
   if (!city) {
     city = await db.models.City.create({
@@ -547,6 +543,13 @@ async function runCase(input: {
 
 async function main() {
   const filesDir = argValue("--files", DEFAULT_FILES);
+  try {
+    await access(filesDir, fsConstants.R_OK);
+  } catch {
+    throw new Error(
+      `Golden-file folder not found: ${filesDir}. Pass --files <path> to the local inventory xlsx folder.`,
+    );
+  }
   env.loadEnvConfig(process.cwd());
   await db.initialize();
   const userId = await resolveUserId();

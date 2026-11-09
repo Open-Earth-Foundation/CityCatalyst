@@ -186,6 +186,8 @@ def run_summary(run_dir: Path) -> dict[str, Any] | None:
         "models": report.get("models", {}),
         "judge_prompt_versions": report.get("judge_prompt_versions", {}),
         "analysis_contract_version": report.get("analysis_contract_version"),
+        "corpus_fingerprint": report.get("corpus_fingerprint"),
+        "evaluator_fingerprint": report.get("evaluator_fingerprint"),
         "has_viewer": (run_dir / "viewer.js").exists(),
         "wall_seconds": report.get("wall_seconds"),
         "fixtures": {

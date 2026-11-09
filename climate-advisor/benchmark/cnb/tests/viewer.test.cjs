@@ -25,7 +25,7 @@ const context = vm.createContext({
 // Expose existing functions inside the test only, keeping browser assets standalone.
 vm.runInContext(source.replace(/\}\)\(\);\s*$/, `
   globalThis.viewer = { extractionFacts, extractionGate, factStats, stageDocCard,
-    goldenTab, extractionTab, verdictDiff, usageTotals, runTotals, indexTotals, usageDiff, costText,
+    goldenTab, extractionTab, verdictDiff, stageDiff, usageTotals, runTotals, indexTotals, usageDiff, costText,
     setRun: (run) => { D = run; } };
 })();`), context);
 const viewer = context.viewer;
@@ -122,6 +122,22 @@ test("historical document-level snapshots keep their original IDs and threshold"
   assert.equal(viewer.extractionGate(f), 0.75);
   assert.match(viewer.goldenTab(f), />required</);
   assert.match(viewer.stageDocCard(f, "extraction"), /gate 75%/);
+});
+
+test("stage deltas appear only when corpus and judge fingerprints match", () => {
+  const before = fixture(), after = fixture();
+  before.stages.extraction.report.metrics = { topic_coverage: 0.5 };
+  after.stages.extraction.report.metrics = { topic_coverage: 0.8 };
+  const run = (id, judge) => ({ run: { id, corpus_fingerprint: "c", evaluator_fingerprint: judge } });
+  const same = viewer.stageDiff({ ...run("a", "j"), fixtures: [before] }, { ...run("b", "j"), fixtures: [after] });
+  assert.match(same, /▲ 30 pts/);
+  assert.doesNotMatch(same, /Not comparable/);
+  const changed = viewer.stageDiff({ ...run("a", "j"), fixtures: [before] }, { ...run("b", "j2"), fixtures: [after] });
+  assert.match(changed, /Not comparable: judge model, prompts, stages or input mode changed/);
+  assert.doesNotMatch(changed, /▲|▼/);
+  const legacy = viewer.stageDiff({ run: { id: "a" }, fixtures: [before] }, { ...run("b", "j"), fixtures: [after] });
+  assert.match(legacy, /predates evaluation fingerprints/);
+  assert.doesNotMatch(legacy, /▲|▼/);
 });
 
 test("changed editing verdicts link to the corresponding saved case", () => {

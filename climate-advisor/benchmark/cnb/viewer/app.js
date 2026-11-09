@@ -1431,6 +1431,18 @@
     return `<span class="${better ? "up" : "down"}">${d > 0 ? "▲" : "▼"} ${Math.round(Math.abs(d) * 100)} pts</span>`;
   }
 
+  // Same rule as the baseline loader: scores are only comparable under identical corpus and judge policy.
+  function incompatibility(a, b) {
+    const reasons = [];
+    if (!a.corpus_fingerprint || !b.corpus_fingerprint || !a.evaluator_fingerprint || !b.evaluator_fingerprint)
+      reasons.push("a run predates evaluation fingerprints");
+    else {
+      if (a.corpus_fingerprint !== b.corpus_fingerprint) reasons.push("fixtures or golden expectations changed");
+      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts, stages or input mode changed");
+    }
+    return reasons;
+  }
+
   async function comparePage(aId, bId) {
     const fids = indexFixtureIds();
     const ordered = [...INDEX].reverse(); // oldest → newest for trends
@@ -1459,16 +1471,17 @@
         </tr>`).join("")}</tbody></table></div>
 
       <h2>Headline metrics over time</h2>
-      <p class="sub">Oldest run on the left. Arrows compare each run with the previous run that evaluated the same stage; green is better.</p>
+      <p class="sub">Oldest run on the left. Arrows compare each run with the previous run that evaluated the same stage; green is better. No arrow appears when the two runs used different fixtures, expectations or judge policy.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table class="trend">
         <thead><tr><th>Document · stage · metric</th>${ordered.map((r) => `<th class="nowrap"><a href="?run=${enc(r.id)}#/">${esc(r.label || r.id)}</a></th>`).join("")}</tr></thead>
         <tbody>${fids.flatMap((fid) => STAGE_KEYS.flatMap((s) => RUN_METRICS[s].map(([key, name]) => {
-          let previous = null;
+          let previous = null, previousRun = null;
           const cells = ordered.map((r) => {
             const value = r.fixtures[fid]?.stages[s]?.metrics?.[key];
             const status = r.fixtures[fid]?.stages[s]?.status;
-            const text = value == null ? (status === "error" ? `<span class="muted" data-tip="Judgment rejected; no official metrics">error</span>` : "–") : `${pct(value)} ${delta(key, previous, value)}`;
-            if (value != null) previous = value;
+            const arrow = previousRun && !incompatibility(previousRun, r).length ? delta(key, previous, value) : "";
+            const text = value == null ? (status === "error" ? `<span class="muted" data-tip="Judgment rejected; no official metrics">error</span>` : "–") : `${pct(value)} ${arrow}`;
+            if (value != null) [previous, previousRun] = [value, r];
             return `<td class="nowrap">${text}</td>`;
           });
           return `<tr><td>${esc(shortFixture(fid))} · ${STAGES[s].n} ${esc(STAGES[s].label)} · <span class="muted">${esc(name)}</span></td>${cells.join("")}</tr>`;
@@ -1542,14 +1555,17 @@
       add(`Golden expectations · ${shortFixture(fid)}`, a ? "baseline content" : null, b ? (same ? "baseline content" : "changed content (comparison may be incompatible)") : null);
     }
     return `<h2>What changed between the runs</h2>
-      <p class="sub">A changed model, prompt, source or expectation explains a changed result; if nothing here changed, the difference is run-to-run variance.</p>
+      <p class="sub">A changed model, prompt, source or expectation can explain a changed result. Each run is a single trial, so differences can also be run-to-run variance.</p>
       <div class="card" style="padding:0"><table><thead><tr><th>Input</th><th>Run A</th><th>Run B</th><th></th></tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
   }
 
   function stageDiff(A, B) {
     const fids = [...new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))];
     const fx = (run, fid) => run.fixtures.find((f) => f.golden.fixture_id === fid);
+    const reasons = incompatibility(A.run, B.run);
     return `<h2>Stage results, A → B</h2>
+      ${reasons.length ? `<div class="callout bad" style="margin-bottom:14px"><b>Not comparable: ${esc(reasons.join("; "))}.</b>
+        <div class="small muted" style="margin-top:4px">Both results are shown side by side, but a higher or lower score here does not mean the producer got better or worse.</div></div>` : ""}
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Document</th>${STAGE_KEYS.map((s) => `<th>${STAGES[s].n} · ${STAGES[s].label}</th>`).join("")}</tr></thead>
         <tbody>${fids.map((fid) => `<tr><td><b>${esc(shortFixture(fid))}</b></td>${STAGE_KEYS.map((s) => {
@@ -1558,7 +1574,7 @@
           const metrics = RUN_METRICS[s].map(([key, name]) => {
             const va = a?.report?.metrics?.[key], vb = b?.report?.metrics?.[key];
             if (va == null && vb == null) return "";
-            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${delta(key, va, vb)}</div>`;
+            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${reasons.length ? "" : delta(key, va, vb)}</div>`;
           }).join("");
           return `<td>${badge(sa)} → ${badge(sb)}${metrics}</td>`;
         }).join("")}</tr>`).join("")}</tbody></table></div>`;

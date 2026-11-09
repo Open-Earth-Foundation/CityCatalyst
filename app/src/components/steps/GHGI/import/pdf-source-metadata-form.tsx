@@ -144,9 +144,24 @@ export function PdfSourceMetadataForm({
           }
         >
           <Box display="flex" flexDirection="column" gap={2}>
-            <Radio value="european">{t("pdf-number-format-european")}</Radio>
-            <Radio value="english">{t("pdf-number-format-english")}</Radio>
-            <Radio value="unknown">{t("pdf-number-format-unknown")}</Radio>
+            {(["european", "english", "unknown"] as const).map((style) => (
+              <Radio
+                key={style}
+                value={style}
+                // onValueChange does not fire for the selected value, so a
+                // click on it confirms the country default.
+                onClick={() => {
+                  if (
+                    !value.numberFormatTouched &&
+                    value.numberFormat === style
+                  ) {
+                    onChange({ ...value, numberFormatTouched: true });
+                  }
+                }}
+              >
+                {t(`pdf-number-format-${style}`)}
+              </Radio>
+            ))}
           </Box>
         </RadioGroup>
       </Field>
@@ -158,7 +173,6 @@ export function PdfSourceMetadataForm({
         errorText={t("pdf-reported-total-invalid")}
       >
         <Input
-          aria-label="pdf-reported-total-label"
           inputMode="decimal"
           value={value.totalText}
           onChange={(e) => onChange({ ...value, totalText: e.target.value })}
@@ -188,7 +202,6 @@ export function PdfSourceMetadataForm({
         errorText={t("pdf-table-pages-invalid")}
       >
         <Input
-          aria-label="pdf-table-pages-label"
           value={value.pagesText}
           onChange={(e) => onChange({ ...value, pagesText: e.target.value })}
         />

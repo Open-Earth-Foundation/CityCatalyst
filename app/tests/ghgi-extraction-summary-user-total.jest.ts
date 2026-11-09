@@ -87,6 +87,19 @@ describe("reconcileExtraction with a user-reported total", () => {
     expect(r.source).toBe("user");
   });
 
+  it("confirms a net user total when the sum matches the document gross", () => {
+    const s = summary(netDocument, 10000, { value: 8800, kind: "net" });
+    const r = reconcileExtraction(s)!;
+    expect(r.mismatch).toBe(false);
+    expect(r.reportedTotal).toBe(10000);
+    expect(r.source).toBe("document");
+    expect(extractionReviewNotes(s).userTotalNote).toEqual({
+      kind: "matched-other-document-total",
+      matched: 10000,
+      entered: 8800,
+    });
+  });
+
   it("does not confirm a gross total with the document net", () => {
     const s = summary(netDocument, 8800, { value: 8800, kind: "gross" });
     const r = reconcileExtraction(s)!;

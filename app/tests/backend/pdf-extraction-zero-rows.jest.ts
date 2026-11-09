@@ -19,6 +19,31 @@ const summary = (over: Partial<ExtractionSummary> = {}): ExtractionSummary => ({
 });
 
 describe("zeroRowReason", () => {
+  it("blames the page list when rows exist only on other pages", () => {
+    expect(
+      zeroRowReason(
+        summary({
+          requestedPages: [3],
+          droppedRows: { other_page: 4 },
+          reportedTotals: [
+            {
+              label: "Total",
+              value: 1_000_000,
+              year: 2022,
+              scope: null,
+              sector: null,
+              subsector: null,
+              level: "total",
+            },
+          ],
+        }),
+      ),
+    ).toBe("pdf-extraction-no-rows-on-listed-pages");
+    expect(zeroRowReason(summary({ droppedRows: { other_page: 4 } }))).toBe(
+      "pdf-extraction-no-data",
+    );
+  });
+
   it("names a document that only states totals (Münster)", () => {
     const result = zeroRowReason(
       summary({

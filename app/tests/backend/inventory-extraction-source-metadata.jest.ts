@@ -216,6 +216,38 @@ describe("page filter", () => {
     expect(sent.some((s) => s.includes("PAGE_40"))).toBe(true);
   });
 
+  it("chunk fallback uses listed pages only", async () => {
+    // 4,000,000 + 1,000,000 does not reach the 9,559,215 executive summary total.
+    mockByPage({
+      5: [totalRow(9559215)],
+      40: [row(4000000)],
+      41: [row(1000000, { sector: "Transportation", gpcRefNo: "II.1.1" })],
+      55: [row(777000, { gpcRefNo: "I.2.1" })],
+    });
+    const result = await extractInventoryFromDocument(doc, {
+      targetYear: 2021,
+      sourceMetadata: meta({ pages: [40, 41] }),
+    });
+    const chunkPrompts = complete.mock.calls
+      .map(
+        (c) =>
+          (c[0] as { messages: { content: string }[] }).messages.at(-1)!
+            .content,
+      )
+      .filter((s) => s.includes("<!-- page: 40 -->"));
+    expect(chunkPrompts.length).toBeGreaterThan(0);
+    for (const prompt of chunkPrompts) {
+      expect(prompt).toContain("<!-- page: 41 -->");
+      expect(prompt).not.toContain("<!-- page: 5 -->");
+      expect(prompt).not.toContain("<!-- page: 55 -->");
+    }
+    expect(result.summary.pageSelection).toBe("fallback");
+    expect(result.summary.requestedPages).toEqual([40, 41]);
+    expect(result.summary.reportedTotals.some((t) => t.value === 9559215)).toBe(
+      true,
+    );
+  });
+
   it("missing listed pages are ignored", async () => {
     mockByPage({ 40: [row(5000000)] });
     const result = await extractInventoryFromDocument(doc, {

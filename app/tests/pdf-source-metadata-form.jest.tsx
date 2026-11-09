@@ -93,6 +93,18 @@ describe("PdfSourceMetadataForm", () => {
     });
   });
 
+  it("clicking the preselected format confirms it as a user choice", async () => {
+    const c = await render("BR");
+    expect(draftToSourceMetadata(latest).metadata.numberFormatSource).toBe(
+      "country_default",
+    );
+    await act(async () => radio(c, "european").click());
+    expect(draftToSourceMetadata(latest).metadata).toMatchObject({
+      numberFormat: "european",
+      numberFormatSource: "user",
+    });
+  });
+
   it("european total with decimal comma", () => {
     const base = initialPdfSourceMetadataDraft("BR");
     const eu = draftToSourceMetadata({ ...base, totalText: "9.559.215,5" });
@@ -109,7 +121,7 @@ describe("PdfSourceMetadataForm", () => {
   it("preview shows tCO2e", async () => {
     const c = await render("BR");
     const input = c.querySelector(
-      'input[aria-label="pdf-reported-total-label"]',
+      "input[inputmode='decimal']",
     ) as HTMLInputElement;
     await act(async () => setInput(input, "7.453.000"));
     expect(c.textContent).toContain("= 7,453,000 tCO2e");

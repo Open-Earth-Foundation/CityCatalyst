@@ -765,7 +765,9 @@ function selectPages(
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
-    if (otherRows > 0) droppedRows.other_page = otherRows;
+    if (otherRows > 0) {
+      droppedRows.other_page = (droppedRows.other_page ?? 0) + otherRows;
+    }
     const keys = new Set<string>();
     const rows: ExtractedRow[] = [];
     for (const row of chosen.flatMap((p) => p.result.rows)) {

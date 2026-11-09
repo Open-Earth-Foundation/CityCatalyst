@@ -352,6 +352,7 @@ export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
 ];
 
 export type ZeroRowReason =
+  | "pdf-extraction-no-rows-on-listed-pages"
   | "pdf-extraction-only-totals"
   | "pdf-extraction-unsupported-units"
   | "pdf-extraction-no-data"
@@ -366,6 +367,12 @@ export type ZeroRowReason =
 export function zeroRowReason(
   summary: ExtractionSummary | null,
 ): ZeroRowReason {
+  if (
+    summary?.requestedPages?.length &&
+    (summary.droppedRows?.other_page ?? 0) > 0
+  ) {
+    return "pdf-extraction-no-rows-on-listed-pages";
+  }
   const targetYear = summary?.targetYear ?? null;
   const totals = summary?.reportedTotals ?? [];
   const totalsForYear = totals.filter(

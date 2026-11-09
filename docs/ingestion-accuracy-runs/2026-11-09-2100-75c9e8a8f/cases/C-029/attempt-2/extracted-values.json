@@ -1,0 +1,135 @@
+[
+  {
+    "gpc": "I.1.1",
+    "scope": "1",
+    "valueT": 4893822,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.1.2",
+    "scope": "2",
+    "valueT": 3468411,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.2.1",
+    "scope": "1",
+    "valueT": 3530079,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.2.2",
+    "scope": "2",
+    "valueT": 9336002,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.4.1",
+    "scope": "1",
+    "valueT": 22,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.6.1",
+    "scope": "1",
+    "valueT": 127,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.8.1",
+    "scope": "1",
+    "valueT": 208674,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.1.1",
+    "scope": "1",
+    "valueT": 4795501,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.2.1",
+    "scope": "1",
+    "valueT": 212358,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.2.2",
+    "scope": "2",
+    "valueT": 493522,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.3.1",
+    "scope": "1",
+    "valueT": 5348,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.4.1",
+    "scope": "1",
+    "valueT": 1569375,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.5.1",
+    "scope": "1",
+    "valueT": 1568958,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.1.1",
+    "scope": "1",
+    "valueT": 1995387,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.1.2",
+    "scope": "3",
+    "valueT": 1995387,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.2.1",
+    "scope": "1",
+    "valueT": 103,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.2.2",
+    "scope": "3",
+    "valueT": 103,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.4.1",
+    "scope": "1",
+    "valueT": 100116,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.4.2",
+    "scope": "3",
+    "valueT": 95463,
+    "omit": false,
+    "notation": null
+  }
+]

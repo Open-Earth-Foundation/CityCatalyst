@@ -22,6 +22,9 @@ Inputs:
 - --run-id: folder name for this run (default: UTC time, YYYYMMDD-HHMMSS, plus
   the label); letters, digits, '.', '_' and '-' only. An existing run is refused.
 - --label: optional short note shown in the viewer, for example "pr-3295".
+- --mlflow: upload the finished run folder to the Clima-CNB-Benchmark MLflow
+  experiment (needs MLFLOW_TRACKING_URI and MLFLOW_TRACKING_USERNAME/PASSWORD);
+  delivery.json records the MLflow run ID, and a failed upload exits 3.
 - --baseline-manifest / --baseline-results-dir: reviewed baseline manifest and durable run store.
 - --timeout-seconds: evaluation deadline (default 3600); finalization follows timeout.
 - --parallel: evaluate fixtures concurrently in one process (faster; default is
@@ -58,6 +61,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import re
 import subprocess
 import sys
@@ -117,6 +121,7 @@ from benchmark.cnb.golden_set.baseline import (
     render_comparison,
 )
 from benchmark.cnb.golden_set.workspace import fixture_template, golden_id
+from benchmark.cnb.scripts.mlflow_log import log_run_dir
 
 logger = logging.getLogger(__name__)
 BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
@@ -177,6 +182,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--run-id", help="Run folder name (default: UTC timestamp plus label)"
     )
     parser.add_argument("--label", help="Short note shown in the viewer")
+    parser.add_argument(
+        "--mlflow",
+        action="store_true",
+        help="Upload the finished run to the Clima-CNB-Benchmark MLflow experiment",
+    )
     parser.add_argument(
         "--parallel",
         action="store_true",
@@ -797,12 +807,26 @@ def main(argv: list[str] | None = None) -> int:
     (args.output_dir / "comparison.md").write_text(
         render_comparison(comparison, args.delivery), encoding="utf-8"
     )
+    # Upload the finished run folder last, so MLflow holds exactly what is on disk.
+    if args.mlflow:
+        mlflow_run_id = log_run_dir(
+            args.output_dir, environment="ci" if os.environ.get("CI") else "local"
+        )
+        args.delivery["mlflow"] = (
+            {"status": "logged", "run_id": mlflow_run_id}
+            if mlflow_run_id
+            else {"status": "failed"}
+        )
+        delivery_path.write_text(
+            json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
+        )
     unavailable = (
         args.delivery["execution"] != "complete"
         or comparison["evaluation_unavailable"]
         or selection["status"] != "comparable"
         or args.delivery["approval_pending"]
         or args.delivery["publication"]["status"] != "published"
+        or args.delivery.get("mlflow", {}).get("status") == "failed"
     )
     return 3 if unavailable else (0 if args.report.passed else 1)
 

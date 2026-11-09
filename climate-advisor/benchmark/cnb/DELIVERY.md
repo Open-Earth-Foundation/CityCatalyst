@@ -28,7 +28,9 @@ artifact kept for 30 days, also when the run fails. Extract the bundle and open
 `index.html`: no server, Python or credentials are needed. The bundle holds the
 candidate, the approved baseline when it is comparable, raw outputs, fixture
 and prompt snapshots, and the comparison summary. The step summary shows the
-same `comparison.md`.
+same `comparison.md`. The run is also uploaded to the `Clima-CNB-Benchmark`
+MLflow experiment with the organisation `MLFLOW_TRACKING_USERNAME` and
+`MLFLOW_TRACKING_PASSWORD` secrets; a failed upload exits `3`.
 
 Every run claims its own folder and refuses an existing one. Reports checkpoint
 after each completed stage; setup errors, timeouts and stage failures keep

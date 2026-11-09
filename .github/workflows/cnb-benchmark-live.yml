@@ -60,7 +60,11 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           CA_DATABASE_URL: 'sqlite+aiosqlite:///:memory:'
+          # Service tracing stays off; --mlflow uploads the finished run to Clima-CNB-Benchmark.
           MLFLOW_ENABLED: 'false'
+          MLFLOW_TRACKING_URI: https://mlflow-dev.openearth.dev
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
           CC_BASE_URL: http://localhost:3000
           RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
@@ -72,7 +76,7 @@ jobs:
           status=0
           # Three fixtures run serially; a saved run took about 2,150 seconds.
           uv run python -m benchmark.cnb.scripts.evaluate \
-            --run-id "$RUN_ID" --label "$RUN_ID" --timeout-seconds 3600 \
+            --run-id "$RUN_ID" --label "$RUN_ID" --timeout-seconds 3600 --mlflow \
             --results-dir output/cnb-ci \
             --baseline-manifest ../.cnb-base/climate-advisor/benchmark/cnb/baseline.json \
             --baseline-results-dir ../.cnb-base/climate-advisor/benchmark/cnb/results || status=$?

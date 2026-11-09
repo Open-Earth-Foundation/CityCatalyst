@@ -49,6 +49,29 @@ resolved failures appear only when both runs used the same fixtures, golden
 expectations and judge policy. Otherwise the runs are shown side by side with
 the reason, and the command exits `3`.
 
+## Store runs in MLflow (draft)
+
+Add `--mlflow` to `evaluate` to upload the finished run folder to the
+[`Clima-CNB-Benchmark`](https://mlflow-dev.openearth.dev/#/experiments/11)
+experiment, separate from the service's `Clima` traces. It needs
+`MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD`
+(the `.env` values work). Each run becomes one parent MLflow run with the
+provenance as params, plus one child per fixture with `<stage>.<metric>` and
+usage metrics, so MLflow's **Compare** view lines up scores, cost and time
+across runs. The whole run folder, with a SHA-256 manifest, is the parent's
+artifact. `delivery.json` records the MLflow run ID.
+
+Existing folders can be uploaded and any MLflow run restored, checksum-verified,
+for `compare`, the viewer or `propose_baseline`:
+
+```bash
+uv run python -m benchmark.cnb.scripts.mlflow_log log output/cnb_golden_set/runs/<run-id>
+uv run python -m benchmark.cnb.scripts.mlflow_log download <mlflow-run-id> --results-dir output/cnb-restored
+```
+
+The approved baseline still lives in git (`baseline.json` and `results/runs/`);
+an MLflow tag never approves anything.
+
 ## Open the viewer
 
 The viewer is a static site generated from saved runs; it is not committed:

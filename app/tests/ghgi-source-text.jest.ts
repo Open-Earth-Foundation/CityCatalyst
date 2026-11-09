@@ -124,7 +124,7 @@ describe("yearEvidence", () => {
   it("other year in a table caption", () => {
     expect(
       yearEvidence("Table A-3 GHG emissions for 2019\n1,000 2,000", 2021, 2026),
-    ).toEqual({ kind: "other", years: [2019] });
+    ).toMatchObject({ kind: "other", years: [2019] });
   });
   it("target year", () => {
     expect(
@@ -186,9 +186,29 @@ describe("yearEvidence", () => {
     ).toBe("target");
   });
   it("several other years in order", () => {
-    expect(yearEvidence("Table 1 Emissions 2018 and 2019", 2021, 2026)).toEqual(
-      { kind: "other", years: [2018, 2019] },
+    expect(
+      yearEvidence("Table 1 Emissions 2018 and 2019", 2021, 2026),
+    ).toMatchObject({ kind: "other", years: [2018, 2019] });
+  });
+});
+
+describe("yearEvidence leadText", () => {
+  it("is the text above the first caption naming another year", () => {
+    const page =
+      "| V.1 | Ganaderia | 49,71 |\n" +
+      "| V.2 | Uso del suelo | -14.041,40 |\n" +
+      "## Tabla de Resultados Inventario 2021\n" +
+      "| I.1.1 | Residencial | 364.749,37 |";
+    const ev = yearEvidence(page, 2022, 2026);
+    expect(ev.kind).toBe("other");
+    expect(ev.leadText).toContain("49,71");
+    expect(ev.leadText).not.toContain("364.749,37");
+  });
+  it("is empty for target and none", () => {
+    expect(yearEvidence("Table 3 Emissions 2021", 2021, 2026).leadText).toBe(
+      "",
     );
+    expect(yearEvidence("| a | 1 |", 2021, 2026).leadText).toBe("");
   });
 });
 
@@ -237,7 +257,7 @@ describe("yearEvidence: comparison and publication lines", () => {
         2021,
         2026,
       ),
-    ).toEqual({ kind: "target", years: [] });
+    ).toMatchObject({ kind: "target", years: [] });
   });
   it("whole words only", () => {
     // "Fromage" and "prepared" inside other words do not count.
@@ -248,7 +268,7 @@ describe("yearEvidence: comparison and publication lines", () => {
   it("from before a noun governs no year", () => {
     expect(
       yearEvidence("Table A-3 GHG emissions from transport 2019", 2021, 2026),
-    ).toEqual({ kind: "other", years: [2019] });
+    ).toMatchObject({ kind: "other", years: [2019] });
   });
   it("from a range is a range", () => {
     expect(
@@ -258,7 +278,7 @@ describe("yearEvidence: comparison and publication lines", () => {
   it("the table year before a comparison counts", () => {
     expect(
       yearEvidence("Table 6 2021 emissions compared with 2016", 2021, 2026),
-    ).toEqual({ kind: "target", years: [] });
+    ).toMatchObject({ kind: "target", years: [] });
   });
   it.each([
     ["Table 6 Change since the 2016 inventory", "none"],

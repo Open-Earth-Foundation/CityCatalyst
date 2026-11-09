@@ -1985,8 +1985,21 @@ function finalizeRows(
     );
     if (evidence.kind === "other") {
       const relabel = evidence.years[0];
+      // A table continued from the previous page sits above the other year's
+      // caption: a row whose value is printed there keeps its year.
+      const leadNumbers = numbersInText(
+        evidence.leadText,
+        detectNumberStyle(options.source.text),
+      );
       rows = rows.map((row) => {
         if (row.year != null && row.year !== targetYear) return row;
+        if (
+          row.totalCO2e != null &&
+          leadNumbers.length > 0 &&
+          isValueInNumbers(row.totalCO2e, leadNumbers)
+        ) {
+          return row;
+        }
         evidenceDropped = true;
         return { ...row, year: relabel };
       });

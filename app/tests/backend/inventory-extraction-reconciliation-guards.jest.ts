@@ -243,6 +243,43 @@ describe("CC-1163 check 2: year evidence", () => {
     "Residential buildings 3,000,000\nOn-road 2,000,000\nTOTAL 5,000,000\n";
   const page = (caption: string) => `${caption}\n${body}`;
 
+  it("keeps the rows of a table continued above another year's caption", () => {
+    // Rosario 2022 p. 55: the end of the 2022 table, then the 2021 table.
+    const rows: ExtractedRow[] = [
+      {
+        year: 2022,
+        sector: "AFOLU",
+        subsector: "Livestock",
+        scope: "1",
+        gpcRefNo: "V.1",
+        totalCO2e: 49.71,
+        rowType: "line_item",
+      },
+      {
+        year: 2022,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        scope: "1",
+        gpcRefNo: "I.1.1",
+        totalCO2e: 364749.37,
+        rowType: "line_item",
+      },
+    ] as ExtractedRow[];
+    const result = finalizeExtractedRows(rows, 2022, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: {
+        text:
+          "| V.1 | Ganaderia | 49,71 |\n" +
+          "## Tabla de Resultados Inventario 2021\n" +
+          "| I.1.1 | Residencial | 364.749,37 |\n",
+        kind: "page",
+      },
+    });
+    expect(result.rows.map((r) => r.gpcRefNo)).toEqual(["V.1"]);
+    expect(result.summary.droppedRows.other_year).toBe(1);
+  });
+
   it("rows of a 2019 table labeled 2021 are dropped", () => {
     const rows = fiveMillionRows();
     const result = finalizeExtractedRows(rows, 2021, {

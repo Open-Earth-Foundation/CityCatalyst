@@ -215,7 +215,7 @@ function isUnitLine(line: string): boolean {
   );
 }
 
-type CaptionLine = { text: string; table: boolean };
+type CaptionLine = { text: string; table: boolean; line: number };
 
 function classifyCaptionLines(text: string): CaptionLine[] {
   const lines = text.split(/\r?\n/);
@@ -224,9 +224,9 @@ function classifyCaptionLines(text: string): CaptionLine[] {
     const line = raw.trim();
     if (!line) return;
     if (/^[\s#*_>]*table\b/i.test(line) || line.startsWith("#")) {
-      found.push({ text: line, table: true });
+      found.push({ text: line, table: true, line: i });
     } else if (/^[\s#*_>]*figure\b/i.test(line)) {
-      found.push({ text: line, table: false });
+      found.push({ text: line, table: false, line: i });
     } else if (
       line.includes("|") &&
       i + 1 < lines.length &&
@@ -234,9 +234,9 @@ function classifyCaptionLines(text: string): CaptionLine[] {
       lines[i + 1].includes("-") &&
       TABLE_SEPARATOR.test(lines[i + 1])
     ) {
-      found.push({ text: line, table: true });
+      found.push({ text: line, table: true, line: i });
     } else if (isUnitLine(line)) {
-      found.push({ text: line, table: false });
+      found.push({ text: line, table: false, line: i });
     }
   });
   return found;
@@ -264,6 +264,13 @@ export function tableCaptionLines(text: string): string[] {
 export type YearEvidence = {
   kind: "target" | "other" | "none";
   years: number[];
+  /**
+   * For `other`: the page text above the first caption that names another year.
+   * A table continued from the previous page sits there (Rosario 2022 p. 55: the
+   * end of the 2022 table, then "Tabla de Resultados Inventario 2021"). Empty
+   * otherwise.
+   */
+  leadText: string;
 };
 
 const MIN_YEAR = 1990;
@@ -373,20 +380,32 @@ export function yearEvidence(
   currentYear: number,
 ): YearEvidence {
   const kept: number[] = [];
-  for (const line of tableCaptionLines(text)) {
+  let firstOtherLine: number | null = null;
+  for (const caption of classifyCaptionLines(text)) {
+    if (!caption.table) continue;
+    const line = caption.text;
     const projection = PROJECTION_WORDS.test(line);
     const dated = DATE_LINE_WORDS.test(line);
     for (const y of yearsInLine(blankGovernedYears(line))) {
       if (y !== targetYear && dated) continue;
       if (y > targetYear && projection) continue;
       if (y > currentYear && y !== targetYear) continue;
+      if (y !== targetYear && firstOtherLine == null) {
+        firstOtherLine = caption.line;
+      }
       if (!kept.includes(y)) kept.push(y);
     }
   }
   const years = kept.filter((y) => y !== targetYear);
-  if (kept.includes(targetYear)) return { kind: "target", years };
-  if (kept.length > 0) return { kind: "other", years };
-  return { kind: "none", years };
+  if (kept.includes(targetYear)) return { kind: "target", years, leadText: "" };
+  if (kept.length > 0) {
+    const leadText = text
+      .split(/\r?\n/)
+      .slice(0, firstOtherLine ?? 0)
+      .join("\n");
+    return { kind: "other", years, leadText };
+  }
+  return { kind: "none", years, leadText: "" };
 }
 
 const LARGE_UNIT_PATTERNS: RegExp[] = [

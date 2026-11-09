@@ -1427,7 +1427,7 @@
       reasons.push("a run predates evaluation fingerprints");
     else {
       if (a.corpus_fingerprint !== b.corpus_fingerprint) reasons.push("fixtures or golden expectations changed");
-      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts, stages or input mode changed");
+      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts or stages changed");
     }
     return reasons;
   }
@@ -1513,7 +1513,7 @@
   function reviewSummary() {
     if (!REVIEW) return "";
     const evidence = (id, row) => id ? `<a href="?run=${enc(id)}#/f/${enc(row.fixture_id)}/${enc(row.stage)}">${esc(id)}</a>` : "unavailable";
-    return `<h2>Approved baseline review</h2><div class="callout"><b>${esc(REVIEW.baseline?.status || "unavailable")}</b>: ${esc(REVIEW.baseline?.reason || "Pinned approved baseline")}
+    return `<h2>Baseline review</h2><div class="callout"><b>${esc(REVIEW.baseline?.status || "unavailable")}</b>: ${esc(REVIEW.baseline?.reason || "Pinned approved baseline")}
       <p>Quality regression: ${esc(REVIEW.quality_regression)} · quality failures: ${esc(REVIEW.quality_failures)} · evaluation unavailable: ${esc(REVIEW.evaluation_unavailable)}</p>
       <a href="comparison.md">Download review summary</a> · <a href="comparison.json">Comparison data</a></div>
       ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.new_failures.length} new failures · ${row.evaluation_errors.length} unavailable</summary>

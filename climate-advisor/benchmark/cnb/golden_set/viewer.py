@@ -236,29 +236,38 @@ def publish_run(run_dir: Path, results_dir: Path, *, fixtures_dir: Path = FIXTUR
     return publish_viewer(results_dir, fixtures_dir=fixtures_dir)
 
 
+def write_review_site(
+    root: Path, candidate_dir: Path, baseline_dir: Path | None, comparison: dict[str, Any]
+) -> Path:
+    """Copy both runs into ``root`` and open the viewer on their comparison.
+
+    Raises ValueError when a run has no immutable ``viewer.js`` snapshot.
+    """
+    for directory in [candidate_dir, *([baseline_dir] if baseline_dir else [])]:
+        if not (directory / "viewer.js").is_file():
+            raise ValueError(f"Missing immutable viewer snapshot: {directory.name}")
+        shutil.copytree(directory, root / "runs" / directory.name, ignore=shutil.ignore_patterns("review-bundle.zip"))
+    index = publish_viewer(root)
+    (root / "comparison.js").write_text("window.GOLDEN_REVIEW = " + json.dumps({
+        **comparison, "baseline_run_id": baseline_dir.name if baseline_dir else None,
+    }, ensure_ascii=False) + ";\n", encoding="utf-8")
+    index.write_text(index.read_text(encoding="utf-8").replace(
+        '<script src="runs/index.js', '<script src="comparison.js"></script>\n<script src="runs/index.js'
+    ), encoding="utf-8")
+    return index
+
+
 def publish_bundle(candidate_dir: Path, results_dir: Path, *, baseline_dir: Path | None = None) -> Path:
     """Package immutable baseline/candidate evidence with a browser-only review entrypoint."""
     if baseline_dir is not None and baseline_dir.name == candidate_dir.name:
         raise ValueError("Baseline and candidate run IDs must differ")
-    comparison = _read_json(candidate_dir / "comparison.json") or {}
     # A temporary sibling avoids copying the archive into itself on a retry.
     with tempfile.TemporaryDirectory(prefix="cnb-review-", dir=results_dir) as temporary:
         root = Path(temporary)
-        for directory in [candidate_dir, *([baseline_dir] if baseline_dir else [])]:
-            if not (directory / "viewer.js").is_file():
-                raise ValueError(f"Missing immutable viewer snapshot: {directory.name}")
-            shutil.copytree(directory, root / "runs" / directory.name, ignore=shutil.ignore_patterns("review-bundle.zip"))
         for name in ("comparison.json", "comparison.md"):
             if (candidate_dir / name).exists():
                 shutil.copyfile(candidate_dir / name, root / name)
-        publish_viewer(root)
-        (root / "comparison.js").write_text("window.GOLDEN_REVIEW = " + json.dumps({
-            **comparison, "baseline_run_id": baseline_dir.name if baseline_dir else None,
-        }, ensure_ascii=False) + ";\n", encoding="utf-8")
-        html_path = root / "index.html"
-        html_path.write_text(html_path.read_text(encoding="utf-8").replace(
-            '<script src="runs/index.js', '<script src="comparison.js"></script>\n<script src="runs/index.js'
-        ), encoding="utf-8")
+        write_review_site(root, candidate_dir, baseline_dir, _read_json(candidate_dir / "comparison.json") or {})
         (root / "README.txt").write_text(
             "Extract the whole archive, then open index.html. No server, Python or API key is needed.\n"
             "comparison.md and comparison.json contain the same review summary.\n"

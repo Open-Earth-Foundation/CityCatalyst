@@ -77,6 +77,19 @@ def evaluation_fingerprints(
     }
 
 
+def incompatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> list[str]:
+    """Why two saved reports' scores cannot be compared; the viewer applies the same rule."""
+    keys = ("corpus_fingerprint", "evaluator_fingerprint")
+    if not all(report.get(key) for report in (baseline, candidate) for key in keys):
+        return ["a run predates evaluation fingerprints"]
+    reasons = []
+    if baseline["corpus_fingerprint"] != candidate["corpus_fingerprint"]:
+        reasons.append("fixtures or golden expectations changed")
+    if baseline["evaluator_fingerprint"] != candidate["evaluator_fingerprint"]:
+        reasons.append("judge model, prompts or stages changed")
+    return reasons
+
+
 def load_approved_baseline(
     manifest_path: Path, results_dir: Path, fingerprints: dict[str, str]
 ) -> tuple[Path | None, dict[str, Any]]:

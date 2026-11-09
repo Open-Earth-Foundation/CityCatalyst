@@ -541,9 +541,16 @@ export function RankedActionsTable({
               {t("next-col-risk")}
             </Overline>
             <VStack alignItems="flex-start" gap="xs">
-              <HStack gap="xs" alignItems="flex-start">
+              <HStack gap="s" alignItems="center">
                 {hazardSector && (
-                  <Box pt="2px">
+                  // The glyph sits centred on the same 8px column as the
+                  // level dot below it, so the two words start on one line.
+                  <Box
+                    w="8px"
+                    display="flex"
+                    justifyContent="center"
+                    flexShrink={0}
+                  >
                     <SectorGlyph sector={hazardSector} />
                   </Box>
                 )}

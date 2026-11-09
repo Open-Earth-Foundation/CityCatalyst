@@ -19,6 +19,8 @@ import {
   hasSignedNumericValue,
   parseNumericCell,
 } from "@/util/parse-numeric-cell";
+import { withIncomingSourceDocument } from "@/backend/ingest/source-document-ids";
+import { excelRowNumber } from "@/util/excel-row-number";
 
 /**
  * Total CO2e (tonnes) that importECRFData stores for a row: the file total when
@@ -70,6 +72,11 @@ export type ImportECRFDataOptions = {
   versionLabel?: string;
   /** Outer transaction (e.g. shared with a replace); otherwise the import runs in its own. */
   transaction?: Transaction;
+  /**
+   * Pool document that created or added to the row. A later file that
+   * accumulates into an existing GPC ref is appended to sourceDocumentIds.
+   */
+  sourceDocumentId?: string;
 };
 
 type RowOutcome = "imported" | "skipped";
@@ -438,7 +445,7 @@ export default class InventoryImportService {
       if (!row.errors?.length) continue;
       skippedRows++;
       for (const message of row.errors) {
-        warnings.push(`Row ${row.rowIndex + 1}: ${message}`);
+        warnings.push(`Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${message}`);
       }
     }
 
@@ -564,6 +571,12 @@ export default class InventoryImportService {
                     subSectorId: row.subsectorId,
                     subCategoryId: row.subcategoryId ?? undefined,
                     lastUpdated: new Date(),
+                    ...(options?.sourceDocumentId
+                      ? withIncomingSourceDocument(
+                          existingValue,
+                          options.sourceDocumentId,
+                        )
+                      : {}),
                   },
                   { transaction: rowTransaction },
                 );
@@ -581,6 +594,12 @@ export default class InventoryImportService {
                     co2eqYears: 100, // Default value
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
+                    ...(options?.sourceDocumentId
+                      ? withIncomingSourceDocument(
+                          {},
+                          options.sourceDocumentId,
+                        )
+                      : {}),
                   },
                   { transaction: rowTransaction },
                 );
@@ -894,7 +913,7 @@ export default class InventoryImportService {
                   );
                 } catch (activityError) {
                   rowWarnings.push(
-                    `Row ${row.rowIndex + 1}: Failed to create activity value: ${activityError instanceof Error ? activityError.message : "Unknown error"}`,
+                    `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: Failed to create activity value: ${activityError instanceof Error ? activityError.message : "Unknown error"}`,
                   );
                   logger.error(
                     {
@@ -918,7 +937,7 @@ export default class InventoryImportService {
 
               if (!unavailableReason) {
                 rowWarnings.push(
-                  `Row ${row.rowIndex + 1}: Unknown notation key "${row.notationKey}", skipping`,
+                  `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: Unknown notation key "${row.notationKey}", skipping`,
                 );
                 return "skipped";
               }
@@ -926,7 +945,7 @@ export default class InventoryImportService {
               // A later NE/NO/IE row must not hide activity data already stored for this ref.
               if (existingValue?.co2eq != null) {
                 rowWarnings.push(
-                  `Row ${row.rowIndex + 1}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
+                  `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has emissions`,
                 );
                 return "skipped";
               }
@@ -944,6 +963,12 @@ export default class InventoryImportService {
                       subSectorId: row.subsectorId,
                       subCategoryId: row.subcategoryId ?? undefined,
                       lastUpdated: new Date(),
+                      ...(options?.sourceDocumentId
+                        ? withIncomingSourceDocument(
+                            existingValue,
+                            options.sourceDocumentId,
+                          )
+                        : {}),
                     },
                     { transaction: rowTransaction },
                   )
@@ -959,6 +984,12 @@ export default class InventoryImportService {
                       unavailableReason,
                       unavailableExplanation,
                       lastUpdated: new Date(),
+                      ...(options?.sourceDocumentId
+                        ? withIncomingSourceDocument(
+                            {},
+                            options.sourceDocumentId,
+                          )
+                        : {}),
                     },
                     { transaction: rowTransaction },
                   );
@@ -970,7 +1001,7 @@ export default class InventoryImportService {
             } else {
               // Skip rows with no emission values and no notation key
               rowWarnings.push(
-                `Row ${row.rowIndex + 1}: Skipped - no emission values or notation key`,
+                `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: Skipped - no emission values or notation key`,
               );
               return "skipped";
             }
@@ -985,7 +1016,7 @@ export default class InventoryImportService {
         }
       } catch (error) {
         errors.push(
-          `Row ${row.rowIndex + 1}: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
         skippedRows++;
         logger.error(

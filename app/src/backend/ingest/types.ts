@@ -64,6 +64,7 @@ export const INGEST_ERROR_CODES = [
   "document_withdrawn",
   "document_superseded",
   "document_unavailable",
+  "ambiguous_imported_data",
   "reconciliation_failed",
 ] as const;
 export type IngestErrorCode = (typeof INGEST_ERROR_CODES)[number];
@@ -211,7 +212,8 @@ export function ingestItemErrorStatus(
     error.code === "mapping_incomplete" ||
     error.code === "document_withdrawn" ||
     error.code === "document_superseded" ||
-    error.code === "document_unavailable"
+    error.code === "document_unavailable" ||
+    error.code === "ambiguous_imported_data"
   ) {
     return 409;
   }

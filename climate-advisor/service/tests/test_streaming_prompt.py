@@ -8,7 +8,11 @@ from uuid import uuid4
 from app.models.requests import MessageCreateRequest
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
-from app.utils.streaming_prompt import stationary_energy_review_instruction_text
+from app.utils.streaming_prompt import (
+    CNB_SOURCE_DOCUMENTS_OMITTED_MESSAGE,
+    fit_cnb_chat_context_window,
+    stationary_energy_review_instruction_text,
+)
 from app.utils.streaming_runner import stream_agent_events
 from app.utils.streaming_telemetry import mlflow_tags
 
@@ -220,3 +224,32 @@ class StreamingPromptTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
         prompts.compose_prompt.assert_called_once_with("stationary_energy_review")
+
+    def test_cnb_chat_drops_source_text_when_history_exceeds_the_window(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()), user_id="user-1", session_factory=MagicMock()
+        )
+        agent = SimpleNamespace(instructions="Concept Note assistant.")
+        runner_input = [
+            {"role": "user", "content": "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n{}"},
+            {"role": "user", "content": "CONCEPT_NOTE_SOURCE_DOCUMENTS\n\n" + "flood " * 200},
+            {"role": "assistant", "content": "earlier reply " * 200},
+            {"role": "user", "content": "What does the plan budget?"},
+        ]
+        budget = SimpleNamespace(
+            tokenizer_encoding="o200k_base",
+            cnb_sources=SimpleNamespace(context_window_tokens=100_000),
+        )
+        settings = SimpleNamespace(
+            llm=SimpleNamespace(generation=SimpleNamespace(prompt_budget=budget))
+        )
+
+        with patch("app.utils.streaming_prompt.get_settings", return_value=settings):
+            self.assertIs(
+                fit_cnb_chat_context_window(handler, agent, runner_input), runner_input
+            )
+            budget.cnb_sources.context_window_tokens = 500
+            fitted = fit_cnb_chat_context_window(handler, agent, runner_input)
+
+        self.assertEqual(fitted[1]["content"], CNB_SOURCE_DOCUMENTS_OMITTED_MESSAGE)
+        self.assertEqual([fitted[0], *fitted[2:]], [runner_input[0], *runner_input[2:]])

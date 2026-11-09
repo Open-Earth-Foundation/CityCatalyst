@@ -350,3 +350,107 @@ describe("CC-1163 check 3: missing unit", () => {
     expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
   });
 });
+
+describe("CC-1163 page evidence survives the chunk fallback", () => {
+  /** A kt-sized table: 6,000.2 + 3,559.0 = 9,559.2, model gives no unit. */
+  const ktRows = (unit: string | null) => [
+    {
+      year: 2021,
+      sector: "Stationary Energy",
+      subsector: "Residential Buildings",
+      scope: "1",
+      gpcRefNo: "I.1.1",
+      totalCO2e: 6000.2,
+      unit,
+      rowType: "line_item",
+    },
+    {
+      year: 2021,
+      sector: "Transportation",
+      subsector: "On-Road",
+      scope: "1",
+      gpcRefNo: "II.1.1",
+      totalCO2e: 3559,
+      unit,
+      rowType: "line_item",
+    },
+    {
+      year: 2021,
+      sector: null,
+      subsector: null,
+      category: "Total",
+      totalCO2e: 9559.2,
+      unit,
+      rowType: "total",
+    },
+  ];
+  const tail =
+    "| Residential | 6,000.2 |\n| On-road | 3,559.0 |\n| Total | 9,559.2 |\n" +
+    "101,101 102,102 103,103 104,104 105,105 106,106\n" +
+    "<!-- page: 2 -->\nNotes only.\n";
+
+  it("kt page with unitless rows: nothing imported as tonnes", async () => {
+    mockRows(ktRows(null));
+    const text =
+      "<!-- page: 1 -->\n## Table 2 GHG emissions 2021 (kt CO2e)\n" +
+      "| Sector | Emissions |\n| --- | --- |\n" +
+      tail;
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(rows).toEqual([]);
+    expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
+    expect(extractionReviewNotes(summary).droppedReasons).toContain(
+      "unsupported_unit",
+    );
+    const reconciliation = reconcileExtraction(summary);
+    expect(reconciliation == null || reconciliation.mismatch).toBe(true);
+    // The page call only: no whole-document re-extraction.
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  it("2019 table labeled 2021: no 2021 rows imported", async () => {
+    mockRows(ktRows("t"));
+    const text =
+      "<!-- page: 1 -->\nTable A-3 GHG emissions for 2019 (t CO2e)\n" +
+      "| Sector | Emissions |\n| --- | --- |\n" +
+      tail;
+    await expect(
+      extractInventoryFromDocument(text, { targetYear: 2021 }),
+    ).rejects.toThrow("Inventory not found for the target year");
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  it("pages without evidence drops still fall back to chunks", async () => {
+    // Line items miss the printed total by far: no run reconciles.
+    const rows = ktRows("t");
+    rows[2].totalCO2e = 19559.2;
+    mockRows(rows);
+    const text =
+      "<!-- page: 1 -->\nTable 2 GHG emissions 2021 (t CO2e)\n" +
+      "| Sector | Emissions |\n| --- | --- |\n" +
+      "| Residential | 6,000.2 |\n| On-road | 3,559.0 |\n| Total | 19,559.2 |\n" +
+      "101,101 102,102 103,103 104,104 105,105 106,106\n" +
+      "<!-- page: 2 -->\nNotes only.\n";
+    const { summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("fallback");
+    // One page call (page 2 has no numbers) and the whole-document call.
+    expect(complete.mock.calls.length).toBeGreaterThan(1);
+  });
+});
+
+describe("CC-1163 number style on the chunk path", () => {
+  it("document without page markers: a string 1.500 imports 1500", async () => {
+    mockRows(stringRows("1.500"));
+    const text =
+      "GPC table\n" +
+      "1.234.567 2.345.678 3.456.789 4.567.890 5.678.901 6.789.012 " +
+      "7.890.123 8.901.234\nTotal 1.500\n";
+    const { rows } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(rows[0].totalCO2e).toBe(1500);
+  });
+});

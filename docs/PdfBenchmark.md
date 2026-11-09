@@ -1,0 +1,132 @@
+# PDF extraction benchmark
+
+**Ticket:** CC-1124. Related: CC-1123 (benchmark contract), CC-1132 (first measurements, see [IngestionAccuracyBaseline.md](./IngestionAccuracyBaseline.md)).
+
+A command that runs PDF inventories through the real GHGI import flow (upload, OCR, extraction, approve), compares the stored values with a Product answer key, and writes a report you can review in a PR. Use it before and after any change to the PDF import, the extraction prompt or the models.
+
+- Command: `npx tsx scripts/pdf-benchmark.ts` from `app/`.
+- Code: `app/src/backend/ingestion-benchmark/` (scoring, metrics, baseline, report, MLflow) and `app/scripts/pdf-benchmark/` (runner).
+- Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`).
+- Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`.
+
+## Prerequisites
+
+1. A local Postgres 16 that is migrated and seeded. The sequelize config has no port variable, so it must listen on 5432:
+
+   ```bash
+   docker run -d --name ia-pg -e POSTGRES_USER=citycatalyst -e POSTGRES_PASSWORD=local -e POSTGRES_DB=citycatalyst -p 127.0.0.1:5432:5432 postgres:16-alpine
+   cd app
+   export DATABASE_HOST=127.0.0.1 DATABASE_USER=citycatalyst DATABASE_PASSWORD=local DATABASE_NAME=citycatalyst DATABASE_USE_SSL=false
+   npm run db:migrate && npm run db:seed
+   ```
+
+2. `app/.env` with the LLM provider keys, the Mistral OCR key, and a bucket for the uploaded PDFs, as for a normal local run. The benchmark reads `LLM_MODEL`, `LLM_EXTRACTION_MODEL` and `LLM_EXTRACTION_REASONING_EFFORT` to label the run, and `MISTRAL_OCR_MODEL` for the OCR model name.
+3. The PDFs and the answer keys on your machine. They are never committed. Copy `app/benchmarks/pdf/config.example.json` to `app/benchmarks/pdf/config.local.json` (git-ignored) and set:
+   - `pdfDir`: one folder, or a list of folders searched in order.
+   - `answerKeys`: path to `answer-keys.json` (see [Add a PDF and its key](#add-a-pdf-and-its-key)).
+   - `outRoot`: where run folders go (default `../docs/ingestion-accuracy-runs`).
+4. Optional, for MLflow: `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD` (see [MLflow](#mlflow)).
+
+Never commit PDFs, OCR text, answer-key JSON, `app/.env` or `config.local.json`.
+
+## Run
+
+All commands run from `app/`.
+
+```bash
+# See every case: block, eligibility, last baseline date and forecast cost. No execution.
+npx tsx scripts/pdf-benchmark.ts --list
+
+# Check a selection and its forecast cost and time. No OCR or LLM call.
+npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --dry-run
+
+# Run two cases, 3 attempts each.
+npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010
+
+# Run the cases of one block that the current import is expected to handle
+# (text tables, scored row by row).
+npx tsx scripts/pdf-benchmark.ts --set validated --eligible --dry-run
+npx tsx scripts/pdf-benchmark.ts --set validated --eligible
+
+# Run and record the result as the new baseline for these cases.
+npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --update-baseline
+
+# Rescore an earlier run with the current scorer and keys. No DB, LLM or OCR call.
+npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/2026-10-31-0417-34131e4ec/results.json
+```
+
+| Flag                             | Effect                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `--cases C-004,C-010`            | Explicit case ids.                                                                                                        |
+| `--set validated\|held-out\|dev` | All cases of one block. Exclusive with `--cases`; one of the two is required.                                             |
+| `--eligible`                     | Keep cases with `textTables: true` that are not total-only. Combines with `--set`.                                        |
+| `--runs N`                       | Attempts per case. Default 3. Any other value marks the run `exploratory`: it is reported but cannot update the baseline. |
+| `--list`                         | Print the manifest.                                                                                                       |
+| `--dry-run`                      | Resolve the selection, print the forecast, exit.                                                                          |
+| `--update-baseline`              | After a run with 3 attempts per case, write the baseline entries for the cases in this run.                               |
+| `--rescore <results.json>`       | Rescore a stored run. Writes a run folder marked `rescore`; never changes the baseline.                                   |
+| `--no-mlflow`                    | Skip MLflow even when it is configured.                                                                                   |
+| `--config path`                  | Use another local config.                                                                                                 |
+
+Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
+
+A run fails before any paid call when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
+
+## Add a PDF and its key
+
+1. Add or update the case in the Product workbook (`GHGI_PDF_answer_keys`).
+2. Export the workbook to JSON:
+
+   ```bash
+   npx tsx scripts/pdf-benchmark/export-answer-keys.ts /path/to/GHGI_PDF_answer_keys.xlsx /path/to/answer-keys.json
+   ```
+
+3. Add the case to `app/benchmarks/pdf/cases.json`: `id` (same as the key id), `city`, `country`, `year`, `block` (`validated`, `held-out` or `dev`), `totalOnly`, `textTables` (`null` while unknown), `fileName`, optional `notes`. Held-out cases are kept out of rule writing; do not tune the import on them.
+4. Put the PDF in a folder listed in `pdfDir`.
+5. Run `--cases <id> --dry-run`, then one real run: `--cases <id>`.
+
+Changing a key or a manifest entry changes the case's test-set version. The next comparison rescores the baseline's stored values with the new key; if those values are not available locally, the case is reported as `baseline stale` and is not compared.
+
+## Update the baseline
+
+Update it when a change is meant to move the numbers (a merged fix, a new model) and you have reviewed the run. Do not update it to hide a regression.
+
+1. Run the cases with the default 3 attempts and `--update-baseline`. Only cases in the run that finished 3 attempts are written; other cases are untouched. Exploratory and interrupted runs never write.
+2. A run takes at most 10 files, so the 27 cases need three runs (for example, one per block or by slices of 10).
+3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
+
+## Read the results
+
+Open `report.md` in the run folder. It has:
+
+- **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
+- **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, share of attempts that pass, attempts 10x or more off the expected total, and the share of wrong totals that carried a warning.
+- **Guardrails** and warnings returned by the import.
+- **Regressions against the baseline.** A case regresses when it passed in the baseline and fails now, recall drops by more than 5 points, a new attempt is off by 10x or more, a new attempt fails with a failure mode the baseline did not have, or the cost goes over 3x the forecast. Any regression makes the command exit with 1.
+- **Failure modes:** `scored`, `ocr_error`, `extraction_error`, `truncated`, `zero_rows`, `approve_error`, `readback_error`.
+- **Per case:** verdict, attempts passed, recall, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
+
+An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. A case passes when all 3 attempts pass.
+
+`results.json` is the full result and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
+
+## MLflow
+
+Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` are set and `--no-mlflow` is absent, each run is logged to the experiment `ghgi-pdf-benchmark` (created on first use) with the non-admin service account:
+
+- One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection; metrics per block; `report.md` and `results.json` as artifacts.
+- One child run per case: case metrics, per-attempt metrics (step = attempt number), verdict, and `extracted-values.json` per attempt.
+- PDFs, OCR text and answer keys are never uploaded.
+
+If MLflow fails, the run continues and the report says `MLflow: not logged` with the reason. A rescore is not logged.
+
+## Limits
+
+- **Local stack.** The benchmark needs a local database, bucket, LLM and OCR keys. It is not a CI job.
+- **At most 10 files per run.** Larger selections fail before any call.
+- **3 attempts per case by default.** Other values are exploratory and cannot update the baseline.
+- **Cost and time.** The 27 cases with 3 attempts cost about US$7 and take about 3 hours in total (31 Oct 2026, `gpt-5.6-luna` and Mistral OCR). `--dry-run` and `--list` forecast the cost from the baseline's usage; a case without a baseline or a model without a price in `prices.json` shows `n/a`.
+- **Warning metric.** The import flow does not return warnings yet, so "wrong totals that carried a warning" stays at 0% until it does.
+- **Legacy tolerance.** Keys without a printed unit and precision keep the earlier tolerance (half a tonne of slack); the report lists the cases that still use it.
+- **Total-only cases** (non-GPC layouts, or keys with no scored rows) are scored on the total, not row by row, and do not count toward headline recall.
+- **Answer keys are not in git.** They stay local until Product confirms they can be shared; reviewers read the report and `results.json`, not the keys.

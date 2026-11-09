@@ -120,6 +120,36 @@ export function parseTolerance(text: string): {
   };
 }
 
+const PRINTED_UNITS = ["t", "kt", "Mt", "Gt"] as const;
+
+/** Optional printed-precision columns, matched case-insensitively. */
+export function parsePrintedPrecision(
+  file: Record<string, string>,
+): Pick<KeyFile, "printedUnit" | "printedDecimals" | "totalPrintedDecimals"> {
+  const byName = new Map(
+    Object.entries(file).map(([name, value]) => [
+      name.trim().toLowerCase(),
+      value,
+    ]),
+  );
+  const unit = (byName.get("printed unit") ?? "").trim();
+  const decimals = (name: string) => {
+    const number = toNumber(byName.get(name) ?? "");
+    return number !== null && number >= 0 && Number.isInteger(number)
+      ? number
+      : undefined;
+  };
+  const out: ReturnType<typeof parsePrintedPrecision> = {};
+  const printedUnit = PRINTED_UNITS.find((valid) => valid === unit);
+  if (printedUnit) out.printedUnit = printedUnit;
+  const printedDecimals = decimals("printed decimals");
+  if (printedDecimals !== undefined) out.printedDecimals = printedDecimals;
+  const totalPrintedDecimals = decimals("total printed decimals");
+  if (totalPrintedDecimals !== undefined)
+    out.totalPrintedDecimals = totalPrintedDecimals;
+  return out;
+}
+
 export async function exportAnswerKeys(workbookPath: string) {
   const workbook = new Excel.Workbook();
   await workbook.xlsx.readFile(workbookPath);
@@ -147,6 +177,7 @@ export async function exportAnswerKeys(workbookPath: string) {
       keyValueRows: toNumber(file["Key value rows"]),
       rows: [],
       distractors: [],
+      ...parsePrintedPrecision(file),
     };
   }
   for (const key of keys) {

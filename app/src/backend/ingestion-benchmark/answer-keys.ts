@@ -42,6 +42,11 @@ export type KeyFile = {
   distractors: KeyDistractor[];
   /** Not a GPC inventory: score the total only, not the rows. */
   nonGpc?: boolean;
+  /** Unit the source prints its values in; with printedDecimals it sets the tolerance. */
+  printedUnit?: "t" | "kt" | "Mt" | "Gt";
+  printedDecimals?: number;
+  /** Decimals of the printed total when they differ from the rows. */
+  totalPrintedDecimals?: number;
 };
 
 export function loadAnswerKeys(path: string): Record<string, KeyFile> {

@@ -11,6 +11,10 @@
  * The app stores one InventoryValue per GPC reference and scope, so a "stored
  * row" here is one stored (ref, scope) group, not one extracted line item.
  */
+import {
+  rowTolerance,
+  totalTolerance,
+} from "@/backend/ingestion-benchmark/tolerance";
 import { toCanonical } from "@/util/notation-keys";
 import type {
   KeyFile,
@@ -46,6 +50,8 @@ export type FileScore = {
   storedTotal: number;
   totalDiffPct: number | null;
   totalWithinTolerance: boolean | null;
+  /** "rule" when the printed-precision rule set the row tolerance, else "legacy". */
+  toleranceSource: "rule" | "legacy";
   notationScored: number;
   notationRecovered: number;
   distractorsStored: {
@@ -343,6 +349,11 @@ export function scoreFile(
 
   // Non-GPC documents and keys with no scored rows are scored on the total only.
   const rows = !totalOnly;
+  const totalTol = totalTolerance(file);
+  const totalTonnes =
+    totalTol.source === "rule"
+      ? totalTol.tonnes
+      : Math.max(totalTol.tonnes, 0.5);
   return {
     keyValueRows: valueRows.length,
     storedGroups: groups.size,
@@ -359,9 +370,8 @@ export function scoreFile(
         ? (totalDiff / Math.abs(file.expectedTotal)) * 100
         : null,
     totalWithinTolerance:
-      totalDiff !== null
-        ? Math.abs(totalDiff) <= Math.max(file.totalTolerance, 0.5)
-        : null,
+      totalDiff !== null ? Math.abs(totalDiff) <= totalTonnes : null,
+    toleranceSource: rowTolerance(file).source,
     notationScored: notationRows.length,
     notationRecovered,
     distractorsStored,

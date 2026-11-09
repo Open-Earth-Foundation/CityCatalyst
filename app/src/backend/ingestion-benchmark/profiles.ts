@@ -3,6 +3,7 @@
  * (lenient, printed-precision sources) and structured-file import (strict).
  */
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
+import { rowTolerance } from "@/backend/ingestion-benchmark/tolerance";
 
 export type ScoringProfile = {
   name: "pdf" | "structured";
@@ -24,8 +25,11 @@ export const PDF_PROFILE: ScoringProfile = {
   zeroRowMatchesAbsent: true,
   skipUnscoredRows: true,
   sumSameRefScope: true,
-  // The sources print whole tonnes; keep half a tonne of slack for the kg to t conversion.
-  valueTolerance: (key) => Math.max(key.tolerance, 0.5),
+  // The printed-precision rule has no floor; legacy keys keep half a tonne of slack for the kg to t conversion.
+  valueTolerance: (key) => {
+    const { tonnes, source } = rowTolerance(key);
+    return source === "rule" ? tonnes : Math.max(tonnes, 0.5);
+  },
 };
 
 export const STRUCTURED_PROFILE: ScoringProfile = {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import {
   isScored,
   parseNumbers,
+  parsePrintedPrecision,
   parseTolerance,
 } from "../../../scripts/pdf-benchmark/export-answer-keys";
 
@@ -48,5 +49,31 @@ describe("parseNumbers", () => {
 
   it("keeps plain integers", () => {
     expect(parseNumbers("Pirque 133; 270.707 hab")).toEqual([133, 270707]);
+  });
+});
+
+describe("parsePrintedPrecision", () => {
+  it("reads the optional columns case-insensitively", () => {
+    expect(
+      parsePrintedPrecision({
+        "printed unit": " Mt ",
+        "PRINTED DECIMALS": "2",
+        "Total Printed Decimals": "1",
+      }),
+    ).toEqual({
+      printedUnit: "Mt",
+      printedDecimals: 2,
+      totalPrintedDecimals: 1,
+    });
+  });
+
+  it("leaves fields undefined when columns are missing or invalid", () => {
+    expect(parsePrintedPrecision({ City: "X" })).toEqual({});
+    expect(
+      parsePrintedPrecision({
+        "Printed unit": "tonnes",
+        "Printed decimals": "",
+      }),
+    ).toEqual({});
   });
 });

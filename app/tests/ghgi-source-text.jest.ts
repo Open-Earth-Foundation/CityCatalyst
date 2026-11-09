@@ -256,7 +256,9 @@ describe("namesLargeUnit: table lines over figures", () => {
   });
   it("a kt figure counts when no table line names tonnes", () => {
     expect(
-      namesLargeUnit("Figure 3 (kt CO2e)\n| Sector | Emissions |\n| --- | --- |"),
+      namesLargeUnit(
+        "Figure 3 (kt CO2e)\n| Sector | Emissions |\n| --- | --- |",
+      ),
     ).toBe(true);
   });
   it("a kt unit line does not void a tonnes caption", () => {
@@ -266,7 +268,9 @@ describe("namesLargeUnit: table lines over figures", () => {
   });
   it("a kt table header wins over a tonnes caption", () => {
     expect(
-      namesLargeUnit("Table 4 Emissions (t CO2e)\n| Sector | kt CO2e |\n| --- | --- |"),
+      namesLargeUnit(
+        "Table 4 Emissions (t CO2e)\n| Sector | kt CO2e |\n| --- | --- |",
+      ),
     ).toBe(true);
   });
 });

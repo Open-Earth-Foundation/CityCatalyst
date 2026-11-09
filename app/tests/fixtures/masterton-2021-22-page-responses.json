@@ -1,5 +1,5 @@
 {
-  "source": "Masterton District Emissions Inventory 2021/22 (GWRC, AECOM, 42 pages). Mistral OCR, then one real LLM_EXTRACTION_MODEL run on 2026-11-05 with targetYear 2022. Responses per candidate page, in call order (a second entry is the page retry).",
+  "source": "Masterton District Emissions Inventory 2021/22 (GWRC, AECOM, 42 pages). Mistral OCR, then one real LLM_EXTRACTION_MODEL run on 2026-11-05 with targetYear 2022. Responses per candidate page, in call order (a second entry is the page retry). pageText holds the Mistral OCR markdown of each candidate page (2026-11-09).",
   "targetYear": 2022,
   "candidatePages": [
     2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 27,

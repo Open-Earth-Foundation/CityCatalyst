@@ -93,6 +93,15 @@ describe("CC-1161 Masterton 2021/22 replay", () => {
       removals: REMOVALS,
       net: NET,
     });
+    // CC-1163 check 1: the gross, forestry and net totals are printed on the pages.
+    const printed = summary.reportedTotals.filter((total) =>
+      [GROSS, REMOVALS, NET].includes(Math.round(total.value)),
+    );
+    expect(printed.length).toBeGreaterThan(0);
+    expect(new Set(printed.map((total) => Math.round(total.value)))).toEqual(
+      new Set([GROSS, REMOVALS, NET]),
+    );
+    for (const total of printed) expect(total.inText).toBe(true);
   });
 
   it("a. with the V.2 rows on page 16 it imports the net total, without a warning", async () => {

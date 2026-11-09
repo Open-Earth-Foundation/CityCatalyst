@@ -344,7 +344,10 @@ describe("CC-1163 check 3: missing unit", () => {
 
   it("keeps unitless rows on a document source", () => {
     const result = finalizeExtractedRows(noUnitRows(), 2021, {
-      source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "document" },
+      source: {
+        text: "Table 2 Emissions (kt CO2e)\n" + body,
+        kind: "document",
+      },
     });
     expect(result.rows.map((r) => r.totalCO2e)).toEqual([3000000, 2000000]);
     expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();

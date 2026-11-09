@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("UsedAuthorizationCode", {
-      jti: {
+      jwt_id: {
         type: Sequelize.STRING(64),
         allowNull: false,
         primaryKey: true,

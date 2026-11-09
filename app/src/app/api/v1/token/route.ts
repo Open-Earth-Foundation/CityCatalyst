@@ -254,7 +254,7 @@ async function handleAuthorizationCodeRequest(
 
 /**
  * Atomically records an authorization code as redeemed. The primary key on
- * `jti` makes the insert fail for a replayed code, regardless of which app
+ * `jwt_id` makes the insert fail for a replayed code, regardless of which app
  * replica handled the first redemption. Expired rows are pruned afterwards,
  * since an expired code is already rejected by jwt.verify.
  */
@@ -262,7 +262,7 @@ async function markCodeUsed(jwtid: string, exp: number | undefined) {
   const expires = exp ? new Date(exp * 1000) : new Date();
 
   try {
-    await UsedAuthorizationCode.create({ jti: jwtid, expires });
+    await UsedAuthorizationCode.create({ jwtId: jwtid, expires });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       logger.debug({ jwtid }, "Replayed authorization code");

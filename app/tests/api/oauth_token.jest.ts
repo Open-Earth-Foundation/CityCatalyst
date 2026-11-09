@@ -58,7 +58,7 @@ function tokenRequest(code: string) {
 
 describe("OAuth token API", () => {
   let oldFeatureFlag: boolean;
-  const usedJtis: string[] = [];
+  const usedJwtIds: string[] = [];
 
   beforeAll(async () => {
     setupTests();
@@ -69,16 +69,16 @@ describe("OAuth token API", () => {
   });
 
   afterAll(async () => {
-    await UsedAuthorizationCode.destroy({ where: { jti: usedJtis } });
+    await UsedAuthorizationCode.destroy({ where: { jwtId: usedJwtIds } });
     await OAuthClient.destroy({ where: { clientId: testClient.clientId } });
     setFeatureFlag(FeatureFlags.OAUTH_ENABLED, oldFeatureFlag);
     await db.sequelize?.close();
   });
 
   it("exchanges an authorization code once and rejects a replay", async () => {
-    const jti = v4();
-    usedJtis.push(jti);
-    const code = createCode(jti);
+    const jwtId = v4();
+    usedJwtIds.push(jwtId);
+    const code = createCode(jwtId);
 
     const first = await postToken(tokenRequest(code), {
       params: Promise.resolve({}),
@@ -90,7 +90,7 @@ describe("OAuth token API", () => {
 
     // The used code is persisted in the database (shared by all replicas),
     // not in process memory.
-    const row = await UsedAuthorizationCode.findByPk(jti);
+    const row = await UsedAuthorizationCode.findByPk(jwtId);
     expect(row).not.toBeNull();
 
     const replay = await postToken(tokenRequest(code), {
@@ -102,34 +102,34 @@ describe("OAuth token API", () => {
   });
 
   it("rejects a code already recorded as used by another instance", async () => {
-    const jti = v4();
-    usedJtis.push(jti);
+    const jwtId = v4();
+    usedJwtIds.push(jwtId);
     await UsedAuthorizationCode.create({
-      jti,
+      jwtId,
       expires: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    const res = await postToken(tokenRequest(createCode(jti)), {
+    const res = await postToken(tokenRequest(createCode(jwtId)), {
       params: Promise.resolve({}),
     });
     await expectStatusCode(res, 400);
   });
 
   it("prunes expired used-code records", async () => {
-    const staleJti = v4();
-    usedJtis.push(staleJti);
+    const staleJwtId = v4();
+    usedJwtIds.push(staleJwtId);
     await UsedAuthorizationCode.create({
-      jti: staleJti,
+      jwtId: staleJwtId,
       expires: new Date(Date.now() - 60 * 1000),
     });
 
-    const jti = v4();
-    usedJtis.push(jti);
-    const res = await postToken(tokenRequest(createCode(jti)), {
+    const jwtId = v4();
+    usedJwtIds.push(jwtId);
+    const res = await postToken(tokenRequest(createCode(jwtId)), {
       params: Promise.resolve({}),
     });
     await expectStatusCode(res, 200);
 
-    expect(await UsedAuthorizationCode.findByPk(staleJti)).toBeNull();
+    expect(await UsedAuthorizationCode.findByPk(staleJwtId)).toBeNull();
   });
 });

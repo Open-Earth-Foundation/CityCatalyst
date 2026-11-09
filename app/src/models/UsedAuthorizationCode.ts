@@ -1,17 +1,17 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 
 /**
- * Records OAuth authorization codes (by JWT `jti`) that have already been
+ * Records OAuth authorization codes (by JWT ID, the `jti` claim) that have already been
  * exchanged at /api/v1/token, so a code can only be redeemed once across
  * all app replicas.
  */
 export interface UsedAuthorizationCodeAttributes {
-  jti: string;
+  jwtId: string;
   expires: Date;
   created: Date;
 }
 
-export type UsedAuthorizationCodePk = "jti";
+export type UsedAuthorizationCodePk = "jwtId";
 export type UsedAuthorizationCodeId =
   UsedAuthorizationCode[UsedAuthorizationCodePk];
 export type UsedAuthorizationCodeOptionalAttributes = "created";
@@ -27,17 +27,18 @@ export class UsedAuthorizationCode
   >
   implements UsedAuthorizationCodeAttributes
 {
-  declare jti: string;
+  declare jwtId: string;
   declare expires: Date;
   declare created: Date;
 
   static initModel(sequelize: Sequelize): typeof UsedAuthorizationCode {
     UsedAuthorizationCode.init(
       {
-        jti: {
+        jwtId: {
           type: DataTypes.STRING(64),
           allowNull: false,
           primaryKey: true,
+          field: "jwt_id",
         },
         expires: {
           type: DataTypes.DATE,

@@ -620,7 +620,7 @@ export async function runAttempt(
           ? "readback_error"
           : stage === "job" &&
               !ocrOk &&
-              !/^extract d/.test((error as Error).message)
+              !/^extract \d/.test((error as Error).message)
             ? "ocr_error"
             : "extraction_error";
     return finish({

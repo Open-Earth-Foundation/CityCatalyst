@@ -13,7 +13,12 @@ type Row = Record<string, unknown>;
 type Answers = Record<string, { rows: Row[] }[]>;
 const fixture = JSON.parse(
   readFileSync("tests/fixtures/masterton-2021-22-page-responses.json", "utf8"),
-) as { targetYear: number; candidatePages: number[]; responses: Answers };
+) as {
+  targetYear: number;
+  candidatePages: number[];
+  pageText: Record<string, string>;
+  responses: Answers;
+};
 
 let answers: Answers = {};
 
@@ -41,9 +46,11 @@ const GROSS = 785873;
 const REMOVALS = -811512;
 const NET = -25639;
 
-/** The candidate pages of the report, each with enough numbers to stay a candidate. */
+/** The candidate pages of the report, with the real Mistral OCR text of each page. */
 const document = fixture.candidatePages
-  .map((n) => `<!-- page: ${n} -->\nPAGE-${n} ${"1,234 ".repeat(10)}`)
+  .map((n) =>
+    [`<!-- page: ${n} -->`, `PAGE-${n}`, fixture.pageText[n]].join("\n"),
+  )
   .join("\n\n");
 
 type Edit = (page: string, rows: Row[]) => Row[];

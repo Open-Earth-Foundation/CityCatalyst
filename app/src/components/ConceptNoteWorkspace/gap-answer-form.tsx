@@ -44,6 +44,31 @@ interface GapQuestion {
   questions: { question: string; options: string[] }[];
 }
 
+/** Unsent answers, kept for the browser session so leaving the form loses nothing. */
+interface GapDraft {
+  question: GapQuestion | null;
+  choices: Record<number, string>;
+  customAnswers: Record<string, string>;
+  details: string;
+}
+
+function readDraft(key: string): GapDraft | null {
+  try {
+    return JSON.parse(sessionStorage.getItem(key) ?? "null");
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(key: string, draft: GapDraft | null): void {
+  try {
+    if (draft) sessionStorage.setItem(key, JSON.stringify(draft));
+    else sessionStorage.removeItem(key);
+  } catch {
+    // Storage can be full or blocked; the form still works without a draft.
+  }
+}
+
 /** Ask about each missing part; choices are user answers, not inferred project facts. */
 export function GapAnswerForm({
   runId,
@@ -55,16 +80,23 @@ export function GapAnswerForm({
   onAddSource,
 }: GapAnswerFormProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [question, setQuestion] = useState<GapQuestion | null>(null);
-  const [loading, setLoading] = useState(true);
+  // A new gap version starts fresh, since earlier answers may no longer fit it.
+  const draftKey = `cnb-gap-draft:${runId}:${request.chapterId}:${request.row.gap?.gap_id ?? request.row.question}:${request.row.gap?.version}`;
+  const [draft] = useState(() => readDraft(draftKey));
+  const [question, setQuestion] = useState<GapQuestion | null>(
+    draft?.question ?? null,
+  );
+  const [loading, setLoading] = useState(!draft?.question);
   const [attempt, setAttempt] = useState(0);
-  const [choices, setChoices] = useState<Record<number, string>>({});
+  const [choices, setChoices] = useState<Record<number, string>>(
+    draft?.choices ?? {},
+  );
   // Keyed by question text so a retry that changes the questions cannot
   // attach earlier text to a different question.
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
-    {},
+    draft?.customAnswers ?? {},
   );
-  const [details, setDetails] = useState("");
+  const [details, setDetails] = useState(draft?.details ?? "");
   const [showRequest, setShowRequest] = useState(false);
   const [tooLong, setTooLong] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
@@ -88,6 +120,8 @@ export function GapAnswerForm({
   const answered = answers.some(Boolean);
 
   useEffect(() => {
+    // Reopening a saved draft keeps its questions, so its answers still match.
+    if (attempt === 0 && draft?.question) return;
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       try {
@@ -135,7 +169,18 @@ export function GapAnswerForm({
     request.row.gap?.gap_id,
     request.row.question,
     attempt,
+    draft,
   ]);
+
+  useEffect(() => {
+    if (loading) return;
+    saveDraft(
+      draftKey,
+      answered || details.trim()
+        ? { question, choices, customAnswers, details }
+        : null,
+    );
+  }, [draftKey, loading, answered, question, choices, customAnswers, details]);
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
@@ -161,6 +206,7 @@ export function GapAnswerForm({
           complete,
         );
         setTooLong(!sent);
+        if (sent) saveDraft(draftKey, null);
       }}
     >
       <VStack align="stretch" gap={3}>

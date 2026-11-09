@@ -315,6 +315,7 @@ const gapAnswer: GapAnswerRequest = {
 };
 
 beforeEach(() => {
+  sessionStorage.clear();
   globalThis.fetch = fetchQuestion;
   fetchQuestion.mockReset();
   fetchQuestion.mockResolvedValue({
@@ -423,14 +424,41 @@ it("asks Clima to replace the gap marker once every question is answered", async
   expect(content).not.toContain("marked as missing");
 });
 
-it("leaves the gap untouched when answered later", async () => {
+it("leaves the gap untouched when answered later and restores the answers on return", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="1"]')!
+      .click(),
+  );
+  await writeAnswer(1, "EUR 2 million");
   const later = [...container.querySelectorAll("button")].find(
     (button) => button.textContent === "gap-answer-later",
   )!;
   await act(async () => later.click());
   expect(closeGap).toHaveBeenCalledTimes(1);
   expect(sendMessage).not.toHaveBeenCalled();
+
+  // Reopening shows the same questions and answers without generating new ones.
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(fetchQuestion).toHaveBeenCalledTimes(1);
+  expect(
+    subQuestion(0).querySelector<HTMLInputElement>(
+      'input[type="radio"][value="1"]',
+    )!.checked,
+  ).toBe(true);
+  expect(
+    subQuestion(1).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toBe("EUR 2 million");
+
+  // A sent answer clears the draft, so the next visit starts fresh.
+  await act(async () => previewButton().click());
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(fetchQuestion).toHaveBeenCalledTimes(2);
 });
 
 it("offers free text for gaps without suggestions and blocks submission while Clima is busy", async () => {

@@ -60,12 +60,12 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   }
   const inviteRequest = AcceptInvite.parse(await req.json());
   logger.info(inviteRequest, "[UserInviteAccept] Parsed invite request");
-  const { email, token, cityIds } = inviteRequest;
+  const { email, token } = inviteRequest;
   const verifiedToken = jwt.verify(
     token,
     process.env.VERIFICATION_TOKEN_SECRET!,
   );
-  logger.info({ email, cityIds }, "[UserInviteAccept] Token verified");
+  logger.info({ email }, "[UserInviteAccept] Token verified");
   const tokenContent = {
     email: (verifiedToken as JwtPayload).email,
     inviteId: (verifiedToken as JwtPayload).inviteId,
@@ -73,9 +73,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       "admin" | "collaborator" | undefined,
     projectId: (verifiedToken as JwtPayload).projectId as string | undefined,
   };
-
-  const difference = (setA: string[], setB: string[]) =>
-    setA.filter((x) => !setB.includes(x));
 
   if (tokenContent.email !== email) {
     logger.error(
@@ -106,6 +103,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       status: InviteStatus.PENDING,
     },
   });
+  const cityIds = invites.map((i) => i.cityId!);
   logger.info(
     {
       count: invites.length,
@@ -113,17 +111,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     },
     "[UserInviteAccept] Found invites",
   );
-  const inviteCityIds = invites.map((i) => i.cityId!);
-  const citiesNotFound = difference(cityIds, inviteCityIds);
-  if (citiesNotFound.length > 0) {
-    logger.error(
-      {
-        citiesNotFound,
-      },
-      "[UserInviteAccept] City not found in invites",
-    );
-    throw createHttpError.Unauthorized("Unauthorized");
-  }
+
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("[UserInviteAccept] VERIFICATION_TOKEN_SECRET missing");
     throw createHttpError.InternalServerError("Configuration error");

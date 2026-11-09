@@ -28,7 +28,7 @@
  *               deleteImportedData:
  *                 type: boolean
  *                 enum: [true]
- *                 description: Confirmed exception. Withdraws every extract and deletes inventory values created from this document. The catalog row stays.
+ *                 description: Confirmed exception. Withdraws every extract and deletes inventory values created only from this document. Rejects 409 if another file accumulated into the same GPC total. The catalog row stays.
  *     responses:
  *       200:
  *         description: Document is withdrawn

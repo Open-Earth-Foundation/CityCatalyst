@@ -4,7 +4,10 @@ import {
   MemoryIngestDocumentPool,
   assertDocumentReusable,
 } from "@/backend/ingest/document-pool";
-import { isWithdrawnBytesDue } from "@/backend/ingest/document-retention";
+import {
+  isClimateAdvisorObjectKey,
+  isWithdrawnBytesDue,
+} from "@/backend/ingest/document-retention";
 import type { RegisterNativeInputInput } from "@/backend/NativeInputCatalogService";
 
 const CITY_ID = "33333333-3333-4333-8333-333333333333";
@@ -84,6 +87,102 @@ describe("CNB Path B registration", () => {
     expect(second.created).toBe(false);
     expect(second.catalogId).toBe(first.catalogId);
     expect(catalogs.catalogs.size).toBe(1);
+    expect(second.documentId).toBe(first.documentId);
+  });
+
+  it("repairs a missing document catalog link when the same upload id is retried", async () => {
+    const pool = new MemoryIngestDocumentPool();
+    const catalogs = registry();
+    catalogs.pool = pool;
+    let links = 0;
+    const originalLink = catalogs.linkCatalog.bind(catalogs);
+    catalogs.linkCatalog = async (documentId, catalogId) => {
+      links += 1;
+      if (links === 1) return;
+      await originalLink(documentId, catalogId);
+    };
+    const input = {
+      uploadId: UPLOAD_ID,
+      cityId: CITY_ID,
+      userId: "owner-user",
+      filename: "plan.pdf",
+      contentHash: "e".repeat(64),
+      buffer: Buffer.from("%PDF-1.7"),
+      markdownReady: false,
+    };
+    const first = await registerCnbUploadOnPool(pool, input, catalogs);
+    expect((await pool.get(first.documentId))?.catalogId ?? null).toBeNull();
+    const second = await registerCnbUploadOnPool(pool, input, catalogs);
+    expect(second.catalogId).toBe(first.catalogId);
+    expect((await pool.get(second.documentId))?.catalogId).toBe(first.catalogId);
+  });
+
+  it("stores a new document when the same bytes are uploaded after withdraw", async () => {
+    const pool = new MemoryIngestDocumentPool();
+    const catalogs = registry();
+    catalogs.pool = pool;
+    const bytes = {
+      cityId: CITY_ID,
+      userId: "owner-user",
+      filename: "plan.pdf",
+      contentHash: "f".repeat(64),
+      buffer: Buffer.from("%PDF-1.7"),
+      markdownReady: false,
+    };
+    const first = await registerCnbUploadOnPool(
+      pool,
+      { ...bytes, uploadId: UPLOAD_ID },
+      catalogs,
+    );
+    await pool.withdraw(first.documentId);
+    const second = await registerCnbUploadOnPool(
+      pool,
+      {
+        ...bytes,
+        uploadId: "55555555-5555-4555-8555-555555555555",
+      },
+      catalogs,
+    );
+    expect(second.documentId).not.toBe(first.documentId);
+    expect((await pool.get(second.documentId))?.availability).toBe("active");
+    expect((await pool.get(first.documentId))?.availability).toBe("withdrawn");
+  });
+
+  it("repairs catalog visibility when promote is retried after a partial update", async () => {
+    const pool = new MemoryIngestDocumentPool();
+    const catalogs = registry();
+    catalogs.pool = pool;
+    const registered = await registerCnbUploadOnPool(
+      pool,
+      {
+        uploadId: UPLOAD_ID,
+        cityId: CITY_ID,
+        userId: "owner-user",
+        filename: "notes.md",
+        contentHash: "c".repeat(64),
+        buffer: Buffer.from("# notes"),
+        markdownReady: true,
+      },
+      catalogs,
+    );
+    await pool.publishPathB((await pool.get(registered.documentId))!);
+    pool.documents.set(registered.documentId, {
+      ...(await pool.get(registered.documentId))!,
+      visibility: "city",
+    });
+    const pathB = pool.catalogByDocumentId.get(registered.documentId)!;
+    pool.catalogByDocumentId.set(registered.documentId, {
+      ...pathB,
+      labels: { ...(pathB.labels ?? {}), visibility: "run" },
+    });
+    expect(
+      pool.catalogByDocumentId.get(registered.documentId)?.labels?.visibility,
+    ).toBe("run");
+    const promoted = await pool.promoteToCity(registered.documentId);
+    expect(promoted.visibility).toBe("city");
+    expect(
+      pool.catalogByDocumentId.get(registered.documentId)?.labels?.visibility,
+    ).toBe("city");
   });
 
   it("promotes a concept-note attachment to a city document other modules can reuse", async () => {
@@ -138,5 +237,13 @@ describe("withdrawn document byte clock", () => {
       withdrawn.withdrawnAt?.toISOString(),
     );
     expect(withdrawn.bytesPurgedAt ?? null).toBeNull();
+  });
+
+  it("does not treat Climate Advisor prefixes as pool-owned objects", () => {
+    expect(isClimateAdvisorObjectKey("pdf-ocr/sources/concept_note_upload/x/source.pdf")).toBe(
+      true,
+    );
+    expect(isClimateAdvisorObjectKey("ingest/documents/abc")).toBe(false);
+    expect(isClimateAdvisorObjectKey(null)).toBe(false);
   });
 });

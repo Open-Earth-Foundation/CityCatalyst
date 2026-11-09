@@ -76,6 +76,9 @@ export async function registerCnbUploadOnPool(
   });
   const existing = await registry.findCatalog(input.uploadId);
   if (existing) {
+    if (!stored.document.catalogId) {
+      await registry.linkCatalog(stored.document.id, existing.id);
+    }
     return {
       documentId: stored.document.id,
       catalogId: existing.id,

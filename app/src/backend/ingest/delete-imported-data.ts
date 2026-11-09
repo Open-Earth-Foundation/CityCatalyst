@@ -1,20 +1,39 @@
+import { Op } from "sequelize";
 import { db } from "@/models";
 import VersionHistoryService from "@/backend/VersionHistoryService";
-import { INGEST_MODULES } from "./types";
+import { INGEST_MODULES, IngestItemError } from "./types";
 import { SequelizeIngestDocumentPool } from "./IngestDocumentPoolService";
+import { isAmbiguousImportedValue } from "./source-document-ids";
 
 export const DELETE_INCLUDING_DATA_LABEL = "delete-including-data";
 
+function taggedInventoryWhere(documentId: string) {
+  return {
+    [Op.or]: [
+      { sourceDocumentId: documentId },
+      { sourceDocumentIds: { [Op.contains]: [documentId] } },
+    ],
+  };
+}
+
 /**
  * Confirmed exception to D9. Withdraws the document and every Path A extract,
- * then removes inventory values created from that document and writes the
- * deletion into version history. Rows that were only updated by a later file
- * keep the first document id, so this does not wipe an accumulated total.
+ * then removes inventory values created only from that document. Accumulated
+ * GPC totals that mix two files cannot be split, so the call is rejected.
  */
 export async function deleteImportedDataForDocument(
   documentId: string,
   authorId: string,
 ): Promise<{ removed: number }> {
+  const tagged = await db.models.InventoryValue.findAll({
+    where: taggedInventoryWhere(documentId),
+  });
+  if (tagged.some((value) => isAmbiguousImportedValue(value))) {
+    throw new IngestItemError(
+      "ambiguous_imported_data",
+      "This document shares inventory values with another file. Delete-including-data cannot split an accumulated GPC total.",
+    );
+  }
   const pool = new SequelizeIngestDocumentPool();
   await pool.withdraw(documentId, {
     withdrawExtractsFor: [...INGEST_MODULES],
@@ -29,7 +48,7 @@ export async function removeTaggedInventoryValues(
 ): Promise<number> {
   return db.sequelize!.transaction(async (transaction) => {
     const values = await db.models.InventoryValue.findAll({
-      where: { sourceDocumentId: documentId },
+      where: taggedInventoryWhere(documentId),
       transaction,
     });
     for (const value of values) {

@@ -34,6 +34,8 @@ export interface InventoryValueAttributes {
   omitFromTotal?: boolean;
   /** Pool document that last created this row. Delete-including-data uses it. */
   sourceDocumentId?: string | null;
+  /** Every pool document that contributed to this GPC total. */
+  sourceDocumentIds?: string[] | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -56,6 +58,7 @@ export type InventoryValueOptionalAttributes =
   | "datasourceId"
   | "omitFromTotal"
   | "sourceDocumentId"
+  | "sourceDocumentIds"
   | "created"
   | "lastUpdated";
 export type InventoryValueCreationAttributes = Optional<
@@ -85,6 +88,7 @@ export class InventoryValue
   declare datasourceId?: string | null;
   declare omitFromTotal?: boolean;
   declare sourceDocumentId?: string | null;
+  declare sourceDocumentIds?: string[] | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -296,6 +300,11 @@ export class InventoryValue
           type: DataTypes.UUID,
           allowNull: true,
           field: "source_document_id",
+        },
+        sourceDocumentIds: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "source_document_ids",
         },
       },
       {

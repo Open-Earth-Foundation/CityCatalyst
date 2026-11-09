@@ -191,12 +191,16 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       if (!existing) {
         throw new Error(`Ingest document ${existingId} missing`);
       }
-      if (input.s3Key && !existing.s3Key) {
-        const withKey = { ...existing, s3Key: input.s3Key };
-        this.documents.set(existingId, withKey);
-        return { document: { ...withKey, buffer: withKey.buffer }, created: false };
+      const reusable =
+        (existing.availability ?? "active") === "active" && !existing.bytesPurgedAt;
+      if (reusable) {
+        if (input.s3Key && !existing.s3Key) {
+          const withKey = { ...existing, s3Key: input.s3Key };
+          this.documents.set(existingId, withKey);
+          return { document: { ...withKey, buffer: withKey.buffer }, created: false };
+        }
+        return { document: { ...existing, buffer: existing.buffer }, created: false };
       }
-      return { document: { ...existing, buffer: existing.buffer }, created: false };
     }
 
     const document: IngestDocumentRecord = {
@@ -291,21 +295,23 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
     if (!current) {
       throw new IngestItemError("document_not_found");
     }
-    if ((current.availability ?? "active") === "withdrawn") {
-      return { ...current, buffer: current.buffer };
-    }
-    const next: IngestDocumentRecord = {
-      ...current,
-      availability: "withdrawn",
-      withdrawnAt: current.withdrawnAt ?? new Date(),
-    };
-    this.documents.set(documentId, next);
-    const pathB = this.catalogByDocumentId.get(documentId);
-    if (pathB) {
-      this.catalogByDocumentId.set(documentId, {
-        ...pathB,
-        availability: "withdrawn",
-      } as RegisterNativeInputInput);
+    const alreadyWithdrawn = (current.availability ?? "active") === "withdrawn";
+    const next: IngestDocumentRecord = alreadyWithdrawn
+      ? current
+      : {
+          ...current,
+          availability: "withdrawn",
+          withdrawnAt: current.withdrawnAt ?? new Date(),
+        };
+    if (!alreadyWithdrawn) {
+      this.documents.set(documentId, next);
+      const pathB = this.catalogByDocumentId.get(documentId);
+      if (pathB) {
+        this.catalogByDocumentId.set(documentId, {
+          ...pathB,
+          availability: "withdrawn",
+        } as RegisterNativeInputInput);
+      }
     }
     const modules = new Set(input.withdrawExtractsFor ?? []);
     if (modules.size > 0) {
@@ -334,10 +340,7 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
     if (availability === "superseded") {
       throw new IngestItemError("document_superseded");
     }
-    if (current.visibility === "city") {
-      return { ...current, buffer: current.buffer };
-    }
-    if (current.visibility !== "run") {
+    if (current.visibility !== "run" && current.visibility !== "city") {
       throw new IngestItemError(
         "validation_failed",
         "Only a concept-note attachment can be marked as a city document",

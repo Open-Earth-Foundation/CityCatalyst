@@ -14,6 +14,11 @@ export interface WithdrawnByteClock {
   bytesPurgedAt?: Date | null;
 }
 
+/** Climate Advisor owns these prefixes; Core must not delete them on retention. */
+export function isClimateAdvisorObjectKey(s3Key: string | null | undefined): boolean {
+  return Boolean(s3Key?.startsWith("pdf-ocr/"));
+}
+
 /** Withdrawn bytes are due once they are older than the retention window. */
 export function isWithdrawnBytesDue(
   document: WithdrawnByteClock,
@@ -29,9 +34,10 @@ function emptyResult(): RetentionPolicyResult {
 }
 
 /**
- * Drop S3 objects and pool blobs for documents withdrawn longer than
- * INGEST_WITHDRAWN_DOCUMENT_DAYS (default 365). The catalog row stays so
- * values can still say the source was withdrawn.
+ * Drop pool blobs (and non-CA S3 objects) for documents withdrawn longer than
+ * INGEST_WITHDRAWN_DOCUMENT_DAYS (default 365). Climate Advisor prefixes stay
+ * so a duplicated note can keep its markdown. Catalog rows stay so values can
+ * still say the source was withdrawn.
  * No-ops unless GDPR_RETENTION_ENABLED=true, same switch as the other policies.
  */
 export async function purgeWithdrawnDocumentBytes(
@@ -74,14 +80,13 @@ export async function purgeWithdrawnDocumentBytes(
           { transaction },
         );
         if (config.dryRun) return;
-        for (const catalog of catalogs) {
-          await InventoryFileStorageService.deleteConceptNoteSource(
-            catalog.sourceId,
-          );
-        }
-        if (document.s3Key && catalogs.length === 0) {
+        if (document.s3Key && !isClimateAdvisorObjectKey(document.s3Key)) {
           await InventoryFileStorageService.deleteFile(document.s3Key);
         }
+        await db.models.IngestItem.update(
+          { data: null },
+          { where: { documentId: document.id }, transaction },
+        );
         await document.update(
           { data: null, s3Key: null, bytesPurgedAt: now },
           { transaction },

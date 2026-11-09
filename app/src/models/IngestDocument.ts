@@ -188,6 +188,7 @@ export class IngestDocument
               { name: "project_id" },
               { name: "organization_id" },
             ],
+            where: { withdrawnAt: null },
           },
         ],
       },

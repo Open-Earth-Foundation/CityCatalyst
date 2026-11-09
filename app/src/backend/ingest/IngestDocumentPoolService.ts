@@ -117,7 +117,10 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       projectId: input.scope.projectId ?? null,
       organizationId: input.scope.organizationId ?? null,
     };
-    const existing = await db.models.IngestDocument.findOne({ where });
+    const activeWhere = { ...where, withdrawnAt: { [Op.is]: null } };
+    const existing = await db.models.IngestDocument.findOne({
+      where: activeWhere,
+    });
     if (existing) {
       if (input.s3Key && !existing.s3Key) {
         await existing.update({ s3Key: input.s3Key });
@@ -139,7 +142,9 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       return { document: toRecord(created), created: true };
     } catch (error) {
       if (!(error instanceof UniqueConstraintError)) throw error;
-      const raced = await db.models.IngestDocument.findOne({ where });
+      const raced = await db.models.IngestDocument.findOne({
+        where: activeWhere,
+      });
       if (!raced) throw error;
       return { document: toRecord(raced), created: false };
     }
@@ -200,20 +205,16 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
     if (!document) {
       throw new IngestItemError("document_not_found");
     }
-    if ((document.availability ?? "active") === "withdrawn") {
-      await stampWithdrawnAt(documentId);
-      await withdrawCnbCatalogs(documentId);
-      const again = await this.get(documentId);
-      return again ?? document;
-    }
     if ((document.availability ?? "active") === "superseded") {
       throw new IngestItemError("document_superseded");
     }
-    let catalogId = document.catalogId ?? null;
-    if (!catalogId) {
-      catalogId = (await this.publishPathB(document)).catalogId;
+    if ((document.availability ?? "active") !== "withdrawn") {
+      let catalogId = document.catalogId ?? null;
+      if (!catalogId) {
+        catalogId = (await this.publishPathB(document)).catalogId;
+      }
+      await withdrawNativeInput(catalogId);
     }
-    await withdrawNativeInput(catalogId);
     await withdrawCnbCatalogs(documentId);
     await stampWithdrawnAt(documentId);
     const modules = input.withdrawExtractsFor ?? [];
@@ -249,19 +250,18 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
     if (availability === "superseded") {
       throw new IngestItemError("document_superseded");
     }
-    if (document.visibility === "city") {
-      return document;
-    }
-    if (document.visibility !== "run") {
+    if (document.visibility !== "run" && document.visibility !== "city") {
       throw new IngestItemError(
         "validation_failed",
         "Only a concept-note attachment can be marked as a city document",
       );
     }
-    await db.models.IngestDocument.update(
-      { visibility: "city" },
-      { where: { id: documentId } },
-    );
+    if (document.visibility !== "city") {
+      await db.models.IngestDocument.update(
+        { visibility: "city" },
+        { where: { id: documentId } },
+      );
+    }
     const where: Record<string, unknown> = {
       [Op.or]: [
         ...(document.catalogId ? [{ id: document.catalogId }] : []),

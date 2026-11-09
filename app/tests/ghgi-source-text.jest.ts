@@ -63,6 +63,12 @@ describe("isValueInText", () => {
     [9559215, "about 9.56 million", false],
     // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.
     [2000000, "CO2e emissions", false],
+    // Scaled down: the page prints kg and the model converted to tonnes
+    // (Santiago 2022, CC-950 backtest 2026-11-09).
+    [2145243.596, "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |", true],
+    [841891, "| Subtotal Transporte | 841.891.000 |", true],
+    // A short kg figure never matches: 500 kg is not 0.5 t of a total.
+    [0.5, "500 kg", false],
   ])("finds %s in %j: %s", (raw, text, expected) => {
     expect(isValueInText(raw, text)).toBe(expected);
   });

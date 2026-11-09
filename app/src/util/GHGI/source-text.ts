@@ -152,8 +152,11 @@ export function numbersInText(
   return found;
 }
 
-/** Kilo and mega: the model may convert a kt or Mt figure to tonnes itself. */
-const SCALES = [1000, 1000000];
+/**
+ * The model may convert a printed figure to tonnes itself: kt and Mt figures up
+ * (×1000, ×1,000,000), kg figures down (×0.001, e.g. Santiago 2022 prints kg).
+ */
+const SCALES = [0.001, 1000, 1000000];
 
 /** A printed figure needs this many significant digits to match scaled. */
 const MIN_SCALED_DIGITS = 4;
@@ -166,8 +169,8 @@ function significantDigits(value: number, step: number): number {
 
 /**
  * True when `raw` (a model value before unit conversion) is printed in `text`:
- * equal up to rounding of the printed figure, or the printed figure times 1000 or
- * 1,000,000 up to its rounding. The sign is ignored on both sides.
+ * equal up to rounding of the printed figure, or the printed figure times 0.001,
+ * 1000 or 1,000,000 up to its rounding. The sign is ignored on both sides.
  *
  * A scaled match needs a printed figure of at least 4 significant digits
  * (`9,559.2` kt matches 9,559,215 t). Shorter figures would match almost any

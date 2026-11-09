@@ -695,6 +695,10 @@ class GoldenSetReport(GoldenContract):
     expected_fixture_ids: list[str] = Field(default_factory=list)
     corpus_fingerprint: str | None = None
     evaluator_fingerprint: str | None = None
+    # Every non-model input that can change a result, so two runs differ only by LLM output.
+    producer_prompt_versions: dict[str, str] = Field(default_factory=dict)
+    llm_config_sha256: str | None = None
+    dependency_lock_sha256: str | None = None
     completed: bool = True
     run_errors: list[str] = Field(default_factory=list)
 

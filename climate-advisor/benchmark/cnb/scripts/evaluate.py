@@ -31,9 +31,11 @@ Inputs:
 
 Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - report.json and report.md with per-stage integrity failures, semantic findings,
-  evaluation errors, model configuration, prompt hashes, run ID, label, git
-  commit, and per-stage usage: wall time, requests, tokens, and the cost
+  evaluation errors, model configuration, judge and producer prompt hashes,
+  LLM config and uv.lock hashes, run ID, label, git commit (plus a diff hash when
+  dirty), and per-stage usage: wall time, requests, tokens, and the cost
   OpenRouter reports (per agent too). No full source text.
+- llm_config.json: the complete effective, non-secret LLM configuration.
 - outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
   verification/seeded_draft.json and findings.json, editing/cases.json, and
   <stage>/judgment.json for review.
@@ -53,6 +55,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
 import re
@@ -107,6 +110,7 @@ from benchmark.cnb.golden_set.models import (
 from benchmark.utils.usage import UsageRecorder, measure, prompt_names
 from benchmark.cnb.golden_set.viewer import publish_run, publish_bundle
 from benchmark.cnb.golden_set.baseline import (
+    content_digest,
     evaluation_fingerprints,
     load_approved_baseline,
     compare_reports,
@@ -192,7 +196,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def code_version() -> str | None:
-    """The current git commit, with ``-dirty`` for uncommitted tracked changes."""
+    """The current git commit; uncommitted tracked changes add ``-dirty-<diff hash>``.
+
+    The diff hash tells two runs from different uncommitted states apart.
+    """
     try:
         commit = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
@@ -201,16 +208,28 @@ def code_version() -> str | None:
             check=True,
             cwd=BENCHMARK_ROOT,
         ).stdout.strip()
-        dirty = subprocess.run(
-            ["git", "status", "--porcelain", "--untracked-files=no"],
+        diff = subprocess.run(
+            ["git", "diff", "HEAD"],
             capture_output=True,
-            text=True,
             check=True,
             cwd=BENCHMARK_ROOT,
-        ).stdout.strip()
+        ).stdout
     except (OSError, subprocess.CalledProcessError):
         return None
-    return f"{commit}-dirty" if dirty else commit
+    return f"{commit}-dirty-{hashlib.sha256(diff).hexdigest()[:8]}" if diff else commit
+
+
+def prompt_versions(settings: Settings) -> dict[str, str]:
+    """SHA-256 of every configured prompt as loaded, with includes resolved."""
+    prompts = settings.llm.prompts
+    versions = {}
+    for name in type(prompts).model_fields:
+        try:
+            text = prompts.get_prompt(name)
+        except (OSError, ValueError, TypeError):
+            continue
+        versions[name] = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    return versions
 
 
 def selected_stages(requested: list[str] | None) -> list[str]:
@@ -270,6 +289,16 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         ),
         "judge": _model_summary(models.cnb_golden_set_judge),
     }
+    # Pin every non-model input; the full LLM config is saved for side-by-side review.
+    report.producer_prompt_versions = prompt_versions(settings)
+    llm_config = settings.llm.model_dump(mode="json")
+    (args.output_dir / "llm_config.json").write_text(
+        json.dumps(llm_config, ensure_ascii=False, sort_keys=True), encoding="utf-8"
+    )
+    report.llm_config_sha256 = content_digest(llm_config)
+    report.dependency_lock_sha256 = hashlib.sha256(
+        (BENCHMARK_ROOT.parents[1] / "uv.lock").read_bytes()
+    ).hexdigest()
     args.delivery["fingerprints"] = evaluation_fingerprints(
         fixtures, report.model_dump(mode="json"), stages
     )
@@ -547,6 +576,11 @@ def render_markdown(report: GoldenSetReport) -> str:
         )
     for stage, digest in report.judge_prompt_versions.items():
         lines.append(f"- {stage} judge prompt SHA-256: `{digest}`")
+    lines.append(
+        f"- Code `{report.code_version}`; LLM config SHA-256 `{report.llm_config_sha256}`; "
+        f"uv.lock SHA-256 `{report.dependency_lock_sha256}`; "
+        f"{len(report.producer_prompt_versions)} configured prompts hashed in report.json."
+    )
     lines += _render_usage(report)
     for fixture in report.fixtures:
         lines += [

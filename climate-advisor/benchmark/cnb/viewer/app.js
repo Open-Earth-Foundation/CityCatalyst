@@ -1535,6 +1535,12 @@
       add(`Model · ${role.replace(/_/g, " ")}`, m(A), m(B));
     }
     for (const stage of STAGE_KEYS) add(`Judge prompt · ${stage}`, short(A.run.judge_prompt_versions?.[stage], 12), short(B.run.judge_prompt_versions?.[stage], 12));
+    add("LLM config", short(A.run.llm_config_sha256, 12), short(B.run.llm_config_sha256, 12));
+    add("Dependency lock", short(A.run.dependency_lock_sha256, 12), short(B.run.dependency_lock_sha256, 12));
+    // Only changed producer prompts are listed; there are dozens of them.
+    const pa = A.run.producer_prompt_versions || {}, pb = B.run.producer_prompt_versions || {};
+    for (const name of new Set([...Object.keys(pa), ...Object.keys(pb)]))
+      if (pa[name] !== pb[name]) add(`Prompt · ${name.replace(/_/g, " ")}`, short(pa[name], 12), short(pb[name], 12));
     const fx = (run, fid) => run.fixtures.find((f) => f.golden.fixture_id === fid);
     for (const fid of new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))) {
       const a = fx(A, fid), b = fx(B, fid);
@@ -1544,7 +1550,7 @@
       add(`Golden expectations · ${shortFixture(fid)}`, a ? "baseline content" : null, b ? (same ? "baseline content" : "changed content (comparison may be incompatible)") : null);
     }
     return `<h2>What changed between the runs</h2>
-      <p class="sub">A changed model, prompt, source or expectation can explain a changed result. Each run is a single trial, so differences can also be run-to-run variance.</p>
+      <p class="sub">Every non-model input is recorded here: code, prompts, LLM config, dependencies, sources and expectations. If none of them changed, a different result comes from the models' own output.</p>
       <div class="card" style="padding:0"><table><thead><tr><th>Input</th><th>Run A</th><th>Run B</th><th></th></tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
   }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import {
   resolveGpcRefFromLabels,
+  refForScope,
   resolveGpcRefNo,
 } from "@/util/GHGI/gpc-ref-resolver";
 
@@ -122,5 +123,32 @@ describe("resolveGpcRefNo for PDF extraction rows (CC-1008)", () => {
     expect(
       resolveGpcRefNo("Stationary Energy", "Energy Industries", undefined, "1"),
     ).toBe("I.4.1");
+  });
+});
+
+describe("refForScope", () => {
+  it("finds the reference for a sub-sector and scope", () => {
+    expect(refForScope("Stationary Energy", "Residential Buildings", 2)).toBe(
+      "I.1.2",
+    );
+    expect(refForScope("stationary-energy", "non-specified-sources", 3)).toBe(
+      "I.6.3",
+    );
+  });
+
+  it("reads scope from the table, not from the last digit", () => {
+    // III.1.2 is scope 3, which proves the last digit is not the scope.
+    expect(refForScope("waste", "solid-waste-disposal", 3)).toBe("III.1.2");
+  });
+
+  it("returns null when the sub-sector has no row for that scope", () => {
+    expect(
+      refForScope(
+        "industrial-processes-and-product-uses-ippu",
+        "emissions-from-product-use-occurring-within-the-city-boundary",
+        2,
+      ),
+    ).toBeNull();
+    expect(refForScope("", "", 2)).toBeNull();
   });
 });

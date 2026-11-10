@@ -270,4 +270,28 @@ async def test_cnb_complete_source_text_follows_the_bundle_message(documents) ->
     assert messages[-1] == {"role": "user", "content": payload.content}
 
 
-from app.utils.streaming_context import load_concept_note_context_message
+
+def test_edit_window_excludes_uploaded_source_text_and_draft_facts() -> None:
+    """Uploads and draft facts are runtime data, not user-typed edit history."""
+    draft_ready = {"role": "assistant", "content": "Your draft is ready to review."}
+    instruction = "Set the capex to PLN 1."
+    messages = [
+        draft_ready,
+        {"role": "user", "content": render_source_documents_message([PLAN_DOCUMENT])},
+        {"role": "user", "content": f"{DRAFT_OVERVIEW_JSON_MARKER}\n{{}}"},
+        {"role": "user", "content": instruction},
+    ]
+    window = recent_concept_note_edit_messages(
+        messages, current_instruction=instruction
+    )
+    assert window == [draft_ready]
+    assert recent_user_inputs(window) == []
+
+
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_JSON_MARKER
+from app.services.cnb.edit_validation import recent_user_inputs
+from app.utils.concept_note_context import render_source_documents_message
+from app.utils.streaming_context import (
+    load_concept_note_context_message,
+    recent_concept_note_edit_messages,
+)

@@ -6,8 +6,10 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
 import {
   isQuoteInText,
   normalizeForQuoteMatch,
@@ -45,6 +47,10 @@ import {
 } from "@/util/GHGI/source-metadata";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
+import {
+  isActivityClass,
+  type ActivityClass,
+} from "@/util/GHGI/activity-class-rules";
 
 type GpcRow = {
   gpcRefNo: string;
@@ -238,6 +244,17 @@ export type ExtractedRow = {
    * when the reference text is found in the extracted text.
    */
   refSource?: "document" | "inferred" | null;
+  /**
+   * What the row measures. New extractions always write this key (a class or
+   * `null`); a stored row without the key predates this field.
+   */
+  activityClass?: ActivityClass | null;
+  /**
+   * Where the scope came from. `inferred` when an activity-class rule set or
+   * changed the scope; `document` when the row's reference is printed in the
+   * document. Unset when the scope is the model's own and no rule changed it.
+   */
+  scopeSource?: "document" | "inferred" | null;
   /** Short verbatim quote the model gives for a III.x.3, in any language. */
   directionEvidence?: string | null;
   /**
@@ -281,6 +298,8 @@ export type ExtractedRow = {
   emissionFactorCH4?: number | null;
   emissionFactorN2O?: number | null;
   emissionFactorTotalCO2e?: number | null;
+  /** 1-based Excel row in the source sheet, when the file was parsed from xlsx. */
+  sourceRowNumber?: number | null;
 };
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
@@ -336,6 +355,7 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - scope (string | null): "1", "2", or "3" when present in document; else null.
 - gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
 - refSource (string): "document" when this row's reference number is printed in the document; "inferred" when you chose it yourself.
+- activityClass (string | null): what the row measures, decided from the row label, table title and section, never from scope or reference: "fuel_combustion" (fuel burned in the city), "grid_energy" (use of grid-supplied electricity, heat, steam or cooling), "td_losses" (transmission and distribution losses of grid energy), "grid_supply" (energy generated and supplied to the grid), "industrial_process" (IPPU industrial process), "product_use" (IPPU product use: refrigerants, air conditioning, lubricants, solvents), "other" (anything else).
 - directionEvidence (string | null): only when gpcRefNo is III.1.3, III.2.3, III.3.3 or III.4.3: a short exact quote from the row, its table heading or its section that says the waste comes from outside the city. Copy it word for word in the document's language; never translate or summarize. Null when the document has no such text.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
@@ -360,13 +380,13 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 
 <example_output>
 {"rows": [
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
-  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
-  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
-  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "activityClass": "grid_energy", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "activityClass": "other", "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
 ]}
 </example_output>`;
 
@@ -872,9 +892,16 @@ export async function extractInventoryFromDocument(
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
   const result = await extractRowsFromDocument(documentContent, options);
+  const rows = verifyRowProvenance(result.rows, documentContent);
   const metadata = options?.sourceMetadata;
   const conflict = numberFormatConflict(documentContent, metadata);
-  const summary: ExtractionSummary = { ...result.summary };
+  // The activity-class rules can move a row onto or off a reference left out
+  // of the total (I.4.4), so the reconciliation sum is taken after them.
+  // Mismatch and deviation are derived from it on read (reconcileExtraction).
+  const summary: ExtractionSummary = {
+    ...result.summary,
+    importedSum: sumImported(rows),
+  };
   if (conflict) summary.numberFormatConflict = conflict;
   if (metadata?.reportedTotal != null && metadata.reportedTotalKind) {
     summary.userReportedTotal = {
@@ -884,8 +911,8 @@ export async function extractInventoryFromDocument(
   }
   return {
     ...result,
+    rows,
     summary,
-    rows: verifyRowProvenance(result.rows, documentContent),
   };
 }
 
@@ -958,7 +985,7 @@ export function verifyRowProvenance(
     // resolves the conflict instead of silently deriving a different one.
     return out;
   });
-  return fillMissingGpcRefNo(checked).map((row) =>
+  return fillMissingGpcRefNo(applyActivityClassRules(checked)).map((row) =>
     row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
   );
 }
@@ -1021,6 +1048,17 @@ function mergeReportedTotals(
   return merged;
 }
 
+type SchemaState = { useSchema: boolean };
+
+/** A provider that cannot take the strict schema answers 400 and names it. */
+export function isSchemaRejection(err: unknown): boolean {
+  return (
+    err instanceof LLMError &&
+    err.code === LLMErrorCode.BAD_REQUEST &&
+    /response_format|json_schema|schema/i.test(err.message)
+  );
+}
+
 async function extractRowsFromDocument(
   documentContent: string,
   options?: ExtractOptions,
@@ -1048,6 +1086,8 @@ async function extractRowsFromDocument(
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  // One state per extraction: the first schema rejection switches every later call.
+  const schemaState: SchemaState = { useSchema: true };
   const metadata = options?.sourceMetadata;
   const listed = listedPagesOf(metadata);
   let allPages = splitDocumentPages(documentContent);
@@ -1127,6 +1167,7 @@ async function extractRowsFromDocument(
                 page.text,
                 numberStyleInstruction(page.text, metadata) + yearInstruction,
                 false,
+                schemaState,
                 resolveNumberStyle(page.text, metadata),
               ),
             ).map((row) => ({ ...row, page: page.page })),
@@ -1210,6 +1251,7 @@ async function extractRowsFromDocument(
         chunkContent,
         yearInstruction,
         options,
+        schemaState,
         { offset: pages.length, total: progressTotal },
       );
       const result = finalizeExtractedRows(
@@ -1266,7 +1308,12 @@ async function extractRowsFromDocument(
     return checkExtractionResult(selected, extractedCount, targetYear);
   }
 
-  const allRows = await extractByChunks(chunkContent, yearInstruction, options);
+  const allRows = await extractByChunks(
+    chunkContent,
+    yearInstruction,
+    options,
+    schemaState,
+  );
   return checkExtractionResult(
     withPageSummary(
       finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
@@ -1293,7 +1340,8 @@ function countChunks(documentContent: string): number {
 async function extractByChunks(
   documentContent: string,
   yearInstruction: string,
-  options?: ExtractOptions,
+  options: ExtractOptions | undefined,
+  schemaState: SchemaState,
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
@@ -1309,7 +1357,13 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(content, yearInstruction, false, style);
+    allRows = await extractSegment(
+      content,
+      yearInstruction,
+      false,
+      schemaState,
+      style,
+    );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -1324,7 +1378,8 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegment(chunk, segmentPrefix, true, style),
+      async (chunk) =>
+        extractSegment(chunk, segmentPrefix, true, schemaState, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1462,23 +1517,44 @@ async function extractSegment(
   content: string,
   prefix: string,
   isSegment: boolean,
+  state: SchemaState,
   style: NumberStyle = resolveNumberStyle(content, null),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const { content: responseContent } = await client.complete({
-    // Table extraction needs a stronger model than column mapping (CC-1008:
-    // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-    model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    jsonMode: true,
-    temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
-    maxTokens: 16000,
-  });
+  const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
+  const call = (structured: boolean) =>
+    client.complete({
+      // Table extraction needs a stronger model than column mapping (CC-1008:
+      // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+      model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+      ...(structured
+        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
+        : { jsonMode: true }),
+      temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+      maxTokens: 16000,
+    });
+  let responseContent: string;
+  const structured = state.useSchema;
+  try {
+    ({ content: responseContent } = await call(structured));
+  } catch (err) {
+    if (!structured || !isSchemaRejection(err)) throw err;
+    // Concurrent chunks can all be rejected; the shared state warns once.
+    if (state.useSchema) {
+      state.useSchema = false;
+      logger.warn(
+        { model },
+        "Extraction structured output rejected; using jsonMode",
+      );
+    }
+    ({ content: responseContent } = await call(false));
+  }
 
   const truncated =
     responseContent.length > EXTRACTION_LOG_LIMIT
@@ -1790,6 +1866,9 @@ function normalizeRows(
     if (row.refSource === "document" || row.refSource === "inferred") {
       out.refSource = row.refSource;
     }
+    out.activityClass = isActivityClass(row.activityClass)
+      ? row.activityClass
+      : null;
     if (typeof row.gpcRefNo === "string") {
       // A reference the document states is kept even if the scope disagrees:
       // the review shows that conflict. verifyRowProvenance checks the claim.

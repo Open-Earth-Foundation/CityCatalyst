@@ -190,6 +190,10 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "page_count": 1,
         "block_count": None,
         "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+        "chapter_excerpts": [
+            {"chapter_ref": "chapter-1", "excerpts": [{"text": "Scope", "page": 1}]},
+            {"chapter_ref": "chapter-2", "excerpts": [{"text": "Budget", "page": 2}]},
+        ],
     }
     run_context = {"context_bundle": {"selected_sources": [source]}}
     service._load_run_context = AsyncMock(
@@ -213,11 +217,15 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
     ]
     assert payloads[0]["previous_chapters"] == []
     assert payloads[0]["current_body_markdown"] is None
-    for payload in payloads:
+    # Each chapter sees only the quotations chosen for its own requirements.
+    for payload, excerpt in zip(payloads, ["Scope", "Budget"], strict=True):
         assert payload["run_context"]["context_bundle"]["selected_sources"] == [
             {
                 "source_label": "Drainage plan",
                 "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+                "chapter_excerpts": [
+                    {"text": excerpt, "page": 1 if excerpt == "Scope" else 2}
+                ],
             }
         ]
     assert source["page_count"] == 1

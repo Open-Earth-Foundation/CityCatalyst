@@ -52,7 +52,12 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_document_mapping": prompts.cnb_source_document_mapping,
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
+        "cnb_source_chapter_evidence": prompts.cnb_source_chapter_evidence,
+        "cnb_source_chapter_evidence_selection": (
+            prompts.cnb_source_chapter_evidence_selection
+        ),
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_chapter_support_check": prompts.cnb_chapter_support_check,
         "cnb_source_impact_review": prompts.cnb_source_impact_review,
         "cnb_draft_overview": prompts.cnb_draft_overview,
         "cnb_chapter_validation_completeness": (
@@ -60,6 +65,9 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         ),
         "cnb_chapter_validation_consistency": (
             prompts.cnb_chapter_validation_consistency
+        ),
+        "cnb_chapter_validation_answered_gaps": (
+            prompts.cnb_chapter_validation_answered_gaps
         ),
     }
 
@@ -102,7 +110,7 @@ def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
     prompt = config.prompts.get_prompt("cnb_source_impact_review")
     budget = config.generation.prompt_budget.cnb_source_impact
 
-    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6-sol"
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6.1-sol"
     assert "call `select_chapters_to_update` exactly once" in prompt
     assert "return no prose" in prompt
     assert "`open_gaps`" in prompt

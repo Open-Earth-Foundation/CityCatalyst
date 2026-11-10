@@ -69,6 +69,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         "concept_note_ask_question",
         "concept_note_help",
         "concept_note_gaps",
+        "concept_note_render_visual",
         "concept_note_sources_query",
     ]
     if edit_enabled:
@@ -99,7 +100,6 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         settings = get_settings().model_copy(deep=True)
         settings.openrouter_api_key = "test-key"
         settings.langsmith_tracing_enabled = False
-        settings.cnb_render_visual_enabled = False
         monkeypatch.setattr(
             "app.services.agent_service.get_settings",
             lambda: settings,
@@ -158,18 +158,17 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             "concept_note_ask_question",
             "concept_note_help",
             "concept_note_gaps",
+            "concept_note_render_visual",
         ]
         await service.close()
     finally:
         await engine.dispose()
 
 
-@pytest.mark.parametrize("enabled", [False, True])
-async def test_render_visual_registration_follows_setting(monkeypatch, enabled):
+async def test_render_visual_is_always_registered_for_cnb_chat(monkeypatch):
     settings = get_settings().model_copy(deep=True)
     settings.openrouter_api_key = "test-key"
     settings.langsmith_tracing_enabled = False
-    settings.cnb_render_visual_enabled = enabled
     monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
     monkeypatch.setattr(
         "app.services.agent_service.load_agent_context",
@@ -185,10 +184,12 @@ async def test_render_visual_registration_follows_setting(monkeypatch, enabled):
         agent = await service.create_agent()
     finally:
         await service.close()
-    expected = ["concept_note_ask_question", "concept_note_help", "concept_note_gaps"]
-    if enabled:
-        expected.append("concept_note_render_visual")
-    assert [tool.name for tool in agent.tools] == expected
+    assert [tool.name for tool in agent.tools] == [
+        "concept_note_ask_question",
+        "concept_note_help",
+        "concept_note_gaps",
+        "concept_note_render_visual",
+    ]
 
 
 async def test_help_receives_active_ui_locale(monkeypatch):

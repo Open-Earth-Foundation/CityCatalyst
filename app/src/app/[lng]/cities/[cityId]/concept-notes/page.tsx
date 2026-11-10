@@ -11,7 +11,7 @@ export default async function ConceptNotesPage({
 }: {
   params: Promise<{ cityId: string; lng: string }>;
 }) {
-  requireConceptNoteBuilderPageEnabled();
+  await requireConceptNoteBuilderPageEnabled();
 
   const { cityId, lng } = await params;
 

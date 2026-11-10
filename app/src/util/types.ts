@@ -1041,6 +1041,7 @@ export type ImportRowIssue =
   | "omitted-from-total"
   | "reported-apart-from-total"
   | "direction-unconfirmed"
+  | "excluded-reference-unconfirmed"
   | "reference-conflict"
   | "skipped-in-review";
 
@@ -1076,6 +1077,14 @@ export interface ImportRowPreview {
     rowNumber: number;
     gpcRefNo: string;
     scope: string | null;
+  }>;
+  /** Imported rows whose scope was set from the activity type, not the document. */
+  inferredScopeRows?: Array<{
+    rowNumber: number;
+    gpcRefNo: string;
+    scope: string | null;
+    /** The extraction's own scope, only when it differs from `scope`. */
+    originalScope: string | null;
   }>;
 }
 

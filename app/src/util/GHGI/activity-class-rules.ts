@@ -116,9 +116,22 @@ function applyToRow<T extends ClassifiableRow>(row: T): T {
       }
       break;
     }
-    case "grid_supply":
-      set({ gpcRefNo: "I.4.4" });
+    case "grid_supply": {
+      // I.4.4 is left out of the total, so the class alone is not enough: the
+      // row must already sit on energy industries. A mistagged consumption row
+      // (e.g. "Electricity" on I.1.2) keeps the model's reference.
+      const { subsectorSlug } = normalizeSectorAndSubsector(
+        row.sector ?? "",
+        row.subsector ?? "",
+      );
+      if (
+        subsectorSlug === "energy-industries" ||
+        row.gpcRefNo?.startsWith("I.4.")
+      ) {
+        set({ gpcRefNo: "I.4.4" });
+      }
       break;
+    }
   }
 
   return next;

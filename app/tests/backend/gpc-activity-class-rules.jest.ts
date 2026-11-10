@@ -128,6 +128,27 @@ describe("applyActivityClassRules", () => {
     expect(apply(fixtures[12]).gpcRefNo).toBe("I.4.4");
   });
 
+  it("maps grid_supply on Energy Industries without a reference to I.4.4", () => {
+    expect(
+      apply(
+        row({ activityClass: "grid_supply", subsector: "Energy Industries" }),
+      ).gpcRefNo,
+    ).toBe("I.4.4");
+  });
+
+  it("keeps a grid_supply row outside energy industries on its reference", () => {
+    // A consumption row mistagged as grid_supply must not move to I.4.4,
+    // which is left out of the total.
+    const mistagged = row({
+      activityClass: "grid_supply",
+      subsector: "Residential Buildings",
+      gpcRefNo: "I.1.2",
+      scope: "2",
+      category: "Electricity",
+    } as ClassifiableRow);
+    expect(apply(mistagged)).toEqual(mistagged);
+  });
+
   it("passes other, null and legacy rows through", () => {
     const rows: ClassifiableRow[] = [
       row({

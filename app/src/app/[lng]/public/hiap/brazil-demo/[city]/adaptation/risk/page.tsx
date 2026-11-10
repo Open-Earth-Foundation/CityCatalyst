@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
+import { Box, Card, HStack, Image, SimpleGrid, VStack } from "@chakra-ui/react";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
@@ -68,8 +68,11 @@ const indexFor = (r: RiskReading | null, s: Scenario) =>
 /**
  * BR-N2 — proposal: the city's AdaptaBrasil risk profile as one list,
  * highest risk first. Each hazard reads as a level in words with the index
- * beside it (the one number the proposal keeps, decision D7); opening a row
- * shows what drives the risk and which actions reduce it.
+ * beside it (the one number the proposal keeps, decision D7). The collapsed
+ * row is the hazard, its level and its index only (review round 2); opening
+ * it gives a one-line definition, the sector and AdaptaBrasil indicator, what
+ * drives the risk and which actions reduce it. AdaptaBrasil is credited at
+ * the top, with a link to the platform.
  */
 export default function Page(props: {
   params: Promise<{ lng: string; city: string }>;
@@ -179,6 +182,37 @@ export default function Page(props: {
       backLabel={t("back-to-home")}
       openPoints={[t("next-notice-proposal"), t("next-notice-risk")]}
     >
+      {/* The source, up front: AdaptaBrasil's logo, name and platform link. */}
+      <HStack
+        gap="m"
+        alignItems="center"
+        flexWrap="wrap"
+        data-testid="adaptabrasil-attribution"
+      >
+        <Box
+          bg="base.light"
+          borderWidth="1px"
+          borderColor="border.overlay"
+          borderRadius="rounded"
+          px="s"
+          py="xs"
+          flexShrink={0}
+        >
+          <Image
+            src="/assets/projects_dashboard/adapta-brazil.png"
+            alt={t("next-risk-logo-alt")}
+            h="24px"
+            w="auto"
+          />
+        </Box>
+        <BodySmall color="content.secondary">
+          {t("next-risk-data-by")}
+        </BodySmall>
+        <TextLink href={ADAPTABRASIL_URL} external>
+          {t("next-risk-open-platform")}
+        </TextLink>
+      </HStack>
+
       <VStack alignItems="stretch" gap="m">
         <HStack
           justifyContent="space-between"
@@ -242,7 +276,6 @@ export default function Page(props: {
                     <span>{pick(cell.label, lng)}</span>
                   </HStack>
                 }
-                meta={`${pick(SECTOR_LABEL[cell.sector], lng)} · ${pick(cell.hazardLabel, lng)}`}
                 aside={
                   index === null ? (
                     <Level tone="neutral">{t("risk-no-data")}</Level>
@@ -260,54 +293,82 @@ export default function Page(props: {
                   )
                 }
               >
-                <SimpleGrid columns={{ base: 1, md: 2 }} gap="xl">
-                  <VStack alignItems="stretch" gap="s">
-                    <Overline color="content.tertiary">
-                      {t("next-risk-drivers")}
-                    </Overline>
-                    {reading && cell.hasComponents ? (
-                      COMPONENTS.map((c) => {
-                        const v = reading[c];
-                        const ct = indexTone(v);
-                        return (
-                          <HStack key={c} gap="xs" alignItems="center">
-                            <BodySmall color="content.secondary" minW="96px">
-                              {t(`risk-col-${c}`)}
-                            </BodySmall>
-                            <MeedInfoTip
-                              content={t(`risk-tip-${c}`)}
-                              ariaLabel={t(`risk-tip-${c}`)}
-                            />
-                            <Level tone={v === 0 ? "neutral" : ct}>
-                              {/* Levels only: the index is the one number kept. */}
-                              {t(`next-component-level-${ct}`)}
-                            </Level>
-                          </HStack>
-                        );
-                      })
-                    ) : (
-                      <BodySmall color="content.secondary">
-                        {t("next-risk-no-components")}
-                      </BodySmall>
-                    )}
+                <VStack alignItems="stretch" gap="l">
+                  <VStack alignItems="stretch" gap="m">
+                    <BodyMedium color="content.secondary">
+                      {t(`next-risk-def-${cell.key}`)}
+                    </BodyMedium>
+                    <HStack gap="xl" flexWrap="wrap" alignItems="flex-start">
+                      <VStack alignItems="flex-start" gap="xs">
+                        <Overline color="content.tertiary">
+                          {t("next-risk-sector-label")}
+                        </Overline>
+                        <HStack gap="xs" alignItems="center">
+                          <SectorGlyph sector={cell.sector} />
+                          <BodySmall color="content.primary">
+                            {pick(SECTOR_LABEL[cell.sector], lng)}
+                          </BodySmall>
+                        </HStack>
+                      </VStack>
+                      <VStack alignItems="flex-start" gap="xs">
+                        <Overline color="content.tertiary">
+                          {t("next-risk-indicator-label")}
+                        </Overline>
+                        <BodySmall color="content.primary">
+                          {pick(cell.hazardLabel, lng)}
+                        </BodySmall>
+                      </VStack>
+                    </HStack>
                   </VStack>
-                  <VStack alignItems="stretch" gap="s">
-                    <Overline color="content.tertiary">
-                      {t("next-risk-reduced-by")}
-                    </Overline>
-                    {reducedBy.length === 0 ? (
-                      <BodySmall color="content.secondary">
-                        {t("next-risk-reduced-none")}
-                      </BodySmall>
-                    ) : (
-                      reducedBy.map((a) => (
-                        <BodyMedium key={a.id} color="content.primary">
-                          {pick(a.name, lng)}
-                        </BodyMedium>
-                      ))
-                    )}
-                  </VStack>
-                </SimpleGrid>
+                  <SimpleGrid columns={{ base: 1, md: 2 }} gap="xl">
+                    <VStack alignItems="stretch" gap="s">
+                      <Overline color="content.tertiary">
+                        {t("next-risk-drivers")}
+                      </Overline>
+                      {reading && cell.hasComponents ? (
+                        COMPONENTS.map((c) => {
+                          const v = reading[c];
+                          const ct = indexTone(v);
+                          return (
+                            <HStack key={c} gap="xs" alignItems="center">
+                              <BodySmall color="content.secondary" minW="96px">
+                                {t(`risk-col-${c}`)}
+                              </BodySmall>
+                              <MeedInfoTip
+                                content={t(`risk-tip-${c}`)}
+                                ariaLabel={t(`risk-tip-${c}`)}
+                              />
+                              <Level tone={v === 0 ? "neutral" : ct}>
+                                {/* Levels only: the index is the one number kept. */}
+                                {t(`next-component-level-${ct}`)}
+                              </Level>
+                            </HStack>
+                          );
+                        })
+                      ) : (
+                        <BodySmall color="content.secondary">
+                          {t("next-risk-no-components")}
+                        </BodySmall>
+                      )}
+                    </VStack>
+                    <VStack alignItems="stretch" gap="s">
+                      <Overline color="content.tertiary">
+                        {t("next-risk-reduced-by")}
+                      </Overline>
+                      {reducedBy.length === 0 ? (
+                        <BodySmall color="content.secondary">
+                          {t("next-risk-reduced-none")}
+                        </BodySmall>
+                      ) : (
+                        reducedBy.map((a) => (
+                          <BodyMedium key={a.id} color="content.primary">
+                            {pick(a.name, lng)}
+                          </BodyMedium>
+                        ))
+                      )}
+                    </VStack>
+                  </SimpleGrid>
+                </VStack>
               </ExpandableRow>
             );
           })}
@@ -337,10 +398,6 @@ export default function Page(props: {
           </VStack>
         </Card.Body>
       </Card.Root>
-
-      <TextLink href={ADAPTABRASIL_URL} external>
-        {t("risk-source-link")}
-      </TextLink>
     </DemoShell>
   );
 }

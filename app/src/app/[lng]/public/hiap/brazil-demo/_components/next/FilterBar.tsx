@@ -3,6 +3,7 @@ import React from "react";
 import { Box, HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { Overline } from "@/components/package/Texts/Overline";
+import { BodySmall } from "@/components/package/Texts/Body";
 import type { useLabels } from "../../_lib/useLabels";
 import { ADAPTA_SECTORS, RISK_CELLS } from "../../_lib/riskCells";
 import { CO_BENEFIT_KEYS } from "../../_lib/coBenefits";
@@ -27,12 +28,41 @@ interface Option {
   label: string;
 }
 
+/** A labelled row of the controls: the label column, then the controls. */
+function ControlRow({
+  label,
+  testId,
+  children,
+}: {
+  label: string;
+  testId?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <HStack
+      gap="s"
+      flexWrap="wrap"
+      alignItems="center"
+      data-testid={testId}
+    >
+      <Box
+        w={{ base: "full", md: "140px" }}
+        flexShrink={0}
+        display={{ base: label ? "block" : "none", md: "block" }}
+      >
+        <Overline color="content.tertiary">{label}</Overline>
+      </Box>
+      {children}
+    </HStack>
+  );
+}
+
 /**
- * The list's filters, after the Booking-style pattern the review asked for:
- * one-click shortcuts for what a city looks for first, then eight facets in
- * two groups (what the action addresses, what it takes), live counts per
- * option, options that would empty the list disabled, and the active
- * filters as removable chips. Filters never change a score.
+ * The one controls cluster at the head of the list (review round 2: keep
+ * filters and preferences together): one-click shortcuts for what a city
+ * looks for first; the eight filters, with live counts and dead ends
+ * disabled; and, on its own row, the preferences that change the order.
+ * One line says the difference: filters narrow, preferences re-order.
  */
 export function FilterBar({
   rows,
@@ -41,7 +71,10 @@ export function FilterBar({
   lng,
   t,
   labels,
+  orderControls,
 }: {
+  /** The "change the order" row: the preferences button and what the order uses. */
+  orderControls?: React.ReactNode;
   /** All ranked rows; the counts are computed over them. */
   rows: RankedRow[];
   filters: RowFilters;
@@ -110,10 +143,6 @@ export function FilterBar({
     },
   };
 
-  const groups: { title: string; keys: FacetKey[] }[] = [
-    { title: t("next-filter-group-addresses"), keys: FACETS_ADDRESSES },
-    { title: t("next-filter-group-takes"), keys: FACETS_TAKES },
-  ];
   // A chip names its dimension once: "High risk", "Low cost", a sector or
   // hazard by its own name, the rest as "Legal capacity: Feasible".
   const chipLabel = (key: FacetKey, value: string, label: string) => {
@@ -150,18 +179,8 @@ export function FilterBar({
 
   return (
     <VStack alignItems="stretch" gap="m">
-      <HStack
-        gap="s"
-        flexWrap="wrap"
-        alignItems="center"
-        pb="m"
-        borderBottomWidth="1px"
-        borderColor="border.overlay"
-        data-testid="priority-shortcuts"
-      >
-        <Box w={{ base: "full", md: "150px" }} flexShrink={0}>
-          <Overline color="content.link">{t("next-shortcuts-title")}</Overline>
-        </Box>
+      <BodySmall color="content.secondary">{t("next-controls-hint")}</BodySmall>
+      <ControlRow label={t("next-shortcuts-title")} testId="priority-shortcuts">
         {PRIORITY_SHORTCUTS.map((s) => (
           <ShortcutChip
             key={s.id}
@@ -171,26 +190,30 @@ export function FilterBar({
             onToggle={() => toggle(s.key, s.value)}
           />
         ))}
-      </HStack>
-      {groups.map((g) => (
-        <HStack key={g.title} gap="s" flexWrap="wrap" alignItems="center">
-          <Box w={{ base: "full", md: "150px" }} flexShrink={0}>
-            <Overline color="content.tertiary">{g.title}</Overline>
-          </Box>
-          {g.keys.map((k) => (
-            <FacetMenu
-              key={k}
-              label={facets[k].title}
-              options={facets[k].options}
-              counts={facets[k].options.map((o) =>
-                facetCount(rows, filters, k, o.value),
-              )}
-              selected={filters[k]}
-              onChange={(next) => onChange({ ...filters, [k]: next })}
-            />
-          ))}
-        </HStack>
-      ))}
+      </ControlRow>
+      {/* Two lines of four, so neither wraps: what the action addresses,
+          then what it takes. The second line continues the first. */}
+      <VStack alignItems="stretch" gap="s">
+        {[FACETS_ADDRESSES, FACETS_TAKES].map((keys, i) => (
+          <ControlRow
+            key={keys.join()}
+            label={i === 0 ? t("next-filter-row") : ""}
+          >
+            {keys.map((k) => (
+              <FacetMenu
+                key={k}
+                label={facets[k].title}
+                options={facets[k].options}
+                counts={facets[k].options.map((o) =>
+                  facetCount(rows, filters, k, o.value),
+                )}
+                selected={filters[k]}
+                onChange={(next) => onChange({ ...filters, [k]: next })}
+              />
+            ))}
+          </ControlRow>
+        ))}
+      </VStack>
       {anyActive && (
         <HStack gap="s" flexWrap="wrap" alignItems="center">
           {active.map((a) => (
@@ -213,6 +236,11 @@ export function FilterBar({
             {t("next-filters-clear")}
           </TextLink>
         </HStack>
+      )}
+      {orderControls && (
+        <Box pt="m" borderTopWidth="1px" borderColor="border.overlay">
+          <ControlRow label={t("next-order-row")}>{orderControls}</ControlRow>
+        </Box>
       )}
     </VStack>
   );

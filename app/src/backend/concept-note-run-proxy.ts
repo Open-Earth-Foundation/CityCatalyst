@@ -28,12 +28,15 @@ export async function proxyConceptNoteRunRequest(
     method = "GET",
     body,
     searchParams,
+    signal,
   }: {
     runId: string;
     path: string;
     method?: "GET" | "POST" | "DELETE";
     body?: Record<string, unknown>;
     searchParams?: Record<string, string>;
+    /** Pass req.signal to cancel upstream work when the browser disconnects. */
+    signal?: AbortSignal;
   },
 ): Promise<NextResponse> {
   if (!session?.user?.id) {
@@ -49,6 +52,7 @@ export async function proxyConceptNoteRunRequest(
     method,
     body,
     requestId,
+    signal,
     searchParams: { ...searchParams, user_id: userId },
   });
   if (response.status === 204) {

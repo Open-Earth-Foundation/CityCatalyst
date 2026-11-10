@@ -92,6 +92,26 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  const invites = await db.models.CityInvite.findAll({
+    where: {
+      inviteId: tokenContent.inviteId,
+      email,
+      status: InviteStatus.PENDING,
+    },
+  });
+  const cityIds = invites.map((i) => i.cityId!);
+  logger.info(
+    {
+      count: invites.length,
+      cityIds,
+    },
+    "[UserInviteAccept] Found invites",
+  );
+
+  if (!process.env.VERIFICATION_TOKEN_SECRET) {
+    logger.error("[UserInviteAccept] VERIFICATION_TOKEN_SECRET missing");
+    throw createHttpError.InternalServerError("Configuration error");
+  }
   const failedInvites: { cityId: string }[] = [];
   let acceptedCities: City[] = [];
 

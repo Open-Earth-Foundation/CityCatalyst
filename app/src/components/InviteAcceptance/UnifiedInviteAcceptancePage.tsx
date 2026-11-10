@@ -193,7 +193,7 @@ const UnifiedInviteAcceptancePage = ({
           trackingData = {
             event: "collaborator_invitation_accepted",
             properties: {
-              num_cities: result.data.cities.length,
+              num_cities: result.data?.cities?.length ?? 0,
             },
           };
         } else {

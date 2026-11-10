@@ -40,6 +40,7 @@ import { logger } from "@/services/logger";
 import { InviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
 import { ProjectAdmin } from "@/models/ProjectAdmin";
+import type { City } from "@/models/City";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   logger.info(
@@ -91,146 +92,167 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
-  const invites = await db.models.CityInvite.findAll({
-    where: {
-      inviteId: tokenContent.inviteId,
-      email,
-      [Op.or]: [
-        { status: InviteStatus.PENDING },
-        // reopening the link after accepting is a no-op success
-        { status: InviteStatus.ACCEPTED, userId: session.user.id },
-      ],
-    },
-  });
-  if (invites.length === 0) {
-    logger.warn(
-      { inviteId: tokenContent.inviteId, email },
-      "[UserInviteAccept] No pending invites match token",
-    );
-    throw new createHttpError.NotFound(
-      "No pending invites found for this token",
-    );
-  }
-  const cityIds = invites.map((i) => i.cityId!);
-  logger.info(
-    {
-      count: invites.length,
-      cityIds,
-    },
-    "[UserInviteAccept] Found invites",
-  );
-
-  if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    logger.error("[UserInviteAccept] VERIFICATION_TOKEN_SECRET missing");
-    throw createHttpError.InternalServerError("Configuration error");
-  }
   const failedInvites: { cityId: string }[] = [];
+  let acceptedCities: City[] = [];
 
-  if (tokenContent.role === "admin" && tokenContent.projectId) {
-    const [, created] = await ProjectAdmin.findOrCreate({
-      where: { projectId: tokenContent.projectId, userId: session.user.id },
-      defaults: {
-        projectAdminId: randomUUID(),
-        projectId: tokenContent.projectId,
-        userId: session.user.id,
-      },
-    });
-    logger.info(
-      { projectId: tokenContent.projectId, userId: session.user.id, created },
-      created
-        ? "[UserInviteAccept] Created ProjectAdmin"
-        : "[UserInviteAccept] ProjectAdmin already exists; continuing accept",
-    );
-    await Promise.all(
-      invites.map((invite) =>
-        invite.update({
-          status: InviteStatus.ACCEPTED,
-          userId: session.user.id,
-        }),
-      ),
-    );
-  } else {
-    await Promise.all(
-      invites.map(async (invite) => {
-        const [cityUser, created] = await db.models.CityUser.findOrCreate({
-          where: {
-            cityId: invite.cityId,
-            userId: session.user.id,
-          },
-          defaults: {
-            cityUserId: randomUUID(),
-            cityId: invite.cityId!,
-            userId: session.user.id,
-          },
-        });
-        logger.info(
-          {
-            cityId: invite.cityId,
-            userId: session.user.id,
-            cityUserId: cityUser.cityUserId,
-            created,
-          },
-          created
-            ? "[UserInviteAccept] Created CityUser"
-            : "[UserInviteAccept] CityUser already exists; continuing accept",
-        );
-        await invite.update({
-          status: InviteStatus.ACCEPTED,
-          userId: session.user.id,
-        });
-        logger.info(
-          { cityId: invite.cityId },
-          "[UserInviteAccept] Updated invite status to ACCEPTED",
-        );
-        return cityUser;
-      }),
-    );
-  }
-
-  const user = await db.models.User.findByPk(session.user.id);
-  if (!user) {
-    logger.error(
-      { userId: session.user.id },
-      "[UserInviteAccept] No user found",
-    );
-    throw new createHttpError.InternalServerError("No user found");
-  }
-  if (!user.defaultInventoryId) {
-    const inventory = await db.models.Inventory.findOne({
+  await db.sequelize!.transaction(async (transaction) => {
+    const invites = await db.models.CityInvite.findAll({
       where: {
-        cityId: {
-          [Op.in]: cityIds,
-        },
+        inviteId: tokenContent.inviteId,
+        email,
+        [Op.or]: [
+          { status: InviteStatus.PENDING },
+          // reopening the link after accepting is a no-op success
+          { status: InviteStatus.ACCEPTED, userId: session.user.id },
+        ],
       },
+      transaction,
     });
-    if (inventory) {
-      await user.update({
-        defaultInventoryId: inventory.inventoryId,
-        defaultCityId: inventory.cityId,
+    if (invites.length === 0) {
+      logger.warn(
+        { inviteId: tokenContent.inviteId, email },
+        "[UserInviteAccept] No pending invites match token",
+      );
+      throw new createHttpError.NotFound(
+        "No pending invites found for this token",
+      );
+    }
+    const cityIds = invites.map((i) => i.cityId!);
+    logger.info(
+      {
+        count: invites.length,
+        cityIds,
+      },
+      "[UserInviteAccept] Found invites",
+    );
+
+    if (!process.env.VERIFICATION_TOKEN_SECRET) {
+      logger.error("[UserInviteAccept] VERIFICATION_TOKEN_SECRET missing");
+      throw createHttpError.InternalServerError("Configuration error");
+    }
+
+    if (tokenContent.role === "admin" && tokenContent.projectId) {
+      const [, created] = await ProjectAdmin.findOrCreate({
+        where: { projectId: tokenContent.projectId, userId: session.user.id },
+        defaults: {
+          projectAdminId: randomUUID(),
+          projectId: tokenContent.projectId,
+          userId: session.user.id,
+        },
+        transaction,
       });
       logger.info(
-        {
-          userId: user.userId,
-          inventoryId: inventory.inventoryId,
-        },
-        "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
+        { projectId: tokenContent.projectId, userId: session.user.id, created },
+        created
+          ? "[UserInviteAccept] Created ProjectAdmin"
+          : "[UserInviteAccept] ProjectAdmin already exists; continuing accept",
+      );
+      await Promise.all(
+        invites.map((invite) =>
+          invite.update(
+            {
+              status: InviteStatus.ACCEPTED,
+              userId: session.user.id,
+            },
+            { transaction },
+          ),
+        ),
       );
     } else {
-      logger.warn({ cityIds }, "[UserInviteAccept] No inventory found");
-      throw new createHttpError.InternalServerError("No inventory found");
+      await Promise.all(
+        invites.map(async (invite) => {
+          const [cityUser, created] = await db.models.CityUser.findOrCreate({
+            where: {
+              cityId: invite.cityId,
+              userId: session.user.id,
+            },
+            defaults: {
+              cityUserId: randomUUID(),
+              cityId: invite.cityId!,
+              userId: session.user.id,
+            },
+            transaction,
+          });
+          logger.info(
+            {
+              cityId: invite.cityId,
+              userId: session.user.id,
+              cityUserId: cityUser.cityUserId,
+              created,
+            },
+            created
+              ? "[UserInviteAccept] Created CityUser"
+              : "[UserInviteAccept] CityUser already exists; continuing accept",
+          );
+          await invite.update(
+            {
+              status: InviteStatus.ACCEPTED,
+              userId: session.user.id,
+            },
+            { transaction },
+          );
+          logger.info(
+            { cityId: invite.cityId },
+            "[UserInviteAccept] Updated invite status to ACCEPTED",
+          );
+          return cityUser;
+        }),
+      );
     }
-  }
 
-  // Look up the accepted cities directly (not scoped to CityUser membership,
-  // since admin invites grant ProjectAdmin access without a CityUser row).
-  const acceptedCities = await db.models.City.findAll({
-    where: { cityId: { [Op.in]: cityIds } },
+    const user = await db.models.User.findByPk(session.user.id, {
+      transaction,
+    });
+    if (!user) {
+      logger.error(
+        { userId: session.user.id },
+        "[UserInviteAccept] No user found",
+      );
+      throw new createHttpError.InternalServerError("No user found");
+    }
+    if (!user.defaultInventoryId) {
+      const inventory = await db.models.Inventory.findOne({
+        where: {
+          cityId: {
+            [Op.in]: cityIds,
+          },
+        },
+        transaction,
+      });
+      if (inventory) {
+        await user.update(
+          {
+            defaultInventoryId: inventory.inventoryId,
+            defaultCityId: inventory.cityId,
+          },
+          { transaction },
+        );
+        logger.info(
+          {
+            userId: user.userId,
+            inventoryId: inventory.inventoryId,
+          },
+          "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
+        );
+      } else {
+        logger.warn({ cityIds }, "[UserInviteAccept] No inventory found");
+        throw new createHttpError.InternalServerError("No inventory found");
+      }
+    }
+
+    // Look up the accepted cities directly (not scoped to CityUser membership,
+    // since admin invites grant ProjectAdmin access without a CityUser row).
+    acceptedCities = await db.models.City.findAll({
+      where: { cityId: { [Op.in]: cityIds } },
+      transaction,
+    });
+
+    logger.info(
+      { failedInvites: failedInvites.length },
+      "[UserInviteAccept] PATCH complete",
+    );
   });
 
-  logger.info(
-    { failedInvites: failedInvites.length },
-    "[UserInviteAccept] PATCH complete",
-  );
   return NextResponse.json({
     success: failedInvites.length === 0,
     cities: acceptedCities.map((city) => ({

@@ -1,4 +1,15 @@
 {
-  "status": "pending",
-  "reason": "Select and approve a run after Product approves chapter requirements and calibration labels. Historical runs are not approved automatically."
+  "status": "approved",
+  "run_id": "20261110-baseline-cc1242",
+  "report_sha256": "c9ac24cbd7ff7b39088b1ada83c9382f53e537c4516a6665bfc48ecc55520d44",
+  "artifact_sha256": "eb05065a7d1db1520cc03ae6e238e20696d1cc9a4dd46ab7e8b3ca75620a15b7",
+  "fingerprints": {
+    "corpus": "86d0b6ffea5e3d22fd59ddf979d811606f26ff5cf5d3b5d0946aea3c7ebf4fb1",
+    "judge_policy": "f72863f237e7d0bee9338872d3a1eb3b653c2bbb934c7204fb170c18b9487d4d"
+  },
+  "approval": {
+    "reviewer": "Piotr Nowakowski",
+    "approved_at": "2026-11-10",
+    "reference": "https://linear.app/openearth/issue/CC-1242/move-the-benchmark-outputs-into-mlflow"
+  }
 }

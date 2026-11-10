@@ -1,11 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Collapsible,
+  HStack,
+  Icon,
+  SimpleGrid,
+  VStack,
+} from "@chakra-ui/react";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { MeedShareBar } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedShareBar";
 import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
+import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { DemoShell } from "../../../_components/DemoShell";
 import { cityFromSlug } from "../../../_lib/useTrack";
 import { useDemoT, useTrackT } from "../../../_lib/useDemoT";
@@ -69,9 +79,11 @@ interface FinanceRow {
 }
 
 /**
- * BR-N8 — financing feasibility. CAPAG first, with what it is, why it
- * matters and where to improve it (finance review, Oct 2026); then the
- * financing routes in general, not tied to an action; then one row per
+ * BR-N8 — financing feasibility. CAPAG first: grade, band, source and the
+ * Treasury's two pages, with what CAPAG means one click away (review round
+ * 2); then the financing routes in general, not tied to an action, as
+ * compact boxes headed by whether the route is open to the city, details on
+ * click; then one row per
  * action, as the methodology sets it (§5.2.6), that opens on what its gap
  * means, the routes that fit it and comparable projects. No tier scores.
  */
@@ -87,6 +99,8 @@ export default function Page(props: {
   const hash = useLocationHash();
   const [openState, setOpen] = useState<string | null | undefined>(undefined);
   const open = openState === undefined ? hash || null : openState;
+  const [capagOpen, setCapagOpen] = useState(false);
+  const [optionOpen, setOptionOpen] = useState<string | null>(null);
   const [selected, setSelected] = useUrlSelection([
     "sector",
     "funding",
@@ -95,8 +109,8 @@ export default function Page(props: {
 
   const credit = creditScreen(city.capag);
   // Whether a route is open to this city: credit routes follow CAPAG.
-  const gate = (p: PathwayMeta) => (
-    <Level tone={p.creditGated ? CREDIT_TONE[credit] : "positive"}>
+  const gate = (p: PathwayMeta, size?: "lg") => (
+    <Level tone={p.creditGated ? CREDIT_TONE[credit] : "positive"} size={size}>
       {p.creditGated ? t(`next-gate-credit-${credit}`) : t("next-gate-open")}
     </Level>
   );
@@ -207,17 +221,6 @@ export default function Page(props: {
                     : "next-capag-source",
                 )}
               </BodySmall>
-              <BodyMedium color="content.secondary">
-                {t("next-capag-what")}
-              </BodyMedium>
-              <BodyMedium color="content.secondary">
-                {t("next-capag-why")}
-              </BodyMedium>
-              {credit === "to_verify" && (
-                <BodyMedium color="content.secondary">
-                  {t("next-capag-nd", { city: city.name })}
-                </BodyMedium>
-              )}
               <HStack gap="xl" flexWrap="wrap">
                 <TextLink href={CAPAG_INFO_URL} external>
                   {t("next-capag-link-capag")}
@@ -226,6 +229,37 @@ export default function Page(props: {
                   {t("next-capag-link-pef")}
                 </TextLink>
               </HStack>
+              {/* The explanation, only when asked for. */}
+              <Collapsible.Root
+                open={capagOpen}
+                onOpenChange={(d) => setCapagOpen(d.open)}
+              >
+                <Box data-testid="capag-more">
+                  <TextLink
+                    arrow={false}
+                    onClick={() => setCapagOpen((v) => !v)}
+                  >
+                    {capagOpen
+                      ? t("next-capag-more-hide")
+                      : t("next-capag-more-show")}
+                  </TextLink>
+                </Box>
+                <Collapsible.Content>
+                  <VStack alignItems="stretch" gap="s" pt="m">
+                    <BodyMedium color="content.secondary">
+                      {t("next-capag-what")}
+                    </BodyMedium>
+                    <BodyMedium color="content.secondary">
+                      {t("next-capag-why")}
+                    </BodyMedium>
+                    {credit === "to_verify" && (
+                      <BodyMedium color="content.secondary">
+                        {t("next-capag-nd", { city: city.name })}
+                      </BodyMedium>
+                    )}
+                  </VStack>
+                </Collapsible.Content>
+              </Collapsible.Root>
             </VStack>
             <VStack
               alignItems="stretch"
@@ -264,40 +298,87 @@ export default function Page(props: {
         <SimpleGrid
           columns={{ base: 1, md: 2, xl: 3 }}
           gap="m"
+          alignItems="start"
           data-testid="financing-options"
         >
-          {PATHWAYS.map((p) => (
-            <VStack
-              key={p.key}
-              alignItems="stretch"
-              gap="s"
-              p="l"
-              bg="base.light"
-              borderWidth="1px"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              boxShadow="1dp"
-            >
-              <TitleMedium as="h3" color="content.primary">
-                {pick(p.label, lng)}
-              </TitleMedium>
-              <BodySmall color="content.secondary">
-                {pick(p.access, lng)}
-              </BodySmall>
-              {p.key === "federal_transfer" && (
-                <BodySmall color="content.secondary">
-                  {t("next-pathway-note-federal_transfer")}
-                </BodySmall>
-              )}
-              {p.creditGated && (
-                <BodySmall color="content.secondary">
-                  {t("next-pathway-note-credit")}
-                </BodySmall>
-              )}
-              <Box flex="1" />
-              {gate(p)}
-            </VStack>
-          ))}
+          {/* City-context style: the route as a label, whether it is open
+              as the headline, how to reach it on click. */}
+          {PATHWAYS.map((p) => {
+            const isOpen = optionOpen === p.key;
+            return (
+              <Collapsible.Root
+                key={p.key}
+                open={isOpen}
+                onOpenChange={(d) => setOptionOpen(d.open ? p.key : null)}
+                data-testid="financing-option"
+                bg="base.light"
+                borderWidth="1px"
+                borderColor={isOpen ? "content.link" : "border.neutral"}
+                borderRadius="rounded"
+                boxShadow="1dp"
+                transition="box-shadow 0.15s, border-color 0.15s"
+                _hover={{ boxShadow: "2dp" }}
+              >
+                <Collapsible.Trigger asChild>
+                  <Box
+                    as="button"
+                    w="full"
+                    textAlign="start"
+                    p="l"
+                    _focusVisible={FOCUS_RING}
+                  >
+                    <HStack
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      gap="s"
+                    >
+                      <VStack alignItems="flex-start" gap="s" minW={0}>
+                        <Overline
+                          as="span"
+                          color="content.tertiary"
+                          minH={{ base: "auto", md: "32px" }}
+                        >
+                          {pick(p.label, lng)}
+                        </Overline>
+                        {gate(p, "lg")}
+                      </VStack>
+                      <Icon
+                        as={isOpen ? LuChevronUp : LuChevronDown}
+                        boxSize="16px"
+                        color="content.tertiary"
+                        flexShrink={0}
+                      />
+                    </HStack>
+                  </Box>
+                </Collapsible.Trigger>
+                <Collapsible.Content>
+                  <VStack
+                    alignItems="stretch"
+                    gap="s"
+                    px="l"
+                    pb="l"
+                    pt="m"
+                    borderTopWidth="1px"
+                    borderColor="border.overlay"
+                  >
+                    <BodySmall color="content.secondary">
+                      {pick(p.access, lng)}
+                    </BodySmall>
+                    {p.key === "federal_transfer" && (
+                      <BodySmall color="content.secondary">
+                        {t("next-pathway-note-federal_transfer")}
+                      </BodySmall>
+                    )}
+                    {p.creditGated && (
+                      <BodySmall color="content.secondary">
+                        {t("next-pathway-note-credit")}
+                      </BodySmall>
+                    )}
+                  </VStack>
+                </Collapsible.Content>
+              </Collapsible.Root>
+            );
+          })}
         </SimpleGrid>
       </VStack>
 

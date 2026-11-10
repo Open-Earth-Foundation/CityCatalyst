@@ -24,6 +24,7 @@ from app.utils.streaming_events import process_chunk
 from app.utils.streaming_prompt import (
     clear_agent_instructions,
     enforce_chat_prompt_budget,
+    fit_cnb_chat_context_window,
     has_embedded_stationary_energy_system_context,
 )
 from app.utils.streaming_telemetry import (
@@ -60,6 +61,8 @@ async def stream_agent_events(
                 restore_agent_instructions = True
             clear_agent_instructions(agent)
         runner_input = enforce_chat_prompt_budget(handler, agent, runner_input)
+    if handler.workflow_context.concept_note_run_id and isinstance(runner_input, list):
+        runner_input = fit_cnb_chat_context_window(handler, agent, runner_input)
 
     trace_context_updated = update_mlflow_trace_context(handler, payload)
     # Prefer the Agents SDK streamed runner and keep the legacy fallback path.

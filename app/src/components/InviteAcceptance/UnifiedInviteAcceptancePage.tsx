@@ -29,7 +29,6 @@ type ValidatedInviteRequest =
       type: InviteType.CITY;
       token: string;
       email: string;
-      cityIds: string[];
     }
   | {
       type: InviteType.ORGANIZATION;
@@ -50,7 +49,6 @@ const UnifiedInviteAcceptancePage = ({
   const { t } = useTranslation(lng, "auth");
 
   const queryParams = Object.fromEntries(searchParams.entries());
-  const inviteId = queryParams.inviteId;
   const calledOnce = useRef(false);
 
   // State management
@@ -86,11 +84,6 @@ const UnifiedInviteAcceptancePage = ({
   // API hooks
   const [acceptCityInvite] = api.useAcceptInviteMutation();
   const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
-  const { data: cityInvites } = api.useGetCityInvitesQuery(
-    { inviteId },
-    { skip: !inviteId || currentInviteType !== InviteType.CITY },
-  );
-  const cityIds = cityInvites ? cityInvites.map((invite) => invite.cityId) : [];
 
   // Toast notification
   const { showSuccessToast } = UseSuccessToast({
@@ -142,14 +135,13 @@ const UnifiedInviteAcceptancePage = ({
 
     switch (currentInviteType) {
       case InviteType.CITY: {
-        if (!cityIds || !validateInput(token, cleanedEmail)) {
+        if (!validateInput(token, cleanedEmail)) {
           return null;
         }
         return {
           type: InviteType.CITY,
           token: sanitizeInput(token),
           email: sanitizeInput(cleanedEmail),
-          cityIds, // comes from API instead of URL param, no need to sanitize
         };
       }
       case InviteType.ORGANIZATION: {
@@ -196,13 +188,12 @@ const UnifiedInviteAcceptancePage = ({
         if (validatedRequest.type === InviteType.CITY) {
           result = await acceptCityInvite({
             token: validatedRequest.token,
-            cityIds: validatedRequest.cityIds,
             email: validatedRequest.email,
           });
           trackingData = {
             event: "collaborator_invitation_accepted",
             properties: {
-              num_cities: validatedRequest.cityIds.length,
+              num_cities: result.data.cities.length,
             },
           };
         } else {

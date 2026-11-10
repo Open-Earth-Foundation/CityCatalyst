@@ -1094,20 +1094,15 @@ async function extractSegment(
     usage,
     finishReason,
   } = await client.complete({
-    // Table extraction needs a stronger model than column mapping (CC-1008:
-    // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-    model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
+    use: "pdf_extraction",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userContent },
     ],
     jsonMode: true,
-    temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
     // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
     // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
     maxTokens: 16000,
-    reasoningEffort:
-      process.env.LLM_EXTRACTION_REASONING_EFFORT?.trim() || undefined,
   });
   logger.info(
     {

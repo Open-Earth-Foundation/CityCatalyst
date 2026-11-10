@@ -26,7 +26,6 @@ const nameMappings = gpcNameMappings as NameMappings;
 
 /** LLM options for interpretation: deterministic JSON output. */
 const INTERPRET_LLM_JSON_MODE = true;
-const INTERPRET_LLM_TEMPERATURE = 0;
 /** Max tokens for column mapping (smaller response). */
 const INTERPRET_LLM_MAX_TOKENS_MAPPING = 4096;
 /** Max tokens for key-value / table shape (larger response so LLM can return all rows). */
@@ -277,12 +276,12 @@ export async function interpretTabular(
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
+    use: "file_interpretation",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
     jsonMode: INTERPRET_LLM_JSON_MODE,
-    temperature: INTERPRET_LLM_TEMPERATURE,
     maxTokens: INTERPRET_LLM_MAX_TOKENS_MAPPING,
   });
 
@@ -560,11 +559,14 @@ function normalizeKeyValueRow(row: Record<string, unknown>): ExtractedRow {
   return out;
 }
 
-function buildPastMappingsBlock(pastMapping?: {
-  columnMapping: Record<string, string>;
-  exampleRows: Record<string, unknown>[];
-} | null): string {
-  if (!pastMapping || Object.keys(pastMapping.columnMapping).length === 0) return "";
+function buildPastMappingsBlock(
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null,
+): string {
+  if (!pastMapping || Object.keys(pastMapping.columnMapping).length === 0)
+    return "";
 
   const mappingLines = Object.entries(pastMapping.columnMapping)
     .map(([col, field]) => `  "${col}" → ${field}`)
@@ -714,12 +716,12 @@ export async function shapeTableToRowsForCIRIS(
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
+    use: "file_interpretation",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
     jsonMode: INTERPRET_LLM_JSON_MODE,
-    temperature: INTERPRET_LLM_TEMPERATURE,
     maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS,
   });
 
@@ -760,12 +762,12 @@ export async function shapeTableToRows(
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
+    use: "file_interpretation",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
     jsonMode: INTERPRET_LLM_JSON_MODE,
-    temperature: INTERPRET_LLM_TEMPERATURE,
     maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE,
   });
 
@@ -807,12 +809,12 @@ export async function shapeKeyValueToRows(
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
+    use: "file_interpretation",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
     jsonMode: INTERPRET_LLM_JSON_MODE,
-    temperature: INTERPRET_LLM_TEMPERATURE,
     maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE,
   });
 
@@ -821,7 +823,10 @@ export async function shapeKeyValueToRows(
       ? responseContent.slice(0, LOG_LIMIT) + `...[truncated]`
       : responseContent;
   logger.debug(
-    { keyValueShapeLength: responseContent.length, keyValueShapeResponse: truncated },
+    {
+      keyValueShapeLength: responseContent.length,
+      keyValueShapeResponse: truncated,
+    },
     "Key-value shape LLM output",
   );
 

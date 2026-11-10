@@ -101,7 +101,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  delete process.env.LLM_EXTRACTION_REASONING_EFFORT;
   jest.restoreAllMocks();
 });
 
@@ -234,11 +233,14 @@ describe("reasoning effort", () => {
   const sentEffort = () =>
     (complete.mock.calls[0][0] as { reasoningEffort?: string }).reasoningEffort;
 
-  it("is read from LLM_EXTRACTION_REASONING_EFFORT", async () => {
-    process.env.LLM_EXTRACTION_REASONING_EFFORT = "low";
+  it("calls the LLM with the pdf_extraction role", async () => {
     mockPages({ content: JSON.stringify({ rows: [] }) });
     await extractInventoryFromDocument(document, { targetYear: 2021 });
-    expect(sentEffort()).toBe("low");
+    const options = complete.mock.calls[0][0] as Record<string, unknown>;
+    expect(options.use).toBe("pdf_extraction");
+    expect(options).not.toHaveProperty("model");
+    expect(options).not.toHaveProperty("temperature");
+    expect(options).not.toHaveProperty("reasoningEffort");
   });
 
   it("is left to the provider when unset", async () => {

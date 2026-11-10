@@ -8,8 +8,8 @@ and an LLM judge scores each stage against the golden expectations. Production
 code never imports anything from here, and the service's Docker image does not
 include it.
 
-Nothing runs the benchmark automatically. Run it yourself, or dispatch the
-manual workflow described in [DELIVERY.md](DELIVERY.md).
+Nothing runs the benchmark automatically, and there is no CI job: a developer
+runs it by hand, because every run spends provider usage.
 
 ## Run it
 
@@ -32,6 +32,12 @@ hash when the tree is dirty), hashes of every configured prompt, the full LLM
 configuration (`llm_config.json`), the `uv.lock` hash, the fixtures and the
 judge policy.
 
+Every run claims its own folder and refuses an existing one. Reports checkpoint
+after each completed stage, so setup errors, timeouts and stage failures keep a
+partial report. `delivery.json` separates execution, ground-truth approval,
+baseline compatibility and publication. Missing judgments never count as
+resolved failures, and missing usage is not proof of zero spend.
+
 Exit codes: `0` passing against an approved baseline; `1` quality failure; `2`
 the run ID already exists; `3` evaluation, approval, baseline comparison or
 publication unavailable.
@@ -42,7 +48,7 @@ publication unavailable.
 uv run python -m benchmark.cnb.scripts.compare --baseline-run benchmark/cnb/results/runs/<run-a> --candidate-run output/cnb_golden_set/runs/<run-b>
 ```
 
-Any two run folders work, including an extracted CI artifact. The command writes
+Any two run folders work, including one restored from MLflow. The command writes
 `output/cnb_compare/<run-a>__<run-b>/` with `comparison.md`, `comparison.json`
 and `index.html`, which opens on the A → B comparison. Score deltas, new and
 resolved failures appear only when both runs used the same fixtures, golden
@@ -103,12 +109,26 @@ When a run should become the reference for later runs:
 uv run python -m benchmark.cnb.scripts.propose_baseline --run output/cnb_golden_set/runs/<run-id> --reviewer "Your Name" --reference <approval-PR-URL>
 ```
 
-It copies the run's durable files into `results/runs/<run-id>/`, writes
-`baseline.json` with the run's hashes and fingerprints, and checks them with the
-evaluator's own baseline loader. Commit both in a PR; that review is the
-approval. A run can only become a baseline when it completed, every fixture's
-ground truth is approved and every stage has a valid judgment. See
-[DELIVERY.md](DELIVERY.md) for the manifest rules.
+It copies the run's durable files (report, outputs, `llm_config.json`,
+`viewer.js`; not its comparison or review bundle) into `results/runs/<run-id>/`,
+writes `baseline.json` with the report and artifact hashes, the fingerprints and
+the reviewer, and checks them with the evaluator's own baseline loader before
+writing anything. Commit both in a PR; that review is the approval. A JSON field
+does not prove a review happened.
+
+The loader accepts a baseline only when the saved run matches its report and
+artifact hashes, the run completed with every requested fixture and stage, every
+fixture's ground truth is approved, every stage has a valid judgment, the viewer
+snapshot exists and the approval date is not in the future. Known quality
+failures are allowed in a baseline; an incomplete run is not. The scoped
+`.gitattributes` rule keeps saved runs byte-identical on Windows and Linux.
+
+Two runs are comparable when they share two fingerprints: the **corpus** (every
+fixture's golden expectations, source, drafting input and reference draft, but
+not its approval record) and the **judge policy** (judge model, all four judge
+prompts, the scoring code and the judge's output schemas). Changing production
+code, prompts or models never breaks comparability; that is what the benchmark
+measures. A run of selected fixtures or stages is compared on that scope only.
 
 ## Judge calibration
 

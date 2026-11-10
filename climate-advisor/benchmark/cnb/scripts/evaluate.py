@@ -61,7 +61,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import os
 import re
 import subprocess
 import sys
@@ -170,7 +169,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--baseline-results-dir",
         type=Path,
         default=BENCHMARK_ROOT / "results",
-        help="Durable approved runs (trusted base checkout in CI)",
+        help="Durable approved runs",
     )
     parser.add_argument(
         "--timeout-seconds",
@@ -310,7 +309,9 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         (BENCHMARK_ROOT.parents[1] / "uv.lock").read_bytes()
     ).hexdigest()
     args.delivery["fingerprints"] = evaluation_fingerprints(
-        fixtures, report.model_dump(mode="json"), stages
+        load_golden_fixtures(args.fixtures_dir),
+        report.models["judge"],
+        judge_prompt_versions(settings),
     )
     report.corpus_fingerprint = args.delivery["fingerprints"]["corpus"]
     report.evaluator_fingerprint = args.delivery["fingerprints"]["judge_policy"]
@@ -809,9 +810,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     # Upload the finished run folder last, so MLflow holds exactly what is on disk.
     if args.mlflow:
-        mlflow_run_id = log_run_dir(
-            args.output_dir, environment="ci" if os.environ.get("CI") else "local"
-        )
+        mlflow_run_id = log_run_dir(args.output_dir)
         args.delivery["mlflow"] = (
             {"status": "logged", "run_id": mlflow_run_id}
             if mlflow_run_id

@@ -1,7 +1,7 @@
 """Compare any two saved CNB benchmark runs offline and review them side by side.
 
 Works on run folders from anywhere: a local run in output/cnb_golden_set, the
-committed baseline store benchmark/cnb/results, or an extracted CI artifact.
+committed baseline store benchmark/cnb/results, or a run restored from MLflow.
 Score deltas, new failures and resolved failures are reported only when both runs
 used the same fixtures, golden expectations and judge policy; otherwise both runs
 are shown side by side with the reason they are not comparable.

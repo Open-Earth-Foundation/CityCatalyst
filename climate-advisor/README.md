@@ -1721,9 +1721,7 @@ uv run python -m benchmark.cnb.scripts.evaluate --label my-change
 ```
 
 [benchmark.md](benchmark/cnb/benchmark.md) is the guide for running, comparing
-runs, the viewer and approving a baseline;
-[DELIVERY.md](benchmark/cnb/DELIVERY.md) covers the manual CI workflow and
-baseline rules; the [fixture README](benchmark/cnb/fixtures/README.md) covers
+runs, MLflow, the viewer and approving a baseline; the [fixture README](benchmark/cnb/fixtures/README.md) covers
 fixture format, gates and ground-truth approval.
 
 ## Docker Deployment (Local Testing)

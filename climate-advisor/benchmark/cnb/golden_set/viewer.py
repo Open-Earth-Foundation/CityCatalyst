@@ -271,7 +271,7 @@ def publish_bundle(candidate_dir: Path, results_dir: Path, *, baseline_dir: Path
         (root / "README.txt").write_text(
             "Extract the whole archive, then open index.html. No server, Python or API key is needed.\n"
             "comparison.md and comparison.json contain the same review summary.\n"
-            "Candidate artifacts expire with CI retention; approved baseline artifacts must remain in the reviewed repository.\n",
+            "Approved baseline artifacts remain in the reviewed repository.\n",
             encoding="utf-8",
         )
         archive = Path(shutil.make_archive(str(candidate_dir / "review-bundle"), "zip", root))

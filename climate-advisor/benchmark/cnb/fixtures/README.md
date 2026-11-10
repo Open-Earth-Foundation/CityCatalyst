@@ -203,9 +203,8 @@ time to keep provider load bounded. `--run-id` names the run folder (default: UT
 existing run is never overwritten. There is no `--repeats` flag; run again and
 compare the runs with `benchmark.cnb.scripts.compare`. A full run makes one
 extraction, one draft per chapter, two or more validator passes per chapter, up
-to four edit plans with review per fixture, and four judge calls per fixture. Nothing runs it automatically; the advisory workflow runs only on manual
-dispatch. See [benchmark.md](../benchmark.md) for comparing runs and
-[DELIVERY.md](../DELIVERY.md) for CI and baseline approval.
+to four edit plans with review per fixture, and four judge calls per fixture. Nothing runs it automatically. See [benchmark.md](../benchmark.md) for
+comparing runs and baseline approval.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
 settings. `llm_config.yaml` configures `models.cnb_golden_set_judge`

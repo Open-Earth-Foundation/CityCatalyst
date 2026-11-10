@@ -32,4 +32,4 @@ provider/schema failures are excluded from agreement and counted explicitly.
 Exit 0 means every evaluated approved case agrees; 1 means disagreement;
 2 refuses an existing report; 3 means pending/unavailable/no evaluations.
 This is a controlled judge-only measurement, not proof of whole-pipeline or
-multi-chapter reliability. No accuracy threshold is silently applied to live CI.
+multi-chapter reliability. No accuracy threshold is silently applied to live runs.

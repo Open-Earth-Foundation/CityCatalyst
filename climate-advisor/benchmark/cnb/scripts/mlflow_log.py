@@ -1,6 +1,6 @@
 """Log existing CNB results to MLflow or restore them for static review.
 
-Inputs: log RUN_DIR [--environment local|ci] [--draft]; or download MLFLOW_RUN_ID
+Inputs: log RUN_DIR [--draft]; or download MLFLOW_RUN_ID
 --results-dir DIR. Uses MLFLOW_TRACKING_URI, MLFLOW_TRACKING_USERNAME/PASSWORD
 from the process environment (does not load .env files).
 Outputs: parent and fixture runs in Clima-CNB-Benchmark, or verified files in
@@ -92,20 +92,18 @@ def _payload(report: dict[str, Any]) -> tuple[
     return metrics, params, tags, children
 
 
-def log_run_dir(run_dir: Path, *, environment: str = "local", draft: bool = False) -> str | None:
+def log_run_dir(run_dir: Path, *, draft: bool = False) -> str | None:
     """Best-effort post-finalization hook; return parent ID or None on any failure.
 
     Requires an explicit tracking URI; never redirects to the service experiment.
     Failure logs only its type, avoiding credential-bearing transport errors.
     """
     try:
-        if environment not in {"local", "ci"}:
-            raise ValueError("Environment must be local or ci")
         if not os.environ.get("MLFLOW_TRACKING_URI"):
             raise ValueError("MLFLOW_TRACKING_URI is required")
         report = json.loads((run_dir / "report.json").read_text(encoding="utf-8"))
         metrics, params, tags, children = _payload(report)
-        tags.update(environment=environment, run_id=report.get("run_id") or run_dir.name)
+        tags["run_id"] = report.get("run_id") or run_dir.name
         if draft:
             tags["draft"] = "true"
         run_id = export_run_dir(run_dir, experiment_name=EXPERIMENT, metrics=metrics,
@@ -123,7 +121,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     sub = parser.add_subparsers(dest="command", required=True)
     log = sub.add_parser("log", help="Export a finalized run directory")
     log.add_argument("run_dir", type=Path)
-    log.add_argument("--environment", choices=("local", "ci"), default="local")
     log.add_argument("--draft", action="store_true", help="Tag as draft=true")
     download = sub.add_parser("download", help="Restore and verify a parent run")
     download.add_argument("run_id")
@@ -136,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
     if args.command == "log":
-        return 0 if log_run_dir(args.run_dir, environment=args.environment, draft=args.draft) else 1
+        return 0 if log_run_dir(args.run_dir, draft=args.draft) else 1
     try:
         client = MlflowClient()
         run = client.get_run(args.run_id)

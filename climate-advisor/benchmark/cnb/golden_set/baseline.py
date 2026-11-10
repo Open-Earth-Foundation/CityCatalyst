@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
+from benchmark.cnb.golden_set.judge import OUTPUT_TYPES
 from benchmark.cnb.golden_set.models import STAGES
 
 
@@ -35,13 +36,19 @@ def artifact_digest(directory: Path) -> str:
 
 def evaluation_fingerprints(
     fixtures: list[Any],
-    report: dict[str, Any],
-    stages: list[str],
+    judge: dict[str, Any] | None,
+    judge_prompts: dict[str, str],
 ) -> dict[str, str]:
-    """Separate producer changes from the corpus and judge policy that must match."""
+    """Fingerprint only what defines a score: the answer key and the judge.
+
+    Pass every fixture in the corpus and all four judge prompts, not just the
+    selected ones, so a partial run stays comparable on the scope it covers.
+    Approval metadata and report fields are left out: re-approving a fixture or
+    adding a report field does not change how outputs are judged.
+    """
     corpus = [
         {
-            "fixture": item.fixture.model_dump(mode="json"),
+            "fixture": item.fixture.model_dump(mode="json", exclude={"approval"}),
             "source": item.markdown,
             "drafting_input": item.drafting_input.model_dump(mode="json")
             if item.drafting_input
@@ -56,21 +63,19 @@ def evaluation_fingerprints(
         "corpus": content_digest(corpus),
         "judge_policy": content_digest(
             {
-                "prompts": report.get("judge_prompt_versions"),
-                "judge": report.get("models", {}).get("judge"),
-                "stages": stages,
-                "comparison_policy": 1,
+                "prompts": judge_prompts,
+                "judge": judge,
+                "comparison_policy": 2,
+                # Scoring code and the judge's structured-output schemas, not report contracts.
                 "scorers": {
                     name: hashlib.sha256(
                         Path(__file__).with_name(name).read_text(encoding="utf-8").encode("utf-8")
                     ).hexdigest()
-                    for name in (
-                        "core.py",
-                        "chapters.py",
-                        "verification.py",
-                        "editing.py",
-                        "models.py",
-                    )
+                    for name in ("core.py", "chapters.py", "verification.py", "editing.py")
+                },
+                "judge_schemas": {
+                    stage: content_digest(output.model_json_schema())
+                    for stage, output in OUTPUT_TYPES.items()
                 },
             }
         ),
@@ -86,7 +91,7 @@ def incompatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> list
     if baseline["corpus_fingerprint"] != candidate["corpus_fingerprint"]:
         reasons.append("fixtures or golden expectations changed")
     if baseline["evaluator_fingerprint"] != candidate["evaluator_fingerprint"]:
-        reasons.append("judge model, prompts or stages changed")
+        reasons.append("judge model, prompts or scoring changed")
     return reasons
 
 
@@ -209,18 +214,12 @@ def compare_reports(
     old = {f["fixture_id"]: f for f in (baseline or {}).get("fixtures", [])}
     new = {f["fixture_id"]: f for f in candidate.get("fixtures", [])}
     rows = []
-    fixture_ids = (
-        old.keys() | new.keys() | set(candidate.get("expected_fixture_ids", []))
-    )
+    # Compare only the candidate's scope; a partial run is not missing the rest.
+    fixture_ids = set(candidate.get("expected_fixture_ids") or new.keys())
+    stages = [s for s in STAGES if s in (candidate.get("requested_stages") or STAGES)]
     for fid in sorted(fixture_ids):
-        for stage in STAGES:
+        for stage in stages:
             before, after = old.get(fid, {}).get(stage), new.get(fid, {}).get(stage)
-            if (
-                before is None
-                and after is None
-                and stage not in candidate.get("requested_stages", [])
-            ):
-                continue
             a, b = before or {}, after or {}
             failures_a = set(
                 a.get("integrity_failures", []) + a.get("semantic_failures", [])

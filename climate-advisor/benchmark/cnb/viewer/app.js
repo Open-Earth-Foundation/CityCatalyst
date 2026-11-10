@@ -1427,7 +1427,7 @@
       reasons.push("a run predates evaluation fingerprints");
     else {
       if (a.corpus_fingerprint !== b.corpus_fingerprint) reasons.push("fixtures or golden expectations changed");
-      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts or stages changed");
+      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts or scoring changed");
     }
     return reasons;
   }

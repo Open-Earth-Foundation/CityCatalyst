@@ -78,6 +78,29 @@ export interface LLMConfig {
   maxRetries: number;
 }
 
+/** Roles that pick a model; keys of `models` in llm_config.yaml. */
+export const LLM_USES = [
+  "pdf_extraction",
+  "crva_extraction",
+  "file_interpretation",
+] as const;
+export type LLMUse = (typeof LLM_USES)[number];
+export type LLMReasoningEffort = "low" | "medium" | "high";
+
+/** Model settings for one role, from llm_config.yaml. */
+export interface LLMModelConfig {
+  name: string;
+  temperature?: number;
+  reasoningEffort?: LLMReasoningEffort;
+}
+
+/** Validated contents of llm_config.yaml. */
+export interface LLMFileConfig {
+  models: Record<LLMUse, LLMModelConfig>;
+  timeoutMs: number;
+  maxRetries: number;
+}
+
 /** Internal adapter interface; one implementation per provider (OpenAI, Anthropic, etc.). */
 export interface ILLMAdapter {
   complete(

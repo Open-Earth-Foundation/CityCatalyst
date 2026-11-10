@@ -1,3 +1,5 @@
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
 import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
 import { skipCookieConsent } from "./helpers";
@@ -236,4 +238,80 @@ test("times out a stalled stream instead of thinking forever", async ({
     timeout: 60_000,
   });
   await expect(chatError(page)).toContainText("stopped responding");
+});
+
+test("shows a static visual without letting it reach the network", async ({
+  page,
+}) => {
+  // Anything the visual sends out, by script, refresh, resource or link, lands here.
+  const leaks: string[] = [];
+  const listener = createServer((request, response) => {
+    leaks.push(request.url ?? "");
+    response.end();
+  });
+  await new Promise<void>((resolve) =>
+    listener.listen(0, "127.0.0.1", resolve),
+  );
+  const out = `http://127.0.0.1:${(listener.address() as AddressInfo).port}`;
+  const html = `<!doctype html><html><head>
+<meta http-equiv="refresh" content="0;url=${out}/refresh">
+<link rel="stylesheet" href="${out}/css">
+<style>body{margin:0;font:14px sans-serif}</style></head><body>
+<script>location.href = "${out}/script?note=" + document.title;</script>
+<svg viewBox="0 0 100 40" width="100%" data-testid="chart">
+<rect width="60" height="20" fill="#2e7d32"></rect>
+<a href="${out}/svg-link"><set attributeName="href" to="${out}/svg-set"></set>
+<text x="2" y="35">Energy 60%</text></a></svg>
+<img src="${out}/img" alt="">
+<div style="background:url(${out}/bg);height:4px"></div>
+<a href="${out}/link">Open the source</a>
+</body></html>`;
+  const visualReply = stream(
+    sse(
+      ["message", { content: "Here is the chart.", index: 0 }],
+      [
+        "done",
+        {
+          ok: true,
+          tools_used: [
+            {
+              id: "call-1",
+              name: "concept_note_render_visual",
+              status: "success",
+              arguments: { title: "Emissions by sector", html },
+              result_json: {
+                action: "concept_note.visual.render",
+                success: true,
+                data: { title: "Emissions by sector", html_chars: html.length },
+                error_code: null,
+              },
+            },
+          ],
+        },
+      ],
+    ),
+  );
+
+  try {
+    await openWorkspace(page, [visualReply]);
+    await ask(page, "Chart the emissions.");
+
+    await expect(page.getByText("Here is the chart.")).toBeVisible();
+    // Give any script, refresh or resource time to arrive.
+    await page.waitForTimeout(1_500);
+    expect(leaks).toEqual([]);
+
+    const visual = page
+      .getByTestId("concept-note-chat-visual")
+      .locator("iframe")
+      .contentFrame();
+    await expect(visual.getByTestId("chart")).toBeVisible();
+    await visual.getByText("Energy 60%").click();
+    await visual.getByText("Open the source").click();
+    await page.waitForTimeout(1_500);
+    expect(leaks).toEqual([]);
+    await expect(visual.getByTestId("chart")).toBeVisible();
+  } finally {
+    listener.close();
+  }
 });

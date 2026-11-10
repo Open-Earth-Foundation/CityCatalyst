@@ -750,6 +750,7 @@ def generate_output_plan(
                 translations, translation_llm_io = translate_output_plan(
                     canonical_chapters=english_generation.chapters,
                     target_chapter_inputs=target_chapter_inputs,
+                    canonical_chapter_inputs=english_chapter_inputs,
                 )
                 generation_by_language.update(translations)
                 llm_io_payload["translation"] = translation_llm_io

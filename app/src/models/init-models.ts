@@ -305,6 +305,12 @@ import {
   OAuthClientAuthzOptionalAttributes,
 } from "./OAuthClientAuthz";
 import {
+  UsedAuthorizationCode as _UsedAuthorizationCode,
+  UsedAuthorizationCodeAttributes,
+  UsedAuthorizationCodeCreationAttributes,
+  UsedAuthorizationCodeOptionalAttributes,
+} from "./UsedAuthorizationCode";
+import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
@@ -389,6 +395,7 @@ export {
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
+  _UsedAuthorizationCode as UsedAuthorizationCode,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -528,6 +535,9 @@ export type {
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
+  UsedAuthorizationCodeAttributes,
+  UsedAuthorizationCodeCreationAttributes,
+  UsedAuthorizationCodeOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -610,6 +620,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
+  const UsedAuthorizationCode = _UsedAuthorizationCode.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -1647,6 +1658,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
+    UsedAuthorizationCode: UsedAuthorizationCode,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

@@ -1493,3 +1493,109 @@ def test_incomplete_policy_evidence_is_omitted_with_a_visible_limitation() -> No
         "lacked document, signal, or quotation context" in limitation
         for limitation in chapters["policy_backing"].limitations
     )
+
+
+def _walk_scores(value: object, path: str = "") -> list[tuple[str, float]]:
+    """Return every numeric `*_score` field in a facts tree with its path."""
+    found: list[tuple[str, float]] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if (
+                str(key).endswith("_score")
+                and isinstance(item, (int, float))
+                and not isinstance(item, bool)
+            ):
+                found.append((f"{path}.{key}", float(item)))
+            else:
+                found.extend(_walk_scores(item, f"{path}.{key}"))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            found.extend(_walk_scores(item, f"{path}[{index}]"))
+    return found
+
+
+def test_every_chapter_score_fact_is_rounded_to_two_decimals() -> None:
+    """Chapters quote scores rounded once, half up, so prose, tables and the UI agree."""
+    ranked = _ranked_action_payload("A_1")
+    ranked.update(
+        {
+            "final_score": 0.58471,
+            "impact_score": 0.125,
+            "alignment_score": 0.75499,
+            "feasibility_score": 0.885,
+        }
+    )
+    ranked["evidence_summary"]["impact"]["impact_block_score"] = 0.90499
+    ranked["evidence_summary"]["alignment"]["policy_component_score"] = 0.33333
+    context = build_report_context(
+        request=_report_request(
+            response_results=[
+                {
+                    "locode": "CL-SCL",
+                    "ranked_action_ids": ["A_1"],
+                    "ranked_actions": [ranked],
+                    "removed_actions": [],
+                    "metadata": {
+                        "locode": "CL-SCL",
+                        "internal_request_id": "internal-1",
+                        "frontend_request_id": "prioritize-req-1",
+                        "counts": {
+                            "total_actions": 1,
+                            "valid_actions": 1,
+                            "discarded_excluded": 0,
+                            "discarded_legal": 0,
+                            "ranked_actions": 1,
+                        },
+                        "weights": {
+                            "impact": 0.34,
+                            "alignment": 0.33,
+                            "feasibility": 0.33,
+                        },
+                        "timings": {},
+                        "explanations": {
+                            "requested": True,
+                            "generated": 1,
+                            "requested_languages": ["en"],
+                            "canonical_language": "en",
+                            "generated_languages": ["en"],
+                            "translation_warnings": [],
+                        },
+                        "hard_filter_evidence_by_action_id": {},
+                    },
+                    "warnings": [],
+                }
+            ]
+        ),
+        action=Action(action_id="A_1", action_name="Bus electrification"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        policy_score=None,
+        legal_assessment=None,
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+
+    chapters = build_chapter_inputs(context)
+    scores = [
+        (f"{chapter.key}{path}", value)
+        for chapter in chapters
+        for path, value in _walk_scores(chapter.facts)
+    ]
+    assert scores, "expected score facts in the chapter inputs"
+    for path, value in scores:
+        assert value == round(value, 2), f"{path} is not rounded: {value}"
+        assert "0.58471" not in str(value) and "0.75499" not in str(value), path
+
+    snapshot = next(chapter for chapter in chapters if chapter.key == "snapshot")
+    ranking = snapshot.facts["ranking"]
+    assert ranking["final_score"] == 0.58
+    # Ties round up, like the UI's toFixed(2), not half-to-even.
+    assert ranking["impact_score"] == 0.13
+    assert ranking["alignment_score"] == 0.75
+    assert ranking["feasibility_score"] == 0.89

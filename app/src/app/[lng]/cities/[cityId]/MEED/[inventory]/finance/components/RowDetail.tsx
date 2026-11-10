@@ -3,7 +3,7 @@ import { Separator, SimpleGrid, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import { numericToLevel, profileAttrs } from "../labels";
+import { financeReason, numericToLevel, profileAttrs } from "../labels";
 import type { FeasibilityRow } from "../types";
 import { FinanceMatches } from "./FinanceMatches";
 import { LevelMeter } from "./LevelMeter";
@@ -13,6 +13,8 @@ export interface RowDetailProps {
   cityId: string;
   cityName: string;
   t: TFunction;
+  /** Page language, for translated project names. */
+  lng?: string;
 }
 
 /**
@@ -20,17 +22,16 @@ export interface RowDetailProps {
  * and lazily-fetched funding opportunities and funded projects (from
  * hiap-meed).
  */
-export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
+export function RowDetail({ row, cityId, cityName, t, lng }: RowDetailProps) {
   const inputs = row.inputs ?? {};
   const ciLevel = numericToLevel(inputs.action?.capital_intensity);
   const pcLevel = numericToLevel(inputs.action?.preparation_complexity);
   const profile = profileAttrs(inputs.city?.profile);
+  const reason = financeReason(row, t);
 
   return (
     <VStack alignItems="stretch" gap="m" px="l" py="m">
-      {row.reason && (
-        <BodyMedium color="content.secondary">{row.reason}</BodyMedium>
-      )}
+      {reason && <BodyMedium color="content.secondary">{reason}</BodyMedium>}
 
       {(ciLevel || pcLevel || profile.fa || profile.dc) && (
         <SimpleGrid columns={{ base: 1, md: 2 }} gap="l">
@@ -81,7 +82,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
 
       <Separator borderColor="border.overlay" />
 
-      <FinanceMatches row={row} cityId={cityId} t={t} />
+      <FinanceMatches row={row} cityId={cityId} t={t} lng={lng} />
     </VStack>
   );
 }

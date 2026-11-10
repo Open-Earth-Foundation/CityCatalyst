@@ -12,6 +12,7 @@ import {
   SECTORS,
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import { isNotEstimated, isNotOccurring } from "@/util/notation-keys";
 
 // Sectors whose completion is tracked per subcategory; IV and V are per subsector.
@@ -79,6 +80,9 @@ export default class InventoryProgressService {
           subsectorId: subsector.subsectorId,
           subsectorName: subsector.subsectorName,
           subCategories: subsector.subCategories
+            .filter(
+              (subcategory) => !isImportedWasteRef(subcategory.referenceNumber),
+            )
             .map((subcategory) => ({
               subcategoryId: subcategory.subcategoryId,
               subcategoryName: subcategory.subcategoryName,

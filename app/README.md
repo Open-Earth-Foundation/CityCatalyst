@@ -3,7 +3,15 @@
 This is the main CityCatalyst Web app. This directory includes both the
 frontend and backend code for the app, as well as database management scripts.
 
-## Concept Note chat errors
+## Concept Note chat
+
+**Answer in chat** on a chapter gap opens up to four questions in Clima, each
+with suggested choices (possible answers, not source facts), free text, or
+**Not decided yet**; a retry appears if generation fails. Answers become a
+chapter edit proposal: accepting it closes the gap only when every part was
+answered. **Answer later** leaves the gap open.
+
+### Connection errors
 
 Concept Note chat keeps request rejections separate from connection failures:
 HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404

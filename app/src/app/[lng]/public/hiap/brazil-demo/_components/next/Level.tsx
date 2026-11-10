@@ -1,55 +1,33 @@
 "use client";
 import React from "react";
 import { Box, HStack } from "@chakra-ui/react";
-import type { MeedTone } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedStatusTag";
-import { BodySmall } from "@/components/package/Texts/Body";
-import { Overline } from "@/components/package/Texts/Overline";
-import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
-
-const DOT: Record<MeedTone, string> = {
-  positive: "interactive.tertiary",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
-  negative: "sentiment.negativeDefault",
-  info: "content.link",
-  neutral: "content.tertiary",
-};
+import { MeedLevel } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedLevel";
+import { MEED_TONE_DOT } from "@/app/[lng]/cities/[cityId]/MEED/components/meedTones";
+import { TitleMedium } from "@/components/package/Texts/Title";
 
 /**
- * The one way a level is shown on the proposal screens: a dot and a word.
- * Green is favourable, amber moderate, red unfavourable, on every
- * assessment (risk, cost, legal capacity, funding gap, policy backing,
- * co-benefit effect). No pills, so a row of levels reads as text.
+ * The demo's level mark is the module's: one dot-and-word component for both,
+ * so the proposal screens and MEED never draw a level differently. The demo
+ * adds one size, "lg", for a level that is the headline of a box (the
+ * financing options), which the module does not need.
  */
 export function Level({
-  tone,
-  children,
-  label,
-  info,
-}: {
-  tone: MeedTone;
-  children: React.ReactNode;
-  /** Optional eyebrow above the level, for card and drawer facts. */
-  label?: string;
-  /** What the dimension means, shown as an "i" tip beside the label. */
-  info?: string;
-}) {
-  const row = (
-    <HStack gap="s" alignItems="center" data-testid="level">
-      <Box boxSize="8px" borderRadius="full" bg={DOT[tone]} flexShrink={0} />
-      <BodySmall color="content.primary" fontWeight="semibold">
-        {children}
-      </BodySmall>
-    </HStack>
-  );
-  if (!label) return row;
+  size = "md",
+  ...props
+}: React.ComponentProps<typeof MeedLevel> & { size?: "md" | "lg" }) {
+  if (size !== "lg") return <MeedLevel {...props} />;
+  const { tone, children } = props;
   return (
-    <Box>
-      <HStack gap="xs" alignItems="center" mb="xs">
-        <Overline color="content.tertiary">{label}</Overline>
-        {info && <MeedInfoTip content={info} ariaLabel={info} />}
-      </HStack>
-      {row}
-    </Box>
+    <HStack gap="s" alignItems="center" data-testid="level">
+      <Box
+        boxSize="10px"
+        borderRadius="full"
+        bg={MEED_TONE_DOT[tone]}
+        flexShrink={0}
+      />
+      <TitleMedium as="span" color="content.primary">
+        {children}
+      </TitleMedium>
+    </HStack>
   );
 }

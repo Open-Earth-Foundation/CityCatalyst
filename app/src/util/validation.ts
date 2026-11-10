@@ -188,7 +188,6 @@ export const createUserInvite = z.object({
 
 export const AcceptInvite = z.object({
   email: z.string().email(),
-  cityIds: z.array(z.string()),
   token: z.string(),
 });
 
@@ -518,6 +517,8 @@ export const withdrawIngestDocumentRequest = z.object({
   withdrawExtractsFor: z
     .array(z.enum(["test", "ghgi", "ccra", "cnb"]))
     .optional(),
+  /** Explicit confirmation. Removes inventory values tagged with this document. */
+  deleteImportedData: z.literal(true).optional(),
 });
 
 export const supersedeIngestDocumentRequest = z.object({

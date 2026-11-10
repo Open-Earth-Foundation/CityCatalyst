@@ -11,7 +11,7 @@ import type { Sector, SectorId } from "./Sector";
 import type { SubSector, SubSectorId } from "./SubSector";
 import type { GasValue, GasValueId } from "./GasValue";
 import type { ActivityValue, ActivityValueId } from "./ActivityValue";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 
 export interface InventoryValueAttributes {
   id: string;
@@ -32,6 +32,10 @@ export interface InventoryValueAttributes {
   datasourceId?: string | null; // TODO remove
   /** Stored, but left out of BASIC and BASIC+ totals. */
   omitFromTotal?: boolean;
+  /** Pool document that last created this row. Delete-including-data uses it. */
+  sourceDocumentId?: string | null;
+  /** Every pool document that contributed to this GPC total. */
+  sourceDocumentIds?: string[] | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -53,6 +57,8 @@ export type InventoryValueOptionalAttributes =
   | "inventoryId"
   | "datasourceId"
   | "omitFromTotal"
+  | "sourceDocumentId"
+  | "sourceDocumentIds"
   | "created"
   | "lastUpdated";
 export type InventoryValueCreationAttributes = Optional<
@@ -81,6 +87,8 @@ export class InventoryValue
   declare inventoryId?: string;
   declare datasourceId?: string | null;
   declare omitFromTotal?: boolean;
+  declare sourceDocumentId?: string | null;
+  declare sourceDocumentIds?: string[] | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -288,6 +296,16 @@ export class InventoryValue
           defaultValue: false,
           field: "omit_from_total",
         },
+        sourceDocumentId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "source_document_id",
+        },
+        sourceDocumentIds: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "source_document_ids",
+        },
       },
       {
         sequelize,
@@ -305,10 +323,20 @@ export class InventoryValue
         ],
         hooks: {
           beforeSave: (inventoryValue: InventoryValue) => {
-            // Grid generation is stored for a territorial total and omitted
-            // from BASIC/BASIC+ totals. Other rows can set the flag directly.
-            if (inventoryValue.gpcReferenceNumber === GRID_GENERATION_GPC_REF) {
+            // These references stay stored and are omitted from BASIC/BASIC+
+            // totals. Other rows can set the flag directly.
+            if (isOmittedGPCReference(inventoryValue.gpcReferenceNumber)) {
               inventoryValue.omitFromTotal = true;
+            } else if (
+              inventoryValue.changed("gpcReferenceNumber") &&
+              isOmittedGPCReference(
+                inventoryValue.previous("gpcReferenceNumber") as
+                  string | null | undefined,
+              )
+            ) {
+              // Reclassified away from an omitted reference: the flag was
+              // derived from that reference, so it must not outlive it.
+              inventoryValue.omitFromTotal = false;
             }
           },
           afterCreate: async (inventoryValue: InventoryValue) => {

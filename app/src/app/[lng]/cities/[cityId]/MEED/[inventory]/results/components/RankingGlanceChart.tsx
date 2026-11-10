@@ -1,11 +1,10 @@
 "use client";
 import React, { useMemo } from "react";
-import { TitleLarge } from "@/components/package/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import {
   Box,
   Card,
   HStack,
-  Text,
   useBreakpointValue,
   useToken,
 } from "@chakra-ui/react";
@@ -13,7 +12,6 @@ import { ResponsiveBar, type BarDatum } from "@nivo/bar";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { SECTORS } from "@/util/constants";
-import { Caption } from "@/components/package/Texts/Caption";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
@@ -129,7 +127,9 @@ export function RankingGlanceChart({
         gap="m"
         flexWrap="wrap"
       >
-        <TitleLarge color="content.primary">{t("glance-title")}</TitleLarge>
+        <TitleMedium as="h3" color="content.primary">
+          {t("glance-title")}
+        </TitleMedium>
         <HStack gap="m" flexWrap="wrap">
           {legend.map(([sector, color]) => (
             <HStack key={sector} gap="xs" alignItems="center">
@@ -146,10 +146,10 @@ export function RankingGlanceChart({
       </HStack>
       {/* What the chart is and how to browse it without a mouse: for
           assistive tech, not for the layout — the bars speak for themselves. */}
-      <Caption srOnly>
+      <BodySmall srOnly>
         {t("glance-description", { count: shown.length })}{" "}
         {t("glance-keyboard-note")}
-      </Caption>
+      </BodySmall>
       <Box h={`${height}px`} minH="240px" position="relative" mt="s">
         <ResponsiveBar<GlanceDatum>
           data={data}
@@ -226,20 +226,15 @@ export function RankingGlanceChart({
                   flexShrink={0}
                 />
                 <Box minW={0}>
-                  <Text
-                    fontSize="body.sm"
-                    lineHeight="18px"
-                    color="content.primary"
-                    whiteSpace="normal"
-                  >
+                  <BodySmall color="content.primary" whiteSpace="normal">
                     {datum.name}
-                  </Text>
-                  <Text fontSize="caption" color="content.tertiary" mt="xs">
+                  </BodySmall>
+                  <BodySmall color="content.tertiary" mt="xs">
                     {t("glance-tooltip-score", {
                       sector: datum.sector,
                       score: datum.score.toFixed(2),
                     })}
-                  </Text>
+                  </BodySmall>
                 </Box>
               </HStack>
             </Card.Root>

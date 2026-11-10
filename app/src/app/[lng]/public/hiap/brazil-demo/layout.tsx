@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 import { DemoLayoutClient } from "./_components/DemoLayoutClient";
 
@@ -23,6 +24,8 @@ export default async function DemoLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
+  // Read the flag at request time, not from the empty build env (cacheComponents).
+  await connection();
   if (!hasServerFeatureFlag(FeatureFlags.HIAP_BR_DEMO)) notFound();
   const { lng } = await props.params;
   return <DemoLayoutClient lng={lng}>{props.children}</DemoLayoutClient>;

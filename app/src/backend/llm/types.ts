@@ -19,6 +19,8 @@ export interface LLMCompleteOptions {
   maxTokens?: number;
   /** Ask for JSON output; adapter may set response_format / schema hint where supported. Caller still parses. */
   jsonMode?: boolean;
+  /** Strict structured output (OpenAI json_schema); wins over jsonMode. */
+  jsonSchema?: { name: string; schema: Record<string, unknown> };
 }
 
 export interface LLMUsage {

@@ -18,8 +18,7 @@ interface ChatWelcomeProps {
 /**
  * Client-side greeting for an empty thread so the chat rail never opens
  * blank. It states what Clima will do and the single next step for the
- * current setup state. Model-proposed questions (chat suggestions) live
- * above the composer and are intentionally not duplicated here.
+ * current setup state.
  */
 export function ChatWelcome({
   lng,

@@ -16,8 +16,15 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
+import {
+  decisionsForFile,
+  type ImportRowDecision,
+  NO_ROW_DECISIONS,
+  withRowDecision,
+} from "@/components/steps/GHGI/import/import-row-decisions";
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
+import ImportReviewRows from "@/components/steps/GHGI/import/import-review-rows";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import ReplaceInventoryConfirmModal from "@/components/Modals/replace-inventory-confirm-modal";
@@ -49,6 +56,7 @@ function ImportButton({
   inventoryId,
   importedFileId,
   mappingOverrides,
+  pendingRows,
   onImport,
   onImportProgressChange,
   disabled,
@@ -59,7 +67,9 @@ function ImportButton({
   cityId: string;
   inventoryId: string;
   importedFileId: string;
-  mappingOverrides: Record<string, string>;
+  mappingOverrides: Record<string, unknown>;
+  /** Rows with no decision yet. The server rejects approval while above zero. */
+  pendingRows: number;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
   disabled?: boolean;
@@ -128,7 +138,7 @@ function ImportButton({
       onImportProgressChange(false);
       makeErrorToast(
         "Import failed",
-        resolveErrorMessage(res.errorLog, "Failed to import data", t),
+        `${resolveErrorMessage(res.errorLog, "Failed to import data", t)} ${t("import-failed-new-upload")}`,
       );
     },
     onPollError: (err) =>
@@ -183,7 +193,7 @@ function ImportButton({
             (result as { errorLog?: string | null }).errorLog,
             "Failed to import data",
             t,
-          ),
+          ) + ` ${t("import-failed-new-upload")}`,
         );
         return;
       }
@@ -216,10 +226,12 @@ function ImportButton({
         }
         h="64px"
         loading={isImporting || isImportPolling}
-        disabled={disabled || isImporting || isImportPolling}
+        disabled={disabled || pendingRows > 0 || isImporting || isImportPolling}
       >
         <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-          {t("import-inventory")}
+          {pendingRows > 0
+            ? t("import-rows-pending", { count: pendingRows })
+            : t("import-inventory")}
         </Text>
         <MdArrowForward height="24px" width="24px" />
       </Button>
@@ -294,6 +306,12 @@ export default function GhgiImportWizard({
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const selectImportedFile = (fileId: string | null) => {
+    setImportedFileId(fileId);
+    // Overrides and decisions belong to the file they were made on.
+    setMappingOverrides({});
+    setFileRowDecisions(NO_ROW_DECISIONS);
+  };
   const [lastImportStatus, setLastImportStatus] =
     useState<ImportStatusResponse | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
@@ -305,6 +323,19 @@ export default function GhgiImportWizard({
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
+  const [fileRowDecisions, setFileRowDecisions] = useState(NO_ROW_DECISIONS);
+  const rowDecisions = decisionsForFile(fileRowDecisions, importedFileId);
+  const allOverrides = useMemo(
+    () => ({ columnMappings: mappingOverrides, rowDecisions }),
+    [mappingOverrides, rowDecisions],
+  );
+  const handleRowDecision = (
+    rowIndex: number,
+    decision: ImportRowDecision | null,
+  ) =>
+    setFileRowDecisions((prev) =>
+      withRowDecision(prev, importedFileId, rowIndex, decision),
+    );
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [dataLossVariant, setDataLossVariant] = useState<
     "leave" | "reset-upload"
@@ -394,6 +425,28 @@ export default function GhgiImportWizard({
     return cols.filter(isMandatory).every((col) => effectiveKey(col) !== "");
   }, [mappingStepData, mappingOverrides]);
 
+  // Same preview the approve route checks, so the button matches the server.
+  const {
+    data: rowPreview,
+    isFetching: isPreviewFetching,
+    isError: isPreviewError,
+  } = api.useGetImportRowPreviewQuery(
+    {
+      cityId,
+      inventoryId: inventoryId ?? "",
+      importedFileId: importedFileId ?? "",
+      mappingOverrides: allOverrides,
+    },
+    {
+      skip:
+        activeStep !== 2 ||
+        !importedFileId ||
+        !inventoryId ||
+        isImportInProgress,
+    },
+  );
+  const pendingRows = rowPreview?.pendingRows ?? 0;
+
   // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
     fileYearMismatchToastShownRef.current = false;
@@ -463,7 +516,7 @@ export default function GhgiImportWizard({
       setLastImportStatus(res);
       const file = uploadPendingFileRef.current;
       if (file) setUploadedFile(file);
-      setImportedFileId(res.id);
+      selectImportedFile(res.id);
       if (res.importStatus === "pending_ai_extraction") {
         setPdfPendingExtraction(true);
         setTabularPendingInterpretation(false);
@@ -626,7 +679,7 @@ export default function GhgiImportWizard({
       }
 
       setUploadedFile(file);
-      setImportedFileId(result.id);
+      selectImportedFile(result.id);
       setPdfPendingExtraction(
         (result as { importStatus?: string; fileType?: string })
           .importStatus === "pending_ai_extraction" ||
@@ -689,7 +742,7 @@ export default function GhgiImportWizard({
     setIsExtractInProgress(false);
     setIsInterpretInProgress(false);
     setUploadedFile(null);
-    setImportedFileId(null);
+    selectImportedFile(null);
     setLastImportStatus(null);
     setPdfPendingExtraction(false);
     setTabularPendingInterpretation(false);
@@ -1101,6 +1154,8 @@ export default function GhgiImportWizard({
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
+                    rowDecisions={rowDecisions}
+                    onRowDecision={handleRowDecision}
                     onMappingChange={(columnName, mappedKey) => {
                       setMappingOverrides((prev) => ({
                         ...prev,
@@ -1125,15 +1180,42 @@ export default function GhgiImportWizard({
                       cityName={inventory?.city?.name}
                     />
                   ) : (
-                    <ReviewConfirmStep
-                      t={t}
-                      cityId={cityId}
-                      cityName={inventory?.city?.name}
-                      inventoryId={inventoryId}
-                      importedFileId={importedFileId}
-                      onEditMapping={goToPrevStep}
-                      mappingOverrides={mappingOverrides}
-                    />
+                    <>
+                      <ImportReviewRows
+                        t={t}
+                        fileId={importedFileId}
+                        rows={rowPreview?.reviewRows ?? []}
+                        onDecide={handleRowDecision}
+                      />
+                      {(rowPreview?.scopeWarnings ?? []).length > 0 && (
+                        <Box mb={6}>
+                          <Text
+                            color="sentiment.warningDefault"
+                            fontWeight="medium"
+                          >
+                            {t("import-scope-warning")}
+                          </Text>
+                          {rowPreview?.scopeWarnings?.map((row) => (
+                            <Text key={row.rowNumber} fontSize="body.sm">
+                              {t("import-scope-warning-row", {
+                                row: row.rowNumber,
+                                reference: row.gpcRefNo,
+                                scope: row.scope || t("import-scope-missing"),
+                              })}
+                            </Text>
+                          ))}
+                        </Box>
+                      )}
+                      <ReviewConfirmStep
+                        t={t}
+                        cityId={cityId}
+                        cityName={inventory?.city?.name}
+                        inventoryId={inventoryId}
+                        importedFileId={importedFileId}
+                        onEditMapping={goToPrevStep}
+                        mappingOverrides={allOverrides}
+                      />
+                    </>
                   )}
                 </motion.div>
               )}
@@ -1237,14 +1319,13 @@ export default function GhgiImportWizard({
                     onClick={() => {
                       handleNavigation(() => {
                         setUploadedFile(null);
-                        setImportedFileId(null);
+                        selectImportedFile(null);
                         setLastImportStatus(null);
                         setPdfPendingExtraction(false);
                         setTabularPendingInterpretation(false);
                         setIsExtractInProgress(false);
                         setIsInterpretInProgress(false);
                         setIsImportInProgress(false);
-                        setMappingOverrides({});
                         setExtractionProgress(null);
                         setStep(0);
                       }, "reset-upload");
@@ -1262,9 +1343,15 @@ export default function GhgiImportWizard({
                     cityId={cityId}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    mappingOverrides={mappingOverrides}
+                    mappingOverrides={allOverrides}
+                    pendingRows={pendingRows}
                     onImportProgressChange={setIsImportInProgress}
-                    disabled={fileYearMismatch}
+                    disabled={
+                      fileYearMismatch ||
+                      !rowPreview ||
+                      isPreviewFetching ||
+                      isPreviewError
+                    }
                     inventoryHasData={inventoryHasData}
                     inventoryYear={inventoryYear}
                     onImport={() => {
@@ -1272,6 +1359,11 @@ export default function GhgiImportWizard({
                     }}
                     t={t}
                   />
+                  {isPreviewError && (
+                    <Text color="sentiment.negativeDefault">
+                      {t("import-rows-check-failed")}
+                    </Text>
+                  )}
                 </HStack>
               )}
             </Box>

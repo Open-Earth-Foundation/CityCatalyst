@@ -21,6 +21,7 @@ import {
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
 import { parseNumericCell } from "@/util/parse-numeric-cell";
+import { excelRowNumber } from "@/util/excel-row-number";
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -282,7 +283,7 @@ export default class FormatAdapterService {
 
     for (let index = 0; index < sheet.rows.length; index++) {
       const row = sheet.rows[index];
-      const rowNumber = index + 1;
+      const rowNumber = excelRowNumber(index, sheet.rowNumbers?.[index]);
       const get = (idx: number): unknown =>
         idx >= 0 ? (row[h[idx]] ?? null) : null;
 
@@ -300,17 +301,28 @@ export default class FormatAdapterService {
         rawSectorVal || rawSubsectorVal || activityType || scopeLabel,
       );
 
-      // Blank template rows have no label. A labelled row with nothing to store is reported.
+      // Keep blank data rows so "rows in file" matches Excel. Labelled empties
+      // are listed as skipped; completely empty template rows are counted too.
       if (totalCO2e === null && !notation) {
         if (hasLabel) {
           warnings.push(
             `Row ${rowNumber}: Skipped - no emission values or notation key (${rawSectorVal || "unknown sector"} / ${rawSubsectorVal || "unknown sub-sector"})`,
           );
         }
+        rows.push({
+          year: targetYear ?? null,
+          sector: rawSectorVal || null,
+          subsector: rawSubsectorVal || null,
+          category: activityType,
+          totalCO2e: null,
+          gpcRefNo: this.strVal(get(gpcRefIdx)),
+          sourceRowNumber: rowNumber,
+        });
         continue;
       }
 
-      let gpcRefNo = this.strVal(get(gpcRefIdx));
+      const statedReference = this.strVal(get(gpcRefIdx));
+      let gpcRefNo = statedReference;
       if (!gpcRefNo) {
         gpcRefNo = resolveGpcRefFromLabels({
           sector: rawSectorVal,
@@ -342,6 +354,7 @@ export default class FormatAdapterService {
         ch4: this.numVal(get(ch4Idx)),
         n2o: this.numVal(get(n2oIdx)),
         gpcRefNo,
+        refSource: statedReference ? "document" : "inferred",
         source: dataSource,
         // The import cites activityDataSource; `source` is only shown on review
         activityDataSource: dataSource,
@@ -373,6 +386,7 @@ export default class FormatAdapterService {
         ...(efTotalIdx >= 0
           ? { emissionFactorTotalCO2e: this.numVal(get(efTotalIdx)) }
           : {}),
+        sourceRowNumber: rowNumber,
       });
     }
 

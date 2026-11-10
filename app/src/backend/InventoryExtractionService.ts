@@ -6,20 +6,37 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
-import { GRID_GENERATION_GPC_REF } from "@/util/GHGI/reported-totals";
+import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
+import {
+  isQuoteInText,
+  normalizeForQuoteMatch,
+} from "@/backend/ingest/plugins/ccra/verify-quotes";
+import {
+  GRID_GENERATION_GPC_REF,
+  isImportedWasteRef,
+  isOmittedGPCReference,
+} from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
+  namesRemovals,
   reconciliationTargets,
+  removalsTotals,
+  targetDeviation,
   type DroppedRowReason,
   type ExtractionSummary,
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
+import {
+  isActivityClass,
+  type ActivityClass,
+} from "@/util/GHGI/activity-class-rules";
 
 type GpcRow = {
   gpcRefNo: string;
@@ -54,7 +71,15 @@ export function canonicalGpcRefNo(
   if (!trimmed) return null;
   if (gpcRefScopes.has(trimmed)) {
     const refScope = gpcRefScopes.get(trimmed);
-    if (scope && refScope != null && String(refScope) !== scope) return null;
+    // A III.x.3 is never dropped or replaced here: the review shows the conflict.
+    if (
+      scope &&
+      refScope != null &&
+      String(refScope) !== scope &&
+      !isImportedWasteRef(trimmed)
+    ) {
+      return null;
+    }
     return trimmed;
   }
   if (scope && gpcRefScopes.has(`${trimmed}.${scope}`)) {
@@ -150,6 +175,11 @@ const HIERARCHY_TEXT = [...SECTOR_SUBSECTOR_HIERARCHY.entries()]
  * reference a row belongs to (enteric fermentation and managed manure are V.1; manure
  * left on pasture and N2O from soils are V.3).
  */
+const WASTE_DIRECTION: Record<string, string> = {
+  "1": " (generated and treated inside the city)",
+  "2": " (generated inside the city, treated outside)",
+  "3": " (generated outside the city, treated inside)",
+};
 const REFERENCE_TEXT = gpcTable
   .map((row) => {
     const scope = row.scope == null ? "no scope" : `scope ${row.scope}`;
@@ -159,7 +189,9 @@ const REFERENCE_TEXT = gpcTable
           .filter((option) => !option.startsWith("land-classification"))
           .join(", ")})`
       : "";
-    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${activities === " ()" ? "" : activities}`;
+    const direction = WASTE_DIRECTION[row.gpcRefNo.split(".")[2]] ?? "";
+    const wasteNote = row.gpcRefNo.startsWith("III.") ? direction : "";
+    return `- ${row.gpcRefNo}: ${slugToDisplay(row.sector)} > ${slugToDisplay(row.subsector)}, ${scope}${wasteNote}${activities === " ()" ? "" : activities}`;
   })
   .join("\n");
 
@@ -185,12 +217,43 @@ export type ExtractedRow = {
   subsector: string | null;
   /** GPC scope when present in the document (e.g. "1", "2", "3" for Scope 1/2/3). Fetched from uploaded file when available. */
   scope?: string | null;
+  /** Exact scope text emitted by extraction, before normalization. */
+  originalScope?: string | null;
   category: string | null;
   totalCO2e: number | null;
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;
   gpcRefNo?: string | null;
+  /**
+   * Where the reference came from. `document` is the model's claim, kept only
+   * when the reference text is found in the extracted text.
+   */
+  refSource?: "document" | "inferred" | null;
+  /**
+   * What the row measures. New extractions always write this key (a class or
+   * `null`); a stored row without the key predates this field.
+   */
+  activityClass?: ActivityClass | null;
+  /**
+   * Where the scope came from. `inferred` when an activity-class rule set or
+   * changed the scope; `document` when the row's reference is printed in the
+   * document. Unset when the scope is the model's own and no rule changed it.
+   */
+  scopeSource?: "document" | "inferred" | null;
+  /** Short verbatim quote the model gives for a III.x.3, in any language. */
+  directionEvidence?: string | null;
+  /**
+   * Whether the quote occurs in the extracted text. This proves the text exists,
+   * not what it means: it never decides anything.
+   */
+  directionEvidenceFound?: boolean | null;
+  /** Page of the extracted text, when extraction ran page by page. */
+  page?: number | null;
+  /** User decision on a row held for review (`mappingConfiguration.overrides`). */
+  reviewDecision?: "keep" | "reclassify" | "skip" | null;
+  /** Reference the model suggested, kept when the user chose another one. */
+  suggestedRefNo?: string | null;
   source?: string | null;
   /** Methodology name when present (e.g. Fuel Sales, Direct Measure, Geographic). Used to create ActivityValue. */
   methodology?: string | null;
@@ -221,6 +284,8 @@ export type ExtractedRow = {
   emissionFactorCH4?: number | null;
   emissionFactorN2O?: number | null;
   emissionFactorTotalCO2e?: number | null;
+  /** 1-based Excel row in the source sheet, when the file was parsed from xlsx. */
+  sourceRowNumber?: number | null;
 };
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
@@ -274,7 +339,10 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
-- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
+- gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
+- refSource (string): "document" when this row's reference number is printed in the document; "inferred" when you chose it yourself.
+- activityClass (string | null): what the row measures, decided from the row label, table title and section, never from scope or reference: "fuel_combustion" (fuel burned in the city), "grid_energy" (use of grid-supplied electricity, heat, steam or cooling), "td_losses" (transmission and distribution losses of grid energy), "grid_supply" (energy generated and supplied to the grid), "industrial_process" (IPPU industrial process), "product_use" (IPPU product use: refrigerants, air conditioning, lubricants, solvents), "other" (anything else).
+- directionEvidence (string | null): only when gpcRefNo is III.1.3, III.2.3, III.3.3 or III.4.3: a short exact quote from the row, its table heading or its section that says the waste comes from outside the city. Copy it word for word in the document's language; never translate or summarize. Null when the document has no such text.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
 - activityAmount (number | null): consumption/quantity value when table has such column.
@@ -298,13 +366,13 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 
 <example_output>
 {"rows": [
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
-  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
-  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
-  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "activityClass": "grid_energy", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "activityClass": "other", "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
+  {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
 ]}
 </example_output>`;
 
@@ -466,10 +534,11 @@ function mergeDropped(
  * Totals with a scope are never grand totals; sector totals were demoted per page.
  * A page that adds only notation-key rows with scope and reference (NO, IE, NE, C)
  * leaves the sum unchanged; it still joins the run as a continuation of the table.
+ * Inside one tier, a run that reaches a net total beats one that reaches only a gross
+ * total: the gross sum leaves out the forestry removals. GPC rows still rank first.
  * Without a candidate every page's rows are kept (fallback).
- * Exported for unit tests.
  */
-export function selectReconciledPages(
+function selectPages(
   input: PageResult[],
   targetYear?: number,
 ): ExtractionResult {
@@ -534,6 +603,8 @@ export function selectReconciledPages(
     rows: number;
     structured: number;
     deviation: number;
+    /** Within the review tolerance of a net total (forestry removals included). */
+    viaNet: boolean;
   };
   const tier = (run: Run): number =>
     (run.structured > 0 ? 0 : 2) +
@@ -541,6 +612,8 @@ export function selectReconciledPages(
   const better = (a: Run, b: Run): boolean => {
     if (tier(a) !== tier(b)) return tier(a) < tier(b);
     const inBand = tier(a) % 2 === 0;
+    // Same tier: the run that reaches a net total keeps the removals the other leaves out.
+    if (inBand && a.viaNet !== b.viaNet) return a.viaNet;
     if (inBand && a.structured !== b.structured) {
       return a.structured > b.structured;
     }
@@ -592,8 +665,8 @@ export function selectReconciledPages(
       rowCount += fresh.length;
       structured += fresh.filter((r) => r.scope && r.gpcRefNo).length;
       if (rowCount === 0) continue;
-      const deviations = allTotals.map(
-        (total) => Math.abs(sum - total) / Math.abs(total),
+      const deviations = allTotals.map((total) =>
+        targetDeviation(sum, total, targets.scale),
       );
       const eligible = allTotals.map(
         (total) =>
@@ -616,7 +689,21 @@ export function selectReconciledPages(
         previous[index] = d;
       });
       if (deviation > selectionTolerance) continue;
-      const run = { start, end, rows: rowCount, structured, deviation };
+      // allTotals lists the grand totals first, then the net ones.
+      const viaNet = deviations.some(
+        (d, index) =>
+          index >= grandTotals.length &&
+          eligible[index] &&
+          d <= RECONCILIATION_TOLERANCE,
+      );
+      const run = {
+        start,
+        end,
+        rows: rowCount,
+        structured,
+        deviation,
+        viaNet,
+      };
       if (!best || better(run, best)) best = run;
     }
   }
@@ -654,9 +741,8 @@ export function selectReconciledPages(
     // whole document reconciles with a reported total.
     const fallback = buildFallback();
     const wholeDeviation = Math.min(
-      ...allTotals.map(
-        (total) =>
-          Math.abs(fallback.summary.importedSum - total) / Math.abs(total),
+      ...allTotals.map((total) =>
+        targetDeviation(fallback.summary.importedSum, total, targets.scale),
       ),
     );
     logger.info(
@@ -707,6 +793,56 @@ export function selectReconciledPages(
   return buildFallback();
 }
 
+/** GPC reference of the AFOLU land-use rows, where the forestry removals live. */
+const REMOVALS_GPC_REF = /^V\.2(\.|$)/i;
+
+/**
+ * True when the rows hold a removals line item with a value: a V.2 reference, or a
+ * sub-sector or category that names forestry or removals. The sector alone does not
+ * count: the livestock rows sit under "Agriculture, Forestry And Other Land Use" too.
+ * A notation key (NE, NO) imports no amount, so it does not cover the removals.
+ */
+function hasRemovalsLineItem(rows: ExtractedRow[]): boolean {
+  return rows.some(
+    (row) =>
+      row.totalCO2e != null &&
+      row.totalCO2e !== 0 &&
+      ((row.gpcRefNo != null && REMOVALS_GPC_REF.test(row.gpcRefNo)) ||
+        [row.subsector, row.category].some(
+          (text) => text != null && namesRemovals(text),
+        )),
+  );
+}
+
+/**
+ * Record the removals totals and subtotals the document reports while the rows hold
+ * no removals line item, so the review screen can warn that the imported sum leaves
+ * them out.
+ */
+function withOrphanRemovals(result: ExtractionResult): ExtractionResult {
+  const removals = removalsTotals(
+    result.summary.reportedTotals,
+    result.summary.targetYear,
+  );
+  if (removals.length === 0 || hasRemovalsLineItem(result.rows)) return result;
+  return {
+    rows: result.rows,
+    summary: { ...result.summary, orphanRemovals: removals },
+  };
+}
+
+/**
+ * Choose the rows of one inventory table out of per-page extractions (see
+ * selectPages) and flag removals totals that have no line item.
+ * Exported for unit tests.
+ */
+export function selectReconciledPages(
+  input: PageResult[],
+  targetYear?: number,
+): ExtractionResult {
+  return withOrphanRemovals(selectPages(input, targetYear));
+}
+
 /**
  * Extract inventory rows from document text using the configured LLM.
  * Returns the rows only; use extractInventoryFromDocument for the reconciliation summary.
@@ -733,6 +869,107 @@ export async function extractInventoryFromDocument(
   documentContent: string,
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
+  const result = await extractRowsFromDocument(documentContent, options);
+  const rows = verifyRowProvenance(result.rows, documentContent);
+  // The activity-class rules can move a row onto or off a reference left out
+  // of the total (I.4.4), so the reconciliation sum is taken after them.
+  // Mismatch and deviation are derived from it on read (reconcileExtraction).
+  return {
+    ...result,
+    rows,
+    summary: { ...result.summary, importedSum: sumImported(rows) },
+  };
+}
+
+/** Numbers on a line without separators, so "1,188,394" reads as 1188394. */
+function lineNumbers(line: string): string[] {
+  return (line.match(/\d[\d.,\s]*\d|\d/g) ?? []).map((number) =>
+    number.replace(/[.,\s]/g, ""),
+  );
+}
+
+/** Escapes every regular expression metacharacter so text matches literally. */
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * True when the document prints the reference on the row's own line: the same
+ * line as its value or notation key, on its page when that is known. A legend or
+ * a table of contents elsewhere is not the document stating it for this row.
+ */
+function isReferenceOnRowLine(
+  row: ExtractedRow,
+  ref: string,
+  documentContent: string,
+): boolean {
+  const pageText = splitDocumentPages(documentContent).find(
+    (page) => page.page === row.page,
+  )?.text;
+  const pattern = new RegExp(`(?<![\\w.])${escapeRegExp(ref)}(?![\\w]|\\.\\d)`);
+  const value =
+    row.totalCO2e == null
+      ? null
+      : String(Math.abs(row.totalCO2e)).replace(/\./g, "");
+  return (pageText ?? documentContent).split("\n").some((rawLine) => {
+    const line = normalizeForQuoteMatch(rawLine);
+    if (!pattern.test(line)) return false;
+    const rest = line.replace(pattern, " ");
+    return value != null
+      ? lineNumbers(rest).includes(value)
+      : !!row.notationKey &&
+          new RegExp(`\\b${escapeRegExp(row.notationKey)}\\b`).test(rest);
+  });
+}
+
+/**
+ * Checks what the model said about each row against the extracted text. A claim
+ * of `document` stands only when the reference is on the row's own line. A quote
+ * is marked found or not found, or left unmarked when too short to tell; no
+ * result confirms a row. Exported for unit tests.
+ */
+export function verifyRowProvenance(
+  rows: ExtractedRow[],
+  documentContent: string,
+): ExtractedRow[] {
+  const text = normalizeForQuoteMatch(documentContent);
+  const checked = rows.map((row): ExtractedRow => {
+    const ref = row.gpcRefNo?.trim();
+    const stated =
+      !!ref &&
+      row.refSource === "document" &&
+      isReferenceOnRowLine(row, ref, documentContent);
+    const out: ExtractedRow = {
+      ...row,
+      refSource: ref ? (stated ? "document" : "inferred") : null,
+      directionEvidenceFound: row.directionEvidence
+        ? isQuoteInText(row.directionEvidence, text)
+        : null,
+    };
+    // Keep the original reference even if its scope conflicts. The review
+    // resolves the conflict instead of silently deriving a different one.
+    return out;
+  });
+  return fillMissingGpcRefNo(applyActivityClassRules(checked)).map((row) =>
+    row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
+  );
+}
+
+type SchemaState = { useSchema: boolean };
+
+/** A provider that cannot take the strict schema answers 400 and names it. */
+export function isSchemaRejection(err: unknown): boolean {
+  return (
+    err instanceof LLMError &&
+    err.code === LLMErrorCode.BAD_REQUEST &&
+    /response_format|json_schema|schema/i.test(err.message)
+  );
+}
+
+async function extractRowsFromDocument(
+  documentContent: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
   const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
@@ -756,6 +993,8 @@ export async function extractInventoryFromDocument(
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  // One state per extraction: the first schema rejection switches every later call.
+  const schemaState: SchemaState = { useSchema: true };
   const pages = splitDocumentPages(documentContent).filter((p) =>
     isCandidatePage(p.text),
   );
@@ -776,8 +1015,13 @@ export async function extractInventoryFromDocument(
         const extract = async () =>
           finalizeExtractedRows(
             normalizeExtractedRows(
-              await extractSegment(page.text, yearInstruction, false),
-            ),
+              await extractSegment(
+                page.text,
+                yearInstruction,
+                false,
+                schemaState,
+              ),
+            ).map((row) => ({ ...row, page: page.page })),
             year,
             { deferYearAssumption: true },
           );
@@ -842,6 +1086,7 @@ export async function extractInventoryFromDocument(
         documentContent,
         yearInstruction,
         options,
+        schemaState,
         { offset: pages.length, total: progressTotal },
       );
       const result = finalizeExtractedRows(
@@ -877,6 +1122,7 @@ export async function extractInventoryFromDocument(
     documentContent,
     yearInstruction,
     options,
+    schemaState,
   );
   return checkExtractionResult(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year),
@@ -899,7 +1145,8 @@ function countChunks(documentContent: string): number {
 async function extractByChunks(
   documentContent: string,
   yearInstruction: string,
-  options?: ExtractOptions,
+  options: ExtractOptions | undefined,
+  schemaState: SchemaState,
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
@@ -911,7 +1158,12 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegmentWithRetry(content, yearInstruction, false);
+    allRows = await extractSegmentWithRetry(
+      content,
+      yearInstruction,
+      false,
+      schemaState,
+    );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -926,7 +1178,8 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegmentWithRetry(chunk, segmentPrefix, true),
+      async (chunk) =>
+        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -955,14 +1208,17 @@ async function extractSegmentWithRetry(
   content: string,
   promptPrefix: string,
   isSegment: boolean,
+  schemaState: SchemaState,
 ): Promise<ExtractedRow[]> {
-  return extractSegment(content, promptPrefix, isSegment).catch((error) => {
-    logger.info(
-      { isSegment, err: error },
-      "Extraction call failed; retrying once",
-    );
-    return extractSegment(content, promptPrefix, isSegment);
-  });
+  return extractSegment(content, promptPrefix, isSegment, schemaState).catch(
+    (error) => {
+      logger.info(
+        { isSegment, err: error },
+        "Extraction call failed; retrying once",
+      );
+      return extractSegment(content, promptPrefix, isSegment, schemaState);
+    },
+  );
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -1014,7 +1270,7 @@ function checkExtractionResult(
     );
   }
 
-  return { rows: result, summary };
+  return withOrphanRemovals({ rows: result, summary });
 }
 
 /**
@@ -1083,46 +1339,63 @@ async function extractSegment(
   content: string,
   prefix: string,
   isSegment: boolean,
+  state: SchemaState,
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const started = Date.now();
-  const {
-    content: responseContent,
-    model,
-    usage,
-    finishReason,
-  } = await client.complete({
-    use: "pdf_extraction",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    jsonMode: true,
-    // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
-    // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
-    maxTokens: 16000,
-  });
-  logger.info(
-    {
-      isSegment,
-      model,
-      finishReason,
-      promptTokens: usage?.promptTokens,
-      completionTokens: usage?.completionTokens,
-      reasoningTokens: usage?.reasoningTokens,
-      durationMs: Date.now() - started,
-    },
-    "Extraction LLM call finished",
-  );
-  // A response cut off at the token limit is incomplete JSON. Fail the call so
-  // the page is retried and then reported as failed, never imported in part.
-  if (finishReason === "length") {
-    throw new LLMError(
-      "Extraction response was cut off at the token limit",
-      LLMErrorCode.BAD_REQUEST,
+  const call = async (structured: boolean): Promise<string> => {
+    const started = Date.now();
+    const { content, model, usage, finishReason } = await client.complete({
+      use: "pdf_extraction",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+      ...(structured
+        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
+        : { jsonMode: true }),
+      // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
+      // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
+      maxTokens: 16000,
+    });
+    logger.info(
+      {
+        isSegment,
+        model,
+        finishReason,
+        promptTokens: usage?.promptTokens,
+        completionTokens: usage?.completionTokens,
+        reasoningTokens: usage?.reasoningTokens,
+        durationMs: Date.now() - started,
+      },
+      "Extraction LLM call finished",
     );
+    // A response cut off at the token limit is incomplete JSON. Fail the call so
+    // the page is retried and then reported as failed, never imported in part.
+    if (finishReason === "length") {
+      throw new LLMError(
+        "Extraction response was cut off at the token limit",
+        LLMErrorCode.BAD_REQUEST,
+      );
+    }
+    return content;
+  };
+  let responseContent: string;
+  const structured = state.useSchema;
+  try {
+    responseContent = await call(structured);
+  } catch (err) {
+    if (!structured || !isSchemaRejection(err)) throw err;
+    // Concurrent chunks can all be rejected; the shared state warns once.
+    if (state.useSchema) {
+      state.useSchema = false;
+      logger.warn(
+        { use: "pdf_extraction" },
+        "Extraction structured output rejected; using jsonMode",
+      );
+    }
+    responseContent = await call(false);
   }
 
   const truncated =
@@ -1409,9 +1682,12 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     }
     if (typeof row.sector === "string") out.sector = row.sector;
     if (typeof row.subsector === "string") out.subsector = row.subsector;
-    if (typeof row.scope === "string" && !isPlaceholderOrEmpty(row.scope)) {
-      const normalized = normalizeScopeString(row.scope);
-      if (normalized) out.scope = normalized;
+    if (typeof row.scope === "string") {
+      out.originalScope = row.scope;
+      const normalized = isPlaceholderOrEmpty(row.scope)
+        ? null
+        : normalizeScopeString(row.scope);
+      out.scope = normalized || row.scope;
     }
     if (typeof row.category === "string") out.category = row.category;
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
@@ -1420,9 +1696,23 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       const n = parseFloat(normalizeNumberString(row.totalCO2e));
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
+    if (row.refSource === "document" || row.refSource === "inferred") {
+      out.refSource = row.refSource;
+    }
+    out.activityClass = isActivityClass(row.activityClass)
+      ? row.activityClass
+      : null;
     if (typeof row.gpcRefNo === "string") {
-      const ref = canonicalGpcRefNo(row.gpcRefNo, out.scope);
+      // A reference the document states is kept even if the scope disagrees:
+      // the review shows that conflict. verifyRowProvenance checks the claim.
+      const ref = canonicalGpcRefNo(row.gpcRefNo, undefined);
       if (ref) out.gpcRefNo = ref;
+    }
+    if (
+      typeof row.directionEvidence === "string" &&
+      !isPlaceholderOrEmpty(row.directionEvidence)
+    ) {
+      out.directionEvidence = row.directionEvidence.trim();
     }
     if (row.rowType === "line_item" || row.rowType === "subtotal") {
       out.rowType = row.rowType;
@@ -1593,11 +1883,11 @@ function scaleOrNull(
   return value == null ? value : value * multiplier;
 }
 
-/** Sum of imported values in tonnes, without rows left out of totals (I.4.4). */
-function sumImported(rows: ExtractedRow[]): number {
+/** Sum of imported values in tonnes, without rows left out of totals. */
+export function sumImported(rows: ExtractedRow[]): number {
   return rows.reduce(
     (sum, row) =>
-      row.gpcRefNo === GRID_GENERATION_GPC_REF || row.totalCO2e == null
+      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
         ? sum
         : sum + row.totalCO2e,
     0,

@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, HStack, Table, VStack } from "@chakra-ui/react";
+import { Box, Card, HStack, Table, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityQuery,
+  useGetMeedActionsQuery,
   useGetMeedReferenceFinanceFeasibilityQuery,
 } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
@@ -19,6 +20,11 @@ import {
 } from "../../components/MeedSkeletons";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { EmptyState } from "../results/components/EmptyState";
+import {
+  buildActionIndex,
+  isKnownSectorTag,
+  sectorTagLabel,
+} from "../results/components/actionCatalog";
 import { CityProfileCard } from "./components/CityProfileCard";
 import { FeasibilityRow } from "./components/FeasibilityRow";
 import { FinanceColumnHeader } from "./components/FinanceColumnHeader";
@@ -46,17 +52,33 @@ function FinancialFeasibilityContent(props: {
 }) {
   const { lng, cityId, inventoryId } = props;
   const { t } = useTranslation(lng, "meed-finance");
+  const { t: tResults } = useTranslation(lng, "meed-results");
 
   const { data, isLoading, isError, refetch } =
     useGetMeedReferenceFinanceFeasibilityQuery({ cityId }, { skip: !cityId });
   const { data: city } = useGetCityQuery(cityId, { skip: !cityId });
+  // The feasibility rows name actions in English only; the catalog carries
+  // the translations, so names are taken from there once it has loaded.
+  const { data: catalog } = useGetMeedActionsQuery(
+    { cityId },
+    { skip: !cityId },
+  );
 
   const [activeRoute, setActiveRoute] = useState<RouteKey | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  const rows = useMemo(() => extractFeasibilityRows(data), [data]);
+  const rows = useMemo(() => {
+    const index = buildActionIndex(catalog, lng);
+    return extractFeasibilityRows(data).map((row) => {
+      const name = index.get(row.action_id)?.actionName;
+      const sector_label = isKnownSectorTag(row.sector)
+        ? sectorTagLabel(row.sector, tResults)
+        : undefined;
+      return { ...row, action_name: name ?? row.action_name, sector_label };
+    });
+  }, [data, catalog, lng, tResults]);
 
   const routeCounts = useMemo(() => {
     const counts: Partial<Record<RouteKey, number>> = {};
@@ -165,64 +187,75 @@ function FinancialFeasibilityContent(props: {
       />
 
       <Card.Root overflow="hidden" borderColor="border.neutral">
-        <Table.Root id={TABLE_ID} size="md" tableLayout="fixed">
-          <Table.Header>
-            <Table.Row bg="background.neutral">
-              <FinanceColumnHeader label={t("column-action")} width={wAction} />
-              <FinanceColumnHeader label={t("column-sector")} width={wSector} />
-              <FinanceColumnHeader label={t("column-route")} width={wRoute} />
-              <FinanceColumnHeader
-                label={t("column-score")}
-                width={wScore}
-                align="end"
-                onSort={() =>
-                  setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
-                }
-                active
-                direction={sortDirection}
-                sortAriaLabel={t("sort-by-column", {
-                  column: t("column-score"),
-                })}
-                tip={t("score-tip")}
-                tipAriaLabel={t("score-tip-label")}
-              />
-              <FinanceColumnHeader
-                label={t("column-fund-access")}
-                width={wFunds}
-                align="end"
-                tip={t("fund-access-tip")}
-                tipAriaLabel={t("fund-access-tip-label")}
-              />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {visibleRows.length === 0 ? (
-              <Table.Row>
-                <Table.Cell colSpan={5}>
-                  <BodyMedium color="content.tertiary" textAlign="center">
-                    {t("no-route-matches")}
-                  </BodyMedium>
-                </Table.Cell>
-              </Table.Row>
-            ) : (
-              visibleRows.map((row) => (
-                <FeasibilityRow
-                  key={row.action_id}
-                  row={row}
-                  expanded={expandedId === row.action_id}
-                  onToggle={() =>
-                    setExpandedId((current) =>
-                      current === row.action_id ? null : row.action_id,
-                    )
-                  }
-                  cityId={cityId}
-                  cityName={cityName}
-                  t={t}
+        {/* Fixed column shares need a floor: below it the table scrolls
+            sideways rather than breaking words. */}
+        <Box overflowX="auto">
+          <Table.Root id={TABLE_ID} size="md" tableLayout="fixed" minW="720px">
+            <Table.Header>
+              <Table.Row bg="background.neutral">
+                <FinanceColumnHeader
+                  label={t("column-action")}
+                  width={wAction}
                 />
-              ))
-            )}
-          </Table.Body>
-        </Table.Root>
+                <FinanceColumnHeader
+                  label={t("column-sector")}
+                  width={wSector}
+                />
+                <FinanceColumnHeader label={t("column-route")} width={wRoute} />
+                <FinanceColumnHeader
+                  label={t("column-score")}
+                  width={wScore}
+                  align="end"
+                  onSort={() =>
+                    setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+                  }
+                  active
+                  direction={sortDirection}
+                  sortAriaLabel={t("sort-by-column", {
+                    column: t("column-score"),
+                  })}
+                  tip={t("score-tip")}
+                  tipAriaLabel={t("score-tip-label")}
+                />
+                <FinanceColumnHeader
+                  label={t("column-fund-access")}
+                  width={wFunds}
+                  align="end"
+                  tip={t("fund-access-tip")}
+                  tipAriaLabel={t("fund-access-tip-label")}
+                />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {visibleRows.length === 0 ? (
+                <Table.Row>
+                  <Table.Cell colSpan={5}>
+                    <BodyMedium color="content.tertiary" textAlign="center">
+                      {t("no-route-matches")}
+                    </BodyMedium>
+                  </Table.Cell>
+                </Table.Row>
+              ) : (
+                visibleRows.map((row) => (
+                  <FeasibilityRow
+                    key={row.action_id}
+                    row={row}
+                    expanded={expandedId === row.action_id}
+                    onToggle={() =>
+                      setExpandedId((current) =>
+                        current === row.action_id ? null : row.action_id,
+                      )
+                    }
+                    cityId={cityId}
+                    cityName={cityName}
+                    lng={lng}
+                    t={t}
+                  />
+                ))
+              )}
+            </Table.Body>
+          </Table.Root>
+        </Box>
       </Card.Root>
 
       <HStack justifyContent="space-between" flexWrap="wrap" gap="s">

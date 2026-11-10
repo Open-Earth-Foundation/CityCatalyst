@@ -1,18 +1,21 @@
 "use client";
 import React from "react";
-import { HStack, VStack } from "@chakra-ui/react";
+import { HStack, Icon, VStack } from "@chakra-ui/react";
+import { LuSlidersHorizontal } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodySmall } from "@/components/package/Texts/Body";
+import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
+import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { TextLink } from "./TextLink";
 
-/** Names shown before "and N more", so the strip stays on two lines. */
+/** Names shown before "and N more", so the line stays short. */
 const MAX_NAMES = 5;
 
 /**
- * Above the list: what this ranking is built on, and the two moves a city
- * has: run a new ranking with its preferences, or go back to the default.
- * After an update it says how many actions changed place, so the effect of
- * the new ranking is visible where the list starts.
+ * The "change the order" row of the list's controls: the button that opens
+ * the preferences, and what the order uses now (the suggested order, or the
+ * city's preferences by name). After an update it says how many actions
+ * changed place, so the effect shows where the list starts.
  */
 export function RankingBasis({
   priorities,
@@ -22,10 +25,10 @@ export function RankingBasis({
   onDefault,
   t,
 }: {
-  /** Labels of the city's chosen priorities; empty for the default ranking. */
+  /** Labels of the city's chosen priorities; empty for the suggested order. */
   priorities: string[];
   customWeights: boolean;
-  /** Set right after the city updated the ranking; null otherwise. */
+  /** Set right after the city updated the list; null otherwise. */
   movedAfterUpdate: number | null;
   onAdjust: () => void;
   onDefault: () => void;
@@ -42,23 +45,39 @@ export function RankingBasis({
 
   return (
     <HStack
-      data-testid="ranking-basis"
-      justifyContent="space-between"
-      alignItems={{ base: "flex-start", md: "center" }}
-      flexDirection={{ base: "column", md: "row" }}
       gap="m"
-      px="xl"
-      py="m"
-      bg="background.neutral"
-      borderRadius="rounded"
+      rowGap="s"
+      alignItems="center"
+      flexWrap="wrap"
+      minW={0}
+      flex="1"
     >
-      <VStack alignItems="flex-start" gap="xs" minW={0} aria-live="polite">
-        <BodySmall color="content.primary" fontWeight="semibold">
-          {isDefault ? t("next-basis-default") : t("next-basis-custom")}
+      <MeedButton
+        variant="outlined"
+        minW="auto"
+        h="36px"
+        px="m"
+        leftIcon={<Icon as={LuSlidersHorizontal} boxSize="16px" />}
+        onClick={onAdjust}
+        _focusVisible={FOCUS_RING}
+        data-testid="open-preferences"
+      >
+        {t("next-customize")}
+      </MeedButton>
+      <VStack
+        data-testid="ranking-basis"
+        alignItems="flex-start"
+        gap="0"
+        minW="200px"
+        flex="1"
+        aria-live="polite"
+      >
+        <BodySmall color="content.primary">
+          <strong>
+            {isDefault ? t("next-basis-default") : t("next-basis-custom")}
+          </strong>
+          {!isDefault && detail ? `: ${detail}` : ""}
         </BodySmall>
-        {!isDefault && (
-          <BodySmall color="content.secondary">{detail}</BodySmall>
-        )}
         {movedAfterUpdate !== null && (
           <BodySmall color="content.secondary">
             {movedAfterUpdate === 0
@@ -67,14 +86,11 @@ export function RankingBasis({
           </BodySmall>
         )}
       </VStack>
-      <HStack gap="l" flexShrink={0} flexWrap="wrap">
-        <TextLink onClick={onAdjust}>{t("next-customize")}</TextLink>
-        {!isDefault && (
-          <TextLink arrow={false} muted onClick={onDefault}>
-            {t("next-basis-back-default")}
-          </TextLink>
-        )}
-      </HStack>
+      {!isDefault && (
+        <TextLink arrow={false} muted onClick={onDefault}>
+          {t("next-basis-back-default")}
+        </TextLink>
+      )}
     </HStack>
   );
 }

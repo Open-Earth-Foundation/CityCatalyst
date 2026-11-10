@@ -203,21 +203,22 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
         },
       },
     });
-    if (!inventory) {
-      logger.error({ cityIds }, "[UserInviteAccept] No inventory found");
+    if (inventory) {
+      await user.update({
+        defaultInventoryId: inventory.inventoryId,
+        defaultCityId: inventory.cityId,
+      });
+      logger.info(
+        {
+          userId: user.userId,
+          inventoryId: inventory.inventoryId,
+        },
+        "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
+      );
+    } else {
+      logger.warn({ cityIds }, "[UserInviteAccept] No inventory found");
       throw new createHttpError.InternalServerError("No inventory found");
     }
-    await user.update({
-      defaultInventoryId: inventory.inventoryId,
-      defaultCityId: inventory.cityId,
-    });
-    logger.info(
-      {
-        userId: user.userId,
-        inventoryId: inventory.inventoryId,
-      },
-      "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId",
-    );
   }
 
   // Look up the accepted cities directly (not scoped to CityUser membership,

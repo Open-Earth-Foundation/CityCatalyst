@@ -6,7 +6,7 @@
 
 1. `detect` accepts PDF only, up to 20 MiB (`CCRA_MAX_PDF_BYTES`). This limit is separate from the inventory limit. The file must start with `%PDF-`, and missing bytes fail the item.
 2. `parse` sends the item bytes to `convertPdfUrlToMarkdown` as a `data:` URL. An optional `resolveDocumentUrl` replaces that URL.
-3. `adapt` splits the OCR output by page and heading, without running headers and footers, then calls the LLM once per field group and chunk. The model is `LLM_EXTRACTION_MODEL`, and `LLM_CHUNK_CONCURRENCY` caps parallel calls.
+3. `adapt` splits the OCR output by page and heading, without running headers and footers, then calls the LLM once per field group and chunk. The model is the `crva_extraction` role of `app/llm_config.yaml`, and `LLM_CHUNK_CONCURRENCY` caps parallel calls.
 4. `adapt` drops each value whose quote is not in the body of its cited page, and reports it in `bundle.dropped`.
 5. `validate` warns about uncovered fields, source data over 10 years old (X.1), sources with no year, and years that are in the future or not in the quote.
 6. `approvalPolicy` always returns `review`. `reviewSummary` returns the bundle, coverage counts and warnings. `serializeReviewDraft` and `hydrateReviewDraft` return a JSON clone of the bundle. The bundle stays in `reviewSummary` until #3370 gives it another home.

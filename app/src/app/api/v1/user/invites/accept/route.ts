@@ -21,11 +21,6 @@
  *                 format: email
  *               token:
  *                 type: string
- *               cityIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
  *     responses:
  *       200:
  *         description: Invites accepted and membership created.

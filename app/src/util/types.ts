@@ -343,7 +343,6 @@ export interface AcceptInviteResponse {
 
 export interface AcceptInviteRequest {
   email: string;
-  cityIds: string[];
   token: string;
 }
 

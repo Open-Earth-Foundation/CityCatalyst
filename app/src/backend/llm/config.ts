@@ -50,7 +50,10 @@ type ParsedModel = z.infer<typeof modelSchema>;
 
 let cachedFileConfig: LLMFileConfig | undefined;
 
-/** Path of llm_config.yaml: LLM_CONFIG_PATH when set, else the file in the app root. */
+/**
+ * Path of llm_config.yaml: LLM_CONFIG_PATH when set, else `llm_config.yaml` in the process working
+ * directory (`process.cwd()`), which is the app root in dev, in Jest and in the container.
+ */
 export function resolveLLMConfigPath(): string {
   return (
     process.env.LLM_CONFIG_PATH?.trim() ||

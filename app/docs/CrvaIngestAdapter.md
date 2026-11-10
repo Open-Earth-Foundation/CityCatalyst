@@ -11,7 +11,7 @@
 5. `validate` warns about uncovered fields, source data over 10 years old (X.1), sources with no year, and years that are in the future or not in the quote.
 6. `approvalPolicy` always returns `review`. `reviewSummary` returns the bundle, coverage counts and warnings. `serializeReviewDraft` and `hydrateReviewDraft` return a JSON clone of the bundle. The bundle stays in `reviewSummary` until #3370 gives it another home.
 
-These fail the item: OCR output with no text or with more page markers than pages, any LLM `finish_reason` other than `stop`, invalid JSON, and an OCR failure. The check reads `raw.choices[0].finish_reason`. Provider failures keep the core code `validation_failed`, and their `errorLog` starts with `ocr_failed:` or `llm_failed:`. Replace it with `finishReason` after PR #3364 (CC-1191) merges.
+These fail the item: OCR output with no text or with more page markers than pages, any LLM `finish_reason` other than `stop`, invalid JSON, and an OCR failure. The check reads `result.finishReason`. Provider failures keep the core code `validation_failed`, and their `errorLog` starts with `ocr_failed:` or `llm_failed:`.
 
 ## Covers
 

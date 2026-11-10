@@ -229,10 +229,7 @@ describe("cut-off response on the chunk path", () => {
   );
 });
 
-describe("reasoning effort", () => {
-  const sentEffort = () =>
-    (complete.mock.calls[0][0] as { reasoningEffort?: string }).reasoningEffort;
-
+describe("LLM role", () => {
   it("calls the LLM with the pdf_extraction role", async () => {
     mockPages({ content: JSON.stringify({ rows: [] }) });
     await extractInventoryFromDocument(document, { targetYear: 2021 });
@@ -241,12 +238,6 @@ describe("reasoning effort", () => {
     expect(options).not.toHaveProperty("model");
     expect(options).not.toHaveProperty("temperature");
     expect(options).not.toHaveProperty("reasoningEffort");
-  });
-
-  it("is left to the provider when unset", async () => {
-    mockPages({ content: JSON.stringify({ rows: [] }) });
-    await extractInventoryFromDocument(document, { targetYear: 2021 });
-    expect(sentEffort()).toBeUndefined();
   });
 });
 

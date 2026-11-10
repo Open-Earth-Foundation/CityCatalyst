@@ -532,18 +532,6 @@ export function ConceptNoteWorkspace({
               }
               onOpenDraft={() => setTab("draft")}
               onOpenFundingSetup={() => void openFundingSetup()}
-              activeTab={tab}
-              hasDocument={draftHasContent}
-              suggestionRevision={JSON.stringify([
-                run.updated_at,
-                contextStatus.state,
-                draft?.status,
-                draft?.chapters.map((chapter) => [
-                  chapter.chapter_id,
-                  chapter.revision_number,
-                  chapter.open_gap_count,
-                ]),
-              ])}
             />
 
             <Tabs.Root

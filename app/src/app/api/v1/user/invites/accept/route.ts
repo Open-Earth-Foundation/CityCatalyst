@@ -14,7 +14,7 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, token, cityIds]
+ *             required: [email, token]
  *             properties:
  *               email:
  *                 type: string
@@ -92,22 +92,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
-  const invites = await db.models.CityInvite.findAll({
-    where: {
-      inviteId: tokenContent.inviteId,
-      email,
-      status: InviteStatus.PENDING,
-    },
-  });
-  const cityIds = invites.map((i) => i.cityId!);
-  logger.info(
-    {
-      count: invites.length,
-      cityIds,
-    },
-    "[UserInviteAccept] Found invites",
-  );
-
   if (!process.env.VERIFICATION_TOKEN_SECRET) {
     logger.error("[UserInviteAccept] VERIFICATION_TOKEN_SECRET missing");
     throw createHttpError.InternalServerError("Configuration error");
@@ -131,11 +115,9 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     if (invites.length === 0) {
       logger.warn(
         { inviteId: tokenContent.inviteId, email },
-        "[UserInviteAccept] No pending invites match token",
+        "[UserInviteAccept] No invites match token",
       );
-      throw new createHttpError.NotFound(
-        "No pending invites found for this token",
-      );
+      throw new createHttpError.NotFound("No invites found for this token");
     }
     const cityIds = invites.map((i) => i.cityId!);
     logger.info(

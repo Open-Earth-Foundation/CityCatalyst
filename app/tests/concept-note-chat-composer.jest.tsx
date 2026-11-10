@@ -54,7 +54,6 @@ jest.unstable_mockModule(
 );
 // Composer behavior only; the surrounding chat surfaces are out of scope.
 for (const [path, name] of [
-  ["chat-suggestions", "ChatSuggestions"],
   ["chat-progress", "ChatProgress"],
   ["drafting-progress-card", "DraftingProgressCard"],
   ["chat-welcome", "ChatWelcome"],

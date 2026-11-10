@@ -43,7 +43,6 @@ import {
 import { ChatProgress } from "./chat-progress";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
-import { ChatSuggestions } from "./chat-suggestions";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
@@ -93,9 +92,6 @@ interface ConceptNoteChatPanelProps {
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
   onDraftOverviewComplete?: () => void;
-  activeTab?: "draft" | "structure" | "context";
-  suggestionRevision?: string;
-  hasDocument?: boolean;
 }
 
 interface ContextStatusNoticeProps {
@@ -256,9 +252,6 @@ export function ConceptNoteChatPanel({
   onOpenDraft,
   onOpenFundingSetup,
   onDraftOverviewComplete,
-  activeTab = "draft",
-  suggestionRevision = "",
-  hasDocument = false,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -721,23 +714,6 @@ export function ConceptNoteChatPanel({
           flexShrink={0}
           onSubmit={submitMessage}
         >
-          <Box mb={!chatDisabled && threadId ? 3 : 0}>
-            {!chatDisabled && threadId && !messages.at(-1)?.choices && (
-              <ChatSuggestions
-                runId={runId}
-                threadId={threadId}
-                lng={lng}
-                tab={activeTab}
-                revision={suggestionRevision}
-                lastMessageId={messages.at(-1)?.id}
-                hasDocument={hasDocument}
-                onSelect={(question) => {
-                  setInput(question);
-                  inputRef.current?.focus();
-                }}
-              />
-            )}
-          </Box>
           <Flex align="flex-end" gap={3}>
             <Textarea
               data-testid="concept-note-chat-input"

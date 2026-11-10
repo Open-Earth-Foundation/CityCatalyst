@@ -191,3 +191,26 @@ it("confirms when every row will be imported", () => {
   expect(container.textContent).toContain('import-rows-all-ok:{"count":3}');
   expect(container.querySelector("table")).toBeNull();
 });
+
+it("lets keyboard users reach the inferred-scope info icon", () => {
+  preview = {
+    totalRows: 1,
+    importedRows: 1,
+    skippedRows: 0,
+    skippedByIssue: {},
+    rows: [],
+    inferredScopeRows: [
+      { rowNumber: 2, gpcRefNo: "I.6.2", scope: "2", originalScope: "1" },
+    ],
+  };
+  render();
+
+  const icon = container.querySelector(
+    '[data-testid="import-inferred-scope"] [role="img"]',
+  );
+  expect(icon).not.toBeNull();
+  expect(icon!.getAttribute("tabindex")).toBe("0");
+  expect(icon!.getAttribute("aria-label")).toContain(
+    "import-inferred-scope-row-overridden",
+  );
+});

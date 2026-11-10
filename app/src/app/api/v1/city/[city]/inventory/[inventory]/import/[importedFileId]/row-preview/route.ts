@@ -60,6 +60,26 @@
  *                       type: integer
  *                     skippedRows:
  *                       type: integer
+ *                     inferredScopeRows:
+ *                       type: array
+ *                       description: |
+ *                         Imported rows whose scope was set from the row's
+ *                         activity type, not read from the document. Rows held
+ *                         for a decision are not listed.
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           rowNumber:
+ *                             type: integer
+ *                           gpcRefNo:
+ *                             type: string
+ *                           scope:
+ *                             type: string
+ *                             nullable: true
+ *                           originalScope:
+ *                             type: string
+ *                             nullable: true
+ *                             description: The extraction's own scope, only when it differs from scope.
  *                     rows:
  *                       type: array
  *                       items:
@@ -92,6 +112,7 @@
  *                               - omitted-from-total
  *                               - reported-apart-from-total
  *                               - direction-unconfirmed
+ *                               - excluded-reference-unconfirmed
  *                               - reference-conflict
  *                               - skipped-in-review
  *       400:

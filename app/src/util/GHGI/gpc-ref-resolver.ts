@@ -201,6 +201,27 @@ export function taxonomyScope(gpcRefNo: string): number | undefined {
 }
 
 /**
+ * Reference for a sub-sector at a given scope, or null when it has none.
+ * Scope comes from the table's `scope` field, never from the reference's last
+ * digit (III.1.2 is scope 3).
+ */
+export function refForScope(
+  sector: string,
+  subsector: string,
+  scope: 1 | 2 | 3,
+): string | null {
+  const sectorSlug = mapToCanonicalSlug("sector", sector);
+  const subsectorSlug = mapToCanonicalSlug("subsector", subsector);
+  const row = table.find(
+    (r) =>
+      normalizeToSlug(r.sector) === sectorSlug &&
+      normalizeToSlug(r.subsector) === subsectorSlug &&
+      r.scope === scope,
+  );
+  return row?.gpcRefNo ?? null;
+}
+
+/**
  * Resolve a missing GPC ref from the raw sector, sub-sector, fuel, and scope
  * labels, including "On-road > Passenger car" style splits.
  */

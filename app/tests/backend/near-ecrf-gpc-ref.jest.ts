@@ -146,7 +146,9 @@ describe("near-eCRF missing GPC ref", () => {
         [GHGS_TOTAL]: null,
       }),
     );
-    expect(rows).toHaveLength(0);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].totalCO2e).toBeNull();
+    expect(rows[0].sourceRowNumber).toBe(2);
     expect(warnings[0]).toContain("no emission values or notation key");
     expect(warnings[0]).toContain("Energy generation");
   });

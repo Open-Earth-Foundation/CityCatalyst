@@ -100,9 +100,22 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     where: {
       inviteId: tokenContent.inviteId,
       email,
-      status: InviteStatus.PENDING,
+      [Op.or]: [
+        { status: InviteStatus.PENDING },
+        // reopening the link after accepting is a no-op success
+        { status: InviteStatus.ACCEPTED, userId: session.user.id },
+      ],
     },
   });
+  if (invites.length === 0) {
+    logger.warn(
+      { inviteId: tokenContent.inviteId, email },
+      "[UserInviteAccept] No pending invites match token",
+    );
+    throw new createHttpError.NotFound(
+      "No pending invites found for this token",
+    );
+  }
   const cityIds = invites.map((i) => i.cityId!);
   logger.info(
     {

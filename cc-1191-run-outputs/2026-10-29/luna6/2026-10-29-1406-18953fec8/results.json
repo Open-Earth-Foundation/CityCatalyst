@@ -1,0 +1,438 @@
+{
+  "measuredAt": "2026-10-29T14:06:48.524Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-016",
+      "file": "Mersin, Türkiye 2023.pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-016",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 43,
+        "chars": 90955,
+        "ms": 8850
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 43
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 94885,
+          "extractedRows": 46,
+          "failedPages": [],
+          "usage": {
+            "calls": 21,
+            "promptTokens": 147048,
+            "completionTokens": 13290,
+            "reasoningTokens": 4553,
+            "lengthStops": 0,
+            "maxCompletionTokens": 8254
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 402835,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 849213,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 136268,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 134797,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 701480,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 112562,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 3731656,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 823724,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 75030,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 59300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 793449,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 107384,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 17231,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 6322,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 43318,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 2966885,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 5887,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 58550,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 129,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 355600,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 9,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 187400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 3840793,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 152018,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 679307,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -1604225,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 212488,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 40,
+          "omittedRows": 1,
+          "total": 14055961,
+          "byScope": {
+            "1": 11233060,
+            "2": 2481801,
+            "3": 341100
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.3.1",
+            "I.3.2",
+            "I.3.3",
+            "I.4.1",
+            "I.4.4",
+            "I.5.1",
+            "I.5.2",
+            "I.5.3",
+            "I.6.1",
+            "I.6.2",
+            "I.6.3",
+            "I.7.1",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1",
+            "II.3.1",
+            "II.3.2",
+            "II.3.3",
+            "II.4.1",
+            "II.5.1",
+            "II.5.2",
+            "III.1.1",
+            "III.1.2",
+            "III.2.1",
+            "III.2.2",
+            "III.3.1",
+            "III.3.2",
+            "III.4.1",
+            "III.4.2",
+            "IV.1",
+            "IV.2",
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 14056006,
+            "storedTotal": 14055961,
+            "totalDiffPct": -0.00032014784285094925,
+            "totalWithinTolerance": true,
+            "notationScored": 9,
+            "notationRecovered": 4,
+            "distractorsStored": [
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "GPC tables for 2019, 2020, 2021 and 2022 (same layout)",
+                "failureMode": "Wrong year imported."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Sector-level summary of the same 2023 table",
+                "failureMode": "Double count, or total inflated by I.4.4 (793,449)."
+              },
+              {
+                "valueT": 9,
+                "gpc": "III.3.2",
+                "what": "Population and area",
+                "failureMode": "Non-emission numbers stored."
+              }
+            ],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

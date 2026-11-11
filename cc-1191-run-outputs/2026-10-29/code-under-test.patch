@@ -1,0 +1,199 @@
+diff --git a/app/src/backend/InventoryExtractionService.ts b/app/src/backend/InventoryExtractionService.ts
+index 0e1ab0b3f..4391269f7 100644
+--- a/app/src/backend/InventoryExtractionService.ts
++++ b/app/src/backend/InventoryExtractionService.ts
+@@ -1068,7 +1068,13 @@ async function extractSegment(
+   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
+ 
+   const client = createLLMClient();
+-  const { content: responseContent } = await client.complete({
++  const started = Date.now();
++  const {
++    content: responseContent,
++    model,
++    usage,
++    finishReason,
++  } = await client.complete({
+     // Table extraction needs a stronger model than column mapping (CC-1008:
+     // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+     model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
+@@ -1079,7 +1085,29 @@ async function extractSegment(
+     jsonMode: true,
+     temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+     maxTokens: 16000,
++    reasoningEffort:
++      process.env.LLM_EXTRACTION_REASONING_EFFORT?.trim() || undefined,
+   });
++  logger.info(
++    {
++      isSegment,
++      model,
++      finishReason,
++      promptTokens: usage?.promptTokens,
++      completionTokens: usage?.completionTokens,
++      reasoningTokens: usage?.reasoningTokens,
++      durationMs: Date.now() - started,
++    },
++    "Extraction LLM call finished",
++  );
++  // A response cut off at the token limit is incomplete JSON. Fail the call so
++  // the page is retried and then reported as failed, never imported in part.
++  if (finishReason === "length") {
++    throw new LLMError(
++      "Extraction response was cut off at the token limit",
++      LLMErrorCode.BAD_REQUEST,
++    );
++  }
+ 
+   const truncated =
+     responseContent.length > EXTRACTION_LOG_LIMIT
+@@ -1188,27 +1216,16 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
+   try {
+     parsed = JSON.parse(jsonStr);
+   } catch {
+-    // Truncated response: try closing {"rows": [ ... with ]}
+-    const trimmedEnd = jsonStr.trimEnd();
+-    if (trimmedEnd.endsWith("}") && jsonStr.includes('"rows"')) {
+-      try {
+-        parsed = JSON.parse(trimmedEnd + "]}");
+-        logger.debug("Repaired truncated extraction JSON by appending ]}");
+-      } catch {
+-        /* ignore */
+-      }
+-    }
+-    if (parsed === undefined) {
+-      // Last resort: find a top-level JSON array
+-      const arrayStart = jsonStr.indexOf("[");
+-      if (arrayStart >= 0) {
+-        const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+-        if (end > 0) {
+-          try {
+-            parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+-          } catch {
+-            /* ignore */
+-          }
++    // A cut-off response is not repaired (closing it would drop rows silently).
++    // Last resort: find a complete top-level JSON array
++    const arrayStart = jsonStr.indexOf("[");
++    if (arrayStart >= 0) {
++      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
++      if (end > 0) {
++        try {
++          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
++        } catch {
++          /* ignore */
+         }
+       }
+     }
+diff --git a/app/src/backend/llm/client.ts b/app/src/backend/llm/client.ts
+index 6549e14d0..76a8e580e 100644
+--- a/app/src/backend/llm/client.ts
++++ b/app/src/backend/llm/client.ts
+@@ -93,6 +93,8 @@ export function createLLMClient(
+               model,
+               promptTokens: result.usage.promptTokens,
+               completionTokens: result.usage.completionTokens,
++              reasoningTokens: result.usage.reasoningTokens,
++              finishReason: result.finishReason,
+             },
+             "LLM complete response",
+           );
+diff --git a/app/src/backend/llm/openai-adapter.ts b/app/src/backend/llm/openai-adapter.ts
+index 6160a888d..63afcb75b 100644
+--- a/app/src/backend/llm/openai-adapter.ts
++++ b/app/src/backend/llm/openai-adapter.ts
+@@ -13,14 +13,14 @@ import type {
+ import { LLMError, LLMErrorCode } from "./types";
+ 
+ /**
+- * Reasoning models (gpt-5 family, o-series) accept only the default temperature and
++ * Reasoning models (gpt-5 and later, o-series) accept only the default temperature and
+  * answer 400 "temperature does not support 0 with this model" to any other value.
+  * OpenRouter drops the parameter silently, the OpenAI API does not. The provider
+  * prefix (`openai/gpt-5.6-luna`) is ignored.
+  */
+ export function supportsCustomTemperature(model: string): boolean {
+   const name = model.split("/").pop() ?? model;
+-  return !/^(gpt-5|o\d)/i.test(name);
++  return !/^(gpt-[5-9]|o\d)/i.test(name);
+ }
+ 
+ function toOpenAIRole(
+@@ -72,10 +72,13 @@ export async function openaiComplete(
+ 
+   const model = options.model ?? config.model;
+   // Some models (e.g. gpt-4o-mini) only support default temperature (1); omit when 0.1 to avoid 400
++  const customTemperature = supportsCustomTemperature(model);
+   const sendTemperature =
+     options.temperature !== undefined &&
+     options.temperature !== 0.1 &&
+-    supportsCustomTemperature(model);
++    customTemperature;
++  // Only reasoning models (the ones without custom temperature) take reasoning_effort.
++  const sendReasoningEffort = !!options.reasoningEffort && !customTemperature;
+ 
+   const body: OpenAI.Chat.ChatCompletionCreateParams = {
+     model,
+@@ -89,6 +92,10 @@ export async function openaiComplete(
+       max_completion_tokens: options.maxTokens,
+     }),
+     ...(options.jsonMode && { response_format: { type: "json_object" } }),
++    ...(sendReasoningEffort && {
++      reasoning_effort:
++        options.reasoningEffort as OpenAI.Chat.ChatCompletionCreateParams["reasoning_effort"],
++    }),
+   };
+ 
+   const controller = new AbortController();
+@@ -108,10 +115,18 @@ export async function openaiComplete(
+           promptTokens: response.usage.prompt_tokens,
+           completionTokens: response.usage.completion_tokens,
+           totalTokens: response.usage.total_tokens,
++          reasoningTokens:
++            response.usage.completion_tokens_details?.reasoning_tokens,
+         }
+       : undefined;
+ 
+-    return { content, usage, raw: response };
++    return {
++      content,
++      model: response.model ?? model,
++      usage,
++      finishReason: choice?.finish_reason ?? undefined,
++      raw: response,
++    };
+   } catch (err) {
+     clearTimeout(timeoutId);
+     const msg = err instanceof Error ? err.message : String(err);
+diff --git a/app/src/backend/llm/types.ts b/app/src/backend/llm/types.ts
+index 4cf35f5e8..57560b0ed 100644
+--- a/app/src/backend/llm/types.ts
++++ b/app/src/backend/llm/types.ts
+@@ -21,12 +21,16 @@ export interface LLMCompleteOptions {
+   maxTokens?: number;
+   /** Ask for JSON output; adapter may set response_format / schema hint where supported. Caller still parses. */
+   jsonMode?: boolean;
++  /** Reasoning effort (e.g. "low", "medium", "high") for reasoning models; ignored by other models. Provider default if not set. */
++  reasoningEffort?: string;
+ }
+ 
+ export interface LLMUsage {
+   promptTokens?: number;
+   completionTokens?: number;
+   totalTokens?: number;
++  /** Part of completionTokens spent on hidden reasoning (reasoning models only). */
++  reasoningTokens?: number;
+ }
+ 
+ export interface LLMCompleteResult {
+@@ -34,6 +38,10 @@ export interface LLMCompleteResult {
+   content: string;
+   /** Token usage when available. */
+   usage?: LLMUsage;
++  /** Model that answered, as reported by the provider. */
++  model?: string;
++  /** Why the model stopped, e.g. "stop" or "length" (cut off at the token limit). */
++  finishReason?: string;
+   /** Raw provider response for debugging; avoid logging. */
+   raw?: unknown;
+ }

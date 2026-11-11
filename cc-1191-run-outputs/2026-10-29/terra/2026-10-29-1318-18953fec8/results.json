@@ -1,0 +1,128 @@
+{
+  "measuredAt": "2026-10-29T13:18:43.876Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6.1-terra",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 1,
+    "llmOutputPerMTok": 5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-009",
+      "file": "Toronto - 2019.pdf",
+      "kind": "pdf",
+      "targetYear": 2019,
+      "keyId": "C-009",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 18,
+        "chars": 26183,
+        "ms": 6408
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 18
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 8708,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 7,
+            "promptTokens": 49325,
+            "completionTokens": 277,
+            "reasoningTokens": 184,
+            "lengthStops": 0,
+            "maxCompletionTokens": 54
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 8,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 15600000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 5,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Natural Gas - Residential (4.79 MT CO2e)",
+                "gpc": "I.1.1",
+                "value": 4790000
+              },
+              {
+                "description": "Natural Gas - Commercial & Institutional (2.45 MT CO2e)",
+                "gpc": "I.2.1",
+                "value": 2450000
+              },
+              {
+                "description": "Natural Gas - Industrial (0.96 MT CO2e)",
+                "gpc": "I.3.1",
+                "value": 960000
+              },
+              {
+                "description": "Electricity - Residential (0.14 MT CO2e)",
+                "gpc": "I.1.2",
+                "value": 140000
+              },
+              {
+                "description": "Electricity - Commercial & Institutional (0.50 MT CO2e)",
+                "gpc": "I.2.2",
+                "value": 500000
+              },
+              {
+                "description": "Electricity - Industrial (0.07 MT CO2e)",
+                "gpc": "I.3.2",
+                "value": 70000
+              },
+              {
+                "description": "Transportation 2019 (5.6 MT CO2e)",
+                "gpc": "II.x (all subsectors and scopes)",
+                "value": 5600000
+              },
+              {
+                "description": "Waste 2019 (1.0 MT CO2e)",
+                "gpc": "III.x (all subsectors; scopes 1 and 3)",
+                "value": 1000000
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

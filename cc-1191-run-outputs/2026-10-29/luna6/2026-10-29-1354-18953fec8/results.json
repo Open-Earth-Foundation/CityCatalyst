@@ -1,0 +1,148 @@
+{
+  "measuredAt": "2026-10-29T13:54:03.590Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-020",
+      "file": "Guadalajara, México 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-020",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 28,
+        "chars": 54632,
+        "ms": 5320
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 28
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 18664,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110713,
+            "completionTokens": 1006,
+            "reasoningTokens": 810,
+            "lengthStops": 0,
+            "maxCompletionTokens": 387
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 23787092,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

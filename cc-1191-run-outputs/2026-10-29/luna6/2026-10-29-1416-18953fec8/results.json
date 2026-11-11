@@ -1,0 +1,246 @@
+{
+  "measuredAt": "2026-10-29T14:16:02.024Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-015",
+      "file": "Rosario, Argentina 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-015",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 58,
+        "chars": 115548,
+        "ms": 9367
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 58
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 119937,
+          "extractedRows": 3,
+          "failedPages": [],
+          "usage": {
+            "calls": 37,
+            "promptTokens": 245888,
+            "completionTokens": 24710,
+            "reasoningTokens": 10640,
+            "lengthStops": 0,
+            "maxCompletionTokens": 6564
+          },
+          "stored": [
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 49.71,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -14041.4,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 271.51,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 3,
+          "omittedRows": 0,
+          "total": -13720.18,
+          "byScope": {
+            "1": -13720.18
+          },
+          "gpcRefs": [
+            "V.1",
+            "V.2",
+            "V.3"
+          ],
+          "score": {
+            "keyValueRows": 29,
+            "storedGroups": 3,
+            "matchedRows": 3,
+            "rowRecall": 0.10344827586206896,
+            "rowPrecision": 1,
+            "subsectorRecall": 0.10344827586206896,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 3347875.4,
+            "storedTotal": -13720.18,
+            "totalDiffPct": -100.4098175218827,
+            "totalWithinTolerance": false,
+            "notationScored": 1,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Edificios residenciales (Alcance 1)",
+                "gpc": "I.1.1",
+                "value": 366748.06
+              },
+              {
+                "description": "Edificios residenciales (Alcance 2)",
+                "gpc": "I.1.2",
+                "value": 310091.48
+              },
+              {
+                "description": "Edificios residenciales (Alcance 3)",
+                "gpc": "I.1.3",
+                "value": 68594.07
+              },
+              {
+                "description": "Edificios comerciales e institucionales (Alcance 1)",
+                "gpc": "I.2.1",
+                "value": 42588.68
+              },
+              {
+                "description": "Edificios comerciales e institucionales (Alcance 2)",
+                "gpc": "I.2.2",
+                "value": 210868.38
+              },
+              {
+                "description": "Edificios comerciales e institucionales (Alcance 3)",
+                "gpc": "I.2.3",
+                "value": 46645.34
+              },
+              {
+                "description": "Industrias de fabricación y construcción (Alcance 1)",
+                "gpc": "I.3.1",
+                "value": 260613.21
+              },
+              {
+                "description": "Industrias de fabricación y construcción (Alcance 2)",
+                "gpc": "I.3.2",
+                "value": 122696.33
+              },
+              {
+                "description": "Industrias de fabricación y construcción (Alcance 3)",
+                "gpc": "I.3.3",
+                "value": 27141.16
+              },
+              {
+                "description": "Industrias de energía (Alcance 2)",
+                "gpc": "I.4.2",
+                "value": 26759.85
+              },
+              {
+                "description": "Industrias de energía (Alcance 3)",
+                "gpc": "I.4.3",
+                "value": 5919.44
+              },
+              {
+                "description": "Industrias de energía: generación entregada a la red (Territorial minus Alcance 1)",
+                "gpc": "I.4.4",
+                "value": 14873.61
+              },
+              {
+                "description": "Agricultura, silvicultura y pesca (Alcance 1)",
+                "gpc": "I.5.1",
+                "value": 177437.85
+              },
+              {
+                "description": "Agricultura, silvicultura y pesca (Alcance 2)",
+                "gpc": "I.5.2",
+                "value": 460.51
+              },
+              {
+                "description": "Agricultura, silvicultura y pesca (Alcance 3)",
+                "gpc": "I.5.3",
+                "value": 101.87
+              },
+              {
+                "description": "Fuentes no especificadas (Alcance 1)",
+                "gpc": "I.6.1",
+                "value": 17.89
+              },
+              {
+                "description": "Emisiones fugitivas de petróleo y gas natural (Alcance 1)",
+                "gpc": "I.8.1",
+                "value": 14489.29
+              },
+              {
+                "description": "Terrestre en carretera (Alcance 1)",
+                "gpc": "II.1.1",
+                "value": 1015426.86
+              },
+              {
+                "description": "Terrestre en carretera (Alcance 2)",
+                "gpc": "II.1.2",
+                "value": 489.89
+              },
+              {
+                "description": "Terrestre en carretera (Alcance 3)",
+                "gpc": "II.1.3",
+                "value": 108.37
+              },
+              {
+                "description": "Transporte ferroviario (Alcance 1)",
+                "gpc": "II.2.1",
+                "value": 26020.9
+              },
+              {
+                "description": "Navegación (Alcance 1)",
+                "gpc": "II.3.1",
+                "value": 7604.77
+              },
+              {
+                "description": "Aviación (Alcance 3)",
+                "gpc": "II.4.3",
+                "value": 21435.53
+              },
+              {
+                "description": "Residuos sólidos (Alcance 1)",
+                "gpc": "III.1.1",
+                "value": 195677.24
+              },
+              {
+                "description": "Residuos sólidos (Alcance 3)",
+                "gpc": "III.1.2",
+                "value": 344885.51
+              },
+              {
+                "description": "Tratamiento y eliminación de aguas residuales (Alcance 1)",
+                "gpc": "III.4.1",
+                "value": 68773.1
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

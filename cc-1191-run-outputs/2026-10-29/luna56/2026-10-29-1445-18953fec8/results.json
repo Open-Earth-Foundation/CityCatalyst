@@ -1,0 +1,393 @@
+{
+  "measuredAt": "2026-10-29T14:45:53.748Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-5.6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-004",
+      "file": "Philladelpia - 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-004",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 30,
+        "chars": 59535,
+        "ms": 5530
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 30
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 130534,
+          "extractedRows": 33,
+          "failedPages": [],
+          "usage": {
+            "calls": 22,
+            "promptTokens": 143497,
+            "completionTokens": 27397,
+            "reasoningTokens": 11312,
+            "lengthStops": 0,
+            "maxCompletionTokens": 4949
+          },
+          "stored": [
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 398025.29,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 4528.14,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 32806.2,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 837745.57,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 4119341800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 766371606,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 3355205460.18,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 231161000.07,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 3341176847.16,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 185658779.04,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.3",
+              "scope": "3",
+              "valueT": 46301990,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 34412388.01,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 19565789,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 2989229000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 398025290,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 4528140,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 16,
+          "omittedRows": 0,
+          "total": 15492251194.66,
+          "byScope": {
+            "1": 7934824974.66,
+            "2": 4119341800,
+            "3": 3438084420
+          },
+          "gpcRefs": [
+            "I.4.1",
+            "I.6.1",
+            "I.6.2",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1",
+            "II.2.3",
+            "II.3.1",
+            "II.4.1",
+            "II.4.3",
+            "III.1.1",
+            "III.1.2",
+            "III.3.1",
+            "III.3.2",
+            "III.4.1",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 20,
+            "storedGroups": 16,
+            "matchedRows": 1,
+            "rowRecall": 0.05,
+            "rowPrecision": 0.0625,
+            "subsectorRecall": 0.08333333333333333,
+            "valueAccuracy": 0.07692307692307693,
+            "classificationAccuracy": 0.3333333333333333,
+            "expectedTotal": 16333686.85,
+            "storedTotal": 15492251194.66,
+            "totalDiffPct": 94748.46462977218,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [
+              {
+                "gpc": "III.1.1",
+                "scope": "1",
+                "valueT": 398025.29
+              },
+              {
+                "gpc": "III.3.1",
+                "scope": "1",
+                "valueT": 4528.14
+              },
+              {
+                "gpc": "III.4.1",
+                "scope": "1",
+                "valueT": 32806.2
+              },
+              {
+                "gpc": "I.6.2",
+                "scope": "2",
+                "valueT": 4119341800
+              },
+              {
+                "gpc": "I.4.1",
+                "scope": "1",
+                "valueT": 766371606
+              },
+              {
+                "gpc": "I.6.1",
+                "scope": "1",
+                "valueT": 3355205460.18
+              },
+              {
+                "gpc": "I.8.1",
+                "scope": "1",
+                "valueT": 231161000.07
+              },
+              {
+                "gpc": "II.1.1",
+                "scope": "1",
+                "valueT": 3341176847.16
+              },
+              {
+                "gpc": "II.2.1",
+                "scope": "1",
+                "valueT": 185658779.04
+              },
+              {
+                "gpc": "II.2.3",
+                "scope": "3",
+                "valueT": 46301990
+              },
+              {
+                "gpc": "II.3.1",
+                "scope": "1",
+                "valueT": 34412388.01
+              },
+              {
+                "gpc": "II.4.1",
+                "scope": "1",
+                "valueT": 19565789
+              },
+              {
+                "gpc": "II.4.3",
+                "scope": "3",
+                "valueT": 2989229000
+              },
+              {
+                "gpc": "III.1.2",
+                "scope": "3",
+                "valueT": 398025290
+              },
+              {
+                "gpc": "III.3.2",
+                "scope": "3",
+                "valueT": 4528140
+              }
+            ],
+            "missingRows": [
+              {
+                "description": "Gas Losses (Fugitive Emissions)",
+                "gpc": "I.8.1",
+                "value": 230930.07
+              },
+              {
+                "description": "On-Road",
+                "gpc": "II.1.1",
+                "value": 3341064.2
+              },
+              {
+                "description": "Railways",
+                "gpc": "II.2.1",
+                "value": 185427.05
+              },
+              {
+                "description": "Railways",
+                "gpc": "II.2.3",
+                "value": 46301.99
+              },
+              {
+                "description": "Waterborne Navigation",
+                "gpc": "II.3.1",
+                "value": 34378.01
+              },
+              {
+                "description": "Aviation",
+                "gpc": "II.4.1",
+                "value": 16560
+              },
+              {
+                "description": "Aviation",
+                "gpc": "II.4.3",
+                "value": 2989229
+              },
+              {
+                "description": "Solid Waste Disposal",
+                "gpc": "III.1.2",
+                "value": 398025.29
+              },
+              {
+                "description": "Incineration and Open Burning",
+                "gpc": "III.3.2",
+                "value": 4528.14
+              },
+              {
+                "description": "Wastewater Treatment and Discharge, Process Emissions",
+                "gpc": "III.4.1",
+                "value": 25081.5
+              },
+              {
+                "description": "AFOLU",
+                "gpc": "V.2 (to confirm)",
+                "value": -40472.15
+              },
+              {
+                "description": "Residential, Commercial, and Industrial Emissions from Gas Use",
+                "gpc": "I.1.1 / I.2.1 / I.3.1",
+                "value": 3195992.55
+              },
+              {
+                "description": "Residential, Commercial, and Industrial Emissions from Electricity Use",
+                "gpc": "I.1.2 / I.2.2 / I.3.2",
+                "value": 3925628.55
+              },
+              {
+                "description": "Electricity Losses (Stationary and Transportation)",
+                "gpc": "I.x.3",
+                "value": 193713.25
+              },
+              {
+                "description": "Steam Production",
+                "gpc": "To confirm (I.4.x)",
+                "value": 765606
+              },
+              {
+                "description": "Emissions from Other Fuels used in the residential and commercial subsectors",
+                "gpc": "I.1.1 / I.2.1",
+                "value": 151613.13
+              },
+              {
+                "description": "Emissions from Large Industrial and Commercial/Institutional Sources",
+                "gpc": "I.3.1 / I.2.1",
+                "value": 132.7
+              },
+              {
+                "description": "Wastewater Emissions from Other Fuels Use",
+                "gpc": "To confirm",
+                "value": 7724.7
+              },
+              {
+                "description": "SF6 Emissions",
+                "gpc": "To confirm (IV.x)",
+                "value": 24477.32
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

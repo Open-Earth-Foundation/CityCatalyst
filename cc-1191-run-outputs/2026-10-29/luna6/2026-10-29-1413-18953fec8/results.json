@@ -1,0 +1,268 @@
+{
+  "measuredAt": "2026-10-29T14:13:06.539Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-005",
+      "file": "NYC - 2015.pdf",
+      "kind": "pdf",
+      "targetYear": 2015,
+      "keyId": "C-005",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 56,
+        "chars": 100851,
+        "ms": 13324
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 56
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 205235,
+          "extractedRows": 6,
+          "failedPages": [],
+          "usage": {
+            "calls": 30,
+            "promptTokens": 202975,
+            "completionTokens": 29201,
+            "reasoningTokens": 7589,
+            "lengthStops": 1,
+            "maxCompletionTokens": 16000
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 36,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 52042186,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 2,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Residential (small and large residential) - #2 fuel oil",
+                "gpc": "I.1.1",
+                "value": 1746430
+              },
+              {
+                "description": "Residential (small and large residential) - #4 fuel oil",
+                "gpc": "I.1.1",
+                "value": 1081765
+              },
+              {
+                "description": "Residential (small and large residential) - #6 fuel oil",
+                "gpc": "I.1.1",
+                "value": 145451
+              },
+              {
+                "description": "Residential (small and large residential) - Biofuel",
+                "gpc": "I.1.1",
+                "value": 59
+              },
+              {
+                "description": "Residential (small and large residential) - Natural gas",
+                "gpc": "I.1.1",
+                "value": 9297070
+              },
+              {
+                "description": "Residential (small and large residential) - Electricity",
+                "gpc": "I.1.2",
+                "value": 4035680
+              },
+              {
+                "description": "Residential (small and large residential) - Steam",
+                "gpc": "I.1.2",
+                "value": 286277
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - #2 fuel oil",
+                "gpc": "I.2.1",
+                "value": 989642
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - #4 fuel oil",
+                "gpc": "I.2.1",
+                "value": 193072
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - #6 fuel oil",
+                "gpc": "I.2.1",
+                "value": 17848
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - Biofuel",
+                "gpc": "I.2.1",
+                "value": 15
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - Natural gas",
+                "gpc": "I.2.1",
+                "value": 5592932
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - Electricity",
+                "gpc": "I.2.2",
+                "value": 6403983
+              },
+              {
+                "description": "Commercial and Institutional (commercial, institutional, and streetlights) - Steam",
+                "gpc": "I.2.2",
+                "value": 569870
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - #2 fuel oil",
+                "gpc": "I.3.1",
+                "value": 227587
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - #4 fuel oil",
+                "gpc": "I.3.1",
+                "value": 41496
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - #6 fuel oil",
+                "gpc": "I.3.1",
+                "value": 1375
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - Biofuel",
+                "gpc": "I.3.1",
+                "value": 3
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - Natural gas",
+                "gpc": "I.3.1",
+                "value": 1347703
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - Electricity",
+                "gpc": "I.3.2",
+                "value": 2320895
+              },
+              {
+                "description": "Manufacturing and construction (industrial) - Steam",
+                "gpc": "I.3.2",
+                "value": 170961
+              },
+              {
+                "description": "Fugitive natural gas - CH4 - natural gas distribution",
+                "gpc": "I.8.1",
+                "value": 258527
+              },
+              {
+                "description": "On-Road - Passenger cars",
+                "gpc": "II.1.1",
+                "value": 12379304
+              },
+              {
+                "description": "On-Road - Medium duty trucks",
+                "gpc": "II.1.1",
+                "value": 401210
+              },
+              {
+                "description": "On-Road - Heavy duty trucks",
+                "gpc": "II.1.1",
+                "value": 1466398
+              },
+              {
+                "description": "On-Road - Buses",
+                "gpc": "II.1.1",
+                "value": 586859
+              },
+              {
+                "description": "Railways - Electricity - subway and commuter rail",
+                "gpc": "II.2.2",
+                "value": 556076
+              },
+              {
+                "description": "Railways - Diesel - commuter rail",
+                "gpc": "II.2.1",
+                "value": 14761
+              },
+              {
+                "description": "Marine Navigation - Diesel - marine navigation",
+                "gpc": "II.3.1",
+                "value": 69110
+              },
+              {
+                "description": "Marine Navigation - Biofuel",
+                "gpc": "II.3.1",
+                "value": 0.1
+              },
+              {
+                "description": "Marine Navigation - Gasoline - marine navigation",
+                "gpc": "II.3.1",
+                "value": 21
+              },
+              {
+                "description": "Aviation - Jet fuel - aviation",
+                "gpc": "II.4.1",
+                "value": 2643
+              },
+              {
+                "description": "Landfills - Exported solid waste - landfills",
+                "gpc": "III.1.2",
+                "value": 1509381
+              },
+              {
+                "description": "Biological treatment - CH4 and N2O - composting",
+                "gpc": "III.2.1",
+                "value": 106849
+              },
+              {
+                "description": "Wastewater treatment - CH4 - wastewater treatment plants",
+                "gpc": "III.4.1",
+                "value": 146058
+              },
+              {
+                "description": "Wastewater treatment - N2O - wastewater treatment plants",
+                "gpc": "III.4.1",
+                "value": 74871
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

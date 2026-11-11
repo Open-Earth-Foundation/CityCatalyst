@@ -1,0 +1,172 @@
+{
+  "measuredAt": "2026-10-29T14:04:34.191Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-022",
+      "file": "Madrid, Spain 2023 (IPCC con CIRIS).pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-022",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 32,
+        "chars": 79373,
+        "ms": 9288
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 32
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 129755,
+          "extractedRows": 12,
+          "failedPages": [],
+          "usage": {
+            "calls": 25,
+            "promptTokens": 179668,
+            "completionTokens": 24121,
+            "reasoningTokens": 13183,
+            "lengthStops": 0,
+            "maxCompletionTokens": 4667
+          },
+          "stored": [
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 10,
+          "omittedRows": 0,
+          "total": 7327000,
+          "byScope": {
+            "1": 5619200,
+            "2": 1707800
+          },
+          "gpcRefs": [
+            "I.2.1",
+            "I.2.2",
+            "I.3.1",
+            "I.3.2",
+            "I.6.1",
+            "II.1.1",
+            "II.1.2",
+            "II.5.1",
+            "II.5.2",
+            "III.1.1"
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 7333400,
+            "storedTotal": 7327000,
+            "totalDiffPct": -0.08727193389151007,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

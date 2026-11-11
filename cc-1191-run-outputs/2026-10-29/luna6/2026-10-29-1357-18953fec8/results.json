@@ -1,0 +1,178 @@
+{
+  "measuredAt": "2026-10-29T13:57:13.755Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-018",
+      "file": "Santiago, Chile 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-018",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 26,
+        "chars": 64233,
+        "ms": 5336
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 26
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 161438,
+          "extractedRows": 23,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 100143,
+            "completionTokens": 33697,
+            "reasoningTokens": 18066,
+            "lengthStops": 0,
+            "maxCompletionTokens": 7947
+          },
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 164429,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 8221,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 565340,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 377653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18883,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 5653,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 592388,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 249503,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 8,
+          "omittedRows": 0,
+          "total": 1982070,
+          "byScope": {
+            "1": 1163381,
+            "2": 542082,
+            "3": 276607
+          },
+          "gpcRefs": [
+            "I.1.2",
+            "I.1.3",
+            "I.2.1",
+            "I.2.2",
+            "I.2.3",
+            "I.8.1",
+            "II.1.1",
+            "II.1.3"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 8,
+            "matchedRows": 8,
+            "rowRecall": 0.6666666666666666,
+            "rowPrecision": 1,
+            "subsectorRecall": 0.6666666666666666,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 2145244,
+            "storedTotal": 1982070,
+            "totalDiffPct": -7.606314246770997,
+            "totalWithinTolerance": false,
+            "notationScored": 3,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Uso de productos (Alcance 1)",
+                "gpc": "IV.2",
+                "value": 85668
+              },
+              {
+                "description": "Disposición de residuos sólidos (Alcance 3)",
+                "gpc": "III.1.2",
+                "value": 77495
+              },
+              {
+                "description": "Tratamiento biológico de residuos (Alcance 1), printed \"2.760\" (total column \"2,8\")",
+                "gpc": "III.2.1",
+                "value": 2.76
+              },
+              {
+                "description": "Tratamiento de aguas residuales (Alcance 3), printed \"6,4\" / \"6.4\"",
+                "gpc": "III.4.2",
+                "value": 6.4
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "measuredAt": "2026-10-29T18:56:35.562Z",
+  "commit": "bdd25e7ef",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "gpt-4o-mini",
+  "extractionModel": "gpt-5.6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-023",
+      "file": "Kyoto, Japan (IPCC) 2023.pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-023",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 4,
+        "chars": 4457,
+        "ms": 4059
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 4
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 25256,
+          "extractedRows": 8,
+          "failedPages": [],
+          "usage": {
+            "calls": 4,
+            "promptTokens": 26807,
+            "completionTokens": 3092,
+            "reasoningTokens": 1571,
+            "lengthStops": 0,
+            "maxCompletionTokens": 2505
+          },
+          "stored": [
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 668000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1384000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 1613000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 257000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 98000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 393000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 7,
+          "omittedRows": 0,
+          "total": 5923000,
+          "byScope": {
+            "1": 5923000
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.6.1",
+            "II.1.1",
+            "III.1.1",
+            "IV.2"
+          ],
+          "score": {
+            "keyValueRows": 9,
+            "storedGroups": 7,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 5923000,
+            "storedTotal": 5923000,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

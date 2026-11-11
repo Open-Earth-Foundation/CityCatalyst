@@ -1,0 +1,188 @@
+{
+  "measuredAt": "2026-10-29T13:12:03.761Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6.1-terra",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 1,
+    "llmOutputPerMTok": 5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-010",
+      "file": "Toronto - 2020.pdf",
+      "kind": "pdf",
+      "targetYear": 2020,
+      "keyId": "C-010",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 35,
+        "chars": 63205,
+        "ms": 11147
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 35
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": true,
+          "finalStatus": "completed",
+          "ms": 30145,
+          "extractedRows": 12,
+          "failedPages": [],
+          "usage": {
+            "calls": 11,
+            "promptTokens": 70656,
+            "completionTokens": 2131,
+            "reasoningTokens": 476,
+            "lengthStops": 0,
+            "maxCompletionTokens": 1766
+          },
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 4546707,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 2575758,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 944100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 85880,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 4531086,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 48358,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 1078,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 366,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 7432,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 1178746,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 6746,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 27359,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "storedRows": 12,
+          "omittedRows": 0,
+          "total": 13953616,
+          "byScope": {
+            "1": 13953250,
+            "3": 366
+          },
+          "gpcRefs": [
+            "I.1.1",
+            "I.2.1",
+            "I.3.1",
+            "I.8.1",
+            "II.1.1",
+            "II.2.1",
+            "II.3.1",
+            "II.4.3",
+            "II.5.1",
+            "III.1.1",
+            "III.2.1",
+            "III.4.1"
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 12,
+            "matchedRows": 12,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "expectedTotal": 13953616,
+            "storedTotal": 13953616,
+            "totalDiffPct": 0,
+            "totalWithinTolerance": true,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

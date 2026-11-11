@@ -1,0 +1,87 @@
+{
+  "measuredAt": "2026-10-29T13:48:47.903Z",
+  "commit": "18953fec8",
+  "branch": "david/cc-1191-improve-ghgi-pdf-extraction-model-and-prevent-silent",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "ocrPerPage": 0.002,
+    "llmInputPerMTok": 0.1,
+    "llmOutputPerMTok": 0.5
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 1,
+  "results": [
+    {
+      "id": "C-025",
+      "file": "Münster, Germany 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-025",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 14,
+        "chars": 25177,
+        "ms": 4818
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 14
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "ms": 20629,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1081,
+            "reasoningTokens": 862,
+            "lengthStops": 0,
+            "maxCompletionTokens": 614
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

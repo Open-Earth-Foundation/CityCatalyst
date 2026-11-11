@@ -5,7 +5,8 @@
  * function never throws; on the first failed request it stops and reports why.
  * Only an allow-list of files leaves the machine (`report.md`, `results.json`
  * and per-attempt `extracted-values.json`); PDFs, OCR text and answer keys do
- * not.
+ * not. Metrics and `results.json` go through the same sanitizer as the run
+ * folder (redact.ts), so no expected value is sent.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -13,6 +14,7 @@ import type {
   BlockSummary,
   CaseVerdict,
 } from "@/backend/ingestion-benchmark/metrics";
+import { publishableSummary } from "@/backend/ingestion-benchmark/redact";
 import type { RunSummary } from "@/backend/ingestion-benchmark/report";
 
 export type MlflowConfig = {
@@ -98,7 +100,6 @@ function attemptMetrics(
   return result.runs.flatMap((run) => {
     const values: [string, unknown][] = [
       ["attempt.row_recall", run.score?.rowRecall],
-      ["attempt.total_diff_pct", run.score?.totalDiffPct],
       ["attempt.seconds", run.stageMs?.total / 1000],
       ["attempt.prompt_tokens", run.usage?.promptTokens],
       ["attempt.completion_tokens", run.usage?.completionTokens],
@@ -112,6 +113,17 @@ function attemptMetrics(
   });
 }
 
+/** results.json as it is uploaded: sanitized again, so a file written before redaction leaks nothing. */
+function publishedResults(file: string): string {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    throw new MlflowFailure("results.json is not valid JSON");
+  }
+  return JSON.stringify(publishableSummary((parsed ?? {}) as object), null, 2);
+}
+
 export async function logBenchmarkRun(args: {
   config: MlflowConfig;
   summary: RunSummary;
@@ -121,7 +133,8 @@ export async function logBenchmarkRun(args: {
   fetchImpl?: typeof fetch;
   now?: () => number;
 }): Promise<MlflowResult> {
-  const { config, summary, verdicts, blocks, runFolder } = args;
+  const { config, verdicts, blocks, runFolder } = args;
+  const summary = publishableSummary(args.summary);
   const doFetch = args.fetchImpl ?? fetch;
   const now = args.now ?? Date.now;
   const base = config.trackingUri.replace(/\/+$/, "");
@@ -207,7 +220,9 @@ export async function logBenchmarkRun(args: {
     await send(
       "PUT",
       `api/2.0/mlflow-artifacts/artifacts/${experimentId}/${runId}/artifacts/${encoded}`,
-      new Uint8Array(readFileSync(file)),
+      name === "results.json"
+        ? new TextEncoder().encode(publishedResults(file))
+        : new Uint8Array(readFileSync(file)),
       name.endsWith(".json") ? "application/json" : "text/markdown",
     );
   }

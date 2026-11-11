@@ -486,4 +486,56 @@ describe("report", () => {
       files.filter((f) => /answer-key|ocr|original|INDEX/i.test(f)),
     ).toEqual([]);
   });
+
+  it("writes no answer-key content to results.json or report.md", () => {
+    const outRoot = tmp();
+    const r = result("A", 0.5);
+    r.runs[0].score = score({
+      expectedTotal: 987654.321,
+      totalDiffPct: 42.4242,
+      missingRows: [
+        { description: "SECRET key row", gpc: "I.4.1", value: 4321.5 },
+      ],
+      distractorsStored: [
+        {
+          valueT: 777,
+          gpc: "I.1.1",
+          what: "SECRET distractor",
+          failureMode: "wrong year",
+        },
+      ],
+      unexpectedStored: [{ gpc: "I.2.1", scope: "1", valueT: 55 }],
+    });
+    const dir = writeRunArtifact({
+      outRoot,
+      summary: summary([r]),
+      verdicts: [verdict(r)],
+      blocks: [block({})],
+      gates: [],
+    });
+    for (const file of ["results.json", "report.md"]) {
+      const text = readFileSync(join(dir, file), "utf8");
+      for (const needle of [
+        "SECRET",
+        "987654",
+        "42.4242",
+        "4321.5",
+        "missingRows",
+        "expectedTotal",
+        "totalDiffPct",
+      ]) {
+        expect(text).not.toContain(needle);
+      }
+    }
+    const results = JSON.parse(readFileSync(join(dir, "results.json"), "utf8"));
+    expect(results.results[0].runs[0].score).toMatchObject({
+      missingRowCount: 1,
+      distractorsStoredCount: 1,
+      unexpectedStoredCount: 1,
+      rowRecall: 0.5,
+      totalWithinTolerance: false,
+    });
+    // In memory the full score stays available to the gates and the report.
+    expect(r.runs[0].score?.missingRows).toHaveLength(1);
+  });
 });

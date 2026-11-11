@@ -310,6 +310,69 @@ describe("logBenchmarkRun", () => {
     }
   });
 
+  it("sends no answer-key content in any metric, tag or artifact", async () => {
+    const secret = {
+      expectedTotal: 987654.321,
+      totalDiffPct: 42.4242,
+      missingRows: [
+        { description: "SECRET key row", gpc: "I.4.1", value: 4321.5 },
+      ],
+      distractorsStored: [
+        {
+          valueT: 777,
+          gpc: "I.1.1",
+          what: "SECRET distractor",
+          failureMode: "x",
+        },
+      ],
+      unexpectedStored: [],
+    };
+    const withKey = {
+      ...summary,
+      results: summary.results.map((r) => ({
+        ...r,
+        runs: r.runs.map((run) => ({
+          ...run,
+          score: { ...run.score, ...secret },
+        })),
+      })),
+    } as unknown as RunSummary;
+    const folder = makeFolder();
+    // A results.json written before redaction existed still goes through the sanitizer.
+    writeFileSync(join(folder, "results.json"), JSON.stringify(withKey));
+    const { calls, fetchImpl } = server();
+    const result = await logBenchmarkRun({
+      config,
+      summary: withKey,
+      verdicts,
+      blocks,
+      runFolder: folder,
+      fetchImpl,
+      now: () => 5,
+    });
+    expect(result.logged).toBe(true);
+    const sent = calls
+      .map((c) =>
+        c.body instanceof Uint8Array
+          ? Buffer.from(c.body).toString("utf8")
+          : JSON.stringify(c.body ?? ""),
+      )
+      .join("\n");
+    expect(sent).toContain("rowRecall");
+    for (const needle of [
+      "SECRET",
+      "987654",
+      "42.4242",
+      "4321.5",
+      "missingRows",
+      "expectedTotal",
+      "totalDiffPct",
+      "total_diff_pct",
+    ]) {
+      expect(sent).not.toContain(needle);
+    }
+  });
+
   it("marks runs FINISHED on success", async () => {
     const { calls, fetchImpl } = server();
     await log(fetchImpl, makeFolder());

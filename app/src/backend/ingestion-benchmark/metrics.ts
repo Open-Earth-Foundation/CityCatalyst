@@ -44,7 +44,7 @@ export function offByFactor(stored: number, expected: number): number {
 /** True when the attempt has an expected total and its stored total is 10x or more off. */
 function isTenX(entry: RunEntry): boolean {
   const score = entry.score;
-  if (!score || score.expectedTotal === null) return false;
+  if (!score || score.expectedTotal == null) return false;
   return (
     offByFactor(score.storedTotal, score.expectedTotal) >= GUARDRAIL_FACTOR
   );

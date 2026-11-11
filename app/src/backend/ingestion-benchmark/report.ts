@@ -1,7 +1,8 @@
 /**
  * Turns the output of the PDF extraction benchmark into a folder the whole
- * team can read: a markdown report, the full results and, per attempt, the
- * values the import stored. Inputs, answer keys and OCR text are never copied.
+ * team can read: a markdown report, the results and, per attempt, the values
+ * the import stored. Inputs, answer keys, OCR text and the answer-key content
+ * of the scores (see redact.ts) are never written.
  *
  * One folder per run, named `<UTC date>-<UTC time>-<short sha>`.
  */
@@ -15,6 +16,7 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import type { CaseGate } from "@/backend/ingestion-benchmark/gate";
+import { publishableSummary } from "@/backend/ingestion-benchmark/redact";
 import type {
   BlockSummary,
   CaseVerdict,
@@ -142,7 +144,6 @@ export type CaseMetrics = {
   classificationAccuracy: number | null;
   notationRecovered: number;
   notationScored: number;
-  totalDiffPct: number | null;
   totalWithinTolerance: boolean | null;
   stableTotal: boolean;
   seconds: number | null;
@@ -190,7 +191,6 @@ export function caseMetrics(result: CaseResult): CaseMetrics {
     ),
     notationRecovered: first?.notationRecovered ?? 0,
     notationScored: first?.notationScored ?? 0,
-    totalDiffPct: mean(scores.map((score) => score?.totalDiffPct)),
     totalWithinTolerance: allWithinTolerance(scores),
     stableTotal: result.stableTotal,
     seconds: mean(result.runs.map((entry) => entry.ms / 1000)),
@@ -573,9 +573,9 @@ export function runFolderName(measuredAt: string, commit: string): string {
 
 /**
  * Writes the run folder under `outRoot` and returns its path. Holds the report,
- * the full results (including the stored values a later baseline rescore
- * needs) and each attempt's extracted values. Never copies inputs, answer keys
- * or OCR text.
+ * the results (including the stored values a later baseline rescore needs,
+ * with the answer-key content of each score redacted) and each attempt's
+ * extracted values. Never copies inputs, answer keys or OCR text.
  */
 export function writeRunArtifact(args: {
   outRoot: string;
@@ -589,7 +589,11 @@ export function writeRunArtifact(args: {
   mkdirSync(dir, { recursive: true });
   writeFileSync(
     join(dir, "results.json"),
-    JSON.stringify({ ...summary, verdicts, blocks, gates }, null, 2),
+    JSON.stringify(
+      publishableSummary({ ...summary, verdicts, blocks, gates }),
+      null,
+      2,
+    ),
   );
   writeFileSync(
     join(dir, "report.md"),

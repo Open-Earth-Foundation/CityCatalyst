@@ -108,7 +108,9 @@ Open `report.md` in the run folder. It has:
 
 An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. A case passes when all 3 attempts pass.
 
-`results.json` is the full result and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
+`results.json` is the result of every attempt and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
+
+`results.json` holds no answer-key content. In each score the key rows that were not found become `missingRowCount`, the stored distractors `distractorsStoredCount` and the stored groups that match no key row `unexpectedStoredCount`; the expected total and the difference to it (`expectedTotal`, `totalDiffPct`) are not written. Recall, precision, accuracies, counts, the stored total and `totalWithinTolerance` stay. Comparison and rescore recompute every score from the stored values and the local keys, so they never need those fields. To clean a run folder written before this rule: `npx tsx scripts/pdf-benchmark/redact-results.ts <run>/results.json <run>/report.md` (rewrites in place; no DB, LLM or OCR call).
 
 ## MLflow
 
@@ -116,7 +118,7 @@ Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`
 
 - One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection; metrics per block; `report.md` and `results.json` as artifacts.
 - One child run per case: case metrics, per-attempt metrics (step = attempt number), verdict, and `extracted-values.json` per attempt.
-- PDFs, OCR text and answer keys are never uploaded.
+- PDFs, OCR text and answer keys are never uploaded. Metrics and `results.json` pass through the same redaction as the run folder, so no expected value (key row, expected total, difference to it, distractor) reaches MLflow.
 
 If MLflow fails, the run continues and the report says `MLflow: not logged` with the reason. A rescore is not logged.
 
@@ -129,4 +131,4 @@ If MLflow fails, the run continues and the report says `MLflow: not logged` with
 - **Warning metric.** The import flow does not return warnings yet, so "wrong totals that carried a warning" stays at 0% until it does.
 - **Legacy tolerance.** Keys without a printed unit and precision keep the earlier tolerance (half a tonne of slack); the report lists the cases that still use it.
 - **Total-only cases** (non-GPC layouts, or keys with no scored rows) are scored on the total, not row by row, and do not count toward headline recall.
-- **Answer keys are not in git.** They stay local until Product confirms they can be shared; reviewers read the report and `results.json`, not the keys.
+- **No expected values in git or MLflow.** The answer keys stay local until Product confirms they can be shared; reviewers read the report and `results.json`, which carry recall, counts and tolerance flags but no key row, expected total or difference to it.

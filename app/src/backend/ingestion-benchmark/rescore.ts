@@ -20,9 +20,14 @@ export function scoringKey(key: KeyFile, totalOnly: boolean): KeyFile {
   return totalOnly ? { ...key, nonGpc: true } : key;
 }
 
+/**
+ * Recomputes every score from the stored values and `key`. Scores read from a
+ * results.json are redacted (no expected values), so they are always replaced,
+ * truncated attempts included.
+ */
 export function rescoreCase(result: CaseResult, key: KeyFile): CaseResult {
   const runs = result.runs.map((entry) =>
-    entry.ok && entry.stored
+    entry.stored && (entry.ok || entry.score)
       ? {
           ...entry,
           score: scoreFile(scoringKey(key, result.totalOnly), entry.stored),

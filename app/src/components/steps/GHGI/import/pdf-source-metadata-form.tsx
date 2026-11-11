@@ -49,7 +49,9 @@ function parseTotal(draft: PdfSourceMetadataDraft): number | null {
     text = paren[1];
   }
   if (text.startsWith("-") || text.startsWith("−")) {
-    negative = !negative;
+    // Parentheses and a sign together are ambiguous, not a double negative.
+    if (negative) return null;
+    negative = true;
     text = text.slice(1);
   }
   let value: number | null;

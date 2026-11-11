@@ -1,6 +1,6 @@
 /**
  * Metadata a user gives about a source document before extraction: number
- * format, reported total and table pages. Pure module: no server imports.
+ * format and reported total. Pure module: no server imports.
  */
 import { z } from "zod";
 import {

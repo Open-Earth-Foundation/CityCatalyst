@@ -159,6 +159,18 @@ describe("PdfSourceMetadataForm", () => {
     expect(european.metadata.reportedTotal).toBe(-25639.5);
   });
 
+  it("parentheses together with a sign is an error", () => {
+    const base = {
+      ...initialPdfSourceMetadataDraft("NZ"),
+      totalKind: "net" as const,
+    };
+    for (const totalText of ["(-25,639)", "(−5)"]) {
+      const r = draftToSourceMetadata({ ...base, totalText });
+      expect(r.errors).toEqual(["total"]);
+      expect(r.metadata.reportedTotal).toBeNull();
+    }
+  });
+
   it("zero is an error for net and gross", () => {
     const base = initialPdfSourceMetadataDraft("NZ");
     for (const totalKind of ["net", "gross"] as const) {

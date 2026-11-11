@@ -1,6 +1,6 @@
 # CC-962 — review package
 
-This package brings the GHGI audit, real-user conversation evaluation, recorded evidence and the verified source-provenance fix into one draft PR. CC-962 remains **In Progress** pending product/engineering review.
+This PR contains the GHGI audit, conversation evaluation and recorded evidence. The product fix and its regression tests have been extracted unchanged into [PR #3422](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3422), independently based on develop, with Milan Gruner requested as reviewer. CC-962 remains pending product/engineering review.
 
 ## Start here
 
@@ -10,9 +10,9 @@ This package brings the GHGI audit, real-user conversation evaluation, recorded 
 4. [English conversation reader](ca/ca-scenarios-reader-en.html): download this self-contained HTML to browse the original scored scenarios and expand the full English answers. [Plain Markdown transcripts](ca/UA02-r1/transcript-en.md) also work directly on GitHub.
 5. [Technical audit and gap/recommendation report](scan/CC-962-rescan-report.md); [technical execution results](technical/CC-962-dev-results.md). Technical API/fault-injection cases are separate from natural user conversations.
 
-## What changed in product code
+## Product fix moved to PR #3422
 
-Stationary Energy source candidates previously used catalogue coverage and start year, causing Clima to describe municipal São Paulo 2022 SEEG data as national data from 2015. The fix derives year/geography from the fetched-record request contract and preserves explicit country/region population downscaling. Exact emissions are unchanged. [Implementation and limitations](postfix/implementation-report.md). Old drafts need regeneration; this PR has not been deployed.
+Stationary Energy source candidates previously used catalogue coverage and start year, causing Clima to describe municipal São Paulo 2022 SEEG data as national data from 2015. The fix derives year/geography from the fetched-record request contract and preserves explicit country/region population downscaling. Exact emissions are unchanged. [Implementation and limitations](postfix/implementation-report.md). Old drafts need regeneration. This evidence PR now has no product-code changes; deployment of the separate fix is not claimed.
 
 ## Results and evidence boundaries
 
@@ -49,7 +49,7 @@ Stationary Energy source candidates previously used catalogue coverage and start
 
 ## Validation
 
-- Three targeted Jest suites pass: **16/16** on this delivery branch based on develop. [Execution log](postfix/delivery-branch-unit-check.txt).
+- Historical validation before extraction: three targeted Jest suites passed **16/16** on the original delivery branch. The same 16 tests passed again on the standalone fix branch on 11 November. [Execution log](postfix/delivery-branch-unit-check.txt).
 - [Video manifest](media-manifest.json) records filenames, SHA-256, byte sizes, classification and GitHub asset URLs. [Post-fix duration/decode checks](postfix/artifact-verification.json) and [original checks](ca/video-decode-verification.json) are retained.
 - No authentication state, credentials, raw service logs or .env files are included. Synthetic fixture IDs and public dataset records are evidence, not live secrets.
 - Disposable fixtures and local processes were cleaned up; [persisted-state checks](postfix/persisted-state-final.json) and [cleanup evidence](postfix/cleanup-data.json) are available.

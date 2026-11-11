@@ -407,6 +407,22 @@ describe("report", () => {
     expect(line).toContain("[folder](./folder/report.md)");
   });
 
+  it("escapes backslashes before pipes in table cells", () => {
+    const gate: CaseGate = {
+      id: "A",
+      verdict: "error",
+      reasons: [String.raw`path C:\runs\out | y and a\|b`],
+      costUsd: null,
+      forecastUsd: null,
+      lines: [],
+    };
+    const report = render(summary([result("A", 0.5)]), [block({})], [gate]);
+    // Each backslash doubled, each pipe escaped: the cell cannot be split or unescaped.
+    expect(report).toContain(
+      String.raw`| A | error | path C:\\runs\\out \| y and a\\\|b |`,
+    );
+  });
+
   it("marks a rescore in the header and names the source run", () => {
     const rescoredFrom = {
       measuredAt: "2026-10-31T04:18:42.240Z",

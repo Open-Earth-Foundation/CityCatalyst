@@ -301,7 +301,8 @@ const pct = (ratio: number | null) =>
 const decimal = (value: number | null) =>
   value === null ? "n/a" : String(Math.round(value * 10) / 10);
 
-const cell = (text: string) => text.replace(/\|/g, "\\|");
+/** Escapes backslashes and pipes in one pass, so a cell can neither be split nor unescaped. */
+const cell = (text: string) => text.replace(/[\\|]/g, (char) => `\\${char}`);
 
 /** Tolerance rule of the first scored attempt, or "n/a" when no attempt was scored. */
 function toleranceSourceOf(result: CaseResult): string {

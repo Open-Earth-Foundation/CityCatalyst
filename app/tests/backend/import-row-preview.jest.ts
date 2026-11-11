@@ -400,11 +400,14 @@ describe("ECRFImportService.processECRFFile", () => {
       { gpcRefNo: 0, totalCO2e: 1 },
     );
 
+    // Blank template rows are skipped silently (CC-1217 CIRIS Path A hygiene).
     expect(result.rowCount).toBe(3);
-    expect(result.rows[1]).toMatchObject({
-      sourceRowNumber: 3,
-      issue: "no-value-or-notation-key",
-    });
+    expect(result.rowsSkippedEmptyEmissions).toBe(1);
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.map((row) => row.sourceRowNumber)).toEqual([2, 4]);
+    expect(
+      result.rows.every((row) => row.issue !== "no-value-or-notation-key"),
+    ).toBe(true);
   });
 });
 

@@ -288,6 +288,7 @@ export default class ECRFImportService {
       }
 
       // Skip empty CIRIS/eCRF template rows before taxonomy lookups.
+      // Treat activity_name notation labels (e.g. "Not Occuring") as real content.
       const earlyNotationHeader =
         detectedColumns.notationKey !== undefined
           ? headers[detectedColumns.notationKey]
@@ -299,6 +300,25 @@ export default class ECRFImportService {
       const earlyNotation = earlyNotationHeader
         ? row[earlyNotationHeader]?.toString().trim()
         : undefined;
+      const earlyActivityHeader =
+        detectedColumns.activityType !== undefined
+          ? headers[detectedColumns.activityType]
+          : this.findHeader(headers, [
+              "activity_name",
+              "activity name",
+              "activity type",
+              "activity_type",
+              "fuel type",
+              "fuel_type",
+              "fuel",
+            ]);
+      const earlyActivity = earlyActivityHeader
+        ? row[earlyActivityHeader]?.toString().trim()
+        : undefined;
+      const earlyNotationResolved = resolveNotationFromActivity({
+        notationKey: earlyNotation || undefined,
+        activityType: earlyActivity || undefined,
+      }).notationKey;
       const earlyHasEmissions =
         hasSignedNumericValue(
           this.extractGasValue(row, headers, detectedColumns.co2),
@@ -312,7 +332,7 @@ export default class ECRFImportService {
         hasSignedNumericValue(
           this.extractGasValue(row, headers, detectedColumns.totalCO2e),
         );
-      if (!earlyHasEmissions && !earlyNotation) {
+      if (!earlyHasEmissions && !earlyNotationResolved) {
         rowsSkippedEmptyEmissions += 1;
         continue;
       }

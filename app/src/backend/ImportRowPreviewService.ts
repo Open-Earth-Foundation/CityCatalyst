@@ -25,6 +25,7 @@ import type {
   ImportScopeNoteRow,
   ScopeOrigin,
 } from "@/util/types";
+import { hasSignedNumericValue } from "@/util/parse-numeric-cell";
 import { excelRowNumber } from "@/util/excel-row-number";
 
 type ImportRow = ECRFImportResult["rows"][number];
@@ -136,13 +137,14 @@ function scopeNote(row: ImportRow): ImportScopeNoteRow | null {
   // "Scope 2" and "2" are the same scope, so compare normalized values.
   const differs =
     original != null && scopeFromLabel(original) !== scopeFromLabel(scope);
+  const total = resolveImportedTotalCO2e(row);
   return {
     rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
     page: review.page,
     text: review.category || review.activityType || null,
     sector: review.sector,
     subsector: review.subsector,
-    value: resolveImportedTotalCO2e(row) ?? null,
+    value: hasSignedNumericValue(total) ? total : null,
     gpcRefNo: row.gpcRefNo,
     scope,
     scopeOrigin,

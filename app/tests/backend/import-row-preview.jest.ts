@@ -690,6 +690,20 @@ describe("scope notes", () => {
     ]);
   });
 
+  it("gives a notation-key row with a total of 0 no value", async () => {
+    const result = await notes([
+      noted(
+        "I.1.1",
+        { finalScope: "1" },
+        { totalCO2e: 0, notationKey: "NO" },
+      ),
+    ]);
+    expect(result.inferredScopeRows?.[0]).toMatchObject({
+      gpcRefNo: "I.1.1",
+      value: null,
+    });
+  });
+
   it("lists I.4.4 as an information note, not a warning, even when finalScope is 1", async () => {
     const result = await notes([
       noted("I.4.4", { finalScope: "1", activityClass: "grid_supply" }),

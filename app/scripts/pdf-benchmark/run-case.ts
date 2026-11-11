@@ -155,9 +155,6 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Loads env, product modules and the test session. Call `disposeContext` when done. */
 export async function createContext(config: LocalConfig): Promise<RunContext> {
-  // Set before any app module loads: Highlight would otherwise record the OCR
-  // and LLM payloads and the MLflow auth header of the run.
-  process.env.HIGHLIGHT_DISABLED = "true";
   env.loadEnvConfig(process.cwd());
   installUsageMeter((await import("@/services/logger")).logger);
   const { db } = await import("@/models");

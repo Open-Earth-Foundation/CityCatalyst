@@ -94,6 +94,9 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 1. Run the cases with the default 3 attempts and `--update-baseline`. Only cases in the run that finished 3 attempts are written; other cases are untouched. Exploratory and interrupted runs never write.
 2. A run takes at most 10 files, so the 27 cases need three runs (for example, one per block or by slices of 10).
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
+4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), refresh the baseline. The test-set version covers only the manifest entry and the key, so a scorer change does not mark the baseline stale on its own. Run `--rescore` on the baseline's run folders to see the effect first.
+
+**Current baseline (11 Nov 2026).** It covers 16 of the 27 cases: C-015..C-025 and C-027..C-031. C-004..C-014 have no entry because their PDFs were not available locally, so they are reported as `no baseline`: only a failed attempt flags them until they are recorded. The entries come from the run folders `2026-11-09-1845-c0b125fe5` and `2026-11-09-2100-75c9e8a8f`. The commits in those folder names were rewritten out of the branch history, and the 21:00 run ran on a dirty tree. Treat these entries as provisional and record them again from a branch commit once C-004..C-014 are available.
 
 ## Read the results
 
@@ -102,8 +105,14 @@ Open `report.md` in the run folder. It has:
 - **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
 - **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
-- **Regressions against the baseline.** A case regresses when it passed in the baseline and fails now, recall drops by more than 5 points, a new attempt is off by 10x or more, a new attempt fails with a failure mode the baseline did not have, or the cost goes over 3x the forecast (the baseline usage scaled to the same number of attempts). Any regression makes the command exit with 1.
-- **Failure modes:** `scored`, `ocr_error`, `extraction_error`, `truncated`, `zero_rows`, `approve_error`, `readback_error`.
+- **Regressions against the baseline.** Each case gets one verdict:
+  - `regression`: the case passed in the baseline and fails now, recall drops by more than 5 points, or more attempts are 10x or more off than in the baseline.
+  - `error`: some attempts did not reach `scored` and the baseline had no failed attempt for the case. A case with no usable baseline (none recorded, or `baseline stale`) also gets `error` when any attempt fails.
+  - `over budget`: the cost is over 3x the forecast (the baseline usage scaled to the same number of attempts). It is reported but does not fail the run.
+
+  The command exits with 1 when any case is `regression` or `error`.
+
+- **Failure modes:** `scored`, `ocr_error`, `extraction_error`, `truncated`, `zero_rows`, `approve_error`, `readback_error`, `setup_error`.
 - **Per case:** verdict, attempts passed, recall, precision, value accuracy, classification accuracy, notation keys (recovered/scored), distractors stored, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
 - **Notes:** cases on the legacy tolerance, row-scored cases whose `textTables` is still unknown in the manifest, cases left out of the baseline, held rows included at approve.
 

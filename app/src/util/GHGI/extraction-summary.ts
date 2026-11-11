@@ -60,10 +60,6 @@ export type ExtractionSummary = {
   numberFormatConflict?: { chosen: NumberStyle; detected: NumberStyle };
   /** Total the user gave for the document; reconciliation target in the review. */
   userReportedTotal?: { value: number; kind: ReportedTotalKind };
-  /** Table pages the user listed (sorted, unique). */
-  requestedPages?: number[];
-  /** Listed pages the document does not have. */
-  ignoredPages?: number[];
 };
 
 /**
@@ -316,8 +312,9 @@ export function reconcileExtraction(
   if (user) {
     scale = Math.max(Math.abs(user.value), targets.scale);
     const sameKind = user.kind === "net" ? targets.net : targets.grand;
-    const confirmed = sameKind.some((value) =>
-      withinTolerance(value, user.value),
+    const confirmed = sameKind.some(
+      (value) =>
+        targetDeviation(value, user.value, scale) <= RECONCILIATION_TOLERANCE,
     );
     candidates = confirmed ? [user.value, ...documentTargets] : [user.value];
   }
@@ -337,7 +334,11 @@ export function reconcileExtraction(
     reportedTotal: best,
     deviation: bestDeviation,
     mismatch: bestDeviation > RECONCILIATION_TOLERANCE,
-    source: user && withinTolerance(best, user.value) ? "user" : "document",
+    source:
+      user &&
+      targetDeviation(best, user.value, scale) <= RECONCILIATION_TOLERANCE
+        ? "user"
+        : "document",
     ...(user ? { userTotal: user.value } : {}),
   };
 }
@@ -352,7 +353,6 @@ export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
 ];
 
 export type ZeroRowReason =
-  | "pdf-extraction-no-rows-on-listed-pages"
   | "pdf-extraction-only-totals"
   | "pdf-extraction-unsupported-units"
   | "pdf-extraction-no-data"
@@ -367,12 +367,6 @@ export type ZeroRowReason =
 export function zeroRowReason(
   summary: ExtractionSummary | null,
 ): ZeroRowReason {
-  if (
-    summary?.requestedPages?.length &&
-    (summary.droppedRows?.other_page ?? 0) > 0
-  ) {
-    return "pdf-extraction-no-rows-on-listed-pages";
-  }
   const targetYear = summary?.targetYear ?? null;
   const totals = summary?.reportedTotals ?? [];
   const totalsForYear = totals.filter(

@@ -630,15 +630,6 @@ describe("PdfOcrJob queue", () => {
     );
   });
 
-  it("translates the pages-not-found error into an i18n reason", async () => {
-    extractRows.mockRejectedValueOnce(new Error("PDF pages not found"));
-
-    const importedFile = await runStoredExtraction();
-
-    expect(importedFile.importStatus).toBe("failed");
-    expect(importedFile.errorLog).toBe("i18n:pdf-pages-not-found");
-  });
-
   it("passes the stored source metadata to extraction, null when invalid", async () => {
     extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
     const metadata = {
@@ -646,7 +637,6 @@ describe("PdfOcrJob queue", () => {
       numberFormatSource: "user",
       reportedTotal: 100,
       reportedTotalKind: "net",
-      pages: [3],
     };
     await runStoredExtraction({ sourceMetadata: metadata });
     expect(extractRows).toHaveBeenLastCalledWith(

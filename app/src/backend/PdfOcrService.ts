@@ -129,7 +129,6 @@ class PdfSourceError extends Error {
 const EXTRACTION_ERROR_KEYS: Record<string, string> = {
   "Inventory not found for the target year":
     "i18n:inventory-not-found-for-target-year",
-  "PDF pages not found": "i18n:pdf-pages-not-found",
 };
 
 function sanitizedMessage(error: unknown): string {

@@ -17,10 +17,7 @@ export type SourceMetadata = {
   numberFormatSource: NumberFormatSource | null;
   reportedTotal: number | null;
   reportedTotalKind: ReportedTotalKind | null;
-  pages: number[] | null;
 };
-
-const MAX_PAGES = 2000;
 
 export const sourceMetadataSchema = z
   .object({
@@ -29,14 +26,8 @@ export const sourceMetadataSchema = z
       .enum(["user", "country_default"])
       .nullable()
       .default(null),
-    reportedTotal: z.number().positive().finite().nullable().default(null),
+    reportedTotal: z.number().finite().nullable().default(null),
     reportedTotalKind: z.enum(["gross", "net"]).nullable().default(null),
-    pages: z
-      .array(z.number().int().min(1))
-      .min(1)
-      .max(MAX_PAGES)
-      .nullable()
-      .default(null),
   })
   .refine(
     (m) => (m.numberFormat === null) === (m.numberFormatSource === null),
@@ -50,6 +41,18 @@ export const sourceMetadataSchema = z
     {
       message: "reportedTotal and reportedTotalKind must be set together",
       path: ["reportedTotalKind"],
+    },
+  )
+  // Gross is positive; a net total may be negative (removals exceed emissions).
+  .refine(
+    (m) =>
+      m.reportedTotal === null ||
+      (m.reportedTotalKind === "net"
+        ? m.reportedTotal !== 0
+        : m.reportedTotal > 0),
+    {
+      message: "a gross total must be positive and a net total non-zero",
+      path: ["reportedTotal"],
     },
   ) satisfies z.ZodType<SourceMetadata, z.ZodTypeDef, unknown>;
 
@@ -70,29 +73,6 @@ export function defaultNumberStyleForCountry(
   if (EUROPEAN_COUNTRIES.has(code)) return "european";
   if (ENGLISH_COUNTRIES.has(code)) return "english";
   return null;
-}
-
-/**
- * Parses "40-45, 52" into a sorted unique page list. Null for empty input, a
- * reversed range, page 0, a non-digit token or more than 2000 pages.
- */
-export function parsePageList(input: string): number[] | null {
-  const tokens = input.split(",").map((t) => t.trim());
-  if (tokens.length === 0 || tokens.every((t) => t === "")) return null;
-  const pages = new Set<number>();
-  for (const token of tokens) {
-    const m = /^(\d+)(?:\s*-\s*(\d+))?$/.exec(token);
-    if (!m) return null;
-    const start = Number(m[1]);
-    const end = m[2] === undefined ? start : Number(m[2]);
-    if (start < 1 || end < start) return null;
-    if (end - start + 1 > MAX_PAGES) return null;
-    for (let p = start; p <= end; p++) {
-      pages.add(p);
-      if (pages.size > MAX_PAGES) return null;
-    }
-  }
-  return [...pages].sort((a, b) => a - b);
 }
 
 type FormatMetadata = Pick<

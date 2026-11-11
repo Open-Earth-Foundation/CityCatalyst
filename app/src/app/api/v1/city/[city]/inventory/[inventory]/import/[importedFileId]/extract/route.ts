@@ -61,12 +61,6 @@
  *                     type: string
  *                     enum: [gross, net]
  *                     nullable: true
- *                   pages:
- *                     type: array
- *                     items:
- *                       type: integer
- *                       minimum: 1
- *                     nullable: true
  *     responses:
  *       202:
  *         description: Extraction queued; poll the import resource for completion.

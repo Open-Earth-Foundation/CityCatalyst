@@ -127,14 +127,45 @@ describe("PdfSourceMetadataForm", () => {
     expect(c.textContent).toContain("= 7,453,000 tCO2e");
   });
 
-  it("invalid pages block extract", () => {
-    const base = initialPdfSourceMetadataDraft("BR");
-    expect(
-      draftToSourceMetadata({ ...base, pagesText: "55-40" }).errors,
-    ).toEqual(["pages"]);
-    expect(
-      draftToSourceMetadata({ ...base, pagesText: "40-45, 52" }).metadata.pages,
-    ).toEqual([40, 41, 42, 43, 44, 45, 52]);
+  it("accepts a negative net total, rejects it as gross", () => {
+    const base = {
+      ...initialPdfSourceMetadataDraft("NZ"),
+      totalKind: "net" as const,
+    };
+    for (const totalText of ["(25,639)", "−25,639", "-25,639"]) {
+      const net = draftToSourceMetadata({ ...base, totalText });
+      expect(net.errors).toEqual([]);
+      expect(net.metadata.reportedTotal).toBe(-25639);
+      expect(net.metadata.reportedTotalKind).toBe("net");
+      const gross = draftToSourceMetadata({
+        ...base,
+        totalKind: "gross",
+        totalText,
+      });
+      expect(gross.errors).toEqual(["total"]);
+      expect(gross.metadata.reportedTotal).toBeNull();
+    }
+    const unknown = draftToSourceMetadata({
+      ...base,
+      numberFormat: "unknown",
+      totalText: "(25,639)",
+    });
+    expect(unknown.metadata.reportedTotal).toBe(-25639);
+    const european = draftToSourceMetadata({
+      ...initialPdfSourceMetadataDraft("BR"),
+      totalKind: "net",
+      totalText: "-25.639,5",
+    });
+    expect(european.metadata.reportedTotal).toBe(-25639.5);
+  });
+
+  it("zero is an error for net and gross", () => {
+    const base = initialPdfSourceMetadataDraft("NZ");
+    for (const totalKind of ["net", "gross"] as const) {
+      expect(
+        draftToSourceMetadata({ ...base, totalKind, totalText: "0" }).errors,
+      ).toEqual(["total"]);
+    }
   });
 
   it("empty draft gives all-null metadata", () => {
@@ -147,7 +178,6 @@ describe("PdfSourceMetadataForm", () => {
       numberFormatSource: null,
       reportedTotal: null,
       reportedTotalKind: null,
-      pages: null,
     });
   });
 });

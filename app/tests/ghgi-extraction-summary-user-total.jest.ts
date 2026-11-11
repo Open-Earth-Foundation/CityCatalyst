@@ -143,3 +143,32 @@ describe("reconcileExtraction with a user-reported total", () => {
     expect(extractionReviewNotes(null).numberFormatConflict).toBeNull();
   });
 });
+
+describe("reconcileExtraction with a negative user net total", () => {
+  // Masterton 2021/22: gross 785,873, forestry -811,512, net -25,639 tCO2e.
+  const masterton = [
+    total(785873, "Total gross emissions"),
+    total(-811512, "Forestry removals", { level: "subtotal", sector: "AFOLU" }),
+    total(-25639, "Total net emissions"),
+  ];
+
+  it("matches an imported sum equal to the negative net total", () => {
+    const r = reconcileExtraction(
+      summary(masterton, -25639, { value: -25639, kind: "net" }),
+    )!;
+    expect(r.mismatch).toBe(false);
+    expect(r.source).toBe("user");
+    expect(r.reportedTotal).toBe(-25639);
+  });
+
+  it("matches without a document net total printed", () => {
+    const r = reconcileExtraction(
+      summary([total(785873, "Total gross emissions")], -25639, {
+        value: -25639,
+        kind: "net",
+      }),
+    )!;
+    expect(r.mismatch).toBe(false);
+    expect(r.source).toBe("user");
+  });
+});

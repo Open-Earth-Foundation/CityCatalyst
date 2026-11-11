@@ -1006,48 +1006,6 @@ function numberStyleInstruction(
     : 'Numbers in this document use "." as the decimal separator and "," for thousands.\n\n';
 }
 
-/** Sorted unique page numbers from the metadata, or null when none are listed. */
-function listedPagesOf(
-  metadata: SourceMetadata | null | undefined,
-): number[] | null {
-  const pages = metadata?.pages;
-  if (!pages || pages.length === 0) return null;
-  return [...new Set(pages)].sort((a, b) => a - b);
-}
-
-/** Rows of a page outside the user's list become dropped rows; its totals stay. */
-function moveRowsToOtherPage(result: ExtractionResult): ExtractionResult {
-  if (result.rows.length === 0) return result;
-  return {
-    rows: [],
-    summary: {
-      ...result.summary,
-      droppedRows: {
-        ...result.summary.droppedRows,
-        other_page:
-          (result.summary.droppedRows.other_page ?? 0) + result.rows.length,
-      },
-      importedSum: 0,
-    },
-  };
-}
-
-/** Totals of the page phase merged into the chunk summary, deduped by label, value and year. */
-function mergeReportedTotals(
-  base: ReportedTotal[],
-  extra: ReportedTotal[],
-): ReportedTotal[] {
-  const keyOf = (t: ReportedTotal) => `${t.label}\t${t.value}\t${t.year}`;
-  const seen = new Set(base.map(keyOf));
-  const merged = [...base];
-  for (const t of extra) {
-    if (seen.has(keyOf(t)) || merged.length >= MAX_REPORTED_TOTALS) continue;
-    seen.add(keyOf(t));
-    merged.push(t);
-  }
-  return merged;
-}
-
 type SchemaState = { useSchema: boolean };
 
 /** A provider that cannot take the strict schema answers 400 and names it. */
@@ -1089,61 +1047,9 @@ async function extractRowsFromDocument(
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
   const metadata = options?.sourceMetadata;
-  const listed = listedPagesOf(metadata);
-  let allPages = splitDocumentPages(documentContent);
-  if (listed && allPages.length === 0) {
-    // splitDocumentPages needs two markers; a one-page OCR output has one.
-    const single = [...documentContent.matchAll(/<!--\s*page:\s*(\d+)\s*-->/g)];
-    if (single.length === 1) {
-      const m = single[0];
-      allPages = [
-        {
-          page: Number(m[1]),
-          text: documentContent.slice((m.index ?? 0) + m[0].length),
-        },
-      ];
-    }
-  }
-  let pages = allPages.filter((p) => isCandidatePage(p.text));
-  let listedSet: Set<number> | null = null;
-  let pageSummary: Pick<ExtractionSummary, "requestedPages" | "ignoredPages"> =
-    {};
-  // Content the chunk path reads: the listed pages only, so rows carry them.
-  let chunkContent = documentContent;
-  if (listed) {
-    const existing = new Set(allPages.map((p) => p.page));
-    const present = listed.filter((n) => existing.has(n));
-    if (present.length === 0) {
-      throw new LLMError("PDF pages not found", LLMErrorCode.BAD_REQUEST);
-    }
-    const wanted = new Set(present);
-    listedSet = wanted;
-    const ignored = listed.filter((n) => !existing.has(n));
-    pageSummary = {
-      requestedPages: listed,
-      ...(ignored.length > 0 ? { ignoredPages: ignored } : {}),
-    };
-    const union = allPages.filter(
-      (p) => isCandidatePage(p.text) || wanted.has(p.page),
-    );
-    if (union.length > MAX_CANDIDATE_PAGES) {
-      logger.info(
-        { candidatePages: union.length, listedPages: present.length },
-        "Too many candidate pages; extracting the listed pages only",
-      );
-      pages = allPages.filter((p) => wanted.has(p.page));
-    } else {
-      pages = union;
-    }
-    chunkContent = allPages
-      .filter((p) => wanted.has(p.page))
-      .map((p) => `<!-- page: ${p.page} -->\n${p.text}`)
-      .join("\n");
-  }
-  const withPageSummary = (result: ExtractionResult): ExtractionResult =>
-    listed
-      ? { ...result, summary: { ...result.summary, ...pageSummary } }
-      : result;
+  const pages = splitDocumentPages(documentContent).filter((p) =>
+    isCandidatePage(p.text),
+  );
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1152,7 +1058,7 @@ async function extractRowsFromDocument(
     const onProgress = options?.onChunkProgress;
     // One progress bar for the page phase and a possible chunk fallback, so the
     // bar never moves back. The chunk count is known before any call.
-    const progressTotal = pages.length + countChunks(chunkContent);
+    const progressTotal = pages.length + countChunks(documentContent);
     const failedPages: { page: number; error: unknown }[] = [];
     // Pages where caption year or unit evidence dropped rows (see finalizeRows).
     const evidencePages = new Set<number>();
@@ -1209,13 +1115,7 @@ async function extractRowsFromDocument(
           );
         }
         if (finalized.evidenceDropped) evidencePages.add(page.page);
-        return {
-          page: page.page,
-          result:
-            listedSet && !listedSet.has(page.page)
-              ? moveRowsToOtherPage(finalized.result)
-              : finalized.result,
-        };
+        return { page: page.page, result: finalized.result };
       },
       async (completedCount) => {
         if (onProgress) {
@@ -1229,9 +1129,7 @@ async function extractRowsFromDocument(
       failed.length > 0
         ? { ...result, summary: { ...result.summary, failedPages: failed } }
         : result;
-    const selected = withPageSummary(
-      withFailed(selectReconciledPages(perPage, year)),
-    );
+    const selected = withFailed(selectReconciledPages(perPage, year));
     logger.info(
       {
         pageSelection: selected.summary.pageSelection,
@@ -1248,7 +1146,7 @@ async function extractRowsFromDocument(
       // No page run reconciles. Per-page rows carry more noise than whole-document
       // chunks (CC-1008 live runs), so extract the old way.
       const chunked = await extractByChunks(
-        chunkContent,
+        documentContent,
         yearInstruction,
         options,
         schemaState,
@@ -1258,28 +1156,15 @@ async function extractRowsFromDocument(
         normalizeExtractedRows(chunked),
         year,
         {
-          source: { text: chunkContent, kind: "document" },
+          source: { text: documentContent, kind: "document" },
           sourceMetadata: metadata,
         },
       );
       return checkExtractionResult(
-        withPageSummary(
-          withFailed({
-            rows: result.rows,
-            summary: {
-              ...result.summary,
-              // With a page list the chunk text lacks the other pages, whose
-              // totals (executive summary) the page phase already found.
-              reportedTotals: listed
-                ? mergeReportedTotals(
-                    result.summary.reportedTotals,
-                    selected.summary.reportedTotals,
-                  )
-                : result.summary.reportedTotals,
-              pageSelection: "fallback",
-            },
-          }),
-        ),
+        withFailed({
+          rows: result.rows,
+          summary: { ...result.summary, pageSelection: "fallback" },
+        }),
         chunked.length,
         targetYear,
       );
@@ -1309,18 +1194,16 @@ async function extractRowsFromDocument(
   }
 
   const allRows = await extractByChunks(
-    chunkContent,
+    documentContent,
     yearInstruction,
     options,
     schemaState,
   );
   return checkExtractionResult(
-    withPageSummary(
-      finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
-        source: { text: chunkContent, kind: "document" },
-        sourceMetadata: metadata,
-      }),
-    ),
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
+      source: { text: documentContent, kind: "document" },
+      sourceMetadata: metadata,
+    }),
     allRows.length,
     targetYear,
   );

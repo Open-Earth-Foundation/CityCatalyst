@@ -1,5 +1,5 @@
 /**
- * CC-1163: user number format, reported total and table pages in PDF
+ * CC-1163: user number format and reported total in PDF
  * extraction. The LLM is mocked; these tests prove the code around the model.
  */
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
@@ -30,7 +30,6 @@ const meta = (over: Record<string, unknown> = {}) => ({
   numberFormatSource: null,
   reportedTotal: null,
   reportedTotalKind: null,
-  pages: null,
   ...over,
 });
 
@@ -165,128 +164,6 @@ describe("number style from metadata", () => {
       targetYear: 2021,
     });
     expect(result.summary.userReportedTotal).toBeUndefined();
-    expect(result.summary.requestedPages).toBeUndefined();
     expect(result.summary.numberFormatConflict).toBeUndefined();
-  });
-});
-
-describe("page filter", () => {
-  const doc =
-    onePage(
-      5,
-      manyNumbers("english", "PAGE_5 Executive summary total 9,559,215"),
-    ) +
-    onePage(40, manyNumbers("english", "PAGE_40 table")) +
-    onePage(41, manyNumbers("english", "PAGE_41 table")) +
-    onePage(55, manyNumbers("english", "PAGE_55 other year table"));
-
-  it("drops rows outside the list and keeps their totals", async () => {
-    mockByPage({
-      5: [row(100000, { gpcRefNo: "I.1.2" }), totalRow(9559215)],
-      40: [row(5000000)],
-      41: [row(4559215, { sector: "Transportation", gpcRefNo: "II.1.1" })],
-      55: [row(777000, { gpcRefNo: "I.2.1" })],
-    });
-    const result = await extractInventoryFromDocument(doc, {
-      targetYear: 2021,
-      sourceMetadata: meta({ pages: [41, 40] }),
-    });
-    expect(result.rows.map((r) => r.page).sort()).toEqual([40, 41]);
-    expect(result.summary.droppedRows.other_page).toBeGreaterThan(0);
-    expect(result.summary.reportedTotals.some((t) => t.value === 9559215)).toBe(
-      true,
-    );
-    expect(result.summary.requestedPages).toEqual([40, 41]);
-  });
-
-  it("listed non-candidate page is still sent", async () => {
-    mockByPage({ 40: [row(1500)] });
-    const text =
-      onePage(39, manyNumbers("english", "PAGE_39 table")) +
-      onePage(40, "PAGE_40 | I.1.1 | 1,500 |\n") +
-      onePage(41, "end\n");
-    await extractInventoryFromDocument(text, {
-      targetYear: 2021,
-      sourceMetadata: meta({ pages: [40] }),
-    });
-    const sent = complete.mock.calls.map(
-      (c) =>
-        (c[0] as { messages: { content: string }[] }).messages.at(-1)!.content,
-    );
-    expect(sent.some((s) => s.includes("PAGE_40"))).toBe(true);
-  });
-
-  it("chunk fallback uses listed pages only", async () => {
-    // 4,000,000 + 1,000,000 does not reach the 9,559,215 executive summary total.
-    mockByPage({
-      5: [totalRow(9559215)],
-      40: [row(4000000)],
-      41: [row(1000000, { sector: "Transportation", gpcRefNo: "II.1.1" })],
-      55: [row(777000, { gpcRefNo: "I.2.1" })],
-    });
-    const result = await extractInventoryFromDocument(doc, {
-      targetYear: 2021,
-      sourceMetadata: meta({ pages: [40, 41] }),
-    });
-    const chunkPrompts = complete.mock.calls
-      .map(
-        (c) =>
-          (c[0] as { messages: { content: string }[] }).messages.at(-1)!
-            .content,
-      )
-      .filter((s) => s.includes("<!-- page: 40 -->"));
-    expect(chunkPrompts.length).toBeGreaterThan(0);
-    for (const prompt of chunkPrompts) {
-      expect(prompt).toContain("<!-- page: 41 -->");
-      expect(prompt).not.toContain("<!-- page: 5 -->");
-      expect(prompt).not.toContain("<!-- page: 55 -->");
-    }
-    expect(result.summary.pageSelection).toBe("fallback");
-    expect(result.summary.requestedPages).toEqual([40, 41]);
-    expect(result.summary.reportedTotals.some((t) => t.value === 9559215)).toBe(
-      true,
-    );
-  });
-
-  it("missing listed pages are ignored", async () => {
-    mockByPage({ 40: [row(5000000)] });
-    const result = await extractInventoryFromDocument(doc, {
-      targetYear: 2021,
-      sourceMetadata: meta({ pages: [40, 999] }),
-    });
-    expect(result.summary.ignoredPages).toEqual([999]);
-    expect(result.summary.requestedPages).toEqual([40, 999]);
-  });
-
-  it("no listed page exists", async () => {
-    mockByPage({});
-    await expect(
-      extractInventoryFromDocument(doc, {
-        targetYear: 2021,
-        sourceMetadata: meta({ pages: [999] }),
-      }),
-    ).rejects.toThrow("PDF pages not found");
-    await expect(
-      extractInventoryFromDocument("no page markers 1,234,567", {
-        targetYear: 2021,
-        sourceMetadata: meta({ pages: [1] }),
-      }),
-    ).rejects.toThrow("PDF pages not found");
-  });
-
-  it("one-page document with a page list extracts, or rejects a missing page", async () => {
-    mockByPage({ 1: [row(1500)] });
-    const text = onePage(1, manyNumbers("english", "PAGE_1"));
-    const ok = await extractInventoryFromDocument(text, {
-      targetYear: 2021,
-      sourceMetadata: meta({ pages: [1] }),
-    });
-    expect(ok.rows).toHaveLength(1);
-    await expect(
-      extractInventoryFromDocument(text, {
-        targetYear: 2021,
-        sourceMetadata: meta({ pages: [2] }),
-      }),
-    ).rejects.toThrow("PDF pages not found");
   });
 });

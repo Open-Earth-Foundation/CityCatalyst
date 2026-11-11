@@ -137,8 +137,6 @@ export default function ReviewConfirmStep({
     numberFormatConflict,
   } = extractionReviewNotes(extractionSummary ?? null);
 
-  const ignoredPages = extractionSummary?.ignoredPages ?? [];
-
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
     sourceFile: fileInfo?.originalFileName || null,
@@ -388,8 +386,7 @@ export default function ReviewConfirmStep({
       {(droppedReasons.length > 0 ||
         extractionSummary?.yearAssumed ||
         reconciledPages.length > 0 ||
-        failedPages.length > 0 ||
-        ignoredPages.length > 0) && (
+        failedPages.length > 0) && (
         <Box
           bg="background.neutral"
           border="1px solid"
@@ -428,11 +425,6 @@ export default function ReviewConfirmStep({
           {failedPages.length > 0 && (
             <Text fontSize="body.sm" color="content.secondary" mt={2}>
               {t("import-pages-failed", { pages: failedPages.join(", ") })}
-            </Text>
-          )}
-          {ignoredPages.length > 0 && (
-            <Text fontSize="body.sm" color="content.secondary" mt={2}>
-              {t("import-ignored-pages", { pages: ignoredPages.join(", ") })}
             </Text>
           )}
           {extractionSummary?.yearAssumed && (

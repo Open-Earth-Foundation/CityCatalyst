@@ -958,7 +958,6 @@ describe("Import Routes API", () => {
       numberFormatSource: "user",
       reportedTotal: 9559215,
       reportedTotalKind: "gross",
-      pages: [40, 41],
     };
 
     const createPdf = (mappingConfiguration?: Record<string, unknown>) =>
@@ -1007,6 +1006,28 @@ describe("Import Routes API", () => {
       expect(file.mappingConfiguration?.sourceMetadata).toEqual(metadata);
     });
 
+    it("extract rejects a negative gross total and stores a negative net total", async () => {
+      const rejected = await createPdf();
+      const bad = await postExtract(rejected.id, {
+        sourceMetadata: {
+          ...metadata,
+          reportedTotal: -25639,
+          reportedTotalKind: "gross",
+        },
+      });
+      await expectStatusCode(bad, 400);
+      const file = await createPdf();
+      const net = {
+        ...metadata,
+        reportedTotal: -25639,
+        reportedTotalKind: "net",
+      };
+      const ok = await postExtract(file.id, { sourceMetadata: net });
+      await expectStatusCode(ok, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toEqual(net);
+    });
+
     it("extract rejects numberFormat without source", async () => {
       const file = await createPdf();
       const res = await postExtract(file.id, {
@@ -1036,7 +1057,7 @@ describe("Import Routes API", () => {
     it("retry replaces sourceMetadata and keeps extractionProgress", async () => {
       const file = await createPdf({
         extractionProgress: { current: 2, total: 5 },
-        sourceMetadata: { ...metadata, reportedTotal: 1, pages: [1] },
+        sourceMetadata: { ...metadata, reportedTotal: 1 },
       });
       const res = await postExtract(file.id, { sourceMetadata: metadata });
       await expectStatusCode(res, 202);

@@ -11,7 +11,6 @@ import { Field } from "@/components/ui/field";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import {
   defaultNumberStyleForCountry,
-  parsePageList,
   type ReportedTotalKind,
   type SourceMetadata,
 } from "@/util/GHGI/source-metadata";
@@ -22,7 +21,6 @@ export type PdfSourceMetadataDraft = {
   numberFormatTouched: boolean;
   totalText: string;
   totalKind: ReportedTotalKind;
-  pagesText: string;
 };
 
 export function initialPdfSourceMetadataDraft(
@@ -33,17 +31,27 @@ export function initialPdfSourceMetadataDraft(
     numberFormatTouched: false,
     totalText: "",
     totalKind: "gross",
-    pagesText: "",
   };
 }
 
 /**
  * With a chosen format the separators are not guessed: european drops dots and
  * reads the comma as decimal, english drops commas. Text that still mixes both
- * (for example "9.559.215,5" read as english) is rejected.
+ * (for example "9.559.215,5" read as english) is rejected. A leading "-", "−"
+ * (U+2212) or parentheses make the value negative.
  */
 function parseTotal(draft: PdfSourceMetadataDraft): number | null {
-  const text = draft.totalText.trim().replace(/[   ']/g, "");
+  let text = draft.totalText.trim().replace(/[   ']/g, "");
+  let negative = false;
+  const paren = /^\((.*)\)$/.exec(text);
+  if (paren) {
+    negative = true;
+    text = paren[1];
+  }
+  if (text.startsWith("-") || text.startsWith("−")) {
+    negative = !negative;
+    text = text.slice(1);
+  }
   let value: number | null;
   if (draft.numberFormat === "european") {
     value = /^[\d.]*\d(,\d+)?$/.test(text)
@@ -56,26 +64,29 @@ function parseTotal(draft: PdfSourceMetadataDraft): number | null {
   } else {
     value = parseNumberString(text, "unknown");
   }
-  return value != null && Number.isFinite(value) && value > 0 ? value : null;
+  if (value == null || !Number.isFinite(value)) return null;
+  return negative ? -value : value;
 }
 
 export function draftToSourceMetadata(draft: PdfSourceMetadataDraft): {
   metadata: SourceMetadata;
-  errors: ("total" | "pages")[];
+  errors: "total"[];
 } {
-  const errors: ("total" | "pages")[] = [];
+  const errors: "total"[] = [];
   const known = draft.numberFormat !== "unknown";
 
   let reportedTotal: number | null = null;
   if (draft.totalText.trim() !== "") {
     reportedTotal = parseTotal(draft);
-    if (reportedTotal == null) errors.push("total");
-  }
-
-  let pages: number[] | null = null;
-  if (draft.pagesText.trim() !== "") {
-    pages = parsePageList(draft.pagesText);
-    if (pages == null) errors.push("pages");
+    // Zero is no total; only a net total may be negative.
+    if (
+      reportedTotal == null ||
+      reportedTotal === 0 ||
+      (reportedTotal < 0 && draft.totalKind !== "net")
+    ) {
+      reportedTotal = null;
+      errors.push("total");
+    }
   }
 
   return {
@@ -90,7 +101,6 @@ export function draftToSourceMetadata(draft: PdfSourceMetadataDraft): {
         : null,
       reportedTotal,
       reportedTotalKind: reportedTotal != null ? draft.totalKind : null,
-      pages,
     },
     errors,
   };
@@ -193,18 +203,6 @@ export function PdfSourceMetadataForm({
             <Radio value="net">{t("pdf-reported-total-kind-net")}</Radio>
           </Box>
         </RadioGroup>
-      </Field>
-
-      <Field
-        label={t("pdf-table-pages-label")}
-        helperText={t("pdf-table-pages-help")}
-        invalid={errors.includes("pages")}
-        errorText={t("pdf-table-pages-invalid")}
-      >
-        <Input
-          value={value.pagesText}
-          onChange={(e) => onChange({ ...value, pagesText: e.target.value })}
-        />
       </Field>
     </Box>
   );

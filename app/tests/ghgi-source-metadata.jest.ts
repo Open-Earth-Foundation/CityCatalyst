@@ -2,13 +2,9 @@ import { describe, expect, it } from "@jest/globals";
 import {
   defaultNumberStyleForCountry,
   numberFormatConflict,
-  parsePageList,
   resolveNumberStyle,
   sourceMetadataSchema,
 } from "@/util/GHGI/source-metadata";
-
-const range = (a: number, b: number) =>
-  Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
 describe("defaultNumberStyleForCountry", () => {
   it("maps countries case-insensitively", () => {
@@ -17,21 +13,6 @@ describe("defaultNumberStyleForCountry", () => {
     expect(defaultNumberStyleForCountry("XX")).toBeNull();
     expect(defaultNumberStyleForCountry(null)).toBeNull();
     expect(defaultNumberStyleForCountry(undefined)).toBeNull();
-  });
-});
-
-describe("parsePageList", () => {
-  it("parses numbers and ranges", () => {
-    expect(parsePageList("40-55")).toEqual(range(40, 55));
-    expect(parsePageList(" 40-45, 52 ")).toEqual([40, 41, 42, 43, 44, 45, 52]);
-    expect(parsePageList("40, 40-42")).toEqual([40, 41, 42]);
-  });
-  it("rejects invalid input", () => {
-    expect(parsePageList("55-40")).toBeNull();
-    expect(parsePageList("0")).toBeNull();
-    expect(parsePageList("p40")).toBeNull();
-    expect(parsePageList("")).toBeNull();
-    expect(parsePageList("1-2001")).toBeNull();
   });
 });
 
@@ -87,7 +68,6 @@ describe("sourceMetadataSchema", () => {
       numberFormatSource: null,
       reportedTotal: null,
       reportedTotalKind: null,
-      pages: null,
     });
     expect(
       sourceMetadataSchema.safeParse({ numberFormat: "english" }).success,
@@ -104,15 +84,56 @@ describe("sourceMetadataSchema", () => {
         reportedTotalKind: "gross",
       }).success,
     ).toBe(false);
-    expect(sourceMetadataSchema.safeParse({ pages: [0] }).success).toBe(false);
     expect(
       sourceMetadataSchema.safeParse({
         numberFormat: "english",
         numberFormatSource: "user",
         reportedTotal: 10,
         reportedTotalKind: "net",
-        pages: [1, 2],
       }).success,
     ).toBe(true);
+  });
+
+  it("accepts a negative net total, rejects a negative gross or zero net", () => {
+    const base = { numberFormat: null, numberFormatSource: null };
+    expect(
+      sourceMetadataSchema.safeParse({
+        ...base,
+        reportedTotal: -25639,
+        reportedTotalKind: "net",
+      }).success,
+    ).toBe(true);
+    expect(
+      sourceMetadataSchema.safeParse({
+        ...base,
+        reportedTotal: -25639,
+        reportedTotalKind: "gross",
+      }).success,
+    ).toBe(false);
+    expect(
+      sourceMetadataSchema.safeParse({
+        ...base,
+        reportedTotal: 0,
+        reportedTotalKind: "net",
+      }).success,
+    ).toBe(false);
+    expect(
+      sourceMetadataSchema.safeParse({
+        reportedTotal: 0,
+        reportedTotalKind: "gross",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("strips a stored pages key from old metadata", () => {
+    const parsed = sourceMetadataSchema.safeParse({
+      numberFormat: "english",
+      numberFormatSource: "user",
+      reportedTotal: 10,
+      reportedTotalKind: "net",
+      pages: [40, 41],
+    });
+    expect(parsed.success).toBe(true);
+    expect(parsed.success && "pages" in parsed.data).toBe(false);
   });
 });

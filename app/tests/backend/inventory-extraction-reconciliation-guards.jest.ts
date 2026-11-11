@@ -278,7 +278,8 @@ describe("CC-1163 check 2: year evidence", () => {
       },
     });
     expect(result.rows.map((r) => r.gpcRefNo)).toEqual(["V.1"]);
-    expect(result.summary.droppedRows.other_year).toBe(1);
+    expect(result.summary.droppedRows.caption_year).toBe(1);
+    expect(result.summary.droppedRows.other_year).toBeUndefined();
   });
 
   it("rows of a 2019 table labeled 2021 are dropped", () => {
@@ -292,7 +293,8 @@ describe("CC-1163 check 2: year evidence", () => {
       },
     });
     expect(result.rows).toEqual([]);
-    expect(result.summary.droppedRows.other_year).toBe(2);
+    expect(result.summary.droppedRows.caption_year).toBe(2);
+    expect(result.summary.droppedRows.other_year).toBeUndefined();
     expect(result.summary.reportedTotals[0].year).toBe(2019);
     expect(
       reconciliationTargets(result.summary.reportedTotals, 2021).grand,

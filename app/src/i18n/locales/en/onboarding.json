@@ -226,6 +226,7 @@
   "import-reconciliation-detail": "The rows to import add up to {{imported}} tCO2e. The document reports {{reported}} tCO2e, a difference of {{deviation}}%. Check the file before you confirm. The data may be missing, counted twice or taken from another year.",
   "import-dropped-rows-title": "Rows left out while reading the document",
   "import-dropped-reason-other_year": "From another year: {{count}}",
+  "import-dropped-reason-caption_year": "Moved to another year by the table caption: {{count}}",
   "import-dropped-reason-missing_year": "Without a year: {{count}}",
   "import-dropped-reason-unsupported_unit": "In a unit that cannot be converted to tonnes: {{count}}",
   "import-dropped-reason-duplicate": "Repeated in another table: {{count}}",

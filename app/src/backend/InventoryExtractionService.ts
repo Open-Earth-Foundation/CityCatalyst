@@ -571,6 +571,7 @@ function selectPages(
       (p) =>
         p.result.rows.some((row) => row.year != null) ||
         (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
+        (p.result.summary.droppedRows.caption_year ?? 0) > 0 ||
         (p.result.summary.droppedRows.missing_year ?? 0) > 0,
     );
   const yearAssumed =
@@ -1304,6 +1305,7 @@ function checkExtractionResult(
     );
     if (
       (summary.droppedRows.other_year ?? 0) +
+        (summary.droppedRows.caption_year ?? 0) +
         (summary.droppedRows.missing_year ?? 0) >
       0
     ) {
@@ -1717,6 +1719,11 @@ function normalizeRows(
   raw: Record<string, unknown>[],
   style: NumberStyle,
 ): ExtractedRow[] {
+  const logAmbiguous = (value: string) =>
+    logger.info(
+      { value },
+      "Ambiguous 3-digit group parsed with number style unknown",
+    );
   return raw.map((row) => {
     const out: ExtractedRow = {
       year: null,
@@ -1743,7 +1750,7 @@ function normalizeRows(
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
       out.totalCO2e = row.totalCO2e;
     } else if (typeof row.totalCO2e === "string") {
-      const n = parseNumberString(row.totalCO2e, style);
+      const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
     if (row.refSource === "document" || row.refSource === "inferred") {
@@ -1783,19 +1790,19 @@ function normalizeRows(
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
-      const n = parseNumberString(row.co2, style);
+      const n = parseNumberString(row.co2, style, logAmbiguous);
       if (Number.isFinite(n)) out.co2 = n;
     }
     if (typeof row.ch4 === "number" && Number.isFinite(row.ch4)) {
       out.ch4 = row.ch4;
     } else if (typeof row.ch4 === "string") {
-      const n = parseNumberString(row.ch4, style);
+      const n = parseNumberString(row.ch4, style, logAmbiguous);
       if (Number.isFinite(n)) out.ch4 = n;
     }
     if (typeof row.n2o === "number" && Number.isFinite(row.n2o)) {
       out.n2o = row.n2o;
     } else if (typeof row.n2o === "string") {
-      const n = parseNumberString(row.n2o, style);
+      const n = parseNumberString(row.n2o, style, logAmbiguous);
       if (Number.isFinite(n)) out.n2o = n;
     }
     if (typeof row.source === "string" && !isPlaceholderOrEmpty(row.source))
@@ -1834,7 +1841,7 @@ function normalizeRows(
       typeof row.activityAmount === "string" &&
       !isPlaceholderOrEmpty(row.activityAmount)
     ) {
-      const n = parseNumberString(row.activityAmount, style);
+      const n = parseNumberString(row.activityAmount, style, logAmbiguous);
       if (Number.isFinite(n)) out.activityAmount = n;
     }
     return out;
@@ -2100,6 +2107,8 @@ function finalizeRows(
 ): { result: ExtractionResult; evidenceDropped: boolean } {
   let rows = inputRows;
   let evidenceDropped = false;
+  // Rows a caption year moved to another year, counted as caption_year drops.
+  const captionRelabeled = new Set<ExtractedRow>();
   // Year evidence from the page's table captions: when they name only other
   // years, rows the model labeled with the target year (or none) belong to that
   // table's year. The year filter then drops them, and their totals stop being
@@ -2128,7 +2137,9 @@ function finalizeRows(
           return row;
         }
         evidenceDropped = true;
-        return { ...row, year: relabel };
+        const moved = { ...row, year: relabel };
+        captionRelabeled.add(moved);
+        return moved;
       });
     }
   }
@@ -2182,6 +2193,7 @@ function finalizeRows(
       continue;
     }
     const scaled: ExtractedRow = { ...row };
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -2242,6 +2254,8 @@ function finalizeRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
+        else if (captionRelabeled.has(row))
+          drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {

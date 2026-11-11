@@ -52,7 +52,8 @@ function isGroupedInteger(s: string, sep: string): boolean {
  * Parses a number string with decimal and thousands separators.
  *
  * 1. Trim. Remove spaces, NBSP, narrow NBSP and `'` used as group separators.
- * 2. Sign: a leading `-` or `−`, or a value in parentheses, is negative.
+ * 2. Sign: a leading `-` or `−`, or a value in parentheses, is negative; a
+ *    leading `+` is dropped. A trailing unit (`1234 tCO2e`) or `%` is dropped.
  * 3. Both `.` and `,` present: the rightmost is the decimal separator and the
  *    other is the group separator (`1.234,5` and `1,234.5` are 1234.5),
  *    whatever the style.
@@ -65,11 +66,13 @@ function isGroupedInteger(s: string, sep: string): boolean {
  *      (`1,500` is 1500, `1.500` is 1.5);
  *    - european: dot is a group separator, comma is decimal
  *      (`1.500` is 1500, `1,500` is 1.5).
+ *    With style unknown, `onAmbiguous` is called with the input.
  * 7. Anything else (letters, several decimal marks, malformed groups): null.
  */
 export function parseNumberString(
   s: string,
   style: NumberStyle,
+  onAmbiguous?: (s: string) => void,
 ): number | null {
   let t = s.trim().replace(/[ \u00a0\u202f']/g, "");
   let negative = false;
@@ -78,10 +81,14 @@ export function parseNumberString(
     negative = true;
     t = paren[1];
   }
-  if (t.startsWith("-") || t.startsWith("\u2212")) {
+  if (t.startsWith("+")) {
+    t = t.slice(1);
+  } else if (t.startsWith("-") || t.startsWith("\u2212")) {
     negative = true;
     t = t.slice(1);
   }
+  // A trailing unit (`tCO2e`, `kg`) or `%` after the last digit is dropped.
+  t = t.replace(/%$/, "").replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
   if (!/^\d[\d.,]*\d$|^\d$/.test(t)) return null;
 
   const dots = t.split(".").length - 1;
@@ -111,6 +118,7 @@ export function parseNumberString(
       let isGroup = false;
       if (after.length === 3) {
         isGroup = style === "european" ? sep === "." : sep === ",";
+        if (style === "unknown") onAmbiguous?.(s);
       }
       if (isGroup) {
         if (!isGroupedInteger(t, sep)) return null;

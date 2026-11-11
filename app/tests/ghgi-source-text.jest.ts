@@ -340,3 +340,43 @@ describe("isValueInNumbers", () => {
     expect(isValueInNumbers(raw, numbers)).toBe(isValueInText(raw, text));
   });
 });
+
+describe("parseNumberString with unit, percent or plus sign", () => {
+  it.each<[string, NumberStyle, number]>([
+    ["1234 tCO2e", "unknown", 1234],
+    ["1,234.5 tCO2e", "english", 1234.5],
+    ["9.559.215 t CO2e", "european", 9559215],
+    ["-603,983 tCO2e", "english", -603983],
+    ["+5", "unknown", 5],
+    ["12%", "unknown", 12],
+    ["12,5 %", "european", 12.5],
+    ["1500 kg", "unknown", 1500],
+  ])("parses %s (%s) as %s", (input, style, expected) => {
+    expect(parseNumberString(input, style)).toBe(expected);
+  });
+
+  it.each(["tCO2e", "abc", "t 1234", "1.2.3 t", "+-5", "%"])(
+    "still rejects %s",
+    (input) => {
+      expect(parseNumberString(input, "unknown")).toBeNull();
+    },
+  );
+});
+
+describe("parseNumberString ambiguous group callback", () => {
+  it("reports a single 3-digit group read with style unknown", () => {
+    const seen: string[] = [];
+    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(1.5);
+    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(1500);
+    expect(seen).toEqual(["1.500", "1,500"]);
+  });
+
+  it("does not report when the style is known or the value is not ambiguous", () => {
+    const seen: string[] = [];
+    parseNumberString("1.500", "european", (s) => seen.push(s));
+    parseNumberString("1,500", "english", (s) => seen.push(s));
+    parseNumberString("1.5", "unknown", (s) => seen.push(s));
+    parseNumberString("1,234,567", "unknown", (s) => seen.push(s));
+    expect(seen).toEqual([]);
+  });
+});

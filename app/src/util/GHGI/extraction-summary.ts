@@ -27,6 +27,7 @@ export type ReportedTotal = {
 export type DroppedRowReason =
   | "subtotal_or_total"
   | "other_year"
+  | "caption_year"
   | "missing_year"
   | "unsupported_unit"
   | "duplicate"
@@ -346,6 +347,7 @@ export function reconcileExtraction(
 /** Drop reasons worth showing. Subtotals and totals are expected to be left out. */
 export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
   "other_year",
+  "caption_year",
   "missing_year",
   "unsupported_unit",
   "duplicate",

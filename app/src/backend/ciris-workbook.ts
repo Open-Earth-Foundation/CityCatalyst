@@ -116,12 +116,13 @@ export async function listSpreadsheetSheetNames(
 }
 
 function decodeXmlEntities(value: string): string {
+  // Decode &amp; last so sequences like &amp;lt; stay a single unescape.
   return value
-    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
 }
 
 /**

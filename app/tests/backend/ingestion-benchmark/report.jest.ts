@@ -405,6 +405,18 @@ describe("report", () => {
     const line = renderIndexLine(s, [block({})], "folder");
     expect(line).toContain("68%");
     expect(line).toContain("[folder](./folder/report.md)");
+    expect(line).not.toContain("MLflow");
+  });
+
+  it("links the MLflow run from the INDEX line when it was logged", () => {
+    const s = {
+      ...summary([result("A", 0.5)]),
+      mlflowRunUrl: "https://mlflow.example/#/experiments/1/runs/abc",
+    };
+    const line = renderIndexLine(s, [block({})], "folder");
+    expect(line).toContain(
+      "[folder](./folder/report.md) · [MLflow](https://mlflow.example/#/experiments/1/runs/abc) |",
+    );
   });
 
   it("escapes backslashes before pipes in table cells", () => {

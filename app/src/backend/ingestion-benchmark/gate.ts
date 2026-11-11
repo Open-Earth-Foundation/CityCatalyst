@@ -8,6 +8,8 @@
  * - regression: the case passed before and fails now, headline recall dropped
  *   more than 5 points, or more attempts are 10x off than in the baseline;
  * - over budget: the case cost more than 3 times its forecast;
+ * - incomplete: an interrupted run did not finish every attempt of the case, so
+ *   it is not compared for regressions or budget;
  * - ok.
  */
 import type { Comparison } from "@/backend/ingestion-benchmark/baseline";
@@ -20,7 +22,8 @@ import {
   type Prices,
 } from "@/backend/ingestion-benchmark/report";
 
-export type Verdict = "ok" | "regression" | "error" | "over budget";
+export type Verdict =
+  "ok" | "regression" | "error" | "over budget" | "incomplete";
 
 export const RECALL_DROP = 0.05;
 export const BUDGET_FACTOR = 3;
@@ -34,7 +37,13 @@ export type CaseGate = {
   lines: [string, string, string][];
 };
 
-const SEVERITY: Verdict[] = ["error", "regression", "over budget", "ok"];
+const SEVERITY: Verdict[] = [
+  "error",
+  "regression",
+  "over budget",
+  "incomplete",
+  "ok",
+];
 
 /**
  * Cost of `attempts` attempts of the case at `prices`, from the Before usage.
@@ -72,9 +81,10 @@ export function gateAgainstBaseline(
   current: CaseVerdict,
   comparison: Comparison,
   forecast: number | null,
+  expectedAttempts?: number,
 ): CaseGate {
   const base = comparison.baseline;
-  const hits: { verdict: Verdict; text: string }[] = [];
+  let hits: { verdict: Verdict; text: string }[] = [];
 
   if (nonScored(current) > 0 && (base === null || nonScored(base) === 0)) {
     hits.push({
@@ -114,6 +124,15 @@ export function gateAgainstBaseline(
     hits.push({
       verdict: "over budget",
       text: `cost $${current.costUsd.toFixed(3)} is over ${BUDGET_FACTOR}x the forecast $${forecast.toFixed(3)}`,
+    });
+  }
+
+  if (expectedAttempts !== undefined && current.attempts < expectedAttempts) {
+    // Fewer attempts cannot pass the all-attempts rule; that is not a regression.
+    hits = hits.filter((hit) => hit.verdict === "error");
+    hits.push({
+      verdict: "incomplete",
+      text: `${current.attempts} of ${expectedAttempts} attempts finished`,
     });
   }
 

@@ -109,6 +109,7 @@ Open `report.md` in the run folder. It has:
   - `regression`: the case passed in the baseline and fails now, recall drops by more than 5 points, or more attempts are 10x or more off than in the baseline.
   - `error`: some attempts did not reach `scored` and the baseline had no failed attempt for the case. A case with no usable baseline (none recorded, or `baseline stale`) also gets `error` when any attempt fails.
   - `over budget`: the cost is over 3x the forecast (the baseline usage scaled to the same number of attempts). It is reported but does not fail the run.
+  - `incomplete`: an interrupted run did not finish every attempt of the case. The case is not checked for regressions or budget, but a failed attempt still gives `error`.
 
   The command exits with 1 when any case is `regression` or `error`.
 
@@ -129,6 +130,10 @@ Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`
 - One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection; metrics per block; `report.md` and `results.json` as artifacts.
 - One child run per case: case metrics, per-attempt metrics (step = attempt number), verdict, and `extracted-values.json` per attempt.
 - PDFs, OCR text and answer keys are never uploaded. Metrics and `results.json` pass through the same redaction as the run folder, so no expected value (key row, expected total, difference to it, distractor) reaches MLflow.
+
+The run's `INDEX.md` line links the MLflow run when it was logged.
+
+The benchmark process sets `HIGHLIGHT_DISABLED=true` before it loads app modules, so Highlight does not record its OCR and LLM requests or the MLflow credentials.
 
 If MLflow fails, the run continues and the report says `MLflow: not logged` with the reason. A rescore is not logged.
 

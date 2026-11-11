@@ -155,6 +155,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Loads env, product modules and the test session. Call `disposeContext` when done. */
 export async function createContext(config: LocalConfig): Promise<RunContext> {
+  // Set before any app module loads: Highlight would otherwise record the OCR
+  // and LLM payloads and the MLflow auth header of the run.
+  process.env.HIGHLIGHT_DISABLED = "true";
   env.loadEnvConfig(process.cwd());
   installUsageMeter((await import("@/services/logger")).logger);
   const { db } = await import("@/models");
@@ -509,46 +512,56 @@ export async function runAttempt(
     let state;
     let ocrMs: number | null = null;
     let jobMs = 0;
+    let jobFailed = true;
     try {
       state = await runPdfJob(ctx, ids, importedFileId);
+      jobFailed = false;
     } finally {
       jobMs = Date.now() - jobStarted;
-      const job = await ctx.db.models.PdfOcrJob.findOne({
-        where: { sourceType: "inventory_import", sourceId: importedFileId },
-      });
-      const stored =
-        await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
-      for (const s3Key of [
-        stored?.s3Key,
-        job?.resultS3Key,
-        job?.structuredS3Key,
-      ]) {
-        if (s3Key) ctx.uploadedKeys.push(s3Key);
-      }
-      ocrMs =
-        job?.startedAt && job?.completedAt
-          ? job.completedAt.getTime() - job.startedAt.getTime()
-          : null;
-      ocrOk = job?.status === "succeeded";
-      ocrRuns.push({
-        ok: ocrOk,
-        code: job?.errorCode ?? null,
-        pages: job?.pageCount ?? null,
-        ms: jobMs,
-      });
-      if (job?.resultS3Key) {
-        // Third-party document text: kept in memory until the run folder exists.
-        ctx.ocrTexts.set(
-          `${entry.id}/${attempt}`,
-          await ctx.storage.getTextFile(job.resultS3Key),
+      try {
+        const job = await ctx.db.models.PdfOcrJob.findOne({
+          where: { sourceType: "inventory_import", sourceId: importedFileId },
+        });
+        const stored =
+          await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
+        for (const s3Key of [
+          stored?.s3Key,
+          job?.resultS3Key,
+          job?.structuredS3Key,
+        ]) {
+          if (s3Key) ctx.uploadedKeys.push(s3Key);
+        }
+        ocrMs =
+          job?.startedAt && job?.completedAt
+            ? job.completedAt.getTime() - job.startedAt.getTime()
+            : null;
+        ocrOk = job?.status === "succeeded";
+        ocrRuns.push({
+          ok: ocrOk,
+          code: job?.errorCode ?? null,
+          pages: job?.pageCount ?? null,
+          ms: jobMs,
+        });
+        if (job?.resultS3Key) {
+          // Third-party document text: kept in memory until the run folder exists.
+          ctx.ocrTexts.set(
+            `${entry.id}/${attempt}`,
+            await ctx.storage.getTextFile(job.resultS3Key),
+          );
+        }
+        const summary = (
+          stored?.mappingConfiguration as {
+            extractionSummary?: { failedPages?: number[] };
+          } | null
+        )?.extractionSummary;
+        failedPages = summary?.failedPages ?? [];
+      } catch (bookkeepingError) {
+        // A job error is the real failure: do not let this one replace it.
+        if (!jobFailed) throw bookkeepingError;
+        console.error(
+          `Job bookkeeping failed after the job error: ${String(bookkeepingError)}`,
         );
       }
-      const summary = (
-        stored?.mappingConfiguration as {
-          extractionSummary?: { failedPages?: number[] };
-        } | null
-      )?.extractionSummary;
-      failedPages = summary?.failedPages ?? [];
     }
     stageMs.ocr = ocrMs;
     stageMs.extraction = Math.max(0, jobMs - (ocrMs ?? 0));

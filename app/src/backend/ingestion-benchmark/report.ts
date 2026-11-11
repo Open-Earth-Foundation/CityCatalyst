@@ -508,7 +508,7 @@ export function renderIndexLine(
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
   const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
-  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md) |`;
+  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }
 
 export const INDEX_HEADER = [

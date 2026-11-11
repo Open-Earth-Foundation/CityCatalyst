@@ -6,6 +6,7 @@ import {
   exitCode,
   forecastUsd,
   gateAgainstBaseline,
+  type Verdict,
 } from "@/backend/ingestion-benchmark/gate";
 import type { CaseVerdict } from "@/backend/ingestion-benchmark/metrics";
 import {
@@ -193,6 +194,51 @@ describe("gateAgainstBaseline", () => {
     ]);
   });
 
+  it("error when the baseline is stale and an attempt did not score", () => {
+    // A runner failure is a real problem with or without a usable baseline.
+    const failing = verdict({
+      failureModes: { ...verdict().failureModes, scored: 2, ocr_error: 1 },
+    });
+    const g = gateAgainstBaseline(
+      failing,
+      {
+        id: "C-001",
+        status: "baseline stale",
+        baseline: null,
+        rescored: false,
+      },
+      null,
+    );
+    expect(g.verdict).toBe("error");
+    expect(exitCode([g])).toBe(1);
+  });
+
+  it("incomplete instead of regression when attempts did not all finish", () => {
+    const partial = verdict({
+      attempts: 1,
+      attemptsPassed: 1,
+      casePasses: false,
+      failureModes: { ...verdict().failureModes, scored: 1 },
+      costUsd: 10,
+    });
+    const g = gateAgainstBaseline(partial, compared(verdict()), 1, 3);
+    expect(g.verdict).toBe("incomplete");
+    expect(g.reasons).toEqual(["incomplete: 1 of 3 attempts finished"]);
+    expect(exitCode([g])).toBe(0);
+  });
+
+  it("incomplete keeps an error from a failed attempt", () => {
+    const partial = verdict({
+      attempts: 1,
+      attemptsPassed: 0,
+      casePasses: false,
+      failureModes: { ...verdict().failureModes, scored: 0, ocr_error: 1 },
+    });
+    const g = gateAgainstBaseline(partial, compared(verdict()), null, 3);
+    expect(g.verdict).toBe("error");
+    expect(g.reasons).toContain("incomplete: 1 of 3 attempts finished");
+  });
+
   it("no baseline is ok with a reason", () => {
     const g = gateAgainstBaseline(
       verdict(),
@@ -205,7 +251,7 @@ describe("gateAgainstBaseline", () => {
 });
 
 describe("exitCode", () => {
-  const gate = (verdict: "ok" | "regression" | "error" | "over budget") => ({
+  const gate = (verdict: Verdict) => ({
     id: "C-001",
     verdict,
     reasons: [],
@@ -218,6 +264,7 @@ describe("exitCode", () => {
     expect(exitCode([gate("ok"), gate("regression")])).toBe(1);
     expect(exitCode([gate("error")])).toBe(1);
     expect(exitCode([gate("ok"), gate("over budget")])).toBe(0);
+    expect(exitCode([gate("incomplete")])).toBe(0);
     expect(exitCode([])).toBe(0);
   });
 });

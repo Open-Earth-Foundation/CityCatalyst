@@ -507,6 +507,7 @@ export async function main(argv: string[]): Promise<number> {
         verdict,
         comparison,
         before ? forecastUsd(before, prices, verdict.attempts) : null,
+        options.runs,
       );
     });
     const manifestCounts = (["validated", "held-out", "dev"] as Block[]).reduce(

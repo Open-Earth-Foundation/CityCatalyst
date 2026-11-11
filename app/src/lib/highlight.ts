@@ -4,7 +4,13 @@ import { env } from "@/lib/runtime-env";
 // Only import and initialize Highlight if not in test environment
 let H: typeof HighlightNextServer.H | null = null;
 
-if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
+// HIGHLIGHT_DISABLED=true keeps Highlight off in local scripts (such as the PDF
+// benchmark) so their request bodies and auth headers are not recorded.
+if (
+  process.env.NODE_ENV !== "test" &&
+  process.env.HIGHLIGHT_DISABLED !== "true" &&
+  typeof window === "undefined"
+) {
   try {
     const HighlightNext = await import("@highlight-run/next/server");
     H = HighlightNext.H;

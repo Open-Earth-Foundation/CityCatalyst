@@ -1,0 +1,4463 @@
+{
+  "measuredAt": "2026-11-09T21:00:07.952Z",
+  "commit": "75c9e8a8f",
+  "branch": "david/cc-1124-build-a-reusable-pdf-extraction-benchmark",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-5.6-luna",
+  "reasoningEffort": null,
+  "ocrModel": "mistral-ocr-latest",
+  "prices": {
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2,
+    "ocrPerPage": 0.002
+  },
+  "runsPerFile": 3,
+  "heldOut": [
+    "C-027",
+    "C-028",
+    "C-029",
+    "C-030",
+    "C-031"
+  ],
+  "results": [
+    {
+      "id": "C-017",
+      "file": "Phoenix, USA 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-017",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 131522,
+          "stageMs": {
+            "ocr": 12030,
+            "extraction": 114848,
+            "import": 1618,
+            "total": 131522
+          },
+          "usage": {
+            "calls": 35,
+            "promptTokens": 247153,
+            "completionTokens": 30971,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3155
+          },
+          "failedPages": [],
+          "extractedRows": 9,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 849903000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 6186826000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 269697000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 8453966000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 16391000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 715000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 147448000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 150137000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 25,
+            "storedGroups": 8,
+            "matchedRows": 1,
+            "rowRecall": 0.04,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0.14285714285714285,
+            "classificationAccuracy": null,
+            "storedTotal": 16075083000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "missingRowCount": 24,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 8
+          },
+          "total": 16075083000
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 129145,
+          "stageMs": {
+            "ocr": 9134,
+            "extraction": 115747,
+            "import": 1605,
+            "total": 129145
+          },
+          "usage": {
+            "calls": 35,
+            "promptTokens": 247153,
+            "completionTokens": 30959,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3199
+          },
+          "failedPages": [],
+          "extractedRows": 13,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 3190000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 3716000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 80300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 50500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 140,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 6504000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 11800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1369400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 585000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 284400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 6300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 6900,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 25,
+            "storedGroups": 12,
+            "matchedRows": 8,
+            "rowRecall": 0.32,
+            "rowPrecision": 0.5833333333333334,
+            "subsectorRecall": 0.56,
+            "valueAccuracy": 0.6153846153846154,
+            "classificationAccuracy": 0.7,
+            "storedTotal": 15804740,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "missingRowCount": 17,
+            "distractorsStoredCount": 3,
+            "unexpectedStoredCount": 5
+          },
+          "total": 15804740
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 104953,
+          "stageMs": {
+            "ocr": 9618,
+            "extraction": 91082,
+            "import": 1671,
+            "total": 104953
+          },
+          "usage": {
+            "calls": 33,
+            "promptTokens": 232691,
+            "completionTokens": 24307,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 2950
+          },
+          "failedPages": [],
+          "extractedRows": 13,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 3190000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 3716000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 80300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 50500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 140,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 6504000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 11800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1369400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 585000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 284400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 6300,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 6900,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 25,
+            "storedGroups": 12,
+            "matchedRows": 8,
+            "rowRecall": 0.32,
+            "rowPrecision": 0.5833333333333334,
+            "subsectorRecall": 0.56,
+            "valueAccuracy": 0.6153846153846154,
+            "classificationAccuracy": 0.7,
+            "storedTotal": 15804740,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 26,
+            "notationRecovered": 0,
+            "missingRowCount": 17,
+            "distractorsStoredCount": 3,
+            "unexpectedStoredCount": 5
+          },
+          "total": 15804740
+        }
+      ],
+      "stableTotal": false,
+      "block": "validated",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 138
+      }
+    },
+    {
+      "id": "C-022",
+      "file": "Madrid, Spain 2023 (IPCC con CIRIS).pdf",
+      "kind": "pdf",
+      "targetYear": 2023,
+      "keyId": "C-022",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 117131,
+          "stageMs": {
+            "ocr": 10549,
+            "extraction": 102304,
+            "import": 1631,
+            "total": 117131
+          },
+          "usage": {
+            "calls": 25,
+            "promptTokens": 189810,
+            "completionTokens": 21793,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3688
+          },
+          "failedPages": [],
+          "extractedRows": 12,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "storedTotal": 7327000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 7327000
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 122334,
+          "stageMs": {
+            "ocr": 9904,
+            "extraction": 107688,
+            "import": 1583,
+            "total": 122334
+          },
+          "usage": {
+            "calls": 25,
+            "promptTokens": 189826,
+            "completionTokens": 22774,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 4129
+          },
+          "failedPages": [],
+          "extractedRows": 12,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 671400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 1970800,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 8,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "storedTotal": 7250900,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 7250900
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 111434,
+          "stageMs": {
+            "ocr": 11058,
+            "extraction": 96158,
+            "import": 1601,
+            "total": 111434
+          },
+          "usage": {
+            "calls": 25,
+            "promptTokens": 189826,
+            "completionTokens": 21176,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3736
+          },
+          "failedPages": [],
+          "extractedRows": 12,
+          "heldRowsIncluded": 1,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 1626100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 1473400,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 420100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 76100,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1800900,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 9500,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 756000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 148800,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 678000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 344700,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 17,
+            "storedGroups": 10,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "storedTotal": 7333600,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 7333600
+        }
+      ],
+      "stableTotal": false,
+      "block": "validated",
+      "eligible": null,
+      "totalOnly": true,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 96
+      }
+    },
+    {
+      "id": "C-025",
+      "file": "Münster, Germany 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-025",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": false,
+          "ms": 29509,
+          "stageMs": {
+            "ocr": 7372,
+            "extraction": 18636,
+            "import": null,
+            "total": 29509
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 60489,
+            "completionTokens": 1226,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 658
+          },
+          "failedPages": [],
+          "extractedRows": 0,
+          "failureMode": "zero_rows",
+          "zeroRowsReason": "pdf-extraction-only-totals",
+          "message": "i18n:pdf-extraction-only-totals"
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": false,
+          "ms": 31291,
+          "stageMs": {
+            "ocr": 8398,
+            "extraction": 19568,
+            "import": null,
+            "total": 31291
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 60533,
+            "completionTokens": 1467,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 654
+          },
+          "failedPages": [],
+          "extractedRows": 0,
+          "failureMode": "zero_rows",
+          "zeroRowsReason": "pdf-extraction-only-totals",
+          "message": "i18n:pdf-extraction-only-totals"
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": false,
+          "ms": 32847,
+          "stageMs": {
+            "ocr": 8488,
+            "extraction": 20739,
+            "import": null,
+            "total": 32847
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 60532,
+            "completionTokens": 1355,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 659
+          },
+          "failedPages": [],
+          "extractedRows": 0,
+          "failureMode": "zero_rows",
+          "zeroRowsReason": "pdf-extraction-only-totals",
+          "message": "i18n:pdf-extraction-only-totals"
+        }
+      ],
+      "stableTotal": false,
+      "block": "validated",
+      "eligible": null,
+      "totalOnly": true,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 42
+      }
+    },
+    {
+      "id": "C-027",
+      "file": "Chicago 2022 (City of Chicago column of the CMAP regional inventory).pdf",
+      "kind": "pdf",
+      "targetYear": 2019,
+      "keyId": "C-027",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 54183,
+          "stageMs": {
+            "ocr": 10152,
+            "extraction": 38476,
+            "import": 1608,
+            "total": 54183
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 58907,
+            "completionTokens": 3929,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3643
+          },
+          "failedPages": [],
+          "extractedRows": 14,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 27100000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 9500000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 1540000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 32710000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 2020000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 29510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 50000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1620000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 3630000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 2870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 120000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 830000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 13,
+            "matchedRows": 1,
+            "rowRecall": 0.09090909090909091,
+            "rowPrecision": 0.07692307692307693,
+            "subsectorRecall": null,
+            "valueAccuracy": 0.09090909090909091,
+            "classificationAccuracy": 1,
+            "storedTotal": 112370000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 10,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 12
+          },
+          "total": 112370000
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 47938,
+          "stageMs": {
+            "ocr": 9206,
+            "extraction": 33475,
+            "import": 1610,
+            "total": 47938
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 58906,
+            "completionTokens": 3577,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3320
+          },
+          "failedPages": [],
+          "extractedRows": 14,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 27100000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 32330000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 9500000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 1540000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 2020000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 29510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 50000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1620000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 3630000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 2870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 120000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 1210000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 13,
+            "matchedRows": 1,
+            "rowRecall": 0.09090909090909091,
+            "rowPrecision": 0.07692307692307693,
+            "subsectorRecall": null,
+            "valueAccuracy": 0.09090909090909091,
+            "classificationAccuracy": 1,
+            "storedTotal": 112370000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 10,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 12
+          },
+          "total": 112370000
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 51396,
+          "stageMs": {
+            "ocr": 9538,
+            "extraction": 36814,
+            "import": 1599,
+            "total": 51396
+          },
+          "usage": {
+            "calls": 8,
+            "promptTokens": 58906,
+            "completionTokens": 3914,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3647
+          },
+          "failedPages": [],
+          "extractedRows": 14,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 27100000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 32330000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 9500000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 1540000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 2020000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 29510000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 50000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1620000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 3630000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 2870000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 120000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 1210000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 11,
+            "storedGroups": 13,
+            "matchedRows": 1,
+            "rowRecall": 0.09090909090909091,
+            "rowPrecision": 0.07692307692307693,
+            "subsectorRecall": null,
+            "valueAccuracy": 0.09090909090909091,
+            "classificationAccuracy": 1,
+            "storedTotal": 112370000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 10,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 12
+          },
+          "total": 112370000
+        }
+      ],
+      "stableTotal": true,
+      "block": "held-out",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 60
+      }
+    },
+    {
+      "id": "C-028",
+      "file": "Long Beach, USA 2021.pdf",
+      "kind": "pdf",
+      "targetYear": 2021,
+      "keyId": "C-028",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 223501,
+          "stageMs": {
+            "ocr": 9692,
+            "extraction": 206141,
+            "import": 1846,
+            "total": 223501
+          },
+          "usage": {
+            "calls": 26,
+            "promptTokens": 197249,
+            "completionTokens": 63486,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 13900
+          },
+          "failedPages": [],
+          "extractedRows": 88,
+          "heldRowsIncluded": 2,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 5913514000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 144026000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 131959000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 24145000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 26000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 51137000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1180188000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 189577000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 108773000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 29106000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 60179000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 840000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 299000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.3",
+              "scope": "1",
+              "valueT": 608000000,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 9149000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 13450000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 285869000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -4616000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 317104000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 8266896000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 29106000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 423680149000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 234505869000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 50,
+            "storedGroups": 23,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": null,
+            "storedTotal": 2896819638000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 50,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 23
+          },
+          "total": 2896819638000
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 135104,
+          "stageMs": {
+            "ocr": 14700,
+            "extraction": 101429,
+            "import": 12262,
+            "total": 135104
+          },
+          "usage": {
+            "calls": 23,
+            "promptTokens": 157180,
+            "completionTokens": 35209,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3729
+          },
+          "failedPages": [],
+          "extractedRows": 67,
+          "heldRowsIncluded": 2,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 158552000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 258175000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 423671000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 144026000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 131959000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 24145000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 26000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 51137000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1180188000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 550620000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 189577000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 108773000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 29106000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 60179000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 840000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 299000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.3",
+              "scope": "1",
+              "valueT": 608000000,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 3000000000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 50,
+            "storedGroups": 18,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": null,
+            "storedTotal": 3314273000000,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 50,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 18
+          },
+          "total": 3314273000000
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 209664,
+          "stageMs": {
+            "ocr": 14544,
+            "extraction": 188571,
+            "import": 1789,
+            "total": 209664
+          },
+          "usage": {
+            "calls": 25,
+            "promptTokens": 190593,
+            "completionTokens": 62481,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 13540
+          },
+          "failedPages": [],
+          "extractedRows": 89,
+          "heldRowsIncluded": 3,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 258175000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 158552158552,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 144026000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 423671007108,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 131959000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 234220285869,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1180188000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 26000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 51137000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 7724542896,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 108773000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 24145000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 189577000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 29106000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 29106,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 840000014,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 60179000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 299002041,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 13450000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.3",
+              "scope": "1",
+              "valueT": 608000000,
+              "omit": true,
+              "notation": null
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 285869000000,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -4616000000,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 50,
+            "storedGroups": 22,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": 0,
+            "subsectorRecall": 0,
+            "valueAccuracy": 0,
+            "classificationAccuracy": 0,
+            "storedTotal": 3297301025586,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 50,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 22
+          },
+          "total": 3297301025586
+        }
+      ],
+      "stableTotal": false,
+      "block": "held-out",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 123
+      }
+    },
+    {
+      "id": "C-029",
+      "file": "Chicago, USA 2017.pdf",
+      "kind": "pdf",
+      "targetYear": 2017,
+      "keyId": "C-029",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 85026,
+          "stageMs": {
+            "ocr": 12131,
+            "extraction": 68637,
+            "import": 1623,
+            "total": 85026
+          },
+          "usage": {
+            "calls": 29,
+            "promptTokens": 201820,
+            "completionTokens": 17342,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3850
+          },
+          "failedPages": [],
+          "extractedRows": 22,
+          "heldRowsIncluded": 3,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 4893822,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 3468411,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 2586242,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 5119282,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 943836,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 4216720,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 22,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 127,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 208674,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 4795501,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 106179,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 246761,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 2674,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1569375,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 784479,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 1995387,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 103,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 2326,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 95463,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 19,
+            "storedGroups": 19,
+            "matchedRows": 19,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "storedTotal": 31035384,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 31035384
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 124510,
+          "stageMs": {
+            "ocr": 10029,
+            "extraction": 109926,
+            "import": 1655,
+            "total": 124510
+          },
+          "usage": {
+            "calls": 32,
+            "promptTokens": 248212,
+            "completionTokens": 28328,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 5838
+          },
+          "failedPages": [],
+          "extractedRows": 40,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 4893822,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 3468411,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 3530079,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 9336002,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 22,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 127,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 208674,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 4795501,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 212358,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 493522,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 5348,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1569375,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 1568958,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 1995387,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 1995387,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 103,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 103,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 100116,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 95463,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 19,
+            "storedGroups": 19,
+            "matchedRows": 10,
+            "rowRecall": 0.5263157894736842,
+            "rowPrecision": 0.5263157894736842,
+            "subsectorRecall": 0.3684210526315789,
+            "valueAccuracy": 0.5882352941176471,
+            "classificationAccuracy": 0.8,
+            "storedTotal": 34268758,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 9,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 9
+          },
+          "total": 34268758
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 87193,
+          "stageMs": {
+            "ocr": 11033,
+            "extraction": 67971,
+            "import": 5717,
+            "total": 87193
+          },
+          "usage": {
+            "calls": 29,
+            "promptTokens": 201820,
+            "completionTokens": 17755,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 3969
+          },
+          "failedPages": [],
+          "extractedRows": 22,
+          "heldRowsIncluded": 3,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 4893822,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 3468411,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 2586242,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 5119282,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 943836,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 4216720,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 22,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 127,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 208674,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 4795501,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 106179,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 246761,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 2674,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 1569375,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 784479,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 1995387,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 103,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 2326,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 95463,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 19,
+            "storedGroups": 19,
+            "matchedRows": 19,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "storedTotal": 31035384,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 31035384
+        }
+      ],
+      "stableTotal": false,
+      "block": "held-out",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 150
+      }
+    },
+    {
+      "id": "C-030",
+      "file": "Porto Alegre, Brazil 2019.pdf",
+      "kind": "pdf",
+      "targetYear": 2019,
+      "keyId": "C-030",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 113808,
+          "stageMs": {
+            "ocr": 17095,
+            "extraction": 90464,
+            "import": 1685,
+            "total": 113808
+          },
+          "usage": {
+            "calls": 33,
+            "promptTokens": 231279,
+            "completionTokens": 10536,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 8164
+          },
+          "failedPages": [],
+          "extractedRows": 53,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 145967,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 94520,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 12477,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 77197,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 137244,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18116,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 31057,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 21303,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 2812,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 361,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 3346,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 102,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 13,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 256,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1196321,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 3441,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.3",
+              "scope": "3",
+              "valueT": 454,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 324894,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 80591,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6081,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 3463,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 199877,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 13705,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -7522,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 6568,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "VI.1",
+              "scope": "3",
+              "valueT": 1188394,
+              "omit": true,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "storedTotal": 2372692,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 27,
+            "notationRecovered": 24,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 2372692
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 102695,
+          "stageMs": {
+            "ocr": 14263,
+            "extraction": 81886,
+            "import": 1716,
+            "total": 102695
+          },
+          "usage": {
+            "calls": 33,
+            "promptTokens": 231279,
+            "completionTokens": 11006,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 8180
+          },
+          "failedPages": [],
+          "extractedRows": 53,
+          "heldRowsIncluded": 1,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 145967,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 94520,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 12477,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 77197,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 137244,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18116,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 31057,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 21303,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 2812,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 361,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 3346,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 102,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 13,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 256,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1196321,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 3441,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.3",
+              "scope": "3",
+              "valueT": 454,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 324894,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 80591,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6081,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 3463,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 199877,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.4.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 13705,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -7522,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 6568,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "VI.1",
+              "scope": "3",
+              "valueT": 1188394,
+              "omit": true,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "storedTotal": 2372692,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 27,
+            "notationRecovered": 25,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 2372692
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 85393,
+          "stageMs": {
+            "ocr": 13208,
+            "extraction": 65268,
+            "import": 1703,
+            "total": 85393
+          },
+          "usage": {
+            "calls": 33,
+            "promptTokens": 231280,
+            "completionTokens": 7883,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 5513
+          },
+          "failedPages": [],
+          "extractedRows": 53,
+          "heldRowsIncluded": 1,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.1",
+              "scope": "1",
+              "valueT": 145967,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 94520,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 12477,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 77197,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 137244,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18116,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.1",
+              "scope": "1",
+              "valueT": 31057,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.2",
+              "scope": "2",
+              "valueT": 21303,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.3.3",
+              "scope": "3",
+              "valueT": 2812,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.4.2",
+              "scope": "2",
+              "valueT": 361,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.3",
+              "scope": "3",
+              "valueT": 48,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.4.4",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.5.1",
+              "scope": "1",
+              "valueT": 3346,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.2",
+              "scope": "2",
+              "valueT": 102,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.5.3",
+              "scope": "3",
+              "valueT": 13,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 256,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.6.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.6.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.7.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 1196321,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.2.2",
+              "scope": "2",
+              "valueT": 3441,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.3",
+              "scope": "3",
+              "valueT": 454,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.3.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.3.3",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "not-estimated"
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 324894,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "II.4.3",
+              "scope": "3",
+              "valueT": 80591,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "included-elsewhere"
+            },
+            {
+              "gpc": "II.5.2",
+              "scope": "2",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 6081,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 3463,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.2.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.3.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 199877,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "III.4.3",
+              "scope": "1",
+              "valueT": 0,
+              "omit": true,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.1",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 0,
+              "omit": false,
+              "notation": "no-occurrance"
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 13705,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.2",
+              "scope": "1",
+              "valueT": -7522,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 6568,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "VI.1",
+              "scope": "3",
+              "valueT": 1188394,
+              "omit": true,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 27,
+            "storedGroups": 27,
+            "matchedRows": 27,
+            "rowRecall": 1,
+            "rowPrecision": 1,
+            "subsectorRecall": 1,
+            "valueAccuracy": 1,
+            "classificationAccuracy": 1,
+            "storedTotal": 2372692,
+            "totalWithinTolerance": true,
+            "toleranceSource": "legacy",
+            "notationScored": 27,
+            "notationRecovered": 26,
+            "missingRowCount": 0,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 0
+          },
+          "total": 2372692
+        }
+      ],
+      "stableTotal": true,
+      "block": "held-out",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 330
+      }
+    },
+    {
+      "id": "C-031",
+      "file": "Dunedin 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2021,
+      "keyId": "C-031",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 108231,
+          "stageMs": {
+            "ocr": 10603,
+            "extraction": 93573,
+            "import": 1632,
+            "total": 108231
+          },
+          "usage": {
+            "calls": 38,
+            "promptTokens": 264739,
+            "completionTokens": 23397,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 2784
+          },
+          "failedPages": [],
+          "extractedRows": 27,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 181671,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 288511,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 4218,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 162261,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 18717,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 43673,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 84947,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 12621,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 37027,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 565761,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 143095,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 18,
+            "storedGroups": 11,
+            "matchedRows": 8,
+            "rowRecall": 0.4444444444444444,
+            "rowPrecision": 0.7272727272727273,
+            "subsectorRecall": 0.6,
+            "valueAccuracy": 0.8,
+            "classificationAccuracy": 1,
+            "storedTotal": 1542502,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 10,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 3
+          },
+          "total": 1542502
+        },
+        {
+          "run": 2,
+          "warnings": [],
+          "ok": true,
+          "ms": 136833,
+          "stageMs": {
+            "ocr": 9298,
+            "extraction": 123507,
+            "import": 1631,
+            "total": 136833
+          },
+          "usage": {
+            "calls": 38,
+            "promptTokens": 264739,
+            "completionTokens": 28230,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 5143
+          },
+          "failedPages": [],
+          "extractedRows": 27,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 181671,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 288511,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 4218,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 162261,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 18717,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 43673,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 84947,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 12621,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 37027,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 565761,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 143095,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 18,
+            "storedGroups": 11,
+            "matchedRows": 8,
+            "rowRecall": 0.4444444444444444,
+            "rowPrecision": 0.7272727272727273,
+            "subsectorRecall": 0.6,
+            "valueAccuracy": 0.8,
+            "classificationAccuracy": 1,
+            "storedTotal": 1542502,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 10,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 3
+          },
+          "total": 1542502
+        },
+        {
+          "run": 3,
+          "warnings": [],
+          "ok": true,
+          "ms": 125944,
+          "stageMs": {
+            "ocr": 10935,
+            "extraction": 110776,
+            "import": 1627,
+            "total": 125944
+          },
+          "usage": {
+            "calls": 38,
+            "promptTokens": 264739,
+            "completionTokens": 25118,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 5161
+          },
+          "failedPages": [],
+          "extractedRows": 27,
+          "heldRowsIncluded": 0,
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.6.1",
+              "scope": "1",
+              "valueT": 181671,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 289689,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.2.1",
+              "scope": "1",
+              "valueT": 4218,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.3.1",
+              "scope": "1",
+              "valueT": 162261,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.4.1",
+              "scope": "1",
+              "valueT": 18717,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.5.1",
+              "scope": "1",
+              "valueT": 42495,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.1",
+              "scope": "1",
+              "valueT": 84947,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.1",
+              "scope": "1",
+              "valueT": 12621,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 37027,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.1",
+              "scope": "1",
+              "valueT": 565761,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "V.3",
+              "scope": "1",
+              "valueT": 143095,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 18,
+            "storedGroups": 11,
+            "matchedRows": 6,
+            "rowRecall": 0.3333333333333333,
+            "rowPrecision": 0.5454545454545454,
+            "subsectorRecall": 0.5,
+            "valueAccuracy": 0.6,
+            "classificationAccuracy": 1,
+            "storedTotal": 1542502,
+            "totalWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "missingRowCount": 12,
+            "distractorsStoredCount": 0,
+            "unexpectedStoredCount": 5
+          },
+          "total": 1542502
+        }
+      ],
+      "stableTotal": true,
+      "block": "held-out",
+      "eligible": false,
+      "totalOnly": false,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 156
+      }
+    }
+  ],
+  "selection": [
+    "C-017",
+    "C-022",
+    "C-025",
+    "C-027",
+    "C-028",
+    "C-029",
+    "C-030",
+    "C-031"
+  ],
+  "exploratory": false,
+  "interrupted": false,
+  "promptHash": "3f1c1271e342",
+  "inputRepresentation": "ocr-markdown",
+  "testSetVersion": "2103eec680cb",
+  "dirty": true,
+  "mlflowRunUrl": null,
+  "mlflowNote": "MLflow not configured",
+  "verdicts": [
+    {
+      "id": "C-017",
+      "block": "validated",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": 0.22666666666666666,
+      "recallScoredOnly": 0.22666666666666666,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 1,
+      "wrongTotalAttempts": 3,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.5248838,
+      "seconds": 365.62
+    },
+    {
+      "id": "C-022",
+      "block": "validated",
+      "eligible": null,
+      "attempts": 3,
+      "attemptsPassed": 1,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": null,
+      "recallScoredOnly": null,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 2,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.384784,
+      "seconds": 350.899
+    },
+    {
+      "id": "C-025",
+      "block": "validated",
+      "eligible": null,
+      "attempts": 3,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": null,
+      "recallScoredOnly": null,
+      "totalWithinToleranceAll": null,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 0,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 0,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 3,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.1251684,
+      "seconds": 93.647
+    },
+    {
+      "id": "C-027",
+      "block": "held-out",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": 0.0909090909090909,
+      "recallScoredOnly": 0.0909090909090909,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 3,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.1690478,
+      "seconds": 153.517
+    },
+    {
+      "id": "C-028",
+      "block": "held-out",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": 0,
+      "recallScoredOnly": 0,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 3,
+      "wrongTotalAttempts": 3,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.5484156,
+      "seconds": 568.269
+    },
+    {
+      "id": "C-029",
+      "block": "held-out",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 2,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": 0.8421052631578947,
+      "recallScoredOnly": 0.8421052631578947,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 1,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.5064804,
+      "seconds": 296.729
+    },
+    {
+      "id": "C-030",
+      "block": "held-out",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 3,
+      "casePasses": true,
+      "exploratory": false,
+      "recallFailedAsZero": 1,
+      "recallScoredOnly": 1,
+      "totalWithinToleranceAll": true,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 0,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.8340776000000001,
+      "seconds": 301.896
+    },
+    {
+      "id": "C-031",
+      "block": "held-out",
+      "eligible": false,
+      "attempts": 3,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": false,
+      "recallFailedAsZero": 0.4074074074074074,
+      "recallScoredOnly": 0.4074074074074074,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 3,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 3,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.5629374,
+      "seconds": 371.008
+    }
+  ],
+  "blocks": [
+    {
+      "block": "validated",
+      "casesInRun": 3,
+      "casesInManifest": 22,
+      "headlineRecall": null,
+      "headlineRecallCases": 0,
+      "recallScoredOnly": null,
+      "recallScoredOnlyCases": 0,
+      "casesTotalWithinTolerance": 0,
+      "attemptPassShare": 0.1111111111111111,
+      "tenXAttempts": 1,
+      "warningShare": 0
+    },
+    {
+      "block": "held-out",
+      "casesInRun": 5,
+      "casesInManifest": 5,
+      "headlineRecall": null,
+      "headlineRecallCases": 0,
+      "recallScoredOnly": null,
+      "recallScoredOnlyCases": 0,
+      "casesTotalWithinTolerance": 1,
+      "attemptPassShare": 0.3333333333333333,
+      "tenXAttempts": 3,
+      "warningShare": 0
+    }
+  ],
+  "gates": [
+    {
+      "id": "C-017",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.5248838,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-022",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.384784,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-025",
+      "verdict": "error",
+      "reasons": [
+        "error: 3 attempt(s) failed",
+        "no baseline"
+      ],
+      "costUsd": 0.1251684,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-027",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.1690478,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-028",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.5484156,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-029",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.5064804,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-030",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.8340776000000001,
+      "forecastUsd": null,
+      "lines": []
+    },
+    {
+      "id": "C-031",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.5629374,
+      "forecastUsd": null,
+      "lines": []
+    }
+  ]
+}

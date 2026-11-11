@@ -14,6 +14,7 @@ const COLLAPSED_ROW_LIMIT = 10;
 
 interface ImportRowIssuesProps {
   t: TFunction;
+  lng: string;
   cityId: string;
   inventoryId: string;
   importedFileId: string;
@@ -32,6 +33,7 @@ function rowSource(row: ImportRowOutcome, t: TFunction): string {
  */
 export default function ImportRowIssues({
   t,
+  lng,
   cityId,
   inventoryId,
   importedFileId,
@@ -66,6 +68,7 @@ export default function ImportRowIssues({
   const reviewRows = (
     <ImportReviewRows
       t={t}
+      lng={lng}
       fileId={importedFileId}
       rows={data.reviewRows ?? []}
       onDecide={onRowDecision}

@@ -11,15 +11,15 @@ import { scopeFromLabel } from "@/util/GHGI/gpc-ref-resolver";
 
 interface ImportReviewRowsProps {
   t: TFunction;
+  /** UI language, used to format numbers. */
+  lng: string;
   fileId: string;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
 }
 
 /** A value in tonnes CO2e, formatted in the UI language. */
-function formatTonnes(t: TFunction, value: number): string {
-  // A t bound to a language carries it as `lng`.
-  const lng = (t as unknown as { lng?: string }).lng ?? "en";
+function formatTonnes(lng: string, value: number): string {
   return `${value.toLocaleString(lng)} tCO2e`;
 }
 
@@ -63,41 +63,48 @@ function Cell({
 }
 
 /** The row's content: page, text, sector, value, reference and scope. */
-function RowContent({ t, row }: { t: TFunction; row: ImportRowReview }) {
+function RowContent({
+  t,
+  lng,
+  row,
+}: {
+  t: TFunction;
+  lng: string;
+  row: ImportRowReview;
+}) {
   const sector = [row.sector, row.subsector].filter(Boolean).join(" > ");
   const shownScope =
     row.scopeOrigin === "reference" ? row.finalScope : row.scope;
   const scopeNumber = scopeFromLabel(shownScope);
+  // A row with no scope shows only why; the stated text adds nothing.
   const scopeText =
-    scopeNumber != null
-      ? t("import-review-scope", { scope: scopeNumber })
-      : shownScope?.trim() || null;
+    row.scopeOrigin === "not-applicable"
+      ? null
+      : scopeNumber != null
+        ? t("import-review-scope", { scope: scopeNumber })
+        : shownScope?.trim() || null;
   return (
     <Box
       display="grid"
       gridTemplateColumns="repeat(auto-fit, minmax(160px, 1fr))"
       gap="8px 16px"
     >
-      <Cell>
-        {row.page != null
-          ? t("import-review-page-number", { page: row.page })
-          : "—"}
-      </Cell>
-      <Cell caption={t("import-scope-col-text")}>
+      <Cell caption={t("import-review-col-page")}>{row.page ?? "—"}</Cell>
+      <Cell caption={t("import-review-col-text")}>
         {row.category || row.activityType || "—"}
       </Cell>
-      <Cell caption={t("import-scope-col-sector")}>{sector || "—"}</Cell>
-      <Cell caption={t("import-scope-col-value")}>
+      <Cell caption={t("import-review-col-sector")}>{sector || "—"}</Cell>
+      <Cell caption={t("import-review-col-value")}>
         {row.value != null
-          ? formatTonnes(t, row.value)
+          ? formatTonnes(lng, row.value)
           : (row.notationKey ?? "—")}
       </Cell>
-      <Cell caption={t("import-scope-col-reference")}>
+      <Cell caption={t("import-review-col-reference")}>
         <Text as="span" fontWeight="medium">
           {row.suggestedRefNo}
         </Text>
       </Cell>
-      <Cell caption={t("import-scope-col-scope")}>
+      <Cell caption={t("import-review-col-scope")}>
         {[scopeText, t(`import-scope-origin-${row.scopeOrigin}`)]
           .filter(Boolean)
           .join(" · ")}
@@ -146,6 +153,7 @@ function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
  */
 export default function ImportReviewRows({
   t,
+  lng,
   fileId,
   rows,
   onDecide,
@@ -185,7 +193,7 @@ export default function ImportReviewRows({
           borderColor="border.default"
           data-testid="import-review-row"
         >
-          <RowContent t={t} row={row} />
+          <RowContent t={t} lng={lng} row={row} />
           {row.expectedScope != null && (
             <Text fontSize="body.sm" color="sentiment.negativeDefault">
               {t("import-review-conflict", {

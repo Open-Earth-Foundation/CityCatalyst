@@ -38,20 +38,17 @@ const row: ImportRowReview = {
 
 // Resolves real English strings so the tests assert what the user reads.
 const strings = en as Record<string, string>;
-const realT = (lng: string) =>
-  Object.assign(
-    (key: string, values?: Record<string, unknown>) =>
-      (strings[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, name) =>
-        String(values?.[name] ?? ""),
-      ),
-    { lng },
-  ) as unknown as TFunction;
+const realT = ((key: string, values?: Record<string, unknown>) =>
+  (strings[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, name) =>
+    String(values?.[name] ?? ""),
+  )) as unknown as TFunction;
 
-function render(rows: ImportRowReview[], translate: TFunction = t) {
+function render(rows: ImportRowReview[], translate: TFunction = t, lng = "en") {
   return renderToStaticMarkup(
     <ChakraProvider value={defaultSystem}>
       <ImportReviewRows
         t={translate}
+        lng={lng}
         fileId="file-a"
         rows={rows}
         onDecide={() => {}}
@@ -86,9 +83,10 @@ describe("ImportReviewRows", () => {
   };
 
   it("shows the row content before the decision buttons", () => {
-    const html = render([content], realT("en"));
+    const html = render([content], realT);
     for (const text of [
-      "Page 4",
+      ">Page<",
+      ">4<",
       "Electricity – Residential",
       "Stationary energy &gt; Residential buildings",
       "16,119 tCO2e",
@@ -97,7 +95,7 @@ describe("ImportReviewRows", () => {
     ]) {
       expect(html).toContain(text);
     }
-    expect(html.indexOf("Page 4")).toBeLessThan(
+    expect(html.indexOf(">Page<")).toBeLessThan(
       html.indexOf("Keep this reference"),
     );
   });
@@ -105,7 +103,7 @@ describe("ImportReviewRows", () => {
   it("does not repeat the word Scope when the stated text already has it", () => {
     const html = render(
       [{ ...content, scope: "Scope 2", scopeOrigin: "document" }],
-      realT("en"),
+      realT,
     );
     expect(html).toContain("Scope 2 · From the document");
     expect(html).not.toContain("Scope Scope");
@@ -121,23 +119,31 @@ describe("ImportReviewRows", () => {
           scopeOrigin: "reference",
         },
       ],
-      realT("en"),
+      realT,
     );
     expect(html).toContain("Scope 1 · From GPC reference");
   });
 
   it("formats the value in the UI language, not the browser locale", () => {
-    expect(render([content], realT("de"))).toContain("16.119 tCO2e");
+    expect(render([content], realT, "de")).toContain("16.119 tCO2e");
   });
 
   it("falls back to activityType and — for a missing page", () => {
     const html = render(
       [{ ...content, page: null, category: null, activityType: "Gas use" }],
-      realT("en"),
+      realT,
     );
     expect(html).toContain("Gas use");
     expect(html).toContain(">—<");
-    expect(html).not.toContain("Page ");
+  });
+
+  it("shows only the origin for a row with no scope, not the stated text", () => {
+    const html = render(
+      [{ ...content, scope: "N/A", scopeOrigin: "not-applicable" }],
+      realT,
+    );
+    expect(html).toContain("No scope · outside the total");
+    expect(html).not.toContain("N/A");
   });
 
   it("labels a quote as found, and gives no other verdict", () => {

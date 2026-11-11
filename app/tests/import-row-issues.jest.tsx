@@ -62,6 +62,7 @@ function render(mappingOverrides: Record<string, string> = {}) {
       <ChakraProvider value={defaultSystem}>
         <ImportRowIssues
           t={t}
+          lng="en"
           cityId="city-1"
           inventoryId="inventory-1"
           importedFileId="file-1"

@@ -564,6 +564,7 @@ function selectPages(
       (p) =>
         p.result.rows.some((row) => row.year != null) ||
         (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
+        (p.result.summary.droppedRows.caption_year ?? 0) > 0 ||
         (p.result.summary.droppedRows.missing_year ?? 0) > 0,
     );
   const yearAssumed =
@@ -1256,6 +1257,7 @@ function checkExtractionResult(
     );
     if (
       (summary.droppedRows.other_year ?? 0) +
+        (summary.droppedRows.caption_year ?? 0) +
         (summary.droppedRows.missing_year ?? 0) >
       0
     ) {
@@ -2055,6 +2057,8 @@ function finalizeRows(
 ): { result: ExtractionResult; evidenceDropped: boolean } {
   let rows = inputRows;
   let evidenceDropped = false;
+  // Rows a caption year moved to another year, counted as caption_year drops.
+  const captionRelabeled = new Set<ExtractedRow>();
   // Year evidence from the page's table captions: when they name only other
   // years, rows the model labeled with the target year (or none) belong to that
   // table's year. The year filter then drops them, and their totals stop being
@@ -2083,7 +2087,9 @@ function finalizeRows(
           return row;
         }
         evidenceDropped = true;
-        return { ...row, year: relabel };
+        const moved = { ...row, year: relabel };
+        captionRelabeled.add(moved);
+        return moved;
       });
     }
   }
@@ -2134,6 +2140,7 @@ function finalizeRows(
       continue;
     }
     const scaled: ExtractedRow = { ...row };
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -2194,6 +2201,8 @@ function finalizeRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
+        else if (captionRelabeled.has(row))
+          drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {

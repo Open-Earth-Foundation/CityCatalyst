@@ -106,8 +106,6 @@ describe("structured output with jsonMode fallback", () => {
     await expect(extractInventoryFromDocument(SHORT)).rejects.toThrow(
       "prompt too long",
     );
-    // The failed call is retried once (CC-1191), still with the schema.
-    expect(complete).toHaveBeenCalledTimes(2);
-    expect(complete.mock.calls.every((c) => c[0].jsonSchema)).toBe(true);
+    expect(complete).toHaveBeenCalledTimes(1);
   });
 });

@@ -957,6 +957,17 @@ export function verifyRowProvenance(
 
 type SchemaState = { useSchema: boolean };
 
+/**
+ * The answer itself is unusable: cut off at the token limit, or not valid
+ * JSON. Asking again can succeed, so this is the one error the chunk path
+ * retries. Transport errors are already retried by the LLM client.
+ */
+class ExtractionResponseError extends LLMError {
+  constructor(message: string) {
+    super(message, LLMErrorCode.BAD_REQUEST);
+  }
+}
+
 /** A provider that cannot take the strict schema answers 400 and names it. */
 export function isSchemaRejection(err: unknown): boolean {
   return (
@@ -1200,9 +1211,11 @@ async function extractByChunks(
 }
 
 /**
- * Whole-document call or chunk, retried once like a page (a cut-off answer
- * throws). A second failure rejects the import: rows of a whole-document call
- * cannot be dropped in part.
+ * Whole-document call or chunk. An unusable answer (cut off, or not valid
+ * JSON) is asked for once more; a second one rejects the import, because rows
+ * of a whole-document call cannot be dropped in part. Every other error is
+ * rethrown: the LLM client already retries timeouts, rate limits and provider
+ * errors, and an auth or config error cannot succeed on a retry.
  */
 async function extractSegmentWithRetry(
   content: string,
@@ -1212,9 +1225,10 @@ async function extractSegmentWithRetry(
 ): Promise<ExtractedRow[]> {
   return extractSegment(content, promptPrefix, isSegment, schemaState).catch(
     (error) => {
+      if (!(error instanceof ExtractionResponseError)) throw error;
       logger.info(
         { isSegment, err: error },
-        "Extraction call failed; retrying once",
+        "Extraction answer unusable; retrying once",
       );
       return extractSegment(content, promptPrefix, isSegment, schemaState);
     },
@@ -1374,9 +1388,8 @@ async function extractSegment(
     // A response cut off at the token limit is incomplete JSON. Fail the call so
     // the page is retried and then reported as failed, never imported in part.
     if (finishReason === "length") {
-      throw new LLMError(
+      throw new ExtractionResponseError(
         "Extraction response was cut off at the token limit",
-        LLMErrorCode.BAD_REQUEST,
       );
     }
     return content;
@@ -1520,9 +1533,8 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
     }
     if (parsed === undefined) {
       logExtractionFailure(content, "Extraction parse failed: not valid JSON");
-      throw new LLMError(
+      throw new ExtractionResponseError(
         "Extraction response was not valid JSON",
-        LLMErrorCode.BAD_REQUEST,
       );
     }
   }

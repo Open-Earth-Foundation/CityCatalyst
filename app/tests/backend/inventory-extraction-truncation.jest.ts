@@ -1,8 +1,9 @@
 /**
  * CC-1191: a response cut off at the token limit must never become a shorter
  * row list. A page is retried once, then reported as failed; a whole-document
- * call or chunk is retried once, then fails the import. Also covers the
- * reasoning effort setting and the per-call log line. The LLM is mocked.
+ * call or chunk is retried once, then fails the import. Only an unusable
+ * answer is retried on the chunk path; other errors are left to the LLM
+ * client. Also covers the LLM role and the per-call log line. The LLM is mocked.
  */
 import {
   afterEach,
@@ -31,6 +32,7 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 const { extractInventoryFromDocument } =
   await import("@/backend/InventoryExtractionService");
 const { logger } = await import("@/services/logger");
+const { LLMError } = await import("@/backend/llm");
 type ExtractedRow = import("@/backend/InventoryExtractionService").ExtractedRow;
 
 const TOTAL = 9559215;
@@ -227,6 +229,42 @@ describe("cut-off response on the chunk path", () => {
       ).rejects.toThrow("cut off at the token limit");
     },
   );
+
+  it.each(cases)(
+    "%s: an answer that is not valid JSON is retried once",
+    async (_name, text, chunkCount) => {
+      let calls = 0;
+      complete.mockImplementation(async () =>
+        ++calls === 1
+          ? { content: "not json", finishReason: "stop" }
+          : answer(false),
+      );
+      const { rows } = await extractInventoryFromDocument(text, {
+        targetYear: 2021,
+      });
+      expect(calls).toBe(chunkCount + 1);
+      expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
+    },
+  );
+
+  // The LLM client already retries these; a second layer here would multiply
+  // the requests during an outage.
+  it.each([
+    ["timeout", "LLM_TIMEOUT"],
+    ["rate limit", "LLM_RATE_LIMIT"],
+    ["provider error", "LLM_PROVIDER_ERROR"],
+    ["auth error", "LLM_AUTH"],
+  ])("a %s on a chunk is not retried", async (name, code) => {
+    for (const [, text, chunkCount] of cases) {
+      complete.mockReset();
+      complete.mockRejectedValue(new LLMError(name, code as never));
+      await expect(
+        extractInventoryFromDocument(text, { targetYear: 2021 }),
+      ).rejects.toThrow(name);
+      expect(complete.mock.calls.length).toBeGreaterThan(0);
+      expect(complete.mock.calls.length).toBeLessThanOrEqual(chunkCount);
+    }
+  });
 });
 
 describe("LLM role", () => {

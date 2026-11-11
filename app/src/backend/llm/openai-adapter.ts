@@ -59,6 +59,9 @@ export async function openaiComplete(
   const client = new OpenAI({
     apiKey: config.apiKey,
     ...(config.baseURL && { baseURL: config.baseURL }),
+    // The LLM client (client.ts) is the one retry layer; the SDK default of 2
+    // retries would multiply with it.
+    maxRetries: 0,
   });
 
   const body: OpenAI.Chat.ChatCompletionCreateParams = {

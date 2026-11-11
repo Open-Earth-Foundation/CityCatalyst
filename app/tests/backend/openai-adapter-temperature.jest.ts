@@ -9,10 +9,14 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import type { LLMModelConfig } from "@/backend/llm/types";
 
 const create = jest.fn<(body: Record<string, unknown>) => Promise<unknown>>();
+const clientOptions: Record<string, unknown>[] = [];
 
 jest.unstable_mockModule("openai", () => ({
   default: class OpenAI {
     chat = { completions: { create } };
+    constructor(options: Record<string, unknown>) {
+      clientOptions.push(options);
+    }
   },
 }));
 
@@ -104,5 +108,12 @@ describe("result", () => {
       completionTokens: 16000,
       reasoningTokens: 12000,
     });
+  });
+});
+
+describe("SDK client", () => {
+  it("turns off the SDK retries, so the LLM client is the one retry layer", async () => {
+    await call({ name: "gpt-4o-mini" });
+    expect(clientOptions[clientOptions.length - 1].maxRetries).toBe(0);
   });
 });

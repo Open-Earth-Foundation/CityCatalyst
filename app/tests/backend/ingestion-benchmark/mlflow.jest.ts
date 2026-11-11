@@ -73,6 +73,12 @@ const verdicts = ["C-001", "C-002"].map((id) => ({
   exploratory: false,
   recallFailedAsZero: 0.75,
   recallScoredOnly: null,
+  rowPrecision: 0.5,
+  valueAccuracy: 0.9,
+  classificationAccuracy: 1,
+  notationScored: 4,
+  notationRecovered: 2,
+  distractorsStored: 0,
   totalWithinToleranceAll: null,
   failureModes: {},
   costUsd: null,
@@ -270,6 +276,17 @@ describe("logBenchmarkRun", () => {
     expect(attempts).toMatchObject({ value: 3, step: 0, timestamp: 5 });
     const passes = batch.body.metrics.find((m: any) => m.key === "casePasses");
     expect(passes.value).toBe(0);
+    const keys = batch.body.metrics.map((m: any) => m.key);
+    for (const metric of [
+      "rowPrecision",
+      "valueAccuracy",
+      "classificationAccuracy",
+      "notationScored",
+      "notationRecovered",
+      "distractorsStored",
+    ]) {
+      expect(keys).toContain(metric);
+    }
   });
 
   it("chunks log-batch calls at 1000 metrics", async () => {

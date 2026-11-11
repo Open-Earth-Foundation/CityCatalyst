@@ -4,6 +4,7 @@
  */
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {
+  caseMetrics,
   caseUsage,
   costUsd,
   type Block,
@@ -68,6 +69,15 @@ export type CaseVerdict = {
   exploratory: boolean;
   recallFailedAsZero: number | null;
   recallScoredOnly: number | null;
+  /** Spec 5.4, means over the scored attempts. */
+  rowPrecision: number | null;
+  valueAccuracy: number | null;
+  classificationAccuracy: number | null;
+  /** Notation keys of the first scored attempt. */
+  notationScored: number;
+  notationRecovered: number;
+  /** Distractor values stored, mean per scored attempt. */
+  distractorsStored: number | null;
   totalWithinToleranceAll: boolean | null;
   tenXAttempts: number;
   wrongTotalAttempts: number;
@@ -101,6 +111,7 @@ export function caseVerdict(
       runs.filter((run) => run.failureMode === mode).length,
     ]),
   ) as Record<FailureMode, number>;
+  const metrics = caseMetrics(result);
 
   return {
     id: result.id,
@@ -121,6 +132,12 @@ export function caseVerdict(
           ),
         )
       : null,
+    rowPrecision: metrics.rowPrecision,
+    valueAccuracy: metrics.valueAccuracy,
+    classificationAccuracy: metrics.classificationAccuracy,
+    notationScored: metrics.notationScored,
+    notationRecovered: metrics.notationRecovered,
+    distractorsStored: metrics.distractorsStored,
     totalWithinToleranceAll:
       withTotal.length === 0
         ? null

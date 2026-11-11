@@ -14,7 +14,6 @@ import {
   caseMetrics,
   caseUsage,
   costUsd,
-  groupSummary,
   totalUsage,
   appendIndexLine,
   INDEX_HEADER,
@@ -120,6 +119,12 @@ function verdict(result: CaseResult): CaseVerdict {
     exploratory: true,
     recallFailedAsZero: 0.5,
     recallScoredOnly: 0.5,
+    rowPrecision: 0.5,
+    valueAccuracy: 0.8,
+    classificationAccuracy: 0.9,
+    notationScored: 4,
+    notationRecovered: 1,
+    distractorsStored: 0,
     totalWithinToleranceAll: false,
     tenXAttempts: 0,
     wrongTotalAttempts: 1,
@@ -163,69 +168,6 @@ const render = (
 ) => renderReport(s, s.results.map(verdict), blocks, gates);
 
 describe("validated and held-out groups", () => {
-  const failed = (id: string): CaseResult => ({
-    ...result(id, 0),
-    runs: [
-      {
-        run: 1,
-        failureMode: "scored" as const,
-        warnings: [] as string[],
-        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
-        ok: false,
-        ms: 1,
-        extractedRows: 0,
-        score: score({ rowRecall: 0, valueAccuracy: null }),
-      },
-    ],
-  });
-
-  it("counts failed runs only in the with-failed means", () => {
-    const group = groupSummary([result("A", 0.8), failed("B")]);
-    expect(group.rowRecall).toBeCloseTo(0.8);
-    expect(group.rowRecallWithFailed).toBeCloseTo(0.4);
-    expect(group.valueAccuracyWithFailed).toBeCloseTo(0.4);
-  });
-
-  it("counts a total as within tolerance only when every run is", () => {
-    const within = score({ totalWithinTolerance: true });
-    const outside = score({ totalWithinTolerance: false });
-    const runs = (first: FileScore, second: FileScore) => [
-      {
-        run: 1,
-        failureMode: "scored" as const,
-        warnings: [] as string[],
-        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
-        ok: true,
-        ms: 1,
-        score: first,
-      },
-      {
-        run: 2,
-        failureMode: "scored" as const,
-        warnings: [] as string[],
-        stageMs: { ocr: null, extraction: null, import: null, total: 1 },
-        ok: true,
-        ms: 1,
-        score: second,
-      },
-    ];
-    const group = groupSummary([
-      { ...result("A", 0.5), runs: runs(within, within) },
-      { ...result("B", 0.5), runs: runs(within, outside) },
-      {
-        ...result("C", 0.5),
-        runs: runs(
-          score({ expectedTotal: null, totalWithinTolerance: null }),
-          score({ expectedTotal: null, totalWithinTolerance: null }),
-        ),
-      },
-    ]);
-    expect(group.totalCases).toBe(2);
-    expect(group.totalCasesWithin).toBe(1);
-    expect(group.totalRuns).toBe(4);
-    expect(group.totalRunsWithin).toBe(3);
-  });
-
   it("validated and held-out are separate sections and never merged", () => {
     const results = [result("A", 0.8), result("B", 0.4)];
     const split = render(summary(results), [
@@ -236,6 +178,49 @@ describe("validated and held-out groups", () => {
     expect(split).toContain("## Block: held-out");
     expect(split.indexOf("## Block: validated")).toBeLessThan(
       split.indexOf("## Block: held-out"),
+    );
+  });
+});
+
+describe("spec 5.4 metrics", () => {
+  it("per-case table shows precision, accuracies, notation keys and distractors", () => {
+    const r = result("A", 0.5);
+    const v = {
+      ...verdict(r),
+      rowPrecision: 0.25,
+      valueAccuracy: 0.8,
+      classificationAccuracy: 0.9,
+      notationScored: 4,
+      notationRecovered: 1,
+      distractorsStored: 2,
+    };
+    const report = renderReport(summary([r]), [v], [block({})], []);
+    expect(report).toContain(
+      "| Precision | Value acc. | Class. acc. | Notation keys | Distractors stored |",
+    );
+    expect(report).toContain("| 25% | 80% | 90% | 1/4 | 2 |");
+  });
+
+  it("block section shows precision, accuracies, notation keys and distractors", () => {
+    const a = result("A", 0.5);
+    const b = result("B", 0.5);
+    b.runs[0].score = score({
+      rowPrecision: 1,
+      valueAccuracy: 0.6,
+      classificationAccuracy: 0.5,
+    });
+    const verdicts = [a, b].map((r, i) => ({
+      ...verdict(r),
+      notationScored: 4,
+      notationRecovered: i + 1,
+      distractorsStored: i,
+    }));
+    const report = renderReport(summary([a, b]), verdicts, [block({})], []);
+    expect(report).toContain(
+      "- Precision 75%, value accuracy 70%, classification accuracy 70% (means over 2 cases scored row by row, scored attempts only)",
+    );
+    expect(report).toContain(
+      "- Notation keys recovered: 3 of 8; cases that stored a distractor value: 1",
     );
   });
 });

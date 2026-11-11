@@ -348,3 +348,71 @@ describe("blockSummaries", () => {
     expect(summary.casesTotalWithinTolerance).toBe(0);
   });
 });
+
+describe("caseVerdict spec 5.4 metrics", () => {
+  const distractor = {
+    valueT: 7,
+    gpc: "I.1.1",
+    what: "d",
+    failureMode: "f",
+  };
+
+  it("averages precision and accuracies over scored attempts and counts notation keys and distractors", () => {
+    const v = caseVerdict(
+      three(
+        entry(
+          1,
+          {},
+          {
+            rowPrecision: 0.5,
+            valueAccuracy: 0.6,
+            classificationAccuracy: 0.9,
+            notationScored: 4,
+            notationRecovered: 3,
+            distractorsStored: [distractor, distractor],
+          },
+        ),
+        entry(
+          2,
+          {},
+          {
+            rowPrecision: 1,
+            valueAccuracy: 1,
+            classificationAccuracy: 0.7,
+            notationScored: 4,
+            notationRecovered: 1,
+          },
+        ),
+        failed(3, "zero_rows"),
+      ),
+      key,
+    );
+    expect(v.rowPrecision).toBeCloseTo(0.75);
+    expect(v.valueAccuracy).toBeCloseTo(0.8);
+    expect(v.classificationAccuracy).toBeCloseTo(0.8);
+    expect(v.notationScored).toBe(4);
+    expect(v.notationRecovered).toBe(3);
+    expect(v.distractorsStored).toBeCloseTo(1);
+  });
+
+  it("reads the distractor count of a redacted score", () => {
+    const redacted = entry(1);
+    delete (redacted.score as Partial<FileScore>).distractorsStored;
+    (
+      redacted.score as unknown as Record<string, number>
+    ).distractorsStoredCount = 2;
+    expect(caseVerdict(three(redacted), key).distractorsStored).toBe(2);
+  });
+
+  it("gives null metrics when no attempt was scored", () => {
+    const v = caseVerdict(three(failed(1, "zero_rows")), key);
+    expect(v).toMatchObject({
+      rowPrecision: null,
+      valueAccuracy: null,
+      classificationAccuracy: null,
+      distractorsStored: null,
+      notationScored: 0,
+      notationRecovered: 0,
+    });
+  });
+});

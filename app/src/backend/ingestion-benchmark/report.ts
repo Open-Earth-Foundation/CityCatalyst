@@ -146,6 +146,8 @@ export type CaseMetrics = {
   classificationAccuracy: number | null;
   notationRecovered: number;
   notationScored: number;
+  /** Distractor values stored, mean per scored attempt. */
+  distractorsStored: number | null;
   totalWithinTolerance: boolean | null;
   stableTotal: boolean;
   seconds: number | null;
@@ -177,6 +179,13 @@ function allWithinTolerance(
   return flags.length ? flags.every(Boolean) : null;
 }
 
+/** Distractor values a score stored; a redacted score keeps only the count. */
+const distractorCount = (score: FileScore): number =>
+  Array.isArray(score.distractorsStored)
+    ? score.distractorsStored.length
+    : ((score as { distractorsStoredCount?: number }).distractorsStoredCount ??
+      0);
+
 export function caseMetrics(result: CaseResult): CaseMetrics {
   const okRuns = result.runs.filter((entry) => entry.ok);
   const scores = okRuns.map((entry) => entry.score ?? null);
@@ -193,6 +202,9 @@ export function caseMetrics(result: CaseResult): CaseMetrics {
     ),
     notationRecovered: first?.notationRecovered ?? 0,
     notationScored: first?.notationScored ?? 0,
+    distractorsStored: mean(
+      scores.map((score) => (score ? distractorCount(score) : null)),
+    ),
     totalWithinTolerance: allWithinTolerance(scores),
     stableTotal: result.stableTotal,
     seconds: mean(result.runs.map((entry) => entry.ms / 1000)),
@@ -210,50 +222,6 @@ export function aggregate(results: CaseResult[]): Aggregate {
     rowPrecision: mean(metrics.map((m) => m.rowPrecision)),
     valueAccuracy: mean(metrics.map((m) => m.valueAccuracy)),
     classificationAccuracy: mean(metrics.map((m) => m.classificationAccuracy)),
-  };
-}
-
-export type GroupSummary = Aggregate & {
-  /** Means over row-scored cases, counting a failed run (no rows) as 0. */
-  rowRecallWithFailed: number | null;
-  valueAccuracyWithFailed: number | null;
-  /** Cases with an expected total. */
-  totalCases: number;
-  /** Cases whose total is within tolerance in every run. */
-  totalCasesWithin: number;
-  totalRuns: number;
-  totalRunsWithin: number;
-};
-
-export function groupSummary(results: CaseResult[]): GroupSummary {
-  const scoredRuns = (result: CaseResult) =>
-    result.runs.flatMap((entry) => (entry.score ? [entry.score] : []));
-  const withFailed = (pick: (score: FileScore) => number | null) =>
-    mean(
-      results.map((result) =>
-        mean(
-          scoredRuns(result)
-            .filter((score) => score.rowRecall !== null)
-            .map((score) => pick(score) ?? 0),
-        ),
-      ),
-    );
-  const totals = results
-    .map((result) =>
-      scoredRuns(result).filter((score) => score.expectedTotal !== null),
-    )
-    .filter((scores) => scores.length > 0);
-  return {
-    ...aggregate(results),
-    rowRecallWithFailed: withFailed((score) => score.rowRecall),
-    valueAccuracyWithFailed: withFailed((score) => score.valueAccuracy),
-    totalCases: totals.length,
-    totalCasesWithin: totals.filter((scores) =>
-      scores.every((score) => score.totalWithinTolerance),
-    ).length,
-    totalRuns: totals.flat().length,
-    totalRunsWithin: totals.flat().filter((score) => score.totalWithinTolerance)
-      .length,
   };
 }
 
@@ -330,6 +298,9 @@ const tokensText = (usage: CaseUsage) =>
 const pct = (ratio: number | null) =>
   ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
 
+const decimal = (value: number | null) =>
+  value === null ? "n/a" : String(Math.round(value * 10) / 10);
+
 const cell = (text: string) => text.replace(/\|/g, "\\|");
 
 /** Tolerance rule of the first scored attempt, or "n/a" when no attempt was scored. */
@@ -401,6 +372,12 @@ export function renderReport(
   }
 
   for (const block of blocks) {
+    const rows = aggregate(
+      summary.results.filter((result) => result.block === block.block),
+    );
+    const inBlock = verdicts.filter((v) => v.block === block.block);
+    const sum = (pick: (v: CaseVerdict) => number) =>
+      inBlock.reduce((total, v) => total + pick(v), 0);
     lines.push(
       `## Block: ${block.block}`,
       "",
@@ -410,6 +387,8 @@ export function renderReport(
       `- Attempts passing: ${pct(block.attemptPassShare)}`,
       `- Attempts 10x or more off the expected total: ${block.tenXAttempts}`,
       `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,
+      `- Precision ${pct(rows.rowPrecision)}, value accuracy ${pct(rows.valueAccuracy)}, classification accuracy ${pct(rows.classificationAccuracy)} (means over ${rows.scored} case${rows.scored === 1 ? "" : "s"} scored row by row, scored attempts only)`,
+      `- Notation keys recovered: ${sum((v) => v.notationRecovered)} of ${sum((v) => v.notationScored)}; cases that stored a distractor value: ${inBlock.filter((v) => (v.distractorsStored ?? 0) > 0).length}`,
       "",
     );
   }
@@ -461,10 +440,10 @@ export function renderReport(
     "",
     "## Per case",
     "",
-    "Recall counts failed attempts as 0. Runtime is summed over the attempts.",
+    "Recall counts failed attempts as 0. Precision, accuracies and distractors stored are means over the scored attempts; notation keys are those of the first scored attempt. Runtime is summed over the attempts.",
     "",
-    "| Case | Block | Verdict | Attempts passed | Recall | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const result of summary.results) {
     const v = verdictById.get(result.id);
@@ -475,7 +454,7 @@ export function renderReport(
           ? "yes"
           : "no";
     lines.push(
-      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
     );
   }
 

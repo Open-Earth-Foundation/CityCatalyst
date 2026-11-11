@@ -175,7 +175,7 @@ describe("publishableSummary", () => {
     const input = {
       ...summaryOf([
         { ...caseResult(), reference: EXPECTED_TOTAL, runs: [legacyRun] },
-      ] as CaseResult[]),
+      ] as unknown as CaseResult[]),
       verdicts: [],
     };
     const before = JSON.stringify(input);

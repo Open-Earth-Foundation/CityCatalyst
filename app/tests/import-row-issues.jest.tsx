@@ -200,7 +200,18 @@ it("lets keyboard users reach the inferred-scope info icon", () => {
     skippedByIssue: {},
     rows: [],
     inferredScopeRows: [
-      { rowNumber: 2, gpcRefNo: "I.6.2", scope: "2", originalScope: "1" },
+      {
+        rowNumber: 2,
+        page: 4,
+        text: "Wastewater",
+        sector: "Waste",
+        subsector: "Wastewater",
+        value: 10,
+        gpcRefNo: "I.6.2",
+        scope: "2",
+        scopeOrigin: "activity-type",
+        originalScope: "1",
+      },
     ],
   };
   render();

@@ -20,6 +20,7 @@ import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import ReportingLevelWarning from "./reporting-level-warning";
 import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
+import type { KnownNumberStyle } from "@/util/GHGI/source-metadata";
 import {
   rowImportWarnings,
   translateReviewImportWarning,
@@ -37,9 +38,9 @@ interface ReviewConfirmStepProps {
 
 function numberFormatLabel(
   t: TFunction,
-  style: "european" | "english" | "unknown",
+  style: KnownNumberStyle,
 ): string {
-  return style === "unknown" ? "unknown" : t(`pdf-number-format-${style}`);
+  return t(`pdf-number-format-${style}`);
 }
 
 export default function ReviewConfirmStep({

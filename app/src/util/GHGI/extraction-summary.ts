@@ -4,8 +4,10 @@
  * shown on the review screen. No server imports: the browser uses this file too.
  */
 
-import type { NumberStyle } from "@/util/GHGI/source-text";
-import type { ReportedTotalKind } from "@/util/GHGI/source-metadata";
+import type {
+  NumberFormatConflict,
+  ReportedTotalKind,
+} from "@/util/GHGI/source-metadata";
 
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
 export type ReportedTotal = {
@@ -58,7 +60,7 @@ export type ExtractionSummary = {
    */
   orphanRemovals?: number[];
   /** The user's number format disagrees with what the document prints. */
-  numberFormatConflict?: { chosen: NumberStyle; detected: NumberStyle };
+  numberFormatConflict?: NumberFormatConflict;
   /** Total the user gave for the document; reconciliation target in the review. */
   userReportedTotal?: { value: number; kind: ReportedTotalKind };
 };
@@ -459,7 +461,7 @@ export type ExtractionReviewNotes = {
     matched: number;
     entered: number;
   } | null;
-  numberFormatConflict: { chosen: NumberStyle; detected: NumberStyle } | null;
+  numberFormatConflict: NumberFormatConflict | null;
 };
 
 /** What the review screen tells the user about an extraction. */

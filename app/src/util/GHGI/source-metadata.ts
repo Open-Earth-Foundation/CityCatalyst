@@ -98,6 +98,14 @@ export function resolveNumberStyle(
   return detected;
 }
 
+/** Number styles a user can choose and a conflict can name. */
+export type KnownNumberStyle = Exclude<NumberStyle, "unknown">;
+
+export type NumberFormatConflict = {
+  chosen: KnownNumberStyle;
+  detected: KnownNumberStyle;
+};
+
 /**
  * For a user-chosen format: the text shows at least 3 unambiguous numbers of
  * the other style and none of the chosen one.
@@ -105,7 +113,7 @@ export function resolveNumberStyle(
 export function numberFormatConflict(
   text: string,
   metadata: FormatMetadata | null | undefined,
-): { chosen: NumberStyle; detected: NumberStyle } | null {
+): NumberFormatConflict | null {
   if (!metadata?.numberFormat || metadata.numberFormatSource !== "user") {
     return null;
   }

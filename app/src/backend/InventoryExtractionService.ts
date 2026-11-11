@@ -434,7 +434,7 @@ export type ExtractOptions = {
   targetYear?: number;
   /** Called after each chunk when extraction runs in chunks (current 1-based, total). Used for progress polling. */
   onChunkProgress?: (current: number, total: number) => void | Promise<void>;
-  /** What the user said about the source: number format, reported total, table pages. */
+  /** What the user said about the source: number format and reported total. */
   sourceMetadata?: SourceMetadata | null;
 };
 

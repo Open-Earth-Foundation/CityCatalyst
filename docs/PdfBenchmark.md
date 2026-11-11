@@ -85,7 +85,7 @@ A run fails before any paid call when a case id is unknown, when a PDF or key is
 4. Put the PDF in a folder listed in `pdfDir`.
 5. Run `--cases <id> --dry-run`, then one real run: `--cases <id>`.
 
-Changing a key or a manifest entry changes the case's test-set version. The next comparison rescores the baseline's stored values with the new key; if those values are not available locally, the case is reported as `baseline stale` and is not compared.
+Changing a key or a manifest entry changes the case's test-set version. The next comparison rescores the baseline's stored values with the new key; if those values cannot be read or rescored, the case is reported as `baseline stale: <cause>` and is not compared.
 
 ## Update the baseline
 
@@ -100,11 +100,12 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 Open `report.md` in the run folder. It has:
 
 - **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
-- **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, share of attempts that pass, attempts 10x or more off the expected total, and the share of wrong totals that carried a warning.
+- **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
-- **Regressions against the baseline.** A case regresses when it passed in the baseline and fails now, recall drops by more than 5 points, a new attempt is off by 10x or more, a new attempt fails with a failure mode the baseline did not have, or the cost goes over 3x the forecast. Any regression makes the command exit with 1.
+- **Regressions against the baseline.** A case regresses when it passed in the baseline and fails now, recall drops by more than 5 points, a new attempt is off by 10x or more, a new attempt fails with a failure mode the baseline did not have, or the cost goes over 3x the forecast (the baseline usage scaled to the same number of attempts). Any regression makes the command exit with 1.
 - **Failure modes:** `scored`, `ocr_error`, `extraction_error`, `truncated`, `zero_rows`, `approve_error`, `readback_error`.
-- **Per case:** verdict, attempts passed, recall, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
+- **Per case:** verdict, attempts passed, recall, precision, value accuracy, classification accuracy, notation keys (recovered/scored), distractors stored, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
+- **Notes:** cases on the legacy tolerance, row-scored cases whose `textTables` is still unknown in the manifest, cases left out of the baseline, held rows included at approve.
 
 An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. A case passes when all 3 attempts pass.
 

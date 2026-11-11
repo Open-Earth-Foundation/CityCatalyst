@@ -220,17 +220,6 @@
     "fileName": "Münster, Germany 2022.pdf"
   },
   {
-    "id": "C-026",
-    "city": "Masterton",
-    "country": "New Zealand",
-    "year": 2022,
-    "block": "dev",
-    "totalOnly": false,
-    "textTables": null,
-    "fileName": "GWRC_EmissionsInventory_2022_Masterton_230619_Final.pdf",
-    "notes": "dev case; id C-026 assigned here (not in answer-key workbooks)"
-  },
-  {
     "id": "C-027",
     "city": "Chicago",
     "country": "USA",

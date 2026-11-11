@@ -111,10 +111,12 @@ describe("cases.json", () => {
   const path = join(process.cwd(), "benchmarks/pdf/cases.json");
   const blocks: Block[] = ["validated", "held-out", "dev"];
 
-  it("has 28 unique ids and every block value is valid", () => {
+  it("has 27 unique ids and every block value is valid", () => {
     const m = loadManifest(path);
-    expect(m).toHaveLength(28);
-    expect(new Set(m.map((c) => c.id)).size).toBe(28);
+    expect(m).toHaveLength(27);
+    expect(new Set(m.map((c) => c.id)).size).toBe(27);
+    // Masterton (C-026) has no answer key and is not part of the test set.
+    expect(m.map((c) => c.id)).not.toContain("C-026");
     for (const c of m) expect(blocks).toContain(c.block);
     expect(m.filter((c) => c.totalOnly).map((c) => c.id)).toEqual([
       "C-006",

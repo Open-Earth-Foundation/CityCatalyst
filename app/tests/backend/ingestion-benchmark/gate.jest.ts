@@ -8,10 +8,12 @@ import {
   gateAgainstBaseline,
 } from "@/backend/ingestion-benchmark/gate";
 import type { CaseVerdict } from "@/backend/ingestion-benchmark/metrics";
-import type {
-  CaseResult,
-  Prices,
-  RunEntry,
+import {
+  caseUsage,
+  costUsd,
+  type CaseResult,
+  type Prices,
+  type RunEntry,
 } from "@/backend/ingestion-benchmark/report";
 
 const verdict = (partial: Partial<CaseVerdict> = {}): CaseVerdict => ({
@@ -174,6 +176,23 @@ describe("gateAgainstBaseline", () => {
     expect(g.reasons).toEqual(["baseline stale"]);
   });
 
+  it("stale baseline carries its cause into the reason", () => {
+    const g = gateAgainstBaseline(
+      verdict(),
+      {
+        id: "C-001",
+        status: "baseline stale",
+        reason: "baseline stale: results.json is not valid JSON",
+        baseline: null,
+        rescored: false,
+      },
+      null,
+    );
+    expect(g.reasons).toEqual([
+      "baseline stale: results.json is not valid JSON",
+    ]);
+  });
+
   it("no baseline is ok with a reason", () => {
     const g = gateAgainstBaseline(
       verdict(),
@@ -210,26 +229,52 @@ describe("forecastUsd", () => {
     ocrPerPage: 0.002,
   };
 
-  it("prices the mean tokens of one run", () => {
-    const run = (n: number): RunEntry =>
-      ({
-        run: n,
-        ok: true,
-        failureMode: "scored",
-        warnings: [],
-        ms: 1,
-        stageMs: { ocr: 0, extraction: 0, import: 0, total: 1 },
-        usage: {
-          calls: 1,
-          promptTokens: 1_000_000,
-          completionTokens: 200_000,
-          reasoningTokens: 0,
-          lengthStops: 0,
-          maxCompletionTokens: 0,
-        },
-      }) as unknown as RunEntry;
-    const before = { runs: [run(1), run(2)] } as unknown as CaseResult;
-    // Per run: 1M in at $1 + 0.2M out at $5 = $2.
-    expect(forecastUsd(before, PRICES)).toBeCloseTo(2, 5);
+  const run = (n: number): RunEntry =>
+    ({
+      run: n,
+      ok: true,
+      failureMode: "scored",
+      warnings: [],
+      ms: 1,
+      stageMs: { ocr: 0, extraction: 0, import: 0, total: 1 },
+      usage: {
+        calls: 1,
+        promptTokens: 1_000_000,
+        completionTokens: 200_000,
+        reasoningTokens: 0,
+        lengthStops: 0,
+        maxCompletionTokens: 0,
+      },
+    }) as unknown as RunEntry;
+  // Two attempts; OCR runs in every attempt, so its pages are summed: 500 per attempt.
+  const before = {
+    runs: [run(1), run(2)],
+    ocrUsage: { calls: 0, promptTokens: 0, completionTokens: 0, pages: 1000 },
+  } as unknown as CaseResult;
+
+  it("prices `attempts` attempts of LLM tokens and OCR pages", () => {
+    // Per attempt: 1M in at $1 + 0.2M out at $5 + 500 pages at $0.002 = $3.
+    expect(forecastUsd(before, PRICES, 1)).toBeCloseTo(3, 5);
+    expect(forecastUsd(before, PRICES, 3)).toBeCloseTo(9, 5);
+  });
+
+  it("compares like with like: the same usage over 3 attempts is not over budget", () => {
+    const current = { ...before, runs: [run(1), run(2), run(3)] };
+    current.ocrUsage = { ...before.ocrUsage!, pages: 1500 };
+    const cost = costUsd(caseUsage(current as CaseResult), PRICES);
+    expect(cost).toBeCloseTo(9, 5);
+    const g = gateAgainstBaseline(
+      verdict({ costUsd: cost }),
+      compared(verdict()),
+      forecastUsd(before, PRICES, 3),
+    );
+    expect(g.verdict).toBe("ok");
+    expect(
+      gateAgainstBaseline(
+        verdict({ costUsd: cost! * 3.1 }),
+        compared(verdict()),
+        forecastUsd(before, PRICES, 3),
+      ).verdict,
+    ).toBe("over budget");
   });
 });

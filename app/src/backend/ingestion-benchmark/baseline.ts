@@ -80,6 +80,8 @@ export function saveBaseline(path: string, baseline: Baseline): void {
 export type Comparison = {
   id: string;
   status: "compared" | "no baseline" | "baseline stale";
+  /** Why the baseline is stale, for the report: "baseline stale: <cause>". */
+  reason?: string;
   baseline: CaseVerdict | null;
   rescored: boolean;
 };
@@ -106,22 +108,26 @@ export function compareWithBaseline(args: {
       rescored: false,
     };
   }
-  const stale: Comparison = {
+  const stale = (cause: string): Comparison => ({
     id,
     status: "baseline stale",
+    reason: `baseline stale: ${cause}`,
     baseline: null,
     rescored: false,
-  };
+  });
+  const where = `${entry.runFolder}/results.json`;
   try {
     const file = join(runsRoot, entry.runFolder, "results.json");
-    if (!existsSync(file)) return stale;
+    if (!existsSync(file)) return stale(`${where} not found`);
     const summary = JSON.parse(readFileSync(file, "utf8")) as RunSummary;
     const stored = summary.results.find((result) => result.id === id);
-    if (!stored) return stale;
+    if (!stored) return stale(`${id} not in ${where}`);
     const rescored = caseVerdict(rescoreCase(stored, key), key, prices);
     return { id, status: "compared", baseline: rescored, rescored: true };
-  } catch {
-    return stale;
+  } catch (error) {
+    return stale(
+      `${where}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 

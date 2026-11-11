@@ -292,9 +292,56 @@ describe("compareWithBaseline", () => {
     expect(c).toEqual({
       id: "C-001",
       status: "baseline stale",
+      reason: "baseline stale: run-1/results.json not found",
       baseline: null,
       rescored: false,
     });
+  });
+
+  it("carries the cause of a failed rescore into the reason", () => {
+    mkdirSync(join(dir, "run-2"), { recursive: true });
+    writeFileSync(join(dir, "run-2", "results.json"), "{not json");
+    const unparsable = compareWithBaseline({
+      id: "C-001",
+      current,
+      currentVersion: "new",
+      baseline: {
+        "C-001": entryOf({ testSetVersion: "old", runFolder: "run-2" }),
+      },
+      key,
+      runsRoot: dir,
+    });
+    expect(unparsable.status).toBe("baseline stale");
+    expect(unparsable.reason).toMatch(/^baseline stale: .*JSON/);
+
+    writeRun("run-3", [{ ...storedCase(), runs: null as never }]);
+    const broken = compareWithBaseline({
+      id: "C-001",
+      current,
+      currentVersion: "new",
+      baseline: {
+        "C-001": entryOf({ testSetVersion: "old", runFolder: "run-3" }),
+      },
+      key,
+      runsRoot: dir,
+    });
+    expect(broken.status).toBe("baseline stale");
+    expect(broken.reason).toMatch(/^baseline stale: \S/);
+    expect(broken.reason).not.toBe("baseline stale");
+
+    writeRun("run-4", []);
+    expect(
+      compareWithBaseline({
+        id: "C-001",
+        current,
+        currentVersion: "new",
+        baseline: {
+          "C-001": entryOf({ testSetVersion: "old", runFolder: "run-4" }),
+        },
+        key,
+        runsRoot: dir,
+      }).reason,
+    ).toBe("baseline stale: C-001 not in run-4/results.json");
   });
 
   it("gives baseline stale for a missing case or unparsable results", () => {

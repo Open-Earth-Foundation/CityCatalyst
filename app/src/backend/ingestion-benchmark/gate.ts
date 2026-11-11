@@ -36,15 +36,26 @@ export type CaseGate = {
 
 const SEVERITY: Verdict[] = ["error", "regression", "over budget", "ok"];
 
-/** Cost of one run of the case at `prices`, from the Before tokens (mean per run) plus OCR. */
-export function forecastUsd(before: CaseResult, prices: Prices): number | null {
+/**
+ * Cost of `attempts` attempts of the case at `prices`, from the Before usage.
+ * Its LLM tokens and its OCR pages are both summed over its attempts (each
+ * attempt is a new upload), so both scale with the attempt count, the same way
+ * the current case cost is summed.
+ */
+export function forecastUsd(
+  before: CaseResult,
+  prices: Prices | undefined,
+  attempts: number,
+): number | null {
+  if (before.runs.length === 0) return null;
+  const scale = attempts / before.runs.length;
   const usage = caseUsage(before);
-  const runs = before.runs.length || 1;
   return costUsd(
     {
       ...usage,
-      promptTokens: usage.promptTokens / runs,
-      completionTokens: usage.completionTokens / runs,
+      promptTokens: usage.promptTokens * scale,
+      completionTokens: usage.completionTokens * scale,
+      ocrPages: usage.ocrPages * scale,
     },
     prices,
   );
@@ -109,7 +120,9 @@ export function gateAgainstBaseline(
   const verdict =
     SEVERITY.find((level) => hits.some((hit) => hit.verdict === level)) ?? "ok";
   const reasons = hits.map((hit) => `${hit.verdict}: ${hit.text}`);
-  if (comparison.status !== "compared") reasons.push(comparison.status);
+  if (comparison.status !== "compared") {
+    reasons.push(comparison.reason ?? comparison.status);
+  }
   return {
     id: current.id,
     verdict,

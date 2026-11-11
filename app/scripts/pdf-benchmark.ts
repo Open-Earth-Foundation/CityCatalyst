@@ -52,8 +52,6 @@ import {
   ZERO_TOKENS,
   appendIndexLine,
   caseMetrics,
-  caseUsage,
-  costUsd,
   gitInfo,
   renderIndexLine,
   runFolderName,
@@ -143,16 +141,7 @@ function forecastRun(
 ): { usd: number | null; seconds: number | null } {
   if (!before || before.runs.length === 0) return { usd: null, seconds: null };
   const scale = runs / before.runs.length;
-  const usage = caseUsage(before);
-  const usd = costUsd(
-    {
-      ...usage,
-      promptTokens: usage.promptTokens * scale,
-      completionTokens: usage.completionTokens * scale,
-      ocrPages: usage.ocrPages * scale,
-    },
-    prices,
-  );
+  const usd = forecastUsd(before, prices, runs);
   const seconds =
     (before.runs.reduce((sum, run) => sum + run.stageMs.total, 0) / 1000) *
     scale;
@@ -509,7 +498,7 @@ export async function main(argv: string[]): Promise<number> {
       return gateAgainstBaseline(
         verdict,
         comparison,
-        before && prices ? forecastUsd(before, prices) : null,
+        before ? forecastUsd(before, prices, verdict.attempts) : null,
       );
     });
     const manifestCounts = (["validated", "held-out", "dev"] as Block[]).reduce(

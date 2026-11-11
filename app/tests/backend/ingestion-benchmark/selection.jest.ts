@@ -54,6 +54,15 @@ describe("selectCases", () => {
     expect(out.map((c) => c.id)).toEqual(["C-004", "C-010"]);
   });
 
+  it("ignores repeated ids, in any case, before the 10-file cap", () => {
+    const big = Array.from({ length: 10 }, (_, i) =>
+      entry(`C-${String(100 + i)}`),
+    );
+    const ids = big.map((c) => c.id);
+    const repeated = [...ids, ids[0].toLowerCase(), ` ${ids[1]} `].join(",");
+    expect(selectCases(big, { cases: repeated }).map((c) => c.id)).toEqual(ids);
+  });
+
   it("throws SelectionError with all ids for 11 files, passes for 10", () => {
     const big = Array.from({ length: 11 }, (_, i) =>
       entry(`C-${String(100 + i)}`),

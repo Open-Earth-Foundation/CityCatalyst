@@ -48,10 +48,15 @@ export function selectCases(
 
   let selected: CaseManifestEntry[];
   if (hasCases) {
-    const wanted = input
-      .cases!.split(",")
-      .map((s) => s.trim().toUpperCase())
-      .filter(Boolean);
+    // Ids are case-insensitive; a repeated id is one file.
+    const wanted = [
+      ...new Set(
+        input
+          .cases!.split(",")
+          .map((s) => s.trim().toUpperCase())
+          .filter(Boolean),
+      ),
+    ];
     const byId = new Map(manifest.map((c) => [c.id.toUpperCase(), c]));
     const unknown = wanted.filter((id) => !byId.has(id));
     if (unknown.length) {

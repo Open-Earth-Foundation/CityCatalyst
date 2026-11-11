@@ -1,0 +1,6 @@
+[
+  {"id": "mock-mit-001", "name": "Mock mitigation item 1 (fictitious)", "mockScores": {"impact": 0.9, "alignment": 0.6, "feasibility": 0.3}},
+  {"id": "mock-mit-002", "name": "Mock mitigation item 2 (fictitious)", "mockScores": {"impact": 0.5, "alignment": 0.5, "feasibility": 0.5}},
+  {"id": "mock-mit-003", "name": "Mock mitigation item 3 (fictitious)", "mockScores": {"impact": 0.5, "alignment": 0.5, "feasibility": 0.5}},
+  {"id": "mock-mit-004", "name": "Mock mitigation item 4 (fictitious)", "mockScores": {"impact": 0.2, "alignment": 0.9, "feasibility": 0.8}}
+]

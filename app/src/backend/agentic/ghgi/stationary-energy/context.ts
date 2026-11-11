@@ -1,7 +1,4 @@
 import DataSourceService, {
-  downscaledByCountryPopulation,
-  downscaledByRegionPopulation,
-  populationScalingRetrievalMethods,
   type RemovedSourceResult,
 } from "@/backend/DataSourceService";
 import { db } from "@/models";
@@ -535,12 +532,10 @@ function buildSourceCandidate(params: {
   const source = params.item.source;
   const data = params.item.data;
   const sourceScope = buildSourceScope(source);
-  const { datasetYear, geographyMatch } = resolveRecordProvenance({
-    inventory: params.inventory,
-    source,
-    hasRecord: Boolean(data),
-    wasRequested: params.applicabilityStatus !== "removed",
-  });
+  const geographyMatch = resolveGeographyMatch(
+    params.inventory,
+    source?.geographicalLocation,
+  );
 
   // datasetUrl isn't a real DataSource field; kept as a defensive fallback
   // in case a differently-shaped source object is ever passed in.
@@ -552,8 +547,12 @@ function buildSourceCandidate(params: {
     publisher_name: source.publisher?.name ?? null,
     retrieval_method: source.retrievalMethod ?? null,
     dataset_name: source.datasourceName ?? null,
-    dataset_year: datasetYear,
-    url: source.url ?? legacySource.datasetUrl ?? source.publisher?.url ?? null,
+    dataset_year: source.startYear ?? null,
+    url:
+      source.url ??
+      legacySource.datasetUrl ??
+      source.publisher?.url ??
+      null,
     geography_match: geographyMatch,
     source_scope: sourceScope,
     source_data: data ?? null,
@@ -563,15 +562,13 @@ function buildSourceCandidate(params: {
     failure_reason: params.failureReason ?? null,
     quality_score:
       params.applicabilityStatus === "applicable" &&
-      datasetYear != null &&
-      datasetYear === params.inventory.year
+      source.startYear === params.inventory.year
         ? "1"
         : null,
     confidence_notes:
       params.failureReason ??
       buildConfidenceNotes({
         geographyMatch,
-        datasetYear,
         source,
         inventory: params.inventory,
       }),
@@ -850,59 +847,8 @@ function resolveGeographyMatch(
   return "unknown";
 }
 
-type GeographyMatch = ReturnType<typeof resolveGeographyMatch>;
-
-/**
- * Describe the provider record CityCatalyst actually requested for this inventory,
- * not the catalogue coverage (`startYear` / `geographicalLocation`).
- *
- * `DataSourceService.retrieveGlobalAPISource` substitutes the inventory year into
- * `:year` and the city locode into `:locode` / `:actor_id`, so those placeholders
- * define the record's year and granularity. Population-downscaled sources fetch a
- * country/region record and only scale it. Anything else falls back to the
- * catalogue coverage, and the year stays unknown rather than borrowed from it.
- */
-function resolveRecordProvenance(params: {
-  inventory: Inventory;
-  source: DataSource;
-  hasRecord: boolean;
-  wasRequested: boolean;
-}): { datasetYear: number | null; geographyMatch: GeographyMatch } {
-  const { inventory, source } = params;
-  const endpoint = source.apiEndpoint ?? "";
-  // shortcut: Global API responses carry no year/location fields, so the request parameters are the provenance; read them from the response if it ever exposes them.
-  const datasetYear =
-    params.hasRecord && endpoint.includes(":year")
-      ? (inventory.year ?? null)
-      : null;
-
-  let geographyMatch: GeographyMatch;
-  if (!params.wasRequested) {
-    geographyMatch = resolveGeographyMatch(
-      inventory,
-      source.geographicalLocation,
-    );
-  } else if (source.retrievalMethod === downscaledByCountryPopulation) {
-    geographyMatch = "country";
-  } else if (source.retrievalMethod === downscaledByRegionPopulation) {
-    geographyMatch = "region";
-  } else if (/:locode|:actor_id/.test(endpoint) && inventory.city?.locode) {
-    geographyMatch = "city";
-  } else if (endpoint.includes(":country")) {
-    geographyMatch = "country";
-  } else {
-    geographyMatch = resolveGeographyMatch(
-      inventory,
-      source.geographicalLocation,
-    );
-  }
-
-  return { datasetYear, geographyMatch };
-}
-
 function buildConfidenceNotes(params: {
   geographyMatch: string;
-  datasetYear: number | null;
   source: DataSource;
   inventory: Inventory;
 }): string {
@@ -916,15 +862,8 @@ function buildConfidenceNotes(params: {
   }
 
   if (
-    params.source.retrievalMethod &&
-    populationScalingRetrievalMethods.includes(params.source.retrievalMethod)
-  ) {
-    notes.push("(scaled to the city by population)");
-  }
-
-  if (
-    params.datasetYear != null &&
-    params.datasetYear === params.inventory.year
+    params.source.startYear &&
+    params.source.startYear === params.inventory.year
   ) {
     notes.push("matches the inventory year");
   }

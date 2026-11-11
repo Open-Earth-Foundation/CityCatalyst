@@ -55,12 +55,13 @@ function parseTotal(draft: PdfSourceMetadataDraft): number | null {
     text = text.slice(1);
   }
   let value: number | null;
+  // Group separators need groups of exactly 3 digits after the first.
   if (draft.numberFormat === "european") {
-    value = /^[\d.]*\d(,\d+)?$/.test(text)
+    value = /^(\d{1,3}(\.\d{3})+|\d+)(,\d+)?$/.test(text)
       ? parseNumberString(text.replace(/\./g, "").replace(",", "."), "english")
       : null;
   } else if (draft.numberFormat === "english") {
-    value = /^[\d,]*\d(\.\d+)?$/.test(text)
+    value = /^(\d{1,3}(,\d{3})+|\d+)(\.\d+)?$/.test(text)
       ? parseNumberString(text.replace(/,/g, ""), "english")
       : null;
   } else {

@@ -105,6 +105,30 @@ describe("PdfSourceMetadataForm", () => {
     });
   });
 
+  it.each<["english" | "european", string]>([
+    ["english", "1,2,3"],
+    ["english", "12,34"],
+    ["english", "1,2345"],
+    ["european", "1.2.3"],
+    ["european", "12.34,5"],
+  ])("%s total with malformed groups %s is an error", (numberFormat, totalText) => {
+    const base = initialPdfSourceMetadataDraft("BR");
+    const result = draftToSourceMetadata({ ...base, numberFormat, totalText });
+    expect(result.errors).toContain("total");
+    expect(result.metadata.reportedTotal).toBeNull();
+  });
+
+  it.each<["english" | "european", string, number]>([
+    ["english", "9,559,215", 9559215],
+    ["english", "9559215.5", 9559215.5],
+    ["european", "9.559.215", 9559215],
+    ["european", "9559215,5", 9559215.5],
+  ])("%s total %s reads as %s", (numberFormat, totalText, expected) => {
+    const base = initialPdfSourceMetadataDraft("BR");
+    const result = draftToSourceMetadata({ ...base, numberFormat, totalText });
+    expect(result.metadata.reportedTotal).toBe(expected);
+  });
+
   it("european total with decimal comma", () => {
     const base = initialPdfSourceMetadataDraft("BR");
     const eu = draftToSourceMetadata({ ...base, totalText: "9.559.215,5" });

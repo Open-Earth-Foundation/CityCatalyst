@@ -7,7 +7,9 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import ImportReviewRows from "@/components/steps/GHGI/import/import-review-rows";
+import type { TFunction } from "i18next";
 import type { ImportRowReview } from "@/util/types";
+import en from "@/i18n/locales/en/onboarding.json";
 
 const t = ((key: string, options?: Record<string, unknown>) =>
   options ? `${key} ${JSON.stringify(options)}` : key) as never;
@@ -22,6 +24,8 @@ const row: ImportRowReview = {
   sector: "Waste",
   subsector: "Wastewater Treatment And Discharge",
   category: "Wastewater Treatment & Discharge",
+  activityType: null,
+  scopeOrigin: "document",
   scope: "1",
   expectedScope: null,
   quote: null,
@@ -32,10 +36,26 @@ const row: ImportRowReview = {
   referenceOptions: ["III.4.1", "III.4.2", "III.4.3"],
 };
 
-function render(rows: ImportRowReview[]) {
+// Resolves real English strings so the tests assert what the user reads.
+const strings = en as Record<string, string>;
+const realT = (lng: string) =>
+  Object.assign(
+    (key: string, values?: Record<string, unknown>) =>
+      (strings[key] ?? key).replace(/\{\{(\w+)\}\}/g, (_, name) =>
+        String(values?.[name] ?? ""),
+      ),
+    { lng },
+  ) as unknown as TFunction;
+
+function render(rows: ImportRowReview[], translate: TFunction = t) {
   return renderToStaticMarkup(
     <ChakraProvider value={defaultSystem}>
-      <ImportReviewRows t={t} fileId="file-a" rows={rows} onDecide={() => {}} />
+      <ImportReviewRows
+        t={translate}
+        fileId="file-a"
+        rows={rows}
+        onDecide={() => {}}
+      />
     </ChakraProvider>,
   );
 }
@@ -43,7 +63,7 @@ function render(rows: ImportRowReview[]) {
 describe("ImportReviewRows", () => {
   it("shows the fields of a held row and says when there is no context", () => {
     const html = render([row]);
-    expect(html).toContain("6300 tCO2e");
+    expect(html).toContain("6,300 tCO2e");
     expect(html).toContain("III.4.3");
     expect(html).toContain("Wastewater Treatment And Discharge");
     expect(html).toContain("Wastewater Treatment &amp; Discharge");
@@ -51,6 +71,49 @@ describe("ImportReviewRows", () => {
     expect(html).toContain("import-review-keep");
     expect(html).toContain("import-review-skip");
     expect(html).toContain("III.4.1");
+  });
+
+  const content: ImportRowReview = {
+    ...row,
+    page: 4,
+    category: "Electricity – Residential",
+    sector: "Stationary energy",
+    subsector: "Residential buildings",
+    value: 16119,
+    suggestedRefNo: "I.6.1",
+    scope: "1",
+    scopeOrigin: "document",
+  };
+
+  it("shows the row content before the decision buttons", () => {
+    const html = render([content], realT("en"));
+    for (const text of [
+      "Page 4",
+      "Electricity – Residential",
+      "Stationary energy &gt; Residential buildings",
+      "16,119 tCO2e",
+      "I.6.1",
+      "Scope 1 · From the document",
+    ]) {
+      expect(html).toContain(text);
+    }
+    expect(html.indexOf("Page 4")).toBeLessThan(
+      html.indexOf("Keep this reference"),
+    );
+  });
+
+  it("formats the value in the UI language, not the browser locale", () => {
+    expect(render([content], realT("de"))).toContain("16.119 tCO2e");
+  });
+
+  it("falls back to activityType and — for a missing page", () => {
+    const html = render(
+      [{ ...content, page: null, category: null, activityType: "Gas use" }],
+      realT("en"),
+    );
+    expect(html).toContain("Gas use");
+    expect(html).toContain(">—<");
+    expect(html).not.toContain("Page ");
   });
 
   it("labels a quote as found, and gives no other verdict", () => {

@@ -27,6 +27,13 @@ export function ScopeOriginLabel({
   return <>{t(`import-scope-origin-${origin}`)}</>;
 }
 
+/** A value in tonnes CO2e, formatted in the UI language. */
+export function formatTonnes(t: TFunction, value: number): string {
+  // A t bound to a language carries it as `lng`.
+  const lng = (t as unknown as { lng?: string }).lng ?? "en";
+  return `${value.toLocaleString(lng)} tCO2e`;
+}
+
 function dash(value: string | null | undefined) {
   return value ? value : "—";
 }
@@ -60,8 +67,6 @@ function ScopeNotesCard({
   tone: "warning" | "info";
 }) {
   const [showAll, setShowAll] = useState(false);
-  // A t bound to a language carries it as `lng`.
-  const lng = (t as unknown as { lng?: string }).lng ?? "en";
   const visibleRows = showAll ? rows : rows.slice(0, COLLAPSED_ROW_LIMIT);
   const isWarning = tone === "warning";
 
@@ -135,9 +140,7 @@ function ScopeNotesCard({
                 <Table.Cell>{dash(row.text)}</Table.Cell>
                 <Table.Cell>{dash(sector)}</Table.Cell>
                 <Table.Cell>
-                  {row.value === null
-                    ? "—"
-                    : `${row.value.toLocaleString(lng)} tCO2e`}
+                  {row.value === null ? "—" : formatTonnes(t, row.value)}
                 </Table.Cell>
                 <Table.Cell>
                   <Text fontWeight="medium">{row.gpcRefNo}</Text>

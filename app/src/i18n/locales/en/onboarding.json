@@ -309,6 +309,8 @@
   "import-review-label": "Row",
   "import-review-category": "Category",
   "import-review-page": "Page",
+  "import-review-page-number": "Page {{page}}",
+  "import-review-scope": "Scope {{scope}}",
   "import-review-table": "Table or section",
   "import-review-no-context": "No source context available for this row.",
   "import-review-quote-found": "Found in document",

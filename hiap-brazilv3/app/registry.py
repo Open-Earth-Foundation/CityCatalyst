@@ -3,6 +3,7 @@
 The registry key is `(region, methodology, version)`. `modality`
 (`mitigation` | `adaptation`) selects the pipeline inside the resolved
 combination. Unsupported combinations raise `UnsupportedCombinationError`.
+Each registration validates its own caller inputs and its own backend config.
 """
 
 from collections.abc import Callable
@@ -10,12 +11,18 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Any
 
+from pydantic import BaseModel
+
 from app.methodologies.ccc.v1.config_schema import MethodologyConfig
+from app.methodologies.ccc.v1.models import PrioritizationInputs
 from app.methodologies.ccc.v1.pipeline import run_adaptation, run_mitigation
 from app.regions.BR.sources import load_items, load_methodology_params
 from app.shared.contracts import RankableItem, RankingResult
 
-Pipeline = Callable[[list[RankableItem], MethodologyConfig], RankingResult]
+# Each pipeline receives the items, its own validated backend config and its
+# own validated caller inputs. The concrete model types are owned by the
+# registration, so the registry only knows them as pydantic models.
+Pipeline = Callable[[list[RankableItem], BaseModel, BaseModel], RankingResult]
 CombinationKey = tuple[str, str, str]
 
 
@@ -23,21 +30,50 @@ CombinationKey = tuple[str, str, str]
 class RegisteredCombination:
     """Everything needed to run one region + methodology + version.
 
-    The registry is the only place where region code and methodology code meet:
-    the region supplies raw parameters, the methodology's model validates them.
+    Each registration supplies its own models, so combinations never share a
+    schema:
+    - `inputs_model` validates the caller's `inputs` object (strictly).
+    - `load_config` returns the server-owned settings, validated against the
+      registration's own config model.
+    The registry is the only place where region code and methodology code meet.
     """
 
     pipelines: dict[str, Pipeline]
-    load_items: Callable[[str], list[RankableItem]]
-    load_raw_config: Callable[[], dict[str, Any]]
+    inputs_model: type[BaseModel]
+    load_items: Callable[[str, BaseModel], list[RankableItem]]
+    load_config: Callable[[], BaseModel]
 
-    def load_config(self) -> MethodologyConfig:
-        """Return the region parameters validated as a methodology config.
+    def validate_inputs(self, raw_inputs: dict[str, Any]) -> BaseModel:
+        """Validate the caller's `inputs` object with this registration's model.
+
+        Args:
+            raw_inputs: The `inputs` object from the request.
+
+        Returns:
+            The validated inputs model.
 
         Raises:
-            pydantic.ValidationError: If the region parameters do not fit the methodology schema.
+            pydantic.ValidationError: On missing fields, wrong types or unexpected fields.
         """
-        return MethodologyConfig(**self.load_raw_config())
+        return self.inputs_model.model_validate(raw_inputs)
+
+
+def validate_config(
+    config_model: type[BaseModel], load_raw: Callable[[], dict[str, Any]]
+) -> BaseModel:
+    """Validate raw region settings with a methodology's own config model.
+
+    Args:
+        config_model: The registration's config model (it should reject unknown settings).
+        load_raw: Returns the raw settings from the region.
+
+    Returns:
+        The validated config.
+
+    Raises:
+        pydantic.ValidationError: If the settings do not fit the model.
+    """
+    return config_model.model_validate(load_raw())
 
 
 class UnsupportedCombinationError(Exception):
@@ -79,8 +115,13 @@ class UnsupportedCombinationError(Exception):
 REGISTRY: dict[CombinationKey, RegisteredCombination] = {
     ("BR", "ccc", "v1"): RegisteredCombination(
         pipelines={"mitigation": run_mitigation, "adaptation": run_adaptation},
+        inputs_model=PrioritizationInputs,
         load_items=load_items,
-        load_raw_config=partial(load_methodology_params, "ccc", "v1"),
+        load_config=partial(
+            validate_config,
+            MethodologyConfig,
+            partial(load_methodology_params, "ccc", "v1"),
+        ),
     ),
 }
 

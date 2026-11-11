@@ -4,7 +4,7 @@ Scaffold note: no approved methodology exists yet. The weights a region
 provides are placeholders to exercise the scoring kernel, not methodology.
 """
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.shared.scoring.weights import validate_weights
 
@@ -12,7 +12,12 @@ PILLARS = ("impact", "alignment", "feasibility")
 
 
 class MethodologyConfig(BaseModel):
-    """Region-provided configuration for one CCC v1 run."""
+    """Region-provided configuration for one CCC v1 run.
+
+    Unknown settings are rejected so typos fail visibly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
 
     weights: dict[str, float] = Field(
         description="Weight per pillar name; must cover every pillar and sum to 1."

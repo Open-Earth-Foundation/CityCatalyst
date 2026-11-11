@@ -16,8 +16,9 @@ def test_combination_produces_valid_ranking(key: tuple[str, str, str]) -> None:
     validate_weights(config.weights)
 
     for modality, pipeline in combination.pipelines.items():
-        items = combination.load_items(modality)
-        result = pipeline(items, config)
+        inputs = combination.validate_inputs({})
+        items = combination.load_items(modality, inputs)
+        result = pipeline(items, config, inputs)
 
         assert isinstance(result, RankingResult)
         known_ids = {item.id for item in items}

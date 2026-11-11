@@ -38,7 +38,14 @@ curl -X POST localhost:8000/v1/prioritize -H 'content-type: application/json' \
   -d '{"meta":{"requestId":"demo-1"},"requestData":{"region":"BR","methodology":"ccc","methodologyVersion":"v1","modality":"mitigation"}}'
 ```
 
+`requestData` has two layers:
+
+- Common fields validated by the service: `region`, `methodology`, `methodologyVersion`, `modality` (unknown top-level fields are rejected).
+- `inputs`: a free object. After the combination is resolved, the registered adapter validates it strictly with its own model. Missing, mistyped or unexpected fields return HTTP 422 with `detail.error.code = "invalid_inputs"` and the per-field errors. The BR scaffold accepts no inputs.
+
 Unsupported combinations return HTTP 422 with `detail.error.code = "unsupported_combination"`; `modality` is listed in the details only when it is the reason.
+
+Each registration (`RegisteredCombination`) supplies its own `inputs_model` and its own `load_config`, so a methodology's server-owned settings are validated against its own model, and unknown settings are rejected.
 
 ## Environment variables
 

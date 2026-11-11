@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from pydantic import BaseModel
 
 from app.shared.contracts import RankableItem
 
@@ -17,11 +18,13 @@ REGION_DIR = Path(__file__).parent
 FIXTURES_DIR = REGION_DIR / "tests" / "fixtures"
 
 
-def load_items(modality: str) -> list[RankableItem]:
+def load_items(modality: str, inputs: BaseModel) -> list[RankableItem]:
     """Load the fictitious items for `modality`.
 
     Args:
         modality: `mitigation` or `adaptation`.
+        inputs: Validated caller inputs. The scaffold fixtures do not depend on
+            them; a real adapter uses them to pick which data to load.
 
     Returns:
         Items whose `metadata["mockScores"]` hold the fictitious pillar scores.

@@ -1,10 +1,14 @@
 """API error shaping."""
 
+import json
 from typing import Any
+
+from pydantic import ValidationError
 
 from app.registry import UnsupportedCombinationError
 
 UNSUPPORTED_COMBINATION_CODE = "unsupported_combination"
+INVALID_INPUTS_CODE = "invalid_inputs"
 
 
 def unsupported_combination_detail(
@@ -36,5 +40,27 @@ def unsupported_combination_detail(
             "code": UNSUPPORTED_COMBINATION_CODE,
             "message": str(error),
             "details": details,
+        },
+    }
+
+
+def invalid_inputs_detail(error: ValidationError, request_id: str) -> dict[str, Any]:
+    """Build the error body for `inputs` rejected by the registered adapter's model.
+
+    Args:
+        error: The validation error raised by the adapter's inputs model.
+        request_id: Caller correlation ID.
+
+    Returns:
+        JSON-serializable body for an HTTP 422 response, listing each problem
+        with its location inside `inputs`.
+    """
+    problems = json.loads(error.json(include_url=False, include_input=False))
+    return {
+        "requestId": request_id,
+        "error": {
+            "code": INVALID_INPUTS_CODE,
+            "message": "inputs do not match the registered adapter's input model",
+            "details": {"errors": problems},
         },
     }

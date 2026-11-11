@@ -7,6 +7,7 @@ adaptation methodology may not; this is an open point, not a decision.
 import logging
 
 from app.methodologies.ccc.v1.config_schema import MethodologyConfig
+from app.methodologies.ccc.v1.models import PrioritizationInputs
 from app.methodologies.ccc.v1.steps.alignment import score_alignment
 from app.methodologies.ccc.v1.steps.feasibility import score_feasibility
 from app.methodologies.ccc.v1.steps.final_scoring import rank_by_pillars
@@ -48,14 +49,22 @@ def _run_three_pillar_scaffold(
     return RankingResult(ranked=ranked, excluded=excluded)
 
 
-def run_mitigation(items: list[RankableItem], config: MethodologyConfig) -> RankingResult:
-    """Run the mitigation pipeline (scaffold, mock data)."""
+def run_mitigation(
+    items: list[RankableItem], config: MethodologyConfig, inputs: PrioritizationInputs
+) -> RankingResult:
+    """Run the mitigation pipeline (scaffold, mock data).
+
+    `inputs` is the validated caller input; the scaffold accepts none and ignores it.
+    """
     return _run_three_pillar_scaffold(items, config)
 
 
-def run_adaptation(items: list[RankableItem], config: MethodologyConfig) -> RankingResult:
+def run_adaptation(
+    items: list[RankableItem], config: MethodologyConfig, inputs: PrioritizationInputs
+) -> RankingResult:
     """Run the adaptation pipeline (scaffold, mock data).
 
-    Uses the same three pillars only as a scaffold assumption.
+    Uses the same three pillars only as a scaffold assumption. `inputs` is the
+    validated caller input; the scaffold accepts none and ignores it.
     """
     return _run_three_pillar_scaffold(items, config)

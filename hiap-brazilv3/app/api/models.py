@@ -1,6 +1,6 @@
 """Public request/response models for `POST /v1/prioritize` (camelCase, like HIAP-MEED)."""
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -19,6 +19,15 @@ class PrioritizeRequestData(BaseModel):
     )
     modality: Literal["mitigation", "adaptation"] = Field(
         description="Selects the mitigation or adaptation pipeline."
+    )
+    inputs: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Adapter-specific caller inputs. Not validated here: after the "
+            "combination is resolved, the registered adapter validates them "
+            "strictly with its own model (HTTP 422 on missing, mistyped or "
+            "unexpected fields)."
+        ),
     )
 
 

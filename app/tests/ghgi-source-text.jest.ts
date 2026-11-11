@@ -362,3 +362,21 @@ describe("parseNumberString with unit, percent or plus sign", () => {
     },
   );
 });
+
+describe("parseNumberString ambiguous group callback", () => {
+  it("reports a single 3-digit group read with style unknown", () => {
+    const seen: string[] = [];
+    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(1.5);
+    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(1500);
+    expect(seen).toEqual(["1.500", "1,500"]);
+  });
+
+  it("does not report when the style is known or the value is not ambiguous", () => {
+    const seen: string[] = [];
+    parseNumberString("1.500", "european", (s) => seen.push(s));
+    parseNumberString("1,500", "english", (s) => seen.push(s));
+    parseNumberString("1.5", "unknown", (s) => seen.push(s));
+    parseNumberString("1,234,567", "unknown", (s) => seen.push(s));
+    expect(seen).toEqual([]);
+  });
+});

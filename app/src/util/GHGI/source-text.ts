@@ -56,11 +56,13 @@ function isGroupedInteger(s: string, sep: string): boolean {
  *      (`1,500` is 1500, `1.500` is 1.5);
  *    - european: dot is a group separator, comma is decimal
  *      (`1.500` is 1500, `1,500` is 1.5).
+ *    With style unknown, `onAmbiguous` is called with the input.
  * 7. Anything else (letters, several decimal marks, malformed groups): null.
  */
 export function parseNumberString(
   s: string,
   style: NumberStyle,
+  onAmbiguous?: (s: string) => void,
 ): number | null {
   let t = s.trim().replace(/[ \u00a0\u202f']/g, "");
   let negative = false;
@@ -106,6 +108,7 @@ export function parseNumberString(
       let isGroup = false;
       if (after.length === 3) {
         isGroup = style === "european" ? sep === "." : sep === ",";
+        if (style === "unknown") onAmbiguous?.(s);
       }
       if (isGroup) {
         if (!isGroupedInteger(t, sep)) return null;

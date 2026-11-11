@@ -1669,6 +1669,11 @@ function normalizeRows(
   raw: Record<string, unknown>[],
   style: NumberStyle,
 ): ExtractedRow[] {
+  const logAmbiguous = (value: string) =>
+    logger.info(
+      { value },
+      "Ambiguous 3-digit group parsed with number style unknown",
+    );
   return raw.map((row) => {
     const out: ExtractedRow = {
       year: null,
@@ -1695,7 +1700,7 @@ function normalizeRows(
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
       out.totalCO2e = row.totalCO2e;
     } else if (typeof row.totalCO2e === "string") {
-      const n = parseNumberString(row.totalCO2e, style);
+      const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
     if (row.refSource === "document" || row.refSource === "inferred") {
@@ -1735,19 +1740,19 @@ function normalizeRows(
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
-      const n = parseNumberString(row.co2, style);
+      const n = parseNumberString(row.co2, style, logAmbiguous);
       if (Number.isFinite(n)) out.co2 = n;
     }
     if (typeof row.ch4 === "number" && Number.isFinite(row.ch4)) {
       out.ch4 = row.ch4;
     } else if (typeof row.ch4 === "string") {
-      const n = parseNumberString(row.ch4, style);
+      const n = parseNumberString(row.ch4, style, logAmbiguous);
       if (Number.isFinite(n)) out.ch4 = n;
     }
     if (typeof row.n2o === "number" && Number.isFinite(row.n2o)) {
       out.n2o = row.n2o;
     } else if (typeof row.n2o === "string") {
-      const n = parseNumberString(row.n2o, style);
+      const n = parseNumberString(row.n2o, style, logAmbiguous);
       if (Number.isFinite(n)) out.n2o = n;
     }
     if (typeof row.source === "string" && !isPlaceholderOrEmpty(row.source))
@@ -1786,7 +1791,7 @@ function normalizeRows(
       typeof row.activityAmount === "string" &&
       !isPlaceholderOrEmpty(row.activityAmount)
     ) {
-      const n = parseNumberString(row.activityAmount, style);
+      const n = parseNumberString(row.activityAmount, style, logAmbiguous);
       if (Number.isFinite(n)) out.activityAmount = n;
     }
     return out;

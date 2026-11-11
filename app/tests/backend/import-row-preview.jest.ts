@@ -194,9 +194,9 @@ describe("previewImportRows", () => {
 
 describe("ECRFImportService.fromExtractedRows empty rows", () => {
   it("keeps empty extracted rows as skipped with the Excel row number", async () => {
-    jest.spyOn(db.models.Scope, "findAll").mockResolvedValue([
-      { scopeId: "scope-1", scopeName: "1" },
-    ] as never);
+    jest
+      .spyOn(db.models.Scope, "findAll")
+      .mockResolvedValue([{ scopeId: "scope-1", scopeName: "1" }] as never);
     jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
       sectorId: "sector-I",
       subsectorId: "subsector-I.1",
@@ -587,9 +587,21 @@ describe("excluded reference needs a decision (Net 1)", () => {
       },
     ]);
     expect(result.inferredScopeRows).toHaveLength(2);
-    expect(result.inferredScopeRows).toEqual([
-      { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
-      { rowNumber: 3, gpcRefNo: "I.1.2", scope: "2", originalScope: "1" },
+    expect(result.inferredScopeRows).toMatchObject([
+      {
+        rowNumber: 2,
+        gpcRefNo: "I.1.2",
+        scope: "2",
+        originalScope: null,
+        scopeOrigin: "activity-type",
+      },
+      {
+        rowNumber: 3,
+        gpcRefNo: "I.1.2",
+        scope: "2",
+        originalScope: "1",
+        scopeOrigin: "activity-type",
+      },
     ]);
   });
 
@@ -601,7 +613,7 @@ describe("excluded reference needs a decision (Net 1)", () => {
         originalScope: "Scope 2",
       }),
     ]);
-    expect(result.inferredScopeRows).toEqual([
+    expect(result.inferredScopeRows).toMatchObject([
       { rowNumber: 2, gpcRefNo: "I.1.2", scope: "2", originalScope: null },
     ]);
   });
@@ -616,6 +628,173 @@ describe("excluded reference needs a decision (Net 1)", () => {
     ]);
     expect(result.pendingRows).toBe(1);
     expect(result.inferredScopeRows).toEqual([]);
+  });
+});
+
+describe("scope notes", () => {
+  function noted(
+    ref: string,
+    review: Record<string, unknown>,
+    fields: Partial<ECRFRowData> = {},
+  ): ECRFRowData {
+    return row(0, {
+      gpcRefNo: ref,
+      totalCO2e: 100,
+      review: {
+        sector: "Stationary Energy",
+        subsector: "Residential buildings",
+        category: null,
+        scope: null,
+        refSource: "document",
+        directionEvidence: null,
+        directionEvidenceFound: null,
+        page: 1,
+        source: null,
+        decision: null,
+        suggestedRefNo: ref,
+        ...review,
+      } as ECRFRowData["review"],
+      ...fields,
+    });
+  }
+
+  async function notes(rows: ECRFRowData[]) {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+    return previewImportRows(
+      { ...importResult(rows), requiresReferenceReview: true },
+      InventoryTypeEnum.GPC_BASIC_PLUS,
+    );
+  }
+
+  it("lists a row with no stated scope as inferred from the reference", async () => {
+    const result = await notes([noted("I.1.1", { finalScope: "1" })]);
+    expect(result.scopeWarnings).toEqual([]);
+    expect(result.inferredScopeRows?.[0]).toMatchObject({
+      scopeOrigin: "reference",
+      scope: "1",
+      originalScope: null,
+    });
+  });
+
+  it("uses the taxonomy scope for waste: III.1.2 is scope 3, III.1.3 is scope 1", async () => {
+    const result = await notes([
+      noted("III.1.2", { finalScope: "3" }),
+      noted("III.1.3", { finalScope: "1" }, { rowIndex: 1 }),
+    ]);
+    expect(result.scopeWarnings).toEqual([]);
+    expect(result.inferredScopeRows).toMatchObject([
+      { gpcRefNo: "III.1.2", scope: "3", scopeOrigin: "reference" },
+      { gpcRefNo: "III.1.3", scope: "1", scopeOrigin: "reference" },
+    ]);
+  });
+
+  it("lists I.4.4 as an information note, not a warning, even when finalScope is 1", async () => {
+    const result = await notes([
+      noted("I.4.4", { finalScope: "1", activityClass: "grid_supply" }),
+    ]);
+    expect(result.scopeWarnings).toEqual([]);
+    expect(result.inferredScopeRows?.[0]).toMatchObject({
+      scopeOrigin: "not-applicable",
+      gpcRefNo: "I.4.4",
+      scope: null,
+    });
+  });
+
+  it("warns on an unknown reference", async () => {
+    const result = await notes([noted("I.9.9", { finalScope: null })]);
+    expect(result.scopeWarnings?.[0].scopeOrigin).toBe("none");
+    expect(result.inferredScopeRows).toEqual([]);
+  });
+
+  it("warns when finalScope does not match the reference scope", async () => {
+    const result = await notes([noted("I.1.1", { finalScope: "2" })]);
+    expect(result.scopeWarnings?.[0].scopeOrigin).toBe("none");
+  });
+
+  it("keeps an unrecognized stated scope as originalScope", async () => {
+    const result = await notes([
+      noted("I.1.1", { scope: "Scope 1+2", finalScope: "1" }),
+    ]);
+    expect(result.inferredScopeRows?.[0]).toMatchObject({
+      scopeOrigin: "reference",
+      originalScope: "Scope 1+2",
+    });
+  });
+
+  it("lists activity-type inference with origin activity-type", async () => {
+    const result = await notes([
+      noted("I.1.2", { scopeSource: "inferred", scope: "2" }),
+    ]);
+    expect(result.inferredScopeRows?.[0].scopeOrigin).toBe("activity-type");
+  });
+
+  it("leaves document scopes out of both lists", async () => {
+    const result = await notes([
+      noted("I.1.2", { scope: "2", finalScope: "2" }),
+    ]);
+    expect(result.scopeWarnings).toEqual([]);
+    expect(result.inferredScopeRows).toEqual([]);
+  });
+
+  it("fills the row content", async () => {
+    const result = await notes([
+      noted(
+        "I.1.1",
+        { category: "Electricity – Residential", finalScope: "1", page: 4 },
+        { totalCO2e: 16119 },
+      ),
+      noted(
+        "I.1.1",
+        { category: null, activityType: "Diesel", finalScope: "1" },
+        { rowIndex: 1 },
+      ),
+    ]);
+    expect(result.inferredScopeRows).toMatchObject([
+      {
+        page: 4,
+        text: "Electricity – Residential",
+        value: 16119,
+        sector: "Stationary Energy",
+        subsector: "Residential buildings",
+      },
+      { text: "Diesel" },
+    ]);
+  });
+
+  it("omits rows without review data and rows pending a decision", async () => {
+    const result = await notes([
+      row(0, { totalCO2e: 5 }),
+      noted(
+        "I.4.4",
+        {
+          activityClass: "other",
+          refSource: "inferred",
+          scope: "2",
+          scopeSource: "inferred",
+        },
+        { rowIndex: 1 },
+      ),
+    ]);
+    expect(result.pendingRows).toBe(1);
+    expect(result.scopeWarnings).toEqual([]);
+    expect(result.inferredScopeRows).toEqual([]);
+  });
+
+  it("carries activityType and scopeOrigin on a review row", async () => {
+    const result = await notes([
+      noted("I.4.4", {
+        activityClass: "other",
+        refSource: "inferred",
+        activityType: "Grid",
+        scope: "2",
+      }),
+    ]);
+    expect(result.reviewRows[0]).toMatchObject({
+      activityType: "Grid",
+      scopeOrigin: "document",
+    });
   });
 });
 

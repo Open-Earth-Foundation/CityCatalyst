@@ -1059,6 +1059,26 @@ export interface ImportRowOutcome {
   tonnes?: number | null;
 }
 
+/** Where a row's scope comes from. */
+export type ScopeOrigin =
+  "document" | "reference" | "activity-type" | "not-applicable" | "none";
+
+export interface ImportScopeNoteRow {
+  rowNumber: number;
+  page: number | null;
+  /** Row text as in the document: category, else activityType. */
+  text: string | null;
+  sector: string | null;
+  subsector: string | null;
+  /** tCO2e; null for a notation-key row. */
+  value: number | null;
+  gpcRefNo: string;
+  scope: string | null;
+  scopeOrigin: ScopeOrigin;
+  /** Stated scope text when it differs from `scope`. */
+  originalScope: string | null;
+}
+
 export interface ImportRowPreview {
   totalRows: number;
   importedRows: number;
@@ -1073,19 +1093,10 @@ export interface ImportRowPreview {
   pendingRows: number;
   /** Every row held for a decision, decided or not. */
   reviewRows: ImportRowReview[];
-  scopeWarnings?: Array<{
-    rowNumber: number;
-    gpcRefNo: string;
-    scope: string | null;
-  }>;
-  /** Imported rows whose scope was set from the activity type, not the document. */
-  inferredScopeRows?: Array<{
-    rowNumber: number;
-    gpcRefNo: string;
-    scope: string | null;
-    /** The extraction's own scope, only when it differs from `scope`. */
-    originalScope: string | null;
-  }>;
+  /** Rows whose scope cannot be explained: unknown reference, or no matching scope. */
+  scopeWarnings?: ImportScopeNoteRow[];
+  /** Imported rows whose scope was not read from the document. */
+  inferredScopeRows?: ImportScopeNoteRow[];
 }
 
 /** A row the import cannot complete without a user decision. */
@@ -1101,6 +1112,9 @@ export interface ImportRowReview {
   sector: string | null;
   subsector: string | null;
   category: string | null;
+  activityType: string | null;
+  /** Where the row's scope comes from. */
+  scopeOrigin: ScopeOrigin;
   /** Scope stated on the row. */
   scope: string | null;
   /** Taxonomy scope of the reference, when the row states another one. */

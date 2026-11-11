@@ -414,8 +414,16 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       InventoryTypeEnum.GPC_BASIC,
     );
     expect(preview.pendingRows).toBe(0);
-    expect(preview.scopeWarnings).toEqual([
-      { rowNumber: 2, gpcRefNo: "III.4.1", scope: "unknown" },
+    // The stated scope is unusable, so the scope comes from the reference.
+    expect(preview.scopeWarnings).toEqual([]);
+    expect(preview.inferredScopeRows).toMatchObject([
+      {
+        rowNumber: 2,
+        gpcRefNo: "III.4.1",
+        scope: "1",
+        scopeOrigin: "reference",
+        originalScope: "unknown",
+      },
     ]);
   });
 
@@ -443,8 +451,16 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       InventoryTypeEnum.GPC_BASIC,
     );
     expect(preview.pendingRows).toBe(0);
-    expect(preview.scopeWarnings).toEqual([
-      { rowNumber: 2, gpcRefNo: "I.1.1", scope: "unknown" },
+    // The stated scope is unusable, so the scope comes from the reference.
+    expect(preview.scopeWarnings).toEqual([]);
+    expect(preview.inferredScopeRows).toMatchObject([
+      {
+        rowNumber: 2,
+        gpcRefNo: "I.1.1",
+        scope: "1",
+        scopeOrigin: "reference",
+        originalScope: "unknown",
+      },
     ]);
   });
 

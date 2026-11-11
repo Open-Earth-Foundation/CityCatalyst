@@ -72,6 +72,7 @@ export function adaptLegacyCase(
             ? null
             : entry.textTables === true
           : null,
+    textTables: entry ? entry.textTables : (result.textTables ?? null),
     runs: result.runs.map(adaptLegacyRun),
   };
 }

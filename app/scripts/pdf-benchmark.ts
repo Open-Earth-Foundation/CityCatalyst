@@ -470,6 +470,7 @@ export async function main(argv: string[]): Promise<number> {
           block: entry.block,
           eligible: entry.totalOnly ? null : entry.textTables === true,
           totalOnly: entry.totalOnly,
+          textTables: entry.textTables,
           ocrUsage: {
             ...ZERO_TOKENS,
             pages:

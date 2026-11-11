@@ -100,6 +100,8 @@ export type CaseResult = {
   eligible: boolean | null;
   /** Scored on the total only, not row by row. */
   totalOnly: boolean;
+  /** Manifest value: the PDF has text tables; null while unknown. Absent in runs before CC-1124. */
+  textTables?: boolean | null;
   /** OCR runs in every PDF run (each run is a new upload); pages are summed over the runs. */
   ocrUsage?: Tokens & { pages: number | null };
 };
@@ -480,8 +482,9 @@ export function renderReport(
   const legacy = summary.results
     .filter((result) => toleranceSourceOf(result) === "legacy")
     .map((result) => result.id);
+  // Total-only cases are not scored on rows, so their text tables do not matter.
   const unknownTables = summary.results
-    .filter((result) => result.eligible === null)
+    .filter((result) => result.textTables === null && !result.totalOnly)
     .map((result) => result.id);
   const heldRows = summary.results
     .map((result) => ({

@@ -84,6 +84,19 @@ describe("adaptLegacyCase", () => {
     expect(result.runs[0].failureMode).toBe("truncated");
   });
 
+  it("takes textTables from the manifest, null while it is unknown", () => {
+    const unknown = manifest.map((entry) => ({ ...entry, textTables: null }));
+    expect(adaptLegacyCase(legacyCase("C-007a"), manifest).textTables).toBe(
+      true,
+    );
+    expect(adaptLegacyCase(legacyCase("C-007a"), unknown).textTables).toBe(
+      null,
+    );
+    expect(adaptLegacyCase(legacyCase("C-099"), manifest).textTables).toBe(
+      null,
+    );
+  });
+
   it("falls back to the held-out list when the manifest lacks the case", () => {
     const result = adaptLegacyCase(legacyCase("C-099"), manifest, ["C-099"]);
     expect(result).toMatchObject({

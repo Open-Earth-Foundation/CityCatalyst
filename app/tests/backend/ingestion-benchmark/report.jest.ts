@@ -369,10 +369,20 @@ describe("report", () => {
     legacy.runs[0].score = score({ toleranceSource: "legacy" });
     const modern = result("C-008", 0.5);
     modern.runs[0].score = score({ toleranceSource: "rule" });
-    const unknown = { ...result("C-009", 0.5), eligible: null };
-    const report = render(summary([legacy, modern, unknown]));
+    legacy.textTables = true;
+    modern.textTables = false;
+    // Unknown text tables: listed. A total-only case is not scored on rows, so it is not.
+    const unknown = { ...result("C-009", 0.5), textTables: null };
+    const totalOnly = {
+      ...result("C-022", 0.5),
+      eligible: null,
+      totalOnly: true,
+      textTables: null,
+    };
+    const known = { ...result("C-010", 0.5), eligible: null, textTables: true };
+    const report = render(summary([legacy, modern, unknown, totalOnly, known]));
     expect(report).toContain("Cases using the legacy tolerance: C-007");
-    expect(report).toContain("`textTables` is unknown: C-009");
+    expect(report).toContain("- Cases where `textTables` is unknown: C-009\n");
     expect(report).toContain("C-028 and C-031 are not fully held out");
   });
 

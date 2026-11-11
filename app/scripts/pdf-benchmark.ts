@@ -392,6 +392,7 @@ export async function main(argv: string[]): Promise<number> {
   if (options.dryRun) return 0;
 
   const { promptHash } = await import("./pdf-benchmark/prompt-hash");
+  const before = new Set(process.listeners("SIGINT"));
   const ctx = await createContext(config);
   let interrupted = false;
   const onSigint = () => {
@@ -417,6 +418,13 @@ export async function main(argv: string[]): Promise<number> {
       "Interrupt received: finishing the current attempt, then writing a partial report.",
     );
   };
+  // createContext loads app modules; @highlight-run/node then registers a
+  // SIGINT handler that flushes and calls process.exit(), which would kill the
+  // run mid-attempt and skip cleanup. Drop only listeners the app added, so
+  // tsx keeps its own relay listener.
+  for (const listener of process.listeners("SIGINT")) {
+    if (!before.has(listener)) process.off("SIGINT", listener);
+  }
   process.on("SIGINT", onSigint);
   // Windows delivers Ctrl+Break (and a closed console) as SIGBREAK.
   process.on("SIGBREAK", onSigint);

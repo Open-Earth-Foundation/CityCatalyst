@@ -102,6 +102,30 @@ describe("ImportReviewRows", () => {
     );
   });
 
+  it("does not repeat the word Scope when the stated text already has it", () => {
+    const html = render(
+      [{ ...content, scope: "Scope 2", scopeOrigin: "document" }],
+      realT("en"),
+    );
+    expect(html).toContain("Scope 2 · From the document");
+    expect(html).not.toContain("Scope Scope");
+  });
+
+  it("shows the scope taken from the reference, not the stated text", () => {
+    const html = render(
+      [
+        {
+          ...content,
+          scope: null,
+          finalScope: "1",
+          scopeOrigin: "reference",
+        },
+      ],
+      realT("en"),
+    );
+    expect(html).toContain("Scope 1 · From GPC reference");
+  });
+
   it("formats the value in the UI language, not the browser locale", () => {
     expect(render([content], realT("de"))).toContain("16.119 tCO2e");
   });

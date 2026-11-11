@@ -7,6 +7,7 @@ import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import type { ImportRowReview } from "@/util/types";
 import type { ImportRowDecision } from "./import-row-decisions";
+import { scopeFromLabel } from "@/util/GHGI/gpc-ref-resolver";
 import { formatTonnes } from "./import-scope-notes";
 
 interface ImportReviewRowsProps {
@@ -58,6 +59,13 @@ function Cell({
 /** The row's content, in the order of the scope notes table. */
 function RowContent({ t, row }: { t: TFunction; row: ImportRowReview }) {
   const sector = [row.sector, row.subsector].filter(Boolean).join(" > ");
+  const shownScope =
+    row.scopeOrigin === "reference" ? row.finalScope : row.scope;
+  const scopeNumber = scopeFromLabel(shownScope);
+  const scopeText =
+    scopeNumber != null
+      ? t("import-review-scope", { scope: scopeNumber })
+      : shownScope?.trim() || null;
   return (
     <Box
       display="grid"
@@ -85,7 +93,7 @@ function RowContent({ t, row }: { t: TFunction; row: ImportRowReview }) {
       </Cell>
       <Cell caption={t("import-scope-col-scope")}>
         {[
-          row.scope != null && t("import-review-scope", { scope: row.scope }),
+          scopeText,
           t(`import-scope-origin-${row.scopeOrigin}`),
         ]
           .filter(Boolean)

@@ -165,12 +165,15 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
-  if (sourceMetadata) {
+  // Each extract call states the metadata for this run: no body, an empty body
+  // or a non-JSON body clears metadata stored by an earlier call.
+  const { sourceMetadata: _stale, ...mappingConfiguration } =
+    importedFile.mappingConfiguration || {};
+  if (sourceMetadata || _stale !== undefined) {
     await importedFile.update({
-      mappingConfiguration: {
-        ...(importedFile.mappingConfiguration || {}),
-        sourceMetadata,
-      },
+      mappingConfiguration: sourceMetadata
+        ? { ...mappingConfiguration, sourceMetadata }
+        : mappingConfiguration,
     });
   }
   await enqueueInventoryPdfOcr(importedFile);

@@ -1054,6 +1054,48 @@ describe("Import Routes API", () => {
       expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
     });
 
+    it.each<[string, unknown]>([
+      ["no body", undefined],
+      ["an empty JSON body", {}],
+    ])(
+      "re-extract with %s clears stale sourceMetadata and keeps extractionProgress",
+      async (_label, body) => {
+        const file = await createPdf({
+          extractionProgress: { current: 2, total: 5 },
+          sourceMetadata: metadata,
+        });
+        const res = await postExtract(file.id, body);
+        await expectStatusCode(res, 202);
+        await file.reload();
+        expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
+        expect(file.mappingConfiguration?.extractionProgress).toEqual({
+          current: 2,
+          total: 5,
+        });
+      },
+    );
+
+    it("extract ignores a non-JSON body and clears stale sourceMetadata", async () => {
+      const file = await createPdf({ sourceMetadata: metadata });
+      const res = await extractImport(
+        new NextRequest("http://localhost:3000/api/extract", {
+          method: "POST",
+          headers: { "content-type": "text/plain" },
+          body: JSON.stringify({ sourceMetadata: metadata }),
+        }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+            importedFileId: file.id,
+          }),
+        },
+      );
+      await expectStatusCode(res, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
+    });
+
     it("retry replaces sourceMetadata and keeps extractionProgress", async () => {
       const file = await createPdf({
         extractionProgress: { current: 2, total: 5 },

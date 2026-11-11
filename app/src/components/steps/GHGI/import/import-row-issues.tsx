@@ -5,7 +5,6 @@ import { TFunction } from "i18next";
 import { Box, Card, Icon, Spinner, Table, Text } from "@chakra-ui/react";
 import { MdCheckCircle, MdError, MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
-import { Tooltip } from "@/components/ui/tooltip";
 import { api } from "@/services/api";
 import type { ImportRowOutcome } from "@/util/types";
 import ImportReviewRows from "./import-review-rows";

@@ -395,7 +395,7 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
     expect(findPendingRows(result)).toHaveLength(0);
   });
 
-  it("warns without blocking when a structured row has an invalid scope", async () => {
+  it("warns without blocking, and does not infer the scope, when a structured row has an invalid scope", async () => {
     const headers = ["GPC ref. no.", "Scope", "Total CO2e"];
     const sheet = {
       name: "Inventory",
@@ -414,20 +414,19 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       InventoryTypeEnum.GPC_BASIC,
     );
     expect(preview.pendingRows).toBe(0);
-    // The stated scope is unusable, so the scope comes from the reference.
-    expect(preview.scopeWarnings).toEqual([]);
-    expect(preview.inferredScopeRows).toMatchObject([
+    // The spreadsheet path never sets a final scope, so the row stays a warning.
+    expect(preview.scopeWarnings).toMatchObject([
       {
         rowNumber: 2,
         gpcRefNo: "III.4.1",
-        scope: "1",
-        scopeOrigin: "reference",
-        originalScope: "unknown",
+        scope: "unknown",
+        scopeOrigin: "none",
       },
     ]);
+    expect(preview.inferredScopeRows).toEqual([]);
   });
 
-  it("warns about an invalid scope even when the reference is inferred from labels", async () => {
+  it("warns about an invalid scope when the reference is inferred from labels, without inferring the scope", async () => {
     const headers = ["Sector", "Subsector", "Scope", "Total CO2e"];
     const sheet = {
       name: "Inventory",
@@ -451,17 +450,16 @@ describe("real catalogue import of III.x.3 and VI.1", () => {
       InventoryTypeEnum.GPC_BASIC,
     );
     expect(preview.pendingRows).toBe(0);
-    // The stated scope is unusable, so the scope comes from the reference.
-    expect(preview.scopeWarnings).toEqual([]);
-    expect(preview.inferredScopeRows).toMatchObject([
+    // The spreadsheet path never sets a final scope, so the row stays a warning.
+    expect(preview.scopeWarnings).toMatchObject([
       {
         rowNumber: 2,
         gpcRefNo: "I.1.1",
-        scope: "1",
-        scopeOrigin: "reference",
-        originalScope: "unknown",
+        scope: "unknown",
+        scopeOrigin: "none",
       },
     ]);
+    expect(preview.inferredScopeRows).toEqual([]);
   });
 
   it("keeps a second identical conflict pending when only the first row is decided", async () => {

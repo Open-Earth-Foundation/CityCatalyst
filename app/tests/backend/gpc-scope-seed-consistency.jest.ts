@@ -34,7 +34,6 @@ const gpcReferenceTable = JSON.parse(
 const scopeNameById = new Map(
   readCsv("Scope.csv").map((r) => [r.scope_id, r.scope_name]),
 );
-// Sub-sectors such as IV.1 carry the scope themselves and have no sub-category.
 // Sub-sectors such as IV.1 carry the scope themselves; others have none.
 const seedScope = new Map<string, number>();
 for (const r of [...readCsv("SubSector.csv"), ...readCsv("SubCategory.csv")]) {

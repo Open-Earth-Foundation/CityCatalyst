@@ -431,25 +431,28 @@ describe("CC-1163 page evidence survives the chunk fallback", () => {
     "101,101 102,102 103,103 104,104 105,105 106,106\n" +
     "<!-- page: 2 -->\nNotes only.\n";
 
-  it("kt page with unitless rows: nothing imported as tonnes", async () => {
-    mockRows(ktRows(null));
-    const text =
-      "<!-- page: 1 -->\n## Table 2 GHG emissions 2021 (kt CO2e)\n" +
-      "| Sector | Emissions |\n| --- | --- |\n" +
-      tail;
-    const { rows, summary } = await extractInventoryFromDocument(text, {
-      targetYear: 2021,
-    });
-    expect(rows).toEqual([]);
-    expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
-    expect(extractionReviewNotes(summary).droppedReasons).toContain(
-      "unsupported_unit",
-    );
-    const reconciliation = reconcileExtraction(summary);
-    expect(reconciliation == null || reconciliation.mismatch).toBe(true);
-    // The page call only: no whole-document re-extraction.
-    expect(complete).toHaveBeenCalledTimes(1);
-  });
+  it.each(["kt CO2e", "ktCO₂e"])(
+    "kt page (%s) with unitless rows: nothing imported as tonnes",
+    async (unit) => {
+      mockRows(ktRows(null));
+      const text =
+        `<!-- page: 1 -->\n## Table 2 GHG emissions 2021 (${unit})\n` +
+        "| Sector | Emissions |\n| --- | --- |\n" +
+        tail;
+      const { rows, summary } = await extractInventoryFromDocument(text, {
+        targetYear: 2021,
+      });
+      expect(rows).toEqual([]);
+      expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
+      expect(extractionReviewNotes(summary).droppedReasons).toContain(
+        "unsupported_unit",
+      );
+      const reconciliation = reconcileExtraction(summary);
+      expect(reconciliation == null || reconciliation.mismatch).toBe(true);
+      // The page call only: no whole-document re-extraction.
+      expect(complete).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it("2019 table labeled 2021: no 2021 rows imported", async () => {
     mockRows(ktRows("t"));

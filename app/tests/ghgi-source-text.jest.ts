@@ -216,6 +216,8 @@ describe("namesLargeUnit", () => {
   it.each([
     "Table 2 Emissions (kt CO2e)",
     "| Sector | ktCO2e |\n| --- | --- |",
+    "| Sector | ktCO₂e |\n| --- | --- |",
+    "Table 3 Emissions (ktCO₂e)",
     "Table 5 (Mt CO2e)",
     "Table 5 Mt CO2-e",
     "Table 7 thousand tonnes CO2e",

@@ -417,7 +417,7 @@ export function yearEvidence(
 }
 
 const LARGE_UNIT_PATTERNS: RegExp[] = [
-  /\bktCO2/i,
+  /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,

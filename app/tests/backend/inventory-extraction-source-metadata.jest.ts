@@ -120,6 +120,44 @@ describe("number style from metadata", () => {
     expect(result.rows[0].totalCO2e).toBe(1500);
   });
 
+  const prompts = () =>
+    complete.mock.calls
+      .map((call) => {
+        const messages = (call[0] as { messages: { content: string }[] })
+          .messages;
+        return messages.map((m) => m.content).join("\n");
+      })
+      .join("\n");
+
+  it("country default does not instruct the model when the document has its own style", async () => {
+    mockByPage({ 1: [row("1.500")] });
+    const result = await extractInventoryFromDocument(page("european"), {
+      targetYear: 2021,
+      sourceMetadata: meta({
+        numberFormat: "english",
+        numberFormatSource: "country_default",
+      }),
+    });
+    expect(result.rows[0].totalCO2e).toBe(1500);
+    expect(prompts()).not.toContain('use "." as the decimal separator');
+    expect(result.summary.numberFormatConflict).toBeUndefined();
+  });
+
+  it("country default decides when the document has no detectable style", async () => {
+    mockByPage({ 1: [row("1.500")] });
+    const text =
+      onePage(1, "PAGE_1\n| I.1.1 | 1.500 |\n") + onePage(2, "x\n");
+    const result = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+      sourceMetadata: meta({
+        numberFormat: "european",
+        numberFormatSource: "country_default",
+      }),
+    });
+    expect(result.rows[0].totalCO2e).toBe(1500);
+    expect(prompts()).toContain('use "," as the decimal separator');
+  });
+
   it("conflict is recorded for user choice only", async () => {
     mockByPage({ 1: [row("1.500")] });
     const user = await extractInventoryFromDocument(page("european"), {

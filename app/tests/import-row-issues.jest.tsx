@@ -192,36 +192,77 @@ it("confirms when every row will be imported", () => {
   expect(container.querySelector("table")).toBeNull();
 });
 
-it("lets keyboard users reach the inferred-scope info icon", () => {
+function scopeRow(
+  rowNumber: number,
+  scopeOrigin: "reference" | "activity-type" | "not-applicable" | "none",
+  gpcRefNo: string,
+  scope: string | null,
+) {
+  return {
+    rowNumber,
+    page: 4,
+    text: "Wastewater",
+    sector: "Waste",
+    subsector: "Wastewater",
+    value: 10,
+    gpcRefNo,
+    scope,
+    scopeOrigin,
+    originalScope: null,
+  };
+}
+
+it("shows nothing for rows whose scope was deduced", () => {
   preview = {
-    totalRows: 1,
-    importedRows: 1,
+    totalRows: 3,
+    importedRows: 3,
     skippedRows: 0,
     skippedByIssue: {},
     rows: [],
+    reviewRows: [],
+    scopeWarnings: [],
     inferredScopeRows: [
-      {
-        rowNumber: 2,
-        page: 4,
-        text: "Wastewater",
-        sector: "Waste",
-        subsector: "Wastewater",
-        value: 10,
-        gpcRefNo: "I.6.2",
-        scope: "2",
-        scopeOrigin: "activity-type",
-        originalScope: "1",
-      },
+      scopeRow(2, "reference", "III.1.2", "1"),
+      scopeRow(3, "activity-type", "I.6.2", "2"),
+      scopeRow(4, "not-applicable", "I.4.4", null),
     ],
   };
   render();
 
-  const icon = container.querySelector(
-    '[data-testid="import-inferred-scope"] [role="img"]',
+  expect(container.textContent).toContain('import-rows-all-ok:{"count":3}');
+  expect(container.textContent).not.toContain("III.1.2");
+  expect(container.textContent).not.toContain("I.4.4");
+  expect(container.querySelector("table")).toBeNull();
+  expect(container.querySelector('[role="img"]')).toBeNull();
+});
+
+it("lists rows whose scope needs a check as plain lines", () => {
+  preview = {
+    totalRows: 2,
+    importedRows: 2,
+    skippedRows: 0,
+    skippedByIssue: {},
+    rows: [],
+    reviewRows: [],
+    scopeWarnings: [
+      scopeRow(7, "none", "X.9.9", null),
+      scopeRow(8, "none", "I.1.1", "Scope 9"),
+    ],
+    inferredScopeRows: [scopeRow(2, "reference", "III.1.2", "1")],
+  };
+  render();
+
+  const warnings = container.querySelector(
+    '[data-testid="import-scope-warnings"]',
   );
-  expect(icon).not.toBeNull();
-  expect(icon!.getAttribute("tabindex")).toBe("0");
-  expect(icon!.getAttribute("aria-label")).toContain(
-    "import-inferred-scope-row-overridden",
+  expect(warnings).not.toBeNull();
+  expect(warnings!.querySelector("table")).toBeNull();
+  expect(warnings!.textContent).toContain("import-scope-warning");
+  expect(warnings!.textContent).toContain(
+    'import-scope-warning-row:{"row":7,"reference":"X.9.9","scope":"import-scope-missing"}',
   );
+  expect(warnings!.textContent).toContain(
+    'import-scope-warning-row:{"row":8,"reference":"I.1.1","scope":"Scope 9"}',
+  );
+  expect(container.textContent).not.toContain("III.1.2");
 });

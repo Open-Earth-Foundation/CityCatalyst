@@ -25,7 +25,6 @@ import {
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import ImportReviewRows from "@/components/steps/GHGI/import/import-review-rows";
-import ImportScopeNotes from "@/components/steps/GHGI/import/import-scope-notes";
 import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import ReplaceInventoryConfirmModal from "@/components/Modals/replace-inventory-confirm-modal";
@@ -1188,11 +1187,25 @@ export default function GhgiImportWizard({
                         rows={rowPreview?.reviewRows ?? []}
                         onDecide={handleRowDecision}
                       />
-                      <ImportScopeNotes
-                        t={t}
-                        warnings={rowPreview?.scopeWarnings ?? []}
-                        inferred={rowPreview?.inferredScopeRows ?? []}
-                      />
+                      {(rowPreview?.scopeWarnings ?? []).length > 0 && (
+                        <Box mb={6}>
+                          <Text
+                            color="sentiment.warningDefault"
+                            fontWeight="medium"
+                          >
+                            {t("import-scope-warning")}
+                          </Text>
+                          {rowPreview?.scopeWarnings?.map((row) => (
+                            <Text key={row.rowNumber} fontSize="body.sm">
+                              {t("import-scope-warning-row", {
+                                row: row.rowNumber,
+                                reference: row.gpcRefNo,
+                                scope: row.scope || t("import-scope-missing"),
+                              })}
+                            </Text>
+                          ))}
+                        </Box>
+                      )}
                       <ReviewConfirmStep
                         t={t}
                         cityId={cityId}

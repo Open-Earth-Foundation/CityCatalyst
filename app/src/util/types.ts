@@ -1095,7 +1095,10 @@ export interface ImportRowPreview {
   reviewRows: ImportRowReview[];
   /** Rows whose scope cannot be explained: unknown reference, or no matching scope. */
   scopeWarnings?: ImportScopeNoteRow[];
-  /** Imported rows whose scope was not read from the document. */
+  /**
+   * Imported rows whose scope was deduced, not read from the document.
+   * Not shown in the UI.
+   */
   inferredScopeRows?: ImportScopeNoteRow[];
 }
 

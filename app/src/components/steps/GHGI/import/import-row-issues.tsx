@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 import type { ImportRowOutcome } from "@/util/types";
 import ImportReviewRows from "./import-review-rows";
-import ImportScopeNotes from "./import-scope-notes";
 import type { ImportRowDecision } from "./import-row-decisions";
 
 const COLLAPSED_ROW_LIMIT = 10;
@@ -72,24 +71,31 @@ export default function ImportRowIssues({
       onDecide={onRowDecision}
     />
   );
-  const hasScopeNotes =
-    (data.scopeWarnings ?? []).length > 0 ||
-    (data.inferredScopeRows ?? []).length > 0;
-  const scopeNotes = (
-    <ImportScopeNotes
-      t={t}
-      warnings={data.scopeWarnings ?? []}
-      inferred={data.inferredScopeRows ?? []}
-    />
+  // Only rows whose scope needs a check; deduced scopes are not shown.
+  const scopeWarnings = (data.scopeWarnings ?? []).length > 0 && (
+    <Box mb={6} data-testid="import-scope-warnings">
+      <Text color="sentiment.warningDefault" fontWeight="medium">
+        {t("import-scope-warning")}
+      </Text>
+      {(data.scopeWarnings ?? []).map((row) => (
+        <Text key={row.rowNumber} fontSize="body.sm">
+          {t("import-scope-warning-row", {
+            row: row.rowNumber,
+            reference: row.gpcRefNo,
+            scope: row.scope || t("import-scope-missing"),
+          })}
+        </Text>
+      ))}
+    </Box>
   );
   // Held rows have their own list above; this table is the rest.
   const issueRows = data.rows.filter((row) => row.status !== "pending");
 
   if (issueRows.length === 0) {
-    if ((data.reviewRows ?? []).length > 0 || hasScopeNotes)
+    if ((data.reviewRows ?? []).length > 0 || scopeWarnings)
       return (
         <>
-          {scopeNotes}
+          {scopeWarnings}
           {reviewRows}
         </>
       );
@@ -114,7 +120,7 @@ export default function ImportRowIssues({
 
   return (
     <>
-      {scopeNotes}
+      {scopeWarnings}
       {reviewRows}
       <Card.Root
         mb={6}

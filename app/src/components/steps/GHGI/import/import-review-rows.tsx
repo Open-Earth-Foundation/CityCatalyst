@@ -8,13 +8,19 @@ import { Button } from "@/components/ui/button";
 import type { ImportRowReview } from "@/util/types";
 import type { ImportRowDecision } from "./import-row-decisions";
 import { scopeFromLabel } from "@/util/GHGI/gpc-ref-resolver";
-import { formatTonnes } from "./import-scope-notes";
 
 interface ImportReviewRowsProps {
   t: TFunction;
   fileId: string;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
+}
+
+/** A value in tonnes CO2e, formatted in the UI language. */
+function formatTonnes(t: TFunction, value: number): string {
+  // A t bound to a language carries it as `lng`.
+  const lng = (t as unknown as { lng?: string }).lng ?? "en";
+  return `${value.toLocaleString(lng)} tCO2e`;
 }
 
 /** What the user decided on, so the server can tell a stale decision. */
@@ -56,7 +62,7 @@ function Cell({
   );
 }
 
-/** The row's content, in the order of the scope notes table. */
+/** The row's content: page, text, sector, value, reference and scope. */
 function RowContent({ t, row }: { t: TFunction; row: ImportRowReview }) {
   const sector = [row.sector, row.subsector].filter(Boolean).join(" > ");
   const shownScope =
@@ -92,10 +98,7 @@ function RowContent({ t, row }: { t: TFunction; row: ImportRowReview }) {
         </Text>
       </Cell>
       <Cell caption={t("import-scope-col-scope")}>
-        {[
-          scopeText,
-          t(`import-scope-origin-${row.scopeOrigin}`),
-        ]
+        {[scopeText, t(`import-scope-origin-${row.scopeOrigin}`)]
           .filter(Boolean)
           .join(" · ")}
       </Cell>

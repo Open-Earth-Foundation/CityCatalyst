@@ -141,6 +141,20 @@ describe("yearEvidence", () => {
       yearEvidence("Table 3-1 Emissions summary for 2021", 2021, 2026).kind,
     ).toBe("target");
   });
+  it("a figure heading does not date the table next to it", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("none");
+    expect(tableCaptionLines(page)).toEqual(["| Sector | tCO2e |"]);
+  });
+  it("a figure heading beside a 2021 table heading: target", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "## Table 3 Emissions 2021\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("target");
+  });
   it.each([2021, 2022])("fiscal 2021/22 is target for %i", (year) => {
     expect(yearEvidence("Table 4 Emissions 2021/22", year, 2026).kind).toBe(
       "target",

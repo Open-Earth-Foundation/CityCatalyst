@@ -262,10 +262,12 @@ function classifyCaptionLines(text: string): CaptionLine[] {
   lines.forEach((raw, i) => {
     const line = raw.trim();
     if (!line) return;
-    if (/^[\s#*_>]*table\b/i.test(line) || line.startsWith("#")) {
-      found.push({ text: line, table: true, line: i });
-    } else if (/^[\s#*_>]*figure\b/i.test(line)) {
+    // Figure captions first: `## Figure 2: Emissions 2019` is a heading, but
+    // it describes a chart, not the table next to it.
+    if (/^[\s#*_>]*figure\b/i.test(line)) {
       found.push({ text: line, table: false, line: i });
+    } else if (/^[\s#*_>]*table\b/i.test(line) || line.startsWith("#")) {
+      found.push({ text: line, table: true, line: i });
     } else if (
       line.includes("|") &&
       i + 1 < lines.length &&

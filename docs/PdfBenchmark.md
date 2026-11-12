@@ -96,7 +96,15 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
 4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), refresh the baseline. The test-set version covers only the manifest entry and the key, so a scorer change does not mark the baseline stale on its own. Run `--rescore` on the baseline's run folders to see the effect first.
 
-**Current baseline (11 Nov 2026).** It covers 16 of the 27 cases: C-015..C-025 and C-027..C-031. C-004..C-014 have no entry because their PDFs were not available locally, so they are reported as `no baseline`: only a failed attempt flags them until they are recorded. The entries come from the run folders `2026-11-09-1845-c0b125fe5` and `2026-11-09-2100-75c9e8a8f`. The commits in those folder names were rewritten out of the branch history, and the 21:00 run ran on a dirty tree. Treat these entries as provisional and record them again from a branch commit once C-004..C-014 are available.
+**Current baseline (11 Nov 2026).** It covers 14 of the 27 cases: C-015..C-019, C-021..C-024 and C-027..C-031. Read it as provisional:
+
+- C-004..C-014 have no entry because their PDFs were not available locally. C-020 and C-025 are left out because every attempt returned zero rows: with failed attempts in the baseline, the gate would stop flagging new failures on them. All of these are reported as `no baseline`, so any failed attempt gives `error`.
+- The entries come from the run folders `2026-11-09-1845-c0b125fe5` and `2026-11-09-2100-75c9e8a8f`. The 18:45 run predates the held-row fix, but the approve route refuses a run with undecided held rows, so the cases it scored had none and the fix does not change them. C-017 and C-022, which had held rows, come from the 21:00 run.
+- The entries were recorded with prompt hash `3f1c1271e342`. Later `develop` changes to the extraction prompt (activity classes) change it, so the next run reports a different prompt hash.
+- C-022..C-024 are total-only cases and store no recall (`null`). The gate compares recall only when both sides have it, so on these cases it checks pass/fail, 10x and failed attempts only.
+- Stored verdicts carry only the fields the gate reads (pass/fail, recall, 10x, failure modes, cost). They lack the newer row metrics (`rowPrecision`, `valueAccuracy`, `classificationAccuracy`, notation keys, `distractorsStored`); a record from the current harness adds them.
+
+Record these cases again from a commit on the merged harness once C-004..C-014 are available.
 
 ## Read the results
 

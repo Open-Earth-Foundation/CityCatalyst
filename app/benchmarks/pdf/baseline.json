@@ -175,41 +175,6 @@
     "runFolder": "2026-11-09-1845-c0b125fe5",
     "date": "2026-11-09T18:45:54.583Z"
   },
-  "C-020": {
-    "verdict": {
-      "id": "C-020",
-      "block": "validated",
-      "eligible": false,
-      "attempts": 3,
-      "attemptsPassed": 0,
-      "casePasses": false,
-      "exploratory": false,
-      "recallFailedAsZero": 0,
-      "recallScoredOnly": null,
-      "totalWithinToleranceAll": null,
-      "tenXAttempts": 0,
-      "wrongTotalAttempts": 0,
-      "warnedWrongTotalAttempts": 0,
-      "failureModes": {
-        "scored": 0,
-        "ocr_error": 0,
-        "extraction_error": 0,
-        "truncated": 0,
-        "zero_rows": 3,
-        "approve_error": 0,
-        "readback_error": 0
-      },
-      "costUsd": 0.2411116,
-      "seconds": 100.908
-    },
-    "commit": "c0b125fe5",
-    "extractionModel": "openai/gpt-5.6-luna",
-    "ocrModel": "mistral-ocr-latest",
-    "promptHash": "3f1c1271e342",
-    "testSetVersion": "1f18151ea297",
-    "runFolder": "2026-11-09-1845-c0b125fe5",
-    "date": "2026-11-09T18:45:54.583Z"
-  },
   "C-021": {
     "verdict": {
       "id": "C-021",
@@ -350,42 +315,6 @@
     "testSetVersion": "01619b677d42",
     "runFolder": "2026-11-09-1845-c0b125fe5",
     "date": "2026-11-09T18:45:54.583Z"
-  },
-  "C-025": {
-    "verdict": {
-      "id": "C-025",
-      "block": "validated",
-      "eligible": null,
-      "attempts": 3,
-      "attemptsPassed": 0,
-      "casePasses": false,
-      "exploratory": false,
-      "recallFailedAsZero": null,
-      "recallScoredOnly": null,
-      "totalWithinToleranceAll": null,
-      "tenXAttempts": 0,
-      "wrongTotalAttempts": 0,
-      "warnedWrongTotalAttempts": 0,
-      "failureModes": {
-        "scored": 0,
-        "ocr_error": 0,
-        "extraction_error": 0,
-        "truncated": 0,
-        "zero_rows": 3,
-        "approve_error": 0,
-        "readback_error": 0,
-        "setup_error": 0
-      },
-      "costUsd": 0.1251684,
-      "seconds": 93.647
-    },
-    "commit": "75c9e8a8f",
-    "extractionModel": "openai/gpt-5.6-luna",
-    "ocrModel": "mistral-ocr-latest",
-    "promptHash": "3f1c1271e342",
-    "testSetVersion": "a0bfa1b62915",
-    "runFolder": "2026-11-09-2100-75c9e8a8f",
-    "date": "2026-11-09T21:00:07.952Z"
   },
   "C-027": {
     "verdict": {

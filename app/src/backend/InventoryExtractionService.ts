@@ -971,6 +971,17 @@ export function verifyRowProvenance(
 
 type SchemaState = { useSchema: boolean };
 
+/**
+ * The answer itself is unusable: cut off at the token limit, or not valid
+ * JSON. Asking again can succeed, so this is the one error the chunk path
+ * retries. Transport errors are already retried by the LLM client.
+ */
+class ExtractionResponseError extends LLMError {
+  constructor(message: string) {
+    super(message, LLMErrorCode.BAD_REQUEST);
+  }
+}
+
 /** A provider that cannot take the strict schema answers 400 and names it. */
 export function isSchemaRejection(err: unknown): boolean {
   return (
@@ -1046,10 +1057,13 @@ async function extractRowsFromDocument(
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
         try {
+          // Like a chunk: only an unusable answer is asked for once more. The
+          // LLM client already retries timeouts, rate limits and provider errors.
           finalized = await extract().catch((error) => {
+            if (!(error instanceof ExtractionResponseError)) throw error;
             logger.info(
               { page: page.page, err: error },
-              "Page extraction failed; retrying once",
+              "Page answer unusable; retrying once",
             );
             return extract();
           });
@@ -1057,7 +1071,7 @@ async function extractRowsFromDocument(
           // One unreadable page must not fail the whole import.
           logger.warn(
             { page: page.page, err: error },
-            "Page extraction failed twice; page skipped",
+            "Page extraction failed; page skipped",
           );
           failedPages.push({ page: page.page, error });
           return { page: page.page, result: EMPTY_RESULT };
@@ -1193,7 +1207,7 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(
+    allRows = await extractSegmentWithRetry(
       content,
       yearInstruction,
       false,
@@ -1215,7 +1229,7 @@ async function extractByChunks(
       chunks,
       concurrency,
       async (chunk) =>
-        extractSegment(chunk, segmentPrefix, true, schemaState, style),
+        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1233,6 +1247,36 @@ async function extractByChunks(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
   return allRows;
+}
+
+/**
+ * Whole-document call or chunk. An unusable answer (cut off, or not valid
+ * JSON) is asked for once more; a second one rejects the import, because rows
+ * of a whole-document call cannot be dropped in part. Every other error is
+ * rethrown: the LLM client already retries timeouts, rate limits and provider
+ * errors, and an auth or config error cannot succeed on a retry.
+ */
+async function extractSegmentWithRetry(
+  content: string,
+  promptPrefix: string,
+  isSegment: boolean,
+  schemaState: SchemaState,
+  style?: NumberStyle,
+): Promise<ExtractedRow[]> {
+  return extractSegment(
+    content,
+    promptPrefix,
+    isSegment,
+    schemaState,
+    style,
+  ).catch((error) => {
+    if (!(error instanceof ExtractionResponseError)) throw error;
+    logger.info(
+      { isSegment, err: error },
+      "Extraction answer unusable; retrying once",
+    );
+    return extractSegment(content, promptPrefix, isSegment, schemaState, style);
+  });
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -1360,12 +1404,10 @@ async function extractSegment(
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
-  const call = (structured: boolean) =>
-    client.complete({
-      // Table extraction needs a stronger model than column mapping (CC-1008:
-      // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-      model,
+  const call = async (structured: boolean): Promise<string> => {
+    const started = Date.now();
+    const { content, model, usage, finishReason } = await client.complete({
+      use: "pdf_extraction",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userContent },
@@ -1373,24 +1415,46 @@ async function extractSegment(
       ...(structured
         ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
         : { jsonMode: true }),
-      temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+      // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
+      // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
       maxTokens: 16000,
     });
+    logger.info(
+      {
+        isSegment,
+        model,
+        finishReason,
+        promptTokens: usage?.promptTokens,
+        completionTokens: usage?.completionTokens,
+        reasoningTokens: usage?.reasoningTokens,
+        durationMs: Date.now() - started,
+      },
+      "Extraction LLM call finished",
+    );
+    // A response cut off at the token limit is incomplete JSON. Fail the call so
+    // the page is retried and then reported as failed, never imported in part.
+    if (finishReason === "length") {
+      throw new ExtractionResponseError(
+        "Extraction response was cut off at the token limit",
+      );
+    }
+    return content;
+  };
   let responseContent: string;
   const structured = state.useSchema;
   try {
-    ({ content: responseContent } = await call(structured));
+    responseContent = await call(structured);
   } catch (err) {
     if (!structured || !isSchemaRejection(err)) throw err;
     // Concurrent chunks can all be rejected; the shared state warns once.
     if (state.useSchema) {
       state.useSchema = false;
       logger.warn(
-        { model },
+        { use: "pdf_extraction" },
         "Extraction structured output rejected; using jsonMode",
       );
     }
-    ({ content: responseContent } = await call(false));
+    responseContent = await call(false);
   }
 
   const truncated =
@@ -1500,35 +1564,23 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    // Truncated response: try closing {"rows": [ ... with ]}
-    const trimmedEnd = jsonStr.trimEnd();
-    if (trimmedEnd.endsWith("}") && jsonStr.includes('"rows"')) {
-      try {
-        parsed = JSON.parse(trimmedEnd + "]}");
-        logger.debug("Repaired truncated extraction JSON by appending ]}");
-      } catch {
-        /* ignore */
-      }
-    }
-    if (parsed === undefined) {
-      // Last resort: find a top-level JSON array
-      const arrayStart = jsonStr.indexOf("[");
-      if (arrayStart >= 0) {
-        const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
-        if (end > 0) {
-          try {
-            parsed = JSON.parse(jsonStr.slice(arrayStart, end));
-          } catch {
-            /* ignore */
-          }
+    // A cut-off response is not repaired (closing it would drop rows silently).
+    // Last resort: find a complete top-level JSON array
+    const arrayStart = jsonStr.indexOf("[");
+    if (arrayStart >= 0) {
+      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+      if (end > 0) {
+        try {
+          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+        } catch {
+          /* ignore */
         }
       }
     }
     if (parsed === undefined) {
       logExtractionFailure(content, "Extraction parse failed: not valid JSON");
-      throw new LLMError(
+      throw new ExtractionResponseError(
         "Extraction response was not valid JSON",
-        LLMErrorCode.BAD_REQUEST,
       );
     }
   }
@@ -2205,8 +2257,7 @@ function finalizeRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
-        else if (captionRelabeled.has(row))
-          drop("caption_year");
+        else if (captionRelabeled.has(row)) drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {

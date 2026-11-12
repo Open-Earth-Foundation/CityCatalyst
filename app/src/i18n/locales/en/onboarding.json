@@ -224,6 +224,7 @@
   "import-removals-gross-only": "The document reports totals with and without forestry removals. This import matches the total without them, not the total of {{net}} tCO2e with them. Confirm this is intended.",
   "import-reconciliation-title": "The imported total does not match the document",
   "import-reconciliation-detail": "The rows to import add up to {{imported}} tCO2e. The document reports {{reported}} tCO2e, a difference of {{deviation}}%. Check the file before you confirm. The data may be missing, counted twice or taken from another year.",
+  "import-ciris-report-mismatch": "The eCRF_3 rows add up to a different total than the CIRIS Report tab. Check the file before you confirm.",
   "import-dropped-rows-title": "Rows left out while reading the document",
   "import-dropped-reason-other_year": "From another year: {{count}}",
   "import-dropped-reason-caption_year": "Moved to another year by the table caption: {{count}}",

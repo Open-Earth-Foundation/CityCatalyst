@@ -221,8 +221,8 @@ export default class ECRFDownloadService {
                 : 0n;
             }
           } else if (targetIdentifier === "notation-key") {
-            // mark as Not estimated
-            replacementValue = "NE";
+            // Leave blank. Filling NE here invents a claim the city did not make.
+            replacementValue = "";
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }
@@ -302,12 +302,12 @@ export default class ECRFDownloadService {
               worksheet,
             );
           } else {
-            this.markRowAsNotEstimated(row, {
+            this.clearLeftoverPlaceholders(row, {
               inventoryYear: output.year as number,
             });
           }
         } else {
-          this.markRowAsNotEstimated(row, {
+          this.clearLeftoverPlaceholders(row, {
             inventoryYear: output.year as number,
           });
         }
@@ -563,9 +563,9 @@ export default class ECRFDownloadService {
     this.writeInventoryYear(row, inventoryYear);
 
     if (typeof referenceValue == "string" && referenceValue in visitedScopes) {
-      // Extra template rows for the same GPC ref (e.g. I.4.4 CHP/heat) after
-      // multi-activity insert — clear placeholders rather than leave {{…}}.
-      this.markRowAsNotEstimated(row, { inventoryYear });
+      // Extra template slots for the same GPC (e.g. I.4.4 CHP/heat) are unused
+      // leftovers, not "not estimated".
+      this.clearLeftoverPlaceholders(row, { inventoryYear });
       return;
     }
 

@@ -188,7 +188,6 @@ export const createUserInvite = z.object({
 
 export const AcceptInvite = z.object({
   email: z.string().email(),
-  cityIds: z.array(z.string()),
   token: z.string(),
 });
 

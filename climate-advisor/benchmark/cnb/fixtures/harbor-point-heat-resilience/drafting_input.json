@@ -1,0 +1,116 @@
+{
+  "run_name": "Harbor Point heat and stormwater resilience concept note",
+  "funder": "Green Climate Fund",
+  "opportunity": "Simplified Approval Process (SAP) funding proposal",
+  "template_name": "GCF SAP concept note (section structure simplified for the golden set)",
+  "chapter_schema": [
+    {
+      "chapter_ref": "project_summary",
+      "title": "Project summary",
+      "required": true,
+      "description": "Project title, city and country, accredited entity, executing entities, total cost and GCF funding requested, and project duration.",
+      "required_fields": [
+        "project title",
+        "city and country",
+        "accredited entity",
+        "executing entities",
+        "total cost and GCF funding requested",
+        "project duration"
+      ]
+    },
+    {
+      "chapter_ref": "climate_context",
+      "title": "Climate rationale and baseline",
+      "required": true,
+      "description": "Climate hazards and observed trends, exposed people and assets, and baseline conditions without the project.",
+      "required_fields": [
+        "climate hazards and trends",
+        "exposed population and assets",
+        "baseline conditions"
+      ]
+    },
+    {
+      "chapter_ref": "project_components",
+      "title": "Project components and activities",
+      "required": true,
+      "description": "Components, activities, quantified outputs and their locations.",
+      "required_fields": [
+        "components and activities",
+        "quantified outputs and locations"
+      ]
+    },
+    {
+      "chapter_ref": "expected_results",
+      "title": "Expected results and indicators",
+      "required": true,
+      "description": "Expected adaptation results, beneficiaries, and indicators with baselines and targets.",
+      "required_fields": [
+        "expected results",
+        "beneficiaries",
+        "indicators with baselines and targets"
+      ]
+    },
+    {
+      "chapter_ref": "implementation",
+      "title": "Implementation arrangements",
+      "required": true,
+      "description": "Implementing entities and partners with their roles, governance, and monitoring and reporting.",
+      "required_fields": [
+        "implementing entities and partner roles",
+        "governance arrangements",
+        "monitoring and reporting"
+      ]
+    },
+    {
+      "chapter_ref": "financing",
+      "title": "Indicative financing",
+      "required": true,
+      "description": "Total cost by component, co-financing, the amount and financial instrument requested from GCF, and the cost basis.",
+      "required_fields": [
+        "cost by component",
+        "co-financing",
+        "GCF request and financial instrument"
+      ]
+    }
+  ],
+  "required_fields": [
+    "project title",
+    "city and country",
+    "accredited entity",
+    "executing entities",
+    "total cost and GCF funding requested",
+    "project duration",
+    "climate hazards and trends",
+    "exposed population and assets",
+    "baseline conditions",
+    "components and activities",
+    "quantified outputs and locations",
+    "expected results",
+    "beneficiaries",
+    "indicators with baselines and targets",
+    "implementing entities and partner roles",
+    "governance arrangements",
+    "monitoring and reporting",
+    "cost by component",
+    "co-financing",
+    "GCF request and financial instrument"
+  ],
+  "cc_context": {
+    "city": {
+      "name": "Harbor Point",
+      "locode": null,
+      "country": null,
+      "country_locode": null,
+      "region": null,
+      "region_locode": null,
+      "area_km2": null,
+      "population": null,
+      "population_year": null,
+      "source": "citycatalyst"
+    },
+    "project": null,
+    "ghgi": null,
+    "ccra": null,
+    "hiap": null
+  }
+}

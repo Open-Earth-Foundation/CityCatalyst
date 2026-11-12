@@ -297,4 +297,10 @@ export interface DemoTrackState {
    * means "the suggested order". Ids not in the ranking are ignored.
    */
   cityOrder?: string[];
+  /** Actions the city ticked for export (proposal home); kept across pages. */
+  selectedIds?: string[];
+  /** Actions the city marked as already implemented; listed apart, not exported. */
+  implementedIds?: string[];
+  /** When the city last changed anything here, for the "Saved on this device" hint. */
+  savedAt?: string | null;
 }

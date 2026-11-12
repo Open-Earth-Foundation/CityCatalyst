@@ -69,12 +69,9 @@ import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { TTLCache } from "@isaacs/ttlcache";
+import { Op, UniqueConstraintError } from "sequelize";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-
-// 10-minute cache, for checking jwtid replay
-
-const cache = new TTLCache({ max: 10000, ttl: 10 * 60 * 1000 });
+import { UsedAuthorizationCode } from "@/models/UsedAuthorizationCode";
 
 const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
@@ -214,14 +211,7 @@ async function handleAuthorizationCodeRequest(
     "Checking for replay of jwtid for authorization token",
   );
 
-  if (cache.has(jwtid)) {
-    logger.debug({ jwtid }, "Cache hit");
-    throw createHttpError.BadRequest("Single-use code.");
-  }
-
-  logger.debug({ jwtid }, "Cache miss");
-
-  cache.set(jwtid, true);
+  await markCodeUsed(jwtid, decoded.exp);
 
   const scope = decoded.scope;
 
@@ -259,6 +249,30 @@ async function handleAuthorizationCodeRequest(
     expires_in: ACCESS_TOKEN_EXPIRY,
     refresh_token: refreshToken,
     scope,
+  });
+}
+
+/**
+ * Atomically records an authorization code as redeemed. The primary key on
+ * `jwt_id` makes the insert fail for a replayed code, regardless of which app
+ * replica handled the first redemption. Expired rows are pruned afterwards,
+ * since an expired code is already rejected by jwt.verify.
+ */
+async function markCodeUsed(jwtid: string, exp: number | undefined) {
+  const expires = exp ? new Date(exp * 1000) : new Date();
+
+  try {
+    await UsedAuthorizationCode.create({ jwtId: jwtid, expires });
+  } catch (error: unknown) {
+    if (error instanceof UniqueConstraintError) {
+      logger.debug({ jwtid }, "Replayed authorization code");
+      throw createHttpError.BadRequest("Single-use code.");
+    }
+    throw error;
+  }
+
+  await UsedAuthorizationCode.destroy({
+    where: { expires: { [Op.lt]: new Date() } },
   });
 }
 

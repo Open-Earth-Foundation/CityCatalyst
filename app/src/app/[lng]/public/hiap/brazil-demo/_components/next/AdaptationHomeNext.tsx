@@ -1,23 +1,22 @@
 "use client";
 import React, { useCallback, useMemo, useState } from "react";
-import { Box, Icon, VStack } from "@chakra-ui/react";
-import { LuSlidersHorizontal } from "react-icons/lu";
+import { Box, HStack, Text, VStack } from "@chakra-ui/react";
 import { BodyMedium } from "@/components/package/Texts/Body";
+import { Overline } from "@/components/package/Texts/Overline";
 import { TitleLarge } from "@/components/package/Texts/Title";
-import { MeedButton } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedButton";
 import { buildReportPdf } from "@/app/[lng]/cities/[cityId]/MEED/[inventory]/results/report/meedReportPdf";
-import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { useTrack } from "../../_lib/useTrack";
+import { useDemoState } from "../../_lib/state";
 import { useDemoT, useTrackT } from "../../_lib/useDemoT";
 import { useLabels } from "../../_lib/useLabels";
 import { SCREEN_IDS, trackHref } from "../../_lib/hrefs";
-import { RISK_CELL_BY_KEY, RISK_CELLS } from "../../_lib/riskCells";
+import { RISK_CELL_BY_KEY } from "../../_lib/riskCells";
 import { ACTION_BY_ID, ADAPTATION_ACTIONS } from "../../_lib/actions";
 import { buildDemoReport } from "../../_lib/report";
 import { downloadCsv } from "../../_lib/csv";
-import { rankAdaptation, type NotRankedAction } from "../../_lib/ranking";
+import { rankAdaptation } from "../../_lib/ranking";
 import { pick } from "../../_lib/localized";
-import { DemoHero } from "../DemoHero";
+import { DemoHero, HeroLink } from "../DemoHero";
 import { TrackTabs } from "../TrackTabs";
 import { ConceptNotice } from "../ConceptNotice";
 import { useSearchParam, writeSearchParams } from "./ListControls";
@@ -29,8 +28,8 @@ import {
 import { RankingBasis } from "./RankingBasis";
 import { RankingRecipe } from "./RankingRecipe";
 import { TopRisks } from "./TopRisks";
-import { TopActions } from "./TopActions";
 import { RankedActionsTable } from "./RankedActionsTable";
+import { TextLink } from "./TextLink";
 import { ActionDrawer } from "./ActionDrawer";
 import { CityContextDialog } from "./CityContextDialog";
 import { isCustomWeights } from "./WeightSliders";
@@ -41,12 +40,11 @@ import {
   FACET_KEYS,
   filtersFromSearch,
   filtersToSearch,
-  matchesFilters,
   type RankedRow,
   type RowFilters,
 } from "./rows";
 
-/** A section of the home: title, one line, content. The same frame four times. */
+/** A section of the home: title, one line, content. */
 function Section({
   id,
   title,
@@ -55,26 +53,36 @@ function Section({
 }: {
   id?: string;
   title: string;
-  body?: string;
+  body?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <VStack id={id} alignItems="stretch" gap="l" scrollMarginTop="l">
       <VStack alignItems="stretch" gap="xs">
-        <TitleLarge color="content.primary">{title}</TitleLarge>
-        {body && <BodyMedium color="content.secondary">{body}</BodyMedium>}
+        <TitleLarge as="h2" color="content.primary">
+          {title}
+        </TitleLarge>
+        {body}
       </VStack>
       {children}
     </VStack>
   );
 }
 
+const scrollTo = (id: string) =>
+  requestAnimationFrame(() =>
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  );
+
 /**
- * BR-N1 — the proposed adaptation home, in the order a city officer reads:
- * where the city is exposed; what to do first; the full list to explore and
- * rework; how the ranking was built. Preferences that change the ranking
- * open in a sheet and apply as a new ranking; filters that narrow the list
- * sit on the list.
+ * BR-N1 — the proposed adaptation home, after review round 2: a short blue
+ * band that says what the tool does and how many actions it found; the
+ * city's top three climate risks in their own box; then one list of actions
+ * with every control at its head (shortcuts, filters, preferences), the
+ * first three grouped as "start with these". Selection, the city's order and
+ * actions marked as implemented are kept in this browser.
  */
 export function AdaptationHomeNext({
   lng,
@@ -94,8 +102,11 @@ export function AdaptationHomeNext({
     setPreferences,
     setCityOrder,
   } = data;
+  const { setSelectedIds, setImplementedIds } = useDemoState(
+    city.slug,
+    track,
+  );
   const { t } = useDemoT(lng);
-  const tMeed = useTrackT(lng, track, "meed");
   const tResults = useTrackT(lng, track, "meed-results");
   const tPre = useTrackT(lng, track, "meed-preflight");
   const labels = useLabels(lng, track);
@@ -133,34 +144,46 @@ export function AdaptationHomeNext({
     setOpenState(id);
     writeSearchParams({ action: id });
   }, []);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  // How many actions changed place in the last new ranking, shown once.
+  // How many actions changed place in the last update, shown once.
   const [movedAfterUpdate, setMovedAfterUpdate] = useState<number | null>(null);
 
-  const rows = useMemo(() => buildRows(data, lng), [data, lng]);
+  // Selection and "already implemented" are kept with the city's order.
+  const selectedIds = useMemo(
+    () => state.selectedIds ?? [],
+    [state.selectedIds],
+  );
+  const implementedIds = useMemo(
+    () => state.implementedIds ?? [],
+    [state.implementedIds],
+  );
+
+  const allRows = useMemo(() => buildRows(data, lng), [data, lng]);
+  // The list leaves out what the city already implemented.
+  const rows = useMemo(
+    () => allRows.filter((r) => !implementedIds.includes(r.action.id)),
+    [allRows, implementedIds],
+  );
+  const cityOrder = useMemo(() => state.cityOrder ?? [], [state.cityOrder]);
   const openId =
     openState !== undefined
       ? openState
       : urlAction === "top"
-        ? (applyCityOrder(rows, state.cityOrder ?? [])[0]?.action.id ?? null)
+        ? (applyCityOrder(rows, cityOrder)[0]?.action.id ?? null)
         : urlAction;
   const rowById = useMemo(
-    () => new Map(rows.map((r) => [r.action.id, r])),
-    [rows],
+    () => new Map(allRows.map((r) => [r.action.id, r])),
+    [allRows],
   );
-  const visibleRows = useMemo(
-    () => rows.filter((r) => matchesFilters(r, filters)),
-    [rows, filters],
+  const implemented = useMemo(
+    () => implementedIds.flatMap((id) => ACTION_BY_ID[id] ?? []),
+    [implementedIds],
   );
-  const cityOrder = useMemo(() => state.cityOrder ?? [], [state.cityOrder]);
-  const topRows = useMemo(
-    () => applyCityOrder(rows, cityOrder).slice(0, 3),
-    [rows, cityOrder],
-  );
-  const footnote: NotRankedAction[] = useMemo(
+  const leftOut = useMemo(
     () =>
-      (adaptation?.notRanked ?? []).filter((n) => n.reason !== "complementary"),
+      (adaptation?.notRanked ?? [])
+        .filter((n) => n.reason === "excluded_by_city")
+        .map((n) => n.action),
     [adaptation],
   );
   const reasonOf = (id: string) =>
@@ -173,11 +196,6 @@ export function AdaptationHomeNext({
       prefs.sectors.length +
       prefs.timeline.length >
     0;
-  const isCustom =
-    hasPreferences ||
-    prefs.excludedActionIds.length > 0 ||
-    isCustomWeights(prefs.weights);
-  const cellsWithData = RISK_CELLS.filter((c) => city.risk[c.key]).length;
   const applied: RankingPriorities = {
     coBenefits: prefs.coBenefits,
     priorityRisks: prefs.priorityRisks,
@@ -186,35 +204,37 @@ export function AdaptationHomeNext({
     weights: prefs.weights,
   };
   const priorityLabels = [
-    ...prefs.coBenefits.map((k) => labels.coBenefit(k)),
     ...prefs.priorityRisks.map((k) => pick(RISK_CELL_BY_KEY[k].label, lng)),
-    ...prefs.sectors.map((k) => labels.sector(k)),
+    ...prefs.coBenefits.map((k) => labels.coBenefit(k)),
     ...prefs.timeline.map((k) => labels.timeline(k)),
+    ...prefs.sectors.map((k) => labels.sector(k)),
   ];
 
-  // A new ranking from the city's priorities: apply, say how many actions
+  // A new order from the city's preferences: apply, say how many actions
   // changed place, and bring the list into view where that is said.
   const runRanking = (next: RankingPriorities) => {
     const before = rows.map((r) => r.action.id);
     const after = rankAdaptation(city, ADAPTATION_ACTIONS, {
       ...prefs,
       ...next,
-    }).ranked.map((s) => s.action.id);
+    })
+      .ranked.map((s) => s.action.id)
+      .filter((id) => !implementedIds.includes(id));
     setMovedAfterUpdate(after.filter((id, i) => before[i] !== id).length);
     setPreferences(next);
     setPanelOpen(false);
-    requestAnimationFrame(() =>
-      document
-        .getElementById("all-actions")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-    );
+    scrollTo("actions");
   };
 
-  const toggleSelect = useCallback((id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  }, []);
+  const toggleSelect = useCallback(
+    (id: string) =>
+      setSelectedIds(
+        selectedIds.includes(id)
+          ? selectedIds.filter((x) => x !== id)
+          : [...selectedIds, id],
+      ),
+    [selectedIds, setSelectedIds],
+  );
   const exclude = (id: string) =>
     setPreferences({
       excludedActionIds: [
@@ -226,6 +246,14 @@ export function AdaptationHomeNext({
     setPreferences({
       excludedActionIds: prefs.excludedActionIds.filter((x) => x !== id),
     });
+  const markImplemented = (id: string) => {
+    setImplementedIds([...implementedIds.filter((x) => x !== id), id]);
+    // Implemented actions are not exported, so they leave the selection.
+    if (selectedIds.includes(id))
+      setSelectedIds(selectedIds.filter((x) => x !== id));
+  };
+  const unmarkImplemented = (id: string) =>
+    setImplementedIds(implementedIds.filter((x) => x !== id));
   const currentOrder = () =>
     applyCityOrder(rows, cityOrder).map((r) => r.action.id);
   const move = (id: string, delta: -1 | 1) => {
@@ -239,12 +267,20 @@ export function AdaptationHomeNext({
   const pin = (id: string) =>
     setCityOrder([id, ...currentOrder().filter((x) => x !== id)]);
 
+  // Only actions still on the list go into the report.
+  const exportIds = useMemo(
+    () =>
+      applyCityOrder(rows, cityOrder)
+        .map((r) => r.action.id)
+        .filter((id) => selectedIds.includes(id)),
+    [rows, cityOrder, selectedIds],
+  );
   const generateReport = useCallback(async () => {
-    if (selectedIds.length === 0) return;
+    if (exportIds.length === 0) return;
     setIsGenerating(true);
     try {
       const documents = buildDemoReport(
-        selectedIds,
+        exportIds,
         data,
         lng,
         t,
@@ -264,12 +300,16 @@ export function AdaptationHomeNext({
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedIds, data, lng, t, tResults, city, track, labels]);
+  }, [exportIds, data, lng, t, tResults, city, track, labels]);
 
-  const exportCsv = () =>
+  // The list as shown: its position in the current order and whether the
+  // city selected it (review: the CSV should say both).
+  const exportCsv = (ordered: RankedRow[]) =>
     downloadCsv(
-      `hiap-brazil-demo-${city.slug}-ranking.csv`,
+      `hiap-brazil-demo-${city.slug}-actions.csv`,
       [
+        t("next-col-position"),
+        t("next-col-selected"),
         t("next-col-action"),
         t("next-col-sector"),
         t("next-col-risk"),
@@ -279,10 +319,12 @@ export function AdaptationHomeNext({
         t("next-col-policy"),
         t("next-col-timeline"),
       ],
-      applyCityOrder(visibleRows, cityOrder).map((r) => [
+      ordered.map((r, i) => [
+        String(i + 1),
+        selectedIds.includes(r.action.id) ? t("next-yes") : t("next-no"),
         pick(r.action.name, lng),
         r.sectorLabel,
-        `${r.hazardLabel} · ${t(`risk-level-${r.riskTone}`)}`,
+        `${r.hazardLabel} · ${t(`next-risk-level-${r.riskTone}`)}`,
         t(`next-cost-${r.cost}`),
         r.legalLabel,
         r.fundingLabel,
@@ -295,6 +337,15 @@ export function AdaptationHomeNext({
   const openRow: RankedRow | null = openId
     ? (rowById.get(openId) ?? null)
     : null;
+  const firstId = applyCityOrder(rows, cityOrder)[0]?.action.id ?? null;
+
+  // What a city does here, in four verbs: one line, each one a way in.
+  const ways: { key: string; onClick: () => void }[] = [
+    { key: "see", onClick: () => scrollTo("action-list") },
+    { key: "adjust", onClick: () => setPanelOpen(true) },
+    { key: "export", onClick: () => scrollTo("action-list") },
+    { key: "open", onClick: () => firstId && setOpenId(firstId) },
+  ];
 
   return (
     <Box
@@ -308,40 +359,30 @@ export function AdaptationHomeNext({
         city={city}
         track={track}
         screenId={SCREEN_IDS.next.home}
-        line={t("next-hero-line", { count: cellsWithData })}
-        description={tMeed("overview-description")}
-        status={
-          isReady
-            ? t("next-hero-status", {
-                count: ranked.length,
-                settings: isCustom
-                  ? t("next-settings-custom")
-                  : t("next-settings-default"),
-              })
-            : undefined
+        headline={t("next-hero-headline")}
+        cityAside={
+          <HeroLink onClick={() => setContextOpen(true)}>
+            {t("next-context-link")}
+          </HeroLink>
         }
-        action={
-          <MeedButton
-            minW="auto"
-            px="l"
-            bg="base.light"
-            color="content.link"
-            borderWidth="1px"
-            borderColor="base.light"
-            _hover={{ bg: "background.neutral" }}
-            leftIcon={<Icon as={LuSlidersHorizontal} boxSize="16px" />}
-            onClick={() => setPanelOpen(true)}
-            _focusVisible={FOCUS_RING}
-          >
-            {t("next-customize")}
-          </MeedButton>
+        line={
+          isReady ? (
+            <HStack gap="s" flexWrap="wrap" data-testid="hero-status">
+              <Text fontSize="body.md" color="background.overlay">
+                {t("next-hero-identified", { count: ranked.length })}
+              </Text>
+              <HeroLink onClick={() => scrollTo("actions")}>
+                {t("next-hero-see")}
+              </HeroLink>
+            </HStack>
+          ) : null
         }
       />
       <TrackTabs lng={lng} city={city.slug} track={track} />
 
       <Box
         mx="auto"
-        pt="xxl"
+        pt="l"
         pb="xxl-6"
         px="l"
         w="full"
@@ -349,74 +390,88 @@ export function AdaptationHomeNext({
         maxW="1090px"
       >
         {!isReady ? null : (
-          <VStack alignItems="stretch" gap="xxl-6" minW={0}>
+          <VStack alignItems="stretch" gap="xxl" minW={0}>
+            <TopRisks
+              city={city}
+              lng={lng}
+              t={t}
+              title={t("next-section-risks")}
+              href={trackHref(lng, city.slug, track, "risk")}
+            />
             <Section
-              title={t("next-section-risks", { city: city.name })}
-              body={t("next-section-risks-body")}
-            >
-              <TopRisks
-                city={city}
-                lng={lng}
-                t={t}
-                href={trackHref(lng, city.slug, track, "risk")}
-                onContext={() => setContextOpen(true)}
-              />
-            </Section>
-            <Section
+              id="actions"
               title={t("next-section-actions")}
-              body={t("next-section-actions-body", { city: city.name })}
+              body={
+                <VStack alignItems="stretch" gap="s">
+                  <BodyMedium color="content.secondary">
+                    {t("next-section-actions-body")}
+                  </BodyMedium>
+                  <HStack
+                    as="nav"
+                    aria-label={t("next-ways-title")}
+                    gap={{ base: "m", md: "l" }}
+                    rowGap="xs"
+                    flexWrap="wrap"
+                    alignItems="center"
+                    data-testid="ways-in"
+                  >
+                    <Overline
+                      color="content.tertiary"
+                      w={{ base: "full", md: "auto" }}
+                    >
+                      {t("next-ways-title")}
+                    </Overline>
+                    {ways.map((w) => (
+                      <TextLink key={w.key} arrow={false} onClick={w.onClick}>
+                        {t(`next-ways-${w.key}`)}
+                      </TextLink>
+                    ))}
+                  </HStack>
+                </VStack>
+              }
             >
-              <TopActions
-                rows={topRows}
-                lng={lng}
-                t={t}
-                tResults={tResults}
-                selectedIds={selectedIds}
-                onToggleSelect={toggleSelect}
-                onOpen={(row) => setOpenId(row.action.id)}
-              />
-            </Section>
-            <Section
-              id="all-actions"
-              title={t("next-section-list")}
-              body={t("next-section-list-body")}
-            >
-              <RankingBasis
-                priorities={priorityLabels}
-                customWeights={isCustomWeights(prefs.weights)}
-                movedAfterUpdate={movedAfterUpdate}
-                onAdjust={() => setPanelOpen(true)}
-                onDefault={() => runRanking({ ...DEFAULT_PRIORITIES })}
-                t={t}
-              />
-              <RankedActionsTable
-                rows={rows}
-                cityOrder={cityOrder}
-                notRanked={footnote}
-                reasonOf={reasonOf}
-                filters={filters}
-                onFiltersChange={setFilters}
-                lng={lng}
-                t={t}
-                tResults={tResults}
-                labels={labels}
-                selectedIds={selectedIds}
-                onToggleSelect={toggleSelect}
-                onOpen={(row) => setOpenId(row.action.id)}
-                onOpenUnranked={(item) => setOpenId(item.action.id)}
-                onOpenAction={setOpenId}
-                onExclude={exclude}
-                onInclude={include}
-                onMove={move}
-                onPin={pin}
-                onResetOrder={() => setCityOrder([])}
-                onExportCsv={exportCsv}
-                report={{
-                  onGenerate: generateReport,
-                  isGenerating,
-                  progress: null,
-                }}
-              />
+              <Box id="action-list" scrollMarginTop="l">
+                <RankedActionsTable
+                  rows={rows}
+                  cityOrder={cityOrder}
+                  reasonOf={reasonOf}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  orderControls={
+                    <RankingBasis
+                      priorities={priorityLabels}
+                      customWeights={isCustomWeights(prefs.weights)}
+                      movedAfterUpdate={movedAfterUpdate}
+                      onAdjust={() => setPanelOpen(true)}
+                      onDefault={() => runRanking({ ...DEFAULT_PRIORITIES })}
+                      t={t}
+                    />
+                  }
+                  lng={lng}
+                  t={t}
+                  tResults={tResults}
+                  labels={labels}
+                  selectedIds={selectedIds}
+                  onToggleSelect={toggleSelect}
+                  onSelectMany={setSelectedIds}
+                  onOpen={(row) => setOpenId(row.action.id)}
+                  implemented={implemented}
+                  leftOut={leftOut}
+                  onImplemented={markImplemented}
+                  onUnimplemented={unmarkImplemented}
+                  onExclude={exclude}
+                  onInclude={include}
+                  onMove={move}
+                  onPin={pin}
+                  onResetOrder={() => setCityOrder([])}
+                  onExportCsv={exportCsv}
+                  onExportPdf={generateReport}
+                  isGenerating={isGenerating}
+                  savedAt={state.savedAt ?? null}
+                  onOpenAction={setOpenId}
+                  cityName={city.name}
+                />
+              </Box>
             </Section>
             <Section title={t("next-section-built")}>
               <RankingRecipe

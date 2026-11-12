@@ -34,6 +34,13 @@ import { WeightSliders, isCustomWeights } from "./WeightSliders";
 
 const TIMELINES: Timeline[] = ["<5 years", "5-10 years", ">10 years"];
 
+/**
+ * Whether the sheet offers sector preferences. Open for the 11 Nov meeting:
+ * reviewers asked to focus on hazards, so this switch drops the sector group
+ * in one place (the ranking still reads any sectors already saved).
+ */
+export const SHOW_SECTOR_PREFERENCE = true;
+
 /** The parts of the preferences a city sets here; exclusions live on the list. */
 export type RankingPriorities = Pick<
   DemoPreferences,
@@ -137,13 +144,6 @@ export function PreferencesSheet({
     options: { value: string; label: string }[];
   }[] = [
     {
-      key: "coBenefits",
-      options: CO_BENEFIT_KEYS.map((k) => ({
-        value: k,
-        label: labels.coBenefit(k),
-      })),
-    },
-    {
       key: "priorityRisks",
       options: RISK_CELLS.map((c) => ({
         value: c.key,
@@ -151,16 +151,27 @@ export function PreferencesSheet({
       })),
     },
     {
-      key: "sectors",
-      options: ADAPTA_SECTORS.map((k) => ({
+      key: "coBenefits",
+      options: CO_BENEFIT_KEYS.map((k) => ({
         value: k,
-        label: labels.sector(k),
+        label: labels.coBenefit(k),
       })),
     },
     {
       key: "timeline",
       options: TIMELINES.map((k) => ({ value: k, label: labels.timeline(k) })),
     },
+    ...(SHOW_SECTOR_PREFERENCE
+      ? [
+          {
+            key: "sectors" as const,
+            options: ADAPTA_SECTORS.map((k) => ({
+              value: k,
+              label: labels.sector(k),
+            })),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -195,9 +206,13 @@ export function PreferencesSheet({
                 </Drawer.Title>
                 <Drawer.CloseTrigger asChild>
                   <CloseButton
-                    size="sm"
-                    color="content.secondary"
-                    aria-label={t("next-drawer-close")}
+                    size="md"
+                    variant="outline"
+                    borderRadius="full"
+                    color="content.primary"
+                    flexShrink={0}
+                    aria-label={t("next-prefs-close-aria")}
+                    _focusVisible={FOCUS_RING}
                   />
                 </Drawer.CloseTrigger>
               </HStack>
@@ -315,16 +330,31 @@ export function PreferencesSheet({
                   </TextLink>
                 )}
               </VStack>
-              <MeedButton
-                minW="auto"
-                px="l"
-                disabled={!changed}
-                onClick={() => onApply(draft)}
-                _focusVisible={FOCUS_RING}
-                data-testid="update-ranking"
+              <HStack
+                gap="m"
+                flexDirection={{ base: "column-reverse", sm: "row" }}
+                alignItems="stretch"
               >
-                {t("next-prefs-update")}
-              </MeedButton>
+                <MeedButton
+                  variant="outlined"
+                  minW="auto"
+                  px="l"
+                  onClick={onClose}
+                  _focusVisible={FOCUS_RING}
+                >
+                  {t("next-prefs-close")}
+                </MeedButton>
+                <MeedButton
+                  minW="auto"
+                  px="l"
+                  disabled={!changed}
+                  onClick={() => onApply(draft)}
+                  _focusVisible={FOCUS_RING}
+                  data-testid="update-ranking"
+                >
+                  {t("next-prefs-update")}
+                </MeedButton>
+              </HStack>
             </Drawer.Footer>
           </Drawer.Content>
         </Drawer.Positioner>

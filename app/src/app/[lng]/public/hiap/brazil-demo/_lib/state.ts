@@ -34,6 +34,9 @@ const EMPTY_STATE: DemoTrackState = {
   generatedAt: null,
   visited: {},
   cityOrder: [],
+  selectedIds: [],
+  implementedIds: [],
+  savedAt: null,
 };
 
 const EVENT = "hiap-br-demo:changed";
@@ -55,6 +58,9 @@ function parse(raw: string | null): DemoTrackState {
       generatedAt: parsed.generatedAt ?? null,
       visited: parsed.visited ?? {},
       cityOrder: parsed.cityOrder ?? [],
+      selectedIds: parsed.selectedIds ?? [],
+      implementedIds: parsed.implementedIds ?? [],
+      savedAt: parsed.savedAt ?? null,
     };
   } catch {
     return EMPTY_STATE;
@@ -118,7 +124,10 @@ export function useDemoState(city: string, track: DemoTrack) {
 
   const update = useCallback(
     (patch: (current: DemoTrackState) => DemoTrackState) => {
-      writeDemoState(city, track, patch(readDemoState(city, track)));
+      writeDemoState(city, track, {
+        ...patch(readDemoState(city, track)),
+        savedAt: new Date().toISOString(),
+      });
     },
     [city, track],
   );
@@ -149,6 +158,16 @@ export function useDemoState(city: string, track: DemoTrack) {
     [update],
   );
 
+  const setSelectedIds = useCallback(
+    (selectedIds: string[]) => update((s) => ({ ...s, selectedIds })),
+    [update],
+  );
+
+  const setImplementedIds = useCallback(
+    (implementedIds: string[]) => update((s) => ({ ...s, implementedIds })),
+    [update],
+  );
+
   const reset = useCallback(() => update(() => EMPTY_STATE), [update]);
 
   return {
@@ -158,6 +177,8 @@ export function useDemoState(city: string, track: DemoTrack) {
     markVisited,
     markGenerated,
     setCityOrder,
+    setSelectedIds,
+    setImplementedIds,
     reset,
   };
 }

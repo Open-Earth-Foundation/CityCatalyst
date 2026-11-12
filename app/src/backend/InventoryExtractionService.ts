@@ -6,8 +6,10 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
 import {
   isQuoteInText,
   normalizeForQuoteMatch,
@@ -31,6 +33,10 @@ import {
 } from "@/util/GHGI/extraction-summary";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
+import {
+  isActivityClass,
+  type ActivityClass,
+} from "@/util/GHGI/activity-class-rules";
 
 /** GPC reference → scope in the taxonomy (null for I.4.4, which has no scope). */
 const gpcRefScopes = new Map(
@@ -120,6 +126,17 @@ export type ExtractedRow = {
    * when the reference text is found in the extracted text.
    */
   refSource?: "document" | "inferred" | null;
+  /**
+   * What the row measures. New extractions always write this key (a class or
+   * `null`); a stored row without the key predates this field.
+   */
+  activityClass?: ActivityClass | null;
+  /**
+   * Where the scope came from. `inferred` when an activity-class rule set or
+   * changed the scope; `document` when the row's reference is printed in the
+   * document. Unset when the scope is the model's own and no rule changed it.
+   */
+  scopeSource?: "document" | "inferred" | null;
   /** Short verbatim quote the model gives for a III.x.3, in any language. */
   directionEvidence?: string | null;
   /**
@@ -163,6 +180,8 @@ export type ExtractedRow = {
   emissionFactorCH4?: number | null;
   emissionFactorN2O?: number | null;
   emissionFactorTotalCO2e?: number | null;
+  /** 1-based Excel row in the source sheet, when the file was parsed from xlsx. */
+  sourceRowNumber?: number | null;
 };
 
 /** User message prefix when no target year. When target year is set, year instruction is injected before document. */
@@ -659,9 +678,14 @@ export async function extractInventoryFromDocument(
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
   const result = await extractRowsFromDocument(documentContent, options);
+  const rows = verifyRowProvenance(result.rows, documentContent);
+  // The activity-class rules can move a row onto or off a reference left out
+  // of the total (I.4.4), so the reconciliation sum is taken after them.
+  // Mismatch and deviation are derived from it on read (reconcileExtraction).
   return {
     ...result,
-    rows: verifyRowProvenance(result.rows, documentContent),
+    rows,
+    summary: { ...result.summary, importedSum: sumImported(rows) },
   };
 }
 
@@ -734,8 +758,19 @@ export function verifyRowProvenance(
     // resolves the conflict instead of silently deriving a different one.
     return out;
   });
-  return fillMissingGpcRefNo(checked).map((row) =>
+  return fillMissingGpcRefNo(applyActivityClassRules(checked)).map((row) =>
     row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
+  );
+}
+
+type SchemaState = { useSchema: boolean };
+
+/** A provider that cannot take the strict schema answers 400 and names it. */
+export function isSchemaRejection(err: unknown): boolean {
+  return (
+    err instanceof LLMError &&
+    err.code === LLMErrorCode.BAD_REQUEST &&
+    /response_format|json_schema|schema/i.test(err.message)
   );
 }
 
@@ -766,6 +801,8 @@ async function extractRowsFromDocument(
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  // One state per extraction: the first schema rejection switches every later call.
+  const schemaState: SchemaState = { useSchema: true };
   const pages = splitDocumentPages(documentContent).filter((p) =>
     isCandidatePage(p.text),
   );
@@ -786,7 +823,12 @@ async function extractRowsFromDocument(
         const extract = async () =>
           finalizeExtractedRows(
             normalizeExtractedRows(
-              await extractSegment(page.text, yearInstruction, false),
+              await extractSegment(
+                page.text,
+                yearInstruction,
+                false,
+                schemaState,
+              ),
             ).map((row) => ({ ...row, page: page.page })),
             year,
             { deferYearAssumption: true },
@@ -852,6 +894,7 @@ async function extractRowsFromDocument(
         documentContent,
         yearInstruction,
         options,
+        schemaState,
         { offset: pages.length, total: progressTotal },
       );
       const result = finalizeExtractedRows(
@@ -887,6 +930,7 @@ async function extractRowsFromDocument(
     documentContent,
     yearInstruction,
     options,
+    schemaState,
   );
   return checkExtractionResult(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year),
@@ -909,7 +953,8 @@ function countChunks(documentContent: string): number {
 async function extractByChunks(
   documentContent: string,
   yearInstruction: string,
-  options?: ExtractOptions,
+  options: ExtractOptions | undefined,
+  schemaState: SchemaState,
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
@@ -921,7 +966,12 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(content, yearInstruction, false);
+    allRows = await extractSegment(
+      content,
+      yearInstruction,
+      false,
+      schemaState,
+    );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
     }
@@ -936,7 +986,7 @@ async function extractByChunks(
     const perChunkRows = await mapPool(
       chunks,
       concurrency,
-      async (chunk) => extractSegment(chunk, segmentPrefix, true),
+      async (chunk) => extractSegment(chunk, segmentPrefix, true, schemaState),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1074,22 +1124,43 @@ async function extractSegment(
   content: string,
   prefix: string,
   isSegment: boolean,
+  state: SchemaState,
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const { content: responseContent } = await client.complete({
-    // Table extraction needs a stronger model than column mapping (CC-1008:
-    // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-    model: process.env.LLM_EXTRACTION_MODEL?.trim() || undefined,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    jsonMode: true,
-    temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
-    maxTokens: 16000,
-  });
+  const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
+  const call = (structured: boolean) =>
+    client.complete({
+      // Table extraction needs a stronger model than column mapping (CC-1008:
+      // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+      model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+      ...(structured
+        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
+        : { jsonMode: true }),
+      temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+      maxTokens: 16000,
+    });
+  let responseContent: string;
+  const structured = state.useSchema;
+  try {
+    ({ content: responseContent } = await call(structured));
+  } catch (err) {
+    if (!structured || !isSchemaRejection(err)) throw err;
+    // Concurrent chunks can all be rejected; the shared state warns once.
+    if (state.useSchema) {
+      state.useSchema = false;
+      logger.warn(
+        { model },
+        "Extraction structured output rejected; using jsonMode",
+      );
+    }
+    ({ content: responseContent } = await call(false));
+  }
 
   const truncated =
     responseContent.length > EXTRACTION_LOG_LIMIT
@@ -1403,6 +1474,9 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (row.refSource === "document" || row.refSource === "inferred") {
       out.refSource = row.refSource;
     }
+    out.activityClass = isActivityClass(row.activityClass)
+      ? row.activityClass
+      : null;
     if (typeof row.gpcRefNo === "string") {
       // A reference the document states is kept even if the scope disagrees:
       // the review shows that conflict. verifyRowProvenance checks the claim.

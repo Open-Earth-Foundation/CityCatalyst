@@ -7,7 +7,7 @@ import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { db } from "@/models";
 import { scopeFromLabel, taxonomyScope } from "@/util/GHGI/gpc-ref-resolver";
-import { findReviewRows } from "@/backend/ImportRowPreviewService";
+import { findReviewRows, reviewIssue } from "@/backend/ImportRowPreviewService";
 import { createHash } from "node:crypto";
 
 function reviewToken(fileId: string, rowIndex: number, source: string): string {
@@ -29,7 +29,7 @@ export interface BuiltImportResult {
 }
 
 /** Applies only decisions bound to the original row, after parsing. */
-async function applyReviewedRows(
+export async function applyReviewedRows(
   result: ECRFImportResult,
   decisions: Record<string, unknown> | undefined,
   fileId: string,
@@ -50,6 +50,7 @@ async function applyReviewedRows(
     )
       continue;
     const review = row.review;
+    const heldExcluded = reviewIssue(row) === "excluded-reference-unconfirmed";
     const originalRef = review.suggestedRefNo ?? row.gpcRefNo;
     if (
       decision.decisionRef !== originalRef ||
@@ -83,7 +84,12 @@ async function applyReviewedRows(
     if (!mapping) continue;
     const catalogueScope = await db.models.Scope.findByPk(mapping.scopeId);
     const expected = scopeFromLabel(catalogueScope?.scopeName) ?? null;
-    const normalizedScope = scopeFromLabel(chosenScope);
+    // A held excluded row has no scope conflict to correct, so a reclassify
+    // takes the target reference's own scope.
+    const normalizedScope =
+      heldExcluded && decision.reviewDecision === "reclassify"
+        ? null
+        : scopeFromLabel(chosenScope);
     const wasConflict =
       (review.catalogueScope !== undefined
         ? review.catalogueScope
@@ -163,7 +169,7 @@ const REVIEW_DECISIONS = new Set(["keep", "reclassify", "skip"]);
  * Apply user overrides to an extracted row. Only allowed keys are applied;
  * used for manual correction of sector/subsector/category etc. per row.
  */
-function applyRowOverrides(
+export function applyRowOverrides(
   base: ExtractedRow,
   overrides: Record<string, unknown>,
   fileId: string,
@@ -232,6 +238,16 @@ function applyRowOverrides(
     out.reviewDecision = null;
   }
   if (reclassified) out.suggestedRefNo = base.gpcRefNo;
+  // A user who sets the scope or the reference owns the pair now: the row no
+  // longer has a scope inferred from its activity type, and the model's
+  // original scope must not come back as the stated scope.
+  if (
+    base.scopeSource === "inferred" &&
+    (out.scope !== base.scope || out.gpcRefNo !== base.gpcRefNo)
+  ) {
+    out.scopeSource = null;
+    out.originalScope = null;
+  }
   return out;
 }
 

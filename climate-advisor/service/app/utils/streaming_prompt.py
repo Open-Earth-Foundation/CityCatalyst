@@ -10,6 +10,7 @@ from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
     format_stationary_energy_context_message,
 )
+from app.utils.concept_note_context import SOURCE_DOCUMENTS_MESSAGE_HEADER
 from app.utils.prompt_budget import (
     TokenCount,
     compact_stationary_energy_prompt_payload,
@@ -172,6 +173,59 @@ def enforce_chat_prompt_budget(
         token_count.tokenizer,
     )
     return trimmed_input
+
+
+CNB_SOURCE_DOCUMENTS_OMITTED_MESSAGE = (
+    f"{SOURCE_DOCUMENTS_MESSAGE_HEADER}_OMITTED\n"
+    "The complete source text does not fit this conversation's context window. "
+    "Use the source summaries, quotations, and the source-query tool instead."
+)
+
+
+def fit_cnb_chat_context_window(
+    handler: StreamingHandler,
+    agent: Any,
+    runner_input: List[Dict[str, str]],
+) -> List[Dict[str, str]]:
+    """Drop complete CNB source text from a chat turn too large for the window.
+
+    Mirrors drafting's ``fit_context_window``: the count covers the agent
+    instructions and every input message, including conversation history.
+    """
+    index = next(
+        (
+            position
+            for position, message in enumerate(runner_input)
+            if str(message.get("content") or "").startswith(
+                f"{SOURCE_DOCUMENTS_MESSAGE_HEADER}\n"
+            )
+        ),
+        None,
+    )
+    if index is None:
+        return runner_input
+    budget = get_settings().llm.generation.prompt_budget
+    tokens = count_prompt_tokens(
+        [
+            agent_instruction_text(handler, agent),
+            *(message.get("content") for message in runner_input),
+        ],
+        model=handler.agent_model,
+        fallback_encoding=budget.tokenizer_encoding,
+    ).tokens
+    window = budget.cnb_sources.context_window_tokens
+    if tokens <= window:
+        return runner_input
+    logger.info(
+        "Concept Note chat turn exceeds the context window tokens=%s window=%s",
+        tokens,
+        window,
+    )
+    return [
+        *runner_input[:index],
+        {"role": "user", "content": CNB_SOURCE_DOCUMENTS_OMITTED_MESSAGE},
+        *runner_input[index + 1 :],
+    ]
 
 
 def agent_instruction_text(handler: StreamingHandler, agent: Any | None = None) -> str:

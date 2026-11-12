@@ -203,3 +203,25 @@ describe("canonicalGpcRefNo", () => {
     expect(canonicalGpcRefNo("III.1.2", "1")).toBeNull();
   });
 });
+
+describe("verifyRowProvenance activity class rules", () => {
+  it("moves a td_losses row to I.6.3 when the table line has no scope", () => {
+    const [out] = verifyRowProvenance(
+      [
+        row({
+          sector: "Stationary Energy",
+          subsector: "Energy Industries",
+          category: "Electricity T&D Losses",
+          totalCO2e: 1710,
+          gpcRefNo: "I.4.3",
+          refSource: "inferred",
+          activityClass: "td_losses",
+        }),
+      ],
+      `Scope 1, Scope 2 and Scope 3 emissions are reported in this inventory.
+| Electricity T&D Losses | 1,710 |`,
+    );
+    expect(out.gpcRefNo).toBe("I.6.3");
+    expect(out.scope).toBe("3");
+  });
+});

@@ -135,3 +135,40 @@ describe("rows without a usable GPC reference", () => {
     expect(rows[0].gpcRefNo ?? null).toBeNull();
   });
 });
+
+describe("activityClass sanitizer", () => {
+  it("keeps a known class, nulls unknown values and always writes the key", async () => {
+    const base = {
+      year: 2022,
+      sector: "Stationary Energy",
+      subsector: "Residential Buildings",
+      totalCO2e: 100,
+      unit: "t",
+      rowType: "line_item",
+      scope: "2",
+      source: "Table 5",
+    };
+    complete.mockResolvedValue({
+      content: JSON.stringify({
+        rows: [
+          { ...base, category: "Electricity", activityClass: "grid_energy" },
+          { ...base, category: "Upper", activityClass: "GRID" },
+          { ...base, category: "Number", activityClass: 42 },
+          { ...base, category: "Missing" },
+        ],
+      }),
+    });
+
+    const { rows } = await extractInventoryFromDocument(
+      "Table 5 Electricity 100",
+      { targetYear: 2022 },
+    );
+
+    expect(rows).toHaveLength(4);
+    expect(rows[0].activityClass).toBe("grid_energy");
+    expect(rows[1].activityClass).toBeNull();
+    expect(rows[2].activityClass).toBeNull();
+    expect("activityClass" in rows[3]).toBe(true);
+    expect(rows[3].activityClass).toBeNull();
+  });
+});

@@ -192,6 +192,8 @@ export default class ECRFImportService {
       ).map((scope) => [scope.scopeId, scopeFromLabel(scope.scopeName)]),
     );
 
+    let rowsSkippedEmptyEmissions = 0;
+
     // Process each row
     for (let i = 0; i < sheet.rows.length; i++) {
       const row = sheet.rows[i];
@@ -199,18 +201,9 @@ export default class ECRFImportService {
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
 
+      // CIRIS templates leave thousands of blank / structural-only rows — skip quietly.
       if (isBlankParsedRow(row)) {
-        rows.push({
-          gpcRefNo: "",
-          sectorId: "",
-          subsectorId: "",
-          subcategoryId: null,
-          scopeId: "",
-          rowIndex: i,
-          sourceRowNumber,
-          issue: "no-value-or-notation-key",
-          errors: ["No gas values or notation key found"],
-        });
+        rowsSkippedEmptyEmissions += 1;
         continue;
       }
 
@@ -291,6 +284,56 @@ export default class ECRFImportService {
           issue: "missing-gpc-reference",
           errors: ["No GPC reference number found"],
         });
+        continue;
+      }
+
+      // Skip empty CIRIS/eCRF template rows before taxonomy lookups.
+      // Treat activity_name notation labels (e.g. "Not Occuring") as real content.
+      const earlyNotationHeader =
+        detectedColumns.notationKey !== undefined
+          ? headers[detectedColumns.notationKey]
+          : this.findHeader(headers, [
+              "notation key",
+              "notation_key",
+              "notation",
+            ]);
+      const earlyNotation = earlyNotationHeader
+        ? row[earlyNotationHeader]?.toString().trim()
+        : undefined;
+      const earlyActivityHeader =
+        detectedColumns.activityType !== undefined
+          ? headers[detectedColumns.activityType]
+          : this.findHeader(headers, [
+              "activity_name",
+              "activity name",
+              "activity type",
+              "activity_type",
+              "fuel type",
+              "fuel_type",
+              "fuel",
+            ]);
+      const earlyActivity = earlyActivityHeader
+        ? row[earlyActivityHeader]?.toString().trim()
+        : undefined;
+      const earlyNotationResolved = resolveNotationFromActivity({
+        notationKey: earlyNotation || undefined,
+        activityType: earlyActivity || undefined,
+      }).notationKey;
+      const earlyHasEmissions =
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.co2),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.ch4),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.n2o),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.totalCO2e),
+        );
+      if (!earlyHasEmissions && !earlyNotationResolved) {
+        rowsSkippedEmptyEmissions += 1;
         continue;
       }
 
@@ -572,15 +615,25 @@ export default class ECRFImportService {
         ],
       );
 
-      // 0 is empty (notation-key behaviour); negatives are real removals
-      if (
-        !hasSignedNumericValue(co2) &&
-        !hasSignedNumericValue(ch4) &&
-        !hasSignedNumericValue(n2o) &&
-        !hasSignedNumericValue(totalCO2e) &&
-        !notationKey
-      ) {
-        rowWarnings.push("No gas values or notation key found");
+      // Empty emissions and no notation: silent skip (CIRIS template filler rows).
+      const hasEmissions =
+        hasSignedNumericValue(co2) ||
+        hasSignedNumericValue(ch4) ||
+        hasSignedNumericValue(n2o) ||
+        hasSignedNumericValue(totalCO2e);
+      if (!hasEmissions && !notationKey) {
+        rowsSkippedEmptyEmissions += 1;
+        continue;
+      }
+
+      // Value + notation on the same row: keep values, warn (do not invent Path B behaviour).
+      if (hasEmissions && notationKey) {
+        rowWarnings.push(
+          "Row has both emission values and a notation key; values were kept",
+        );
+        warnings.push(
+          `Row ${sourceRowNumber}: Has both emission values and a notation key; values were kept`,
+        );
       }
 
       rows.push({
@@ -648,12 +701,7 @@ export default class ECRFImportService {
     // Review banner reads these stored "Row N:" strings (same shape as Adapter D).
     for (const row of rows) {
       const n = excelRowNumber(row.rowIndex, row.sourceRowNumber);
-      if (
-        row.issue === "no-value-or-notation-key" ||
-        row.warnings?.some((message) => /No gas values/i.test(message))
-      ) {
-        warnings.push(`Row ${n}: Skipped - no emission values or notation key`);
-      } else if (row.errors?.length) {
+      if (row.errors?.length) {
         warnings.push(`Row ${n}: ${row.errors[0]}`);
       }
     }
@@ -667,9 +715,9 @@ export default class ECRFImportService {
       requiresReferenceReview: true,
       errors,
       warnings,
-      rowCount: rows.length,
+      rowCount: rows.length + rowsSkippedEmptyEmissions,
       validRowCount: validRows.length,
-      rowsSkippedEmptyEmissions: countRowsSkippedEmptyEmissions(rows),
+      rowsSkippedEmptyEmissions,
       inferredYearFromFile,
     };
   }

@@ -88,18 +88,28 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     ).toBe(true);
   });
 
-  it("rejects CIRIS/PDF before reaching commit", async () => {
+  it("accepts CIRIS eCRF as ecrf and still rejects PDF before commit", async () => {
+    const imported: number[] = [];
     const validateStructure = jest.fn(async () => ({
       isValid: true,
       errors: [],
       warnings: [],
       fileType: "xlsx" as const,
       isCIRIS: true,
+      detectedColumns: { gpcRefNo: 0, sector: 1, subsector: 2, scope: 3 },
     }));
     const plugin = new GhgiIngestPlugin({
       validateStructure,
-      importEcrf: async () => {
-        throw new Error("commit should not run");
+      buildImportResult: async () => ecrfResult(5555289),
+      importEcrf: async (_inventoryId, importResult) => {
+        imported.push(importResult.rows[0]?.totalCO2e ?? 0);
+        return {
+          totalRows: 1,
+          importedRows: 1,
+          skippedRows: 0,
+          errors: [],
+          warnings: [],
+        };
       },
     });
     const store = new MemoryIngestStore();
@@ -108,19 +118,24 @@ describe("GhgiIngestPlugin (CC-991)", () => {
     const cirisJob = await ingest.enqueue({
       moduleId: "ghgi",
       scope: { cityId: CITY_ID, inventoryId: INVENTORY_ID },
-      files: [{ name: "ciris.xlsx", buffer: Buffer.from("x") }],
+      files: [{ name: "ciris.xlsm", buffer: Buffer.from("x") }],
     });
     await ingest.run(cirisJob.id, plugin);
     const [ciris] = await store.listItems(cirisJob.id);
-    expect(ciris?.errorCode).toBe("unknown_format");
-    expect(ciris?.errorLog).toMatch(/ciris/);
+    expect(ciris?.status).toBe("completed");
+    expect(imported).toEqual([5555289]);
 
+    const pdfPlugin = new GhgiIngestPlugin({
+      importEcrf: async () => {
+        throw new Error("commit should not run");
+      },
+    });
     const pdfJob = await ingest.enqueue({
       moduleId: "ghgi",
       scope: { cityId: CITY_ID, inventoryId: INVENTORY_ID },
       files: [{ name: "scan.pdf", buffer: Buffer.from("%PDF") }],
     });
-    await ingest.run(pdfJob.id, plugin);
+    await ingest.run(pdfJob.id, pdfPlugin);
     const [pdf] = await store.listItems(pdfJob.id);
     expect(pdf?.errorCode).toBe("unsupported_extension");
   });

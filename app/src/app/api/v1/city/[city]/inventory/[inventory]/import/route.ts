@@ -86,6 +86,11 @@ import FileValidatorService from "@/backend/FileValidatorService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import FormatAdapterService from "@/backend/FormatAdapterService";
+import {
+  extractCirisWorkbookTotalTonnes,
+  sumCirisEcrfImportedTonnes,
+} from "@/backend/ciris-workbook";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import InventoryFileStorageService, {
   isS3Configured,
 } from "@/backend/InventoryFileStorageService";
@@ -238,16 +243,27 @@ async function runUploadProcessingInBackground(
       return;
     }
 
-    // ── Adapters A/B/C: normalize, then hand off to AI interpretation (Path B) ──
-    const usePathB =
-      !!validationResult.adapterType ||
-      !FileValidatorService.hasDistinctRequiredECRFColumns(
-        validationResult.detectedColumns || {},
-      ) ||
-      !!validationResult.isCIRIS ||
-      !!validationResult.isBIOMATEC;
+    // CIRIS without eCRF_3 must not fall through to AI Path B.
+    if (validationResult.cirisWithoutEcrf) {
+      await setFailed(
+        validationResult.errors?.length
+          ? validationResult.errors.join("; ")
+          : "This CIRIS workbook does not contain an eCRF_3 sheet",
+      );
+      return;
+    }
 
-    // Path B: file doesn't have full eCRF structure, is CIRIS, BIOMATEC, or matched an adapter.
+    // ── Adapters A/B/C: normalize, then hand off to AI interpretation (Path B) ──
+    // CIRIS with valid eCRF_3 stays on Path A (isCIRIS is a format flag only).
+    const usePathB =
+      !!validationResult.isBIOMATEC ||
+      (!!validationResult.adapterType && !validationResult.isCIRIS) ||
+      (!validationResult.isCIRIS &&
+        !FileValidatorService.hasDistinctRequiredECRFColumns(
+          validationResult.detectedColumns || {},
+        ));
+
+    // Path B: BIOMATEC, matched adapter, or non-eCRF tabular without distinct columns.
     if (usePathB) {
       await importedFile.update({
         importStatus: ImportStatusEnum.PENDING_AI_INTERPRETATION,
@@ -290,6 +306,61 @@ async function runUploadProcessingInBackground(
       parsedData,
       validationResult.detectedColumns || {},
     );
+
+    const isCIRIS =
+      validationResult.isCIRIS === true || parsedData.isCIRIS === true;
+    let cirisWarnings: string[] = [];
+    let extractionSummary:
+      | {
+          reportedTotals: Array<{
+            label: string;
+            value: number;
+            year: number | null;
+            scope: string | null;
+            sector: string | null;
+            subsector: string | null;
+            level: "subtotal" | "total";
+          }>;
+          droppedRows: Record<string, never>;
+          importedSum: number;
+          yearAssumed: boolean;
+          targetYear: number | null;
+        }
+      | undefined;
+    if (isCIRIS) {
+      const reportTotal = extractCirisWorkbookTotalTonnes(parsedData.sheets);
+      const importedSum = sumCirisEcrfImportedTonnes(
+        importResult.rows,
+        isOmittedGPCReference,
+      );
+      if (reportTotal != null && reportTotal > 0) {
+        extractionSummary = {
+          reportedTotals: [
+            {
+              label: "CIRIS Report total",
+              value: reportTotal,
+              year: null,
+              scope: null,
+              sector: null,
+              subsector: null,
+              level: "total",
+            },
+          ],
+          droppedRows: {},
+          importedSum,
+          yearAssumed: false,
+          targetYear: importResult.inferredYearFromFile ?? null,
+        };
+        const deviation =
+          Math.abs(importedSum - reportTotal) / Math.abs(reportTotal);
+        if (deviation > 0.01) {
+          cirisWarnings.push(
+            `eCRF_3 import total (${importedSum.toLocaleString()} tCO2e) differs from the CIRIS Report total (${reportTotal.toLocaleString()} tCO2e)`,
+          );
+        }
+      }
+    }
+
     await importedFile.update({
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       validationResults: {
@@ -297,9 +368,11 @@ async function runUploadProcessingInBackground(
         warnings: [
           ...(validationResult.warnings || []),
           ...importResult.warnings,
+          ...cirisWarnings,
         ],
         detectedColumns: validationResult.detectedColumns,
         inferredYearFromFile: importResult.inferredYearFromFile,
+        isCIRIS: isCIRIS || undefined,
         processingResults: {
           rowCount: importResult.rowCount,
           validRowCount: importResult.validRowCount,
@@ -319,6 +392,7 @@ async function runUploadProcessingInBackground(
           hasErrors: !!row.errors && row.errors.length > 0,
           hasWarnings: !!row.warnings && row.warnings.length > 0,
         })),
+        ...(extractionSummary ? { extractionSummary } : {}),
       },
       lastUpdated: new Date(),
     });

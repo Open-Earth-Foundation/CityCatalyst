@@ -10,6 +10,8 @@ import {
 } from "@jest/globals";
 import { POST as uploadImportFile } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/route";
 import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/route";
+import { POST as extractImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/extract/route";
+import { NextRequest } from "next/server";
 import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
 import { db } from "@/models";
 import assert from "node:assert";
@@ -946,6 +948,166 @@ describe("Import Routes API", () => {
             where: { inventoryId: filledInventory.inventoryId },
           }),
         ).toBe(0);
+      });
+    });
+  });
+
+  describe("POST /api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/extract", () => {
+    const metadata = {
+      numberFormat: "european",
+      numberFormatSource: "user",
+      reportedTotal: 9559215,
+      reportedTotalKind: "gross",
+    };
+
+    const createPdf = (mappingConfiguration?: Record<string, unknown>) =>
+      db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "plan.pdf",
+        fileType: "pdf",
+        fileSize: 10,
+        originalFileName: "plan.pdf",
+        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
+        s3Key: "test/plan.pdf",
+        mappingConfiguration,
+      });
+
+    const postExtract = (importedFileId: string, body?: unknown) =>
+      extractImport(
+        new NextRequest("http://localhost:3000/api/extract", {
+          method: "POST",
+          headers:
+            body === undefined ? {} : { "content-type": "application/json" },
+          body: body === undefined ? undefined : JSON.stringify(body),
+        }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+            importedFileId,
+          }),
+        },
+      );
+
+    afterEach(async () => {
+      await db.models.PdfOcrJob.destroy({
+        where: { sourceType: "inventory_import" },
+      });
+    });
+
+    it("extract stores sourceMetadata", async () => {
+      const file = await createPdf();
+      const res = await postExtract(file.id, { sourceMetadata: metadata });
+      await expectStatusCode(res, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toEqual(metadata);
+    });
+
+    it("extract rejects a negative gross total and stores a negative net total", async () => {
+      const rejected = await createPdf();
+      const bad = await postExtract(rejected.id, {
+        sourceMetadata: {
+          ...metadata,
+          reportedTotal: -25639,
+          reportedTotalKind: "gross",
+        },
+      });
+      await expectStatusCode(bad, 400);
+      const file = await createPdf();
+      const net = {
+        ...metadata,
+        reportedTotal: -25639,
+        reportedTotalKind: "net",
+      };
+      const ok = await postExtract(file.id, { sourceMetadata: net });
+      await expectStatusCode(ok, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toEqual(net);
+    });
+
+    it("extract rejects numberFormat without source", async () => {
+      const file = await createPdf();
+      const res = await postExtract(file.id, {
+        sourceMetadata: { numberFormat: "european" },
+      });
+      await expectStatusCode(res, 400);
+      await file.reload();
+      expect(file.importStatus).toBe(ImportStatusEnum.PENDING_AI_EXTRACTION);
+    });
+
+    it("extract rejects reportedTotalKind without reportedTotal", async () => {
+      const file = await createPdf();
+      const res = await postExtract(file.id, {
+        sourceMetadata: { reportedTotalKind: "gross" },
+      });
+      await expectStatusCode(res, 400);
+    });
+
+    it("extract without body works as before", async () => {
+      const file = await createPdf();
+      const res = await postExtract(file.id);
+      await expectStatusCode(res, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
+    });
+
+    it.each<[string, unknown]>([
+      ["no body", undefined],
+      ["an empty JSON body", {}],
+    ])(
+      "re-extract with %s clears stale sourceMetadata and keeps extractionProgress",
+      async (_label, body) => {
+        const file = await createPdf({
+          extractionProgress: { current: 2, total: 5 },
+          sourceMetadata: metadata,
+        });
+        const res = await postExtract(file.id, body);
+        await expectStatusCode(res, 202);
+        await file.reload();
+        expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
+        expect(file.mappingConfiguration?.extractionProgress).toEqual({
+          current: 2,
+          total: 5,
+        });
+      },
+    );
+
+    it("extract ignores a non-JSON body and clears stale sourceMetadata", async () => {
+      const file = await createPdf({ sourceMetadata: metadata });
+      const res = await extractImport(
+        new NextRequest("http://localhost:3000/api/extract", {
+          method: "POST",
+          headers: { "content-type": "text/plain" },
+          body: JSON.stringify({ sourceMetadata: metadata }),
+        }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+            importedFileId: file.id,
+          }),
+        },
+      );
+      await expectStatusCode(res, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toBeUndefined();
+    });
+
+    it("retry replaces sourceMetadata and keeps extractionProgress", async () => {
+      const file = await createPdf({
+        extractionProgress: { current: 2, total: 5 },
+        sourceMetadata: { ...metadata, reportedTotal: 1 },
+      });
+      const res = await postExtract(file.id, { sourceMetadata: metadata });
+      await expectStatusCode(res, 202);
+      await file.reload();
+      expect(file.mappingConfiguration?.sourceMetadata).toEqual(metadata);
+      expect(file.mappingConfiguration?.extractionProgress).toEqual({
+        current: 2,
+        total: 5,
       });
     });
   });

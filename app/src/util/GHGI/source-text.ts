@@ -24,11 +24,21 @@ function countMatches(text: string, patterns: RegExp[]): number {
  * evidence is "unknown".
  */
 export function detectNumberStyle(text: string): NumberStyle {
-  const european = countMatches(text, EUROPEAN_PATTERNS);
-  const english = countMatches(text, ENGLISH_PATTERNS);
+  const { european, english } = countNumberStyles(text);
   if (european > english) return "european";
   if (english > european) return "english";
   return "unknown";
+}
+
+/** Counts of unambiguous european and english numbers in `text`. */
+export function countNumberStyles(text: string): {
+  european: number;
+  english: number;
+} {
+  return {
+    european: countMatches(text, EUROPEAN_PATTERNS),
+    english: countMatches(text, ENGLISH_PATTERNS),
+  };
 }
 
 /** First group 1-3 digits, every following group exactly 3 digits. */

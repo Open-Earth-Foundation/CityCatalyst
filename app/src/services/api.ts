@@ -1,3 +1,4 @@
+import type { SourceMetadata } from "@/util/GHGI/source-metadata";
 import { env } from "@/lib/runtime-env";
 import {
   type CityAttributes,
@@ -2314,11 +2315,13 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
+          sourceMetadata?: Partial<SourceMetadata>;
         }
       >({
-        query: ({ cityId, inventoryId, importedFileId }) => ({
+        query: ({ cityId, inventoryId, importedFileId, sourceMetadata }) => ({
           url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/extract`,
           method: "POST",
+          ...(sourceMetadata ? { body: { sourceMetadata } } : {}),
         }),
         transformResponse: (response: {
           data:

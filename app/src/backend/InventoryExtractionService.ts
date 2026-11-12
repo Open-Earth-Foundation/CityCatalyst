@@ -40,6 +40,11 @@ import {
   type ExtractionSummary,
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
+import {
+  numberFormatConflict,
+  resolveNumberStyle,
+  type SourceMetadata,
+} from "@/util/GHGI/source-metadata";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
 import {
@@ -429,6 +434,8 @@ export type ExtractOptions = {
   targetYear?: number;
   /** Called after each chunk when extraction runs in chunks (current 1-based, total). Used for progress polling. */
   onChunkProgress?: (current: number, total: number) => void | Promise<void>;
+  /** What the user said about the source: number format and reported total. */
+  sourceMetadata?: SourceMetadata | null;
 };
 
 export type ExtractionResult = {
@@ -779,7 +786,9 @@ function selectPages(
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
-    if (otherRows > 0) droppedRows.other_page = otherRows;
+    if (otherRows > 0) {
+      droppedRows.other_page = (droppedRows.other_page ?? 0) + otherRows;
+    }
     const keys = new Set<string>();
     const rows: ExtractedRow[] = [];
     for (const row of chosen.flatMap((p) => p.result.rows)) {
@@ -885,13 +894,26 @@ export async function extractInventoryFromDocument(
 ): Promise<ExtractionResult> {
   const result = await extractRowsFromDocument(documentContent, options);
   const rows = verifyRowProvenance(result.rows, documentContent);
+  const metadata = options?.sourceMetadata;
+  const conflict = numberFormatConflict(documentContent, metadata);
   // The activity-class rules can move a row onto or off a reference left out
   // of the total (I.4.4), so the reconciliation sum is taken after them.
   // Mismatch and deviation are derived from it on read (reconcileExtraction).
+  const summary: ExtractionSummary = {
+    ...result.summary,
+    importedSum: sumImported(rows),
+  };
+  if (conflict) summary.numberFormatConflict = conflict;
+  if (metadata?.reportedTotal != null && metadata.reportedTotalKind) {
+    summary.userReportedTotal = {
+      value: metadata.reportedTotal,
+      kind: metadata.reportedTotalKind,
+    };
+  }
   return {
     ...result,
     rows,
-    summary: { ...result.summary, importedSum: sumImported(rows) },
+    summary,
   };
 }
 
@@ -969,6 +991,22 @@ export function verifyRowProvenance(
   );
 }
 
+/** Prompt line telling the model the decimal separator, when metadata decides it. */
+function numberStyleInstruction(
+  text: string,
+  metadata: SourceMetadata | null | undefined,
+): string {
+  if (!metadata?.numberFormat) return "";
+  const decided =
+    metadata.numberFormatSource === "user" ||
+    (metadata.numberFormatSource === "country_default" &&
+      detectNumberStyle(text) === "unknown");
+  if (!decided) return "";
+  return metadata.numberFormat === "european"
+    ? 'Numbers in this document use "," as the decimal separator and "." for thousands.\n\n'
+    : 'Numbers in this document use "." as the decimal separator and "," for thousands.\n\n';
+}
+
 type SchemaState = { useSchema: boolean };
 
 /**
@@ -1020,6 +1058,7 @@ async function extractRowsFromDocument(
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
+  const metadata = options?.sourceMetadata;
   const pages = splitDocumentPages(documentContent).filter((p) =>
     isCandidatePage(p.text),
   );
@@ -1044,15 +1083,17 @@ async function extractRowsFromDocument(
             normalizeExtractedRows(
               await extractSegment(
                 page.text,
-                yearInstruction,
+                numberStyleInstruction(page.text, metadata) + yearInstruction,
                 false,
                 schemaState,
+                resolveNumberStyle(page.text, metadata),
               ),
             ).map((row) => ({ ...row, page: page.page })),
             year,
             {
               deferYearAssumption: true,
               source: { text: page.text, kind: "page" },
+              sourceMetadata: metadata,
             },
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
@@ -1129,7 +1170,10 @@ async function extractRowsFromDocument(
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
-        { source: { text: documentContent, kind: "document" } },
+        {
+          source: { text: documentContent, kind: "document" },
+          sourceMetadata: metadata,
+        },
       );
       return checkExtractionResult(
         withFailed({
@@ -1173,6 +1217,7 @@ async function extractRowsFromDocument(
   return checkExtractionResult(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
       source: { text: documentContent, kind: "document" },
+      sourceMetadata: metadata,
     }),
     allRows.length,
     targetYear,
@@ -1198,7 +1243,10 @@ async function extractByChunks(
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
-  const style = detectNumberStyle(documentContent);
+  const style = resolveNumberStyle(documentContent, options?.sourceMetadata);
+  yearInstruction =
+    numberStyleInstruction(documentContent, options?.sourceMetadata) +
+    yearInstruction;
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -1399,7 +1447,7 @@ async function extractSegment(
   prefix: string,
   isSegment: boolean,
   state: SchemaState,
-  style: NumberStyle = detectNumberStyle(content),
+  style: NumberStyle = resolveNumberStyle(content, null),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
@@ -2078,6 +2126,8 @@ export type FinalizeOptions = {
   source?: FinalizeSource;
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
   currentYear?: number;
+  /** User choices about the source; sets the number style of the source text. */
+  sourceMetadata?: SourceMetadata | null;
 };
 
 /**
@@ -2127,7 +2177,7 @@ function finalizeRows(
       // caption: a row whose value is printed there keeps its year.
       const leadNumbers = numbersInText(
         evidence.leadText,
-        detectNumberStyle(options.source.text),
+        resolveNumberStyle(options.source.text, options.sourceMetadata),
       );
       rows = rows.map((row) => {
         if (row.year != null && row.year !== targetYear) return row;
@@ -2154,7 +2204,10 @@ function finalizeRows(
   const source = options?.source;
   // Every number printed in the source, read once for all the in-text checks.
   const sourceNumbers = source
-    ? numbersInText(source.text, detectNumberStyle(source.text))
+    ? numbersInText(
+        source.text,
+        resolveNumberStyle(source.text, options?.sourceMetadata),
+      )
     : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.

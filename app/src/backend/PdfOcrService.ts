@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { sourceMetadataSchema } from "@/util/GHGI/source-metadata";
 import { literal, Op } from "sequelize";
 import { db } from "@/models";
 import type {
@@ -688,8 +689,12 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
+    const storedMetadata = sourceMetadataSchema.safeParse(
+      importedFile.mappingConfiguration?.sourceMetadata,
+    );
     const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
+      sourceMetadata: storedMetadata.success ? storedMetadata.data : null,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
         if (!renewed) throw new Error("PDF extraction lease was lost");

@@ -11,12 +11,10 @@ export interface LLMMessage {
 }
 
 export interface LLMCompleteOptions {
+  /** Role in llm_config.yaml that supplies model, temperature and reasoning effort. */
+  use: LLMUse;
   /** Chat messages (system + user, or user + assistant + user, etc.). */
   messages: LLMMessage[];
-  /** Override default model for this call. */
-  model?: string;
-  /** Temperature 0–2. Optional; provider default if not set. */
-  temperature?: number;
   /** Max tokens to generate. Optional; provider default if not set. */
   maxTokens?: number;
   /** Ask for JSON output; adapter may set response_format / schema hint where supported. Caller still parses. */
@@ -29,6 +27,8 @@ export interface LLMUsage {
   promptTokens?: number;
   completionTokens?: number;
   totalTokens?: number;
+  /** Part of completionTokens spent on hidden reasoning (reasoning models only). */
+  reasoningTokens?: number;
 }
 
 export interface LLMCompleteResult {
@@ -36,6 +36,10 @@ export interface LLMCompleteResult {
   content: string;
   /** Token usage when available. */
   usage?: LLMUsage;
+  /** Model that answered, as reported by the provider. */
+  model?: string;
+  /** Why the model stopped, e.g. "stop" or "length" (cut off at the token limit). */
+  finishReason?: string;
   /** Raw provider response for debugging; avoid logging. */
   raw?: unknown;
 }
@@ -62,17 +66,44 @@ export class LLMError extends Error {
   }
 }
 
-/** Config loaded from env; used by createLLMClient and adapters. */
+/** Roles that pick a model; keys of `models` in llm_config.yaml. */
+export const LLM_USES = [
+  "pdf_extraction",
+  "crva_extraction",
+  "file_interpretation",
+] as const;
+export type LLMUse = (typeof LLM_USES)[number];
+export type LLMReasoningEffort = "low" | "medium" | "high";
+
+/** Model settings for one role, from llm_config.yaml. */
+export interface LLMModelConfig {
+  name: string;
+  temperature?: number;
+  reasoningEffort?: LLMReasoningEffort;
+}
+
+/** Validated contents of llm_config.yaml. */
+export interface LLMFileConfig {
+  models: Record<LLMUse, LLMModelConfig>;
+  timeoutMs: number;
+  maxRetries: number;
+}
+
+/** Config used by createLLMClient and adapters: env (provider, key, base URL) plus llm_config.yaml. */
 export interface LLMConfig {
   provider: string;
-  model: string;
   apiKey: string;
   baseURL?: string;
+  models: Record<LLMUse, LLMModelConfig>;
   timeoutMs: number;
   maxRetries: number;
 }
 
 /** Internal adapter interface; one implementation per provider (OpenAI, Anthropic, etc.). */
 export interface ILLMAdapter {
-  complete(options: LLMCompleteOptions, config: LLMConfig): Promise<LLMCompleteResult>;
+  complete(
+    options: LLMCompleteOptions,
+    config: LLMConfig,
+    model: LLMModelConfig,
+  ): Promise<LLMCompleteResult>;
 }

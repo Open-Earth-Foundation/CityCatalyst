@@ -117,6 +117,8 @@ Open `report.md` in the run folder. It has:
 - **Per case:** verdict, attempts passed, recall, precision, value accuracy, classification accuracy, notation keys (recovered/scored), distractors stored, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
 - **Notes:** cases on the legacy tolerance, row-scored cases whose `textTables` is still unknown in the manifest, cases left out of the baseline, held rows included at approve.
 
+  The runner includes every row the import review holds back, whatever its issue (a reference conflict gets the scope the catalogue expects). A reviewer might skip some of them, such as `direction-unconfirmed` rows. The scores therefore measure what the model extracted, not what a reviewed import would store.
+
 An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. A case passes when all 3 attempts pass.
 
 `results.json` is the result of every attempt and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
@@ -133,7 +135,7 @@ Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`
 
 The run's `INDEX.md` line links the MLflow run when it was logged.
 
-Highlight stays on by default in the benchmark process, as in the app, so its traces and logs reach Highlight. Set `HIGHLIGHT_DISABLED=true` to turn it off. The Node SDK (`@highlight-run/node` 3.12.22) records outgoing `fetch` calls as spans with URL, method, status and body sizes. It records no request or response bodies and no headers: header capture needs `headersToSpanAttributes`, which the SDK does not set, and `networkRecording` in `app/src/lib/highlight.ts` is a browser option that the Node SDK ignores. So the MLflow `Authorization` header does not reach Highlight, and OCR/LLM payloads reach it only when the app logs them.
+Highlight stays on by default in the benchmark process, as in the app, so its traces and logs reach Highlight. Set `HIGHLIGHT_DISABLED=true` to turn it off; the app ignores it when `NODE_ENV` is `production`. The Node SDK (`@highlight-run/node` 3.12.22) records outgoing `fetch` calls as spans with URL, method, status and body sizes. It records no request or response bodies and no headers: header capture needs `headersToSpanAttributes`, which the SDK does not set, and `networkRecording` in `app/src/lib/highlight.ts` is a browser option that the Node SDK ignores. So the MLflow `Authorization` header does not reach Highlight, and OCR/LLM payloads reach it only when the app logs them.
 
 If MLflow fails, the run continues and the report says `MLflow: not logged` with the reason. A rescore is not logged.
 

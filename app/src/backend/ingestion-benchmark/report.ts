@@ -491,7 +491,7 @@ export function renderReport(
       : []),
     ...(heldRows.length
       ? [
-          `- Held rows included automatically at approve: ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,
+          `- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,
         ]
       : []),
     "",

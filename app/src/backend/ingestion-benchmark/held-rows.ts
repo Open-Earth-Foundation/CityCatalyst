@@ -2,7 +2,9 @@
  * Decisions for rows the import review holds back (CC-1124). The review screen
  * asks the user to keep, reclassify or skip them and the approve route refuses
  * to import until every held row has a decision. The benchmark measures what
- * the model extracted, so the runner includes every held row.
+ * the model extracted, so the runner includes every held row, whatever its
+ * issue (a reviewer might skip some, such as direction-unconfirmed rows). The
+ * scores are therefore extraction quality, not what a reviewed import stores.
  */
 import type { ImportRowReview } from "@/util/types";
 

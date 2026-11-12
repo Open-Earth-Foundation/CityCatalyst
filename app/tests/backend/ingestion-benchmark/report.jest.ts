@@ -345,7 +345,7 @@ describe("report", () => {
       "- Not recorded in the baseline: C-017 (approve_error)",
     );
     expect(report).toContain(
-      "- Held rows included automatically at approve: C-018 (4)",
+      "- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): C-018 (4)",
     );
   });
 

@@ -237,10 +237,14 @@ async function doDispose(ctx: RunContext): Promise<void> {
           where: { cityId },
           force: true,
         });
-        await ctx.db.sequelize!.query(
-          `DELETE FROM "InventoryValue" WHERE inventory_id IN (SELECT inventory_id FROM "Inventory" WHERE city_id = :cityId)`,
-          { replacements: { cityId } },
-        );
+        const inventories = await ctx.db.models.Inventory.findAll({
+          where: { cityId },
+          attributes: ["inventoryId"],
+        });
+        // ActivityValue and GasValue rows go with their InventoryValue (ON DELETE CASCADE).
+        await ctx.db.models.InventoryValue.destroy({
+          where: { inventoryId: inventories.map((i) => i.inventoryId) },
+        });
         await ctx.db.models.Inventory.destroy({ where: { cityId } });
         await ctx.db.models.City.destroy({ where: { cityId } });
       } catch (error) {

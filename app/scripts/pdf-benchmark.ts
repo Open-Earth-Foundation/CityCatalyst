@@ -392,6 +392,8 @@ export async function main(argv: string[]): Promise<number> {
   if (options.dryRun) return 0;
 
   const { promptHash } = await import("./pdf-benchmark/prompt-hash");
+  // Highlight stays on for benchmark runs on purpose: we want the extraction
+  // payloads there. Export HIGHLIGHT_DISABLED=true to run without it.
   const before = new Set(process.listeners("SIGINT"));
   const ctx = await createContext(config);
   let interrupted = false;

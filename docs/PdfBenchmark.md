@@ -101,15 +101,15 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
 4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), raise `SCORER_VERSION` in `score.ts`. Each baseline entry records the scorer version it was computed with; an entry from another version is rescored from its run folder, so the baseline and the new run are scored by the same rules. The run header shows the scorer version. Run `--rescore` on the baseline's run folders to see the effect first.
 
-**Current baseline (11 Nov 2026).** It covers 14 of the 27 cases: C-015..C-019, C-021..C-024 and C-027..C-031. Read it as provisional:
+**Current baseline (12 Nov 2026).** It covers 26 of the 27 cases, all recorded by one run of the merged harness: run folder `2026-11-12-1722-fe14d3a05`, commit `fe14d3a05`, prompt hash `fa433ff5842e`, scorer version 2, 3 attempts per case. Read it as provisional:
 
-- C-004..C-014 have no entry because their PDFs were not available locally. C-020 and C-025 are left out because every attempt returned zero rows: with failed attempts in the baseline, the gate would stop flagging new failures on them. All of these are reported as `no baseline`, so any failed attempt gives `error`.
-- The entries come from the run folders `2026-11-09-1845-c0b125fe5` and `2026-11-09-2100-75c9e8a8f`. The 18:45 run predates the held-row fix, but the approve route refuses a run with undecided held rows, so the cases it scored had none and the fix does not change them. C-017 and C-022, which had held rows, come from the 21:00 run.
-- The entries were recorded with prompt hash `3f1c1271e342`. Later `develop` changes to the extraction prompt (activity classes) change it, so the next run reports a different prompt hash.
+- C-005 has no entry: one attempt ended in `approve_error`, and the harness does not record a case with that failure. It is reported as `no baseline`, so any failed attempt gives `error`.
+- C-019 (3 truncated attempts), C-020 and C-025 (3 zero-row attempts each) and C-009 (1 zero-row attempt) are recorded with their failures. The `error` verdict fires only when the baseline had no failed attempt, so the gate does not flag new failures on these four cases. It still flags the other regression rules, and a fix shows up in "Change from the baseline".
+- Headline recall is `n/a` in both blocks: it counts only cases whose `textTables` is known, and no case with row recall has it yet. Read the provisional recall (validated 64% over 17 cases, held-out 51% over 5 cases) until Product sets `textTables` in the manifest.
 - C-022..C-024 are total-only cases and store no recall (`null`). The gate compares recall only when both sides have it, so on these cases it checks pass/fail, 10x and failed attempts only.
-- Stored verdicts carry only the fields the gate reads (pass/fail, recall, 10x, failure modes, cost). They lack the newer row metrics (`rowPrecision`, `valueAccuracy`, `classificationAccuracy`, notation keys, `distractorsStored`); a record from the current harness adds them.
+- The 9 Nov run folders (`2026-11-09-1845-c0b125fe5`, `2026-11-09-2100-75c9e8a8f`) stay as history. The baseline no longer points to them.
 
-Record these cases again from a commit on the merged harness once C-004..C-014 are available.
+Record the baseline again after a change meant to move the numbers, or once Product sets `textTables`.
 
 ## Read the results
 

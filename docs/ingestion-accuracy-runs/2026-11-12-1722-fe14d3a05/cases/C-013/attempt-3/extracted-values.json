@@ -1,0 +1,16 @@
+[
+  {
+    "gpc": "I.4.4",
+    "scope": "1",
+    "valueT": 6681316,
+    "omit": true,
+    "notation": null
+  },
+  {
+    "gpc": "IV.1",
+    "scope": "1",
+    "valueT": 0,
+    "omit": false,
+    "notation": "not-estimated"
+  }
+]

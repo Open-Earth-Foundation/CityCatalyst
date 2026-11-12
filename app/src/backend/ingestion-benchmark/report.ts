@@ -134,6 +134,14 @@ export type RunSummary = {
   mlflowNote: string | null;
   /** Cases left out of the baseline because an attempt failed on the runner side. */
   baselineNotRecorded?: { id: string; modes: string[] }[];
+  /**
+   * Set when a full-set run (--all) did not cover every case: inputs missing on
+   * this machine, or cases that did not finish all their attempts.
+   */
+  incomplete?: {
+    missing: { id: string; reason: string }[];
+    unfinished: string[];
+  };
   /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
   rescoredFrom?: { measuredAt: string; commit: string };
 };
@@ -348,7 +356,7 @@ export function renderReport(
   const gateById = new Map(gates.map((g) => [g.id, g]));
   const usage = totalUsage(summary.results);
   const cost = costUsd(usage, summary.prices);
-  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}`;
+  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.incomplete ? " - INCOMPLETE" : ""}`;
   const lines: string[] = [
     title,
     "",
@@ -370,6 +378,21 @@ export function renderReport(
   if (summary.interrupted) {
     lines.push(
       "**INTERRUPTED**: the run stopped before every case finished; numbers cover the finished cases only.",
+      "",
+    );
+  }
+  if (summary.incomplete) {
+    const { missing, unfinished } = summary.incomplete;
+    lines.push(
+      "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      ...(missing.length
+        ? [
+            `- Missing inputs (not run): ${missing.map((m) => `${m.id} (${cell(m.reason)})`).join(", ")}`,
+          ]
+        : []),
+      ...(unfinished.length
+        ? [`- Did not finish every attempt: ${unfinished.join(", ")}`]
+        : []),
       "",
     );
   }
@@ -430,6 +453,8 @@ export function renderReport(
     }
     lines.push("");
   }
+
+  lines.push(...renderBaselineChange(verdicts, gates));
 
   const modeTotals = new Map<string, number>();
   for (const verdict of verdicts) {
@@ -525,7 +550,7 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}`;
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }
@@ -612,4 +637,99 @@ export function writeRunArtifact(args: {
     }
   }
   return dir;
+}
+
+const signedPoints = (now: number | null, before: number | null) =>
+  now === null || before === null
+    ? "n/a"
+    : `${now >= before ? "+" : ""}${Math.round((now - before) * 100)} pts`;
+
+const meanOrNull = (values: number[]) =>
+  values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+
+/**
+ * "Change from the baseline": baseline score, new score and the difference,
+ * per block (never merged) and per case, over the cases that have a baseline.
+ */
+export function renderBaselineChange(
+  verdicts: CaseVerdict[],
+  gates: CaseGate[],
+): string[] {
+  const pairs = verdicts.flatMap((now) => {
+    const before = gates.find((g) => g.id === now.id)?.baseline ?? null;
+    return before ? [{ now, before }] : [];
+  });
+  const lines = ["## Change from the baseline", ""];
+  if (pairs.length === 0) {
+    lines.push("No case in this run has a baseline to compare with.", "");
+    return lines;
+  }
+  lines.push(
+    "Only cases with a baseline count, on both sides. Recall counts failed attempts as 0. Headline recall uses the eligible cases (`textTables: true`, not total-only); provisional recall uses the row-scored cases whose `textTables` is unknown. Total-only cases have no recall: they count in the attempt and total rows only. An attempt passes when it is scored, its application total is within tolerance and it is not 10x off.",
+    "",
+  );
+  const blocks = (["validated", "held-out", "dev"] as Block[]).filter((block) =>
+    pairs.some((p) => p.now.block === block),
+  );
+  for (const block of blocks) {
+    const inBlock = pairs.filter((p) => p.now.block === block);
+    const recallOver = (
+      pick: (v: CaseVerdict) => boolean,
+      side: "now" | "before",
+    ) =>
+      meanOrNull(
+        inBlock
+          .filter((p) => pick(p.now))
+          .flatMap((p) =>
+            p[side].recallFailedAsZero === null
+              ? []
+              : [p[side].recallFailedAsZero as number],
+          ),
+      );
+    const passShare = (side: "now" | "before") => {
+      const attempts = inBlock.reduce((sum, p) => sum + p[side].attempts, 0);
+      return attempts
+        ? inBlock.reduce((sum, p) => sum + p[side].attemptsPassed, 0) / attempts
+        : null;
+    };
+    const totalsOk = (side: "now" | "before") =>
+      inBlock.filter((p) => p[side].totalWithinToleranceAll === true).length;
+    const eligible = (v: CaseVerdict) => v.eligible === true;
+    const unknown = (v: CaseVerdict) => v.textTables === null;
+    const rows: [string, number | null, number | null][] = [
+      [
+        "Headline recall",
+        recallOver(eligible, "before"),
+        recallOver(eligible, "now"),
+      ],
+      [
+        "Provisional recall",
+        recallOver(unknown, "before"),
+        recallOver(unknown, "now"),
+      ],
+      ["Attempts passing", passShare("before"), passShare("now")],
+    ];
+    lines.push(
+      `### ${block} (${inBlock.length} case${inBlock.length === 1 ? "" : "s"} with a baseline)`,
+      "",
+      "| Score | Baseline | Now | Change |",
+      "| --- | --- | --- | --- |",
+      ...rows.map(
+        ([name, before, now]) =>
+          `| ${name} | ${pct(before)} | ${pct(now)} | ${signedPoints(now, before)} |`,
+      ),
+      `| Cases with every total within tolerance | ${totalsOk("before")} | ${totalsOk("now")} | ${totalsOk("now") - totalsOk("before") >= 0 ? "+" : ""}${totalsOk("now") - totalsOk("before")} |`,
+      "",
+    );
+  }
+  lines.push(
+    "| Case | Block | Recall baseline | Recall now | Change | Attempts passed (baseline / now) | Verdict |",
+    "| --- | --- | --- | --- | --- | --- | --- |",
+    ...pairs.map(({ now, before }) => {
+      const verdict = gates.find((g) => g.id === now.id)?.verdict ?? "-";
+      return `| ${cell(now.id)} | ${now.block} | ${pct(before.recallFailedAsZero)} | ${pct(now.recallFailedAsZero)} | ${signedPoints(now.recallFailedAsZero, before.recallFailedAsZero)} | ${before.attemptsPassed}/${before.attempts} / ${now.attemptsPassed}/${now.attempts} | ${verdict} |`;
+    }),
+    "",
+  );
+  return lines;
 }

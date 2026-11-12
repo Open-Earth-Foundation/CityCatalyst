@@ -4,6 +4,8 @@ export type CliOptions = {
   cases?: string;
   set?: Block;
   eligible: boolean;
+  /** Every case in the manifest, in groups of at most 10, with one report. */
+  all: boolean;
   runs: number;
   list: boolean;
   dryRun: boolean;
@@ -21,6 +23,7 @@ const BLOCKS: Block[] = ["validated", "held-out", "dev"];
 export function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     eligible: false,
+    all: false,
     runs: REQUIRED_RUNS,
     list: false,
     dryRun: false,
@@ -66,6 +69,9 @@ export function parseArgs(argv: string[]): CliOptions {
         break;
       case "--eligible":
         options.eligible = true;
+        break;
+      case "--all":
+        options.all = true;
         break;
       case "--list":
         options.list = true;

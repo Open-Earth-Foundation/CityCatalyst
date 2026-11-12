@@ -41,6 +41,8 @@ export type CaseGate = {
   costUsd: number | null;
   forecastUsd: number | null;
   lines: [string, string, string][];
+  /** The baseline verdict compared against (rescored when needed), or null. */
+  baseline?: CaseVerdict | null;
 };
 
 const SEVERITY: Verdict[] = [
@@ -186,6 +188,7 @@ export function gateAgainstBaseline(
     costUsd: current.costUsd,
     forecastUsd: forecast,
     lines: [],
+    baseline: base,
   };
 }
 

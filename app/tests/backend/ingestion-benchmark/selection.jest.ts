@@ -4,6 +4,7 @@ import type { Block } from "@/backend/ingestion-benchmark/report";
 import {
   MAX_FILES_PER_RUN,
   SelectionError,
+  groupsOf,
   loadManifest,
   selectCases,
   type CaseManifestEntry,
@@ -125,5 +126,30 @@ describe("cases.json", () => {
       "C-024",
       "C-025",
     ]);
+  });
+});
+
+describe("selectCases --all", () => {
+  const many = Array.from({ length: 27 }, (_, i) =>
+    entry(`C-${String(i + 1).padStart(3, "0")}`),
+  );
+
+  it("selects every case past the per-run limit", () => {
+    expect(selectCases(many, { all: true })).toHaveLength(27);
+  });
+
+  it("cannot be combined with --cases or --set", () => {
+    expect(() => selectCases(many, { all: true, set: "validated" })).toThrow(
+      SelectionError,
+    );
+    expect(() => selectCases(many, { all: true, cases: "C-001" })).toThrow(
+      SelectionError,
+    );
+  });
+
+  it("splits a selection into groups of at most 10, in order", () => {
+    const groups = groupsOf(many);
+    expect(groups.map((g) => g.length)).toEqual([10, 10, 7]);
+    expect(groups.flat()).toEqual(many);
   });
 });

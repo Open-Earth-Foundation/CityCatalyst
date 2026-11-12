@@ -40,6 +40,10 @@ npx tsx scripts/pdf-benchmark.ts --list
 # Check a selection and its forecast cost and time. No OCR or LLM call.
 npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --dry-run
 
+# Run every case in the manifest, in groups of at most 10, with one report.
+npx tsx scripts/pdf-benchmark.ts --all --dry-run
+npx tsx scripts/pdf-benchmark.ts --all
+
 # Run two cases, 3 attempts each.
 npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010
 
@@ -55,22 +59,23 @@ npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --update-baseline
 npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-folder>/results.json
 ```
 
-| Flag                             | Effect                                                                                                                    |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `--cases C-004,C-010`            | Explicit case ids.                                                                                                        |
-| `--set validated\|held-out\|dev` | All cases of one block. Exclusive with `--cases`; one of the two is required.                                             |
-| `--eligible`                     | Keep cases with `textTables: true` that are not total-only. Combines with `--set`.                                        |
-| `--runs N`                       | Attempts per case. Default 3. Any other value marks the run `exploratory`: it is reported but cannot update the baseline. |
-| `--list`                         | Print the manifest.                                                                                                       |
-| `--dry-run`                      | Resolve the selection, print the forecast, exit.                                                                          |
-| `--update-baseline`              | After a run with 3 attempts per case, write the baseline entries for the cases in this run.                               |
-| `--rescore <results.json>`       | Rescore a stored run. Writes a run folder marked `rescore`; never changes the baseline.                                   |
-| `--no-mlflow`                    | Skip MLflow even when it is configured.                                                                                   |
-| `--config path`                  | Use another local config.                                                                                                 |
+| Flag                             | Effect                                                                                                                                                                                                          |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cases C-004,C-010`            | Explicit case ids.                                                                                                                                                                                              |
+| `--set validated\|held-out\|dev` | All cases of one block. `--cases`, `--set` or `--all` is required, only one.                                                                                                                                    |
+| `--eligible`                     | Keep cases with `textTables: true` that are not total-only. Combines with `--set`.                                                                                                                              |
+| `--all`                          | Every case in the manifest, run in groups of at most 10 files with one report. Exclusive with `--cases` and `--set`. Cases whose PDF or key is missing locally are left out and the run is marked `incomplete`. |
+| `--runs N`                       | Attempts per case. Default 3. Any other value marks the run `exploratory`: it is reported but cannot update the baseline.                                                                                       |
+| `--list`                         | Print the manifest.                                                                                                                                                                                             |
+| `--dry-run`                      | Resolve the selection, print the forecast, exit.                                                                                                                                                                |
+| `--update-baseline`              | After a run with 3 attempts per case, write the baseline entries for the cases in this run.                                                                                                                     |
+| `--rescore <results.json>`       | Rescore a stored run. Writes a run folder marked `rescore`; never changes the baseline.                                                                                                                         |
+| `--no-mlflow`                    | Skip MLflow even when it is configured.                                                                                                                                                                         |
+| `--config path`                  | Use another local config.                                                                                                                                                                                       |
 
-Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
+Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 3 incomplete `--all` run (missing inputs or unfinished cases, no regression or error), 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
 
-A run fails before any paid call when the selection is empty (for example `--eligible` while no case has `textTables: true`), when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
+With `--all`, a missing PDF or key does not stop the run: the case is left out and the report and INDEX line are marked `incomplete`, with the missing and unfinished cases listed. Otherwise, a run fails before any paid call when the selection is empty (for example `--eligible` while no case has `textTables: true`), when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
 
 ## Add a PDF and its key
 
@@ -92,7 +97,7 @@ Changing a key or a manifest entry changes the case's test-set version. The next
 Update it when a change is meant to move the numbers (a merged fix, a new model) and you have reviewed the run. Do not update it to hide a regression.
 
 1. Run the cases with the default 3 attempts and `--update-baseline`. Only cases in the run that finished 3 attempts are written; other cases are untouched. Exploratory and interrupted runs never write.
-2. A run takes at most 10 files, so the 27 cases need three runs (for example, one per block or by slices of 10).
+2. Use `--all --update-baseline` to record every case in one run (in groups of 10). A selection with `--cases` or `--set` still takes at most 10 files.
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
 4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), raise `SCORER_VERSION` in `score.ts`. Each baseline entry records the scorer version it was computed with; an entry from another version is rescored from its run folder, so the baseline and the new run are scored by the same rules. The run header shows the scorer version. Run `--rescore` on the baseline's run folders to see the effect first.
 
@@ -105,6 +110,7 @@ Open `report.md` in the run folder. It has:
 - **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
 - **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, a provisional recall over the row-scored cases whose `textTables` is still unknown (until Product classifies them), share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
+- **Change from the baseline:** per block, the baseline score, the new score and the difference (headline recall, provisional recall, attempts passing, cases with every total within tolerance), then one row per case. Only cases with a baseline count, on both sides; the section says which cases and attempts each score uses.
 - **Regressions against the baseline.** Each case gets one verdict:
   - `regression`: the case passed in the baseline and fails now; its recall drops by more than 5 points and below the worst baseline attempt; no attempt passes where the baseline had one; every attempt's total is further off than the worst baseline attempt (the total check is the only quality check on total-only cases); or at least 2 more attempts are 10x or more off than in the baseline. Attempts of one case vary by more than 5 points, so the recall check uses the baseline's own spread rather than a fixed drop. Baseline entries recorded without per-attempt recall are rescored from their run folder to recover it.
   - `error`: some attempts did not reach `scored` and the baseline had no failed attempt for the case. A case with no usable baseline (none recorded, or `baseline stale`) also gets `error` when any attempt fails.

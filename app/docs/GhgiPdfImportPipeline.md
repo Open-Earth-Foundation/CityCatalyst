@@ -170,11 +170,294 @@ Fixed constants in `InventoryExtractionService.ts`: candidate page ≥ 8 numbers
 - Benchmark harness: CC-1124 (PRs #3416 and #3424, in review at the time of writing) runs the real pipeline on the answer-key set and reports row recall per case, with results in a run folder and MLflow.
 - Measured on 31 Oct 2026 (CC-1124, before the activity-class changes): row recall 68% on the validated set, 28% on the held-out set. Internal target: 90% row recall.
 
+## Example payloads
+
+Real payloads, so a reviewer can see what each stage receives and returns. Sources:
+
+- OCR Markdown: `app/tests/fixtures/auckland-2021-ocr-excerpt.md` (Mistral OCR of the Auckland 2021 inventory).
+- LLM answers: `app/tests/fixtures/masterton-2021-22-page-responses.json`, one real run on the Masterton 2021/22 report (42 pages, target year 2022, recorded 2026-11-05, before the `activityClass` field existed).
+- Everything after the LLM answers was produced by replaying those answers through the current code on `develop` (the same replay as `tests/backend/inventory-extraction-masterton.jest.ts`).
+
+Long arrays are cut with `...`.
+
+### 1. Mistral OCR request
+
+Built by `buildMistralOcrRequest` for an inventory import (`annotationMode = "none"`):
+
+```json
+{
+  "model": "mistral-ocr-latest",
+  "document": {
+    "type": "document_url",
+    "document_url": "https://<bucket>.s3.amazonaws.com/imports/<cityId>/<inventoryId>/<file>.pdf?X-Amz-..."
+  },
+  "include_blocks": true,
+  "confidence_scores_granularity": "block",
+  "extract_header": true,
+  "extract_footer": true,
+  "table_format": "markdown",
+  "include_image_base64": false
+}
+```
+
+### 2. OCR Markdown (input to extraction)
+
+Part of one page of the Auckland report as stored in `combined_markdown.md`. It shows the cases the prompt and the post-processing must handle: a summary table and a detailed GPC table of the same inventory, scope columns next to BASIC and Total columns, references written once for all scopes (`I.1`), a combined reference (`I.4.1/2/3`) and notation keys (`NO`).
+
+```markdown
+Table 3-1 Emissions summary for 2021
+
+| GHG Emission Source (By Sector) |                                         | Scope 1   | Scope 2   | Scope 3 | BASIC     | BASIC+    | BASIC+ S3 |
+| ------------------------------- | --------------------------------------- | --------- | --------- | ------- | --------- | --------- | --------- |
+| Stationary Energy               | Energy use (all emissions except I.4.4) | 1,956,185 | 1,121,835 | 82,214  | 3,078,020 | 3,160,234 | 3,160,234 |
+| ...                             |                                         |           |           |         |           |           |           |
+| TOTAL                           |                                         | 7,890,074 | 1,127,651 | 541,222 | 7,453,238 | 9,559,215 | 9,559,215 |
+
+Table A-1 GHG emissions by sector and sub-sector for 2021 in the GPC format
+
+| GPC ref No. | GHG Emissions Source (By Sector and Sub-sector)       | Scope 1 | Scope 2 | Scope 3 | Total   |
+| ----------- | ----------------------------------------------------- | ------- | ------- | ------- | ------- |
+| I.1         | Residential buildings                                 | 196,407 | 450,523 | 33,017  | 679,947 |
+| I.2         | Commercial and institutional buildings and facilities | 462,976 | 116,488 | 8,537   | 588,000 |
+| I.4.1/2/3   | Energy industries                                     | NO      | NO      | NO      |         |
+| I.4.4       | Energy generation supplied to the grid                | 32      |         |         |         |
+```
+
+### 3. LLM request (one page)
+
+What `extractSegment` sends for one candidate page (Masterton page 12). The page text is the Markdown of that page only.
+
+```json
+{
+  "use": "pdf_extraction",
+  "messages": [
+    { "role": "system", "content": "<SYSTEM_PROMPT, 25,847 characters>" },
+    {
+      "role": "user",
+      "content": "Extract only emissions data for the year 2022. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (2022); use null only when the document gives no year.\n\nDocument text:\n\n<Markdown of page 12>"
+    }
+  ],
+  "jsonSchema": "<EXTRACTION_RESPONSE_SCHEMA>",
+  "maxTokens": 16000
+}
+```
+
+The system prompt is the same on every call and holds the full GPC taxonomy. Masterton has 31 candidate pages, so one import made 32 calls (page 16 was retried because its rows did not reach its own total).
+
+### 4. LLM answer (one page)
+
+Recorded answer for Masterton page 12, an agriculture table:
+
+```json
+{
+  "rows": [
+    {
+      "year": 2022,
+      "sector": "Agriculture Forestry And Other Land Use Afolu",
+      "subsector": "Emissions From Livestock Within The City Boundary",
+      "category": "Enteric Fermentation",
+      "totalCO2e": 488422,
+      "unit": "t",
+      "rowType": "line_item",
+      "scope": "1",
+      "gpcRefNo": "V.1",
+      "source": "Table 1"
+    },
+    {
+      "year": 2022,
+      "sector": "Agriculture Forestry And Other Land Use Afolu",
+      "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary",
+      "category": "Unmanaged Manure on Pasture",
+      "totalCO2e": 73102,
+      "unit": "t",
+      "rowType": "line_item",
+      "scope": "1",
+      "gpcRefNo": "V.3",
+      "source": "Table 1"
+    },
+    "... 3 more line items (49,543 + 14,665 + 10,042) ...",
+    {
+      "year": 2022,
+      "sector": "Agriculture Forestry And Other Land Use Afolu",
+      "subsector": "Emissions From Livestock Within The City Boundary",
+      "category": "Subtotal",
+      "totalCO2e": 635774,
+      "rowType": "subtotal",
+      "...": "..."
+    }
+  ]
+}
+```
+
+### 5. One page after finalizing
+
+`finalizeExtractedRows` on that answer: 5 line items stay, the subtotal moves to `reportedTotals`.
+
+```json
+{
+  "rows": [
+    {
+      "year": 2022,
+      "sector": "Agriculture Forestry And Other Land Use Afolu",
+      "subsector": "Emissions From Livestock Within The City Boundary",
+      "category": "Enteric Fermentation",
+      "totalCO2e": 488422,
+      "unit": "t",
+      "rowType": "line_item",
+      "scope": "1",
+      "gpcRefNo": "V.1",
+      "source": "Table 1",
+      "page": 12,
+      "activityType": "Enteric Fermentation"
+    },
+    "... 4 more ..."
+  ],
+  "summary": {
+    "reportedTotals": [
+      {
+        "label": "Subtotal",
+        "value": 635774,
+        "year": 2022,
+        "scope": null,
+        "sector": "Agriculture Forestry And Other Land Use Afolu",
+        "subsector": "Emissions From Livestock Within The City Boundary",
+        "level": "subtotal"
+      }
+    ],
+    "droppedRows": { "subtotal_or_total": 1 },
+    "importedSum": 635774,
+    "yearAssumed": false,
+    "targetYear": 2022
+  }
+}
+```
+
+### 6. Stored rows and summary (what the review screen reads)
+
+`ImportedInventoryFile.mappingConfiguration` after the whole document. One stored row:
+
+```json
+{
+  "year": 2022,
+  "sector": "Transportation",
+  "subsector": "On Road Transportation",
+  "category": "Diesel - On-Road",
+  "totalCO2e": 38736,
+  "activityClass": null,
+  "gpcRefNo": "II.1.1",
+  "rowType": "line_item",
+  "unit": "t",
+  "source": "Table 4",
+  "activityType": "Diesel",
+  "page": 13,
+  "refSource": "inferred",
+  "directionEvidenceFound": null
+}
+```
+
+`refSource` is `inferred` although the model wrote the reference: the report does not print `II.1.1` on that line.
+
+The summary (`extractionSummary`), with 18 reported totals cut to the ones that matter:
+
+```json
+{
+  "reportedTotals": [
+    {
+      "label": "Net Forestry Emissions",
+      "value": -811512,
+      "level": "subtotal",
+      "...": "..."
+    },
+    {
+      "label": "Total Gross Emissions (excluding Forestry)",
+      "value": 785873,
+      "level": "subtotal",
+      "...": "..."
+    },
+    {
+      "label": "Total Net Emissions (including Forestry)",
+      "value": -25639,
+      "level": "total",
+      "...": "..."
+    },
+    {
+      "label": "Total Gross Emissions",
+      "value": 785873,
+      "level": "total",
+      "...": "..."
+    },
+    "... 14 more sector subtotals ..."
+  ],
+  "targetYear": 2022,
+  "droppedRows": { "subtotal_or_total": 18, "other_page": 39 },
+  "importedSum": 777928,
+  "yearAssumed": false,
+  "pageSelection": "reconciled",
+  "selectedPages": [12, 13, 14],
+  "orphanRemovals": [-811512]
+}
+```
+
+And the notes the review screen derives from it (`extractionReviewNotes`):
+
+```json
+{
+  "reconciliation": {
+    "importedSum": 777928,
+    "reportedTotal": 785873,
+    "deviation": 0.0101,
+    "mismatch": true
+  },
+  "removalsWarning": { "kind": "orphan", "removals": -811512, "net": -25639 },
+  "reconciledPages": [],
+  "failedPages": [],
+  "droppedReasons": ["other_page"]
+}
+```
+
+### 7. What this example shows
+
+The report's inventory is gross 785,873 and net -25,639 tCO2e (forestry -811,512). The import keeps pages 12 to 14 only and imports 777,928 (25 rows):
+
+- **IPPU is lost.** Page 15 repeats the waste rows of page 14, now with a scope and printed GPC references (`III.1.1`, `III.4.1`). The duplicate check does not catch them, because its key includes the scope and the page 14 rows had none. The repeat pushes the sum away from every total, so the run stops at page 14 and the IPPU rows on page 15 (7,947) never join. That is the 7,945 (1.01%) gap, within rounding.
+- **Forestry is lost.** The V.2 rows are on page 16, after the stop, so the net total is never reached. The review warns about orphan removals instead.
+- **The same table appears several times.** Agriculture is on pages 11, 12 and 25, transport on 13 and 26, forestry on 6, 16 and 29 (summary, chapter, appendix). 39 rows from other pages are dropped. Page selection must pick one copy per sector, and only consecutive pages can form a run.
+- **Answers vary on a retry.** Page 16's second answer drops the scope on all its rows and relabels its subtotal "Total".
+- **Cost.** 32 calls, each with a 25,847-character system prompt, for one report.
+
+### 8. Approve request with a row decision
+
+`POST .../import/approve`. Row decisions are keyed by row index and must match what the user saw, or the server ignores them:
+
+```json
+{
+  "importedFileId": "<uuid>",
+  "replaceExisting": true,
+  "mappingOverrides": {
+    "columnMappings": {},
+    "rowDecisions": {
+      "7": {
+        "reviewDecision": "reclassify",
+        "gpcRefNo": "I.6.3",
+        "scope": "3",
+        "decisionFileId": "<uuid of the imported file>",
+        "decisionToken": "<token from the review row>",
+        "decisionRef": "I.4.4",
+        "decisionScope": null,
+        "decisionValue": 1710
+      }
+    }
+  }
+}
+```
+
+The decision type is `ImportRowDecision` in `components/steps/GHGI/import/import-row-decisions.ts`. This payload is illustrative (the values are not from the Masterton run).
+
 ## Where accuracy is lost (known weak points)
 
 These follow from the design above. They are starting points for improvement work, not decisions.
 
-- **Table choice.** Page selection depends on the document printing a grand total that the rows can match. Reports without one, or with totals on a different page from the table, fall back to chunk extraction.
+- **Table choice.** Page selection depends on the document printing a grand total that the rows can match. Reports without one, or with totals on a different page from the table, fall back to chunk extraction. A page that repeats rows of the previous page under other labels can end a run early (Masterton, see the example above).
 - **Fallback quality.** The chunk path has no reconciliation-based table choice. It relies on the prompt alone to skip summary, comparison and per-gas tables.
 - **Rules tuned on few reports.** Many rules (hidden totals, sector-total demotion, removals, AFOLU V.1 vs V.3) came from specific reports (Auckland, Masterton). Held-out reports with other layouts are not covered by them. This matches the gap between the validated and held-out recall.
 - **Model variance.** The same page can give different rows on different runs. The benchmark runs each file several times to measure this.

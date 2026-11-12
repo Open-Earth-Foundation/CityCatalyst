@@ -48,6 +48,7 @@ import {
   type LegacySummary,
 } from "@/backend/ingestion-benchmark/legacy-results";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import {
   ZERO_TOKENS,
   appendIndexLine,
@@ -269,6 +270,7 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     promptHash: old.promptHash ?? null,
     inputRepresentation: old.inputRepresentation ?? null,
     testSetVersion: combinedTestSetVersion(caseVersions),
+    scorerVersion: SCORER_VERSION,
     dirty: dirty(),
     mlflowRunUrl: null,
     mlflowNote: "not logged (rescore)",
@@ -533,6 +535,7 @@ export async function main(argv: string[]): Promise<number> {
           ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
           promptHash: promptHash(),
           testSetVersion: caseVersions.get(verdict.id)!,
+          scorerVersion: SCORER_VERSION,
           runFolder: folderName,
           date: measuredAt,
         },
@@ -560,6 +563,7 @@ export async function main(argv: string[]): Promise<number> {
       inputRepresentation:
         process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown",
       testSetVersion: combinedTestSetVersion([...caseVersions.values()]),
+      scorerVersion: SCORER_VERSION,
       dirty: dirty(),
       mlflowRunUrl: null,
       mlflowNote: null,

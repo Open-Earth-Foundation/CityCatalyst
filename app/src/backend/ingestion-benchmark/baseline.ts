@@ -19,6 +19,7 @@ import type {
   RunSummary,
 } from "@/backend/ingestion-benchmark/report";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 
 const REQUIRED_ATTEMPTS = 3;
@@ -57,6 +58,8 @@ export type BaselineEntry = {
   ocrModel: string | null;
   promptHash: string | null;
   testSetVersion: string;
+  /** SCORER_VERSION the verdict was computed with; absent on entries before it existed. */
+  scorerVersion?: string;
   runFolder: string;
   date: string;
 };
@@ -100,14 +103,13 @@ export function compareWithBaseline(args: {
   if (!entry) {
     return { id, status: "no baseline", baseline: null, rescored: false };
   }
+  // A different scorer still allows the comparison once the stored values are
+  // rescored; only a different test set can make the baseline stale.
   const sameVersion = entry.testSetVersion === currentVersion;
-  // An entry recorded before per-attempt recall and totals were stored is rescored from its
+  const sameScorer = entry.scorerVersion === SCORER_VERSION;
+  // An entry from another scorer version (or none) is rescored from its
   // run folder to recover it; when that fails, the stored verdict is used.
-  if (
-    sameVersion &&
-    entry.verdict.attemptRecalls !== undefined &&
-    entry.verdict.attemptTotalFactors !== undefined
-  ) {
+  if (sameVersion && sameScorer) {
     return {
       id,
       status: "compared",

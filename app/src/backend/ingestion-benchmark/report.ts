@@ -127,6 +127,8 @@ export type RunSummary = {
   promptHash: string | null;
   inputRepresentation: string | null;
   testSetVersion: string;
+  /** SCORER_VERSION of the scores in this summary; absent on older runs. */
+  scorerVersion?: string;
   dirty: boolean;
   mlflowRunUrl: string | null;
   mlflowNote: string | null;
@@ -354,7 +356,7 @@ export function renderReport(
     `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
     `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
     `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
-    `- Test-set version: ${summary.testSetVersion}`,
+    `- Test-set version: ${summary.testSetVersion}; scorer version: ${summary.scorerVersion ?? "n/a"}`,
     `- Attempts per case: ${summary.runsPerFile}`,
     ...(summary.rescoredFrom
       ? [
@@ -480,6 +482,17 @@ export function renderReport(
       ),
     }))
     .filter((c) => c.rows > 0);
+  // The app's total fails but removing the GPC exclusions it misses would pass:
+  // the app is missing an exclusion (CC-1201), not the extraction.
+  const adjustedOnly = summary.results
+    .filter((result) =>
+      result.runs.some(
+        (run) =>
+          run.score?.totalWithinTolerance === false &&
+          run.score?.adjustedWithinTolerance === true,
+      ),
+    )
+    .map((result) => result.id);
   lines.push(
     "",
     `Estimated cost of this run: ${money(cost)}`,
@@ -489,6 +502,7 @@ export function renderReport(
     "- C-028 and C-031 are not fully held out.",
     `- Cases using the legacy tolerance: ${legacy.length ? legacy.join(", ") : "none"}`,
     `- Cases where \`textTables\` is unknown: ${unknownTables.length ? unknownTables.join(", ") : "none"}`,
+    `- Cases whose application total is off but would be within tolerance after removing the GPC-excluded references the app does not flag yet (CC-1201): ${adjustedOnly.length ? adjustedOnly.join(", ") : "none"}`,
     ...(summary.baselineNotRecorded?.length
       ? [
           `- Not recorded in the baseline: ${summary.baselineNotRecorded.map((c) => `${c.id} (${c.modes.join(", ")})`).join(", ")}`,

@@ -296,12 +296,22 @@ describe("scoreFile", () => {
     expect(score.rowPrecision).toBe(1);
   });
 
-  it("keeps the GPC exclusions out of the stored total", () => {
+  it("scores the application total; GPC exclusions it misses only adjust a diagnostic", () => {
+    // The app stores 1,100 t but flags none of the excluded references.
     const score = scoreFile(keyFile([], { expectedTotal: 100 }), [
       stored("I.1.1", "1", 100),
-      stored("I.4.4", "1", 7),
-      stored("III.4.3", "3", 608),
-      stored("VI.1", "1", 1188394),
+      stored("VI.1", "1", 1000),
+    ]);
+    expect(score.storedTotal).toBe(1100);
+    expect(score.totalWithinTolerance).toBe(false);
+    expect(score.adjustedTotal).toBe(100);
+    expect(score.adjustedWithinTolerance).toBe(true);
+  });
+
+  it("leaves values the app omits out of its total", () => {
+    const score = scoreFile(keyFile([], { expectedTotal: 100 }), [
+      stored("I.1.1", "1", 100),
+      stored("I.4.4", "1", 7, { omit: true }),
     ]);
     expect(score.storedTotal).toBe(100);
     expect(score.totalWithinTolerance).toBe(true);

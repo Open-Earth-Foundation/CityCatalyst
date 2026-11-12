@@ -20,6 +20,7 @@ import {
   type Baseline,
   type BaselineEntry,
 } from "@/backend/ingestion-benchmark/baseline";
+import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import type { CaseVerdict } from "@/backend/ingestion-benchmark/metrics";
 import type {
   CaseResult,
@@ -112,6 +113,7 @@ const entryOf = (partial: Partial<BaselineEntry> = {}): BaselineEntry => ({
   ocrModel: null,
   promptHash: null,
   testSetVersion: "v1",
+  scorerVersion: SCORER_VERSION,
   runFolder: "run-1",
   date: "2026-11-01",
   ...partial,
@@ -259,21 +261,41 @@ describe("compareWithBaseline", () => {
     expect(c.baseline).toEqual(stored);
   });
 
-  it("same version without per-attempt recall rescores the run folder", () => {
+  it("same test set but another scorer version rescores the run folder", () => {
     writeRun("run-1", [storedCase()]);
     const c = compareWithBaseline({
       id: "C-001",
       current,
       currentVersion: "v1",
       baseline: {
-        "C-001": entryOf({ verdict: verdict({ recallFailedAsZero: 0.8 }) }),
+        "C-001": entryOf({
+          scorerVersion: "1",
+          verdict: verdict({ recallFailedAsZero: 0.8 }),
+        }),
       },
       key,
       runsRoot: dir,
     });
     expect(c.status).toBe("compared");
     expect(c.rescored).toBe(true);
-    expect(c.baseline?.attemptRecalls).toHaveLength(3);
+    expect(c.baseline?.recallFailedAsZero).toBe(1);
+  });
+
+  it("another scorer version without a run folder keeps the stored verdict", () => {
+    const stored = verdict({ recallFailedAsZero: 0.8 });
+    const c = compareWithBaseline({
+      id: "C-001",
+      current,
+      currentVersion: "v1",
+      baseline: {
+        "C-001": entryOf({ scorerVersion: undefined, verdict: stored }),
+      },
+      key,
+      runsRoot: dir,
+    });
+    expect(c.status).toBe("compared");
+    expect(c.rescored).toBe(false);
+    expect(c.baseline).toEqual(stored);
   });
 
   it("different version rescores the baseline values", () => {

@@ -94,7 +94,7 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 1. Run the cases with the default 3 attempts and `--update-baseline`. Only cases in the run that finished 3 attempts are written; other cases are untouched. Exploratory and interrupted runs never write.
 2. A run takes at most 10 files, so the 27 cases need three runs (for example, one per block or by slices of 10).
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
-4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), refresh the baseline. The test-set version covers only the manifest entry and the key, so a scorer change does not mark the baseline stale on its own. Run `--rescore` on the baseline's run folders to see the effect first.
+4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), raise `SCORER_VERSION` in `score.ts`. Each baseline entry records the scorer version it was computed with; an entry from another version is rescored from its run folder, so the baseline and the new run are scored by the same rules. The run header shows the scorer version. Run `--rescore` on the baseline's run folders to see the effect first.
 
 **Current baseline.** `baseline.json` starts empty: every case is reported as `no baseline` until a run records it.
 
@@ -115,11 +115,11 @@ Open `report.md` in the run folder. It has:
 
 - **Failure modes:** `scored`, `ocr_error`, `extraction_error`, `truncated`, `zero_rows`, `approve_error`, `readback_error`, `setup_error`.
 - **Per case:** verdict, attempts passed, recall, precision, value accuracy, classification accuracy, notation keys (recovered/scored), distractors stored, total within tolerance, 10x count, cost, tokens, runtime per stage, and the tolerance rule used.
-- **Notes:** cases on the legacy tolerance, row-scored cases whose `textTables` is still unknown in the manifest, cases left out of the baseline, held rows included at approve.
+- **Notes:** cases on the legacy tolerance, row-scored cases whose `textTables` is still unknown in the manifest, cases whose application total is off but would be within tolerance after removing the GPC-excluded references the app does not flag yet (CC-1201), cases left out of the baseline, held rows included at approve.
 
   The runner includes every row the import review holds back, whatever its issue (a reference conflict gets the scope the catalogue expects). A reviewer might skip some of them, such as `direction-unconfirmed` rows. The scores therefore measure what the model extracted, not what a reviewed import would store.
 
-An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. A case passes when all 3 attempts pass.
+An attempt passes when it is `scored`, its total is within tolerance and it is not 10x off. The total is the application's own: every stored value it does not omit from the total. The benchmark does not remove anything more. GPC keeps more references out of BASIC and BASIC+ than the app flags today (CC-1201); the adjusted total that removes them is a diagnostic in `results.json` and the Notes, never a pass. A case passes when all 3 attempts pass.
 
 `results.json` is the result of every attempt and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
 

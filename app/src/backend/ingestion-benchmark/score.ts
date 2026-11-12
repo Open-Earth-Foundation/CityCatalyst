@@ -36,6 +36,13 @@ export type StoredValue = {
   notation: string | null;
 };
 
+/**
+ * Version of the scoring rules (score.ts, profiles.ts, tolerance.ts and the
+ * metrics). Raise it on every change to them: a baseline entry recorded with
+ * another version is rescored from its run folder, so both sides use the same rules.
+ */
+export const SCORER_VERSION = "2";
+
 export type FileScore = {
   keyValueRows: number;
   storedGroups: number;
@@ -47,9 +54,17 @@ export type FileScore = {
   valueAccuracy: number | null;
   classificationAccuracy: number | null;
   expectedTotal: number | null;
+  /** The application's total: every stored value it does not omit from the total. */
   storedTotal: number;
   totalDiffPct: number | null;
+  /** Whether the application's total is within tolerance of the expected one. */
   totalWithinTolerance: boolean | null;
+  /**
+   * Diagnostic only: the application's total minus the GPC-excluded references
+   * it does not flag yet (CC-1201). Never used for pass/fail.
+   */
+  adjustedTotal?: number;
+  adjustedWithinTolerance?: boolean | null;
   /** "rule" when the printed-precision rule set the row tolerance, else "legacy". */
   toleranceSource: "rule" | "legacy";
   notationScored: number;
@@ -313,12 +328,20 @@ export function scoreFile(
     }
   }
 
-  // GPC keeps these out of BASIC and BASIC+. The app only flags I.4.4 today (CC-1201 covers the rest).
+  // Pass/fail uses the application's own total, so an exclusion it misses shows
+  // as a wrong total. GPC keeps more references out of BASIC and BASIC+ than the
+  // app flags today (only I.4.4; CC-1201 covers the rest): the adjusted total
+  // removes them too, as a diagnostic.
   const storedTotal = valueStored
+    .filter((item) => !item.omit)
+    .reduce((sum, item) => sum + item.valueT, 0);
+  const adjustedTotal = valueStored
     .filter((item) => !item.omit && !isGpcExcluded(item.gpc))
     .reduce((sum, item) => sum + item.valueT, 0);
   const totalDiff =
     file.expectedTotal !== null ? storedTotal - file.expectedTotal : null;
+  const adjustedDiff =
+    file.expectedTotal !== null ? adjustedTotal - file.expectedTotal : null;
 
   // Notation keys: scored keys only; the wildcard and multi-ref patterns apply.
   const notationRows = file.rows.filter(
@@ -387,6 +410,9 @@ export function scoreFile(
         : null,
     totalWithinTolerance:
       totalDiff !== null ? Math.abs(totalDiff) <= totalTonnes : null,
+    adjustedTotal,
+    adjustedWithinTolerance:
+      adjustedDiff !== null ? Math.abs(adjustedDiff) <= totalTonnes : null,
     toleranceSource: rowTolerance(file).source,
     notationScored: notationRows.length,
     notationRecovered,

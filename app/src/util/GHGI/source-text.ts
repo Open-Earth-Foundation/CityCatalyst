@@ -77,6 +77,15 @@ export function parseNumberString(
     negative = true;
     t = t.slice(1);
   }
+  // Scientific notation (`1.5e3`, `9E+2`), as some providers return, is read
+  // before units are dropped, so the exponent is not taken for a unit.
+  const scientific =
+    /^(\d+(?:\.\d+)?[eE][+-]?\d+)(?:[A-Za-z][A-Za-z0-9₂/]*)?$/.exec(t);
+  if (scientific) {
+    const value = Number(scientific[1]);
+    if (!Number.isFinite(value)) return null;
+    return negative ? -value : value;
+  }
   // A trailing unit (`tCO2e`, `kg`) or `%` after the last digit is dropped.
   t = t.replace(/%$/, "").replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
   if (!/^\d[\d.,]*\d$|^\d$/.test(t)) return null;

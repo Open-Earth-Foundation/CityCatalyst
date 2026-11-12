@@ -353,6 +353,11 @@ describe("parseNumberString with unit, percent or plus sign", () => {
     ["12%", "unknown", 12],
     ["12,5 %", "european", 12.5],
     ["1500 kg", "unknown", 1500],
+    ["1.5e3", "unknown", 1500],
+    ["9e2", "european", 900],
+    ["15E+2", "unknown", 1500],
+    ["-2.5e-1", "unknown", -0.25],
+    ["1.5e3 tCO2e", "unknown", 1500],
   ])("parses %s (%s) as %s", (input, style, expected) => {
     expect(parseNumberString(input, style)).toBe(expected);
   });

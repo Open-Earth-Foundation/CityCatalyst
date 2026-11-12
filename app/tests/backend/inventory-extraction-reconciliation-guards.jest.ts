@@ -87,6 +87,27 @@ describe("CC-1163 number strings", () => {
     });
     expect(rows[0].totalCO2e).toBe(1.5);
   });
+
+  it("scientific notation strings keep their exponent", async () => {
+    mockRows([
+      { ...stringRows("9e2")[0], totalCO2e: "9e2" },
+      {
+        ...stringRows("6e2")[0],
+        subsector: "Commercial Buildings",
+        gpcRefNo: "I.2.1",
+        totalCO2e: "6e2",
+      },
+      { ...stringRows("15e2")[1], totalCO2e: "15e2" },
+    ]);
+    const text =
+      "<!-- page: 1 -->\nGPC table\nResidential 900\nCommercial 600\n" +
+      "Total 1,500\n";
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(rows.map((r) => r.totalCO2e)).toEqual([900, 600]);
+    expect(summary.reportedTotals?.[0]?.value).toBe(1500);
+  });
 });
 
 /** Two line items that add up to 5,000,000 and a total row of `total`. */

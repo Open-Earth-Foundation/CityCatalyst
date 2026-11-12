@@ -178,6 +178,37 @@ describe("cut-off response", () => {
     expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
   });
 
+  // The LLM client already retries these; a page retry would run its whole
+  // set of retries a second time before the page is skipped.
+  it.each([
+    ["timeout", "LLM_TIMEOUT"],
+    ["rate limit", "LLM_RATE_LIMIT"],
+    ["provider error", "LLM_PROVIDER_ERROR"],
+  ])("a %s on a page is not retried: page failed", async (name, code) => {
+    let chapterCalls = 0;
+    complete.mockImplementation(async (args) => {
+      const user = (
+        args as { messages: { role: string; content: string }[] }
+      ).messages.find((m) => m.role === "user")!.content;
+      if (user.includes("Chapter 4")) {
+        chapterCalls++;
+        throw new LLMError(name, code as never);
+      }
+      const rows = user.includes("Table 3-1")
+        ? [grandTotal()]
+        : user.includes("Table A-1")
+          ? exactTable()
+          : [];
+      return { content: JSON.stringify({ rows }), finishReason: "stop" };
+    });
+    const { rows, summary } = await extractInventoryFromDocument(document, {
+      targetYear: 2021,
+    });
+    expect(chapterCalls).toBe(1);
+    expect(summary.failedPages).toEqual([17]);
+    expect(rows.map((r) => r.gpcRefNo).sort()).toEqual(["I.1.1", "I.1.2"]);
+  });
+
   it("a complete response still parses", async () => {
     mockPages({
       content: JSON.stringify({ rows: [] }),

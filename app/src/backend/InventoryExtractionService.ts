@@ -1038,10 +1038,13 @@ async function extractRowsFromDocument(
           );
         let result: ExtractionResult;
         try {
+          // Like a chunk: only an unusable answer is asked for once more. The
+          // LLM client already retries timeouts, rate limits and provider errors.
           result = await extract().catch((error) => {
+            if (!(error instanceof ExtractionResponseError)) throw error;
             logger.info(
               { page: page.page, err: error },
-              "Page extraction failed; retrying once",
+              "Page answer unusable; retrying once",
             );
             return extract();
           });
@@ -1049,7 +1052,7 @@ async function extractRowsFromDocument(
           // One unreadable page must not fail the whole import.
           logger.warn(
             { page: page.page, err: error },
-            "Page extraction failed twice; page skipped",
+            "Page extraction failed; page skipped",
           );
           failedPages.push({ page: page.page, error });
           return { page: page.page, result: EMPTY_RESULT };

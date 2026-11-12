@@ -88,7 +88,18 @@ export async function openaiComplete(
     ...(options.maxTokens !== undefined && {
       max_completion_tokens: options.maxTokens,
     }),
-    ...(options.jsonMode && { response_format: { type: "json_object" } }),
+    ...(options.jsonSchema
+      ? {
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: options.jsonSchema.name,
+              schema: options.jsonSchema.schema,
+              strict: true,
+            },
+          },
+        }
+      : options.jsonMode && { response_format: { type: "json_object" } }),
   };
 
   const controller = new AbortController();

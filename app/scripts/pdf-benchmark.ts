@@ -48,6 +48,7 @@ import {
   type LegacySummary,
 } from "@/backend/ingestion-benchmark/legacy-results";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import {
   ZERO_TOKENS,
   appendIndexLine,
@@ -65,6 +66,7 @@ import {
 import {
   MAX_FILES_PER_RUN,
   SelectionError,
+  groupsOf,
   loadManifest,
   selectCases,
   type CaseManifestEntry,
@@ -269,6 +271,7 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     promptHash: old.promptHash ?? null,
     inputRepresentation: old.inputRepresentation ?? null,
     testSetVersion: combinedTestSetVersion(caseVersions),
+    scorerVersion: SCORER_VERSION,
     dirty: dirty(),
     mlflowRunUrl: null,
     mlflowNote: "not logged (rescore)",
@@ -351,7 +354,7 @@ export async function main(argv: string[]): Promise<number> {
       console.error(error.message);
       if (error.message.includes("exceed")) {
         console.error(
-          `A run takes at most ${MAX_FILES_PER_RUN} files; split the selection into several runs.`,
+          `A run takes at most ${MAX_FILES_PER_RUN} files; split the selection into several runs, or use --all to run every case in groups with one report.`,
         );
       }
       return 2;
@@ -362,11 +365,29 @@ export async function main(argv: string[]): Promise<number> {
   const { createContext, disposeContext, pdfPathFor, runAttempt } =
     await import("./pdf-benchmark/run-case");
   const missing = missingInputs(selected, config, keys, pdfPathFor);
-  if (missing.length) {
+  // A full-set run goes on without the cases whose inputs are missing here and
+  // marks itself incomplete; an explicit selection stops before any paid call.
+  const missingCases: { id: string; reason: string }[] = [];
+  if (missing.length && !options.all) {
     console.error(
       `Missing inputs:\n${missing.map((m) => `  ${m}`).join("\n")}`,
     );
     return 2;
+  }
+  if (missing.length) {
+    for (const line of missing) {
+      const [id, ...reason] = line.split(": ");
+      missingCases.push({ id, reason: reason.join(": ") });
+    }
+    const skip = new Set(missingCases.map((m) => m.id));
+    selected = selected.filter((entry) => !skip.has(entry.id));
+    console.warn(
+      `Missing inputs, left out and the run marked incomplete:\n${missing.map((m) => `  ${m}`).join("\n")}`,
+    );
+    if (selected.length === 0) {
+      console.error("No case has its inputs on this machine.");
+      return 2;
+    }
   }
 
   const forecasts = selected.map((entry) => ({
@@ -392,8 +413,10 @@ export async function main(argv: string[]): Promise<number> {
   if (options.dryRun) return 0;
 
   const { promptHash } = await import("./pdf-benchmark/prompt-hash");
+  // Highlight stays on for benchmark runs on purpose: we want the extraction
+  // payloads there. Export HIGHLIGHT_DISABLED=true to run without it.
   const before = new Set(process.listeners("SIGINT"));
-  const ctx = await createContext(config);
+  let ctx = await createContext(config);
   let interrupted = false;
   const onSigint = () => {
     if (interrupted) {
@@ -422,63 +445,86 @@ export async function main(argv: string[]): Promise<number> {
   // SIGINT handler that flushes and calls process.exit(), which would kill the
   // run mid-attempt and skip cleanup. Drop only listeners the app added, so
   // tsx keeps its own relay listener.
-  for (const listener of process.listeners("SIGINT")) {
-    if (!before.has(listener)) process.off("SIGINT", listener);
-  }
+  const dropAppSigintListeners = () => {
+    for (const listener of process.listeners("SIGINT")) {
+      if (!before.has(listener) && listener !== onSigint) {
+        process.off("SIGINT", listener);
+      }
+    }
+  };
+  dropAppSigintListeners();
   process.on("SIGINT", onSigint);
   // Windows delivers Ctrl+Break (and a closed console) as SIGBREAK.
   process.on("SIGBREAK", onSigint);
 
   const measuredAt = new Date().toISOString();
   const results: CaseResult[] = [];
+  // OCR text of every group, written to the run folder at the end.
+  const ocrTexts = new Map<string, string>();
+  const groups = groupsOf(selected);
   try {
-    attempts: for (const entry of selected) {
-      const key = keys[entry.id];
-      const runs: RunEntry[] = [];
-      for (let attempt = 1; attempt <= options.runs; attempt++) {
-        if (interrupted) break;
-        console.log(`[${entry.id}] attempt ${attempt}/${options.runs}`);
-        const run = await runAttempt(ctx, entry, key, attempt);
+    attempts: for (const [index, group] of groups.entries()) {
+      if (index > 0) {
+        // Each group gets a fresh context, so its test cities are removed before the next.
+        for (const [k, text] of ctx.ocrTexts) ocrTexts.set(k, text);
+        await disposeContext(ctx);
+        ctx = await createContext(config);
+        dropAppSigintListeners();
+      }
+      if (groups.length > 1) {
         console.log(
-          `[${entry.id}] attempt ${attempt}: ${run.failureMode}${run.message ? ` (${run.message})` : ""}`,
+          `Group ${index + 1} of ${groups.length}: ${group.map((c) => c.id).join(", ")}`,
         );
-        runs.push(run);
       }
-      if (runs.length > 0) {
-        const ocrRuns = ctx.ocrRuns.get(entry.id) ?? [];
-        const totals = runs
-          .filter((run) => run.ok)
-          .map((run) => Math.round(run.total ?? 0));
-        results.push({
-          id: entry.id,
-          file: entry.fileName,
-          kind: "pdf",
-          targetYear: entry.year,
-          keyId: key.id,
-          ocr: {
-            ok: ocrRuns.every((ocr) => ocr.ok),
-            code: ocrRuns.find((ocr) => ocr.code)?.code ?? null,
-          },
-          productFlowFailsAtOcr: ocrRuns.some(
-            (ocr) => !ocr.ok && ocr.code != null,
-          ),
-          runs,
-          stableTotal: totals.length > 1 && new Set(totals).size === 1,
-          block: entry.block,
-          eligible: entry.totalOnly ? null : entry.textTables === true,
-          totalOnly: entry.totalOnly,
-          textTables: entry.textTables,
-          ocrUsage: {
-            ...ZERO_TOKENS,
-            pages:
-              ocrRuns.length > 0 && ocrRuns.every((ocr) => ocr.pages != null)
-                ? ocrRuns.reduce((sum, ocr) => sum + (ocr.pages ?? 0), 0)
-                : null,
-          },
-        });
+      for (const entry of group) {
+        const key = keys[entry.id];
+        const runs: RunEntry[] = [];
+        for (let attempt = 1; attempt <= options.runs; attempt++) {
+          if (interrupted) break;
+          console.log(`[${entry.id}] attempt ${attempt}/${options.runs}`);
+          const run = await runAttempt(ctx, entry, key, attempt);
+          console.log(
+            `[${entry.id}] attempt ${attempt}: ${run.failureMode}${run.message ? ` (${run.message})` : ""}`,
+          );
+          runs.push(run);
+        }
+        if (runs.length > 0) {
+          const ocrRuns = ctx.ocrRuns.get(entry.id) ?? [];
+          const totals = runs
+            .filter((run) => run.ok)
+            .map((run) => Math.round(run.total ?? 0));
+          results.push({
+            id: entry.id,
+            file: entry.fileName,
+            kind: "pdf",
+            targetYear: entry.year,
+            keyId: key.id,
+            ocr: {
+              ok: ocrRuns.every((ocr) => ocr.ok),
+              code: ocrRuns.find((ocr) => ocr.code)?.code ?? null,
+            },
+            productFlowFailsAtOcr: ocrRuns.some(
+              (ocr) => !ocr.ok && ocr.code != null,
+            ),
+            runs,
+            stableTotal: totals.length > 1 && new Set(totals).size === 1,
+            block: entry.block,
+            eligible: entry.totalOnly ? null : entry.textTables === true,
+            totalOnly: entry.totalOnly,
+            textTables: entry.textTables,
+            ocrUsage: {
+              ...ZERO_TOKENS,
+              pages:
+                ocrRuns.length > 0 && ocrRuns.every((ocr) => ocr.pages != null)
+                  ? ocrRuns.reduce((sum, ocr) => sum + (ocr.pages ?? 0), 0)
+                  : null,
+            },
+          });
+        }
+        if (interrupted) break attempts;
       }
-      if (interrupted) break attempts;
     }
+    for (const [k, text] of ctx.ocrTexts) ocrTexts.set(k, text);
 
     const caseVersions = new Map(
       results.map((result) => [
@@ -531,11 +577,23 @@ export async function main(argv: string[]): Promise<number> {
           ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
           promptHash: promptHash(),
           testSetVersion: caseVersions.get(verdict.id)!,
+          scorerVersion: SCORER_VERSION,
           runFolder: folderName,
           date: measuredAt,
         },
       ]),
     );
+    const unfinished = selected
+      .filter(
+        (entry) =>
+          (results.find((r) => r.id === entry.id)?.runs.length ?? 0) <
+          options.runs,
+      )
+      .map((entry) => entry.id);
+    const incomplete =
+      options.all && (missingCases.length > 0 || unfinished.length > 0)
+        ? { missing: missingCases, unfinished }
+        : undefined;
     const baselineNotRecorded =
       options.updateBaseline && options.runs === 3 && !interrupted
         ? runnerFailedCases(baselineEntries)
@@ -558,10 +616,12 @@ export async function main(argv: string[]): Promise<number> {
       inputRepresentation:
         process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown",
       testSetVersion: combinedTestSetVersion([...caseVersions.values()]),
+      scorerVersion: SCORER_VERSION,
       dirty: dirty(),
       mlflowRunUrl: null,
       mlflowNote: null,
       ...(baselineNotRecorded.length ? { baselineNotRecorded } : {}),
+      ...(incomplete ? { incomplete } : {}),
     };
 
     const runFolder = writeRunArtifact({
@@ -592,7 +652,7 @@ export async function main(argv: string[]): Promise<number> {
     writeRunArtifact({ outRoot, summary, verdicts, blocks, gates });
 
     // OCR text is third-party document text: written locally only, git-ignored.
-    for (const [attemptKey, text] of ctx.ocrTexts) {
+    for (const [attemptKey, text] of ocrTexts) {
       const [caseId, attempt] = attemptKey.split("/");
       const dir = join(runFolder, "cases", caseId, `attempt-${attempt}`);
       mkdirSync(dir, { recursive: true });
@@ -632,12 +692,20 @@ export async function main(argv: string[]): Promise<number> {
     }
     for (const block of blocks) {
       console.log(
-        `${block.block}: headline recall ${block.headlineRecall === null ? "n/a" : `${Math.round(block.headlineRecall * 100)}%`} over ${block.casesInRun} case(s)`,
+        `${block.block}: headline recall ${block.headlineRecall === null ? "n/a" : `${Math.round(block.headlineRecall * 100)}%`} over ${block.casesInRun} case(s)${block.provisionalRecall === null ? "" : `; provisional recall ${Math.round(block.provisionalRecall * 100)}% over ${block.provisionalRecallCases} case(s) with unknown textTables`}`,
       );
     }
     if (interrupted) console.log("INTERRUPTED: partial report written.");
+    if (incomplete) {
+      console.log(
+        `INCOMPLETE: missing ${incomplete.missing.map((m) => m.id).join(", ") || "none"}; unfinished ${incomplete.unfinished.join(", ") || "none"}.`,
+      );
+    }
     console.log(`Run folder: ${runFolder}`);
-    return interrupted ? 130 : exitCode(gates);
+    if (interrupted) return 130;
+    const gateCode = exitCode(gates);
+    // A regression or error wins; otherwise an incomplete full-set run is not a pass.
+    return gateCode === 0 && incomplete ? 3 : gateCode;
   } finally {
     process.off("SIGINT", onSigint);
     process.off("SIGBREAK", onSigint);

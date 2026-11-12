@@ -74,6 +74,28 @@ class ConceptNoteChapterDraftOutput(BaseModel):
     )
 
 
+class ChapterSupportRevision(BaseModel):
+    """One draft passage the inputs do not fully support, and its replacement.
+
+    Whitespace is kept as returned because ``before`` must match the draft exactly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    before: str = Field(min_length=1, max_length=8_000)
+    after: str = Field(max_length=8_000)
+    reason: str = Field(min_length=1, max_length=1_000)
+
+
+class ChapterSupportReview(BaseModel):
+    """Claim-support corrections for one drafted chapter, with any new gaps."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    revisions: list[ChapterSupportRevision] = Field(default_factory=list, max_length=30)
+    gaps: list[ConceptNoteDraftGapOutput] = Field(default_factory=list, max_length=30)
+
+
 class ConceptNoteGapResolutionResponse(BaseModel):
     """Latest append-only resolution event for one gap."""
 

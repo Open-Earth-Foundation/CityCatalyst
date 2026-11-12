@@ -27,6 +27,8 @@ export interface PlanoClimaLink {
   /** The strongest match among the passages that cite the action. */
   match: PolicyMatch;
   pages: number[];
+  /** The cited passages, strongest match first: Portuguese text as published. */
+  passages: { page: number; match: PolicyMatch; pt: string }[];
 }
 
 /**
@@ -39,20 +41,25 @@ export function planoClimaPlans(action: AdaptationAction): PlanoClimaLink[] {
   for (const e of action.policy.evidence) {
     if (!isPlanoClimaDocument(e.document)) continue;
     const prev = byDoc.get(e.document);
+    const passage = { page: e.page, match: e.match, pt: e.pt };
     if (!prev) {
       byDoc.set(e.document, {
         document: e.document,
         match: e.match,
         pages: [e.page],
+        passages: [passage],
       });
     } else {
       if (MATCH_RANK[e.match] < MATCH_RANK[prev.match]) prev.match = e.match;
       if (!prev.pages.includes(e.page)) prev.pages.push(e.page);
+      if (!prev.passages.some((x) => x.pt === e.pt))
+        prev.passages.push(passage);
     }
   }
-  return [...byDoc.values()].sort(
-    (a, b) => MATCH_RANK[a.match] - MATCH_RANK[b.match],
-  );
+  const plans = [...byDoc.values()];
+  for (const plan of plans)
+    plan.passages.sort((a, b) => MATCH_RANK[a.match] - MATCH_RANK[b.match]);
+  return plans.sort((a, b) => MATCH_RANK[a.match] - MATCH_RANK[b.match]);
 }
 
 /** Short name of a sectoral plan, for filters ("Recursos Hídricos"). */

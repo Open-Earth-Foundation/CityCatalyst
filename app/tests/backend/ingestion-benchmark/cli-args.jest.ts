@@ -78,3 +78,10 @@ describe("parseArgs --rescore", () => {
     ).toThrow("a rescore cannot update the baseline");
   });
 });
+
+describe("parseArgs --all", () => {
+  it("parses --all", () => {
+    expect(parseArgs(["--all"]).all).toBe(true);
+    expect(parseArgs(["--cases", "C-004"]).all).toBe(false);
+  });
+});

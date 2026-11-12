@@ -19,6 +19,7 @@ import type {
   RunSummary,
 } from "@/backend/ingestion-benchmark/report";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 
 const REQUIRED_ATTEMPTS = 3;
@@ -57,6 +58,8 @@ export type BaselineEntry = {
   ocrModel: string | null;
   promptHash: string | null;
   testSetVersion: string;
+  /** SCORER_VERSION the verdict was computed with; absent on entries before it existed. */
+  scorerVersion?: string;
   runFolder: string;
   date: string;
 };
@@ -100,7 +103,13 @@ export function compareWithBaseline(args: {
   if (!entry) {
     return { id, status: "no baseline", baseline: null, rescored: false };
   }
-  if (entry.testSetVersion === currentVersion) {
+  // A different scorer still allows the comparison once the stored values are
+  // rescored; only a different test set can make the baseline stale.
+  const sameVersion = entry.testSetVersion === currentVersion;
+  const sameScorer = entry.scorerVersion === SCORER_VERSION;
+  // An entry from another scorer version (or none) is rescored from its
+  // run folder to recover it; when that fails, the stored verdict is used.
+  if (sameVersion && sameScorer) {
     return {
       id,
       status: "compared",
@@ -108,13 +117,16 @@ export function compareWithBaseline(args: {
       rescored: false,
     };
   }
-  const stale = (cause: string): Comparison => ({
-    id,
-    status: "baseline stale",
-    reason: `baseline stale: ${cause}`,
-    baseline: null,
-    rescored: false,
-  });
+  const stale = (cause: string): Comparison =>
+    sameVersion
+      ? { id, status: "compared", baseline: entry.verdict, rescored: false }
+      : {
+          id,
+          status: "baseline stale",
+          reason: `baseline stale: ${cause}`,
+          baseline: null,
+          rescored: false,
+        };
   const where = `${entry.runFolder}/results.json`;
   try {
     const file = join(runsRoot, entry.runFolder, "results.json");

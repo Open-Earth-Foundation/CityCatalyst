@@ -18,6 +18,7 @@ import {
   appendIndexLine,
   INDEX_HEADER,
   renderIndexLine,
+  renderBaselineChange,
   renderReport,
   runFolderName,
   writeRunArtifact,
@@ -345,7 +346,7 @@ describe("report", () => {
       "- Not recorded in the baseline: C-017 (approve_error)",
     );
     expect(report).toContain(
-      "- Held rows included automatically at approve: C-018 (4)",
+      "- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): C-018 (4)",
     );
   });
 
@@ -560,5 +561,69 @@ describe("report", () => {
     });
     // In memory the full score stays available to the gates and the report.
     expect(r.runs[0].score?.missingRows).toHaveLength(1);
+  });
+});
+
+describe("change from the baseline and incomplete runs", () => {
+  const base = (id: string, recall: number, passed: number): CaseVerdict => ({
+    ...verdict(result(id, recall)),
+    id,
+    block: "validated",
+    eligible: true,
+    attempts: 3,
+    attemptsPassed: passed,
+    recallFailedAsZero: recall,
+  });
+  const gateFor = (id: string, baseline: CaseVerdict | null): CaseGate => ({
+    id,
+    verdict: "ok",
+    reasons: [],
+    costUsd: null,
+    forecastUsd: null,
+    lines: [],
+    baseline,
+  });
+
+  it("shows baseline, now and the difference per block and per case", () => {
+    const now = [base("C-004", 0.8, 3), base("C-005", 0.4, 1)];
+    const lines = renderBaselineChange(now, [
+      gateFor("C-004", base("C-004", 0.7, 2)),
+      gateFor("C-005", base("C-005", 0.5, 2)),
+    ]).join("\n");
+    expect(lines).toContain("## Change from the baseline");
+    expect(lines).toContain("### validated (2 cases with a baseline)");
+    // Headline recall: (0.7 + 0.5) / 2 = 60% before, (0.8 + 0.4) / 2 = 60% now.
+    expect(lines).toContain("| Headline recall | 60% | 60% | +0 pts |");
+    expect(lines).toContain("| Attempts passing | 67% | 67% | +0 pts |");
+    expect(lines).toContain(
+      "| C-004 | validated | 70% | 80% | +10 pts | 2/3 / 3/3 | ok |",
+    );
+    expect(lines).toContain(
+      "| C-005 | validated | 50% | 40% | -10 pts | 2/3 / 1/3 | ok |",
+    );
+  });
+
+  it("says when no case has a baseline", () => {
+    expect(
+      renderBaselineChange(
+        [base("C-004", 0.8, 3)],
+        [gateFor("C-004", null)],
+      ).join("\n"),
+    ).toContain("No case in this run has a baseline");
+  });
+
+  it("marks an incomplete full-set run in the title and lists what is missing", () => {
+    const s = {
+      ...summary([]),
+      incomplete: {
+        missing: [{ id: "C-004", reason: "PDF not found in pdfDir" }],
+        unfinished: ["C-010"],
+      },
+    };
+    const report = render(s, []);
+    expect(report).toContain(" - INCOMPLETE");
+    expect(report).toContain("C-004 (PDF not found in pdfDir)");
+    expect(report).toContain("Did not finish every attempt: C-010");
+    expect(renderIndexLine(s, [], "f")).toContain("(incomplete)");
   });
 });

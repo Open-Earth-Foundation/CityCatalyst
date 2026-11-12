@@ -17,6 +17,8 @@ export type SelectionInput = {
   cases?: string;
   set?: Block;
   eligible?: boolean;
+  /** Every case in the manifest, run in groups of MAX_FILES_PER_RUN. */
+  all?: boolean;
 };
 
 export const MAX_FILES_PER_RUN = 10;
@@ -39,15 +41,18 @@ export function selectCases(
   input: SelectionInput,
 ): CaseManifestEntry[] {
   const hasCases = input.cases !== undefined && input.cases.trim() !== "";
-  if (hasCases && input.set) {
-    throw new SelectionError("Use either --cases or --set, not both.");
+  const sources = [hasCases, !!input.set, !!input.all].filter(Boolean).length;
+  if (sources > 1) {
+    throw new SelectionError("Use only one of --cases, --set or --all.");
   }
-  if (!hasCases && !input.set) {
-    throw new SelectionError("Provide --cases or --set.");
+  if (sources === 0) {
+    throw new SelectionError("Provide --cases, --set or --all.");
   }
 
   let selected: CaseManifestEntry[];
-  if (hasCases) {
+  if (input.all) {
+    selected = [...manifest];
+  } else if (hasCases) {
     // Ids are case-insensitive; a repeated id is one file.
     const wanted = [
       ...new Set(
@@ -76,7 +81,15 @@ export function selectCases(
     selected = selected.filter((c) => c.textTables === true && !c.totalOnly);
   }
 
-  if (selected.length > MAX_FILES_PER_RUN) {
+  if (selected.length === 0) {
+    throw new SelectionError(
+      input.eligible
+        ? "No case matches the selection: --eligible keeps only cases with textTables: true that are not total-only."
+        : "No case matches the selection.",
+    );
+  }
+
+  if (!input.all && selected.length > MAX_FILES_PER_RUN) {
     throw new SelectionError(
       `${selected.length} files exceed the maximum of ${MAX_FILES_PER_RUN} per run: ${selected
         .map((c) => c.id)
@@ -85,4 +98,13 @@ export function selectCases(
     );
   }
   return selected;
+}
+
+/** Splits a selection into groups of at most MAX_FILES_PER_RUN cases, in order. */
+export function groupsOf<T>(items: T[], size = MAX_FILES_PER_RUN): T[][] {
+  const groups: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    groups.push(items.slice(i, i + size));
+  }
+  return groups;
 }

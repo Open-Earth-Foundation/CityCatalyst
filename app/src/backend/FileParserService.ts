@@ -1,6 +1,16 @@
 import Excel from "exceljs";
 import { parse } from "csv-parse";
 import { Readable } from "stream";
+import {
+  cirisMissingEcrf3,
+  cirisSheetsToParse,
+  filterSpreadsheetToSheets,
+  isCirisSheetList,
+  listSpreadsheetSheetNames,
+  preferEcrf3SheetName,
+  sheetNameLooksLikeEcrf3,
+} from "@/backend/ciris-workbook";
+import { logger } from "@/services/logger";
 
 export interface ParsedSheet {
   name: string;
@@ -16,6 +26,10 @@ export interface ParsedFileData {
   sheets: ParsedSheet[];
   primarySheet?: ParsedSheet; // The main data sheet (eCRF_3 for eCRF files)
   fileType: "xlsx" | "csv";
+  /** All worksheet names in the source package before selective load. */
+  sourceSheetNames?: string[];
+  /** CIRIS/CDP multi-sheet workbook (eCRF_3 + helper tabs). */
+  isCIRIS?: boolean;
 }
 
 /**
@@ -24,16 +38,46 @@ export interface ParsedFileData {
  */
 export default class FileParserService {
   /**
-   * Parse an XLSX file from a buffer
-   * @param buffer - File buffer
-   * @returns ParsedFileData with sheets and data
+   * Parse an XLSX/XLSM file from a buffer.
+   * CIRIS workbooks only materialize eCRF_3 (+ Report/Overview) so ExcelJS
+   * does not expand the full ~53-sheet template into memory.
    */
   public static async parseXLSX(buffer: Buffer): Promise<ParsedFileData> {
+    let loadBuffer = buffer;
+    let sourceSheetNames: string[] | undefined;
+    let isCIRIS = false;
+
+    try {
+      sourceSheetNames = await listSpreadsheetSheetNames(buffer);
+      isCIRIS =
+        isCirisSheetList(sourceSheetNames) ||
+        cirisMissingEcrf3(sourceSheetNames);
+      if (isCIRIS) {
+        const keep = cirisSheetsToParse(sourceSheetNames);
+        if (keep.length > 0) {
+          loadBuffer = await filterSpreadsheetToSheets(buffer, keep);
+          logger.info(
+            {
+              ingest: true,
+              sheetCount: sourceSheetNames.length,
+              keptSheets: keep,
+            },
+            "[ciris] selective sheet parse",
+          );
+        }
+      }
+    } catch (error) {
+      logger.warn(
+        { err: error },
+        "[ciris] selective sheet filter failed; loading full workbook",
+      );
+    }
+
     const workbook = new Excel.Workbook();
     // exceljs's Buffer type comes from a different @types/node snapshot than
     // this project's, so the two Buffer types don't structurally match.
     await workbook.xlsx.load(
-      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+      loadBuffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
     );
 
     const sheets: ParsedSheet[] = [];
@@ -43,26 +87,67 @@ export default class FileParserService {
       const rows: Record<string, string | number | null>[] = [];
       const rowNumbers: number[] = [];
 
-      // Get headers from first row
+      // Get headers from first row. CIRIS eCRF_3 repeats Fuel/Notation/GHG
+      // headers after its helper block — keep the first occurrence only so
+      // mapping UI and row objects do not show duplicate fields.
       const headerRow = worksheet.getRow(1);
+      let maxCol = 0;
+      const seenHeaders = new Set<string>();
       headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
         const headerValue = cell.value?.toString() || `Column ${colNumber}`;
+        maxCol = Math.max(maxCol, colNumber);
+        if (seenHeaders.has(headerValue)) return;
+        seenHeaders.add(headerValue);
         headers[colNumber] = headerValue;
       });
 
-      // Parse data rows (starting from row 2)
-      for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+      // exceljs rowCount follows the template dimension (eCRF_3 goes to ~500).
+      // Stop at the last row that actually has a cell, but keep empty rows
+      // between the header and that last row so Excel numbering stays aligned.
+      let lastUsedRow = 1;
+      worksheet.eachRow({ includeEmpty: false }, (row) => {
+        lastUsedRow = Math.max(lastUsedRow, row.number);
+        row.eachCell({ includeEmpty: false }, (_cell, colNumber) => {
+          maxCol = Math.max(maxCol, colNumber);
+        });
+      });
+
+      // CIRIS Report/Overview sheets have sparse/empty header rows; still keep
+      // numeric total cells under stable Column N keys. Do not invent headers
+      // for eCRF_3 (would surface as unmapped Column N in the mapping UI).
+      const synthesizeMissingHeaders =
+        !sheetNameLooksLikeEcrf3(worksheet.name) &&
+        (/^report$/i.test(worksheet.name) ||
+          /^results_overview$/i.test(worksheet.name));
+      if (synthesizeMissingHeaders) {
+        for (let col = 1; col <= maxCol; col++) {
+          if (!headers[col]) headers[col] = `Column ${col}`;
+        }
+      }
+
+      // Data starts at Excel row 2 (row 1 is the header; exceljs is 1-based).
+      for (let rowNum = 2; rowNum <= lastUsedRow; rowNum++) {
         const row = worksheet.getRow(rowNum);
         const rowData: Record<string, string | number | null> = {};
 
-        headers.forEach((header, colNumber) => {
-          if (header) {
-            const cell = row.getCell(colNumber);
-            rowData[header] = this.normalizeCellValue(cell.value);
+        if (synthesizeMissingHeaders) {
+          for (let colNumber = 1; colNumber <= maxCol; colNumber++) {
+            const header = headers[colNumber];
+            if (!header) continue;
+            rowData[header] = this.normalizeCellValue(
+              row.getCell(colNumber).value,
+            );
           }
-        });
+        } else {
+          headers.forEach((header, colNumber) => {
+            if (header) {
+              rowData[header] = this.normalizeCellValue(
+                row.getCell(colNumber).value,
+              );
+            }
+          });
+        }
 
-        // Keep blank data rows so "rows in file" and skip counts match the sheet.
         rows.push(rowData);
         rowNumbers.push(rowNum);
       }
@@ -72,14 +157,18 @@ export default class FileParserService {
         headers: headers.filter(Boolean),
         rows,
         rowNumbers,
-        rowCount: worksheet.rowCount,
-        columnCount: worksheet.columnCount,
+        rowCount: lastUsedRow,
+        columnCount: Math.max(worksheet.columnCount, maxCol),
       });
     });
 
-    // Identify primary sheet (eCRF_3 for eCRF files, or first sheet with data for others)
+    // Prefer exact eCRF_3 over Light_eCRF_3 (includes() matched Light first).
+    const preferredName = preferEcrf3SheetName(sheets.map((s) => s.name));
     const primarySheet =
-      sheets.find((s) => s.name.toLowerCase().includes("ecrf_3")) ||
+      (preferredName
+        ? sheets.find((s) => s.name === preferredName)
+        : undefined) ||
+      sheets.find((s) => sheetNameLooksLikeEcrf3(s.name)) ||
       sheets.find((s) => s.rows.length > 0) ||
       sheets[0];
 
@@ -87,6 +176,8 @@ export default class FileParserService {
       sheets,
       primarySheet,
       fileType: "xlsx",
+      sourceSheetNames,
+      isCIRIS: isCIRIS || undefined,
     };
   }
 

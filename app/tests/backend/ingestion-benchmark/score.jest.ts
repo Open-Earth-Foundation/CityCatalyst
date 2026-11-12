@@ -296,12 +296,22 @@ describe("scoreFile", () => {
     expect(score.rowPrecision).toBe(1);
   });
 
-  it("keeps the GPC exclusions out of the stored total", () => {
+  it("scores the application total; GPC exclusions it misses only adjust a diagnostic", () => {
+    // The app stores 1,100 t but flags none of the excluded references.
     const score = scoreFile(keyFile([], { expectedTotal: 100 }), [
       stored("I.1.1", "1", 100),
-      stored("I.4.4", "1", 7),
-      stored("III.4.3", "3", 608),
-      stored("VI.1", "1", 1188394),
+      stored("VI.1", "1", 1000),
+    ]);
+    expect(score.storedTotal).toBe(1100);
+    expect(score.totalWithinTolerance).toBe(false);
+    expect(score.adjustedTotal).toBe(100);
+    expect(score.adjustedWithinTolerance).toBe(true);
+  });
+
+  it("leaves values the app omits out of its total", () => {
+    const score = scoreFile(keyFile([], { expectedTotal: 100 }), [
+      stored("I.1.1", "1", 100),
+      stored("I.4.4", "1", 7, { omit: true }),
     ]);
     expect(score.storedTotal).toBe(100);
     expect(score.totalWithinTolerance).toBe(true);
@@ -329,5 +339,58 @@ describe("scoreFile", () => {
     expect(score.valueAccuracy).toBeNull();
     expect(score.totalWithinTolerance).toBe(true);
     expect(score.storedTotal).toBe(300);
+  });
+});
+
+describe("scoreFile review cases (CC-1124)", () => {
+  it("keeps an explicit scope on a parent-reference row", () => {
+    const key = keyFile(
+      [row({ gpc: "I.1", scope: "1", value: 100, rowType: "Value" })],
+      { expectedTotal: 100 },
+    );
+    const wrongScope = scoreFile(key, [stored("I.1.2", "2", 100)]);
+    expect(wrongScope.rowRecall).toBe(0);
+    const rightScope = scoreFile(key, [stored("I.1.1", "1", 100)]);
+    expect(rightScope.rowRecall).toBe(1);
+  });
+
+  it("sums across scopes when the key gives no scope", () => {
+    const key = keyFile(
+      [row({ gpc: "I.1", scope: "", value: 100, rowType: "Value" })],
+      { expectedTotal: 100 },
+    );
+    const score = scoreFile(key, [
+      stored("I.1.1", "1", 60),
+      stored("I.1.2", "2", 40),
+    ]);
+    expect(score.rowRecall).toBe(1);
+  });
+
+  it("does not let a repeated value lower classification accuracy", () => {
+    const key = keyFile(
+      [
+        row({ row: 1, gpc: "I.1.1", scope: "1", value: 100, rowType: "Value" }),
+        row({ row: 2, gpc: "I.2.1", scope: "1", value: 100, rowType: "Value" }),
+      ],
+      { expectedTotal: 200 },
+    );
+    const score = scoreFile(key, [
+      stored("I.1.1", "1", 100),
+      stored("I.2.1", "1", 100),
+    ]);
+    expect(score.rowRecall).toBe(1);
+    expect(score.classificationAccuracy).toBe(1);
+  });
+
+  it("counts an absent zero aggregate in both value-accuracy counters", () => {
+    const key = keyFile(
+      [
+        row({ row: 1, gpc: "I.1.1", scope: "1", value: 100, rowType: "Value" }),
+        row({ row: 2, gpc: "I.2", scope: "", value: 0, rowType: "Value" }),
+      ],
+      { expectedTotal: 100 },
+    );
+    const score = scoreFile(key, [stored("I.1.1", "1", 100)]);
+    expect(score.valueAccuracy).toBe(1);
   });
 });

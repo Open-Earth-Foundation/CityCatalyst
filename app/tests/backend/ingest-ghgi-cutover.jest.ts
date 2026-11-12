@@ -46,7 +46,7 @@ function ecrfResult(totalCO2e: number): ECRFImportResult {
 }
 
 describe("GHGI runner cutover helpers (CC-1218)", () => {
-  it("sends deterministic eCRF/near-eCRF through the runner, not PDF/CIRIS", () => {
+  it("sends deterministic eCRF/near-eCRF/CIRIS through the runner, not PDF", () => {
     expect(
       shouldCommitViaGhgiRunner({
         fileType: "csv",
@@ -70,7 +70,7 @@ describe("GHGI runner cutover helpers (CC-1218)", () => {
         fileType: "xlsx",
         validationResults: { isCIRIS: true },
       }),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("auto-commits signed CO2e eCRF through GhgiIngestPlugin", async () => {
@@ -147,7 +147,7 @@ describe("GHGI runner cutover helpers (CC-1218)", () => {
         errors: [],
         warnings: [],
         fileType: "xlsx",
-        isCIRIS: true,
+        isBIOMATEC: true,
       }),
       importEcrf: async () => {
         throw new Error("commit should not run");
@@ -156,8 +156,8 @@ describe("GHGI runner cutover helpers (CC-1218)", () => {
     const store = new MemoryIngestStore();
     const runner = new IngestRunner(store, new MemoryIngestDocumentPool());
     const { item } = await ingestGhgiBuffer({
-      buffer: Buffer.from("ciris"),
-      originalFileName: "ciris.xlsx",
+      buffer: Buffer.from("biomatec"),
+      originalFileName: "biomatec.xlsx",
       cityId: CITY_ID,
       inventoryId: INVENTORY_ID,
       userId: USER_A,

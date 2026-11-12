@@ -68,6 +68,19 @@ export type CaseVerdict = {
   casePasses: boolean;
   exploratory: boolean;
   recallFailedAsZero: number | null;
+  /**
+   * Recall of each attempt, failed attempts as 0. The gate compares a new mean
+   * with the worst of these. Absent on baseline entries recorded before it existed.
+   */
+  attemptRecalls?: number[] | null;
+  /**
+   * How far each attempt's stored total is from the expected one (stored /
+   * expected or its inverse, 1 = exact); null for a failed attempt or no
+   * expected total. Absent on baseline entries recorded before it existed.
+   */
+  attemptTotalFactors?: (number | null)[];
+  /** The manifest's textTables for the case; absent on older baseline entries. */
+  textTables?: boolean | null;
   recallScoredOnly: number | null;
   /** Spec 5.4, means over the scored attempts. */
   rowPrecision: number | null;
@@ -123,6 +136,16 @@ export function caseVerdict(
       runs.length === REQUIRED_ATTEMPTS && attemptsPassed === REQUIRED_ATTEMPTS,
     exploratory: runs.length !== REQUIRED_ATTEMPTS,
     recallFailedAsZero: hasRows ? mean(runs.map(recallOf)) : null,
+    attemptRecalls: hasRows ? runs.map(recallOf) : null,
+    attemptTotalFactors: runs.map((run) => {
+      const score = run.score;
+      if (run.failureMode !== "scored" || score?.expectedTotal == null) {
+        return null;
+      }
+      const factor = offByFactor(score.storedTotal, score.expectedTotal);
+      return Number.isFinite(factor) ? factor : null;
+    }),
+    textTables: result.textTables ?? null,
     recallScoredOnly: hasRows
       ? mean(
           scored.flatMap((run) =>
@@ -167,6 +190,12 @@ export type BlockSummary = {
   recallScoredOnly: number | null;
   /** Eligible cases with a scored-attempt recall that went into the figure above. */
   recallScoredOnlyCases: number;
+  /**
+   * Recall (failed attempts as 0) over the row-scored cases whose textTables is
+   * still unknown in the manifest. Provisional: shown until they are classified.
+   */
+  provisionalRecall: number | null;
+  provisionalRecallCases: number;
   casesTotalWithinTolerance: number;
   attemptPassShare: number | null;
   tenXAttempts: number;
@@ -187,6 +216,7 @@ export function blockSummaries(
     const cases = verdicts.filter((v) => v.block === block);
     if (cases.length === 0) return [];
     const eligible = cases.filter((v) => v.eligible === true);
+    const unknownTables = cases.filter((v) => v.textTables === null);
     const attempts = cases.reduce((sum, v) => sum + v.attempts, 0);
     const wrong = cases.reduce((sum, v) => sum + v.wrongTotalAttempts, 0);
     const warned = cases.reduce(
@@ -202,6 +232,12 @@ export function blockSummaries(
         headlineRecallCases: countOf(eligible.map((v) => v.recallFailedAsZero)),
         recallScoredOnly: meanOf(eligible.map((v) => v.recallScoredOnly)),
         recallScoredOnlyCases: countOf(eligible.map((v) => v.recallScoredOnly)),
+        provisionalRecall: meanOf(
+          unknownTables.map((v) => v.recallFailedAsZero),
+        ),
+        provisionalRecallCases: countOf(
+          unknownTables.map((v) => v.recallFailedAsZero),
+        ),
         casesTotalWithinTolerance: cases.filter(
           (v) => v.totalWithinToleranceAll === true,
         ).length,

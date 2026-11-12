@@ -1,7 +1,9 @@
 import {
+  GRID_GENERATION_GPC_REF,
   isImportedWasteRef,
   isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
+import { hasLossOrConsumptionLabel } from "@/util/GHGI/activity-class-rules";
 import type { ECRFImportResult } from "@/backend/ECRFImportService";
 import {
   importRowSkipReason,
@@ -20,6 +22,7 @@ import type {
   ImportRowPreview,
   ImportRowReview,
 } from "@/util/types";
+import { excelRowNumber } from "@/util/excel-row-number";
 
 type ImportRow = ECRFImportResult["rows"][number];
 
@@ -58,12 +61,35 @@ function finalPairConflict(row: ImportRow): boolean {
   );
 }
 
-function reviewIssue(row: ImportRow): ImportRowIssue | null {
+/**
+ * A valued row the model placed on I.4.4 (left out of the total), without the
+ * document naming that reference. Genuine grid supply may stay there; anything
+ * else, or a label about losses or consumption, needs a decision. Other
+ * omitted references (III.x.3, VI.1) keep their own handling. Rows without an
+ * activity class are legacy and are not held.
+ */
+function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
+  const review = row.review;
+  const ref = review?.suggestedRefNo ?? row.gpcRefNo;
+  if (!review || ref !== GRID_GENERATION_GPC_REF) return false;
+  // A gas-only row (no totalCO2e) still carries a value.
+  if (resolveImportedTotalCO2e(row) == null || review.refSource === "document")
+    return false;
+  if (!("activityClass" in review)) return false;
+  return (
+    review.activityClass !== "grid_supply" ||
+    hasLossOrConsumptionLabel(review.category, review.subsector)
+  );
+}
+
+export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
   if (row.review?.refSource === "document") return null;
+  if (isExcludedReferenceUnconfirmed(row))
+    return "excluded-reference-unconfirmed";
   return isImportedWasteRef(ref) ? "direction-unconfirmed" : null;
 }
 
@@ -93,7 +119,14 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     page: review.page,
     source: review.source,
     decision: review.decision,
-    referenceOptions: siblingReferences(suggestedRefNo),
+    referenceOptions: Array.from(
+      new Set([
+        ...siblingReferences(suggestedRefNo),
+        ...(issue === "excluded-reference-unconfirmed"
+          ? ["I.6.2", "I.6.3"]
+          : []),
+      ]),
+    ),
   };
 }
 
@@ -149,7 +182,7 @@ export async function previewImportRows(
 
   for (const row of importResult.rows) {
     const outcome = {
-      rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+      rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
       gpcRefNo: row.gpcRefNo || null,
       sourceLabel: row.sourceLabel ?? null,
       notationKey: row.notationKey ?? null,
@@ -182,7 +215,7 @@ export async function previewImportRows(
     const held = pending.get(row.rowIndex);
     if (held) {
       outcomes.push({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
@@ -207,7 +240,7 @@ export async function previewImportRows(
         : null;
       if (tonnes != null) omittedFromTotalTonnes += tonnes;
       outcomes.push({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
@@ -236,10 +269,30 @@ export async function previewImportRows(
     scopeWarnings: importedRows
       .filter((row) => row.review && scopeFromLabel(row.review.scope) == null)
       .map((row) => ({
-        rowNumber: row.sourceRowNumber ?? row.rowIndex + 1,
+        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
         gpcRefNo: row.gpcRefNo,
         scope: row.review?.scope ?? null,
       })),
+    // Rows held for a decision are listed in reviewRows, not here.
+    inferredScopeRows: importedRows
+      .filter(
+        (row) =>
+          row.review?.scopeSource === "inferred" && !pending.has(row.rowIndex),
+      )
+      .map((row) => {
+        const scope = row.review?.scope ?? null;
+        const original = row.review?.originalScope?.trim() || null;
+        // "Scope 2" and "2" are the same scope, so compare normalized values.
+        const differs =
+          original != null &&
+          scopeFromLabel(original) !== scopeFromLabel(scope);
+        return {
+          rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
+          gpcRefNo: row.gpcRefNo,
+          scope,
+          originalScope: differs ? original : null,
+        };
+      }),
     omittedFromTotalTonnes,
     rows: outcomes,
   };

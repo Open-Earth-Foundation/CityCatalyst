@@ -421,6 +421,36 @@ async def load_refresh_state(
         ) from exc
 
 
+async def load_selected_sources(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+) -> list[SelectedSource]:
+    """Read the owned run's persisted selected sources; empty without a bundle."""
+    try:
+        async with session_factory() as session:
+            await _require_owned_run(
+                session=session,
+                user_id=user_id,
+                run_id=run_id,
+                lock=False,
+            )
+            bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+            return normalize_bundle(
+                bundle_row.context_bundle if bundle_row is not None else None
+            ).selected_sources
+    except ContextBundlePersistenceError:
+        raise
+    except (OSError, SQLAlchemyError) as exc:
+        logger.exception("Failed to read Concept Note selected sources")
+        raise ContextBundlePersistenceError(
+            "cnb_storage_unavailable",
+            503,
+            "Concept Note context storage is unavailable",
+        ) from exc
+
+
 async def fail_build(
     *,
     session_factory: async_sessionmaker[AsyncSession],

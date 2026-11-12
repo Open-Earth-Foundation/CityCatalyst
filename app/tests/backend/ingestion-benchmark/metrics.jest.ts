@@ -322,6 +322,21 @@ describe("blockSummaries", () => {
     expect(v.recallScoredOnlyCases).toBe(2);
   });
 
+  it("reports a provisional recall over row-scored cases with unknown textTables", () => {
+    const unknown = {
+      ...verdictFor("A", "validated", false, false, 0.6),
+      textTables: null,
+    };
+    const v = blockSummaries([unknown], {
+      validated: 1,
+      "held-out": 0,
+      dev: 0,
+    })[0];
+    expect(v.headlineRecall).toBeNull();
+    expect(v.provisionalRecall).toBeCloseTo((0.6 + 1 + 1) / 3);
+    expect(v.provisionalRecallCases).toBe(1);
+  });
+
   it("counts zero cases when every case is total-only", () => {
     const v = blockSummaries([verdictFor("C", "validated", true, true, 0)], {
       validated: 1,

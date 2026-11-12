@@ -255,6 +255,7 @@ export async function logBenchmarkRun(args: {
       prompt_hash: none(summary.promptHash),
       input_representation: none(summary.inputRepresentation),
       test_set_version: none(summary.testSetVersion),
+      scorer_version: none(summary.scorerVersion),
       selection: summary.selection.join(",") || "none",
       exploratory: String(summary.exploratory),
       interrupted: String(summary.interrupted),

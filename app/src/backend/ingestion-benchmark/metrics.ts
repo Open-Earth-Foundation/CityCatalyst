@@ -73,6 +73,12 @@ export type CaseVerdict = {
    * with the worst of these. Absent on baseline entries recorded before it existed.
    */
   attemptRecalls?: number[] | null;
+  /**
+   * How far each attempt's stored total is from the expected one (stored /
+   * expected or its inverse, 1 = exact); null for a failed attempt or no
+   * expected total. Absent on baseline entries recorded before it existed.
+   */
+  attemptTotalFactors?: (number | null)[];
   /** The manifest's textTables for the case; absent on older baseline entries. */
   textTables?: boolean | null;
   recallScoredOnly: number | null;
@@ -131,6 +137,14 @@ export function caseVerdict(
     exploratory: runs.length !== REQUIRED_ATTEMPTS,
     recallFailedAsZero: hasRows ? mean(runs.map(recallOf)) : null,
     attemptRecalls: hasRows ? runs.map(recallOf) : null,
+    attemptTotalFactors: runs.map((run) => {
+      const score = run.score;
+      if (run.failureMode !== "scored" || score?.expectedTotal == null) {
+        return null;
+      }
+      const factor = offByFactor(score.storedTotal, score.expectedTotal);
+      return Number.isFinite(factor) ? factor : null;
+    }),
     textTables: result.textTables ?? null,
     recallScoredOnly: hasRows
       ? mean(

@@ -220,12 +220,16 @@ export function scoreFile(
         })),
       );
     }
-    const anywhere = [...groups.entries()].find(
-      ([, g]) => Math.abs(g.valueT - expected) <= slack,
-    );
-    if (anywhere) {
+    // Classification: the value is somewhere in the stored groups; it is right
+    // when its own reference and scope hold it. Checking its own group first
+    // keeps a repeated value from depending on the order of the groups.
+    const own = !!group && Math.abs(group.valueT - expected) <= slack;
+    const elsewhere =
+      own ||
+      [...groups.values()].some((g) => Math.abs(g.valueT - expected) <= slack);
+    if (elsewhere) {
       classDen += rows.length;
-      if (anywhere[0] === key) classRight += rows.length;
+      if (own) classRight += rows.length;
     }
   }
 
@@ -250,12 +254,24 @@ export function scoreFile(
       }
       continue;
     }
-    const under = [...groups.entries()].filter(([, g]) =>
-      patterns.some((pattern) => matchesRef(pattern, g.gpc)),
+    // A scope given in the key is kept; only a row without one sums across scopes.
+    const rowScope = normalizeScope(row.scope);
+    const under = [...groups.entries()].filter(
+      ([, g]) =>
+        patterns.some((pattern) => matchesRef(pattern, g.gpc)) &&
+        (rowScope === "" || g.scope === rowScope),
     );
     const sum = under.reduce((acc, [, g]) => acc + g.valueT, 0);
-    if (under.length > 0) foundByRef += 1;
-    if (Math.abs(sum - (row.value ?? 0)) <= tolOf(row.value)) {
+    // Same zero-as-absent rule as the strict rows, for both value counters.
+    const zeroMatch =
+      profile.zeroRowMatchesAbsent &&
+      under.length === 0 &&
+      Math.abs(row.value ?? 0) <= tolOf(row.value);
+    if (under.length > 0 || zeroMatch) foundByRef += 1;
+    if (
+      zeroMatch ||
+      (under.length > 0 && Math.abs(sum - (row.value ?? 0)) <= tolOf(row.value))
+    ) {
       matchedRows += 1;
       valueRight += 1;
       classDen += 1;

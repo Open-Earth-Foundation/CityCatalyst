@@ -331,3 +331,56 @@ describe("scoreFile", () => {
     expect(score.storedTotal).toBe(300);
   });
 });
+
+describe("scoreFile review cases (CC-1124)", () => {
+  it("keeps an explicit scope on a parent-reference row", () => {
+    const key = keyFile(
+      [row({ gpc: "I.1", scope: "1", value: 100, rowType: "Value" })],
+      { expectedTotal: 100 },
+    );
+    const wrongScope = scoreFile(key, [stored("I.1.2", "2", 100)]);
+    expect(wrongScope.rowRecall).toBe(0);
+    const rightScope = scoreFile(key, [stored("I.1.1", "1", 100)]);
+    expect(rightScope.rowRecall).toBe(1);
+  });
+
+  it("sums across scopes when the key gives no scope", () => {
+    const key = keyFile(
+      [row({ gpc: "I.1", scope: "", value: 100, rowType: "Value" })],
+      { expectedTotal: 100 },
+    );
+    const score = scoreFile(key, [
+      stored("I.1.1", "1", 60),
+      stored("I.1.2", "2", 40),
+    ]);
+    expect(score.rowRecall).toBe(1);
+  });
+
+  it("does not let a repeated value lower classification accuracy", () => {
+    const key = keyFile(
+      [
+        row({ row: 1, gpc: "I.1.1", scope: "1", value: 100, rowType: "Value" }),
+        row({ row: 2, gpc: "I.2.1", scope: "1", value: 100, rowType: "Value" }),
+      ],
+      { expectedTotal: 200 },
+    );
+    const score = scoreFile(key, [
+      stored("I.1.1", "1", 100),
+      stored("I.2.1", "1", 100),
+    ]);
+    expect(score.rowRecall).toBe(1);
+    expect(score.classificationAccuracy).toBe(1);
+  });
+
+  it("counts an absent zero aggregate in both value-accuracy counters", () => {
+    const key = keyFile(
+      [
+        row({ row: 1, gpc: "I.1.1", scope: "1", value: 100, rowType: "Value" }),
+        row({ row: 2, gpc: "I.2", scope: "", value: 0, rowType: "Value" }),
+      ],
+      { expectedTotal: 100 },
+    );
+    const score = scoreFile(key, [stored("I.1.1", "1", 100)]);
+    expect(score.valueAccuracy).toBe(1);
+  });
+});

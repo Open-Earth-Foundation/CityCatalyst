@@ -132,6 +132,45 @@ describe("gateAgainstBaseline", () => {
     expect(c031.verdict).toBe("ok");
   });
 
+  it("regression: a total-only case loses its only passing attempt", () => {
+    // Expected total 100: baseline totals 100 / 200 / 200, candidate 200 / 200 / 200.
+    const g = gateAgainstBaseline(
+      verdict({
+        recallFailedAsZero: null,
+        casePasses: false,
+        attemptsPassed: 0,
+        attemptTotalFactors: [2, 2, 2],
+      }),
+      compared(
+        verdict({
+          recallFailedAsZero: null,
+          casePasses: false,
+          attemptsPassed: 1,
+          attemptTotalFactors: [1, 2, 2],
+        }),
+      ),
+      null,
+    );
+    expect(g.verdict).toBe("regression");
+    expect(g.reasons.join(" ")).toContain("no attempt passes");
+  });
+
+  it("totals: regression only when every attempt is worse than the worst baseline attempt", () => {
+    const base = verdict({ attemptTotalFactors: [1, 1.5, 1.2] });
+    const within = gateAgainstBaseline(
+      verdict({ attemptTotalFactors: [1.5, 1.4, 1.6] }),
+      compared(base),
+      null,
+    );
+    expect(within.verdict).toBe("ok");
+    const worse = gateAgainstBaseline(
+      verdict({ attemptTotalFactors: [1.8, 2, 1.7] }),
+      compared(base),
+      null,
+    );
+    expect(worse.verdict).toBe("regression");
+  });
+
   it("regression: recall below the worst baseline attempt", () => {
     const g = gateAgainstBaseline(
       verdict({ recallFailedAsZero: 0.5 }),

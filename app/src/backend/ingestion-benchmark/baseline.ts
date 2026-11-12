@@ -101,9 +101,13 @@ export function compareWithBaseline(args: {
     return { id, status: "no baseline", baseline: null, rescored: false };
   }
   const sameVersion = entry.testSetVersion === currentVersion;
-  // An entry recorded before per-attempt recall was stored is rescored from its
+  // An entry recorded before per-attempt recall and totals were stored is rescored from its
   // run folder to recover it; when that fails, the stored verdict is used.
-  if (sameVersion && entry.verdict.attemptRecalls !== undefined) {
+  if (
+    sameVersion &&
+    entry.verdict.attemptRecalls !== undefined &&
+    entry.verdict.attemptTotalFactors !== undefined
+  ) {
     return {
       id,
       status: "compared",

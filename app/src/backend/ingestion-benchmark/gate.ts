@@ -7,8 +7,10 @@
  *   baseline had no such failure;
  * - regression: the case passed before and fails now; its recall dropped more
  *   than 5 points and below the worst baseline attempt (attempts of one case
- *   vary more than 5 points, so a fixed drop alone flags noise); or at least 2
- *   more attempts are 10x off than in the baseline;
+ *   vary more than 5 points, so a fixed drop alone flags noise); no attempt
+ *   passes where the baseline had one; every attempt's total is further off
+ *   than the worst baseline attempt; or at least 2 more attempts are 10x off
+ *   than in the baseline;
  * - over budget: the case cost more than 3 times its forecast;
  * - incomplete: an interrupted run did not finish every attempt of the case, so
  *   it is not compared for regressions or budget;
@@ -120,6 +122,29 @@ export function gateAgainstBaseline(
           text: `recall ${pct(current.recallFailedAsZero)} vs ${pct(base.recallFailedAsZero)} in the baseline (worst baseline attempt ${pct(floor)})`,
         });
       }
+    }
+    if (base.attemptsPassed > 0 && current.attemptsPassed === 0) {
+      hits.push({
+        verdict: "regression",
+        text: `no attempt passes; ${base.attemptsPassed} did in the baseline`,
+      });
+    }
+    // Total error, for every case and the only quality signal on total-only
+    // ones: flagged when even the best attempt is worse than the worst baseline
+    // attempt, so ordinary variation between attempts does not count.
+    const worst = (factors: (number | null)[]) =>
+      Math.max(...factors.map((f) => f ?? Infinity));
+    const best = (factors: (number | null)[]) =>
+      Math.min(...factors.map((f) => f ?? Infinity));
+    if (
+      base.attemptTotalFactors?.length &&
+      current.attemptTotalFactors?.length &&
+      best(current.attemptTotalFactors) > worst(base.attemptTotalFactors)
+    ) {
+      hits.push({
+        verdict: "regression",
+        text: `every total is further off than the worst baseline attempt (best now ${best(current.attemptTotalFactors).toFixed(2)}x vs ${worst(base.attemptTotalFactors).toFixed(2)}x)`,
+      });
     }
     if (current.tenXAttempts >= base.tenXAttempts + TEN_X_MARGIN) {
       hits.push({

@@ -59,6 +59,16 @@ describe("isValueInText", () => {
     [9559215, "(kt CO2e) Total 9,559.2", true],
     [-811512, "Forestry (811,512)", true],
     [-603983, "AFOLU −603,983", true],
+    [-603983, "| AFOLU | -603,983 |", true],
+    [-25639000, "(kt CO2e) Net ( 25,639.0 )", true],
+    // The sign must match: a positive answer is not a printed negative.
+    [25639, "Net emissions (25,639)", false],
+    [25639, "Net emissions −25,639", false],
+    [25639, "Net emissions -25,639", false],
+    [-25639, "Net emissions 25,639", false],
+    // A hyphen joining two numbers or words is not a minus.
+    [2021, "Period 2019-2021", true],
+    [2021, "I.1-2021", true],
     [5000000, "Total 4,876,120", false],
     [9559215, "about 9.56 million", false],
     // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.

@@ -147,25 +147,46 @@ function lastDigitStep(token: string, value: number): number {
 }
 
 /**
- * Every number printed in `text`, parsed with `style`, signs dropped: `(811,512)`
- * and `−603,983` read as 811512 and 603983. `step` is the place value of the last
- * digit (1 for `9,559`, 0.1 for `9,559.2`). A space-grouped run (`9 559 215`)
- * yields the merged number and each token on its own. Tokens that do not parse
- * with the style are skipped.
+ * True when the number printed at `text[start, end)` is negative: a Unicode
+ * minus right before it, a `-` right before it that does not join two words or
+ * numbers (`2019-2021`, `CO2-e`), or parentheses around it alone (`(811,512)`).
+ */
+function isNegativeAt(text: string, start: number, end: number): boolean {
+  const before = text.slice(0, start).replace(/[   ]+$/, "");
+  const after = text.slice(end).replace(/^[   ]+/, "");
+  if (before.endsWith("−")) return true;
+  if (text[start - 1] === "-" && !/[\p{L}\d]/u.test(text[start - 2] ?? "")) {
+    return true;
+  }
+  return before.endsWith("(") && after.startsWith(")");
+}
+
+/**
+ * Every number printed in `text`, parsed with `style`, with its sign:
+ * `(811,512)` and `−603,983` read as -811512 and -603983. `step` is the place
+ * value of the last digit (1 for `9,559`, 0.1 for `9,559.2`). A space-grouped
+ * run (`9 559 215`) yields the merged number and each token on its own. Tokens
+ * that do not parse with the style are skipped.
  */
 export function numbersInText(
   text: string,
   style: NumberStyle,
 ): { value: number; step: number }[] {
   const found: { value: number; step: number }[] = [];
-  const add = (token: string) => {
+  const add = (match: RegExpMatchArray) => {
+    const token = match[0];
     const value = parseNumberString(token, style);
     if (value == null) return;
     const abs = Math.abs(value);
-    found.push({ value: abs, step: lastDigitStep(token, abs) });
+    const start = match.index ?? 0;
+    const negative = isNegativeAt(text, start, start + token.length);
+    found.push({
+      value: negative ? -abs : abs,
+      step: lastDigitStep(token, abs),
+    });
   };
-  for (const match of text.matchAll(NUMBER_TOKEN)) add(match[0]);
-  for (const match of text.matchAll(SPACE_GROUPED)) add(match[0]);
+  for (const match of text.matchAll(NUMBER_TOKEN)) add(match);
+  for (const match of text.matchAll(SPACE_GROUPED)) add(match);
   return found;
 }
 
@@ -187,7 +208,8 @@ function significantDigits(value: number, step: number): number {
 /**
  * True when `raw` (a model value before unit conversion) is printed in `text`:
  * equal up to rounding of the printed figure, or the printed figure times 0.001,
- * 1000 or 1,000,000 up to its rounding. The sign is ignored on both sides.
+ * 1000 or 1,000,000 up to its rounding. The sign must match: 25,639 is not
+ * found in `(25,639)` or `−25,639`.
  *
  * A scaled match needs a printed figure of at least 4 significant digits
  * (`9,559.2` kt matches 9,559,215 t). Shorter figures would match almost any
@@ -210,12 +232,12 @@ export function isValueInNumbers(
   raw: number,
   numbers: { value: number; step: number }[],
 ): boolean {
-  const target = Math.abs(raw);
   return numbers.some(
     ({ value, step }) =>
-      Math.abs(target - value) <= Math.max(0.5, step / 2) ||
-      (significantDigits(value, step) >= MIN_SCALED_DIGITS &&
-        SCALES.some((m) => Math.abs(target - value * m) <= (step * m) / 2)),
+      Math.sign(raw) * Math.sign(value) >= 0 &&
+      (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
+        (significantDigits(Math.abs(value), step) >= MIN_SCALED_DIGITS &&
+          SCALES.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
 }
 

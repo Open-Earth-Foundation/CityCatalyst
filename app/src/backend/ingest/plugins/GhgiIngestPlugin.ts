@@ -54,12 +54,12 @@ function toFile(buffer: Buffer, originalFileName: string): File {
 }
 
 /**
- * GHGI structured import (eCRF / near-eCRF). PDF, CIRIS, BIOMATEC, and
+ * GHGI structured import (eCRF / near-eCRF / CIRIS eCRF_3). PDF, BIOMATEC, and
  * mapping/AI formats are unknown_format so they never call OpenAI.
  */
 export class GhgiIngestPlugin implements IngestPlugin {
   readonly moduleId = "ghgi" as const;
-  readonly allowedExtensions = ["xlsx", "csv"] as const;
+  readonly allowedExtensions = ["xlsx", "xlsm", "csv"] as const;
   private readonly detections = new Map<string, GhgiDetectedFormat>();
   private readonly deps: GhgiIngestPluginDeps;
 

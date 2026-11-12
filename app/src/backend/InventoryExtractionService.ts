@@ -2129,7 +2129,11 @@ function finalizeRows(
   const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
 
   for (const row of rows) {
-    if (unitRequired && row.unit == null) {
+    // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
+    const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
+      (v) => v != null,
+    );
+    if (unitRequired && row.unit == null && hasAmount) {
       evidenceDropped = true;
       drop("unsupported_unit");
       continue;

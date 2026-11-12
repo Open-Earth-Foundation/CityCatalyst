@@ -394,6 +394,21 @@ describe("CC-1163 check 3: missing unit", () => {
     );
   });
 
+  it("keeps a notation-only row (NE) on a kt page", () => {
+    const [residential] = noUnitRows();
+    const notationRow: ExtractedRow = {
+      ...residential,
+      totalCO2e: null,
+      notationKey: "NE",
+    };
+    const result = finalizeExtractedRows([notationRow], 2021, {
+      source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "page" },
+    });
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].notationKey).toBe("NE");
+    expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
+  });
+
   it("keeps unitless rows on a tonnes page", () => {
     const result = finalizeExtractedRows(noUnitRows(), 2021, {
       source: { text: "Table 2 Emissions (t CO2e)\n" + body, kind: "page" },

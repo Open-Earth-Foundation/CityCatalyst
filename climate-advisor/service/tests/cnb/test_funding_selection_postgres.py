@@ -107,6 +107,7 @@ async def test_switch_waits_for_edit_registration_then_rejects_active_planning(
         service._propose(
             run,
             EditProposalRequest(instruction="Improve wording", idempotency_key=uuid4()),
+            token="token",
             recent_messages=None,
         )
     )
@@ -153,6 +154,7 @@ async def test_edit_waits_for_switch_then_reads_the_new_funder(funding_workspace
                 EditProposalRequest(
                     instruction="Improve wording", idempotency_key=uuid4()
                 ),
+                token="token",
                 recent_messages=None,
             )
         )

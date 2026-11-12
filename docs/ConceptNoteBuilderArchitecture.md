@@ -241,7 +241,18 @@ One bounded document agent searches exact text and reads chapters on demand.
 It proposes contextual matches, selected server-issued match IDs, or explicit
 all-match replacements. Python resolves offsets from the captured revisions and
 returns structural errors to the agent for correction. An independent LLM
-reviewer checks meaning and factual support for each affected chapter. Python checks exact anchors,
+reviewer checks meaning and factual support for each affected chapter. Planner
+and reviewer use the same evidence: every source quotation, plus a bounded
+`query_source` tool that re-reads one selected source pinned to the proposal's
+context snapshot; a failed lookup is never support, and another chapter's text
+is not evidence. After the final rejection, the reviewer's explanations are
+stored as `review_objections` (CNB migration `20261111_120000`), shown in the
+proposal card and returned to chat. Edit planning and new-source revalidation do
+not overlap: a pending or running revalidation rejects a new edit with
+`sources_updating`, and revalidation waits while an edit is planned. An open
+workspace reloads the saved draft once when a proposal's base revisions are newer
+than the chapters it holds, so a proposal planned after a revalidation can be
+accepted without a page reload. Python checks exact anchors,
 source identity, that cited context sections exist in the run, user quotes,
 required headings and unresolved markers. It does
 not infer meaning from numeric/entity tokens, merge groups based on shared values,
@@ -678,8 +689,10 @@ Once the run has an application template, `chapter_excerpts` hold up to
 reading of the complete source tags exact passages with the chapters whose
 title, description, and required fields they serve, and a selection call runs
 only for chapters with more verified candidates than the quota. The drafter
-receives only the current chapter's quotations; the edit planner and reviewer
-read them as the chapter's `source_excerpts`. `chapter_evidence_fingerprint`
+receives only the current chapter's quotations. The edit planner and every
+reviewer receive all chapters' quotations once, deduplicated, as
+`run_context.source_excerpts`, because a quotation kept for one chapter can
+support an edit in another. `chapter_evidence_fingerprint`
 hashes the template requirements, prompts, models, and limits; a build with a
 different fingerprint re-extracts only the chapter quotations, and a funding
 change or workspace open queues that rebuild. A failed extraction keeps the

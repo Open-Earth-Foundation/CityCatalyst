@@ -2,21 +2,41 @@
 
 import asyncio
 import json
+from contextlib import asynccontextmanager
 from dataclasses import replace
 from datetime import UTC, datetime
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 from agents.tool_context import ToolContext
 
+from datetime import timedelta
+
 from app.config import get_settings
+from app.models.cnb.concept_note_edits import EditChange
+from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.persistence.concept_notes.edits import (
+    ConceptNoteEditRepository,
+    edit_planning_in_progress,
+)
+from app.routes import concept_note_edits as edit_routes
+from sqlalchemy import update
+from tests.test_concept_note_lifecycle import _workspace_repository
+from app.services.cnb.edits import ConceptNoteEditService
+from app.tools import concept_note_edit_tools as edit_tools
+from app.tools.concept_note_draft_tools import (
+    bound_source_answer,
+    build_source_query_tool,
+)
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
     EditAgentOutput,
     EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
+    EditReviewObjection,
     EditScope,
     PlannedTextChange,
 )
@@ -26,6 +46,8 @@ from app.services.cnb.edit_planner import (
     ConceptNoteEditPlanner,
     bind_semantic_review,
     build_planner_input,
+    fit_review_evidence,
+    unavailable_source_lookup,
 )
 from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
 from app.utils.cnb_progress import bind_cnb_progress
@@ -206,7 +228,8 @@ async def test_reviewer_feedback_repairs_and_rechecks_the_complete_candidate(rej
                 )
                 output = EditAgentOutput(intent="edit")
             else:
-                assert not agent.tools
+                # Reviewers can only read sources; they never get draft or edit tools.
+                assert [tool.name for tool in agent.tools] == ["query_source"]
                 assert "review_feedback" not in data
                 reviewer_inputs.append(data)
                 unsupported = (
@@ -277,6 +300,494 @@ async def test_repair_limits_never_bypass_candidate_or_review_guards(
         )
     assert error.value.code == expected_code
     assert attempts == expected_attempts
+    # Only a final semantic rejection explains itself to chat.
+    assert error.value.objections == (
+        [
+            EditReviewObjection(
+                chapter_title="Implementation",
+                explanation="The user did not request doubling the number.",
+            )
+        ]
+        if expected_code == "unsupported_edit"
+        else []
+    )
+
+
+@pytest.mark.asyncio
+async def test_planner_and_reviewers_share_one_bounded_verified_source_lookup():
+    current = replace(chapter("Minimum DSCR is to be confirmed."), chapter_ref="financing")
+    # The DSCR quotation was kept for the risk chapter, not the edited one.
+    context = {
+        "selected_sources": [
+            {
+                "upload_id": str(uuid4()),
+                "sha256": "a" * 64,
+                "source_label": "Financing pack",
+                "summary": "Lender terms.",
+                "topics": [],
+                "key_excerpts": [],
+                "chapter_excerpts": [
+                    {
+                        "chapter_ref": "risks",
+                        "excerpts": [{"text": "Minimum DSCR 1.15x.", "page": 7}],
+                    }
+                ],
+            },
+            {
+                "upload_id": str(uuid4()),
+                "sha256": "b" * 64,
+                "source_label": "Climate report",
+                "summary": "Emissions.",
+                "topics": [],
+                "key_excerpts": [],
+                "chapter_excerpts": [
+                    {
+                        "chapter_ref": "climate",
+                        "excerpts": [{"text": "1,853 t CO2e avoided.", "page": 1}],
+                    }
+                ],
+            },
+        ]
+    }
+    uncited = {"source_index": "2", "text": "1,853 t CO2e avoided.", "page": 1}
+    asked = []
+
+    async def lookup(source_index, question):
+        asked.append(question)
+        return json.dumps({"success": "fail" not in question, "data": {"q": question}})
+
+    async def ask(agent, question):
+        tool = next(tool for tool in agent.tools if tool.name == "query_source")
+        context = ToolContext(
+            context=None,
+            tool_name="query_source",
+            tool_call_id=question,
+            tool_arguments="{}",
+        )
+        return json.loads(
+            await tool.on_invoke_tool(
+                context, json.dumps({"source_index": 1, "question": question})
+            )
+        )
+
+    class LookupRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            data = json.loads(payload)
+            assert {"source_index": "1", "text": "Minimum DSCR 1.15x.", "page": 7} in (
+                data["run_context"]["source_excerpts"]
+            )
+            # The planner sees every quotation; a reviewer only its cited sources'.
+            assert (uncited in data["run_context"]["source_excerpts"]) == (
+                agent.output_type is EditAgentOutput
+            )
+            if agent.output_type is EditAgentOutput:
+                assert (await ask(agent, "What is the DSCR?"))["success"]
+                assert not (await ask(agent, "fail once"))["success"]
+                # The failure was not cached, but this run's limit is spent.
+                limited = await ask(agent, "fail once")
+                assert limited["error_code"] == "source_query_limit"
+                await propose_with_tools(
+                    agent,
+                    "is to be confirmed",
+                    "is 1.15x",
+                    source_refs=["1"],
+                    kind="factual",
+                )
+                output = EditAgentOutput(intent="edit")
+            else:
+                # The planner's answer is shared, and costs this reviewer nothing.
+                assert (await ask(agent, "  what is the  DSCR? "))["success"]
+                assert (await ask(agent, "Is it base case?"))["success"]
+                assert not (await ask(agent, "fail once"))["success"]
+                limited = await ask(agent, "One more?")
+                assert limited["error_code"] == "source_query_limit"
+                output = ChapterEditReview(decisions=[{
+                    "change_index": 0,
+                    "support": "source",
+                    "explanation": "Page 7 states a minimum DSCR of 1.15x.",
+                }])
+            return SimpleNamespace(final_output=output)
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.llm.generation.prompt_budget.cnb_edits.max_source_queries = 2
+    plan = await ConceptNoteEditPlanner(settings, runner=LookupRunner).plan(
+        EditProposalRequest(instruction="Fill the DSCR.", idempotency_key=uuid4()),
+        [current],
+        context,
+        source_lookup=lookup,
+    )
+    assert asked == ["What is the DSCR?", "fail once", "Is it base case?", "fail once"]
+    assert plan.changes[0].semantic_support == "source"
+
+
+@pytest.mark.asyncio
+async def test_service_pins_lookups_to_snapshot_and_keeps_review_objections(
+    monkeypatch,
+):
+    current = chapter("Minimum DSCR is to be confirmed.")
+    snapshot_source = {"upload_id": str(uuid4()), "sha256": "a" * 64}
+    objection = EditReviewObjection(
+        chapter_title="Implementation",
+        explanation="No supplied source states 70% CPI indexation.",
+    )
+    queried = []
+
+    async def query(**kwargs):
+        queried.append(kwargs)
+        return json.dumps({"success": True})
+
+    monkeypatch.setattr("app.services.cnb.edits.query_concept_note_source", query)
+
+    async def plan(request, chapters, context, *, source_lookup, **kwargs):
+        # An index the snapshot never held cannot answer from a newer upload.
+        outside = json.loads(await source_lookup(2, "Is the amendment signed?"))
+        assert outside["error_code"] == "concept_note_source_not_selected"
+        assert json.loads(await source_lookup(1, "Is the amendment signed?"))["success"]
+        raise EditOperationError(
+            "unsupported_edit", "Rejected.", status_code=422, objections=[objection]
+        )
+
+    repository = SimpleNamespace(
+        start=AsyncMock(return_value=(SimpleNamespace(proposal_id=uuid4()), True)),
+        finish=AsyncMock(return_value="failed"),
+    )
+    service = ConceptNoteEditService(
+        repository,
+        SimpleNamespace(list_chapters=AsyncMock(return_value=[current])),
+        SimpleNamespace(plan=plan),
+        workflow_sessions="sessions",
+    )
+
+    @asynccontextmanager
+    async def locked(run):
+        yield run, {"selected_sources": [snapshot_source]}
+
+    service.locked_context = locked
+    result = await service._propose(
+        SimpleNamespace(run_id=uuid4(), user_id="owner", context_summary={}),
+        EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+        token="token-1",
+        recent_messages=None,
+    )
+
+    assert result == "failed"
+    assert repository.finish.await_args.kwargs["review_objections"] == [objection]
+    [call] = queried
+    assert call["expected_source"] == (snapshot_source["upload_id"], "a" * 64)
+    assert call["token"] == "token-1"
+    assert call["session_factory"] == "sessions"
+    assert call["include_visual_context"] is False
+
+
+@pytest.mark.asyncio
+async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
+    monkeypatch,
+):
+    now = datetime.now(UTC)
+    proposal = EditProposalResponse(
+        proposal_id=uuid4(),
+        run_id=uuid4(),
+        instruction="Fill the gaps.",
+        scope=EditScope(),
+        status="failed",
+        error_code="unsupported_edit",
+        review_objections=[
+            EditReviewObjection(
+                chapter_title="Financing plan",
+                explanation="No supplied source states 70% CPI indexation.",
+            )
+        ],
+        created_at=now,
+        updated_at=now,
+    )
+    service = SimpleNamespace(propose=AsyncMock(return_value=proposal))
+    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
+    monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
+    monkeypatch.setattr(
+        edit_tools,
+        "ConceptNoteRunService",
+        lambda session, cc_client: SimpleNamespace(
+            get_authorized_run=AsyncMock(return_value="run"),
+            cc_client=SimpleNamespace(close=AsyncMock()),
+        ),
+    )
+
+    @asynccontextmanager
+    async def sessions():
+        yield None
+
+    [tool] = edit_tools.build_concept_note_edit_tools(
+        session_factory=sessions,
+        run_id=proposal.run_id,
+        user_id="owner",
+        token_ref={"value": "token-1"},
+        request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+    )
+    context = ToolContext(
+        context=None,
+        tool_name="concept_note_edit_propose",
+        tool_call_id="edit",
+        tool_arguments="{}",
+    )
+    result = json.loads(await tool.on_invoke_tool(context, "{}"))
+
+    assert result["error_code"] == "unsupported_edit"
+    assert result["data"]["review_objections"] == [
+        {
+            "chapter_title": "Financing plan",
+            "explanation": "No supplied source states 70% CPI indexation.",
+        }
+    ]
+    assert service.propose.await_args.kwargs["token"] == "token-1"
+
+
+async def invoke_query_source(tool, question, source_index=1):
+    context = ToolContext(
+        context=None, tool_name="query_source", tool_call_id=question, tool_arguments="{}"
+    )
+    return json.loads(
+        await tool.on_invoke_tool(
+            context, json.dumps({"source_index": source_index, "question": question})
+        )
+    )
+
+
+@pytest.mark.asyncio
+async def test_concurrent_reviewers_share_one_in_flight_source_read():
+    release = asyncio.Event()
+    calls = []
+
+    async def lookup(source_index, question):
+        calls.append(question)
+        await release.wait()
+        return json.dumps({"success": True, "data": {"excerpts": []}})
+
+    cache = {}
+    reviewers = [
+        build_source_query_tool(
+            lookup, stage="reviewing", max_queries=1, max_answer_chars=1000, cache=cache
+        )
+        for _ in range(2)
+    ]
+    pending = [
+        asyncio.create_task(invoke_query_source(tool, "Is the tranche drawn?"))
+        for tool in reviewers
+    ]
+    await asyncio.sleep(0)
+    release.set()
+    results = await asyncio.gather(*pending)
+
+    assert calls == ["Is the tranche drawn?"]
+    assert all(result["success"] for result in results)
+
+
+def test_long_source_answers_keep_whole_quotations_and_say_what_was_left_out():
+    answer = json.dumps(
+        {
+            "success": True,
+            "data": {
+                "excerpts": [{"text": "a" * 600, "page": 1}, {"text": "b" * 600, "page": 2}],
+                "caveats": [],
+            },
+        }
+    )
+
+    bounded = json.loads(bound_source_answer(answer, 1000))
+
+    assert bounded["data"]["excerpts"] == [{"text": "a" * 600, "page": 1}]
+    assert "1 more quotations were left out" in bounded["data"]["caveats"][0]
+    assert bound_source_answer(answer, 5000) == answer
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("route", ["propose", "refine"])
+async def test_edit_routes_accept_any_bearer_scheme_case(route):
+    service = SimpleNamespace(
+        propose=AsyncMock(return_value="proposal"),
+        repository=SimpleNamespace(get=AsyncMock()),
+    )
+    run = SimpleNamespace(run_id=uuid4(), user_id="owner", status="active")
+    request = EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+
+    if route == "propose":
+        await edit_routes.propose_edit(request, run, service, authorization="bearer token-1")
+    else:
+        await edit_routes.refine_edit_proposal(
+            uuid4(), request, run, service, authorization="BEARER token-1"
+        )
+
+    assert service.propose.await_args.kwargs["token"] == "token-1"
+
+
+def test_a_large_rewrite_trims_review_quotations_instead_of_failing():
+    def size(value):
+        return len(json.dumps(value))
+
+    excerpts = [{"source_index": "1", "text": f"Quotation {i} " + "x" * 80} for i in range(10)]
+    payload = {
+        "chapter": {"body_markdown": "Body."},
+        "run_context": {"source_excerpts": excerpts},
+        "changes": [{"before": "b" * 300, "after": "a" * 300}],
+    }
+    full = size(["prompt", payload])
+
+    assert fit_review_evidence(payload, "prompt", count=size, limit=full) is payload
+    trimmed = fit_review_evidence(payload, "prompt", count=size, limit=full - 400)
+    kept = trimmed["run_context"]["source_excerpts"]
+    assert kept == excerpts[: len(kept)] and 0 < len(kept) < len(excerpts)
+    assert trimmed["run_context"]["source_excerpts_omitted"] == len(excerpts) - len(kept)
+    assert size(["prompt", trimmed]) <= full - 400
+    assert payload["run_context"]["source_excerpts"] == excerpts
+    # The chapter and changes alone must still fit; otherwise review stays a context limit.
+    assert fit_review_evidence(payload, "prompt", count=size, limit=600) is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", ["pending", "running"])
+async def test_no_edit_is_planned_while_a_new_source_rewrites_chapters(status):
+    repository = SimpleNamespace(start=AsyncMock())
+    service = ConceptNoteEditService(
+        repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
+    )
+
+    @asynccontextmanager
+    async def locked(run):
+        yield SimpleNamespace(
+            context_summary={"source_revalidation": {"status": status}}
+        ), {}
+
+    service.locked_context = locked
+    with pytest.raises(EditOperationError) as error:
+        await service._propose(
+            SimpleNamespace(run_id=uuid4(), user_id="owner"),
+            EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+            token="token",
+            recent_messages=None,
+        )
+
+    assert error.value.code == "sources_updating"
+    repository.start.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_rejection_objections_persist_and_planning_state_expires():
+    async with _workspace_repository() as (_, sessions):
+        repository = ConceptNoteEditRepository(sessions)
+        run_id = uuid4()
+
+        def request():
+            return EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+
+        rejected, _ = await repository.start(run_id=run_id, user_id="owner", request=request())
+        assert await edit_planning_in_progress(sessions, run_id)
+        objection = EditReviewObjection(
+            chapter_title="Financing plan",
+            explanation="No supplied source states 70% CPI indexation.",
+        )
+        await repository.finish(
+            run_id=run_id,
+            user_id="owner",
+            proposal_id=rejected.proposal_id,
+            base_revisions={},
+            changes=[],
+            error_code="unsupported_edit",
+            review_objections=[objection],
+        )
+        restored = await repository.get(
+            run_id=run_id, user_id="owner", proposal_id=rejected.proposal_id
+        )
+        assert restored.status == "failed"
+        assert restored.review_objections == [objection]
+        assert not await edit_planning_in_progress(sessions, run_id)
+
+        # An interrupted plan must not hold source revalidation back forever.
+        abandoned, _ = await repository.start(
+            run_id=run_id, user_id="owner", request=request()
+        )
+        async with sessions() as session, session.begin():
+            await session.execute(
+                update(ConceptNoteEditProposal)
+                .where(ConceptNoteEditProposal.proposal_id == abandoned.proposal_id)
+                .values(updated_at=datetime.now(UTC) - timedelta(minutes=11))
+            )
+        assert not await edit_planning_in_progress(sessions, run_id)
+
+
+@pytest.mark.asyncio
+async def test_chat_tool_reports_proposal_scope_and_source_updates(monkeypatch):
+    now = datetime.now(UTC)
+
+    def change(title, start):
+        return EditChange(
+            change_id=uuid4(),
+            chapter_id=uuid4(),
+            chapter_title=title,
+            base_revision=1,
+            start=start,
+            before="[Information needed: x]",
+            after="Filled.",
+            kind="factual",
+            group_id="g",
+            source_refs=["5"],
+        )
+
+    proposal = EditProposalResponse(
+        proposal_id=uuid4(),
+        run_id=uuid4(),
+        instruction="Fill the gaps.",
+        scope=EditScope(),
+        status="proposed",
+        changes=[change("Financing plan", 0), change("Financing plan", 9), change("Risk management", 0)],
+        created_at=now,
+        updated_at=now,
+    )
+    service = SimpleNamespace(
+        propose=AsyncMock(
+            side_effect=[proposal, EditOperationError("sources_updating", "Wait.")]
+        )
+    )
+    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
+    monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
+    monkeypatch.setattr(
+        edit_tools,
+        "ConceptNoteRunService",
+        lambda session, cc_client: SimpleNamespace(
+            get_authorized_run=AsyncMock(return_value="run"),
+            cc_client=SimpleNamespace(close=AsyncMock()),
+        ),
+    )
+
+    @asynccontextmanager
+    async def sessions():
+        yield None
+
+    [tool] = edit_tools.build_concept_note_edit_tools(
+        session_factory=sessions,
+        run_id=proposal.run_id,
+        user_id="owner",
+        token_ref={"value": "token-1"},
+        request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+    )
+    context = ToolContext(
+        context=None, tool_name="concept_note_edit_propose", tool_call_id="edit", tool_arguments="{}"
+    )
+
+    proposed = json.loads(await tool.on_invoke_tool(context, "{}"))
+    assert proposed["data"]["chapters"] == [
+        {"title": "Financing plan", "change_count": 2},
+        {"title": "Risk management", "change_count": 1},
+    ]
+    updating = json.loads(await tool.on_invoke_tool(context, "{}"))
+    assert updating["error_code"] == "sources_updating"
+
+
+@pytest.mark.asyncio
+async def test_unbound_source_lookup_fails_closed():
+    result = json.loads(await unavailable_source_lookup(1, "What is the DSCR?"))
+    assert result["success"] is False
+    assert result["error_code"] == "source_lookup_unavailable"
 
 
 @pytest.mark.asyncio

@@ -22,7 +22,10 @@ from app.services.citycatalyst_client import (
     ConceptNoteStructuredArtifact,
 )
 from app.services.cnb.source_analysis import SourceAnalysisError, SourcePage
-from app.tools.concept_note_source_tools import build_concept_note_source_tools
+from app.tools.concept_note_source_tools import (
+    build_concept_note_source_tools,
+    query_concept_note_source,
+)
 
 TOOL_CONTEXT = ToolContext(
     context=None,
@@ -342,3 +345,84 @@ async def test_source_tool_keeps_full_visual_envelope_out_of_excerpts() -> None:
     assert payload["data"]["excerpts"][0]["text"] != (
         envelope["provider_annotation"]["chart"]["trends"][4]
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("same_source", [True, False])
+async def test_edit_source_query_is_pinned_to_the_snapshot_and_skips_annotations(
+    same_source,
+) -> None:
+    run_id = uuid4()
+    upload_id = uuid4()
+    markdown = "<!-- page: 1 -->\nEvidence"
+    digest = hashlib.sha256(markdown.encode()).hexdigest()
+    _raw, structured_sha, structured, _envelope = _full_annotation_artifact(upload_id)
+    selected = ContextBundleQuerySource(
+        source=SelectedSource(
+            upload_id=upload_id,
+            source_label="City plan",
+            filename="plan.pdf",
+            sha256=digest,
+            page_count=1,
+            summary="Plan summary.",
+            topics=[],
+            key_excerpts=[],
+        ),
+        upload=ConceptNoteUploadSnapshot(
+            upload_id=upload_id,
+            run_id=run_id,
+            user_id="owner",
+            filename="plan.pdf",
+            source_label="City plan",
+            markdown_s3_key="result.md",
+            markdown_sha256=digest,
+            page_count=1,
+            status="ready",
+            error_code=None,
+            received_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(timezone.utc),
+            annotation_mode="visual_context",
+            structured_s3_key=structured.s3_key,
+            structured_sha256=structured_sha,
+            structured_size_bytes=len(structured.raw_bytes),
+            structured_schema_version=STRUCTURED_DOCUMENT_SCHEMA_VERSION,
+        ),
+    )
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(
+            return_value=ConceptNoteMarkdownArtifact(
+                markdown=markdown,
+                markdown_s3_key="result.md",
+                sha256=digest,
+                page_count=1,
+            )
+        ),
+        get_concept_note_structured=AsyncMock(return_value=structured),
+        close=AsyncMock(),
+    )
+    # The edit snapshot saw this source, or a different document at the same index.
+    expected = (str(upload_id), digest if same_source else "b" * 64)
+
+    output = await query_concept_note_source(
+        session_factory=None,  # type: ignore[arg-type]
+        run_id=run_id,
+        user_id="owner",
+        token="token",
+        source_index=1,
+        question="What evidence is stated?",
+        expected_source=expected,
+        include_visual_context=False,
+        client_factory=lambda: client,
+        load_query_source_fn=AsyncMock(return_value=selected),
+        query_document_fn=fake_query_document,
+        verify_source_artifact_fn=fake_verify_source_artifact,
+    )
+
+    payload = json.loads(output)
+    if same_source:
+        assert payload["success"] is True
+        assert payload["data"]["visual_context"] == []
+    else:
+        assert payload["error_code"] == "concept_note_source_changed"
+        client.get_concept_note_markdown.assert_not_awaited()
+    client.get_concept_note_structured.assert_not_awaited()

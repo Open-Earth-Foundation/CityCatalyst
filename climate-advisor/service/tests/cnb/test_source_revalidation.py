@@ -383,6 +383,24 @@ async def test_failed_revalidation_leaves_the_job_pending(session_factory) -> No
     }
 
 
+async def test_revalidation_waits_while_a_chat_edit_is_planned(session_factory) -> None:
+    """Rewriting chapters mid-plan would make that edit stale, so the job waits."""
+    run_id, upload_id = await queue_bundle_with_pending_job(session_factory)
+    revalidate = AsyncMock(return_value=True)
+    service = ContextBundleService(
+        session_factory,
+        cc_client_factory=retry_client,
+        revalidate_fn=revalidate,
+        edit_in_progress_fn=AsyncMock(return_value=True),
+    )
+
+    assert await service.run_source_revalidation(run_id=run_id) is False
+
+    revalidate.assert_not_awaited()
+    job = await load_job(session_factory, run_id)
+    assert job["status"] == "pending" and job["attempts"] == 0
+
+
 async def test_reconciler_schedules_every_pending_job(
     session_factory, monkeypatch
 ) -> None:

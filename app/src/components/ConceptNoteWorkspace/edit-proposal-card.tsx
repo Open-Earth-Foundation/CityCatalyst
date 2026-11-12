@@ -148,6 +148,26 @@ export function EditProposalCard({
                 )}
               </Text>
             )}
+          {Boolean(proposal.review_objections?.length) && (
+            <VStack
+              align="start"
+              gap={0.5}
+              data-testid="concept-note-review-objections"
+            >
+              <Text fontSize="label.sm" fontWeight="semibold">
+                {t("edit-review-objections")}
+              </Text>
+              {proposal.review_objections!.map((objection, position) => (
+                <Text
+                  key={position}
+                  fontSize="label.sm"
+                  color="content.secondary"
+                >
+                  {objection.chapter_title}: {objection.explanation}
+                </Text>
+              ))}
+            </VStack>
+          )}
         </VStack>
       )}
       <HStack

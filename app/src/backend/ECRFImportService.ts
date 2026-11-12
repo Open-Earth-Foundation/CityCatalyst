@@ -85,6 +85,7 @@ export interface ECRFRowReviewData {
   sector: string | null;
   subsector: string | null;
   category: string | null;
+  activityType?: string | null;
   scope: string | null;
   refSource: "document" | "inferred" | null;
   directionEvidence: string | null;
@@ -951,6 +952,7 @@ export default class ECRFImportService {
           sector: row.sector ?? null,
           subsector: row.subsector ?? null,
           category: row.category ?? null,
+          activityType: row.activityType ?? null,
           scope:
             row.scopeSource === "inferred"
               ? (row.scope ?? null)

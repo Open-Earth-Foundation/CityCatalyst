@@ -259,6 +259,23 @@ describe("compareWithBaseline", () => {
     expect(c.baseline).toEqual(stored);
   });
 
+  it("same version without per-attempt recall rescores the run folder", () => {
+    writeRun("run-1", [storedCase()]);
+    const c = compareWithBaseline({
+      id: "C-001",
+      current,
+      currentVersion: "v1",
+      baseline: {
+        "C-001": entryOf({ verdict: verdict({ recallFailedAsZero: 0.8 }) }),
+      },
+      key,
+      runsRoot: dir,
+    });
+    expect(c.status).toBe("compared");
+    expect(c.rescored).toBe(true);
+    expect(c.baseline?.attemptRecalls).toHaveLength(3);
+  });
+
   it("different version rescores the baseline values", () => {
     writeRun("run-1", [storedCase()]);
     const baseline: Baseline = {

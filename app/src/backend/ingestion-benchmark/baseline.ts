@@ -100,7 +100,10 @@ export function compareWithBaseline(args: {
   if (!entry) {
     return { id, status: "no baseline", baseline: null, rescored: false };
   }
-  if (entry.testSetVersion === currentVersion) {
+  const sameVersion = entry.testSetVersion === currentVersion;
+  // An entry recorded before per-attempt recall was stored is rescored from its
+  // run folder to recover it; when that fails, the stored verdict is used.
+  if (sameVersion && entry.verdict.attemptRecalls !== undefined) {
     return {
       id,
       status: "compared",
@@ -108,13 +111,16 @@ export function compareWithBaseline(args: {
       rescored: false,
     };
   }
-  const stale = (cause: string): Comparison => ({
-    id,
-    status: "baseline stale",
-    reason: `baseline stale: ${cause}`,
-    baseline: null,
-    rescored: false,
-  });
+  const stale = (cause: string): Comparison =>
+    sameVersion
+      ? { id, status: "compared", baseline: entry.verdict, rescored: false }
+      : {
+          id,
+          status: "baseline stale",
+          reason: `baseline stale: ${cause}`,
+          baseline: null,
+          rescored: false,
+        };
   const where = `${entry.runFolder}/results.json`;
   try {
     const file = join(runsRoot, entry.runFolder, "results.json");

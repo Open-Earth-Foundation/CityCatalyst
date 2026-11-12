@@ -91,19 +91,60 @@ describe("gateAgainstBaseline", () => {
     expect(small.verdict).toBe("ok");
   });
 
-  it("regression: more 10x attempts than the baseline", () => {
+  it("regression: at least 2 more 10x attempts than the baseline", () => {
     const g = gateAgainstBaseline(
-      verdict({ tenXAttempts: 1 }),
+      verdict({ tenXAttempts: 2 }),
       compared(verdict({ tenXAttempts: 0 })),
       null,
     );
     expect(g.verdict).toBe("regression");
-    const same = gateAgainstBaseline(
+    const oneMore = gateAgainstBaseline(
       verdict({ tenXAttempts: 1 }),
-      compared(verdict({ tenXAttempts: 1 })),
+      compared(verdict({ tenXAttempts: 0 })),
       null,
     );
-    expect(same.verdict).toBe("ok");
+    expect(oneMore.verdict).toBe("ok");
+  });
+
+  it("ok: a recall drop within the baseline's own attempt spread", () => {
+    // C-029 baseline 100% / 53% / 100%; a rerun at 53% / 53% / 100% (mean 68%).
+    const base = verdict({
+      recallFailedAsZero: (1 + 0.53 + 1) / 3,
+      attemptRecalls: [1, 0.53, 1],
+    });
+    const g = gateAgainstBaseline(
+      verdict({ recallFailedAsZero: (0.53 + 0.53 + 1) / 3 }),
+      compared(base),
+      null,
+    );
+    expect(g.verdict).toBe("ok");
+    // C-031 baseline 44% / 44% / 33%; a rerun at 33% on every attempt.
+    const c031 = gateAgainstBaseline(
+      verdict({ recallFailedAsZero: 0.33 }),
+      compared(
+        verdict({
+          recallFailedAsZero: (0.44 + 0.44 + 0.33) / 3,
+          attemptRecalls: [0.44, 0.44, 0.33],
+        }),
+      ),
+      null,
+    );
+    expect(c031.verdict).toBe("ok");
+  });
+
+  it("regression: recall below the worst baseline attempt", () => {
+    const g = gateAgainstBaseline(
+      verdict({ recallFailedAsZero: 0.5 }),
+      compared(
+        verdict({
+          recallFailedAsZero: (1 + 0.53 + 1) / 3,
+          attemptRecalls: [1, 0.53, 1],
+        }),
+      ),
+      null,
+    );
+    expect(g.verdict).toBe("regression");
+    expect(g.reasons.join(" ")).toContain("worst baseline attempt 53%");
   });
 
   it("error: a non-scored failure appears where the baseline had none", () => {

@@ -385,6 +385,11 @@ export function renderReport(
       `- ${block.casesInRun} of ${block.casesInManifest} cases in this run`,
       `- Headline recall (failed attempts count as 0): ${pct(block.headlineRecall)} (${counted(block.headlineRecallCases, block.headlineRecall === null ? "only eligible cases with row recall count" : "total-only cases have no row recall")}); cases with totals within tolerance: ${block.casesTotalWithinTolerance}`,
       `- Recall over scored attempts only: ${pct(block.recallScoredOnly)} (${counted(block.recallScoredOnlyCases)})`,
+      ...(block.provisionalRecallCases > 0
+        ? [
+            `- Provisional recall, cases whose \`textTables\` is unknown (failed attempts count as 0): ${pct(block.provisionalRecall)} (${counted(block.provisionalRecallCases)})`,
+          ]
+        : []),
       `- Attempts passing: ${pct(block.attemptPassShare)}`,
       `- Attempts 10x or more off the expected total: ${block.tenXAttempts}`,
       `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,

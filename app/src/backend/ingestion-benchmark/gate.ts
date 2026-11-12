@@ -5,8 +5,10 @@
  * Verdicts, most severe first:
  * - error: an attempt failed (any failure mode other than `scored`) where the
  *   baseline had no such failure;
- * - regression: the case passed before and fails now, headline recall dropped
- *   more than 5 points, or more attempts are 10x off than in the baseline;
+ * - regression: the case passed before and fails now; its recall dropped more
+ *   than 5 points and below the worst baseline attempt (attempts of one case
+ *   vary more than 5 points, so a fixed drop alone flags noise); or at least 2
+ *   more attempts are 10x off than in the baseline;
  * - over budget: the case cost more than 3 times its forecast;
  * - incomplete: an interrupted run did not finish every attempt of the case, so
  *   it is not compared for regressions or budget;
@@ -26,6 +28,8 @@ export type Verdict =
   "ok" | "regression" | "error" | "over budget" | "incomplete";
 
 export const RECALL_DROP = 0.05;
+/** Extra 10x attempts, over the baseline's, that make a regression. */
+export const TEN_X_MARGIN = 2;
 export const BUDGET_FACTOR = 3;
 
 export type CaseGate = {
@@ -101,15 +105,23 @@ export function gateAgainstBaseline(
     }
     if (
       base.recallFailedAsZero !== null &&
-      current.recallFailedAsZero !== null &&
-      current.recallFailedAsZero < base.recallFailedAsZero - RECALL_DROP
+      current.recallFailedAsZero !== null
     ) {
-      hits.push({
-        verdict: "regression",
-        text: `recall ${pct(current.recallFailedAsZero)} vs ${pct(base.recallFailedAsZero)} in the baseline`,
-      });
+      // Without per-attempt recall (older entries), the floor is the baseline mean.
+      const floor = base.attemptRecalls?.length
+        ? Math.min(...base.attemptRecalls)
+        : base.recallFailedAsZero;
+      if (
+        current.recallFailedAsZero < base.recallFailedAsZero - RECALL_DROP &&
+        current.recallFailedAsZero < floor
+      ) {
+        hits.push({
+          verdict: "regression",
+          text: `recall ${pct(current.recallFailedAsZero)} vs ${pct(base.recallFailedAsZero)} in the baseline (worst baseline attempt ${pct(floor)})`,
+        });
+      }
     }
-    if (current.tenXAttempts > base.tenXAttempts) {
+    if (current.tenXAttempts >= base.tenXAttempts + TEN_X_MARGIN) {
       hits.push({
         verdict: "regression",
         text: `${current.tenXAttempts} attempt(s) 10x off vs ${base.tenXAttempts} in the baseline`,

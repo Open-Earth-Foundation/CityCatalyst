@@ -44,7 +44,7 @@ npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --dry-run
 npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010
 
 # Run the cases of one block that the current import is expected to handle
-# (text tables, scored row by row).
+# (text tables, scored row by row). Exits 2 while no case has textTables: true.
 npx tsx scripts/pdf-benchmark.ts --set validated --eligible --dry-run
 npx tsx scripts/pdf-benchmark.ts --set validated --eligible
 
@@ -70,7 +70,7 @@ npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-
 
 Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
 
-A run fails before any paid call when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
+A run fails before any paid call when the selection is empty (for example `--eligible` while no case has `textTables: true`), when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
 
 ## Add a PDF and its key
 
@@ -103,10 +103,10 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 Open `report.md` in the run folder. It has:
 
 - **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
-- **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
+- **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, a provisional recall over the row-scored cases whose `textTables` is still unknown (until Product classifies them), share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
 - **Regressions against the baseline.** Each case gets one verdict:
-  - `regression`: the case passed in the baseline and fails now, recall drops by more than 5 points, or more attempts are 10x or more off than in the baseline.
+  - `regression`: the case passed in the baseline and fails now; its recall drops by more than 5 points and below the worst baseline attempt; or at least 2 more attempts are 10x or more off than in the baseline. Attempts of one case vary by more than 5 points, so the recall check uses the baseline's own spread rather than a fixed drop. Baseline entries recorded without per-attempt recall are rescored from their run folder to recover it.
   - `error`: some attempts did not reach `scored` and the baseline had no failed attempt for the case. A case with no usable baseline (none recorded, or `baseline stale`) also gets `error` when any attempt fails.
   - `over budget`: the cost is over 3x the forecast (the baseline usage scaled to the same number of attempts). It is reported but does not fail the run.
   - `incomplete`: an interrupted run did not finish every attempt of the case. The case is not checked for regressions or budget, but a failed attempt still gives `error`.

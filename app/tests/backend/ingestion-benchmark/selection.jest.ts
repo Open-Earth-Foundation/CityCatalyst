@@ -100,10 +100,10 @@ describe("selectCases", () => {
     ).toEqual(["C-1"]);
   });
 
-  it("--eligible returns [] when every textTables is null", () => {
-    expect(selectCases(manifest, { set: "validated", eligible: true })).toEqual(
-      [],
-    );
+  it("throws when --eligible leaves no case (every textTables is null)", () => {
+    expect(() =>
+      selectCases(manifest, { set: "validated", eligible: true }),
+    ).toThrow(SelectionError);
   });
 });
 

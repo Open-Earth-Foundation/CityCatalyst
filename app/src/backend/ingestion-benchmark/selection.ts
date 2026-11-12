@@ -76,6 +76,14 @@ export function selectCases(
     selected = selected.filter((c) => c.textTables === true && !c.totalOnly);
   }
 
+  if (selected.length === 0) {
+    throw new SelectionError(
+      input.eligible
+        ? "No case matches the selection: --eligible keeps only cases with textTables: true that are not total-only."
+        : "No case matches the selection.",
+    );
+  }
+
   if (selected.length > MAX_FILES_PER_RUN) {
     throw new SelectionError(
       `${selected.length} files exceed the maximum of ${MAX_FILES_PER_RUN} per run: ${selected

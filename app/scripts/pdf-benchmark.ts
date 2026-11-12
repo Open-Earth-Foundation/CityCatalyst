@@ -634,7 +634,7 @@ export async function main(argv: string[]): Promise<number> {
     }
     for (const block of blocks) {
       console.log(
-        `${block.block}: headline recall ${block.headlineRecall === null ? "n/a" : `${Math.round(block.headlineRecall * 100)}%`} over ${block.casesInRun} case(s)`,
+        `${block.block}: headline recall ${block.headlineRecall === null ? "n/a" : `${Math.round(block.headlineRecall * 100)}%`} over ${block.casesInRun} case(s)${block.provisionalRecall === null ? "" : `; provisional recall ${Math.round(block.provisionalRecall * 100)}% over ${block.provisionalRecallCases} case(s) with unknown textTables`}`,
       );
     }
     if (interrupted) console.log("INTERRUPTED: partial report written.");

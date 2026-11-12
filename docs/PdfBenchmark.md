@@ -1,6 +1,6 @@
 # PDF extraction benchmark
 
-**Ticket:** CC-1124. Related: CC-1123 (benchmark contract), CC-1132 (first measurements, see [IngestionAccuracyBaseline.md](./IngestionAccuracyBaseline.md)).
+**Ticket:** CC-1124. Related: CC-1123 (benchmark contract), CC-1132 (first measurements).
 
 A command that runs PDF inventories through the real GHGI import flow (upload, OCR, extraction, approve), compares the stored values with a Product answer key, and writes a report you can review in a PR. Use it before and after any change to the PDF import, the extraction prompt or the models.
 
@@ -52,7 +52,7 @@ npx tsx scripts/pdf-benchmark.ts --set validated --eligible
 npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --update-baseline
 
 # Rescore an earlier run with the current scorer and keys. No DB, LLM or OCR call.
-npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/2026-10-31-0417-34131e4ec/results.json
+npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-folder>/results.json
 ```
 
 | Flag                             | Effect                                                                                                                    |
@@ -96,7 +96,7 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
 4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), refresh the baseline. The test-set version covers only the manifest entry and the key, so a scorer change does not mark the baseline stale on its own. Run `--rescore` on the baseline's run folders to see the effect first.
 
-**Current baseline (11 Nov 2026).** It covers 16 of the 27 cases: C-015..C-025 and C-027..C-031. C-004..C-014 have no entry because their PDFs were not available locally, so they are reported as `no baseline`: only a failed attempt flags them until they are recorded. The entries come from the run folders `2026-11-09-1845-c0b125fe5` and `2026-11-09-2100-75c9e8a8f`. The commits in those folder names were rewritten out of the branch history, and the 21:00 run ran on a dirty tree. Treat these entries as provisional and record them again from a branch commit once C-004..C-014 are available.
+**Current baseline.** `baseline.json` starts empty: every case is reported as `no baseline` until a run records it.
 
 ## Read the results
 

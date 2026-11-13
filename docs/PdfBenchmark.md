@@ -20,7 +20,7 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
    npm run db:migrate && npm run db:seed
    ```
 
-2. `app/.env` with the LLM provider keys, the Mistral OCR key, and a bucket for the uploaded PDFs, as for a normal local run. The benchmark reads `LLM_MODEL`, `LLM_EXTRACTION_MODEL` and `LLM_EXTRACTION_REASONING_EFFORT` to label the run, and `MISTRAL_OCR_MODEL` for the OCR model name.
+2. `app/.env` with the LLM provider keys, the Mistral OCR key, and a bucket for the uploaded PDFs, as for a normal local run. The benchmark labels the run with the model and reasoning effort the application uses for PDF extraction: the `pdf_extraction` entry of `app/llm_config.yaml` (or `LLM_CONFIG_PATH`), prefixed with `LLM_PROVIDER` (default `openai`), which is also the key it looks up in `benchmarks/pdf/prices.json`. It reads `MISTRAL_OCR_MODEL` for the OCR model name.
 3. The PDFs and the answer keys on your machine. They are never committed. Copy `app/benchmarks/pdf/config.example.json` to `app/benchmarks/pdf/config.local.json` (git-ignored) and set:
    - `pdfDir`: one folder, or a list of folders searched in order.
    - `answerKeys`: path to `answer-keys.json` (see [Add a PDF and its key](#add-a-pdf-and-its-key)).

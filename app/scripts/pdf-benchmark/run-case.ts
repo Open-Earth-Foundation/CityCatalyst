@@ -7,18 +7,16 @@
  */
 import env from "@next/env";
 import { NextRequest } from "next/server";
-import pino from "pino";
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { QueryTypes } from "sequelize";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import { heldRowDecisions } from "@/backend/ingestion-benchmark/held-rows";
-import {
-  ZERO_TOKENS,
-  type FailureMode,
-  type RunEntry,
-  type Tokens,
+import type {
+  FailureMode,
+  RunEntry,
+  Tokens,
 } from "@/backend/ingestion-benchmark/report";
 import {
   scoreFile,
@@ -26,6 +24,11 @@ import {
 } from "@/backend/ingestion-benchmark/score";
 import { scoringKey } from "@/backend/ingestion-benchmark/rescore";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
+import {
+  installUsageMeter,
+  since,
+  snapshot,
+} from "@/backend/ingestion-benchmark/usage-meter";
 import { Auth, type AppSession } from "@/lib/auth";
 import {
   GlobalWarmingPotentialTypeEnum,
@@ -90,59 +93,6 @@ export function pdfPathFor(
     if (existsSync(candidate)) return candidate;
   }
   return null;
-}
-
-// Product code logs every LLM call with its token usage; read those lines from
-// the shared pino stream so the benchmark needs no product change.
-const meter: Tokens = { ...ZERO_TOKENS };
-let windowMax = 0;
-const snapshot = (): Tokens => ({ ...meter });
-const since = (before: Tokens): Tokens => {
-  const max = windowMax;
-  windowMax = 0;
-  return {
-    calls: meter.calls - before.calls,
-    promptTokens: meter.promptTokens - before.promptTokens,
-    completionTokens: meter.completionTokens - before.completionTokens,
-    reasoningTokens:
-      (meter.reasoningTokens ?? 0) - (before.reasoningTokens ?? 0),
-    lengthStops: (meter.lengthStops ?? 0) - (before.lengthStops ?? 0),
-    maxCompletionTokens: max,
-  };
-};
-
-function installUsageMeter(logger: object) {
-  const stream = (logger as Record<symbol, { write: (c: string) => boolean }>)[
-    pino.symbols.streamSym
-  ];
-  const write = stream.write.bind(stream);
-  stream.write = (chunk: string) => {
-    if (
-      typeof chunk === "string" &&
-      chunk.includes('"LLM complete response"')
-    ) {
-      try {
-        const entry = JSON.parse(chunk) as {
-          promptTokens?: number;
-          completionTokens?: number;
-          reasoningTokens?: number;
-          finishReason?: string;
-        };
-        meter.calls += 1;
-        meter.promptTokens += entry.promptTokens ?? 0;
-        meter.completionTokens += entry.completionTokens ?? 0;
-        meter.reasoningTokens =
-          (meter.reasoningTokens ?? 0) + (entry.reasoningTokens ?? 0);
-        if (entry.finishReason === "length") {
-          meter.lengthStops = (meter.lengthStops ?? 0) + 1;
-        }
-        windowMax = Math.max(windowMax, entry.completionTokens ?? 0);
-      } catch {
-        // a malformed log line only loses one call from the count
-      }
-    }
-    return write(chunk);
-  };
 }
 
 function mockRequest(body?: unknown): NextRequest {

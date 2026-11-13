@@ -48,6 +48,10 @@ import {
   type LegacySummary,
 } from "@/backend/ingestion-benchmark/legacy-results";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
+import {
+  pdfExtractionModel,
+  type ExtractionModel,
+} from "@/backend/ingestion-benchmark/model-config";
 import { SCORER_VERSION } from "@/backend/ingestion-benchmark/score";
 import {
   ZERO_TOKENS,
@@ -337,9 +341,20 @@ export async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const outRoot = resolve(config.outRoot);
-  const extractionModel =
-    process.env.LLM_EXTRACTION_MODEL || process.env.LLM_MODEL;
-  const prices = extractionModel ? allPrices[extractionModel] : undefined;
+  // The model the application will use, from its own llm_config.yaml.
+  let extraction: ExtractionModel;
+  try {
+    const { loadLLMFileConfig } = await import("@/backend/llm/config");
+    extraction = pdfExtractionModel(
+      loadLLMFileConfig(),
+      (process.env.LLM_PROVIDER?.trim() || "openai").toLowerCase(),
+    );
+  } catch (error) {
+    console.error((error as Error).message);
+    return 2;
+  }
+  const extractionModel = extraction.model;
+  const prices = allPrices[extractionModel];
 
   if (options.list) {
     printList(manifest, baseline, outRoot, prices);
@@ -573,7 +588,7 @@ export async function main(argv: string[]): Promise<number> {
         {
           verdict,
           commit: git.commit,
-          extractionModel: extractionModel ?? null,
+          extractionModel,
           ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
           promptHash: promptHash(),
           testSetVersion: caseVersions.get(verdict.id)!,
@@ -601,9 +616,8 @@ export async function main(argv: string[]): Promise<number> {
     const summary: RunSummary = {
       measuredAt,
       ...git,
-      llmModel: process.env.LLM_MODEL,
       extractionModel,
-      reasoningEffort: process.env.LLM_EXTRACTION_REASONING_EFFORT || null,
+      reasoningEffort: extraction.reasoningEffort,
       ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
       prices,
       runsPerFile: options.runs,

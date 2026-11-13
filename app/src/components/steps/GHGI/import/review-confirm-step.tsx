@@ -20,6 +20,13 @@ import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import ReportingLevelWarning from "./reporting-level-warning";
 import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
+import type { ExtractedRow } from "@/backend/InventoryExtractionService";
+import {
+  SourceCheckCards,
+  type SourceCheckAnswer,
+} from "@/components/steps/GHGI/import/source-check-card";
+import { UseErrorToast, UseInfoToast } from "@/hooks/Toasts";
+import { getApiErrorMessage } from "@/util/helpers";
 import {
   rowImportWarnings,
   translateReviewImportWarning,
@@ -27,6 +34,8 @@ import {
 
 interface ReviewConfirmStepProps {
   t: TFunction;
+  /** App language, for numbers on the source check cards. */
+  lng?: string;
   cityId: string;
   cityName?: string;
   inventoryId: string;
@@ -37,6 +46,7 @@ interface ReviewConfirmStepProps {
 
 export default function ReviewConfirmStep({
   t,
+  lng,
   cityId,
   cityName,
   importedFileId,
@@ -59,6 +69,39 @@ export default function ReviewConfirmStep({
       skip: !cityId || !inventoryId || !importedFileId,
     },
   );
+  const sourceChecks =
+    data?.mappingConfiguration?.extractionSummary?.sourceChecks;
+  const { data: populationData } = api.useGetInventoryPopulationsQuery(
+    inventoryId,
+    { skip: !inventoryId || !sourceChecks },
+  );
+  const [updateSourceChecks] = api.useUpdateImportSourceChecksMutation();
+
+  /** Saves one check answer. A stale write reloads the import and asks again. */
+  const answerSourceCheck = async (answer: SourceCheckAnswer) => {
+    try {
+      await updateSourceChecks({
+        cityId,
+        inventoryId,
+        importedFileId,
+        ...answer,
+      }).unwrap();
+    } catch (error: unknown) {
+      const code = (error as { data?: { error?: { code?: string } } })?.data
+        ?.error?.code;
+      if (code === "source-checks-conflict") {
+        refetch();
+        UseInfoToast({
+          title: t("import-source-checks-conflict"),
+        }).showInfoToast();
+        return;
+      }
+      UseErrorToast({
+        title: t("import-source-checks-save-failed"),
+        description: getApiErrorMessage(error, ""),
+      }).showErrorToast();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -243,6 +286,16 @@ export default function ReviewConfirmStep({
           </HStack>
         </HStack>
       </VStack>
+      <SourceCheckCards
+        t={t}
+        locale={lng}
+        checks={sourceChecks}
+        rows={
+          (data?.mappingConfiguration?.rows as ExtractedRow[] | undefined) ?? []
+        }
+        population={populationData?.population ?? null}
+        onConfirm={answerSourceCheck}
+      />
       {reconciliation?.mismatch && (
         <Box
           bg="sentiment.warningOverlay"

@@ -33,6 +33,7 @@ import { logger } from "@/services/logger";
 import { getApiErrorMessage } from "@/util/helpers";
 import type { ImportStatusResponse } from "@/util/types";
 import { readImportChunkProgress } from "@/util/import-chunk-progress";
+import { hasPendingSourceChecks } from "@/util/GHGI/source-checks";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
 import { useAppDispatch } from "@/lib/hooks";
@@ -50,6 +51,8 @@ function resolveErrorMessage(
 
 /** Error code from the approve route when the inventory has data and the user has not confirmed replacing it. */
 const INVENTORY_HAS_DATA_CODE = "inventory-has-data";
+/** Error code from the approve route while a review source check is unanswered. */
+const SOURCE_CHECKS_PENDING_CODE = "source-checks-pending";
 
 function ImportButton({
   cityId,
@@ -57,6 +60,7 @@ function ImportButton({
   importedFileId,
   mappingOverrides,
   pendingRows,
+  sourceChecksPending,
   onImport,
   onImportProgressChange,
   disabled,
@@ -70,6 +74,8 @@ function ImportButton({
   mappingOverrides: Record<string, unknown>;
   /** Rows with no decision yet. The server rejects approval while above zero. */
   pendingRows: number;
+  /** A source check is unanswered. The server rejects approval then. */
+  sourceChecksPending: boolean;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
   disabled?: boolean;
@@ -207,6 +213,10 @@ function ImportButton({
         setShowReplaceConfirm(true);
         return;
       }
+      if (errorCode === SOURCE_CHECKS_PENDING_CODE) {
+        makeErrorToast(t("import-source-checks-pending"));
+        return;
+      }
       makeErrorToast(
         "Import failed",
         getApiErrorMessage(error, "Failed to import data"),
@@ -226,12 +236,20 @@ function ImportButton({
         }
         h="64px"
         loading={isImporting || isImportPolling}
-        disabled={disabled || pendingRows > 0 || isImporting || isImportPolling}
+        disabled={
+          disabled ||
+          sourceChecksPending ||
+          pendingRows > 0 ||
+          isImporting ||
+          isImportPolling
+        }
       >
         <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-          {pendingRows > 0
-            ? t("import-rows-pending", { count: pendingRows })
-            : t("import-inventory")}
+          {sourceChecksPending
+            ? t("import-source-checks-pending-button")
+            : pendingRows > 0
+              ? t("import-rows-pending", { count: pendingRows })
+              : t("import-inventory")}
         </Text>
         <MdArrowForward height="24px" width="24px" />
       </Button>
@@ -1208,6 +1226,7 @@ export default function GhgiImportWizard({
                       )}
                       <ReviewConfirmStep
                         t={t}
+                        lng={lng}
                         cityId={cityId}
                         cityName={inventory?.city?.name}
                         inventoryId={inventoryId}
@@ -1345,6 +1364,10 @@ export default function GhgiImportWizard({
                     importedFileId={importedFileId}
                     mappingOverrides={allOverrides}
                     pendingRows={pendingRows}
+                    sourceChecksPending={hasPendingSourceChecks(
+                      mappingStepData?.mappingConfiguration
+                        ?.extractionSummary ?? null,
+                    )}
                     onImportProgressChange={setIsImportInProgress}
                     disabled={
                       fileYearMismatch ||

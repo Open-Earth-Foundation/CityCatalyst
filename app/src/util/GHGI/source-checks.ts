@@ -10,6 +10,7 @@
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import {
   isNetTotalLabel,
+  type ExtractionSummary,
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
 import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
@@ -87,6 +88,18 @@ export type SourceChecks = {
     suggested: number | null;
   };
 };
+
+/**
+ * True while any source check waits for an answer. Approval is blocked then.
+ * A summary without checks (stored before them) has nothing pending.
+ */
+export function hasPendingSourceChecks(
+  summary: Pick<ExtractionSummary, "sourceChecks"> | null | undefined,
+): boolean {
+  const checks = summary?.sourceChecks;
+  if (!checks) return false;
+  return Object.values(checks).some((check) => check?.status === "pending");
+}
 
 const DEFAULT_READINGS = { unit: "t", numberFormat: "english" } as const;
 

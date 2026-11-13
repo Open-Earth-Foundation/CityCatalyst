@@ -47,6 +47,31 @@ describe("applyReadings", () => {
     expect(applyReadings(eu, T_EU, T_EN)).toEqual(rows);
   });
 
+  it("round-trips decimal values exactly", () => {
+    const rows = [
+      { totalCO2e: 50947.15, unitCheck: "MT" as const, co2: 15348.78 },
+      { totalCO2e: 15348.78, unitCheck: "MT" as const, co2: 50947.15 },
+    ];
+    expect(
+      applyReadings(applyReadings(rows, T_EN, MT_EN), MT_EN, T_EN),
+    ).toEqual(rows);
+  });
+
+  it("does not restore gases after a separator round trip", () => {
+    const rows = [
+      {
+        totalCO2e: 6.6,
+        totalCO2eText: "6.600",
+        printedFactor: 1,
+        numberCheck: true,
+        co2: 3,
+      },
+    ];
+    const back = applyReadings(applyReadings(rows, T_EN, T_EU), T_EU, T_EN);
+    expect(back[0].totalCO2e).toBe(6.6);
+    expect(back[0].co2).toBeNull();
+  });
+
   it("re-reads the separator from text", () => {
     const [r] = applyReadings(
       [
@@ -136,6 +161,13 @@ describe("selectLevelTotal", () => {
       total("Total Net Emissions (including Forestry)", -25639),
     ];
     expect(selectLevelTotal(c, "gpc_basic")).toBe(0);
+  });
+  it("skips a positive net total larger than gross", () => {
+    const c = [
+      total("Total Gross Emissions", 785873),
+      total("Total Net Emissions", 900000),
+    ];
+    expect(selectLevelTotal(c, null)).toBe(0);
   });
   it("prefers the level label", () => {
     const c = [

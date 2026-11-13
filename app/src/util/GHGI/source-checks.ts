@@ -73,12 +73,11 @@ function convert<R extends CheckableValue>(
   const fromFormat = from.numberFormat ?? DEFAULT_READINGS.numberFormat;
   const toFormat = to.numberFormat ?? DEFAULT_READINGS.numberFormat;
   const unitApplies = item.unitCheck === "MT";
-  const unitRatio = unitApplies
-    ? UNIT_FACTOR[toUnit] / UNIT_FACTOR[fromUnit]
-    : 1;
+  // Multiply first, then divide: Mt to t by a ratio of 1e-6 drifts on decimals.
+  const scale = (n: number) =>
+    unitApplies ? (n * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[fromUnit] : n;
 
-  let value = current * unitRatio;
-  const ratio = unitRatio;
+  let value = scale(current);
   let separatorChanged = false;
 
   if (item.numberCheck && fromFormat !== toFormat && item.totalCO2eText) {
@@ -98,12 +97,19 @@ function convert<R extends CheckableValue>(
   for (const gas of GAS_KEYS) {
     const gasValue = item[gas];
     if (gasValue == null) continue;
-    next[gas] = separatorChanged ? null : gasValue * ratio;
+    next[gas] = separatorChanged ? null : scale(gasValue);
   }
   return next as R;
 }
 
-/** Items (rows or reported totals) converted from one set of readings to another. */
+/**
+ * Items (rows or reported totals) converted from one set of readings to another.
+ *
+ * A separator change sets co2, ch4 and n2o to null: the text carries only the
+ * total, so the gases cannot be rebuilt. Callers must always convert from the
+ * stored rows with their current readings, never chain conversions expecting
+ * the gases to come back.
+ */
 export function applyReadings<R extends CheckableValue>(
   items: R[],
   from: Readings,

@@ -227,6 +227,7 @@
   "import-ciris-report-mismatch": "The eCRF_3 rows add up to a different total than the CIRIS Report tab. Check the file before you confirm.",
   "import-dropped-rows-title": "Rows left out while reading the document",
   "import-dropped-reason-other_year": "From another year: {{count}}",
+  "import-dropped-reason-caption_year": "Moved to another year by the table caption: {{count}}",
   "import-dropped-reason-missing_year": "Without a year: {{count}}",
   "import-dropped-reason-unsupported_unit": "In a unit that cannot be converted to tonnes: {{count}}",
   "import-dropped-reason-duplicate": "Repeated in another table: {{count}}",

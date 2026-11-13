@@ -13,11 +13,18 @@ export type ReportedTotal = {
   sector: string | null;
   subsector: string | null;
   level: "subtotal" | "total";
+  /**
+   * False when the value is not printed in the source text the model read: the
+   * model invented or computed it, and it is no reconciliation target. Missing on
+   * summaries stored before this check and when no source text was given.
+   */
+  inText?: boolean;
 };
 
 export type DroppedRowReason =
   | "subtotal_or_total"
   | "other_year"
+  | "caption_year"
   | "missing_year"
   | "unsupported_unit"
   | "duplicate"
@@ -196,6 +203,8 @@ export function reconciliationTargets(
     (total) =>
       !total.scope &&
       Number.isFinite(total.value) &&
+      // A total not printed in the source text (model arithmetic) is no target.
+      total.inText !== false &&
       // A total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );
@@ -309,6 +318,7 @@ export function reconcileExtraction(
 /** Drop reasons worth showing. Subtotals and totals are expected to be left out. */
 export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
   "other_year",
+  "caption_year",
   "missing_year",
   "unsupported_unit",
   "duplicate",

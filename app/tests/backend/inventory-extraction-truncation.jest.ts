@@ -72,8 +72,11 @@ const numbers = Array.from(
 ).join(" ");
 const page = (n: number, title: string) =>
   `<!-- page: ${n} -->\n${title}\n${numbers}\n`;
+// Page 15 prints the grand total, so reconciliation can use it (CC-1163).
 const document =
-  page(15, "Table 3-1") + page(17, "Chapter 4") + page(46, "Table A-1");
+  page(15, "Table 3-1\nTotal 9,559,215") +
+  page(17, "Chapter 4") +
+  page(46, "Table A-1");
 
 /** JSON of two rows cut after the first row, as a model stopped at the limit writes it. */
 const cutOff = (rows: ExtractedRow[]) =>

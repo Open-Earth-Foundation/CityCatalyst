@@ -21,6 +21,15 @@ import {
 } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
+  detectNumberStyle,
+  isValueInNumbers,
+  numbersInText,
+  parseNumberString,
+  yearEvidence,
+  namesLargeUnit,
+  type NumberStyle,
+} from "@/util/GHGI/source-text";
+import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
   namesRemovals,
@@ -497,8 +506,9 @@ const EMPTY_RESULT: ExtractionResult = {
  */
 function ownTotalDeviation({ rows, summary }: ExtractionResult): number | null {
   if (!rows.some((row) => row.scope && row.gpcRefNo)) return null;
+  // A total not printed on the page is no reason to ask again (CC-1163).
   const totals = summary.reportedTotals.filter(
-    (t) => isGrandTotal(t) && t.value !== 0,
+    (t) => isGrandTotal(t) && t.value !== 0 && t.inText !== false,
   );
   if (totals.length === 0) return null;
   return Math.min(
@@ -554,6 +564,7 @@ function selectPages(
       (p) =>
         p.result.rows.some((row) => row.year != null) ||
         (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
+        (p.result.summary.droppedRows.caption_year ?? 0) > 0 ||
         (p.result.summary.droppedRows.missing_year ?? 0) > 0,
     );
   const yearAssumed =
@@ -761,7 +772,10 @@ function selectPages(
   }
 
   if (best) {
-    const chosen = sorted.slice(best.start, best.end + 1);
+    // Pages without rows (another year's table, dropped) lead no run.
+    let first = best.start;
+    while (first < best.end && sorted[first].result.rows.length === 0) first++;
+    const chosen = sorted.slice(first, best.end + 1);
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
@@ -1019,12 +1033,14 @@ async function extractRowsFromDocument(
     // bar never moves back. The chunk count is known before any call.
     const progressTotal = pages.length + countChunks(documentContent);
     const failedPages: { page: number; error: unknown }[] = [];
+    // Pages where caption year or unit evidence dropped rows (see finalizeRows).
+    const evidencePages = new Set<number>();
     const perPage = await mapPool(
       pages,
       getLlmChunkConcurrency(),
       async (page): Promise<PageResult> => {
         const extract = async () =>
-          finalizeExtractedRows(
+          finalizeRows(
             normalizeExtractedRows(
               await extractSegment(
                 page.text,
@@ -1034,13 +1050,16 @@ async function extractRowsFromDocument(
               ),
             ).map((row) => ({ ...row, page: page.page })),
             year,
-            { deferYearAssumption: true },
+            {
+              deferYearAssumption: true,
+              source: { text: page.text, kind: "page" },
+            },
           );
-        let result: ExtractionResult;
+        let finalized: Awaited<ReturnType<typeof extract>>;
         try {
           // Like a chunk: only an unusable answer is asked for once more. The
           // LLM client already retries timeouts, rate limits and provider errors.
-          result = await extract().catch((error) => {
+          finalized = await extract().catch((error) => {
             if (!(error instanceof ExtractionResponseError)) throw error;
             logger.info(
               { page: page.page, err: error },
@@ -1059,17 +1078,18 @@ async function extractRowsFromDocument(
         }
         // The model sometimes skips a column of a dense table. When the page states
         // its own grand total and the rows miss it, ask once more; keep the closer.
-        const first = ownTotalDeviation(result);
+        const first = ownTotalDeviation(finalized.result);
         if (first != null && first > RECONCILIATION_TOLERANCE) {
           const retry = await extract().catch(() => null);
-          const second = retry ? ownTotalDeviation(retry) : null;
-          if (retry && second != null && second < first) result = retry;
+          const second = retry ? ownTotalDeviation(retry.result) : null;
+          if (retry && second != null && second < first) finalized = retry;
           logger.info(
             { page: page.page, first, second },
             "Page retried: rows did not add up to the page total",
           );
         }
-        return { page: page.page, result };
+        if (finalized.evidenceDropped) evidencePages.add(page.page);
+        return { page: page.page, result: finalized.result };
       },
       async (completedCount) => {
         if (onProgress) {
@@ -1093,7 +1113,10 @@ async function extractRowsFromDocument(
       },
       "Page selection finished",
     );
-    if (selected.summary.pageSelection === "fallback") {
+    if (
+      selected.summary.pageSelection === "fallback" &&
+      evidencePages.size === 0
+    ) {
       // No page run reconciles. Per-page rows carry more noise than whole-document
       // chunks (CC-1008 live runs), so extract the old way.
       const chunked = await extractByChunks(
@@ -1106,6 +1129,7 @@ async function extractRowsFromDocument(
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
+        { source: { text: documentContent, kind: "document" } },
       );
       return checkExtractionResult(
         withFailed({
@@ -1114,6 +1138,14 @@ async function extractRowsFromDocument(
         }),
         chunked.length,
         targetYear,
+      );
+    }
+    if (selected.summary.pageSelection === "fallback") {
+      // Page evidence dropped rows: the chunk path would read them again without
+      // the caption year or unit, so the per-page rows stand.
+      logger.info(
+        { evidencePages: [...evidencePages].sort((a, b) => a - b) },
+        "Chunk fallback skipped: page evidence dropped rows",
       );
     }
     if (onProgress) {
@@ -1139,7 +1171,9 @@ async function extractRowsFromDocument(
     schemaState,
   );
   return checkExtractionResult(
-    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
+      source: { text: documentContent, kind: "document" },
+    }),
     allRows.length,
     targetYear,
   );
@@ -1164,6 +1198,7 @@ async function extractByChunks(
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
+  const style = detectNumberStyle(documentContent);
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -1177,6 +1212,7 @@ async function extractByChunks(
       yearInstruction,
       false,
       schemaState,
+      style,
     );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
@@ -1193,7 +1229,7 @@ async function extractByChunks(
       chunks,
       concurrency,
       async (chunk) =>
-        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState),
+        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1225,17 +1261,22 @@ async function extractSegmentWithRetry(
   promptPrefix: string,
   isSegment: boolean,
   schemaState: SchemaState,
+  style?: NumberStyle,
 ): Promise<ExtractedRow[]> {
-  return extractSegment(content, promptPrefix, isSegment, schemaState).catch(
-    (error) => {
-      if (!(error instanceof ExtractionResponseError)) throw error;
-      logger.info(
-        { isSegment, err: error },
-        "Extraction answer unusable; retrying once",
-      );
-      return extractSegment(content, promptPrefix, isSegment, schemaState);
-    },
-  );
+  return extractSegment(
+    content,
+    promptPrefix,
+    isSegment,
+    schemaState,
+    style,
+  ).catch((error) => {
+    if (!(error instanceof ExtractionResponseError)) throw error;
+    logger.info(
+      { isSegment, err: error },
+      "Extraction answer unusable; retrying once",
+    );
+    return extractSegment(content, promptPrefix, isSegment, schemaState, style);
+  });
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -1260,6 +1301,7 @@ function checkExtractionResult(
     );
     if (
       (summary.droppedRows.other_year ?? 0) +
+        (summary.droppedRows.caption_year ?? 0) +
         (summary.droppedRows.missing_year ?? 0) >
       0
     ) {
@@ -1357,6 +1399,7 @@ async function extractSegment(
   prefix: string,
   isSegment: boolean,
   state: SchemaState,
+  style: NumberStyle = detectNumberStyle(content),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
@@ -1426,7 +1469,7 @@ async function extractSegment(
   logger.debug({ extractionResponse: truncated }, "Extraction LLM output");
 
   const parsed = parseExtractionResponse(responseContent);
-  return normalizeRows(parsed);
+  return normalizeRows(parsed, style);
 }
 
 /**
@@ -1661,11 +1704,6 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   );
 }
 
-/** Strip commas and spaces used as thousands separators so "48,000" and "48 000" parse correctly. */
-function normalizeNumberString(s: string): string {
-  return String(s).replace(/,/g, "").replace(/\s+/g, "").trim();
-}
-
 /** Treat "-", "N/A", empty as missing (model sometimes outputs these instead of null). */
 function isPlaceholderOrEmpty(s: string): boolean {
   const t = s.trim().toLowerCase();
@@ -1681,7 +1719,15 @@ function normalizeScopeString(s: string): "1" | "2" | "3" | null {
   return null;
 }
 
-function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
+function normalizeRows(
+  raw: Record<string, unknown>[],
+  style: NumberStyle,
+): ExtractedRow[] {
+  const logAmbiguous = (value: string) =>
+    logger.info(
+      { value },
+      "Ambiguous 3-digit group parsed with number style unknown",
+    );
   return raw.map((row) => {
     const out: ExtractedRow = {
       year: null,
@@ -1708,7 +1754,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
       out.totalCO2e = row.totalCO2e;
     } else if (typeof row.totalCO2e === "string") {
-      const n = parseFloat(normalizeNumberString(row.totalCO2e));
+      const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
     if (row.refSource === "document" || row.refSource === "inferred") {
@@ -1748,19 +1794,19 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
-      const n = parseFloat(normalizeNumberString(row.co2));
+      const n = parseNumberString(row.co2, style, logAmbiguous);
       if (Number.isFinite(n)) out.co2 = n;
     }
     if (typeof row.ch4 === "number" && Number.isFinite(row.ch4)) {
       out.ch4 = row.ch4;
     } else if (typeof row.ch4 === "string") {
-      const n = parseFloat(normalizeNumberString(row.ch4));
+      const n = parseNumberString(row.ch4, style, logAmbiguous);
       if (Number.isFinite(n)) out.ch4 = n;
     }
     if (typeof row.n2o === "number" && Number.isFinite(row.n2o)) {
       out.n2o = row.n2o;
     } else if (typeof row.n2o === "string") {
-      const n = parseFloat(normalizeNumberString(row.n2o));
+      const n = parseNumberString(row.n2o, style, logAmbiguous);
       if (Number.isFinite(n)) out.n2o = n;
     }
     if (typeof row.source === "string" && !isPlaceholderOrEmpty(row.source))
@@ -1799,7 +1845,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       typeof row.activityAmount === "string" &&
       !isPlaceholderOrEmpty(row.activityAmount)
     ) {
-      const n = parseFloat(normalizeNumberString(row.activityAmount));
+      const n = parseNumberString(row.activityAmount, style, logAmbiguous);
       if (Number.isFinite(n)) out.activityAmount = n;
     }
     return out;
@@ -2016,6 +2062,24 @@ function repeatKey(row: ExtractedRow): string {
   ].join("\t");
 }
 
+/** The text the model read: one page, or the whole document on the chunk path. */
+export type FinalizeSource = { text: string; kind: "page" | "document" };
+
+export type FinalizeOptions = {
+  /**
+   * Keep year-less rows as they are when no row names a year, instead of assigning
+   * the target year. Page selection decides later, with every page in view.
+   */
+  deferYearAssumption?: boolean;
+  /**
+   * Source text of the rows. When set, each reported total records whether its
+   * value is printed there (`inText`).
+   */
+  source?: FinalizeSource;
+  /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
+  currentYear?: number;
+};
+
 /**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
@@ -2024,33 +2088,115 @@ function repeatKey(row: ExtractedRow): string {
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
  */
-export type FinalizeOptions = {
-  /**
-   * Keep year-less rows as they are when no row names a year, instead of assigning
-   * the target year. Page selection decides later, with every page in view.
-   */
-  deferYearAssumption?: boolean;
-};
-
 export function finalizeExtractedRows(
-  rows: ExtractedRow[],
+  inputRows: ExtractedRow[],
   targetYear?: number,
   options?: FinalizeOptions,
 ): ExtractionResult {
+  return finalizeRows(inputRows, targetYear, options).result;
+}
+
+/**
+ * finalizeExtractedRows, plus `evidenceDropped`: true when page evidence removed
+ * rows, either a caption year relabeled at least one row or total, or a row
+ * without a unit was dropped on a kt or Mt page. The chunk path cannot see that
+ * evidence, so such a page must not be re-extracted by chunks.
+ */
+function finalizeRows(
+  inputRows: ExtractedRow[],
+  targetYear?: number,
+  options?: FinalizeOptions,
+): { result: ExtractionResult; evidenceDropped: boolean } {
+  let rows = inputRows;
+  let evidenceDropped = false;
+  // Rows a caption year moved to another year, counted as caption_year drops.
+  const captionRelabeled = new Set<ExtractedRow>();
+  // Year evidence from the page's table captions: when they name only other
+  // years, rows the model labeled with the target year (or none) belong to that
+  // table's year. The year filter then drops them, and their totals stop being
+  // targets. Runs before hidden row totals are found so those inherit the year.
+  if (options?.source?.kind === "page" && targetYear != null) {
+    const evidence = yearEvidence(
+      options.source.text,
+      targetYear,
+      options.currentYear ?? new Date().getUTCFullYear(),
+    );
+    if (evidence.kind === "other") {
+      const relabel = evidence.years[0];
+      // A table continued from the previous page sits above the other year's
+      // caption: a row whose value is printed there keeps its year.
+      const leadNumbers = numbersInText(
+        evidence.leadText,
+        detectNumberStyle(options.source.text),
+      );
+      rows = rows.map((row) => {
+        if (row.year != null && row.year !== targetYear) return row;
+        if (
+          row.totalCO2e != null &&
+          leadNumbers.length > 0 &&
+          isValueInNumbers(row.totalCO2e, leadNumbers)
+        ) {
+          return row;
+        }
+        evidenceDropped = true;
+        const moved = { ...row, year: relabel };
+        captionRelabeled.add(moved);
+        return moved;
+      });
+    }
+  }
   const droppedRows: ExtractionSummary["droppedRows"] = {};
   const drop = (reason: DroppedRowReason) => {
     droppedRows[reason] = (droppedRows[reason] ?? 0) + 1;
   };
   const reportedTotals: ReportedTotal[] = [];
   const converted: ExtractedRow[] = [];
+  const source = options?.source;
+  // Every number printed in the source, read once for all the in-text checks.
+  const sourceNumbers = source
+    ? numbersInText(source.text, detectNumberStyle(source.text))
+    : [];
+  // Raw totalCO2e (before the unit multiplier) of each converted row, for the
+  // in-text check of hidden row totals.
+  const rawValues = new Map<ExtractedRow, number | null>();
+  const inText = (
+    raw: number | null | undefined,
+    label: string,
+    value: number,
+    page: number | null | undefined,
+  ): { inText?: boolean } => {
+    if (!source || raw == null) return {};
+    const found = isValueInNumbers(raw, sourceNumbers);
+    if (!found) {
+      logger.warn(
+        { label, value, page: page ?? null },
+        "Reported total not found in source text",
+      );
+    }
+    return { inText: found };
+  };
+
+  // On a page whose captions name kt or Mt, a row without a unit is unknown,
+  // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
+  const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
 
   for (const row of rows) {
+    // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
+    const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
+      (v) => v != null,
+    );
+    if (unitRequired && row.unit == null && hasAmount) {
+      evidenceDropped = true;
+      drop("unsupported_unit");
+      continue;
+    }
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
       continue;
     }
     const scaled: ExtractedRow = { ...row };
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -2080,22 +2226,25 @@ export function finalizeExtractedRows(
         scaled.totalCO2e != null &&
         reportedTotals.length < MAX_REPORTED_TOTALS
       ) {
+        const label =
+          scaled.category?.trim() ||
+          scaled.subsector?.trim() ||
+          scaled.sector?.trim() ||
+          rowType;
         reportedTotals.push({
-          label:
-            scaled.category?.trim() ||
-            scaled.subsector?.trim() ||
-            scaled.sector?.trim() ||
-            rowType,
+          label,
           value: scaled.totalCO2e,
           year: scaled.year,
           scope: scaled.scope ?? null,
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
+          ...inText(row.totalCO2e, label, scaled.totalCO2e, row.page),
         });
       }
       continue;
     }
+    rawValues.set(scaled, row.totalCO2e ?? null);
     converted.push(scaled);
   }
 
@@ -2108,10 +2257,15 @@ export function finalizeExtractedRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
+        else if (captionRelabeled.has(row)) drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {
-      yearFiltered = converted.map((row) => ({ ...row, year: targetYear }));
+      yearFiltered = converted.map((row) => {
+        const copy = { ...row, year: targetYear };
+        rawValues.set(copy, rawValues.get(row) ?? null);
+        return copy;
+      });
       yearAssumed = yearFiltered.length > 0;
     }
   }
@@ -2123,14 +2277,17 @@ export function finalizeExtractedRows(
   for (const row of hiddenTotals) {
     drop("subtotal_or_total");
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
+      const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
+      const value = row.totalCO2e as number;
       reportedTotals.push({
-        label: row.category?.trim() || row.subsector?.trim() || "subtotal",
-        value: row.totalCO2e as number,
+        label,
+        value,
         year: row.year,
         scope: null,
         sector: row.sector,
         subsector: row.subsector,
         level: "subtotal",
+        ...inText(rawValues.get(row), label, value, row.page),
       });
     }
   }
@@ -2160,13 +2317,16 @@ export function finalizeExtractedRows(
   const importedSum = sumImported(finalRows);
 
   return {
-    rows: finalRows,
-    summary: {
-      reportedTotals,
-      droppedRows,
-      importedSum,
-      yearAssumed,
-      targetYear: targetYear ?? null,
+    result: {
+      rows: finalRows,
+      summary: {
+        reportedTotals,
+        droppedRows,
+        importedSum,
+        yearAssumed,
+        targetYear: targetYear ?? null,
+      },
     },
+    evidenceDropped,
   };
 }

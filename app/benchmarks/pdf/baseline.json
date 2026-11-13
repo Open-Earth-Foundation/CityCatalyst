@@ -523,7 +523,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.08462879999999999,
+      "costUsd": 0.04531439999999999,
       "seconds": 204.877
     },
     "commit": "fe14d3a05",
@@ -577,7 +577,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.8841404000000002,
+      "costUsd": 0.6160702,
       "seconds": 420.114
     },
     "commit": "fe14d3a05",
@@ -631,7 +631,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6224088,
+      "costUsd": 0.4402044,
       "seconds": 349.804
     },
     "commit": "fe14d3a05",
@@ -685,7 +685,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.798802,
+      "costUsd": 0.537401,
       "seconds": 312.246
     },
     "commit": "fe14d3a05",
@@ -739,7 +739,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.5346476,
+      "costUsd": 0.34532379999999996,
       "seconds": 333.996
     },
     "commit": "fe14d3a05",
@@ -793,7 +793,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 4.3953136,
+      "costUsd": 2.4976568,
       "seconds": 2603.153
     },
     "commit": "fe14d3a05",
@@ -847,7 +847,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.3240212,
+      "costUsd": 0.24601060000000002,
       "seconds": 87.421
     },
     "commit": "fe14d3a05",
@@ -901,7 +901,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6852924,
+      "costUsd": 0.5466462000000001,
       "seconds": 159.789
     },
     "commit": "fe14d3a05",
@@ -951,7 +951,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6091996,
+      "costUsd": 0.4005998,
       "seconds": 286.375
     },
     "commit": "fe14d3a05",
@@ -1001,7 +1001,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.09157399999999999,
+      "costUsd": 0.057787,
       "seconds": 98.551
     },
     "commit": "fe14d3a05",
@@ -1051,7 +1051,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.24708180000000002,
+      "costUsd": 0.1143606,
       "seconds": 108.434
     },
     "commit": "fe14d3a05",
@@ -1101,7 +1101,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.212721,
+      "costUsd": 0.126907,
       "seconds": 95.823
     },
     "commit": "fe14d3a05",
@@ -1155,7 +1155,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.2722692,
+      "costUsd": 0.1707564,
       "seconds": 122.998
     },
     "commit": "fe14d3a05",
@@ -1209,7 +1209,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.2077826,
+      "costUsd": 0.5665942,
       "seconds": 483.837
     },
     "commit": "fe14d3a05",
@@ -1263,7 +1263,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.9067608,
+      "costUsd": 0.5022536,
       "seconds": 227.915
     },
     "commit": "fe14d3a05",
@@ -1317,7 +1317,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.22946,
+      "costUsd": 0.84982,
       "seconds": 304.031
     },
     "commit": "fe14d3a05",
@@ -1371,7 +1371,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.1580372,
+      "costUsd": 0.5940124,
       "seconds": 351.741
     },
     "commit": "fe14d3a05",

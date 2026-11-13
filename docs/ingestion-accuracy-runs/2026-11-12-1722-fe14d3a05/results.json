@@ -5169,9 +5169,9 @@
             "total": 67147
           },
           "usage": {
-            "calls": 2,
-            "promptTokens": 18376,
-            "completionTokens": 18478,
+            "calls": 1,
+            "promptTokens": 9188,
+            "completionTokens": 9239,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 9239
@@ -5580,9 +5580,9 @@
             "total": 64410
           },
           "usage": {
-            "calls": 2,
-            "promptTokens": 18376,
-            "completionTokens": 17654,
+            "calls": 1,
+            "promptTokens": 9188,
+            "completionTokens": 8827,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 8827
@@ -5991,9 +5991,9 @@
             "total": 73320
           },
           "usage": {
-            "calls": 2,
-            "promptTokens": 18376,
-            "completionTokens": 20204,
+            "calls": 1,
+            "promptTokens": 9188,
+            "completionTokens": 10102,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 10102
@@ -6430,9 +6430,9 @@
             "total": 151136
           },
           "usage": {
-            "calls": 72,
-            "promptTokens": 542164,
-            "completionTokens": 60862,
+            "calls": 36,
+            "promptTokens": 271082,
+            "completionTokens": 30431,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 7779
@@ -6673,9 +6673,9 @@
             "total": 132965
           },
           "usage": {
-            "calls": 72,
-            "promptTokens": 542178,
-            "completionTokens": 53292,
+            "calls": 36,
+            "promptTokens": 271089,
+            "completionTokens": 26646,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 5880
@@ -6916,9 +6916,9 @@
             "total": 136013
           },
           "usage": {
-            "calls": 72,
-            "promptTokens": 542148,
-            "completionTokens": 61548,
+            "calls": 36,
+            "promptTokens": 271074,
+            "completionTokens": 30774,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 6090
@@ -7187,9 +7187,9 @@
             "total": 126710
           },
           "usage": {
-            "calls": 42,
-            "promptTokens": 331664,
-            "completionTokens": 42752,
+            "calls": 21,
+            "promptTokens": 165832,
+            "completionTokens": 21376,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 7937
@@ -7486,9 +7486,9 @@
             "total": 105057
           },
           "usage": {
-            "calls": 42,
-            "promptTokens": 331734,
-            "completionTokens": 41032,
+            "calls": 21,
+            "promptTokens": 165867,
+            "completionTokens": 20516,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 8802
@@ -7848,9 +7848,9 @@
             "total": 118037
           },
           "usage": {
-            "calls": 42,
-            "promptTokens": 331750,
-            "completionTokens": 54032,
+            "calls": 21,
+            "promptTokens": 165875,
+            "completionTokens": 27016,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 9360
@@ -8238,9 +8238,9 @@
             "total": 110437
           },
           "usage": {
-            "calls": 68,
-            "promptTokens": 513314,
-            "completionTokens": 60536,
+            "calls": 34,
+            "promptTokens": 256657,
+            "completionTokens": 30268,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3418
@@ -8369,9 +8369,9 @@
             "total": 101025
           },
           "usage": {
-            "calls": 68,
-            "promptTokens": 513312,
-            "completionTokens": 57078,
+            "calls": 34,
+            "promptTokens": 256656,
+            "completionTokens": 28539,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3200
@@ -8500,9 +8500,9 @@
             "total": 100784
           },
           "usage": {
-            "calls": 68,
-            "promptTokens": 513312,
-            "completionTokens": 61398,
+            "calls": 34,
+            "promptTokens": 256656,
+            "completionTokens": 30699,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3621
@@ -8659,9 +8659,9 @@
             "total": 112637
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 227106,
-            "completionTokens": 70054,
+            "calls": 15,
+            "promptTokens": 113553,
+            "completionTokens": 35027,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 6644
@@ -8790,9 +8790,9 @@
             "total": 112152
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 226994,
-            "completionTokens": 69112,
+            "calls": 15,
+            "promptTokens": 113497,
+            "completionTokens": 34556,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 6581
@@ -8921,9 +8921,9 @@
             "total": 109207
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 226994,
-            "completionTokens": 62858,
+            "calls": 15,
+            "promptTokens": 113497,
+            "completionTokens": 31429,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 6685
@@ -9080,9 +9080,9 @@
             "total": 841464
           },
           "usage": {
-            "calls": 138,
-            "promptTokens": 1118850,
-            "completionTokens": 844238,
+            "calls": 69,
+            "promptTokens": 559425,
+            "completionTokens": 422119,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 16000
@@ -9179,9 +9179,9 @@
             "total": 933847
           },
           "usage": {
-            "calls": 142,
-            "promptTokens": 1155846,
-            "completionTokens": 927488,
+            "calls": 71,
+            "promptTokens": 577923,
+            "completionTokens": 463744,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 16000
@@ -9335,9 +9335,9 @@
             "total": 827842
           },
           "usage": {
-            "calls": 138,
-            "promptTokens": 1120724,
-            "completionTokens": 825132,
+            "calls": 69,
+            "promptTokens": 560362,
+            "completionTokens": 412566,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 16000
@@ -9518,9 +9518,9 @@
             "total": 28206
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 248316,
-            "completionTokens": 1808,
+            "calls": 15,
+            "promptTokens": 124158,
+            "completionTokens": 904,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 350
@@ -9543,9 +9543,9 @@
             "total": 28376
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 248242,
-            "completionTokens": 1756,
+            "calls": 15,
+            "promptTokens": 124121,
+            "completionTokens": 878,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 250
@@ -9568,9 +9568,9 @@
             "total": 30839
           },
           "usage": {
-            "calls": 30,
-            "promptTokens": 248244,
-            "completionTokens": 2320,
+            "calls": 15,
+            "promptTokens": 124122,
+            "completionTokens": 1160,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 556
@@ -9621,9 +9621,9 @@
             "total": 54609
           },
           "usage": {
-            "calls": 54,
-            "promptTokens": 395306,
-            "completionTokens": 10746,
+            "calls": 27,
+            "promptTokens": 197653,
+            "completionTokens": 5373,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2135
@@ -9745,9 +9745,9 @@
             "total": 49005
           },
           "usage": {
-            "calls": 54,
-            "promptTokens": 395306,
-            "completionTokens": 10770,
+            "calls": 27,
+            "promptTokens": 197653,
+            "completionTokens": 5385,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2220
@@ -9869,9 +9869,9 @@
             "total": 56175
           },
           "usage": {
-            "calls": 54,
-            "promptTokens": 395306,
-            "completionTokens": 11908,
+            "calls": 27,
+            "promptTokens": 197653,
+            "completionTokens": 5954,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2559
@@ -10021,9 +10021,9 @@
             "total": 95475
           },
           "usage": {
-            "calls": 50,
-            "promptTokens": 404020,
-            "completionTokens": 45570,
+            "calls": 25,
+            "promptTokens": 202010,
+            "completionTokens": 22785,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 4158
@@ -10131,9 +10131,9 @@
             "total": 96523
           },
           "usage": {
-            "calls": 52,
-            "promptTokens": 421990,
-            "completionTokens": 50888,
+            "calls": 26,
+            "promptTokens": 210995,
+            "completionTokens": 25444,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 4334
@@ -10255,9 +10255,9 @@
             "total": 94377
           },
           "usage": {
-            "calls": 50,
-            "promptTokens": 404004,
-            "completionTokens": 46206,
+            "calls": 25,
+            "promptTokens": 202002,
+            "completionTokens": 23103,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3940
@@ -10372,9 +10372,9 @@
             "total": 46094
           },
           "usage": {
-            "calls": 10,
-            "promptTokens": 76892,
-            "completionTokens": 11702,
+            "calls": 5,
+            "promptTokens": 38446,
+            "completionTokens": 5851,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2809
@@ -10461,9 +10461,9 @@
             "total": 25095
           },
           "usage": {
-            "calls": 8,
-            "promptTokens": 60776,
-            "completionTokens": 5614,
+            "calls": 4,
+            "promptTokens": 30388,
+            "completionTokens": 2807,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2068
@@ -10543,9 +10543,9 @@
             "total": 27362
           },
           "usage": {
-            "calls": 8,
-            "promptTokens": 60762,
-            "completionTokens": 5924,
+            "calls": 4,
+            "promptTokens": 30381,
+            "completionTokens": 2962,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2493
@@ -10667,9 +10667,9 @@
             "total": 35344
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 172773,
-            "completionTokens": 25920,
+            "calls": 8,
+            "promptTokens": 57591,
+            "completionTokens": 8640,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2055
@@ -10756,9 +10756,9 @@
             "total": 38888
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 172773,
-            "completionTokens": 27885,
+            "calls": 8,
+            "promptTokens": 57591,
+            "completionTokens": 9295,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 1838
@@ -10838,9 +10838,9 @@
             "total": 34202
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 172773,
-            "completionTokens": 25710,
+            "calls": 8,
+            "promptTokens": 57591,
+            "completionTokens": 8570,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 1964
@@ -10976,9 +10976,9 @@
             "total": 36666
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 193179,
-            "completionTokens": 3591,
+            "calls": 8,
+            "promptTokens": 64393,
+            "completionTokens": 1197,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 479
@@ -11001,9 +11001,9 @@
             "total": 33888
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 193308,
-            "completionTokens": 3573,
+            "calls": 8,
+            "promptTokens": 64436,
+            "completionTokens": 1191,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 485
@@ -11026,9 +11026,9 @@
             "total": 25269
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 193308,
-            "completionTokens": 3471,
+            "calls": 8,
+            "promptTokens": 64436,
+            "completionTokens": 1157,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 438
@@ -11079,9 +11079,9 @@
             "total": 39019
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 188439,
-            "completionTokens": 10122,
+            "calls": 8,
+            "promptTokens": 62813,
+            "completionTokens": 3374,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3100
@@ -11224,9 +11224,9 @@
             "total": 42228
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 188436,
-            "completionTokens": 11610,
+            "calls": 8,
+            "promptTokens": 62812,
+            "completionTokens": 3870,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3596
@@ -11369,9 +11369,9 @@
             "total": 41751
           },
           "usage": {
-            "calls": 24,
-            "promptTokens": 188433,
-            "completionTokens": 10941,
+            "calls": 8,
+            "promptTokens": 62811,
+            "completionTokens": 3647,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3390
@@ -11542,9 +11542,9 @@
             "total": 183285
           },
           "usage": {
-            "calls": 75,
-            "promptTokens": 608481,
-            "completionTokens": 199251,
+            "calls": 25,
+            "promptTokens": 202827,
+            "completionTokens": 66417,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 14732
@@ -11750,9 +11750,9 @@
             "total": 198943
           },
           "usage": {
-            "calls": 78,
-            "promptTokens": 629673,
-            "completionTokens": 204534,
+            "calls": 26,
+            "promptTokens": 209891,
+            "completionTokens": 68178,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 14412
@@ -11951,9 +11951,9 @@
             "total": 101609
           },
           "usage": {
-            "calls": 69,
-            "promptTokens": 505377,
-            "completionTokens": 107112,
+            "calls": 23,
+            "promptTokens": 168459,
+            "completionTokens": 35704,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 3543
@@ -12173,9 +12173,9 @@
             "total": 72074
           },
           "usage": {
-            "calls": 87,
-            "promptTokens": 647952,
-            "completionTokens": 55749,
+            "calls": 29,
+            "promptTokens": 215984,
+            "completionTokens": 18583,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 4333
@@ -12353,9 +12353,9 @@
             "total": 72086
           },
           "usage": {
-            "calls": 87,
-            "promptTokens": 647916,
-            "completionTokens": 54741,
+            "calls": 29,
+            "promptTokens": 215972,
+            "completionTokens": 18247,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 4262
@@ -12533,9 +12533,9 @@
             "total": 83755
           },
           "usage": {
-            "calls": 90,
-            "promptTokens": 671832,
-            "completionTokens": 67194,
+            "calls": 30,
+            "promptTokens": 223944,
+            "completionTokens": 22398,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 6171
@@ -12741,9 +12741,9 @@
             "total": 105603
           },
           "usage": {
-            "calls": 99,
-            "promptTokens": 742149,
-            "completionTokens": 37398,
+            "calls": 33,
+            "promptTokens": 247383,
+            "completionTokens": 12466,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 10023
@@ -13152,9 +13152,9 @@
             "total": 94023
           },
           "usage": {
-            "calls": 99,
-            "promptTokens": 742146,
-            "completionTokens": 32610,
+            "calls": 33,
+            "promptTokens": 247382,
+            "completionTokens": 10870,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 8508
@@ -13556,9 +13556,9 @@
             "total": 104405
           },
           "usage": {
-            "calls": 99,
-            "promptTokens": 742149,
-            "completionTokens": 33468,
+            "calls": 33,
+            "promptTokens": 247383,
+            "completionTokens": 11156,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 8871
@@ -13995,9 +13995,9 @@
             "total": 121653
           },
           "usage": {
-            "calls": 117,
-            "promptTokens": 871566,
-            "completionTokens": 100512,
+            "calls": 39,
+            "promptTokens": 290522,
+            "completionTokens": 33504,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 5071
@@ -14133,9 +14133,9 @@
             "total": 125607
           },
           "usage": {
-            "calls": 114,
-            "promptTokens": 849852,
-            "completionTokens": 91749,
+            "calls": 38,
+            "promptTokens": 283284,
+            "completionTokens": 30583,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 4997
@@ -14264,9 +14264,9 @@
             "total": 104481
           },
           "usage": {
-            "calls": 117,
-            "promptTokens": 871578,
-            "completionTokens": 80604,
+            "calls": 39,
+            "promptTokens": 290526,
+            "completionTokens": 26868,
             "reasoningTokens": 0,
             "lengthStops": 0,
             "maxCompletionTokens": 2331
@@ -14931,7 +14931,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.08462879999999999,
+      "costUsd": 0.04531439999999999,
       "seconds": 204.877
     },
     {
@@ -14975,7 +14975,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.8841404000000002,
+      "costUsd": 0.6160702,
       "seconds": 420.114
     },
     {
@@ -15019,7 +15019,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6224088,
+      "costUsd": 0.4402044,
       "seconds": 349.804
     },
     {
@@ -15063,7 +15063,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.798802,
+      "costUsd": 0.537401,
       "seconds": 312.246
     },
     {
@@ -15107,7 +15107,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.5346476,
+      "costUsd": 0.34532379999999996,
       "seconds": 333.996
     },
     {
@@ -15151,7 +15151,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 4.3953136,
+      "costUsd": 2.4976568,
       "seconds": 2603.153
     },
     {
@@ -15195,7 +15195,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.3240212,
+      "costUsd": 0.24601060000000002,
       "seconds": 87.421
     },
     {
@@ -15239,7 +15239,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6852924,
+      "costUsd": 0.5466462000000001,
       "seconds": 159.789
     },
     {
@@ -15279,7 +15279,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.6091996,
+      "costUsd": 0.4005998,
       "seconds": 286.375
     },
     {
@@ -15319,7 +15319,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.09157399999999999,
+      "costUsd": 0.057787,
       "seconds": 98.551
     },
     {
@@ -15359,7 +15359,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.24708180000000002,
+      "costUsd": 0.1143606,
       "seconds": 108.434
     },
     {
@@ -15399,7 +15399,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.212721,
+      "costUsd": 0.126907,
       "seconds": 95.823
     },
     {
@@ -15443,7 +15443,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.2722692,
+      "costUsd": 0.1707564,
       "seconds": 122.998
     },
     {
@@ -15487,7 +15487,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.2077826,
+      "costUsd": 0.5665942,
       "seconds": 483.837
     },
     {
@@ -15531,7 +15531,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 0.9067608,
+      "costUsd": 0.5022536,
       "seconds": 227.915
     },
     {
@@ -15575,7 +15575,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.22946,
+      "costUsd": 0.84982,
       "seconds": 304.031
     },
     {
@@ -15619,7 +15619,7 @@
         "readback_error": 0,
         "setup_error": 0
       },
-      "costUsd": 1.1580372,
+      "costUsd": 0.5940124,
       "seconds": 351.741
     }
   ],
@@ -15774,7 +15774,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.08462879999999999,
+      "costUsd": 0.04531439999999999,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15785,7 +15785,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.8841404000000002,
+      "costUsd": 0.6160702,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15796,7 +15796,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.6224088,
+      "costUsd": 0.4402044,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15807,7 +15807,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.798802,
+      "costUsd": 0.537401,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15818,7 +15818,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.5346476,
+      "costUsd": 0.34532379999999996,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15830,7 +15830,7 @@
         "error: 3 attempt(s) failed",
         "no baseline"
       ],
-      "costUsd": 4.3953136,
+      "costUsd": 2.4976568,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15842,7 +15842,7 @@
         "error: 3 attempt(s) failed",
         "no baseline"
       ],
-      "costUsd": 0.3240212,
+      "costUsd": 0.24601060000000002,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15853,7 +15853,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.6852924,
+      "costUsd": 0.5466462000000001,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15864,7 +15864,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.6091996,
+      "costUsd": 0.4005998,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15875,7 +15875,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.09157399999999999,
+      "costUsd": 0.057787,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15886,7 +15886,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.24708180000000002,
+      "costUsd": 0.1143606,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15898,7 +15898,7 @@
         "error: 3 attempt(s) failed",
         "no baseline"
       ],
-      "costUsd": 0.212721,
+      "costUsd": 0.126907,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15909,7 +15909,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.2722692,
+      "costUsd": 0.1707564,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15920,7 +15920,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 1.2077826,
+      "costUsd": 0.5665942,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15931,7 +15931,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 0.9067608,
+      "costUsd": 0.5022536,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15942,7 +15942,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 1.22946,
+      "costUsd": 0.84982,
       "forecastUsd": null,
       "lines": [],
       "baseline": null
@@ -15953,7 +15953,7 @@
       "reasons": [
         "no baseline"
       ],
-      "costUsd": 1.1580372,
+      "costUsd": 0.5940124,
       "forecastUsd": null,
       "lines": [],
       "baseline": null

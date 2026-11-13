@@ -96,28 +96,29 @@ Recall counts failed attempts as 0. Precision, accuracies and distractors stored
 | C-009 | validated | error | 0/3 | 0% | 0% | 0% | n/a | 0/5 | 0 | no | 0 | zero_rows 1 | $0.151 | 167k / 8k | ocr 28 s, extraction 100 s, import 3 s | legacy |
 | C-010 | validated | ok | 3/3 | 100% | 100% | 100% | 100% | 0/0 | 0 | yes | 0 | none | $0.274 | 241k / 13k | ocr 35 s, extraction 94 s, import 5 s | legacy |
 | C-013 | validated | ok | 0/3 | 61% | 100% | 100% | 100% | 22/24 | 0 | no | 1 | none | $0.446 | 529k / 54k | ocr 37 s, extraction 183 s, import 5 s | legacy |
-| C-014 | validated | ok | 3/3 | 91% | 91% | 95% | 95% | 30/32 | 0 | yes | 0 | none | $0.085 | 55k / 56k | ocr 31 s, extraction 162 s, import 7 s | legacy |
-| C-015 | validated | ok | 2/3 | 96% | 96% | 99% | 98% | 0/1 | 0 | no | 0 | none | $0.884 | 1626k / 176k | ocr 35 s, extraction 369 s, import 5 s | legacy |
-| C-016 | validated | ok | 3/3 | 90% | 94% | 94% | 100% | 5/9 | 4 | yes | 0 | none | $0.622 | 995k / 138k | ocr 35 s, extraction 274 s, import 32 s | legacy |
-| C-017 | validated | ok | 0/3 | 31% | 56% | 59% | 67% | 0/26 | 3 | no | 0 | none | $0.799 | 1540k / 179k | ocr 31 s, extraction 260 s, import 12 s | legacy |
-| C-018 | validated | ok | 0/3 | 92% | 92% | 92% | 100% | 0/3 | 1 | no | 0 | none | $0.535 | 681k / 202k | ocr 27 s, extraction 295 s, import 5 s | legacy |
-| C-019 | validated | error | 0/3 | 0% | n/a | n/a | n/a | 0/0 | n/a | no | 3 | truncated 3 | $4.40 | 3395k / 2597k | ocr 57 s, extraction 2531 s, import 5 s | n/a |
-| C-020 | validated | error | 0/3 | 0% | n/a | n/a | n/a | 0/0 | n/a | n/a | 0 | zero_rows 3 | $0.324 | 745k / 6k | ocr 25 s, extraction 53 s, import n/a | n/a |
-| C-021 | validated | ok | 3/3 | 91% | 91% | 100% | 91% | 0/0 | 0 | yes | 0 | none | $0.685 | 1186k / 33k | ocr 35 s, extraction 104 s, import 5 s | legacy |
-| C-022 | validated | ok | 2/3 | n/a | n/a | n/a | n/a | 0/0 | 0 | no | 0 | none | $0.609 | 1230k / 143k | ocr 31 s, extraction 243 s, import 5 s | legacy |
-| C-023 | validated | ok | 1/3 | n/a | n/a | n/a | n/a | 0/0 | 0 | no | 0 | none | $0.092 | 198k / 23k | ocr 19 s, extraction 69 s, import 5 s | legacy |
-| C-024 | validated | ok | 1/3 | n/a | n/a | n/a | n/a | 0/0 | 0.7 | no | 0 | none | $0.247 | 518k / 80k | ocr 17 s, extraction 81 s, import 5 s | legacy |
-| C-025 | validated | error | 0/3 | n/a | n/a | n/a | n/a | 0/0 | n/a | n/a | 0 | zero_rows 3 | $0.213 | 580k / 11k | ocr 28 s, extraction 45 s, import n/a | n/a |
-| C-027 | held-out | ok | 0/3 | 9% | 7% | 9% | 100% | 0/0 | 0 | no | 0 | none | $0.272 | 565k / 33k | ocr 26 s, extraction 83 s, import 5 s | legacy |
-| C-028 | held-out | ok | 0/3 | 0% | 0% | 0% | n/a | 0/0 | 0 | no | 3 | none | $1.21 | 1744k / 511k | ocr 31 s, extraction 423 s, import 6 s | legacy |
-| C-029 | held-out | ok | 2/3 | 98% | 98% | 100% | 98% | 0/0 | 0 | no | 0 | none | $0.907 | 1968k / 178k | ocr 26 s, extraction 190 s, import 5 s | legacy |
-| C-030 | held-out | ok | 3/3 | 96% | 96% | 100% | 96% | 25/27 | 0 | yes | 0 | none | $1.23 | 2226k / 103k | ocr 42 s, extraction 243 s, import 5 s | legacy |
-| C-031 | held-out | ok | 0/3 | 52% | 73% | 81% | 100% | 0/0 | 0 | no | 0 | none | $1.16 | 2593k / 273k | ocr 29 s, extraction 311 s, import 5 s | legacy |
+| C-014 | validated | ok | 3/3 | 91% | 91% | 95% | 95% | 30/32 | 0 | yes | 0 | none | $0.045 | 28k / 28k | ocr 31 s, extraction 162 s, import 7 s | legacy |
+| C-015 | validated | ok | 2/3 | 96% | 96% | 99% | 98% | 0/1 | 0 | no | 0 | none | $0.616 | 813k / 88k | ocr 35 s, extraction 369 s, import 5 s | legacy |
+| C-016 | validated | ok | 3/3 | 90% | 94% | 94% | 100% | 5/9 | 4 | yes | 0 | none | $0.440 | 498k / 69k | ocr 35 s, extraction 274 s, import 32 s | legacy |
+| C-017 | validated | ok | 0/3 | 31% | 56% | 59% | 67% | 0/26 | 3 | no | 0 | none | $0.537 | 770k / 90k | ocr 31 s, extraction 260 s, import 12 s | legacy |
+| C-018 | validated | ok | 0/3 | 92% | 92% | 92% | 100% | 0/3 | 1 | no | 0 | none | $0.345 | 341k / 101k | ocr 27 s, extraction 295 s, import 5 s | legacy |
+| C-019 | validated | error | 0/3 | 0% | n/a | n/a | n/a | 0/0 | n/a | no | 3 | truncated 3 | $2.50 | 1698k / 1298k | ocr 57 s, extraction 2531 s, import 5 s | n/a |
+| C-020 | validated | error | 0/3 | 0% | n/a | n/a | n/a | 0/0 | n/a | n/a | 0 | zero_rows 3 | $0.246 | 372k / 3k | ocr 25 s, extraction 53 s, import n/a | n/a |
+| C-021 | validated | ok | 3/3 | 91% | 91% | 100% | 91% | 0/0 | 0 | yes | 0 | none | $0.547 | 593k / 17k | ocr 35 s, extraction 104 s, import 5 s | legacy |
+| C-022 | validated | ok | 2/3 | n/a | n/a | n/a | n/a | 0/0 | 0 | no | 0 | none | $0.401 | 615k / 71k | ocr 31 s, extraction 243 s, import 5 s | legacy |
+| C-023 | validated | ok | 1/3 | n/a | n/a | n/a | n/a | 0/0 | 0 | no | 0 | none | $0.058 | 99k / 12k | ocr 19 s, extraction 69 s, import 5 s | legacy |
+| C-024 | validated | ok | 1/3 | n/a | n/a | n/a | n/a | 0/0 | 0.7 | no | 0 | none | $0.114 | 173k / 27k | ocr 17 s, extraction 81 s, import 5 s | legacy |
+| C-025 | validated | error | 0/3 | n/a | n/a | n/a | n/a | 0/0 | n/a | n/a | 0 | zero_rows 3 | $0.127 | 193k / 4k | ocr 28 s, extraction 45 s, import n/a | n/a |
+| C-027 | held-out | ok | 0/3 | 9% | 7% | 9% | 100% | 0/0 | 0 | no | 0 | none | $0.171 | 188k / 11k | ocr 26 s, extraction 83 s, import 5 s | legacy |
+| C-028 | held-out | ok | 0/3 | 0% | 0% | 0% | n/a | 0/0 | 0 | no | 3 | none | $0.567 | 581k / 170k | ocr 31 s, extraction 423 s, import 6 s | legacy |
+| C-029 | held-out | ok | 2/3 | 98% | 98% | 100% | 98% | 0/0 | 0 | no | 0 | none | $0.502 | 656k / 59k | ocr 26 s, extraction 190 s, import 5 s | legacy |
+| C-030 | held-out | ok | 3/3 | 96% | 96% | 100% | 96% | 25/27 | 0 | yes | 0 | none | $0.850 | 742k / 34k | ocr 42 s, extraction 243 s, import 5 s | legacy |
+| C-031 | held-out | ok | 0/3 | 52% | 73% | 81% | 100% | 0/0 | 0 | no | 0 | none | $0.594 | 864k / 91k | ocr 29 s, extraction 311 s, import 5 s | legacy |
 
-Estimated cost of this run: $17.92
+Estimated cost of this run: $12.32
 
 ## Notes
 
+- Token and cost figures corrected on 13 Nov 2026. The harness at `fe14d3a05` counted LLM usage once per context created so far, so cases C-014..C-023 (second group of `--all`) were counted twice and C-024..C-031 (third group) three times. The stored usage was divided by its group number and the costs recomputed (fixed in #3416, `f6fe7491f`). Scores are unchanged. The MLflow run still shows the uncorrected token and cost metrics.
 - C-028 and C-031 are not fully held out.
 - Cases using the legacy tolerance: C-004, C-005, C-006, C-007a, C-007b, C-007s, C-008, C-009, C-010, C-013, C-014, C-015, C-016, C-017, C-018, C-021, C-022, C-023, C-024, C-027, C-028, C-029, C-030, C-031
 - Cases where `textTables` is unknown: C-004, C-005, C-007a, C-007b, C-007s, C-008, C-009, C-010, C-013, C-014, C-015, C-016, C-017, C-018, C-019, C-020, C-021, C-027, C-028, C-029, C-030, C-031

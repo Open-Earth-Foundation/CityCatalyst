@@ -32,6 +32,19 @@ export const UNIT_FACTOR: Record<UnitReading, number> = {
 /** Plausible tonnes of CO2e per person per year, inclusive. */
 export const PER_PERSON_RANGE = { min: 1, max: 20 } as const;
 
+/**
+ * Gas values of a row as extracted, under the number reading and unit reading
+ * of that time. A separator change nulls the gases (the printed text carries
+ * only the total); converting back to `numberFormat` restores these.
+ */
+export type ExtractedGases = {
+  co2?: number | null;
+  ch4?: number | null;
+  n2o?: number | null;
+  numberFormat: NumberReading;
+  unit: UnitReading;
+};
+
 /** Fields of a row or reported total that a reading can change. */
 export type CheckableValue = {
   totalCO2e?: number | null;
@@ -43,6 +56,7 @@ export type CheckableValue = {
   numberCheck?: boolean | null;
   totalCO2eText?: string | null;
   printedFactor?: number | null;
+  extractedGases?: ExtractedGases | null;
 };
 
 export type CheckStatus = "pending" | "confirmed";
@@ -151,7 +165,16 @@ function convert<R extends CheckableValue>(
   if (value === current && !separatorChanged) return item;
 
   const next: CheckableValue = { ...item, [key]: value };
+  const stored = item.extractedGases;
+  const restore = separatorChanged && stored?.numberFormat === toFormat;
   for (const gas of GAS_KEYS) {
+    if (restore && stored![gas] != null) {
+      // Same convention as `scale`: multiply first, then divide.
+      next[gas] = unitApplies
+        ? (stored![gas]! * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[stored!.unit]
+        : stored![gas];
+      continue;
+    }
     const gasValue = item[gas];
     if (gasValue == null) continue;
     next[gas] = separatorChanged ? null : scale(gasValue);
@@ -163,9 +186,10 @@ function convert<R extends CheckableValue>(
  * Items (rows or reported totals) converted from one set of readings to another.
  *
  * A separator change sets co2, ch4 and n2o to null: the text carries only the
- * total, so the gases cannot be rebuilt. Callers must always convert from the
- * stored rows with their current readings, never chain conversions expecting
- * the gases to come back.
+ * total, so the gases cannot be rebuilt from it. They come back from
+ * `extractedGases` when the separator returns to the reading they were
+ * extracted under (scaled to the current unit reading). Callers always convert
+ * from the stored rows with their current readings.
  */
 export function applyReadings<R extends CheckableValue>(
   items: R[],
@@ -204,13 +228,32 @@ export function inPerPersonRange(value: number): boolean {
   return value >= PER_PERSON_RANGE.min && value <= PER_PERSON_RANGE.max;
 }
 
+/** City-wide totals in tonnes judged without a population, inclusive. */
+export const CITY_TOTAL_RANGE = { min: 1e3, max: 1e9 } as const;
+
+/**
+ * Whether a city inventory total in tonnes is plausible: by emissions per
+ * person with a population, else by the total itself.
+ */
+export function totalPlausibility(
+  total: number,
+  population: number | null | undefined,
+): "low" | "plausible" | "high" {
+  const value = perPerson(total, population);
+  const range = value == null ? CITY_TOTAL_RANGE : PER_PERSON_RANGE;
+  const measured = value ?? total;
+  if (measured > range.max) return "high";
+  if (measured < range.min) return "low";
+  return "plausible";
+}
+
 const BASIC_LABEL = /\bBASIC\b(?!\s*\+)/i;
 const BASIC_PLUS_LABEL = /\bBASIC\s*\+(?!\s*S3)/i;
 
 /**
  * Index of the reported total that matches the inventory level: the BASIC or
- * BASIC+ labeled one when present, else the largest positive total that is not
- * a net total. Null when no candidate qualifies.
+ * BASIC+ labeled one when present, else the largest. Only positive totals that
+ * are not net totals qualify. Null when no candidate qualifies.
  */
 export function selectLevelTotal(
   candidates: ReportedTotal[],
@@ -222,13 +265,17 @@ export function selectLevelTotal(
       : inventoryType === "gpc_basic_plus"
         ? BASIC_PLUS_LABEL
         : null;
+  const qualifies = (c: ReportedTotal) =>
+    c.value > 0 && !isNetTotalLabel(c.label);
   if (pattern) {
-    const labeled = candidates.findIndex((c) => pattern.test(c.label));
+    const labeled = candidates.findIndex(
+      (c) => qualifies(c) && pattern.test(c.label),
+    );
     if (labeled >= 0) return labeled;
   }
   let best: number | null = null;
   candidates.forEach((c, i) => {
-    if (!(c.value > 0) || isNetTotalLabel(c.label)) return;
+    if (!qualifies(c)) return;
     if (best == null || c.value > candidates[best].value) best = i;
   });
   return best;

@@ -16,7 +16,11 @@ import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inven
 import { PATCH as patchSourceChecks } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/source-checks/route";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
-import { optionTotals, type SourceChecks } from "@/util/GHGI/source-checks";
+import {
+  optionTotals,
+  type Readings,
+  type SourceChecks,
+} from "@/util/GHGI/source-checks";
 import { db } from "@/models";
 import assert from "node:assert";
 import { AppSession, Auth } from "@/lib/auth";
@@ -1151,8 +1155,14 @@ describe("Import Routes API", () => {
         },
       });
 
-    const patch = (importedFileId: string, body: unknown) =>
-      patchSourceChecks(mockRequest(body), {
+    const T_NONE = { unit: "t", numberFormat: null } as const;
+    /** Answers with `expected` (the readings the card showed); false sends none. */
+    const patch = (
+      importedFileId: string,
+      body: Record<string, unknown>,
+      expected: Readings | false = T_NONE,
+    ) =>
+      patchSourceChecks(mockRequest(expected ? { ...body, expected } : body), {
         params: Promise.resolve({
           city: city.cityId,
           inventory: inventory.inventoryId,
@@ -1338,7 +1348,9 @@ describe("Import Routes API", () => {
       const file = await createChecked({
         overrides: { "0": decision(2, "I.1.1"), "2": decision(100, "II.1.1") },
       });
-      await expectStatusCode(await patch(file.id, { unit: "Mt" }), 200);
+      const res = await patch(file.id, { unit: "Mt" });
+      await expectStatusCode(res, 200);
+      expect((await res.json()).data.clearedDecisions).toBe(1);
       const stored = await storedSummary(file);
       expect(stored.overrides).toEqual({ "2": decision(100, "II.1.1") });
 
@@ -1357,6 +1369,42 @@ describe("Import Routes API", () => {
         columnMappings: {},
         rowDecisions: { "2": decision(100, "II.1.1") },
       });
+    });
+
+    it("rejects an answer computed under other readings with 409", async () => {
+      const file = await createChecked();
+      // Unit confirmed as Mt; a card still showing tonnes answers the total.
+      await expectStatusCode(await patch(file.id, { unit: "Mt" }), 200);
+      const before = await storedSummary(file);
+
+      const stale = await patch(file.id, { total: { candidate: 0 } }, T_NONE);
+      await expectStatusCode(stale, 409);
+      expect((await stale.json()).error.code).toBe("source-checks-conflict");
+      const staleFormat = await patch(
+        file.id,
+        { unit: "t" },
+        { unit: "Mt", numberFormat: "english" },
+      );
+      await expectStatusCode(staleFormat, 409);
+
+      const after = await storedSummary(file);
+      expect(after.rows).toEqual(before.rows);
+      expect(after.extractionSummary).toEqual(before.extractionSummary);
+
+      // Without `expected` the body is invalid.
+      await expectStatusCode(
+        await patch(file.id, { total: { candidate: 0 } }, false),
+        400,
+      );
+    });
+
+    it("reports no cleared decisions when no row changed", async () => {
+      const file = await createChecked({
+        overrides: { "0": decision(2, "I.1.1") },
+      });
+      const res = await patch(file.id, { unit: "t" });
+      await expectStatusCode(res, 200);
+      expect((await res.json()).data.clearedDecisions).toBe(0);
     });
 
     it("rejects a stale write with 409 source-checks-conflict", async () => {
@@ -1396,7 +1444,11 @@ describe("Import Routes API", () => {
 
       // The refetched client resends the losing answer: nothing is lost.
       await expectStatusCode(
-        await patch(file.id, { total: { candidate: 0 } }),
+        await patch(
+          file.id,
+          { total: { candidate: 0 } },
+          { unit: "Mt", numberFormat: null },
+        ),
         200,
       );
       const stored = await storedSummary(file);
@@ -1433,6 +1485,7 @@ describe("Import Routes API", () => {
         numberCheck: true,
         totalCO2eText: "6.600",
         printedFactor: 1,
+        extractedGases: { co2: 6.6, numberFormat: "english", unit: "t" },
       });
       const file = await db.models.ImportedInventoryFile.create({
         id: randomUUID(),
@@ -1461,8 +1514,9 @@ describe("Import Routes API", () => {
           },
         },
       });
+      const english = { unit: null, numberFormat: "english" } as const;
       await expectStatusCode(
-        await patch(file.id, { numberFormat: "european" }),
+        await patch(file.id, { numberFormat: "european" }, english),
         200,
       );
       const stored = await storedSummary(file);
@@ -1472,6 +1526,19 @@ describe("Import Routes API", () => {
       expect(stored.extractionSummary.sourceChecks?.numberFormat).toMatchObject(
         { status: "confirmed", reading: "european" },
       );
+
+      // Back to the extraction reading: the extracted gases return.
+      await expectStatusCode(
+        await patch(
+          file.id,
+          { numberFormat: "english" },
+          { unit: null, numberFormat: "european" },
+        ),
+        200,
+      );
+      const back = await storedSummary(file);
+      expect(back.rows[0]).toMatchObject({ totalCO2e: 6.6, co2: 6.6 });
+      expect(back.extractionSummary.importedSum).toBe(106.6);
     });
 
     it("rejects wrong status", async () => {

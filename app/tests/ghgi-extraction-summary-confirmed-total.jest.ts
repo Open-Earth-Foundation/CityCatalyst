@@ -146,6 +146,51 @@ describe("reconcileExtraction with a confirmed total", () => {
     }
   });
 
+  it("notes another printed total matched instead of the confirmed one", () => {
+    const notes = extractionReviewNotes(
+      summary(auckland, BASIC_PLUS, { value: BASIC, origin: "document" }),
+    );
+    expect(notes.reconciliation?.mismatch).toBe(false);
+    expect(notes.confirmedTotalNote).toEqual({
+      matched: BASIC_PLUS,
+      confirmed: BASIC,
+    });
+  });
+
+  it("no confirmed-total note when the confirmed total matched", () => {
+    for (const s of [
+      summary(auckland, BASIC_PLUS, { value: BASIC_PLUS, origin: "document" }),
+      summary(auckland, BASIC_PLUS),
+      summary(
+        auckland,
+        BASIC_PLUS,
+        { value: BASIC, origin: "document" },
+        "pending",
+      ),
+    ]) {
+      expect(extractionReviewNotes(s).confirmedTotalNote).toBeNull();
+    }
+  });
+
+  it("no confirmed-total note on a mismatch: the banner speaks", () => {
+    const notes = extractionReviewNotes(
+      summary(auckland, 1000, { value: BASIC, origin: "document" }),
+    );
+    expect(notes.reconciliation?.mismatch).toBe(true);
+    expect(notes.confirmedTotalNote).toBeNull();
+  });
+
+  it("notes the net total matched when the gross was confirmed", () => {
+    const notes = extractionReviewNotes(
+      summary(netDocument, 8800, { value: 10000, origin: "document" }),
+    );
+    expect(notes.reconciliation?.mismatch).toBe(false);
+    expect(notes.confirmedTotalNote).toEqual({
+      matched: 8800,
+      confirmed: 10000,
+    });
+  });
+
   it("review notes no longer carry userTotalNote or numberFormatConflict", () => {
     const notes = extractionReviewNotes(summary(auckland, BASIC_PLUS));
     expect(notes).not.toHaveProperty("userTotalNote");

@@ -2318,11 +2318,16 @@ export const api = createApi({
       }),
       /** Answers the review source checks; the stored rows and summary change. */
       updateImportSourceChecks: builder.mutation<
-        { extractionSummary: ExtractionSummary },
+        { extractionSummary: ExtractionSummary; clearedDecisions?: number },
         {
           cityId: string;
           inventoryId: string;
           importedFileId: string;
+          /** Readings the answered card computed its totals under. */
+          expected: {
+            unit: UnitReading | null;
+            numberFormat: NumberReading | null;
+          };
           unit?: UnitReading;
           numberFormat?: NumberReading;
           total?: { candidate: number } | { value: number } | { skip: true };
@@ -2334,7 +2339,10 @@ export const api = createApi({
           body,
         }),
         transformResponse: (response: {
-          data: { extractionSummary: ExtractionSummary };
+          data: {
+            extractionSummary: ExtractionSummary;
+            clearedDecisions?: number;
+          };
         }) => response.data,
         invalidatesTags: (_result, _error, { importedFileId }) => [
           { type: "ImportStatus", id: importedFileId },

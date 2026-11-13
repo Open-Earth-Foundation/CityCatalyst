@@ -329,6 +329,51 @@ describe("number format check", () => {
     expect(selected.rows[1].printedFactor).toBe(1);
   });
 
+  it("keeps the gases of an ambiguous row to restore them", () => {
+    // The model read 6.600 as 6.6 (english); the document reads european.
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6.6, co2: 6, ch4: 0.6 })],
+      2021,
+      {
+        source: { text: undetected, kind: "document" },
+        sourceMetadata: countryDefault("european"),
+      },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 6600,
+      co2: null,
+      ch4: null,
+      extractedGases: {
+        co2: 6,
+        ch4: 0.6,
+        numberFormat: "english",
+        unit: "t",
+      },
+    });
+    const [english] = applyReadings(
+      rows,
+      { unit: null, numberFormat: "european" },
+      { unit: null, numberFormat: "english" },
+    );
+    expect(english).toMatchObject({ totalCO2e: 6.6, co2: 6, ch4: 0.6 });
+  });
+
+  it("no extracted gases on a row that is not ambiguous", () => {
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6600, co2: 6600 })],
+      2021,
+      {
+        source: {
+          text: "1.234.567 1.234.567 1.234.567\n" + undetected,
+          kind: "document",
+        },
+      },
+    );
+    expect(rows[0].numberCheck).toBeUndefined();
+    expect(rows[0].co2).toBe(6600);
+    expect(rows[0].extractedGases).toBeUndefined();
+  });
+
   it("an ambiguous total gets the same fields as its rows", () => {
     const { summary } = finalizeExtractedRows(
       [
@@ -392,6 +437,36 @@ describe("total check", () => {
       inventoryType: "gpc_basic_plus",
     });
     expect(summary.sourceChecks?.total?.suggested).toBe(1);
+  });
+
+  it("the cap keeps the level total when it comes after five others", () => {
+    const labels = ["Total A", "Total B", "Total C", "Total D", "Total E"];
+    const values = [1_000_000, 1_010_000, 1_020_000, 1_030_000, 1_040_000];
+    const many = [
+      lineItem({ totalCO2e: 990_000 }),
+      ...labels.map((label, i) => total(label, values[i])),
+      total("BASIC", 990_000),
+    ];
+    const printed =
+      "| I.1.1 | Natural gas | 990,000 |\n" +
+      labels
+        .map((label, i) => `| ${label} | ${values[i].toLocaleString("en")} |`)
+        .join("\n") +
+      "\n| BASIC | 990,000 |\n";
+    const { summary } = finalizeExtractedRows(many, 2021, {
+      source: { text: printed, kind: "document" },
+      inventoryType: "gpc_basic",
+    });
+    const check = summary.sourceChecks?.total;
+    expect(check?.candidates).toHaveLength(5);
+    expect(check?.candidates.map((c) => c.label)).toEqual([
+      "Total A",
+      "Total B",
+      "Total C",
+      "Total D",
+      "BASIC",
+    ]);
+    expect(check?.suggested).toBe(4);
   });
 
   it("no candidates: empty list and no suggestion", () => {

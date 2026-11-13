@@ -22,6 +22,7 @@ import {
   applyReadings,
   selectLevelTotal,
   sumImported,
+  type ExtractedGases,
   type NumberReading,
   type SourceChecks,
 } from "@/util/GHGI/source-checks";
@@ -314,6 +315,11 @@ export type ExtractedRow = {
   unitCheck?: "MT" | null;
   /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
   numberCheck?: boolean | null;
+  /**
+   * On `numberCheck` rows with gases: the gases as extracted, restored when the
+   * review returns to that number reading (see `applyReadings`).
+   */
+  extractedGases?: ExtractedGases | null;
   emissionFactorUnit?: string | null;
   emissionFactorSource?: string | null;
   emissionFactorDescription?: string | null;
@@ -1985,6 +1991,7 @@ function withoutPrintedText(row: ExtractedRow): ExtractedRow {
   delete out.totalCO2eText;
   delete out.printedFactor;
   delete out.numberCheck;
+  delete out.extractedGases;
   return out;
 }
 
@@ -2029,11 +2036,24 @@ function withPrintedText(
       if (!matchesPrinted(value, parseNumberString(text, reading), factor)) {
         continue;
       }
+      const hasGases = row.co2 != null || row.ch4 != null || row.n2o != null;
       const checked: ExtractedRow = {
         ...withoutPrintedText(row),
         totalCO2eText: text,
         printedFactor: factor,
         ...(ambiguous ? { numberCheck: true } : {}),
+        // Gases as the model read them: under `reading`, before any unit answer.
+        ...(ambiguous && hasGases
+          ? {
+              extractedGases: {
+                ...(row.co2 != null ? { co2: row.co2 } : {}),
+                ...(row.ch4 != null ? { ch4: row.ch4 } : {}),
+                ...(row.n2o != null ? { n2o: row.n2o } : {}),
+                numberFormat: reading,
+                unit: "t" as const,
+              },
+            }
+          : {}),
       };
       if (reading === context.reading) return checked;
       const [converted] = applyReadings(
@@ -2084,7 +2104,7 @@ function itemLabel(row: ExtractedRow): string {
  * - `numberFormat` when a printed number reads two ways in a document of
  *   undetected style;
  * - `total` always: the printed, year-matched grand totals (at most 5) and the
- *   one matching the inventory level.
+ *   one matching the inventory level, which the cap always keeps.
  */
 function buildSourceChecks(
   rows: ExtractedRow[],
@@ -2161,7 +2181,7 @@ function buildSourceChecks(
   const targets = reconciliationTargets(reportedTotals, options.targetYear);
   const targetValues = new Set([...targets.grand, ...targets.net]);
   const seen = new Set<string>();
-  const candidates = reportedTotals
+  const printed = reportedTotals
     .filter(
       (t) =>
         isGrandTotal(t) &&
@@ -2176,16 +2196,26 @@ function buildSourceChecks(
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    })
-    .slice(0, MAX_TOTAL_CANDIDATES);
+    });
+  // Suggest from all printed totals, then cap the list keeping the suggestion.
+  const level =
+    printed.length > 0
+      ? selectLevelTotal(printed, options.inventoryType ?? null)
+      : null;
+  let candidates = printed.slice(0, MAX_TOTAL_CANDIDATES);
+  let suggested = level;
+  if (level != null && level >= MAX_TOTAL_CANDIDATES) {
+    candidates = [
+      ...printed.slice(0, MAX_TOTAL_CANDIDATES - 1),
+      printed[level],
+    ];
+    suggested = MAX_TOTAL_CANDIDATES - 1;
+  }
   checks.total = {
     status: "pending",
     candidates,
     selected: null,
-    suggested:
-      candidates.length > 0
-        ? selectLevelTotal(candidates, options.inventoryType ?? null)
-        : null,
+    suggested,
   };
   return checks;
 }
@@ -2478,9 +2508,7 @@ function finalizeRows(
   const printedContext: PrintedTextContext = {
     undetected: documentStyle === "unknown",
     reading:
-      documentStyle !== "unknown"
-        ? documentStyle
-        : ambiguousReading(metadata),
+      documentStyle !== "unknown" ? documentStyle : ambiguousReading(metadata),
     largeUnit: !!source && namesLargeUnit(source.text),
   };
 
@@ -2569,8 +2597,7 @@ function finalizeRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
-        else if (captionRelabeled.has(row))
-          drop("caption_year");
+        else if (captionRelabeled.has(row)) drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {

@@ -15,6 +15,8 @@
  *       rows whose values changed are cleared. A total answer confirms a printed
  *       candidate, a typed total (origin user), or no total (skip, only when the
  *       document printed none). Only valid while the import waits for approval.
+ *       `expected` names the readings the client computed its totals under; when
+ *       the stored readings differ the answer is refused with 409.
  *     parameters:
  *       - in: path
  *         name: city
@@ -40,8 +42,24 @@
  *         application/json:
  *           schema:
  *             type: object
- *             description: At least one key. Each key must answer a check the import has.
+ *             description: |
+ *               `expected` and at least one answer. Each answer must be to a
+ *               check the import has.
+ *             required: [expected]
  *             properties:
+ *               expected:
+ *                 type: object
+ *                 required: [unit, numberFormat]
+ *                 description: Current readings the client showed (null without that check).
+ *                 properties:
+ *                   unit:
+ *                     type: string
+ *                     enum: [t, Mt]
+ *                     nullable: true
+ *                   numberFormat:
+ *                     type: string
+ *                     enum: [english, european]
+ *                     nullable: true
  *               unit:
  *                 type: string
  *                 enum: [t, Mt]
@@ -84,6 +102,9 @@
  *                     extractionSummary:
  *                       type: object
  *                       additionalProperties: true
+ *                     clearedDecisions:
+ *                       type: integer
+ *                       description: Row decisions cleared because the row values changed.
  *       400:
  *         description: |
  *           Invalid body, an answer to a check the import does not have, a
@@ -95,7 +116,8 @@
  *       409:
  *         description: |
  *           The import changed between the read and the write (another answer,
- *           an approval). Error code source-checks-conflict; refetch and retry.
+ *           an approval), or `expected` differs from the stored readings. Error
+ *           code source-checks-conflict; refetch and retry.
  */
 
 import UserService from "@/backend/UserService";
@@ -118,10 +140,17 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+const unitSchema = z.enum(["t", "Mt"]);
+const numberFormatSchema = z.enum(["english", "european"]);
+
 const sourceChecksBodySchema = z
   .object({
-    unit: z.enum(["t", "Mt"]).optional(),
-    numberFormat: z.enum(["english", "european"]).optional(),
+    expected: z.object({
+      unit: unitSchema.nullable(),
+      numberFormat: numberFormatSchema.nullable(),
+    }),
+    unit: unitSchema.optional(),
+    numberFormat: numberFormatSchema.optional(),
     total: z
       .union([
         z.object({ candidate: z.number().int().min(0) }),
@@ -159,28 +188,40 @@ function changedRowIndexes(
 }
 
 /**
- * Row decisions without the changed rows. Stored overrides are either keyed
- * by row index or namespaced as `{ columnMappings, rowDecisions }`; both keys
- * are positions in `mappingConfiguration.rows`.
+ * Row decisions without the changed rows, and how many were dropped. Stored
+ * overrides are either keyed by row index or namespaced as
+ * `{ columnMappings, rowDecisions }`; both keys are positions in
+ * `mappingConfiguration.rows`.
  */
 function withoutDecisions(
   overrides: Record<string, unknown>,
   changed: Set<string>,
-): Record<string, unknown> {
+): { overrides: Record<string, unknown>; cleared: number } {
+  let cleared = 0;
   const drop = (record: Record<string, unknown>) =>
     Object.fromEntries(
-      Object.entries(record).filter(([key]) => !changed.has(key)),
+      Object.entries(record).filter(([key]) => {
+        if (!changed.has(key)) return true;
+        cleared++;
+        return false;
+      }),
     );
   const namespaced =
     "columnMappings" in overrides || "rowDecisions" in overrides;
-  if (!namespaced) return drop(overrides);
+  if (!namespaced) return { overrides: drop(overrides), cleared };
   const rowDecisions = overrides.rowDecisions;
-  return rowDecisions && typeof rowDecisions === "object"
-    ? {
-        ...overrides,
-        rowDecisions: drop(rowDecisions as Record<string, unknown>),
-      }
-    : overrides;
+  const next =
+    rowDecisions && typeof rowDecisions === "object"
+      ? {
+          ...overrides,
+          rowDecisions: drop(rowDecisions as Record<string, unknown>),
+        }
+      : overrides;
+  return { overrides: next, cleared };
+}
+
+function conflict(message: string) {
+  return createHttpError(409, message, { code: "source-checks-conflict" });
 }
 
 function sameTotal(a: ReportedTotal, b: ConfirmedTotal): boolean {
@@ -251,6 +292,16 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
     unit: checks.unit?.reading ?? null,
     numberFormat: checks.numberFormat?.reading ?? null,
   };
+  // The client computed its totals under `expected`; an answer applied on
+  // other readings would store totals the person never saw.
+  if (
+    body.expected.unit !== from.unit ||
+    body.expected.numberFormat !== from.numberFormat
+  ) {
+    throw conflict(
+      "The import changed since it was shown. Reload and answer again.",
+    );
+  }
   const to: Readings = {
     unit: body.unit ?? from.unit,
     numberFormat: body.numberFormat ?? from.numberFormat,
@@ -315,6 +366,8 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
   const overrides = mappingConfiguration.overrides as
     Record<string, unknown> | undefined;
   const changed = changedRowIndexes(storedRows, rows);
+  const cleared =
+    overrides && changed.size > 0 ? withoutDecisions(overrides, changed) : null;
 
   // Optimistic guard, the same one approve uses to claim the file: the write
   // only lands on the version read above. A newer lastUpdated also makes a
@@ -329,9 +382,7 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
         ...mappingConfiguration,
         rows,
         extractionSummary,
-        ...(overrides && changed.size > 0
-          ? { overrides: withoutDecisions(overrides, changed) }
-          : {}),
+        ...(cleared ? { overrides: cleared.overrides } : {}),
       },
       lastUpdated: writtenAt,
     },
@@ -344,12 +395,12 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
     },
   );
   if (!updated) {
-    throw createHttpError(
-      409,
+    throw conflict(
       "The import changed while the answer was saved. Reload and answer again.",
-      { code: "source-checks-conflict" },
     );
   }
 
-  return NextResponse.json({ data: { extractionSummary } });
+  return NextResponse.json({
+    data: { extractionSummary, clearedDecisions: cleared?.cleared ?? 0 },
+  });
 });

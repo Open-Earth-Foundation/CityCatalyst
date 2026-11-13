@@ -86,6 +86,7 @@ import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import { hasPendingSourceChecks } from "@/util/GHGI/source-checks";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -543,13 +544,11 @@ export const POST = apiHandler(
 
     // Checks the review asks about the source must be answered first. A summary
     // stored before source checks has none.
-    const sourceChecks = (
-      importedFile.mappingConfiguration?.extractionSummary as
-        ExtractionSummary | undefined
-    )?.sourceChecks;
     if (
-      sourceChecks &&
-      Object.values(sourceChecks).some((check) => check?.status === "pending")
+      hasPendingSourceChecks(
+        importedFile.mappingConfiguration?.extractionSummary as
+          ExtractionSummary | undefined,
+      )
     ) {
       throw createHttpError(
         409,

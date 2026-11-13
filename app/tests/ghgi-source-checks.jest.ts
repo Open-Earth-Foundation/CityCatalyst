@@ -4,6 +4,7 @@ import {
   optionTotals,
   perPerson,
   selectLevelTotal,
+  totalPlausibility,
   type Readings,
 } from "@/util/GHGI/source-checks";
 import { isAmbiguousNumberText } from "@/util/GHGI/source-text";
@@ -57,7 +58,60 @@ describe("applyReadings", () => {
     ).toEqual(rows);
   });
 
-  it("does not restore gases after a separator round trip", () => {
+  it("restores the extracted gases after a separator round trip", () => {
+    const rows = [
+      {
+        totalCO2e: 6.6,
+        totalCO2eText: "6.600",
+        printedFactor: 1,
+        numberCheck: true,
+        co2: 3,
+        ch4: 3.6,
+        extractedGases: {
+          co2: 3,
+          ch4: 3.6,
+          numberFormat: "english" as const,
+          unit: "t" as const,
+        },
+      },
+    ];
+    const eu = applyReadings(rows, T_EN, T_EU);
+    expect(eu[0]).toMatchObject({ totalCO2e: 6600, co2: null, ch4: null });
+    const back = applyReadings(eu, T_EU, T_EN);
+    expect(back).toEqual(rows);
+  });
+
+  it("restores gases scaled to the current unit after unit and separator changes", () => {
+    const rows = [
+      {
+        totalCO2e: 6.6,
+        totalCO2eText: "6.600",
+        printedFactor: 1,
+        numberCheck: true,
+        unitCheck: "MT" as const,
+        co2: 3.3,
+        n2o: 3.3,
+        extractedGases: {
+          co2: 3.3,
+          n2o: 3.3,
+          numberFormat: "english" as const,
+          unit: "t" as const,
+        },
+      },
+    ];
+    const MT_EU: Readings = { unit: "Mt", numberFormat: "european" };
+    // Separator first, then unit; then the separator back under Mt.
+    const eu = applyReadings(rows, T_EN, T_EU);
+    const mtEu = applyReadings(eu, T_EU, MT_EU);
+    expect(mtEu[0]).toMatchObject({ totalCO2e: 6600e6, co2: null });
+    const mtEn = applyReadings(mtEu, MT_EU, MT_EN);
+    expect(mtEn).toEqual(applyReadings(rows, T_EN, MT_EN));
+    expect(mtEn[0]).toMatchObject({ co2: 3.3e6, n2o: 3.3e6 });
+    // Both back at once: the stored rows exactly.
+    expect(applyReadings(mtEu, MT_EU, T_EN)).toEqual(rows);
+  });
+
+  it("does not restore gases without extracted gases", () => {
     const rows = [
       {
         totalCO2e: 6.6,
@@ -180,6 +234,34 @@ describe("selectLevelTotal", () => {
   });
   it("returns null for no candidates", () => {
     expect(selectLevelTotal([], "gpc_basic")).toBeNull();
+  });
+  it("skips a labelled total that is net or not positive", () => {
+    const c = [
+      total("BASIC net emissions", 300000),
+      total("BASIC", 0),
+      total("Total gross", 785873),
+    ];
+    expect(selectLevelTotal(c, "gpc_basic")).toBe(2);
+    expect(
+      selectLevelTotal(
+        [total("BASIC net", 1), total("BASIC gross", 9)],
+        "gpc_basic",
+      ),
+    ).toBe(1);
+  });
+});
+
+describe("totalPlausibility", () => {
+  it("uses emissions per person with a population", () => {
+    expect(totalPlausibility(3250886, 342000)).toBe("plausible");
+    expect(totalPlausibility(3250886e6, 342000)).toBe("high");
+    expect(totalPlausibility(25, 5_000_000)).toBe("low");
+    expect(totalPlausibility(25e6, 5_000_000)).toBe("plausible");
+  });
+  it("uses the total without a population", () => {
+    expect(totalPlausibility(3250886, null)).toBe("plausible");
+    expect(totalPlausibility(2e9, null)).toBe("high");
+    expect(totalPlausibility(25, null)).toBe("low");
   });
 });
 

@@ -460,6 +460,13 @@ export type ExtractionReviewNotes = {
   failedPages: number[];
   droppedReasons: DroppedRowReason[];
   removalsWarning: RemovalsWarning | null;
+  /**
+   * The imported sum matches another printed total, not the one the user
+   * confirmed: `matched` is that total, `confirmed` the confirmed one. The
+   * document totals stay targets (a net total reconciles even when the gross was
+   * confirmed), so the user is told instead of shown a mismatch.
+   */
+  confirmedTotalNote: { matched: number; confirmed: number } | null;
 };
 
 /** What the review screen tells the user about an extraction. */
@@ -484,5 +491,14 @@ export function extractionReviewNotes(
     droppedReasons: REPORTED_DROP_REASONS.filter(
       (reason) => (summary?.droppedRows?.[reason] ?? 0) > 0,
     ),
+    confirmedTotalNote:
+      reconciliation?.confirmedTotal != null &&
+      !reconciliation.mismatch &&
+      reconciliation.source === "document"
+        ? {
+            matched: reconciliation.reportedTotal,
+            confirmed: reconciliation.confirmedTotal,
+          }
+        : null,
   };
 }

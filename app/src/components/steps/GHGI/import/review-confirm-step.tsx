@@ -86,15 +86,28 @@ export default function ReviewConfirmStep({
   );
   const [updateSourceChecks] = api.useUpdateImportSourceChecksMutation();
 
-  /** Saves one check answer. A stale write reloads the import and asks again. */
-  const answerSourceCheck = async (answer: SourceCheckAnswer) => {
+  /**
+   * Saves one check answer; resolves false when it was not saved, so the card
+   * stays open. A stale write reloads the import and asks again.
+   */
+  const answerSourceCheck = async (
+    answer: SourceCheckAnswer,
+  ): Promise<boolean> => {
     try {
-      await updateSourceChecks({
+      const { clearedDecisions } = await updateSourceChecks({
         cityId,
         inventoryId,
         importedFileId,
         ...answer,
       }).unwrap();
+      if (clearedDecisions && clearedDecisions > 0) {
+        UseInfoToast({
+          title: t("import-source-checks-cleared", {
+            count: clearedDecisions,
+          }),
+        }).showInfoToast();
+      }
+      return true;
     } catch (error: unknown) {
       const code = (error as { data?: { error?: { code?: string } } })?.data
         ?.error?.code;
@@ -103,12 +116,13 @@ export default function ReviewConfirmStep({
         UseInfoToast({
           title: t("import-source-checks-conflict"),
         }).showInfoToast();
-        return;
+        return false;
       }
       UseErrorToast({
         title: t("import-source-checks-save-failed"),
         description: getApiErrorMessage(error, ""),
       }).showErrorToast();
+      return false;
     }
   };
 
@@ -178,6 +192,7 @@ export default function ReviewConfirmStep({
     failedPages,
     droppedReasons,
     removalsWarning,
+    confirmedTotalNote,
   } = extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
@@ -352,6 +367,26 @@ export default function ReviewConfirmStep({
               )}
             </Text>
           </Box>
+        </Box>
+      )}
+      {confirmedTotalNote && (
+        <Box
+          data-testid="confirmed-total-note"
+          bg="background.neutral"
+          border="1px solid"
+          borderColor="border.default"
+          borderRadius="md"
+          p={4}
+          mb={8}
+        >
+          <Text fontSize="body.sm" color="content.secondary">
+            {t("import-reconciliation-other-total", {
+              matched: Math.round(confirmedTotalNote.matched).toLocaleString(),
+              confirmed: Math.round(
+                confirmedTotalNote.confirmed,
+              ).toLocaleString(),
+            })}
+          </Text>
         </Box>
       )}
       {removalsWarning && (

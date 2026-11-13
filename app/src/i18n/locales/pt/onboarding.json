@@ -388,9 +388,7 @@
   "import-unit-check-evidence": "\"{{unitText}} CO2e\".",
   "import-unit-check-footnote": "Relatórios no estilo dos EUA costumam usar \"MT\" para toneladas métricas; lê-lo como megatoneladas é um erro de importação comum.",
   "import-unit-option-t": "Toneladas métricas de CO₂e (t)",
-  "import-unit-option-t-detail": "Em relatórios no estilo dos EUA, \"MT\" costuma abreviar toneladas métricas.",
   "import-unit-option-mt": "Megatoneladas de CO₂e (milhões de t)",
-  "import-unit-option-mt-detail": "O total ficaria muito acima de qualquer inventário de cidade.",
   "import-unit-answer-t": "toneladas métricas",
   "import-unit-answer-mt": "megatoneladas",
   "import-number-check-title": "Verifique o formato dos números",
@@ -415,5 +413,11 @@
   "import-source-checks-conflict": "A importação mudou enquanto sua resposta era salva. A versão mais recente está sendo exibida. Confirme novamente.",
   "import-source-checks-save-failed": "Não foi possível salvar sua resposta",
   "import-reconciliation-confirmed-detail": "As linhas importadas somam {{imported}} tCO2e, mas o total que você confirmou é {{reported}} tCO2e ({{deviation}}% de diferença).",
-  "import-review-locked-by-checks": "Responda às verificações acima antes de editar as linhas."
+  "import-review-locked-by-checks": "Responda às verificações acima antes de editar as linhas.",
+  "import-unit-option-high-detail": "O total ficaria muito acima de qualquer inventário de cidade.",
+  "import-unit-option-low-detail": "O total ficaria muito abaixo do que um inventário de cidade mostra.",
+  "import-unit-option-neutral-detail": "Lê os valores como escritos, em {{unit}}.",
+  "import-source-checks-cleared_one": "{{count}} decisão de linha foi removida porque os valores dessa linha mudaram.",
+  "import-source-checks-cleared_other": "{{count}} decisões de linha foram removidas porque os valores dessas linhas mudaram.",
+  "import-reconciliation-other-total": "As linhas importadas somam {{matched}} t, outro total impresso no documento, e não as {{confirmed}} t que você confirmou."
 }

@@ -12,6 +12,8 @@ import type { ImportRowReview } from "@/util/types";
 import type { SourceChecks } from "@/util/GHGI/source-checks";
 
 let importStatus: unknown = undefined;
+let clearedDecisions = 0;
+const toasts: string[] = [];
 
 // Every api hook returns empty data; the import status comes from the test.
 jest.unstable_mockModule("@/services/api", () => ({
@@ -26,11 +28,29 @@ jest.unstable_mockModule("@/services/api", () => ({
             refetch: () => {},
           });
         }
+        if (name === "useUpdateImportSourceChecksMutation") {
+          return () => [
+            () => ({
+              unwrap: async () => ({ extractionSummary: {}, clearedDecisions }),
+            }),
+            {},
+          ];
+        }
         if (name.endsWith("Mutation")) return () => [async () => ({}), {}];
         return () => ({ data: undefined, isLoading: false });
       },
     },
   ),
+}));
+
+const toast = (kind: string) => (options: { title?: string }) => ({
+  [`show${kind}Toast`]: () => toasts.push(`${kind}:${options.title}`),
+});
+jest.unstable_mockModule("@/hooks/Toasts", () => ({
+  UseInfoToast: toast("Info"),
+  UseErrorToast: toast("Error"),
+  UseSuccessToast: toast("Success"),
+  UseWarningToast: toast("Warning"),
 }));
 
 const { default: ImportReviewRows } =
@@ -110,7 +130,10 @@ function controls(c: HTMLElement) {
   return [...buttons, ...selects];
 }
 
-async function mountReview(sourceChecks: SourceChecks | undefined) {
+async function mountReview(
+  sourceChecks: SourceChecks | undefined,
+  summary: Record<string, unknown> = {},
+) {
   importStatus = {
     mappingConfiguration: {
       rows: [],
@@ -120,6 +143,7 @@ async function mountReview(sourceChecks: SourceChecks | undefined) {
         importedSum: 0,
         yearAssumed: false,
         sourceChecks,
+        ...summary,
       },
     },
   };
@@ -198,5 +222,67 @@ describe("ReviewConfirmStep rows and checks", () => {
     const c = await mountReview(undefined);
     expect(controls(c).length).toBeGreaterThanOrEqual(3);
     expect(controls(c).some((el) => el.disabled)).toBe(false);
+  });
+});
+
+describe("ReviewConfirmStep source check notes", () => {
+  const printed = (label: string, value: number) => ({
+    label,
+    value,
+    year: 2021,
+    scope: null,
+    sector: null,
+    subsector: null,
+    level: "total",
+    inText: true,
+  });
+
+  it("notes another printed total matched, not the confirmed one", async () => {
+    const c = await mountReview(
+      {
+        total: {
+          status: "confirmed",
+          candidates: [],
+          selected: { value: 7453238, origin: "document", label: "BASIC" },
+          suggested: null,
+        },
+      },
+      {
+        targetYear: 2021,
+        importedSum: 9559215,
+        reportedTotals: [printed("BASIC", 7453238), printed("BASIC+", 9559215)],
+      },
+    );
+    expect(
+      c.querySelector('[data-testid="confirmed-total-note"]')?.textContent,
+    ).toBe("import-reconciliation-other-total");
+  });
+
+  it("no note when the confirmed total matched", async () => {
+    const c = await mountReview(CONFIRMED_TOTAL, { importedSum: 412300 });
+    expect(c.querySelector('[data-testid="confirmed-total-note"]')).toBeNull();
+  });
+
+  it("tells how many row decisions an answer cleared", async () => {
+    toasts.length = 0;
+    clearedDecisions = 2;
+    const c = await mountReview({
+      total: {
+        status: "pending",
+        candidates: [printed("BASIC", 412300) as never],
+        selected: null,
+        suggested: 0,
+      },
+    });
+    const confirm = Array.from(c.querySelectorAll("button")).find(
+      (b) => b.textContent?.trim() === "import-check-confirm",
+    )!;
+    await act(async () => confirm.click());
+    expect(toasts).toEqual(["Info:import-source-checks-cleared"]);
+
+    toasts.length = 0;
+    clearedDecisions = 0;
+    await act(async () => confirm.click());
+    expect(toasts).toEqual([]);
   });
 });

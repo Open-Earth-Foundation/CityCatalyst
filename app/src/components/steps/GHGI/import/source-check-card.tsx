@@ -6,10 +6,19 @@
  * separator of a number such as "6.600", and the document total. Each card
  * shows the imported total under every reading with `optionTotals`, the same
  * function the endpoint uses, so the totals shown are the totals stored.
- * Presentational: the caller sends the answer to the source-checks endpoint.
+ * Presentational: the caller sends the answer to the source-checks endpoint,
+ * with the readings the totals were computed under (`expected`). One answer is
+ * saved at a time: every Confirm is disabled while a save is in flight.
  */
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { TFunction } from "i18next";
 import { Box, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +30,7 @@ import {
   optionTotals,
   perPerson,
   PER_PERSON_RANGE,
+  totalPlausibility,
   type NumberReading,
   type Readings,
   type SourceChecks,
@@ -28,17 +38,64 @@ import {
 } from "@/util/GHGI/source-checks";
 import { parseNumberString } from "@/util/GHGI/source-text";
 
-/** Body of one answer to the source-checks endpoint. */
-export type SourceCheckAnswer = {
+/** One card's answer. */
+export type CheckAnswer = {
   unit?: UnitReading;
   numberFormat?: NumberReading;
   total?: { candidate: number } | { value: number } | { skip: true };
 };
 
-type OnConfirm = (answer: SourceCheckAnswer) => void | Promise<unknown>;
+/**
+ * Body of one answer to the source-checks endpoint: the answer and the
+ * readings the card computed its totals under.
+ */
+export type SourceCheckAnswer = CheckAnswer & { expected: Readings };
+
+/** Resolves (or returns) false, or throws, when the answer was not saved. */
+type OnConfirm = (
+  answer: SourceCheckAnswer,
+) => void | boolean | Promise<unknown>;
+type CardConfirm = (answer: CheckAnswer) => void | boolean | Promise<unknown>;
 
 /** Locale for numbers on the cards; undefined uses the browser default. */
 const LocaleContext = createContext<string | undefined>(undefined);
+
+type SaveState = {
+  /** True while an answer is being saved. */
+  saving: boolean;
+  /** Runs one save at a time; resolves true when it succeeded. */
+  save: (run: () => unknown) => Promise<boolean>;
+};
+
+function useSaveState(): SaveState {
+  const [saving, setSaving] = useState(false);
+  // A ref, so a second click before the re-render is ignored too.
+  const busy = useRef(false);
+  const save = useCallback(async (run: () => unknown) => {
+    if (busy.current) return false;
+    busy.current = true;
+    setSaving(true);
+    try {
+      return (await run()) !== false;
+    } catch {
+      return false;
+    } finally {
+      busy.current = false;
+      setSaving(false);
+    }
+  }, []);
+  return { saving, save };
+}
+
+/** Save state shared by all cards of one review. */
+const SaveContext = createContext<SaveState | null>(null);
+
+/** The shared save state, or this component's own outside the cards list. */
+function useSave(): SaveState {
+  const shared = useContext(SaveContext);
+  const own = useSaveState();
+  return shared ?? own;
+}
 
 /** Tonnes as shown on the cards: "3,250,886 t", "3.25 trillion t". */
 export function formatTonnes(
@@ -92,6 +149,23 @@ function AiDraftBadge({ t }: { t: TFunction }) {
       whiteSpace="nowrap"
     >
       {t("import-check-badge")}
+    </Box>
+  );
+}
+
+function NoSourceBadge({ t }: { t: TFunction }) {
+  return (
+    <Box
+      as="span"
+      px={2}
+      py="2px"
+      borderRadius="full"
+      bg="background.neutral"
+      color="content.secondary"
+      fontSize="body.sm"
+      whiteSpace="nowrap"
+    >
+      {t("import-total-no-source")}
     </Box>
   );
 }
@@ -265,6 +339,7 @@ export function SourceCheckCard({
   hint,
   confirmed,
   confirmedLine,
+  confirmedBadge,
   confirmDisabled,
   onConfirm,
   footnote,
@@ -275,13 +350,17 @@ export function SourceCheckCard({
   hint?: string;
   confirmed: boolean;
   confirmedLine: string;
+  /** Shown after the confirmed line, e.g. "No source" for a typed total. */
+  confirmedBadge?: ReactNode;
   confirmDisabled?: boolean;
-  onConfirm: () => void | Promise<unknown>;
+  onConfirm: () => void | boolean | Promise<unknown>;
   footnote?: ReactNode;
   children: ReactNode;
 }) {
   const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  // This card's save, for its spinner; `saving` is true for any card's save.
+  const [mine, setMine] = useState(false);
+  const { saving, save } = useSave();
 
   if (confirmed && !editing) {
     return (
@@ -296,9 +375,12 @@ export function SourceCheckCard({
         px={4}
         py={3}
       >
-        <Text fontSize="body.md" color="content.secondary">
-          {confirmedLine}
-        </Text>
+        <HStack gap={2} flexWrap="wrap">
+          <Text fontSize="body.md" color="content.secondary">
+            {confirmedLine}
+          </Text>
+          {confirmedBadge}
+        </HStack>
         <Button
           variant="ghost"
           size="sm"
@@ -311,14 +393,12 @@ export function SourceCheckCard({
     );
   }
 
+  // The card closes only when the answer was saved.
   const confirm = async () => {
-    setSaving(true);
-    try {
-      await onConfirm();
-      setEditing(false);
-    } finally {
-      setSaving(false);
-    }
+    setMine(true);
+    const saved = await save(onConfirm);
+    setMine(false);
+    if (saved) setEditing(false);
   };
 
   return (
@@ -356,8 +436,8 @@ export function SourceCheckCard({
         </Box>
         <Button
           onClick={confirm}
-          loading={saving}
-          disabled={confirmDisabled}
+          loading={mine}
+          disabled={confirmDisabled || saving}
           flexShrink={0}
         >
           {t("import-check-confirm")}
@@ -387,7 +467,7 @@ export function UnitCheckCard({
   readings: Readings;
   rows: ExtractedRow[];
   population: number | null;
-  onConfirm: OnConfirm;
+  onConfirm: CardConfirm;
 }) {
   const locale = useContext(LocaleContext);
   const [selected, setSelected] = useState<UnitReading>(check.reading);
@@ -400,6 +480,22 @@ export function UnitCheckCard({
     .join(", ");
   const answerKey = (reading: UnitReading) =>
     reading === "Mt" ? "import-unit-answer-mt" : "import-unit-answer-t";
+  const plausibility = (reading: UnitReading) =>
+    totalPlausibility(totalOf(reading), population);
+  // Each option says what its own total means, never a fixed claim.
+  const detail = (reading: UnitReading) => {
+    const verdict = plausibility(reading);
+    return verdict === "high"
+      ? t("import-unit-option-high-detail")
+      : verdict === "low"
+        ? t("import-unit-option-low-detail")
+        : t("import-unit-option-neutral-detail", {
+            unit: t(answerKey(reading)),
+          });
+  };
+  // The note that "MT" usually means metric tonnes, only when the totals agree.
+  const showFootnote =
+    plausibility("t") === "plausible" && plausibility("Mt") === "high";
 
   return (
     <SourceCheckCard
@@ -412,7 +508,7 @@ export function UnitCheckCard({
         answer: t(answerKey(check.reading)),
       })}
       onConfirm={() => onConfirm({ unit: selected })}
-      footnote={t("import-unit-check-footnote")}
+      footnote={showFootnote ? t("import-unit-check-footnote") : undefined}
     >
       <EvidenceBox>
         {location && `${location}: `}
@@ -430,13 +526,13 @@ export function UnitCheckCard({
           {
             value: "t",
             title: t("import-unit-option-t"),
-            detail: t("import-unit-option-t-detail"),
+            detail: detail("t"),
             total: formatTonnes(t, totalOf("t"), locale),
           },
           {
             value: "Mt",
             title: t("import-unit-option-mt"),
-            detail: t("import-unit-option-mt-detail"),
+            detail: detail("Mt"),
             total: formatTonnes(t, totalOf("Mt"), locale),
           },
         ]}
@@ -469,7 +565,7 @@ export function NumberFormatCheckCard({
   readings: Readings;
   rows: ExtractedRow[];
   population: number | null;
-  onConfirm: OnConfirm;
+  onConfirm: CardConfirm;
 }) {
   const locale = useContext(LocaleContext);
   const [selected, setSelected] = useState<NumberReading>(check.reading);
@@ -482,8 +578,10 @@ export function NumberFormatCheckCard({
     return value == null
       ? t(`import-number-answer-${reading}`)
       : t("import-number-option", {
+          // No grouping: "6600" and "6.6" read the same in every locale.
           value: value.toLocaleString(locale, {
             maximumFractionDigits: 6,
+            useGrouping: false,
           }),
         });
   };
@@ -556,9 +654,11 @@ export function TotalCheckCard({
 }: {
   t: TFunction;
   check: NonNullable<SourceChecks["total"]>;
-  onConfirm: OnConfirm;
+  onConfirm: CardConfirm;
 }) {
   const locale = useContext(LocaleContext);
+  // Shared with the card frame, so "Continue without" and Confirm save once.
+  const saveState = useSave();
   const { candidates } = check;
   const initial = (() => {
     const fromSelected = check.selected
@@ -587,99 +687,99 @@ export function TotalCheckCard({
   const single = candidates.length === 1 ? candidates[0] : null;
 
   return (
-    <SourceCheckCard
-      t={t}
-      title={t("import-total-check-title")}
-      hint={t("import-total-check-hint")}
-      confirmed={check.status === "confirmed"}
-      confirmedLine={confirmedLine}
-      confirmDisabled={candidates.length === 0 && !typedValid}
-      onConfirm={() =>
-        onConfirm(
-          candidates.length === 0
-            ? { total: { value: typedValue as number } }
-            : { total: { candidate: selected } },
-        )
-      }
-    >
-      {single && (
-        <EvidenceBox>
-          <Flex justifyContent="space-between" gap={3} wrap="wrap">
-            <Box minW={0}>
-              <Text fontWeight="bold" color="content.primary">
-                {single.label}
+    <SaveContext.Provider value={saveState}>
+      <SourceCheckCard
+        t={t}
+        title={t("import-total-check-title")}
+        hint={t("import-total-check-hint")}
+        confirmed={check.status === "confirmed"}
+        confirmedLine={confirmedLine}
+        confirmedBadge={
+          check.selected?.origin === "user" ? (
+            <NoSourceBadge t={t} />
+          ) : undefined
+        }
+        confirmDisabled={candidates.length === 0 && !typedValid}
+        onConfirm={() =>
+          onConfirm(
+            candidates.length === 0
+              ? { total: { value: typedValue as number } }
+              : { total: { candidate: selected } },
+          )
+        }
+      >
+        {single && (
+          <EvidenceBox>
+            <Flex justifyContent="space-between" gap={3} wrap="wrap">
+              <Box minW={0}>
+                <Text fontWeight="bold" color="content.primary">
+                  {single.label}
+                </Text>
+                {candidateLocation(t, single) && (
+                  <Text>{candidateLocation(t, single)}</Text>
+                )}
+              </Box>
+              <Text
+                fontWeight="semibold"
+                color="content.primary"
+                whiteSpace="nowrap"
+              >
+                {formatTonnes(t, single.value, locale)}
               </Text>
-              {candidateLocation(t, single) && (
-                <Text>{candidateLocation(t, single)}</Text>
-              )}
-            </Box>
-            <Text
-              fontWeight="semibold"
-              color="content.primary"
-              whiteSpace="nowrap"
-            >
-              {formatTonnes(t, single.value, locale)}
-            </Text>
-          </Flex>
-        </EvidenceBox>
-      )}
-      {candidates.length >= 2 && (
-        <OptionList
-          selected={String(selected)}
-          onSelect={(value) => setSelected(Number(value))}
-          options={candidates.map((candidate, index) => ({
-            value: String(index),
-            title: candidate.label,
-            detail: candidateLocation(t, candidate) || undefined,
-            total: formatTonnes(t, candidate.value, locale),
-          }))}
-        />
-      )}
-      {candidates.length === 0 && (
-        <VStack alignItems="stretch" gap={2}>
-          <Text fontSize="body.sm" color="content.secondary">
-            {t("import-total-fallback-hint")}
-          </Text>
-          <HStack gap={2} flexWrap="wrap">
-            <Text asChild fontSize="body.sm">
-              <label htmlFor="import-total-input">
-                {t("import-total-input-label")}
-              </label>
-            </Text>
-            <Box
-              as="span"
-              px={2}
-              py="2px"
-              borderRadius="full"
-              bg="background.neutral"
-              color="content.secondary"
-              fontSize="body.sm"
-            >
-              {t("import-total-no-source")}
-            </Box>
-          </HStack>
-          <Input
-            id="import-total-input"
-            inputMode="decimal"
-            value={typed}
-            onChange={(e) => setTyped(e.target.value)}
-            maxW="320px"
+            </Flex>
+          </EvidenceBox>
+        )}
+        {candidates.length >= 2 && (
+          <OptionList
+            selected={String(selected)}
+            onSelect={(value) => setSelected(Number(value))}
+            options={candidates.map((candidate, index) => ({
+              value: String(index),
+              title: candidate.label,
+              detail: candidateLocation(t, candidate) || undefined,
+              total: formatTonnes(t, candidate.value, locale),
+            }))}
           />
-          <Box>
-            <Button
-              variant="ghost"
-              size="sm"
-              px={0}
-              color="content.link"
-              textDecoration="underline"
-              onClick={() => onConfirm({ total: { skip: true } })}
-            >
-              {t("import-total-continue-without")}
-            </Button>
-          </Box>
-        </VStack>
-      )}
-    </SourceCheckCard>
+        )}
+        {candidates.length === 0 && (
+          <VStack alignItems="stretch" gap={2}>
+            <Text fontSize="body.sm" color="content.secondary">
+              {t("import-total-fallback-hint")}
+            </Text>
+            <HStack gap={2} flexWrap="wrap">
+              <Text asChild fontSize="body.sm">
+                <label htmlFor="import-total-input">
+                  {t("import-total-input-label")}
+                </label>
+              </Text>
+              <NoSourceBadge t={t} />
+            </HStack>
+            <Input
+              id="import-total-input"
+              inputMode="decimal"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              maxW="320px"
+            />
+            <Box>
+              <Button
+                variant="ghost"
+                size="sm"
+                px={0}
+                color="content.link"
+                textDecoration="underline"
+                disabled={saveState.saving}
+                onClick={() =>
+                  saveState.save(() => onConfirm({ total: { skip: true } }))
+                }
+              >
+                {t("import-total-continue-without")}
+              </Button>
+            </Box>
+          </VStack>
+        )}
+      </SourceCheckCard>
+    </SaveContext.Provider>
   );
 }
 
@@ -703,44 +803,50 @@ export function SourceCheckCards({
   /** Number locale, e.g. the app language. Defaults to the browser's. */
   locale?: string;
 }) {
+  const saveState = useSaveState();
   if (!checks || (!checks.unit && !checks.numberFormat && !checks.total)) {
     return null;
   }
   const readings = currentReadings(checks);
+  // Every answer names the readings its card computed totals under.
+  const confirm: CardConfirm = (answer) =>
+    onConfirm({ ...answer, expected: readings });
   return (
     <LocaleContext.Provider value={locale}>
-      <VStack w="full" alignItems="stretch" gap={4} mb={8}>
-        {checks.unit && (
-          <UnitCheckCard
-            key={`unit-${checks.unit.reading}-${checks.unit.status}`}
-            t={t}
-            check={checks.unit}
-            readings={readings}
-            rows={rows}
-            population={population}
-            onConfirm={onConfirm}
-          />
-        )}
-        {checks.numberFormat && (
-          <NumberFormatCheckCard
-            key={`number-${checks.numberFormat.reading}-${checks.numberFormat.status}`}
-            t={t}
-            check={checks.numberFormat}
-            readings={readings}
-            rows={rows}
-            population={population}
-            onConfirm={onConfirm}
-          />
-        )}
-        {checks.total && (
-          <TotalCheckCard
-            key={`total-${checks.total.status}-${checks.total.selected?.value ?? ""}`}
-            t={t}
-            check={checks.total}
-            onConfirm={onConfirm}
-          />
-        )}
-      </VStack>
+      <SaveContext.Provider value={saveState}>
+        <VStack w="full" alignItems="stretch" gap={4} mb={8}>
+          {checks.unit && (
+            <UnitCheckCard
+              key={`unit-${checks.unit.reading}-${checks.unit.status}`}
+              t={t}
+              check={checks.unit}
+              readings={readings}
+              rows={rows}
+              population={population}
+              onConfirm={confirm}
+            />
+          )}
+          {checks.numberFormat && (
+            <NumberFormatCheckCard
+              key={`number-${checks.numberFormat.reading}-${checks.numberFormat.status}`}
+              t={t}
+              check={checks.numberFormat}
+              readings={readings}
+              rows={rows}
+              population={population}
+              onConfirm={confirm}
+            />
+          )}
+          {checks.total && (
+            <TotalCheckCard
+              key={`total-${checks.total.status}-${checks.total.selected?.value ?? ""}`}
+              t={t}
+              check={checks.total}
+              onConfirm={confirm}
+            />
+          )}
+        </VStack>
+      </SaveContext.Provider>
     </LocaleContext.Provider>
   );
 }

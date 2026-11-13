@@ -74,7 +74,8 @@ async function render(props: {
   checks: SourceChecks | undefined;
   rows?: ExtractedRow[];
   population?: number | null;
-  onConfirm?: (answer: SourceCheckAnswer) => void;
+  onConfirm?: (answer: SourceCheckAnswer) => unknown;
+  locale?: string;
 }) {
   const container = document.createElement("div");
   document.body.append(container);
@@ -88,7 +89,7 @@ async function render(props: {
           rows={props.rows ?? []}
           population={props.population ?? null}
           onConfirm={props.onConfirm ?? (() => {})}
-          locale="en"
+          locale={props.locale ?? "en"}
         />
       </ChakraProvider>,
     ),
@@ -135,6 +136,41 @@ describe("SourceCheckCards", () => {
       'US-style reports often use "MT" for metric tonnes; reading it as megatonnes is a common import error.',
     );
     expect(button(c, "Flag")).toBeUndefined();
+    // City scale: tonnes neutral, megatonnes far above.
+    expect(c.textContent).toContain(
+      "Reads the values as written in metric tonnes.",
+    );
+    expect(c.textContent).toContain(
+      "Total would be far above any city inventory.",
+    );
+    expect(c.textContent).not.toContain("far below");
+  });
+
+  it("unit card for a megatonne document", async () => {
+    const c = await render({
+      checks: UNIT_CHECKS,
+      rows: [
+        row({ gpcRefNo: "I.1.1", totalCO2e: 20, unitCheck: "MT" }),
+        row({ gpcRefNo: "I.2.1", totalCO2e: 5, unitCheck: "MT" }),
+      ],
+      population: 5_000_000,
+    });
+    expect(c.textContent).toContain(
+      "Total would be far below what a city inventory shows.",
+    );
+    expect(c.textContent).toContain(
+      "Reads the values as written in megatonnes.",
+    );
+    expect(c.textContent).not.toContain("far above any city inventory");
+    expect(c.textContent).not.toContain("US-style reports");
+  });
+
+  it("unit card without population judges the total", async () => {
+    const c = await render({ checks: UNIT_CHECKS, rows: MT_ROWS });
+    expect(c.textContent).toContain(
+      "Total would be far above any city inventory.",
+    );
+    expect(c.textContent).toContain("US-style reports");
   });
 
   it("unit card megatonnes warns", async () => {
@@ -154,7 +190,10 @@ describe("SourceCheckCards", () => {
       "9,505,514.6 t per person",
     );
     await act(async () => button(c, "Confirm").click());
-    expect(onConfirm).toHaveBeenCalledWith({ unit: "Mt" });
+    expect(onConfirm).toHaveBeenCalledWith({
+      unit: "Mt",
+      expected: { unit: "t", numberFormat: null },
+    });
   });
 
   it("no population hides per-person", async () => {
@@ -181,9 +220,25 @@ describe("SourceCheckCards", () => {
       ],
     });
     expect(c.textContent).toContain("6.600");
-    expect(c.textContent).toContain("Read as 6,600");
+    expect(c.textContent).toContain("Read as 6600");
     expect(c.textContent).toContain("Read as 6.6");
     expect(radio(c, "english").checked).toBe(true);
+  });
+
+  it("number format labels have no grouping in any locale", async () => {
+    const c = await render({
+      checks: {
+        numberFormat: {
+          status: "pending",
+          reading: "english",
+          examples: [{ label: "Stationary energy", text: "6.600" }],
+        },
+      },
+      locale: "pt-BR",
+    });
+    expect(c.textContent).toContain("Read as 6600");
+    expect(c.textContent).toContain("Read as 6,6");
+    expect(c.textContent).not.toContain("Read as 6.600");
   });
 
   it("total card printed", async () => {
@@ -204,7 +259,10 @@ describe("SourceCheckCards", () => {
     expect(c.textContent).toContain("Table 3");
     expect(c.textContent).toContain("p. 7");
     await act(async () => button(c, "Confirm").click());
-    expect(onConfirm).toHaveBeenCalledWith({ total: { candidate: 0 } });
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { candidate: 0 },
+      expected: { unit: null, numberFormat: null },
+    });
   });
 
   it("total card fallback", async () => {
@@ -227,9 +285,126 @@ describe("SourceCheckCards", () => {
     expect(c.textContent).toContain("No source");
     await act(async () => setInput(input!, "412300"));
     await act(async () => button(c, "Confirm").click());
-    expect(onConfirm).toHaveBeenCalledWith({ total: { value: 412300 } });
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { value: 412300 },
+      expected: { unit: null, numberFormat: null },
+    });
     await act(async () => button(c, "Continue without a total").click());
-    expect(onConfirm).toHaveBeenCalledWith({ total: { skip: true } });
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { skip: true },
+      expected: { unit: null, numberFormat: null },
+    });
+  });
+
+  it("sends the readings the totals were computed under", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        unit: { ...UNIT_CHECKS.unit!, status: "confirmed", reading: "Mt" },
+        numberFormat: {
+          status: "pending",
+          reading: "european",
+          examples: [{ label: "Stationary energy", text: "6.600" }],
+        },
+      },
+      rows: MT_ROWS,
+      onConfirm,
+    });
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      numberFormat: "european",
+      expected: { unit: "Mt", numberFormat: "european" },
+    });
+  });
+
+  it("disables every Confirm while a save is in flight", async () => {
+    let resolve: (saved: boolean) => void = () => {};
+    const onConfirm = jest.fn(
+      () =>
+        new Promise<boolean>((done) => {
+          resolve = done;
+        }),
+    );
+    const c = await render({
+      checks: {
+        ...UNIT_CHECKS,
+        total: {
+          status: "pending",
+          candidates: [candidate({})],
+          selected: null,
+          suggested: 0,
+        },
+      },
+      rows: MT_ROWS,
+      onConfirm,
+    });
+    const [unitConfirm, totalConfirm] = Array.from(
+      c.querySelectorAll("button"),
+    ).filter((b) => b.textContent?.trim() === "Confirm");
+    await act(async () => unitConfirm.click());
+    expect(totalConfirm.disabled).toBe(true);
+    await act(async () => totalConfirm.click());
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    await act(async () => resolve(true));
+    expect(totalConfirm.disabled).toBe(false);
+  });
+
+  it("Continue without a total saves once on a double click", async () => {
+    let resolve: (saved: boolean) => void = () => {};
+    const onConfirm = jest.fn(
+      () =>
+        new Promise<boolean>((done) => {
+          resolve = done;
+        }),
+    );
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [],
+          selected: null,
+          suggested: null,
+        },
+      },
+      onConfirm,
+    });
+    const skip = button(c, "Continue without a total");
+    await act(async () => {
+      skip.click();
+      skip.click();
+    });
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(skip.disabled).toBe(true);
+    await act(async () => resolve(true));
+    expect(skip.disabled).toBe(false);
+  });
+
+  it("a confirmed typed total keeps the No source mark", async () => {
+    const typed = await render({
+      checks: {
+        total: {
+          status: "confirmed",
+          candidates: [],
+          selected: { value: 412300, origin: "user" },
+          suggested: null,
+        },
+      },
+    });
+    expect(typed.textContent).toContain("Total: 412,300 t — confirmed");
+    expect(typed.textContent).toContain("No source");
+
+    const printed = await render({
+      checks: {
+        total: {
+          status: "confirmed",
+          candidates: [candidate({})],
+          selected: { value: 412300, origin: "document", label: "BASIC" },
+          suggested: 0,
+        },
+      },
+    });
+    expect(printed.textContent).toContain("Total: 412,300 t — confirmed");
+    expect(printed.textContent).not.toContain("No source");
   });
 
   it("confirmed check collapses and reopens", async () => {
@@ -241,6 +416,30 @@ describe("SourceCheckCards", () => {
     expect(radio(c, "Mt")).toBeNull();
     await act(async () => button(c, "Change").click());
     expect(radio(c, "Mt")).not.toBeNull();
+  });
+
+  it("a failed save from Change keeps the card open", async () => {
+    const onConfirm = jest.fn(async (): Promise<boolean> => false);
+    const c = await render({
+      checks: { unit: { ...UNIT_CHECKS.unit!, status: "confirmed" } },
+      rows: MT_ROWS,
+      onConfirm,
+    });
+    await act(async () => button(c, "Change").click());
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(radio(c, "Mt")).not.toBeNull();
+
+    // A thrown error keeps it open too; a saved answer closes it.
+    onConfirm.mockImplementationOnce(async () => {
+      throw new Error("network");
+    });
+    await act(async () => button(c, "Confirm").click());
+    expect(radio(c, "Mt")).not.toBeNull();
+    onConfirm.mockImplementationOnce(async () => true);
+    await act(async () => button(c, "Confirm").click());
+    expect(radio(c, "Mt")).toBeNull();
+    expect(c.textContent).toContain("Units: metric tonnes — confirmed");
   });
 
   it("no checks no cards", async () => {

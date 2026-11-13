@@ -439,9 +439,7 @@
   "import-unit-check-evidence": "\"{{unitText}} CO2e\".",
   "import-unit-check-footnote": "US-style reports often use \"MT\" for metric tonnes; reading it as megatonnes is a common import error.",
   "import-unit-option-t": "Metric tonnes of CO₂e (t)",
-  "import-unit-option-t-detail": "In US-style reports, \"MT\" commonly abbreviates metric tons.",
   "import-unit-option-mt": "Megatonnes of CO₂e (million t)",
-  "import-unit-option-mt-detail": "Total would be far above any city inventory.",
   "import-unit-answer-t": "metric tonnes",
   "import-unit-answer-mt": "megatonnes",
   "import-number-check-title": "Check number format",
@@ -465,5 +463,11 @@
   "import-source-checks-pending-button": "Confirm the checks first",
   "import-source-checks-conflict": "The import changed while your answer was saved. The latest version is now shown. Please confirm again.",
   "import-source-checks-save-failed": "Your answer could not be saved",
-  "import-review-locked-by-checks": "Answer the checks above before editing rows."
+  "import-review-locked-by-checks": "Answer the checks above before editing rows.",
+  "import-unit-option-high-detail": "Total would be far above any city inventory.",
+  "import-unit-option-low-detail": "Total would be far below what a city inventory shows.",
+  "import-unit-option-neutral-detail": "Reads the values as written in {{unit}}.",
+  "import-source-checks-cleared_one": "{{count}} row decision was cleared because the values of that row changed.",
+  "import-source-checks-cleared_other": "{{count}} row decisions were cleared because the values of those rows changed.",
+  "import-reconciliation-other-total": "The imported rows add up to {{matched}} t, another total printed in the document, not the {{confirmed}} t you confirmed."
 }

@@ -228,13 +228,17 @@ function ImportButton({
     <>
       <Button
         w="auto"
+        flex={{ base: "1", md: "none" }}
+        minW={0}
         gap="8px"
         py="16px"
-        px="24px"
+        px={{ base: "16px", md: "24px" }}
+        whiteSpace="normal"
         onClick={() =>
           inventoryHasData ? setShowReplaceConfirm(true) : handleImport(false)
         }
-        h="64px"
+        h="auto"
+        minH="64px"
         loading={isImporting || isImportPolling}
         disabled={
           disabled ||
@@ -1266,7 +1270,12 @@ export default function GhgiImportWizard({
                 />
               </Box>
             </Box>
-            <Box w="full" display="flex" justifyContent="end" px="135px">
+            <Box
+              w="full"
+              display="flex"
+              justifyContent="end"
+              px={{ base: "16px", md: "135px" }}
+            >
               {activeStep === 0 && (
                 <Button
                   w="auto"
@@ -1330,13 +1339,16 @@ export default function GhgiImportWizard({
                 </Button>
               )}
               {activeStep === 2 && importedFileId && inventoryId && (
-                <HStack gap="16px">
+                <HStack
+                  gap={{ base: "8px", md: "16px" }}
+                  w={{ base: "full", md: "auto" }}
+                >
                   <Button
                     variant="outline"
-                    minW="171px"
+                    minW={{ base: "auto", md: "171px" }}
                     gap="8px"
                     py="16px"
-                    px="24px"
+                    px={{ base: "16px", md: "24px" }}
                     h="64px"
                     disabled={isImportInProgress}
                     onClick={() => {

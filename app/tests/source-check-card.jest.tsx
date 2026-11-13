@@ -317,6 +317,63 @@ describe("SourceCheckCards", () => {
     });
   });
 
+  describe("number format gas note", () => {
+    const GAS_NOTE = "the gas breakdown (CO2, CH4, N2O) is dropped";
+    const numberChecks = (reading: "english" | "european"): SourceChecks => ({
+      numberFormat: {
+        status: "pending",
+        reading,
+        examples: [{ label: "Stationary energy", text: "6.600" }],
+      },
+    });
+    const gasRow = (extra: Record<string, unknown> = {}) =>
+      row({
+        gpcRefNo: "I.1.1",
+        totalCO2e: 6600,
+        totalCO2eText: "6.600",
+        numberCheck: true,
+        co2: 6000,
+        ch4: 400,
+        n2o: 200,
+        ...extra,
+      });
+    const extracted = {
+      co2: 6000,
+      ch4: 400,
+      n2o: 200,
+      numberFormat: "european",
+      unit: "t",
+    };
+
+    it("shows the note when moving away from the extraction reading", async () => {
+      const c = await render({
+        checks: numberChecks("european"),
+        rows: [gasRow({ extractedGases: extracted })],
+      });
+      expect(c.textContent).not.toContain(GAS_NOTE);
+      await act(async () => radio(c, "english").click());
+      expect(c.textContent).toContain(GAS_NOTE);
+    });
+
+    it("hides the note when returning to the extraction reading", async () => {
+      const c = await render({
+        checks: numberChecks("english"),
+        rows: [gasRow({ extractedGases: extracted })],
+      });
+      await act(async () => radio(c, "european").click());
+      expect(c.textContent).not.toContain(GAS_NOTE);
+    });
+
+    it("hides the note when no row has gases", async () => {
+      const c = await render({
+        checks: numberChecks("european"),
+        rows: [gasRow({ co2: null, ch4: null, n2o: null })],
+      });
+      await act(async () => radio(c, "english").click());
+      expect(c.textContent).not.toContain(GAS_NOTE);
+    });
+  });
+
   it("disables every Confirm while a save is in flight", async () => {
     let resolve: (saved: boolean) => void = () => {};
     const onConfirm = jest.fn(

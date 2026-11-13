@@ -27,6 +27,7 @@ import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { ReportedTotal } from "@/util/GHGI/extraction-summary";
 import {
   inPerPersonRange,
+  applyReadings,
   optionTotals,
   perPerson,
   PER_PERSON_RANGE,
@@ -572,6 +573,17 @@ export function NumberFormatCheckCard({
   const totals = optionTotals(rows, readings, "numberFormat");
   const totalOf = (reading: NumberReading) =>
     totals.find((o) => o.reading === reading)?.total ?? 0;
+  // Only when the new reading would null gases the rows hold now; going back
+  // to the reading they were extracted under restores them.
+  const dropsGases = (() => {
+    const next = { ...readings, numberFormat: selected };
+    return rows.some((row) => {
+      if (!row.numberCheck) return false;
+      const hasGas = (r: ExtractedRow) =>
+        r.co2 != null || r.ch4 != null || r.n2o != null;
+      return hasGas(row) && !hasGas(applyReadings([row], readings, next)[0]);
+    });
+  })();
   const example = check.examples[0] ?? null;
   const readAs = (reading: NumberReading) => {
     const value = example ? parseNumberString(example.text, reading) : null;
@@ -620,7 +632,7 @@ export function NumberFormatCheckCard({
           total: formatTonnes(t, totalOf(reading), locale),
         }))}
       />
-      {selected !== check.reading && (
+      {dropsGases && (
         <Text fontSize="body.sm" color="content.secondary">
           {t("import-number-check-gases")}
         </Text>

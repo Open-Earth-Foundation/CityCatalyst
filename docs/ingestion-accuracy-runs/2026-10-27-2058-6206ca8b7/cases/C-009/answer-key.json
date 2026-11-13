@@ -1,0 +1,231 @@
+{
+  "id": "C-009",
+  "city": "Toronto",
+  "country": "Canada",
+  "year": 2019,
+  "fileName": "8f2e-2019-Inventory.pdf",
+  "expectedTotal": 15600000,
+  "toleranceText": "±5,000 t per row (chart labels have 2 decimals in Mt); total ±100,000 t",
+  "tolerance": 5000,
+  "totalTolerance": 100000,
+  "keyValueRows": 8,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Natural Gas - Residential (4.79 MT CO2e)",
+      "year": 2019,
+      "value": 4790000,
+      "gpc": "I.1.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed in million tonnes (4.79 MT) -> 4790000 t. Footnote 2 (p. 5): natural gas total includes fugitive emissions, so part of I.8.1 is embedded here."
+    },
+    {
+      "row": 2,
+      "description": "Natural Gas - Commercial & Institutional (2.45 MT CO2e)",
+      "year": 2019,
+      "value": 2450000,
+      "gpc": "I.2.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed as 2.45 MT -> 2450000 t. Fugitive emissions embedded per footnote 2."
+    },
+    {
+      "row": 3,
+      "description": "Natural Gas - Industrial (0.96 MT CO2e)",
+      "year": 2019,
+      "value": 960000,
+      "gpc": "I.3.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed as 0.96 MT -> 960000 t. Footnote 4 (p. 8): industrial includes process emissions (IPPU) and fugitive per footnote 2; importer should not split."
+    },
+    {
+      "row": 4,
+      "description": "Electricity - Residential (0.14 MT CO2e)",
+      "year": 2019,
+      "value": 140000,
+      "gpc": "I.1.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed as 0.14 MT -> 140000 t. Grid electricity = scope 2."
+    },
+    {
+      "row": 5,
+      "description": "Electricity - Commercial & Institutional (0.50 MT CO2e)",
+      "year": 2019,
+      "value": 500000,
+      "gpc": "I.2.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed as 0.50 MT -> 500000 t."
+    },
+    {
+      "row": 6,
+      "description": "Electricity - Industrial (0.07 MT CO2e)",
+      "year": 2019,
+      "value": 70000,
+      "gpc": "I.3.2",
+      "scope": "2",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Printed as 0.07 MT -> 70000 t."
+    },
+    {
+      "row": 7,
+      "description": "Transportation 2019 (5.6 MT CO2e)",
+      "year": 2019,
+      "value": 5600000,
+      "gpc": "II.x (all subsectors and scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Only a sector total is given in MT. Breakdowns exist only as % (Fig. 8: 73/14/10/3; text p.10: rail 1.4%, aviation 1.35%, marine 0.02%, TTC electric 0.18%) or by fuel (Fig. 4) - do NOT derive tonnes from %. Includes on-road (II.1), commuter rail (II.2), City marine fleet (II.3), Billy Bishop aviation fuel (II.4) and TTC rail electricity (scope 2). 1990-2018 bars must NOT be imported. Sector total only: compare with the sum of everything stored under II (or III). Sub-splits exist only as percentages; the flow must not turn them into tonnes."
+    },
+    {
+      "row": 8,
+      "description": "Waste 2019 (1.0 MT CO2e)",
+      "year": 2019,
+      "value": 1000000,
+      "gpc": "III.x (all subsectors; scopes 1 and 3)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": false,
+      "note": "Sector total only. Landfills inside and outside the city boundary (III.1.1 + III.1.2), plus organics/yard waste (III.2) and wastewater (III.4). Text: 'just under 1.0 MT' landfill. Cannot split. Sector total only: compare with the sum of everything stored under II (or III). Sub-splits exist only as percentages; the flow must not turn them into tonnes."
+    },
+    {
+      "row": 9,
+      "description": "Fugitive emissions (included in natural gas total - footnote 2)",
+      "year": 2019,
+      "value": null,
+      "gpc": "I.8.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Notation key",
+      "notation": "IE",
+      "scored": true,
+      "note": "Fugitive emissions are folded into the natural gas building values (rows 1-3)."
+    },
+    {
+      "row": 10,
+      "description": "Industrial process emissions (included in Industrial buildings - footnote 4)",
+      "year": 2019,
+      "value": null,
+      "gpc": "IV.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Notation key",
+      "notation": "IE",
+      "scored": true,
+      "note": "Process emissions are included in Industrial building emissions (row 3). IPPU not required at BASIC."
+    },
+    {
+      "row": 11,
+      "description": "Freight rail emissions not accounted for",
+      "year": 2019,
+      "value": null,
+      "gpc": "II.2.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Notation key",
+      "notation": "NE",
+      "scored": true,
+      "note": "Freight rail NE (data not available); commuter rail IS included within the transportation total (row 7)."
+    },
+    {
+      "row": 12,
+      "description": "Air travel via Toronto Pearson International Airport not captured",
+      "year": 2019,
+      "value": null,
+      "gpc": "II.4.3",
+      "scope": "3",
+      "ambiguous": true,
+      "rowType": "Notation key",
+      "notation": "NE",
+      "scored": true,
+      "note": "Pearson aviation NE; only Billy Bishop airport fuel is included (inside row 7). Scope assignment (II.4.3) is an interpretation."
+    },
+    {
+      "row": 13,
+      "description": "Marine vessels for cargo transport and personal use not accounted for",
+      "year": 2019,
+      "value": null,
+      "gpc": "II.3.1",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Notation key",
+      "notation": "NE",
+      "scored": true,
+      "note": "Partial NE: only City marine fleet fuel is included (inside row 7)."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "p. 4, Figure 2",
+      "what": "1990-2018 bars",
+      "examples": "2018: 16.2 Mt",
+      "numbers": [
+        2018,
+        16.2
+      ],
+      "failureMode": "Other year"
+    },
+    {
+      "where": "p. 6, Figure 4",
+      "what": "Emissions by fuel source (electricity mixes buildings and transport)",
+      "examples": "Electricity 0.7 Mt",
+      "numbers": [
+        0.7
+      ],
+      "failureMode": "Double count"
+    },
+    {
+      "where": "pp. 2-3, Table 1 and text",
+      "what": "Percentages (38% below 1990, shares by sector)",
+      "examples": "38%",
+      "numbers": [
+        38
+      ],
+      "failureMode": "Percentage stored as value"
+    },
+    {
+      "where": "p. 15, Figure 10",
+      "what": "City government (corporate) emissions, in kilotonnes; already inside the city total",
+      "examples": "0.74 Mt",
+      "numbers": [
+        0.74
+      ],
+      "failureMode": "Other inventory / double count"
+    },
+    {
+      "where": "text",
+      "what": "Methane total that overlaps waste",
+      "examples": "0.80 Mt",
+      "numbers": [
+        0.8
+      ],
+      "failureMode": "Double count"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "run": 1,
+    "ok": false,
+    "message": null,
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 2,
+    "ok": false,
+    "message": null,
+    "extractedRows": 0,
+    "stored": []
+  },
+  {
+    "run": 3,
+    "ok": false,
+    "message": null,
+    "extractedRows": 0,
+    "stored": []
+  }
+]

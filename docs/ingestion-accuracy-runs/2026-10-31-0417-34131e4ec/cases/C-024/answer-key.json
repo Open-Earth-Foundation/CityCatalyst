@@ -1,0 +1,176 @@
+{
+  "id": "C-024",
+  "city": "Coimbatore",
+  "country": "India",
+  "year": null,
+  "expectedTotal": 4638345,
+  "toleranceText": "±3 t (rounding)",
+  "tolerance": 3,
+  "totalTolerance": 3,
+  "keyValueRows": 10,
+  "rows": [
+    {
+      "row": 1,
+      "description": "Residential Buildings",
+      "year": null,
+      "value": 796886,
+      "gpc": "I.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 2,
+      "description": "Commercial and Institutional Buildings/Facilities",
+      "year": null,
+      "value": 404008,
+      "gpc": "I.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 3,
+      "description": "Manufacturing Industry and Construction",
+      "year": null,
+      "value": 2061681,
+      "gpc": "I.3.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 4,
+      "description": "On-Road Transportation",
+      "year": null,
+      "value": 1005201,
+      "gpc": "II.1.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 5,
+      "description": "Rail",
+      "year": null,
+      "value": 25368,
+      "gpc": "II.2.x (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 6,
+      "description": "Aviation",
+      "year": null,
+      "value": 55017,
+      "gpc": "II.4.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level. Scope (1 or 3) not stated."
+    },
+    {
+      "row": 7,
+      "description": "Solid Waste Disposal",
+      "year": null,
+      "value": 190326,
+      "gpc": "III.1.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 8,
+      "description": "Biological treatment",
+      "year": null,
+      "value": 73165,
+      "gpc": "III.2.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    },
+    {
+      "row": 9,
+      "description": "Incineration and open burning (printed 0)",
+      "year": null,
+      "value": 0,
+      "gpc": "III.3.x",
+      "scope": "",
+      "ambiguous": false,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed 0."
+    },
+    {
+      "row": 10,
+      "description": "Wastewater",
+      "year": null,
+      "value": 26691,
+      "gpc": "III.4.x",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Indian number format (lakh): 7,96,886 = 796,886. Scopes not split in the source: compare at subsector level."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 2-3, Table 6",
+      "what": "Emissions by fuel (same emissions, other split)",
+      "examples": "Diesel 5,76,546; Indirect Electricity 19,89,402",
+      "numbers": [
+        576546,
+        1989402
+      ],
+      "failureMode": "Double count."
+    },
+    {
+      "where": "PDF p. 3, Table 7",
+      "what": "Local government operations (already inside community)",
+      "examples": "Total 73,021.45",
+      "numbers": [
+        73021.45
+      ],
+      "failureMode": "Double count."
+    },
+    {
+      "where": "PDF p. 1-2, Tables 2-3 and Table 5 subtotal rows",
+      "what": "Energy (GJ), per capita, sector subtotals",
+      "examples": "4,09,52,508 GJ; 2.34 t/cap; Stationary Units 32,62,575",
+      "numbers": [
+        40952508,
+        2.34,
+        3262575
+      ],
+      "failureMode": "Energy or subtotals stored as emissions."
+    }
+  ],
+  "nonGpc": true
+}

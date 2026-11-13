@@ -1,0 +1,155 @@
+{
+  "id": "C-023",
+  "city": "Kyoto",
+  "country": "Japan",
+  "year": null,
+  "expectedTotal": 5923000,
+  "toleranceText": "±1,000 t (万t rounding)",
+  "tolerance": 1000,
+  "totalTolerance": 1000,
+  "keyValueRows": 9,
+  "rows": [
+    {
+      "row": 1,
+      "description": "エネルギー起源CO2: 産業部門 (industry, 66.8)",
+      "year": null,
+      "value": 668000,
+      "gpc": "I.3 (+ I.5, all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Manufacturing, mining, construction, agriculture/forestry. Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 2,
+      "description": "エネルギー起源CO2: 運輸部門 (transport, 138.4)",
+      "year": null,
+      "value": 1384000,
+      "gpc": "II.1 + II.2 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Cars and rail. Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 3,
+      "description": "エネルギー起源CO2: 家庭部門 (households, 151.0)",
+      "year": null,
+      "value": 1510000,
+      "gpc": "I.1 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 4,
+      "description": "エネルギー起源CO2: 業務部門 (commercial, 161.3)",
+      "year": null,
+      "value": 1613000,
+      "gpc": "I.2 (all scopes)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 5,
+      "description": "非エネルギー起源CO2 (廃棄物部門) (waste, 25.7)",
+      "year": null,
+      "value": 257000,
+      "gpc": "III.3",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Waste incineration CO2. Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 6,
+      "description": "メタン CH4 (2.8)",
+      "year": null,
+      "value": 28000,
+      "gpc": "No GPC ref (gas, no sector)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Reported by gas only; the flow cannot place it in a GPC subsector. Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 7,
+      "description": "一酸化二窒素 N2O (7.0)",
+      "year": null,
+      "value": 70000,
+      "gpc": "No GPC ref (gas, no sector)",
+      "scope": "",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 8,
+      "description": "代替フロン等 HFCs/PFCs/SF6/NF3 (39.3)",
+      "year": null,
+      "value": 393000,
+      "gpc": "IV.2",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value",
+      "notation": "",
+      "scored": true,
+      "note": "F-gases, mostly product use. Printed in 万トン (x10,000 t) with 1 decimal. Tolerance ±500 t. Q-KYO-1: sector values include electricity (scopes 1+2 mixed)."
+    },
+    {
+      "row": 9,
+      "description": "吸収量 removals by forests, farmland, green space (24.7)",
+      "year": null,
+      "value": -247000,
+      "gpc": "V (removals)",
+      "scope": "1",
+      "ambiguous": true,
+      "rowType": "Value (not in total)",
+      "notation": "",
+      "scored": true,
+      "note": "Q-KYO-2: the city nets this to get 567.6. Key total = gross 592.3."
+    }
+  ],
+  "distractors": [
+    {
+      "where": "PDF p. 1-2",
+      "what": "2013 and 2022 columns, % changes, net total, energy",
+      "examples": "784.1; 606.9; 567.6 (net); 71,748 TJ",
+      "numbers": [
+        784.1,
+        606.9,
+        567.6,
+        71748
+      ],
+      "failureMode": "Wrong year, net instead of gross, or energy stored."
+    },
+    {
+      "where": "PDF p. 2, 表1",
+      "what": "Subtotals by gas that contain the sector rows",
+      "examples": "CO2 543.2; エネルギー起源 517.4",
+      "numbers": [
+        2,
+        543.2,
+        517.4
+      ],
+      "failureMode": "Double count."
+    }
+  ]
+}

@@ -1,0 +1,554 @@
+{
+  "measuredAt": "2026-11-03T15:50:08.283Z",
+  "commit": "f0bb61d5c",
+  "branch": "david/cc-1132-core-ingestion-measure-current-accuracy-per-module-and-input",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-5.6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2,
+    "ocrPerPage": 0.002
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 3,
+  "results": [
+    {
+      "id": "C-020",
+      "file": "Guadalajara, México 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-020",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "code": null,
+        "runs": [
+          {
+            "ok": true,
+            "code": null,
+            "pages": 28,
+            "ms": 32143
+          },
+          {
+            "ok": true,
+            "code": null,
+            "pages": 28,
+            "ms": 27815
+          },
+          {
+            "ok": true,
+            "code": null,
+            "pages": 28,
+            "ms": 29145
+          }
+        ]
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 84
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 35305,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110712,
+            "completionTokens": 1085,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 479
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 31316,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110745,
+            "completionTokens": 836,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 261
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 32690,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110711,
+            "completionTokens": 788,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 210
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-025",
+      "file": "Münster, Germany 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-025",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "code": null,
+        "runs": [
+          {
+            "ok": true,
+            "code": null,
+            "pages": 14,
+            "ms": 29259
+          },
+          {
+            "ok": true,
+            "code": null,
+            "pages": 14,
+            "ms": 28689
+          },
+          {
+            "ok": true,
+            "code": null,
+            "pages": 14,
+            "ms": 29578
+          }
+        ]
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 42
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 32971,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1009,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 619
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 32222,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1019,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 646
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "PDF does not contain extractable inventory data",
+          "ms": 34406,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57284,
+            "completionTokens": 1645,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 644
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

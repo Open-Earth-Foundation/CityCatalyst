@@ -1,0 +1,518 @@
+{
+  "measuredAt": "2026-11-03T15:29:28.166Z",
+  "commit": "20bd946e4",
+  "branch": "david/cc-1132-core-ingestion-measure-current-accuracy-per-module-and-input",
+  "llmModel": "openai/gpt-4o-mini",
+  "extractionModel": "openai/gpt-5.6-luna",
+  "reasoningEffort": null,
+  "prices": {
+    "llmInputPerMTok": 0.2,
+    "llmOutputPerMTok": 1.2,
+    "ocrPerPage": 0.002
+  },
+  "ocrModel": "mistral-ocr-latest",
+  "runsPerFile": 3,
+  "results": [
+    {
+      "id": "C-020",
+      "file": "Guadalajara, México 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-020",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 28,
+        "chars": 54630,
+        "ms": 5639
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 28
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: document states only totals (Total GHG emissions 23787113 t (2022))",
+          "ms": 24281,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110711,
+            "completionTokens": 1243,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 616
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: model found no values in the OCR text",
+          "ms": 21184,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110711,
+            "completionTokens": 877,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 291
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: document states only totals (Total GHG emissions 23787113 t (2022))",
+          "ms": 23650,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 15,
+            "promptTokens": 110711,
+            "completionTokens": 1228,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 669
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": 0,
+            "rowPrecision": null,
+            "subsectorRecall": 0,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 24706394,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": [
+              {
+                "description": "Emisiones fugitivas de la distribución de gas natural",
+                "gpc": "I.8.1",
+                "value": 17373
+              },
+              {
+                "description": "Aviación",
+                "gpc": "II.4.3",
+                "value": 919302
+              },
+              {
+                "description": "Industria manufacturera y de la construcción",
+                "gpc": "I.3.x (all scopes)",
+                "value": 9475604
+              },
+              {
+                "description": "Edificios residenciales",
+                "gpc": "I.1.x (all scopes)",
+                "value": 4486219
+              },
+              {
+                "description": "Instalaciones comerciales e institucionales",
+                "gpc": "I.2.x (all scopes)",
+                "value": 1838091
+              },
+              {
+                "description": "Agricultura, silvicultura y actividades pesqueras",
+                "gpc": "I.5.x (all scopes)",
+                "value": 4432
+              },
+              {
+                "description": "Transporte carretero",
+                "gpc": "II.1.x (all scopes)",
+                "value": 6695502
+              },
+              {
+                "description": "Ferroviario",
+                "gpc": "II.2.x (all scopes)",
+                "value": 19669
+              },
+              {
+                "description": "Residuos sólidos",
+                "gpc": "III.1.x",
+                "value": 947369
+              },
+              {
+                "description": "Incineración y quema",
+                "gpc": "III.3.x",
+                "value": 919
+              },
+              {
+                "description": "Aguas residuales",
+                "gpc": "III.4.x",
+                "value": 250069
+              },
+              {
+                "description": "Residuos biológicos",
+                "gpc": "III.2.x",
+                "value": 51845
+              }
+            ]
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    },
+    {
+      "id": "C-025",
+      "file": "Münster, Germany 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-025",
+      "reference": null,
+      "ocr": {
+        "ok": true,
+        "pages": 14,
+        "chars": 25176,
+        "ms": 4096
+      },
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": 14
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: document states only totals (Total citywide CO₂ emissions 1788000 t (2022))",
+          "ms": 21749,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1235,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 762
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 2,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: document states only totals (Total CO2 emissions 1788000 t (2022))",
+          "ms": 21418,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1508,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 646
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        },
+        {
+          "run": 3,
+          "ok": false,
+          "finalStatus": "failed",
+          "message": "extraction returned 0 rows: document states only totals (Total CO2 emissions 1788000 t (2022))",
+          "ms": 17475,
+          "extractedRows": 0,
+          "failedPages": [],
+          "usage": {
+            "calls": 8,
+            "promptTokens": 57240,
+            "completionTokens": 1137,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 536
+          },
+          "stored": [],
+          "storedRows": 0,
+          "omittedRows": 0,
+          "total": 0,
+          "byScope": {},
+          "gpcRefs": [],
+          "score": {
+            "keyValueRows": 1,
+            "storedGroups": 0,
+            "matchedRows": 0,
+            "rowRecall": null,
+            "rowPrecision": null,
+            "subsectorRecall": null,
+            "valueAccuracy": null,
+            "classificationAccuracy": null,
+            "expectedTotal": 1788000,
+            "storedTotal": 0,
+            "totalDiffPct": -100,
+            "totalWithinTolerance": false,
+            "notationScored": 0,
+            "notationRecovered": 0,
+            "distractorsStored": [],
+            "unexpectedStored": [],
+            "missingRows": []
+          },
+          "totalDiffPct": null,
+          "scopeDiffPct": {}
+        }
+      ],
+      "stableTotal": false
+    }
+  ]
+}

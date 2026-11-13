@@ -1,0 +1,735 @@
+/**
+ * Turns the output of the PDF extraction benchmark into a folder the whole
+ * team can read: a markdown report, the results and, per attempt, the values
+ * the import stored. Inputs, answer keys, OCR text and the answer-key content
+ * of the scores (see redact.ts) are never written.
+ *
+ * One folder per run, named `<UTC date>-<UTC time>-<short sha>`.
+ */
+import { execFileSync } from "node:child_process";
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
+import type { CaseGate } from "@/backend/ingestion-benchmark/gate";
+import { publishableSummary } from "@/backend/ingestion-benchmark/redact";
+import type {
+  BlockSummary,
+  CaseVerdict,
+} from "@/backend/ingestion-benchmark/metrics";
+import type {
+  FileScore,
+  StoredValue,
+} from "@/backend/ingestion-benchmark/score";
+
+export type Tokens = {
+  calls: number;
+  promptTokens: number;
+  completionTokens: number;
+  /** Part of completionTokens spent on hidden reasoning; absent in runs before CC-1191. */
+  reasoningTokens?: number;
+  /** Calls cut off at the token limit (finish_reason "length"). */
+  lengthStops?: number;
+  /** Largest completion of a single call. */
+  maxCompletionTokens?: number;
+};
+
+/** Unit prices in USD. Any missing price makes the cost "n/a" instead of a guess. */
+export type Prices = {
+  llmInputPerMTok?: number;
+  llmOutputPerMTok?: number;
+  ocrPerPage?: number;
+};
+
+export type FailureMode =
+  | "scored"
+  | "ocr_error"
+  | "extraction_error"
+  | "truncated"
+  | "zero_rows"
+  | "approve_error"
+  | "readback_error"
+  | "setup_error";
+
+export type Block = "validated" | "held-out" | "dev";
+
+export type StageMs = {
+  ocr: number | null;
+  extraction: number | null;
+  import: number | null;
+  total: number;
+};
+
+export type RunEntry = {
+  run: number;
+  failureMode: FailureMode;
+  zeroRowsReason?: string;
+  warnings: string[];
+  stageMs: StageMs;
+  ok: boolean;
+  ms: number;
+  message?: string;
+  extractedRows?: number;
+  /** Held rows the runner included at approve (the review screen asks for a decision on them). */
+  heldRowsIncluded?: number;
+  stored?: StoredValue[];
+  score?: FileScore | null;
+  total?: number;
+  /** LLM usage of this run (extraction). */
+  usage?: Tokens;
+  /** Pages whose extraction failed twice and were skipped. */
+  failedPages?: number[];
+};
+
+export type CaseResult = {
+  id: string;
+  file: string;
+  kind: string;
+  targetYear: number;
+  keyId: string | null;
+  ocr: { ok?: boolean; code?: string | null } | null;
+  productFlowFailsAtOcr: boolean;
+  runs: RunEntry[];
+  stableTotal: boolean;
+  block: Block;
+  /** Counts toward the headline recall; null when the key is not a value-row case. */
+  eligible: boolean | null;
+  /** Scored on the total only, not row by row. */
+  totalOnly: boolean;
+  /** Manifest value: the PDF has text tables; null while unknown. Absent in runs before CC-1124. */
+  textTables?: boolean | null;
+  /** OCR runs in every PDF run (each run is a new upload); pages are summed over the runs. */
+  ocrUsage?: Tokens & { pages: number | null };
+};
+
+export type RunSummary = {
+  measuredAt: string;
+  commit: string;
+  branch: string;
+  llmModel?: string;
+  extractionModel?: string;
+  /** LLM_EXTRACTION_REASONING_EFFORT; null means the provider default. */
+  reasoningEffort?: string | null;
+  ocrModel?: string;
+  prices?: Prices;
+  runsPerFile: number;
+  /** Cases kept out of rule writing; reported apart from the validated set. */
+  heldOut?: string[];
+  results: CaseResult[];
+  selection: string[];
+  /** Attempts other than 3 per case. */
+  exploratory: boolean;
+  interrupted: boolean;
+  promptHash: string | null;
+  inputRepresentation: string | null;
+  testSetVersion: string;
+  /** SCORER_VERSION of the scores in this summary; absent on older runs. */
+  scorerVersion?: string;
+  dirty: boolean;
+  mlflowRunUrl: string | null;
+  mlflowNote: string | null;
+  /** Cases left out of the baseline because an attempt failed on the runner side. */
+  baselineNotRecorded?: { id: string; modes: string[] }[];
+  /**
+   * Set when a full-set run (--all) did not cover every case: inputs missing on
+   * this machine, or cases that did not finish all their attempts.
+   */
+  incomplete?: {
+    missing: { id: string; reason: string }[];
+    unfinished: string[];
+  };
+  /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
+  rescoredFrom?: { measuredAt: string; commit: string };
+};
+
+export type CaseMetrics = {
+  ocrOk: boolean | null;
+  ocrCode: string | null;
+  extractedRows: number | null;
+  rowRecall: number | null;
+  rowPrecision: number | null;
+  valueAccuracy: number | null;
+  classificationAccuracy: number | null;
+  notationRecovered: number;
+  notationScored: number;
+  /** Distractor values stored, mean per scored attempt. */
+  distractorsStored: number | null;
+  totalWithinTolerance: boolean | null;
+  stableTotal: boolean;
+  seconds: number | null;
+};
+
+export type Aggregate = {
+  cases: number;
+  scored: number;
+  ocrFailures: number;
+  rowRecall: number | null;
+  rowPrecision: number | null;
+  valueAccuracy: number | null;
+  classificationAccuracy: number | null;
+};
+
+const mean = (values: (number | null | undefined)[]): number | null => {
+  const present = values.filter((v): v is number => typeof v === "number");
+  return present.length
+    ? present.reduce((sum, v) => sum + v, 0) / present.length
+    : null;
+};
+
+function allWithinTolerance(
+  scores: Array<{ totalWithinTolerance: boolean | null } | null>,
+): boolean | null {
+  const flags = scores
+    .map((score) => score?.totalWithinTolerance)
+    .filter((flag): flag is boolean => typeof flag === "boolean");
+  return flags.length ? flags.every(Boolean) : null;
+}
+
+/** Distractor values a score stored; a redacted score keeps only the count. */
+const distractorCount = (score: FileScore): number =>
+  Array.isArray(score.distractorsStored)
+    ? score.distractorsStored.length
+    : ((score as { distractorsStoredCount?: number }).distractorsStoredCount ??
+      0);
+
+export function caseMetrics(result: CaseResult): CaseMetrics {
+  const okRuns = result.runs.filter((entry) => entry.ok);
+  const scores = okRuns.map((entry) => entry.score ?? null);
+  const first = scores.find((score) => score) ?? null;
+  return {
+    ocrOk: result.ocr ? result.ocr.ok === true : null,
+    ocrCode: result.ocr?.code ?? null,
+    extractedRows: mean(okRuns.map((entry) => entry.extractedRows)),
+    rowRecall: mean(scores.map((score) => score?.rowRecall)),
+    rowPrecision: mean(scores.map((score) => score?.rowPrecision)),
+    valueAccuracy: mean(scores.map((score) => score?.valueAccuracy)),
+    classificationAccuracy: mean(
+      scores.map((score) => score?.classificationAccuracy),
+    ),
+    notationRecovered: first?.notationRecovered ?? 0,
+    notationScored: first?.notationScored ?? 0,
+    distractorsStored: mean(
+      scores.map((score) => (score ? distractorCount(score) : null)),
+    ),
+    totalWithinTolerance: allWithinTolerance(scores),
+    stableTotal: result.stableTotal,
+    seconds: mean(result.runs.map((entry) => entry.ms / 1000)),
+  };
+}
+
+export function aggregate(results: CaseResult[]): Aggregate {
+  const metrics = results.map(caseMetrics);
+  return {
+    cases: results.length,
+    scored: metrics.filter((m) => m.rowRecall !== null).length,
+    ocrFailures: results.filter((result) => result.productFlowFailsAtOcr)
+      .length,
+    rowRecall: mean(metrics.map((m) => m.rowRecall)),
+    rowPrecision: mean(metrics.map((m) => m.rowPrecision)),
+    valueAccuracy: mean(metrics.map((m) => m.valueAccuracy)),
+    classificationAccuracy: mean(metrics.map((m) => m.classificationAccuracy)),
+  };
+}
+
+export const ZERO_TOKENS: Tokens = {
+  calls: 0,
+  promptTokens: 0,
+  completionTokens: 0,
+  reasoningTokens: 0,
+  lengthStops: 0,
+  maxCompletionTokens: 0,
+};
+
+export const addTokens = (a: Tokens, b?: Tokens): Tokens => ({
+  calls: a.calls + (b?.calls ?? 0),
+  promptTokens: a.promptTokens + (b?.promptTokens ?? 0),
+  completionTokens: a.completionTokens + (b?.completionTokens ?? 0),
+  reasoningTokens: (a.reasoningTokens ?? 0) + (b?.reasoningTokens ?? 0),
+  lengthStops: (a.lengthStops ?? 0) + (b?.lengthStops ?? 0),
+  maxCompletionTokens: Math.max(
+    a.maxCompletionTokens ?? 0,
+    b?.maxCompletionTokens ?? 0,
+  ),
+});
+
+export type CaseUsage = Tokens & { ocrPages: number; ocrPagesKnown: boolean };
+
+/** Everything one case spent: OCR once plus every run's extraction. */
+export function caseUsage(result: CaseResult): CaseUsage {
+  const tokens = result.runs.reduce(
+    (sum, run) => addTokens(sum, run.usage),
+    addTokens(ZERO_TOKENS, result.ocrUsage),
+  );
+  return {
+    ...tokens,
+    ocrPages: result.ocrUsage?.pages ?? 0,
+    ocrPagesKnown: result.ocrUsage?.pages != null,
+  };
+}
+
+export function totalUsage(results: CaseResult[]): CaseUsage {
+  return results.map(caseUsage).reduce(
+    (sum, usage) => ({
+      ...addTokens(sum, usage),
+      ocrPages: sum.ocrPages + usage.ocrPages,
+      ocrPagesKnown: sum.ocrPagesKnown && usage.ocrPagesKnown,
+    }),
+    { ...ZERO_TOKENS, ocrPages: 0, ocrPagesKnown: true },
+  );
+}
+
+/** USD, or null when a price needed for the usage is missing. */
+export function costUsd(usage: CaseUsage, prices?: Prices): number | null {
+  const { llmInputPerMTok, llmOutputPerMTok, ocrPerPage } = prices ?? {};
+  if (
+    llmInputPerMTok === undefined ||
+    llmOutputPerMTok === undefined ||
+    ocrPerPage === undefined
+  ) {
+    return null;
+  }
+  return (
+    (usage.promptTokens / 1e6) * llmInputPerMTok +
+    (usage.completionTokens / 1e6) * llmOutputPerMTok +
+    usage.ocrPages * ocrPerPage
+  );
+}
+
+const money = (value: number | null) =>
+  value === null ? "n/a" : `$${value.toFixed(value < 1 ? 3 : 2)}`;
+
+const tokensText = (usage: CaseUsage) =>
+  `${(usage.promptTokens / 1000).toFixed(0)}k / ${(usage.completionTokens / 1000).toFixed(0)}k`;
+
+const pct = (ratio: number | null) =>
+  ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
+
+const decimal = (value: number | null) =>
+  value === null ? "n/a" : String(Math.round(value * 10) / 10);
+
+/** Escapes backslashes and pipes in one pass, so a cell can neither be split nor unescaped. */
+const cell = (text: string) => text.replace(/[\\|]/g, (char) => `\\${char}`);
+
+/** Tolerance rule of the first scored attempt, or "n/a" when no attempt was scored. */
+function toleranceSourceOf(result: CaseResult): string {
+  return (
+    result.runs.find((run) => run.failureMode === "scored" && run.score)?.score
+      ?.toleranceSource ?? "n/a"
+  );
+}
+
+/** Seconds spent in each stage, summed over the attempts. */
+function stageSeconds(result: CaseResult): string {
+  const sum = (pick: (stage: StageMs) => number | null) => {
+    const values = result.runs
+      .map((run) => pick(run.stageMs))
+      .filter((v): v is number => v !== null);
+    return values.length
+      ? `${Math.round(values.reduce((a, b) => a + b, 0) / 1000)} s`
+      : "n/a";
+  };
+  return `ocr ${sum((s) => s.ocr)}, extraction ${sum((s) => s.extraction)}, import ${sum((s) => s.import)}`;
+}
+
+const counted = (n: number, why?: string) =>
+  `${n} case${n === 1 ? "" : "s"} counted${why ? `; ${why}` : ""}`;
+
+function failureModesText(verdict: CaseVerdict | undefined): string {
+  if (!verdict) return "n/a";
+  const parts = Object.entries(verdict.failureModes)
+    .filter(([mode, count]) => mode !== "scored" && count > 0)
+    .map(([mode, count]) => `${mode} ${count}`);
+  return parts.length ? parts.join(", ") : "none";
+}
+
+export function renderReport(
+  summary: RunSummary,
+  verdicts: CaseVerdict[],
+  blocks: BlockSummary[],
+  gates: CaseGate[],
+): string {
+  const verdictById = new Map(verdicts.map((v) => [v.id, v]));
+  const gateById = new Map(gates.map((g) => [g.id, g]));
+  const usage = totalUsage(summary.results);
+  const cost = costUsd(usage, summary.prices);
+  const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.incomplete ? " - INCOMPLETE" : ""}`;
+  const lines: string[] = [
+    title,
+    "",
+    `- Commit: \`${summary.commit}\` on \`${summary.branch}\`${summary.dirty ? " (dirty working tree)" : ""}`,
+    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+    `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
+    `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+    `- Test-set version: ${summary.testSetVersion}; scorer version: ${summary.scorerVersion ?? "n/a"}`,
+    `- Attempts per case: ${summary.runsPerFile}`,
+    ...(summary.rescoredFrom
+      ? [
+          `- Rescored from the run of ${summary.rescoredFrom.measuredAt.slice(0, 16).replace("T", " ")} UTC (\`${summary.rescoredFrom.commit}\`) with the current scorer and answer keys; no OCR or LLM call was made`,
+        ]
+      : []),
+    `- Selection: ${summary.selection.length ? summary.selection.join(", ") : "none"}`,
+    `- MLflow: ${summary.mlflowRunUrl ?? summary.mlflowNote ?? "not logged"}`,
+    "",
+  ];
+  if (summary.interrupted) {
+    lines.push(
+      "**INTERRUPTED**: the run stopped before every case finished; numbers cover the finished cases only.",
+      "",
+    );
+  }
+  if (summary.incomplete) {
+    const { missing, unfinished } = summary.incomplete;
+    lines.push(
+      "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      ...(missing.length
+        ? [
+            `- Missing inputs (not run): ${missing.map((m) => `${m.id} (${cell(m.reason)})`).join(", ")}`,
+          ]
+        : []),
+      ...(unfinished.length
+        ? [`- Did not finish every attempt: ${unfinished.join(", ")}`]
+        : []),
+      "",
+    );
+  }
+
+  for (const block of blocks) {
+    const rows = aggregate(
+      summary.results.filter((result) => result.block === block.block),
+    );
+    const inBlock = verdicts.filter((v) => v.block === block.block);
+    const sum = (pick: (v: CaseVerdict) => number) =>
+      inBlock.reduce((total, v) => total + pick(v), 0);
+    lines.push(
+      `## Block: ${block.block}`,
+      "",
+      `- ${block.casesInRun} of ${block.casesInManifest} cases in this run`,
+      `- Headline recall (failed attempts count as 0): ${pct(block.headlineRecall)} (${counted(block.headlineRecallCases, block.headlineRecall === null ? "only eligible cases with row recall count" : "total-only cases have no row recall")}); cases with totals within tolerance: ${block.casesTotalWithinTolerance}`,
+      `- Recall over scored attempts only: ${pct(block.recallScoredOnly)} (${counted(block.recallScoredOnlyCases)})`,
+      ...(block.provisionalRecallCases > 0
+        ? [
+            `- Provisional recall, cases whose \`textTables\` is unknown (failed attempts count as 0): ${pct(block.provisionalRecall)} (${counted(block.provisionalRecallCases)})`,
+          ]
+        : []),
+      `- Attempts passing: ${pct(block.attemptPassShare)}`,
+      `- Attempts 10x or more off the expected total: ${block.tenXAttempts}`,
+      `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,
+      `- Precision ${pct(rows.rowPrecision)}, value accuracy ${pct(rows.valueAccuracy)}, classification accuracy ${pct(rows.classificationAccuracy)} (means over ${rows.scored} case${rows.scored === 1 ? "" : "s"} scored row by row, scored attempts only)`,
+      `- Notation keys recovered: ${sum((v) => v.notationRecovered)} of ${sum((v) => v.notationScored)}; cases that stored a distractor value: ${inBlock.filter((v) => (v.distractorsStored ?? 0) > 0).length}`,
+      "",
+    );
+  }
+
+  const tenX = verdicts.reduce((sum, v) => sum + v.tenXAttempts, 0);
+  const warnings = summary.results.flatMap((result) =>
+    [...new Set(result.runs.flatMap((run) => run.warnings))].map((text) => ({
+      id: result.id,
+      text,
+    })),
+  );
+  lines.push(
+    "## Guardrails",
+    "",
+    `- 10x guardrail: ${tenX} attempt${tenX === 1 ? "" : "s"} with a stored total 10x or more off the expected total`,
+    warnings.length
+      ? `- Warnings:\n${warnings.map((w) => `  - ${w.id}: ${cell(w.text)}`).join("\n")}`
+      : "- Warnings: none",
+    "",
+    "## Regressions against the baseline",
+    "",
+  );
+  if (gates.length === 0) {
+    lines.push("No baseline comparison in this run.", "");
+  } else {
+    lines.push("| Case | Verdict | Reasons |", "| --- | --- | --- |");
+    for (const gate of gates) {
+      lines.push(
+        `| ${cell(gate.id)} | ${gate.verdict} | ${cell(gate.reasons.join("; ") || "-")} |`,
+      );
+    }
+    lines.push("");
+  }
+
+  lines.push(...renderBaselineChange(verdicts, gates));
+
+  const modeTotals = new Map<string, number>();
+  for (const verdict of verdicts) {
+    for (const [mode, count] of Object.entries(verdict.failureModes)) {
+      if (mode !== "scored" && count > 0) {
+        modeTotals.set(mode, (modeTotals.get(mode) ?? 0) + count);
+      }
+    }
+  }
+  lines.push(
+    "## Failure modes",
+    "",
+    modeTotals.size
+      ? [...modeTotals].map(([mode, count]) => `- ${mode}: ${count}`).join("\n")
+      : "No failed attempts.",
+    "",
+    "## Per case",
+    "",
+    "Recall counts failed attempts as 0. Precision, accuracies and distractors stored are means over the scored attempts; notation keys are those of the first scored attempt. Runtime is summed over the attempts.",
+    "",
+    "| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+  );
+  for (const result of summary.results) {
+    const v = verdictById.get(result.id);
+    const within =
+      v?.totalWithinToleranceAll == null
+        ? "n/a"
+        : v.totalWithinToleranceAll
+          ? "yes"
+          : "no";
+    lines.push(
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+    );
+  }
+
+  const legacy = summary.results
+    .filter((result) => toleranceSourceOf(result) === "legacy")
+    .map((result) => result.id);
+  // Total-only cases are not scored on rows, so their text tables do not matter.
+  const unknownTables = summary.results
+    .filter((result) => result.textTables === null && !result.totalOnly)
+    .map((result) => result.id);
+  const heldRows = summary.results
+    .map((result) => ({
+      id: result.id,
+      rows: result.runs.reduce(
+        (sum, run) => sum + (run.heldRowsIncluded ?? 0),
+        0,
+      ),
+    }))
+    .filter((c) => c.rows > 0);
+  // The app's total fails but removing the GPC exclusions it misses would pass:
+  // the app is missing an exclusion (CC-1201), not the extraction.
+  const adjustedOnly = summary.results
+    .filter((result) =>
+      result.runs.some(
+        (run) =>
+          run.score?.totalWithinTolerance === false &&
+          run.score?.adjustedWithinTolerance === true,
+      ),
+    )
+    .map((result) => result.id);
+  lines.push(
+    "",
+    `Estimated cost of this run: ${money(cost)}`,
+    "",
+    "## Notes",
+    "",
+    "- C-028 and C-031 are not fully held out.",
+    `- Cases using the legacy tolerance: ${legacy.length ? legacy.join(", ") : "none"}`,
+    `- Cases where \`textTables\` is unknown: ${unknownTables.length ? unknownTables.join(", ") : "none"}`,
+    `- Cases whose application total is off but would be within tolerance after removing the GPC-excluded references the app does not flag yet (CC-1201): ${adjustedOnly.length ? adjustedOnly.join(", ") : "none"}`,
+    ...(summary.baselineNotRecorded?.length
+      ? [
+          `- Not recorded in the baseline: ${summary.baselineNotRecorded.map((c) => `${c.id} (${c.modes.join(", ")})`).join(", ")}`,
+        ]
+      : []),
+    ...(heldRows.length
+      ? [
+          `- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,
+        ]
+      : []),
+    "",
+  );
+  return lines.join("\n");
+}
+
+export function renderIndexLine(
+  summary: RunSummary,
+  blocks: BlockSummary[],
+  folder: string,
+): string {
+  const recall = (block: Block) =>
+    pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}`;
+  const cost = costUsd(totalUsage(summary.results), summary.prices);
+  return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
+}
+
+export const INDEX_HEADER = [
+  "# PDF benchmark runs",
+  "",
+  "One line per benchmark run, oldest first. Open the report for per-case numbers and regressions.",
+  "",
+  "| Run (UTC) | Commit | Cases | Validated recall | Held-out recall | Est. cost | Report |",
+  "| --- | --- | --- | --- | --- | --- | --- |",
+  "",
+].join("\n");
+
+/**
+ * Appends one run line to INDEX.md. The new table (INDEX_HEADER) is added at
+ * the end of the file when missing, so earlier tables above it stay untouched.
+ */
+export function appendIndexLine(indexPath: string, line: string): void {
+  mkdirSync(dirname(indexPath), { recursive: true });
+  const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  if (!current.includes(INDEX_HEADER)) {
+    const gap = current === "" || current.endsWith("\n") ? "" : "\n";
+    appendFileSync(indexPath, `${gap}${INDEX_HEADER}`);
+  }
+  appendFileSync(indexPath, `${line}\n`);
+}
+
+export function gitInfo(): { commit: string; branch: string } {
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync("git", args, { encoding: "utf8" }).trim();
+    } catch {
+      return "unknown";
+    }
+  };
+  return {
+    commit: git("rev-parse", "--short", "HEAD"),
+    branch: git("rev-parse", "--abbrev-ref", "HEAD"),
+  };
+}
+
+export function runFolderName(measuredAt: string, commit: string): string {
+  const stamp = measuredAt.slice(0, 16).replace("T", "-").replace(":", "");
+  return `${stamp}-${commit}`;
+}
+
+/**
+ * Writes the run folder under `outRoot` and returns its path. Holds the report,
+ * the results (including the stored values a later baseline rescore needs,
+ * with the answer-key content of each score redacted) and each attempt's
+ * extracted values. Never copies inputs, answer keys or OCR text.
+ */
+export function writeRunArtifact(args: {
+  outRoot: string;
+  summary: RunSummary;
+  verdicts: CaseVerdict[];
+  blocks: BlockSummary[];
+  gates: CaseGate[];
+}): string {
+  const { outRoot, summary, verdicts, blocks, gates } = args;
+  const dir = join(outRoot, runFolderName(summary.measuredAt, summary.commit));
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(
+    join(dir, "results.json"),
+    JSON.stringify(
+      publishableSummary({ ...summary, verdicts, blocks, gates }),
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
+    join(dir, "report.md"),
+    renderReport(summary, verdicts, blocks, gates),
+  );
+  for (const result of summary.results) {
+    for (const run of result.runs) {
+      const attemptDir = join(dir, "cases", result.id, `attempt-${run.run}`);
+      mkdirSync(attemptDir, { recursive: true });
+      writeFileSync(
+        join(attemptDir, "extracted-values.json"),
+        JSON.stringify(run.stored ?? [], null, 2),
+      );
+    }
+  }
+  return dir;
+}
+
+const signedPoints = (now: number | null, before: number | null) =>
+  now === null || before === null
+    ? "n/a"
+    : `${now >= before ? "+" : ""}${Math.round((now - before) * 100)} pts`;
+
+const meanOrNull = (values: number[]) =>
+  values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+
+/**
+ * "Change from the baseline": baseline score, new score and the difference,
+ * per block (never merged) and per case, over the cases that have a baseline.
+ */
+export function renderBaselineChange(
+  verdicts: CaseVerdict[],
+  gates: CaseGate[],
+): string[] {
+  const pairs = verdicts.flatMap((now) => {
+    const before = gates.find((g) => g.id === now.id)?.baseline ?? null;
+    return before ? [{ now, before }] : [];
+  });
+  const lines = ["## Change from the baseline", ""];
+  if (pairs.length === 0) {
+    lines.push("No case in this run has a baseline to compare with.", "");
+    return lines;
+  }
+  lines.push(
+    "Only cases with a baseline count, on both sides. Recall counts failed attempts as 0. Headline recall uses the eligible cases (`textTables: true`, not total-only); provisional recall uses the row-scored cases whose `textTables` is unknown. Total-only cases have no recall: they count in the attempt and total rows only. An attempt passes when it is scored, its application total is within tolerance and it is not 10x off.",
+    "",
+  );
+  const blocks = (["validated", "held-out", "dev"] as Block[]).filter((block) =>
+    pairs.some((p) => p.now.block === block),
+  );
+  for (const block of blocks) {
+    const inBlock = pairs.filter((p) => p.now.block === block);
+    const recallOver = (
+      pick: (v: CaseVerdict) => boolean,
+      side: "now" | "before",
+    ) =>
+      meanOrNull(
+        inBlock
+          .filter((p) => pick(p.now))
+          .flatMap((p) =>
+            p[side].recallFailedAsZero === null
+              ? []
+              : [p[side].recallFailedAsZero as number],
+          ),
+      );
+    const passShare = (side: "now" | "before") => {
+      const attempts = inBlock.reduce((sum, p) => sum + p[side].attempts, 0);
+      return attempts
+        ? inBlock.reduce((sum, p) => sum + p[side].attemptsPassed, 0) / attempts
+        : null;
+    };
+    const totalsOk = (side: "now" | "before") =>
+      inBlock.filter((p) => p[side].totalWithinToleranceAll === true).length;
+    const eligible = (v: CaseVerdict) => v.eligible === true;
+    const unknown = (v: CaseVerdict) => v.textTables === null;
+    const rows: [string, number | null, number | null][] = [
+      [
+        "Headline recall",
+        recallOver(eligible, "before"),
+        recallOver(eligible, "now"),
+      ],
+      [
+        "Provisional recall",
+        recallOver(unknown, "before"),
+        recallOver(unknown, "now"),
+      ],
+      ["Attempts passing", passShare("before"), passShare("now")],
+    ];
+    lines.push(
+      `### ${block} (${inBlock.length} case${inBlock.length === 1 ? "" : "s"} with a baseline)`,
+      "",
+      "| Score | Baseline | Now | Change |",
+      "| --- | --- | --- | --- |",
+      ...rows.map(
+        ([name, before, now]) =>
+          `| ${name} | ${pct(before)} | ${pct(now)} | ${signedPoints(now, before)} |`,
+      ),
+      `| Cases with every total within tolerance | ${totalsOk("before")} | ${totalsOk("now")} | ${totalsOk("now") - totalsOk("before") >= 0 ? "+" : ""}${totalsOk("now") - totalsOk("before")} |`,
+      "",
+    );
+  }
+  lines.push(
+    "| Case | Block | Recall baseline | Recall now | Change | Attempts passed (baseline / now) | Verdict |",
+    "| --- | --- | --- | --- | --- | --- | --- |",
+    ...pairs.map(({ now, before }) => {
+      const verdict = gates.find((g) => g.id === now.id)?.verdict ?? "-";
+      return `| ${cell(now.id)} | ${now.block} | ${pct(before.recallFailedAsZero)} | ${pct(now.recallFailedAsZero)} | ${signedPoints(now.recallFailedAsZero, before.recallFailedAsZero)} | ${before.attemptsPassed}/${before.attempts} / ${now.attemptsPassed}/${now.attempts} | ${verdict} |`;
+    }),
+    "",
+  );
+  return lines;
+}

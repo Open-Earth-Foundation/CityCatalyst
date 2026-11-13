@@ -7,6 +7,7 @@ import {
   caseVerdict,
   offByFactor,
 } from "@/backend/ingestion-benchmark/metrics";
+import { gateAgainstBaseline } from "@/backend/ingestion-benchmark/gate";
 import type {
   Block,
   CaseResult,
@@ -429,5 +430,63 @@ describe("caseVerdict spec 5.4 metrics", () => {
       notationScored: 0,
       notationRecovered: 0,
     });
+  });
+});
+
+describe("total gate with the accepted tolerance", () => {
+  const totals = (stored: number, within: boolean) =>
+    caseVerdict(
+      three(
+        ...[1, 2, 3].map((run) =>
+          entry(
+            run,
+            {},
+            {
+              expectedTotal: 100,
+              storedTotal: stored,
+              totalWithinTolerance: within,
+            },
+          ),
+        ),
+      ),
+      key,
+    );
+  const compared = (baseline: ReturnType<typeof caseVerdict>) => ({
+    id: "C-001",
+    status: "compared" as const,
+    baseline,
+    rescored: false,
+  });
+
+  it("records whether each attempt's total is within tolerance", () => {
+    expect(totals(100.1, true).attemptTotalsWithinTolerance).toEqual([
+      true,
+      true,
+      true,
+    ]);
+    expect(
+      caseVerdict(three(failed(1, "zero_rows")), key)
+        .attemptTotalsWithinTolerance,
+    ).toEqual([null]);
+  });
+
+  it("does not flag totals within tolerance because the baseline was more exact", () => {
+    const base = totals(100, true);
+    const candidate = totals(100.1, true);
+    expect(base.attemptsPassed).toBe(3);
+    expect(candidate.attemptsPassed).toBe(3);
+    expect(gateAgainstBaseline(candidate, compared(base), null).verdict).toBe(
+      "ok",
+    );
+  });
+
+  it("still flags totals out of tolerance and worse than the baseline", () => {
+    const g = gateAgainstBaseline(
+      totals(150, false),
+      compared(totals(100, true)),
+      null,
+    );
+    expect(g.verdict).toBe("regression");
+    expect(g.reasons.join(" ")).toContain("out of tolerance");
   });
 });

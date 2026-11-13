@@ -281,7 +281,7 @@ describe("compareWithBaseline", () => {
     expect(c.baseline?.recallFailedAsZero).toBe(1);
   });
 
-  it("another scorer version without a run folder keeps the stored verdict", () => {
+  it("another scorer version without a run folder makes the baseline stale", () => {
     const stored = verdict({ recallFailedAsZero: 0.8 });
     const c = compareWithBaseline({
       id: "C-001",
@@ -293,9 +293,23 @@ describe("compareWithBaseline", () => {
       key,
       runsRoot: dir,
     });
-    expect(c.status).toBe("compared");
-    expect(c.rescored).toBe(false);
-    expect(c.baseline).toEqual(stored);
+    expect(c.status).toBe("baseline stale");
+    expect(c.baseline).toBeNull();
+    expect(c.reason).toContain("not found");
+  });
+
+  it("another scorer version whose run folder lacks the case makes the baseline stale", () => {
+    writeRun("run-1", []);
+    const c = compareWithBaseline({
+      id: "C-001",
+      current,
+      currentVersion: "v1",
+      baseline: { "C-001": entryOf({ scorerVersion: "1" }) },
+      key,
+      runsRoot: dir,
+    });
+    expect(c.status).toBe("baseline stale");
+    expect(c.reason).toContain("C-001 not in");
   });
 
   it("different version rescores the baseline values", () => {

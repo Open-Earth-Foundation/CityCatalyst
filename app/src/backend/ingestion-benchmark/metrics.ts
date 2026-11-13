@@ -79,6 +79,11 @@ export type CaseVerdict = {
    * expected total. Absent on baseline entries recorded before it existed.
    */
   attemptTotalFactors?: (number | null)[];
+  /**
+   * Whether each attempt's stored total is within the accepted tolerance; null
+   * for a failed attempt or no expected total. Absent on older baseline entries.
+   */
+  attemptTotalsWithinTolerance?: (boolean | null)[];
   /** The manifest's textTables for the case; absent on older baseline entries. */
   textTables?: boolean | null;
   recallScoredOnly: number | null;
@@ -145,6 +150,11 @@ export function caseVerdict(
       const factor = offByFactor(score.storedTotal, score.expectedTotal);
       return Number.isFinite(factor) ? factor : null;
     }),
+    attemptTotalsWithinTolerance: runs.map((run) =>
+      run.failureMode === "scored" && run.score?.expectedTotal != null
+        ? run.score.totalWithinTolerance === true
+        : null,
+    ),
     textTables: result.textTables ?? null,
     recallScoredOnly: hasRows
       ? mean(

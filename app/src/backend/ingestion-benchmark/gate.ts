@@ -3,20 +3,24 @@
  * with its per-case baseline (spec 6.3).
  *
  * Verdicts, most severe first:
- * - error: an attempt failed (any failure mode other than `scored`) where the
- *   baseline had no such failure;
+ * - error: an attempt failed in the runner (approve, readback, OCR or setup),
+ *   whatever the baseline holds; or a model failure (extraction error,
+ *   truncated, zero rows) appears where the baseline had none;
  * - regression: the case passed before and fails now; its recall dropped more
  *   than 5 points and below the worst baseline attempt (attempts of one case
  *   vary more than 5 points, so a fixed drop alone flags noise); no attempt
- *   passes where the baseline had one; every attempt's total is further off
- *   than the worst baseline attempt; or at least 2 more attempts are 10x off
+ *   passes where the baseline had one; every attempt's total is out of
+ *   tolerance and further off than the worst baseline attempt; or at least 2 more attempts are 10x off
  *   than in the baseline;
  * - over budget: the case cost more than 3 times its forecast;
  * - incomplete: an interrupted run did not finish every attempt of the case, so
  *   it is not compared for regressions or budget;
  * - ok.
  */
-import type { Comparison } from "@/backend/ingestion-benchmark/baseline";
+import {
+  RUNNER_FAILURES,
+  type Comparison,
+} from "@/backend/ingestion-benchmark/baseline";
 import type { CaseVerdict } from "@/backend/ingestion-benchmark/metrics";
 import {
   caseUsage,
@@ -78,10 +82,21 @@ export function forecastUsd(
   );
 }
 
-const nonScored = (verdict: CaseVerdict): number =>
+const failures = (
+  verdict: CaseVerdict,
+  include: (mode: FailureMode) => boolean,
+): number =>
   (Object.entries(verdict.failureModes) as [FailureMode, number][])
-    .filter(([mode]) => mode !== "scored")
+    .filter(([mode]) => mode !== "scored" && include(mode))
     .reduce((sum, [, count]) => sum + count, 0);
+
+const isRunnerFailure = (mode: FailureMode) => RUNNER_FAILURES.includes(mode);
+/** Failures of the benchmark itself (approve, readback, OCR, setup). */
+const runnerFailures = (verdict: CaseVerdict) =>
+  failures(verdict, isRunnerFailure);
+/** Failures of the model output (extraction error, truncated, zero rows). */
+const modelFailures = (verdict: CaseVerdict) =>
+  failures(verdict, (mode) => !isRunnerFailure(mode));
 
 const pct = (ratio: number) => `${Math.round(ratio * 100)}%`;
 
@@ -94,10 +109,21 @@ export function gateAgainstBaseline(
   const base = comparison.baseline;
   let hits: { verdict: Verdict; text: string }[] = [];
 
-  if (nonScored(current) > 0 && (base === null || nonScored(base) === 0)) {
+  // A runner failure is never acceptable: a baseline whose model failed to
+  // return rows must not hide a later approve, readback, OCR or setup failure.
+  if (runnerFailures(current) > 0) {
     hits.push({
       verdict: "error",
-      text: `${nonScored(current)} attempt(s) failed${base ? " where the baseline had none" : ""}`,
+      text: `${runnerFailures(current)} attempt(s) failed in the runner`,
+    });
+  }
+  if (
+    modelFailures(current) > 0 &&
+    (base === null || modelFailures(base) === 0)
+  ) {
+    hits.push({
+      verdict: "error",
+      text: `${modelFailures(current)} attempt(s) failed${base ? " where the baseline had none" : ""}`,
     });
   }
   if (base) {
@@ -133,7 +159,9 @@ export function gateAgainstBaseline(
     }
     // Total error, for every case and the only quality signal on total-only
     // ones: flagged when even the best attempt is worse than the worst baseline
-    // attempt, so ordinary variation between attempts does not count.
+    // attempt, so ordinary variation between attempts does not count, and only
+    // when no attempt is within the accepted tolerance: a total the scorer
+    // accepts is not a regression because the baseline was more exact.
     const worst = (factors: (number | null)[]) =>
       Math.max(...factors.map((f) => f ?? Infinity));
     const best = (factors: (number | null)[]) =>
@@ -141,11 +169,12 @@ export function gateAgainstBaseline(
     if (
       base.attemptTotalFactors?.length &&
       current.attemptTotalFactors?.length &&
+      !current.attemptTotalsWithinTolerance?.some((within) => within) &&
       best(current.attemptTotalFactors) > worst(base.attemptTotalFactors)
     ) {
       hits.push({
         verdict: "regression",
-        text: `every total is further off than the worst baseline attempt (best now ${best(current.attemptTotalFactors).toFixed(2)}x vs ${worst(base.attemptTotalFactors).toFixed(2)}x)`,
+        text: `every total is out of tolerance and further off than the worst baseline attempt (best now ${best(current.attemptTotalFactors).toFixed(2)}x vs ${worst(base.attemptTotalFactors).toFixed(2)}x)`,
       });
     }
     if (current.tenXAttempts >= base.tenXAttempts + TEN_X_MARGIN) {

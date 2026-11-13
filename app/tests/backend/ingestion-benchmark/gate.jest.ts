@@ -201,6 +201,45 @@ describe("gateAgainstBaseline", () => {
     ).toBe("ok");
   });
 
+  it.each([
+    ["zero_rows", "approve_error"],
+    ["truncated", "readback_error"],
+  ] as const)(
+    "error: a runner failure is not hidden by a baseline %s failure (%s)",
+    (baselineMode, currentMode) => {
+      const modes = verdict().failureModes;
+      const base = verdict({
+        attemptsPassed: 0,
+        casePasses: false,
+        recallFailedAsZero: 0,
+        failureModes: { ...modes, scored: 0, [baselineMode]: 3 },
+      });
+      const current = verdict({
+        attemptsPassed: 0,
+        casePasses: false,
+        recallFailedAsZero: 0,
+        failureModes: { ...modes, scored: 0, [currentMode]: 3 },
+      });
+      const g = gateAgainstBaseline(current, compared(base), null);
+      expect(g.verdict).toBe("error");
+      expect(g.reasons.join(" ")).toContain("failed in the runner");
+      expect(exitCode([g])).toBe(1);
+    },
+  );
+
+  it("ok: the same model failure as in the baseline", () => {
+    const modes = verdict().failureModes;
+    const zeroRows = verdict({
+      attemptsPassed: 0,
+      casePasses: false,
+      recallFailedAsZero: 0,
+      failureModes: { ...modes, scored: 0, zero_rows: 3 },
+    });
+    const g = gateAgainstBaseline(zeroRows, compared(zeroRows), null);
+    expect(g.verdict).toBe("ok");
+    expect(exitCode([g])).toBe(0);
+  });
+
   it("error without a baseline when an attempt did not score", () => {
     const failing = verdict({
       failureModes: { ...verdict().failureModes, scored: 2, ocr_error: 1 },

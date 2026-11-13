@@ -103,12 +103,11 @@ export function compareWithBaseline(args: {
   if (!entry) {
     return { id, status: "no baseline", baseline: null, rescored: false };
   }
-  // A different scorer still allows the comparison once the stored values are
-  // rescored; only a different test set can make the baseline stale.
+  // An entry from another test set or scorer version (or none) is rescored
+  // from its run folder, so both sides use the same rules. When that fails the
+  // baseline is stale: the stored verdict was scored under other rules.
   const sameVersion = entry.testSetVersion === currentVersion;
   const sameScorer = entry.scorerVersion === SCORER_VERSION;
-  // An entry from another scorer version (or none) is rescored from its
-  // run folder to recover it; when that fails, the stored verdict is used.
   if (sameVersion && sameScorer) {
     return {
       id,
@@ -117,16 +116,13 @@ export function compareWithBaseline(args: {
       rescored: false,
     };
   }
-  const stale = (cause: string): Comparison =>
-    sameVersion
-      ? { id, status: "compared", baseline: entry.verdict, rescored: false }
-      : {
-          id,
-          status: "baseline stale",
-          reason: `baseline stale: ${cause}`,
-          baseline: null,
-          rescored: false,
-        };
+  const stale = (cause: string): Comparison => ({
+    id,
+    status: "baseline stale",
+    reason: `baseline stale: ${cause}`,
+    baseline: null,
+    rescored: false,
+  });
   const where = `${entry.runFolder}/results.json`;
   try {
     const file = join(runsRoot, entry.runFolder, "results.json");
@@ -144,7 +140,7 @@ export function compareWithBaseline(args: {
 }
 
 /** Failures of the benchmark itself, not of the model: such a case says nothing about extraction. */
-const RUNNER_FAILURES: FailureMode[] = [
+export const RUNNER_FAILURES: FailureMode[] = [
   "approve_error",
   "readback_error",
   "ocr_error",

@@ -1198,43 +1198,47 @@ export default function GhgiImportWizard({
                       cityName={inventory?.city?.name}
                     />
                   ) : (
-                    <>
-                      <ImportReviewRows
-                        t={t}
-                        fileId={importedFileId}
-                        rows={rowPreview?.reviewRows ?? []}
-                        onDecide={handleRowDecision}
-                      />
-                      {(rowPreview?.scopeWarnings ?? []).length > 0 && (
-                        <Box mb={6}>
-                          <Text
-                            color="sentiment.warningDefault"
-                            fontWeight="medium"
-                          >
-                            {t("import-scope-warning")}
-                          </Text>
-                          {rowPreview?.scopeWarnings?.map((row) => (
-                            <Text key={row.rowNumber} fontSize="body.sm">
-                              {t("import-scope-warning-row", {
-                                row: row.rowNumber,
-                                reference: row.gpcRefNo,
-                                scope: row.scope || t("import-scope-missing"),
-                              })}
-                            </Text>
-                          ))}
-                        </Box>
+                    <ReviewConfirmStep
+                      t={t}
+                      lng={lng}
+                      cityId={cityId}
+                      cityName={inventory?.city?.name}
+                      inventoryId={inventoryId}
+                      importedFileId={importedFileId}
+                      onEditMapping={goToPrevStep}
+                      mappingOverrides={allOverrides}
+                      renderRows={(locked) => (
+                        <>
+                          <ImportReviewRows
+                            t={t}
+                            fileId={importedFileId}
+                            rows={rowPreview?.reviewRows ?? []}
+                            onDecide={handleRowDecision}
+                            disabled={locked}
+                          />
+                          {(rowPreview?.scopeWarnings ?? []).length > 0 && (
+                            <Box mb={6}>
+                              <Text
+                                color="sentiment.warningDefault"
+                                fontWeight="medium"
+                              >
+                                {t("import-scope-warning")}
+                              </Text>
+                              {rowPreview?.scopeWarnings?.map((row) => (
+                                <Text key={row.rowNumber} fontSize="body.sm">
+                                  {t("import-scope-warning-row", {
+                                    row: row.rowNumber,
+                                    reference: row.gpcRefNo,
+                                    scope:
+                                      row.scope || t("import-scope-missing"),
+                                  })}
+                                </Text>
+                              ))}
+                            </Box>
+                          )}
+                        </>
                       )}
-                      <ReviewConfirmStep
-                        t={t}
-                        lng={lng}
-                        cityId={cityId}
-                        cityName={inventory?.city?.name}
-                        inventoryId={inventoryId}
-                        importedFileId={importedFileId}
-                        onEditMapping={goToPrevStep}
-                        mappingOverrides={allOverrides}
-                      />
-                    </>
+                    />
                   )}
                 </motion.div>
               )}

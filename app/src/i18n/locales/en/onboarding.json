@@ -464,5 +464,6 @@
   "import-source-checks-pending": "Confirm the checks above before you import.",
   "import-source-checks-pending-button": "Confirm the checks first",
   "import-source-checks-conflict": "The import changed while your answer was saved. The latest version is now shown. Please confirm again.",
-  "import-source-checks-save-failed": "Your answer could not be saved"
+  "import-source-checks-save-failed": "Your answer could not be saved",
+  "import-review-locked-by-checks": "Answer the checks above before editing rows."
 }

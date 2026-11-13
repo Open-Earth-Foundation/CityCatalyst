@@ -414,5 +414,6 @@
   "import-source-checks-pending-button": "Confirme as verificações primeiro",
   "import-source-checks-conflict": "A importação mudou enquanto sua resposta era salva. A versão mais recente está sendo exibida. Confirme novamente.",
   "import-source-checks-save-failed": "Não foi possível salvar sua resposta",
-  "import-reconciliation-confirmed-detail": "As linhas importadas somam {{imported}} tCO2e, mas o total que você confirmou é {{reported}} tCO2e ({{deviation}}% de diferença)."
+  "import-reconciliation-confirmed-detail": "As linhas importadas somam {{imported}} tCO2e, mas o total que você confirmou é {{reported}} tCO2e ({{deviation}}% de diferença).",
+  "import-review-locked-by-checks": "Responda às verificações acima antes de editar as linhas."
 }

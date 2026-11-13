@@ -27,6 +27,8 @@ import {
 } from "@/components/steps/GHGI/import/source-check-card";
 import { UseErrorToast, UseInfoToast } from "@/hooks/Toasts";
 import { getApiErrorMessage } from "@/util/helpers";
+import { hasPendingSourceChecks } from "@/util/GHGI/source-checks";
+import type { ReactNode } from "react";
 import {
   rowImportWarnings,
   translateReviewImportWarning,
@@ -42,6 +44,12 @@ interface ReviewConfirmStepProps {
   importedFileId: string;
   mappingOverrides?: Record<string, unknown>;
   onEditMapping?: () => void;
+  /**
+   * Rows that need a decision, rendered right after the source check cards.
+   * `locked` is true while a check is pending: answering a check can change
+   * row values and clears their decisions, so checks come first.
+   */
+  renderRows?: (locked: boolean) => ReactNode;
 }
 
 export default function ReviewConfirmStep({
@@ -53,6 +61,7 @@ export default function ReviewConfirmStep({
   onEditMapping,
   inventoryId,
   mappingOverrides,
+  renderRows,
 }: ReviewConfirmStepProps) {
   const { data, isLoading, refetch } = api.useGetImportStatusQuery(
     {
@@ -296,6 +305,9 @@ export default function ReviewConfirmStep({
         population={populationData?.population ?? null}
         onConfirm={answerSourceCheck}
       />
+      {renderRows?.(
+        hasPendingSourceChecks(data?.mappingConfiguration?.extractionSummary),
+      )}
       {reconciliation?.mismatch && (
         <Box
           bg="sentiment.warningOverlay"

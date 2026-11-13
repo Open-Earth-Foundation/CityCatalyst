@@ -92,6 +92,10 @@
  *         description: Unauthorized.
  *       404:
  *         description: Import file not found or access denied.
+ *       409:
+ *         description: |
+ *           The import changed between the read and the write (another answer,
+ *           an approval). Error code source-checks-conflict; refetch and retry.
  */
 
 import UserService from "@/backend/UserService";
@@ -312,6 +316,13 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
     Record<string, unknown> | undefined;
   const changed = changedRowIndexes(storedRows, rows);
 
+  // Optimistic guard, the same one approve uses to claim the file: the write
+  // only lands on the version read above. A newer lastUpdated also makes a
+  // concurrent approve's claim fail instead of importing the old rows.
+  const readAt = importedFile.lastUpdated;
+  const writtenAt = new Date(
+    Math.max(Date.now(), (readAt?.getTime() ?? 0) + 1),
+  );
   const [updated] = await db.models.ImportedInventoryFile.update(
     {
       mappingConfiguration: {
@@ -322,18 +333,21 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
           ? { overrides: withoutDecisions(overrides, changed) }
           : {}),
       },
-      lastUpdated: new Date(),
+      lastUpdated: writtenAt,
     },
     {
       where: {
         id: importedFile.id,
         importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        lastUpdated: readAt,
       },
     },
   );
   if (!updated) {
-    throw new createHttpError.BadRequest(
-      "The import is no longer waiting for approval",
+    throw createHttpError(
+      409,
+      "The import changed while the answer was saved. Reload and answer again.",
+      { code: "source-checks-conflict" },
     );
   }
 

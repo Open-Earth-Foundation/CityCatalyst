@@ -1423,6 +1423,106 @@ describe("Import Routes API", () => {
       });
     });
 
+    it("rejects a stale write with 409 source-checks-conflict", async () => {
+      const file = await createChecked();
+      // Both requests read the same stored version before either writes.
+      const responses = await Promise.all([
+        patch(file.id, { unit: "Mt" }),
+        patch(file.id, { total: { candidate: 0 } }),
+      ]);
+      expect(responses.map((res) => res.status).sort()).toEqual([200, 409]);
+      const conflict = responses.find((res) => res.status === 409)!;
+      expect((await conflict.json()).error.code).toBe("source-checks-conflict");
+
+      const winner = responses[0].status === 200 ? "unit" : "total";
+      const afterRace = await storedSummary(file);
+      expect(afterRace.extractionSummary.sourceChecks?.[winner]?.status).toBe(
+        "confirmed",
+      );
+
+      // The refetched client resends the losing answer: nothing is lost.
+      await expectStatusCode(
+        await patch(
+          file.id,
+          winner === "unit" ? { total: { candidate: 0 } } : { unit: "Mt" },
+        ),
+        200,
+      );
+      const stored = await storedSummary(file);
+      expect(stored.extractionSummary.sourceChecks?.unit).toMatchObject({
+        status: "confirmed",
+        reading: "Mt",
+      });
+      expect(stored.extractionSummary.sourceChecks?.total).toMatchObject({
+        status: "confirmed",
+        selected: { value: 5_000_000, origin: "document" },
+      });
+      expect(stored.extractionSummary.importedSum).toBe(5_000_100);
+    });
+
+    it("answers unit and total in one request", async () => {
+      const file = await createChecked();
+      await expectStatusCode(
+        await patch(file.id, { unit: "Mt", total: { candidate: 0 } }),
+        200,
+      );
+      const stored = await storedSummary(file);
+      expect(stored.extractionSummary.sourceChecks?.unit?.status).toBe(
+        "confirmed",
+      );
+      expect(stored.extractionSummary.sourceChecks?.total).toMatchObject({
+        status: "confirmed",
+        selected: { value: 5_000_000, origin: "document", page: 12 },
+      });
+    });
+
+    it("applies number format reading", async () => {
+      const ambiguous = row("I.1.1", 6.6, {
+        co2: 6.6,
+        numberCheck: true,
+        totalCO2eText: "6.600",
+        printedFactor: 1,
+      });
+      const file = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "plan.pdf",
+        fileType: "pdf",
+        fileSize: 10,
+        originalFileName: "plan.pdf",
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        mappingConfiguration: {
+          rows: [ambiguous, row("II.1.1", 100)],
+          extractionSummary: {
+            reportedTotals: [],
+            droppedRows: {},
+            importedSum: 106.6,
+            yearAssumed: false,
+            sourceChecks: {
+              numberFormat: {
+                status: "pending",
+                reading: "english",
+                examples: [{ label: "Residential", text: "6.600" }],
+              },
+            },
+          },
+        },
+      });
+      await expectStatusCode(
+        await patch(file.id, { numberFormat: "european" }),
+        200,
+      );
+      const stored = await storedSummary(file);
+      expect(stored.rows[0]).toMatchObject({ totalCO2e: 6600, co2: null });
+      expect(stored.rows[1].totalCO2e).toBe(100);
+      expect(stored.extractionSummary.importedSum).toBe(6700);
+      expect(stored.extractionSummary.sourceChecks?.numberFormat).toMatchObject(
+        { status: "confirmed", reading: "european" },
+      );
+    });
+
     it("rejects wrong status", async () => {
       const extracting = await createChecked({
         status: ImportStatusEnum.EXTRACTING,
@@ -1491,7 +1591,7 @@ describe("Import Routes API", () => {
           }),
         },
       );
-      await expectStatusCodes(approved, [200, 202, 500]);
+      await expectStatusCode(approved, 202);
       await legacy.reload();
       expect(legacy.importStatus).not.toBe(
         ImportStatusEnum.WAITING_FOR_APPROVAL,

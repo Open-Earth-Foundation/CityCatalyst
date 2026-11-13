@@ -8,9 +8,13 @@ import type {
   NumberFormatConflict,
   ReportedTotalKind,
 } from "@/util/GHGI/source-metadata";
+import type { CheckableValue, SourceChecks } from "@/util/GHGI/source-checks";
 
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
-export type ReportedTotal = {
+export type ReportedTotal = Pick<
+  CheckableValue,
+  "unitCheck" | "numberCheck" | "totalCO2eText" | "printedFactor"
+> & {
   label: string;
   value: number;
   year: number | null;
@@ -24,6 +28,10 @@ export type ReportedTotal = {
    * summaries stored before this check and when no source text was given.
    */
   inText?: boolean;
+  /** Table or section the model named for the total, when it gave one. */
+  source?: string | null;
+  /** Page of the extracted text, when extraction ran page by page. */
+  page?: number | null;
 };
 
 export type DroppedRowReason =
@@ -63,6 +71,8 @@ export type ExtractionSummary = {
   numberFormatConflict?: NumberFormatConflict;
   /** Total the user gave for the document; reconciliation target in the review. */
   userReportedTotal?: { value: number; kind: ReportedTotalKind };
+  /** Checks the review asks before approval. Missing on imports stored before them: no checks. */
+  sourceChecks?: SourceChecks;
 };
 
 /**

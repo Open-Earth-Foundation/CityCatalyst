@@ -15,6 +15,7 @@ const ROW_PROPERTIES = {
   subsector: nullable("string"),
   category: nullable("string"),
   totalCO2e: nullable("number"),
+  totalCO2eText: nullable("string"),
   unit: nullable("string"),
   rowType: { type: "string", enum: ["line_item", "subtotal", "total"] },
   notationKey: nullable("string"),

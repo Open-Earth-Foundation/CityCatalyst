@@ -545,6 +545,7 @@ describe("PdfOcrJob queue", () => {
 
   const runStoredExtraction = async (
     extraConfiguration: Record<string, unknown> = {},
+    inventory: Record<string, unknown> = { year: 2022 },
   ) => {
     const importedFile = {
       inventoryId: "inventory-id",
@@ -565,7 +566,7 @@ describe("PdfOcrJob queue", () => {
       typeof extractInventoryRowsFromStoredMarkdown
     >[0];
     importedFindByPk.mockResolvedValue(importedFile);
-    inventoryFindByPk.mockResolvedValue({ year: 2022 });
+    inventoryFindByPk.mockResolvedValue(inventory);
     getTextFile.mockResolvedValue("OCR Markdown");
     importedUpdate.mockImplementation(async (values) => {
       Object.assign(importedFile, values);
@@ -647,6 +648,47 @@ describe("PdfOcrJob queue", () => {
     expect(extractRows).toHaveBeenLastCalledWith(
       "OCR Markdown",
       expect.objectContaining({ sourceMetadata: null }),
+    );
+  });
+
+  it("passes the city's country default and the inventory level (CC-1163)", async () => {
+    extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
+    const city = { countryLocode: "BR", locode: "BR SAO" };
+    await runStoredExtraction(
+      {},
+      { year: 2022, inventoryType: "gpc_basic", city },
+    );
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({
+        inventoryType: "gpc_basic",
+        sourceMetadata: {
+          numberFormat: "european",
+          numberFormatSource: "country_default",
+          reportedTotal: null,
+          reportedTotalKind: null,
+        },
+      }),
+    );
+    // Without a country code the locode prefix decides; a stored format wins.
+    await runStoredExtraction({}, { year: 2022, city: { locode: "US NYC" } });
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({
+        inventoryType: null,
+        sourceMetadata: expect.objectContaining({ numberFormat: "english" }),
+      }),
+    );
+    const stored = {
+      numberFormat: "english",
+      numberFormatSource: "user",
+      reportedTotal: null,
+      reportedTotalKind: null,
+    };
+    await runStoredExtraction({ sourceMetadata: stored }, { year: 2022, city });
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({ sourceMetadata: stored }),
     );
   });
 

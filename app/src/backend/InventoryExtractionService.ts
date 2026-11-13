@@ -18,10 +18,17 @@ import {
   GRID_GENERATION_GPC_REF,
   isImportedWasteRef,
 } from "@/util/GHGI/reported-totals";
-import { sumImported } from "@/util/GHGI/source-checks";
+import {
+  applyReadings,
+  selectLevelTotal,
+  sumImported,
+  type NumberReading,
+  type SourceChecks,
+} from "@/util/GHGI/source-checks";
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
+  isAmbiguousNumberText,
   isValueInNumbers,
   numbersInText,
   parseNumberString,
@@ -293,6 +300,21 @@ export type ExtractedRow = {
   rowType?: ExtractedRowType | null;
   /** Unit of totalCO2e as written in the source (t, kt, Mt, tCO2e). Converted to tonnes after extraction. */
   unit?: string | null;
+  /**
+   * The totalCO2e cell exactly as printed. Kept only when it parses and
+   * `printedFactor` checks out against the stored value.
+   */
+  totalCO2eText?: string | null;
+  /**
+   * Stored totalCO2e divided by the printed number under the current number
+   * reading: 1, 1000 or 1,000,000. Excludes the "MT" unit factor, which
+   * `applyReadings` applies through `unitCheck`.
+   */
+  printedFactor?: number | null;
+  /** "MT" when the document wrote the unit so: read as tonnes until the review confirms it. */
+  unitCheck?: "MT" | null;
+  /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
+  numberCheck?: boolean | null;
   emissionFactorUnit?: string | null;
   emissionFactorSource?: string | null;
   emissionFactorDescription?: string | null;
@@ -310,7 +332,7 @@ You are an extractor of GHG inventory line items from city emissions reports. Yo
 </role>
 
 <task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. When the unit is written "MT" in capitals, do not convert; set unit to "MT". Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
 
 Row types (critical): set "rowType" on every row.
 - "line_item": a measured value for one activity, subsector or GPC reference. Only these rows are imported.
@@ -351,7 +373,8 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
 - category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
 - totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
-- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
+- totalCO2eText (string | null): the totalCO2e cell exactly as printed, before any conversion (e.g. "48", "6.600", "1,234,567"). Null for a notation key.
+- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt", "MT"); null when the document does not say.
 - rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
@@ -382,7 +405,7 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 
 <example_output>
 {"rows": [
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "totalCO2eText": "125,000", "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "activityClass": "grid_energy", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},
@@ -402,7 +425,7 @@ const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emi
 - If this segment contains only sector-level totals: output one row per sector.
 - Never output a single aggregated row when the segment shows multiple line items (multiple activities, subsectors, or sectors). Extract every row you see in the inventory tables.
 - If the table has columns by year (e.g. CY 2015): year = the column header (2015); totalCO2e = tCO₂e from that column for that row; activityAmount = Consumed from that column; one output row per table row, do not collapse the year column into one total.
-- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Convert to tonnes when the unit is stated and set "unit" to "t".
+- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Convert to tonnes when the unit is stated and set "unit" to "t". When the unit is written "MT" in capitals, do not convert; set unit to "MT". Copy each totalCO2e cell exactly as printed into totalCO2eText.
 - Numbers: output numeric fields as JSON numbers; strip thousand separators (e.g. 48,000 → 48000); use decimal point for decimals (1,5 → 1.5).\n\nSegment text:\n\n`;
 
 /** Max document length in a single LLM request; above CHUNK_THRESHOLD we split into chunks. */
@@ -438,6 +461,8 @@ export type ExtractOptions = {
   onChunkProgress?: (current: number, total: number) => void | Promise<void>;
   /** What the user said about the source: number format and reported total. */
   sourceMetadata?: SourceMetadata | null;
+  /** Inventory level (`gpc_basic`, `gpc_basic_plus`): picks the suggested document total. */
+  inventoryType?: string | null;
 };
 
 export type ExtractionResult = {
@@ -905,6 +930,15 @@ export async function extractInventoryFromDocument(
     ...result.summary,
     importedSum: sumImported(rows),
   };
+  // Page selection merges per-page summaries, so the checks are built again
+  // from the rows and totals that are stored.
+  delete summary.sourceChecks;
+  const sourceChecks = buildSourceChecks(rows, summary.reportedTotals, {
+    targetYear: summary.targetYear,
+    inventoryType: options?.inventoryType,
+    reading: ambiguousReading(metadata),
+  });
+  if (sourceChecks) summary.sourceChecks = sourceChecks;
   if (conflict) summary.numberFormatConflict = conflict;
   if (metadata?.reportedTotal != null && metadata.reportedTotalKind) {
     summary.userReportedTotal = {
@@ -1755,6 +1789,12 @@ function normalizeRows(
       const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
+    if (
+      typeof row.totalCO2eText === "string" &&
+      !isPlaceholderOrEmpty(row.totalCO2eText)
+    ) {
+      out.totalCO2eText = row.totalCO2eText.trim();
+    }
     if (row.refSource === "document" || row.refSource === "inferred") {
       out.refSource = row.refSource;
     }
@@ -1898,6 +1938,252 @@ export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
   return fillActivityTypeFromCategory(fillMissingGpcRefNo(rows));
 }
 
+/** A unit without its CO2e, "metric", "of", brackets and spaces: "(MT CO2e)" is "MT". */
+function cleanUnit(unit: string): string {
+  return unit
+    .trim()
+    .replace(/co[2₂]\s*-?\s*(equiv\w*|eq|e)?\.?/gi, "")
+    .replace(/\bmetric\b/gi, "")
+    .replace(/\bof\b/gi, "")
+    .replace(/[()\s]/g, "");
+}
+
+/**
+ * True for "MT" in capitals (after cleaning): metric tonnes or megatonnes. Such
+ * rows are kept as tonnes and get a unit check in the review. "Mt" and "mt" are
+ * not ambiguous. tonnesMultiplier still returns null for "MT".
+ */
+function isAmbiguousMtUnit(unit: string | null | undefined): boolean {
+  return unit != null && cleanUnit(unit) === "MT";
+}
+
+/** A printed number may differ from the stored tonnes by one of these factors (kt, Mt). */
+const PRINTED_FACTORS = [1, 1000, 1_000_000];
+/** Rounding allowed between the stored value and printed number × factor. */
+const PRINTED_FACTOR_TOLERANCE = 0.005;
+
+/** The factor from `printed` to `value`, or null when none fits within rounding. */
+function printedFactorOf(value: number, printed: number | null): number | null {
+  if (printed == null) return null;
+  if (printed === 0) return value === 0 ? 1 : null;
+  const ratio = value / printed;
+  return (
+    PRINTED_FACTORS.find(
+      (factor) => Math.abs(ratio / factor - 1) <= PRINTED_FACTOR_TOLERANCE,
+    ) ?? null
+  );
+}
+
+type PrintedTextContext = {
+  /** The source text prints no unambiguous number of either style. */
+  undetected: boolean;
+  /** Reading the stored values follow: the source style, else the metadata format, else english. */
+  reading: NumberReading;
+};
+
+/** Reading of an ambiguous number when the document style is undetected. */
+function ambiguousReading(
+  metadata: SourceMetadata | null | undefined,
+): NumberReading {
+  return metadata?.numberFormat ?? "english";
+}
+
+function withoutPrintedText(row: ExtractedRow): ExtractedRow {
+  const out = { ...row };
+  delete out.totalCO2eText;
+  delete out.printedFactor;
+  delete out.numberCheck;
+  return out;
+}
+
+/**
+ * Checks the printed text of a row against its stored totalCO2e (already in
+ * tonnes). The text stands when stored = printed × 1, 1000 or 1,000,000 under
+ * the current reading; it then sets `printedFactor`, and `numberCheck` when the
+ * number reads two ways. When an ambiguous number matches only the other reading
+ * (the model read it the other way), the value is stored under the current one.
+ * Otherwise the text is dropped, the model's number kept, and the mismatch logged.
+ */
+function withPrintedText(
+  row: ExtractedRow,
+  context: PrintedTextContext,
+): ExtractedRow {
+  const text = row.totalCO2eText;
+  if (text == null) return row;
+  const value = row.totalCO2e;
+  if (value == null) return withoutPrintedText(row);
+  const ambiguous = context.undetected && isAmbiguousNumberText(text);
+  const factor = printedFactorOf(
+    value,
+    parseNumberString(text, context.reading),
+  );
+  if (factor != null) {
+    return {
+      ...withoutPrintedText(row),
+      totalCO2eText: text,
+      printedFactor: factor,
+      ...(ambiguous ? { numberCheck: true } : {}),
+    };
+  }
+  if (ambiguous) {
+    const other: NumberReading =
+      context.reading === "english" ? "european" : "english";
+    const otherFactor = printedFactorOf(value, parseNumberString(text, other));
+    if (otherFactor != null) {
+      const [converted] = applyReadings(
+        [{ ...row, numberCheck: true, printedFactor: otherFactor }],
+        { unit: null, numberFormat: other },
+        { unit: null, numberFormat: context.reading },
+      );
+      return converted;
+    }
+  }
+  logger.warn(
+    { text, value, label: row.category ?? row.subsector ?? null },
+    "Printed text does not match the extracted value; text ignored",
+  );
+  return withoutPrintedText(row);
+}
+
+/** Fields of a row a reported total keeps for the review checks. */
+function totalCheckFields(row: ExtractedRow): Partial<ReportedTotal> {
+  const out: Partial<ReportedTotal> = {};
+  if (row.source) out.source = row.source;
+  if (row.page != null) out.page = row.page;
+  if (row.unitCheck) out.unitCheck = row.unitCheck;
+  if (row.numberCheck) out.numberCheck = true;
+  if (row.totalCO2eText != null) out.totalCO2eText = row.totalCO2eText;
+  if (row.printedFactor != null) out.printedFactor = row.printedFactor;
+  return out;
+}
+
+/** Most document totals the total check lists. */
+const MAX_TOTAL_CANDIDATES = 5;
+/** Most examples the number format check shows. */
+const MAX_NUMBER_EXAMPLES = 3;
+
+function itemLabel(row: ExtractedRow): string {
+  return (
+    row.category?.trim() ||
+    row.activityType?.trim() ||
+    row.subsector?.trim() ||
+    row.sector?.trim() ||
+    ""
+  );
+}
+
+/**
+ * The checks the review asks before approval, or undefined without rows:
+ * - `unit` when a row or total was written "MT" (read as tonnes);
+ * - `numberFormat` when a printed number reads two ways in a document of
+ *   undetected style;
+ * - `total` always: the printed, year-matched grand totals (at most 5) and the
+ *   one matching the inventory level.
+ */
+function buildSourceChecks(
+  rows: ExtractedRow[],
+  reportedTotals: ReportedTotal[],
+  options: {
+    targetYear: number | null | undefined;
+    inventoryType: string | null | undefined;
+    reading: NumberReading;
+  },
+): SourceChecks | undefined {
+  if (rows.length === 0) return undefined;
+  const checks: SourceChecks = {};
+
+  const mtRows = rows.filter((row) => row.unitCheck === "MT");
+  const mtTotals = reportedTotals.filter((t) => t.unitCheck === "MT");
+  if (mtRows.length > 0 || mtTotals.length > 0) {
+    const items = [...mtRows, ...mtTotals];
+    const sources = [
+      ...new Set(
+        items
+          .map((item) => item.source?.trim())
+          .filter((source): source is string => !!source),
+      ),
+    ];
+    const pages = [
+      ...new Set(
+        items
+          .map((item) => item.page)
+          .filter((page): page is number => page != null),
+      ),
+    ].sort((a, b) => a - b);
+    const exampleRow = mtRows.find((row) => row.totalCO2e != null);
+    const exampleTotal = mtTotals[0];
+    checks.unit = {
+      status: "pending",
+      reading: "t",
+      evidence: {
+        unitText: "MT",
+        sources,
+        pages,
+        example: exampleRow
+          ? {
+              label: itemLabel(exampleRow),
+              text: exampleRow.totalCO2eText ?? String(exampleRow.totalCO2e),
+            }
+          : exampleTotal
+            ? {
+                label: exampleTotal.label,
+                text: exampleTotal.totalCO2eText ?? String(exampleTotal.value),
+              }
+            : null,
+      },
+    };
+  }
+
+  const examples = [
+    ...rows
+      .filter((row) => row.numberCheck && row.totalCO2eText)
+      .map((row) => ({ label: itemLabel(row), text: row.totalCO2eText! })),
+    ...reportedTotals
+      .filter((t) => t.numberCheck && t.totalCO2eText)
+      .map((t) => ({ label: t.label, text: t.totalCO2eText! })),
+  ];
+  if (examples.length > 0) {
+    checks.numberFormat = {
+      status: "pending",
+      reading: options.reading,
+      examples: examples.slice(0, MAX_NUMBER_EXAMPLES),
+    };
+  }
+
+  // Same targets as the reconciliation, so the card lists what the review
+  // reconciles against: no removals, no other year, no total the model computed.
+  const targets = reconciliationTargets(reportedTotals, options.targetYear);
+  const targetValues = new Set([...targets.grand, ...targets.net]);
+  const seen = new Set<string>();
+  const candidates = reportedTotals
+    .filter(
+      (t) =>
+        isGrandTotal(t) &&
+        t.inText !== false &&
+        (t.year == null ||
+          options.targetYear == null ||
+          t.year === options.targetYear) &&
+        targetValues.has(t.value),
+    )
+    .filter((t) => {
+      const key = `${t.label}\t${t.value}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, MAX_TOTAL_CANDIDATES);
+  checks.total = {
+    status: "pending",
+    candidates,
+    selected: null,
+    suggested:
+      candidates.length > 0
+        ? selectLevelTotal(candidates, options.inventoryType ?? null)
+        : null,
+  };
+  return checks;
+}
+
 /**
  * Multiplier from the unit written in the document to metric tonnes.
  * Empty unit means tonnes (rows stored before the unit field existed). Returns
@@ -1906,13 +2192,7 @@ export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
  */
 export function tonnesMultiplier(unit?: string | null): number | null {
   if (unit == null) return 1;
-  const raw = unit.trim();
-  if (!raw) return 1;
-  const cleaned = raw
-    .replace(/co[2\u2082]\s*-?\s*(equiv\w*|eq|e)?\.?/gi, "")
-    .replace(/\bmetric\b/gi, "")
-    .replace(/\bof\b/gi, "")
-    .replace(/[()\s]/g, "");
+  const cleaned = cleanUnit(unit);
   if (cleaned === "") return 1;
   // Case matters here: "Mt" is megatonnes, "mt" is a metric tonne.
   if (
@@ -2067,12 +2347,18 @@ export type FinalizeOptions = {
   currentYear?: number;
   /** User choices about the source; sets the number style of the source text. */
   sourceMetadata?: SourceMetadata | null;
+  /** Inventory level (`gpc_basic`, `gpc_basic_plus`): picks the suggested document total. */
+  inventoryType?: string | null;
 };
 
 /**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
- * - units are converted to tonnes, rows with an unknown unit are dropped;
+ * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
+ *   rows are kept as tonnes with `unitCheck`;
+ * - printed text (`totalCO2eText`) is checked against the value and sets
+ *   `printedFactor` and `numberCheck`;
+ * - `summary.sourceChecks` lists the checks the review asks (none without rows);
  * - with a target year, rows of another year or without a year are dropped when
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
@@ -2172,19 +2458,31 @@ function finalizeRows(
   // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
   const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
 
+  // Printed text is checked against the style of the text the model read; an
+  // undetected style leaves the metadata format, else english, as the reading.
+  const sourceStyle = resolveNumberStyle(
+    source?.text ?? "",
+    options?.sourceMetadata,
+  );
+  const printedContext: PrintedTextContext = {
+    undetected: detectNumberStyle(source?.text ?? "") === "unknown",
+    reading: sourceStyle === "unknown" ? "english" : sourceStyle,
+  };
+
   for (const row of rows) {
     if (unitRequired && row.unit == null) {
       evidenceDropped = true;
       drop("unsupported_unit");
       continue;
     }
-    const multiplier = tonnesMultiplier(row.unit);
+    // "MT" stays as printed (tonnes by default) and the review asks which unit.
+    const ambiguousMt = isAmbiguousMtUnit(row.unit);
+    const multiplier = ambiguousMt ? 1 : tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
       continue;
     }
-    const scaled: ExtractedRow = { ...row };
-    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
+    let scaled: ExtractedRow = { ...row };
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -2192,6 +2490,7 @@ function finalizeRows(
       if (row.n2o != null) scaled.n2o = row.n2o * multiplier;
     }
     if (row.unit) scaled.unit = "t";
+    if (ambiguousMt) scaled.unitCheck = "MT";
     // A huge value in Mt can overflow to Infinity; it is not a usable number.
     if (
       [scaled.totalCO2e, scaled.co2, scaled.ch4, scaled.n2o].some(
@@ -2201,6 +2500,15 @@ function finalizeRows(
       drop("unsupported_unit");
       continue;
     }
+    const checked = withPrintedText(scaled, printedContext);
+    // The value as the model printed it, for the in-text checks: re-read when
+    // the printed text moved it to the current reading.
+    const rawTotal =
+      checked.totalCO2e !== scaled.totalCO2e && checked.totalCO2e != null
+        ? checked.totalCO2e / multiplier
+        : row.totalCO2e;
+    scaled = checked;
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
 
     const labelLevel = sumLabelLevel(row);
     const rowType: ExtractedRowType | null | undefined =
@@ -2227,12 +2535,13 @@ function finalizeRows(
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
-          ...inText(row.totalCO2e, label, scaled.totalCO2e, row.page),
+          ...inText(rawTotal, label, scaled.totalCO2e, row.page),
+          ...totalCheckFields(scaled),
         });
       }
       continue;
     }
-    rawValues.set(scaled, row.totalCO2e ?? null);
+    rawValues.set(scaled, rawTotal ?? null);
     converted.push(scaled);
   }
 
@@ -2277,6 +2586,7 @@ function finalizeRows(
         subsector: row.subsector,
         level: "subtotal",
         ...inText(rawValues.get(row), label, value, row.page),
+        ...totalCheckFields(row),
       });
     }
   }
@@ -2304,6 +2614,11 @@ function finalizeRows(
   }
 
   const importedSum = sumImported(finalRows);
+  const sourceChecks = buildSourceChecks(finalRows, reportedTotals, {
+    targetYear,
+    inventoryType: options?.inventoryType,
+    reading: ambiguousReading(options?.sourceMetadata),
+  });
 
   return {
     result: {
@@ -2314,6 +2629,7 @@ function finalizeRows(
         importedSum,
         yearAssumed,
         targetYear: targetYear ?? null,
+        ...(sourceChecks ? { sourceChecks } : {}),
       },
     },
     evidenceDropped,

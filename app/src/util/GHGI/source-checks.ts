@@ -44,6 +44,50 @@ export type CheckableValue = {
   printedFactor?: number | null;
 };
 
+export type CheckStatus = "pending" | "confirmed";
+
+/** A document total the user confirmed, or a total the user typed. */
+export type ConfirmedTotal = {
+  value: number;
+  origin: "document" | "user";
+  label?: string;
+  source?: string | null;
+  page?: number | null;
+};
+
+/**
+ * Checks the review step asks before approval
+ * (`ExtractionSummary.sourceChecks`). A summary without them has no checks.
+ */
+export type SourceChecks = {
+  /** Rows written in "MT": metric tonnes or megatonnes. */
+  unit?: {
+    status: CheckStatus;
+    reading: UnitReading;
+    evidence: {
+      unitText: string;
+      sources: string[];
+      pages: number[];
+      example: { label: string; text: string } | null;
+    };
+  };
+  /** Rows printed like `6.600` in a document whose style is undetected. */
+  numberFormat?: {
+    status: CheckStatus;
+    reading: NumberReading;
+    /** At most 3. */
+    examples: { label: string; text: string }[];
+  };
+  /** The document total the import is reconciled against. */
+  total?: {
+    status: CheckStatus;
+    candidates: ReportedTotal[];
+    selected: ConfirmedTotal | null;
+    /** Index in `candidates` that matches the inventory level. */
+    suggested: number | null;
+  };
+};
+
 const DEFAULT_READINGS = { unit: "t", numberFormat: "english" } as const;
 
 /** Sum of imported values in tonnes, without rows left out of totals. */

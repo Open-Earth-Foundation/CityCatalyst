@@ -1,5 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
-import { sourceMetadataSchema } from "@/util/GHGI/source-metadata";
+import {
+  defaultNumberStyleForCountry,
+  sourceMetadataSchema,
+  type SourceMetadata,
+} from "@/util/GHGI/source-metadata";
 import { literal, Op } from "sequelize";
 import { db } from "@/models";
 import type {
@@ -660,6 +664,29 @@ async function finalizeInventoryExtraction(
   });
 }
 
+/**
+ * Stored source metadata with the city's country default as the number format
+ * when none was stored. The default reads the separator of an ambiguous number
+ * only when the document style is undetected.
+ */
+function withCountryNumberFormat(
+  stored: SourceMetadata | null,
+  city: { countryLocode?: string; locode?: string } | null | undefined,
+): SourceMetadata | null {
+  if (stored?.numberFormat) return stored;
+  const numberFormat = defaultNumberStyleForCountry(
+    city?.countryLocode ?? city?.locode?.slice(0, 2),
+  );
+  if (!numberFormat) return stored;
+  return {
+    reportedTotal: null,
+    reportedTotalKind: null,
+    ...stored,
+    numberFormat,
+    numberFormatSource: "country_default",
+  };
+}
+
 export async function extractInventoryRowsFromStoredMarkdown(
   job: PdfOcrJob,
   owner: string,
@@ -681,6 +708,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
   try {
     const inventory = await db.models.Inventory.findByPk(
       importedFile.inventoryId,
+      { include: [{ model: db.models.City, as: "city" }] },
     );
     const markdown = await InventoryFileStorageService.getTextFile(
       job.resultS3Key,
@@ -694,7 +722,11 @@ export async function extractInventoryRowsFromStoredMarkdown(
     );
     const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
-      sourceMetadata: storedMetadata.success ? storedMetadata.data : null,
+      sourceMetadata: withCountryNumberFormat(
+        storedMetadata.success ? storedMetadata.data : null,
+        inventory?.city,
+      ),
+      inventoryType: inventory?.inventoryType ?? null,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
         if (!renewed) throw new Error("PDF extraction lease was lost");

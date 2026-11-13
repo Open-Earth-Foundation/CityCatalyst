@@ -679,6 +679,7 @@ async def test_edit_registration_reloads_funding_and_blocks_switch_until_finishe
                 EditProposalRequest(
                     instruction="Improve the wording.", idempotency_key=uuid4()
                 ),
+                token="token",
                 recent_messages=None,
             )
         )

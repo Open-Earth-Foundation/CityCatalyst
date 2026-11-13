@@ -16,6 +16,7 @@ from app.models.cnb.concept_note_edits import (
     EditNotice,
     EditProposalRequest,
     EditProposalResponse,
+    EditReviewObjection,
     PlannedTextChange,
 )
 from app.models.cnb.concept_note_structure import (
@@ -44,15 +45,26 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
+# A proposal still processing after this long was interrupted, e.g. by a restart.
+PLANNING_ABANDONED_AFTER = timedelta(minutes=10)
+
 
 class EditOperationError(Exception):
     """A safe, machine-readable edit failure exposed at the API boundary."""
 
-    def __init__(self, code: str, message: str, *, status_code: int = 409) -> None:
-        """Retain an allowlisted failure category without private document text."""
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        status_code: int = 409,
+        objections: list[EditReviewObjection] | None = None,
+    ) -> None:
+        """Retain an allowlisted failure category; only review objections carry text."""
         super().__init__(message)
         self.code = code
         self.status_code = status_code
+        self.objections = objections or []
 
 
 class ConceptNoteEditRepository:
@@ -126,6 +138,7 @@ class ConceptNoteEditRepository:
         error_code: str | None = None,
         notices: list[EditNotice] | None = None,
         structure: StructureProposal | None = None,
+        review_objections: list[EditReviewObjection] | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -142,6 +155,10 @@ class ConceptNoteEditRepository:
             row.structure = structure.model_dump(mode="json") if structure else None
             row.clarification = clarification
             row.error_code = error_code
+            row.review_objections = [
+                objection.model_dump(mode="json")
+                for objection in (review_objections or [])
+            ]
             row.status = (
                 "clarification_required"
                 if clarification
@@ -171,7 +188,7 @@ class ConceptNoteEditRepository:
                     ConceptNoteEditProposal.actor_user_id == user_id,
                     ConceptNoteEditProposal.status == "processing",
                     ConceptNoteEditProposal.updated_at
-                    < datetime.now(UTC) - timedelta(minutes=10),
+                    < datetime.now(UTC) - PLANNING_ABANDONED_AFTER,
                 )
                 .values(
                     status="failed",
@@ -737,6 +754,24 @@ def replace_anchors(body: str, changes: Sequence[PlannedTextChange]) -> str:
     return result
 
 
+async def edit_planning_in_progress(
+    sessions: async_sessionmaker[AsyncSession], run_id: UUID
+) -> bool:
+    """Return whether an edit proposal for the run is still being planned."""
+    async with sessions() as session:
+        planning = await session.scalar(
+            select(ConceptNoteEditProposal.proposal_id)
+            .where(
+                ConceptNoteEditProposal.run_id == run_id,
+                ConceptNoteEditProposal.status == "processing",
+                ConceptNoteEditProposal.updated_at
+                >= datetime.now(UTC) - PLANNING_ABANDONED_AFTER,
+            )
+            .limit(1)
+        )
+    return planning is not None
+
+
 def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
     """Detach public proposal data from the managed database session."""
     return EditProposalResponse.model_validate(
@@ -752,6 +787,7 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "structure": row.structure,
             "clarification": row.clarification,
             "error_code": row.error_code,
+            "review_objections": row.review_objections,
             "result": row.applied_result,
             "created_at": row.created_at,
             "updated_at": row.updated_at,

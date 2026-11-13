@@ -120,6 +120,14 @@ class ChapterEditReview(BaseModel):
     decisions: list[EditSemanticDecision] = Field(min_length=1, max_length=100)
 
 
+class EditReviewObjection(BaseModel):
+    """Why the final reviewed candidate was rejected, kept with the failed proposal."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    chapter_title: str
+    explanation: str = Field(min_length=1, max_length=1000)
+
+
 class EditNotice(BaseModel):
     """Server-counted exclusions retained with the reviewable proposal."""
 
@@ -254,6 +262,7 @@ class EditProposalResponse(BaseModel):
     notices: list[EditNotice] = Field(default_factory=list)
     clarification: str | None = None
     error_code: str | None = None
+    review_objections: list[EditReviewObjection] = Field(default_factory=list)
     result: EditApplicationResult | None = None
     created_at: datetime
     updated_at: datetime

@@ -23,7 +23,8 @@ from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
 )
-from fastapi import APIRouter, Depends, HTTPException, Request
+from app.utils.citycatalyst_auth import extract_bearer_token
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -90,10 +91,11 @@ async def propose_edit(
     payload: EditProposalRequest,
     run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    authorization: str | None = Header(default=None),
 ) -> EditProposalResponse:
     """Create or replay a proposal without mutating the current draft."""
     require_active_run(run)
-    return await service.propose(run, payload)
+    return await service.propose(run, payload, token=extract_bearer_token(authorization))
 
 
 @router.get(
@@ -150,6 +152,7 @@ async def refine_edit_proposal(
     payload: EditProposalRequest,
     run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    authorization: str | None = Header(default=None),
 ) -> EditProposalResponse:
     """Create a separately reviewable replacement for an owned prior proposal."""
     require_active_run(run)
@@ -163,7 +166,7 @@ async def refine_edit_proposal(
         run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
     )
     bound = payload.model_copy(update={"refines_proposal_id": proposal_id})
-    return await service.propose(run, bound)
+    return await service.propose(run, bound, token=extract_bearer_token(authorization))
 
 
 @router.get("/concept-notes/{run_id}/structure", response_model=StructureState)

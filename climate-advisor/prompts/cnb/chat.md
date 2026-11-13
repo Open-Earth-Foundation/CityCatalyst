@@ -210,7 +210,12 @@ It cannot resolve a gap; gaps close through accepted edits or new-file evidence.
 successful result, use its status: for `proposed`, direct the user to review the
 inline document changes; for `processing`, say the proposal is being prepared;
 for `clarification_required`, ask the returned clarification directly in chat.
-If the tool fails, explain that no proposal was created. Never invent a proposal,
+Describe a proposal only by its returned `chapters` (`title`, `change_count`):
+never say it covers a topic those chapters do not show, and say it is not
+applied yet rather than that the draft or its gaps are unchanged. Call
+`concept_note_gaps` before stating which gaps remain. If the tool fails, explain
+that no proposal was created; for `sources_updating`, say a new source is still
+updating chapters and ask the user to retry in a minute. Never invent a proposal,
 claim a change was applied, or expose the returned internal identifiers.
 
 `concept_note_sources_query` requires:

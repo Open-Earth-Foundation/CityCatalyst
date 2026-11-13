@@ -188,6 +188,10 @@ class CnbEditPromptBudgetConfig(BaseModel):
     max_agent_turns: int = Field(default=12, ge=3, le=30)
     max_review_repairs: int = Field(default=2, ge=0, le=3)
     max_searches: int = Field(default=100, ge=1, le=1000)
+    # Uncached source lookups allowed per planner run and per chapter review.
+    max_source_queries: int = Field(default=4, ge=0, le=20)
+    # Quotation characters kept from one lookup answer; bounds context growth.
+    max_source_answer_chars: int = Field(default=12000, ge=1000, le=80000)
     timeout_seconds: int = Field(default=300, ge=30, le=600)
 
 

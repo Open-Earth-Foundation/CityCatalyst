@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from agents import Agent, OpenAIChatCompletionsModel, RunConfig, Runner
@@ -16,6 +17,7 @@ from app.models.cnb.concept_note_edits import (
     EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
+    EditReviewObjection,
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
@@ -23,17 +25,27 @@ from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSn
 from app.services.cnb.edit_session import DraftEditSession
 from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
-from app.tools.concept_note_draft_tools import build_draft_tools
+from app.tools.concept_note_draft_tools import (
+    SourceLookup,
+    SourceLookupCache,
+    build_draft_tools,
+    build_source_query_tool,
+)
+from app.tools.concept_note_source_tools import error_payload
 from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
-from app.utils.concept_note_context import (
-    chapter_excerpts_for,
-    omit_context_identifiers,
-)
+from app.utils.concept_note_context import omit_context_identifiers
 from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
+
+
+async def unavailable_source_lookup(source_index: int, question: str) -> str:
+    """Fail closed when no authorized source access is bound to the operation."""
+    return error_payload(
+        "source_lookup_unavailable", "Source lookup is unavailable for this edit"
+    )
 
 
 class ConceptNoteEditPlanner:
@@ -52,14 +64,24 @@ class ConceptNoteEditPlanner:
         *,
         prior_proposal: EditProposalResponse | None = None,
         recent_messages: list[dict[str, str]] | None = None,
+        source_lookup: SourceLookup = unavailable_source_lookup,
     ) -> EditPlanOutput:
-        """Bound the complete tool loop and semantic review by one operation deadline."""
+        """Bound the complete tool loop and semantic review by one operation deadline.
+
+        ``source_lookup`` gives the planner and every reviewer the same verified,
+        snapshot-pinned access to the selected sources.
+        """
         try:
             async with asyncio.timeout(
                 self._settings.llm.generation.prompt_budget.cnb_edits.timeout_seconds
             ):
                 return await self._plan(
-                    request, chapters, run_context, prior_proposal, recent_messages
+                    request,
+                    chapters,
+                    run_context,
+                    prior_proposal,
+                    recent_messages,
+                    source_lookup,
                 )
         except TimeoutError:
             raise EditOperationError(
@@ -81,9 +103,11 @@ class ConceptNoteEditPlanner:
         run_context: dict[str, Any],
         prior_proposal: EditProposalResponse | None,
         recent_messages: list[dict[str, str]] | None,
+        source_lookup: SourceLookup,
     ) -> EditPlanOutput:
         """Repair rejected candidates within one deadline, reviewing each independently."""
         prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_planner")
+        review_prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_review")
         model = (
             self._settings.llm.models.cnb_chat_edit_planner
             or self._settings.llm.models.cnb_source_synthesizer
@@ -172,6 +196,8 @@ class ConceptNoteEditPlanner:
             settings = cnb_model_settings(
                 model.reasoning_effort, responses=False, temperature=0.0
             )
+            # One answer cache per operation; each agent run gets its own lookup limit.
+            lookup_cache: SourceLookupCache = {}
             for attempt in range(budget.cnb_edits.max_review_repairs + 1):
                 session.plan = None
                 if (
@@ -196,7 +222,16 @@ class ConceptNoteEditPlanner:
                     instructions=prompt,
                     model=sdk_model,
                     model_settings=settings,
-                    tools=build_draft_tools(session, chapter_inputs),
+                    tools=[
+                        *build_draft_tools(session, chapter_inputs),
+                        build_source_query_tool(
+                            source_lookup,
+                            stage="planning",
+                            max_queries=budget.cnb_edits.max_source_queries,
+                            max_answer_chars=budget.cnb_edits.max_source_answer_chars,
+                            cache=lookup_cache,
+                        ),
+                    ],
                     output_type=EditAgentOutput,
                 )
                 run_config = RunConfig(
@@ -245,40 +280,68 @@ class ConceptNoteEditPlanner:
                     for chapter in chapters
                     if chapter_changes[chapter.chapter_id]
                 ]
-                reviewer = Agent(
-                    name="Concept Note edit semantic reviewer",
-                    instructions=self._settings.llm.prompts.get_prompt(
-                        "cnb_chat_edit_review"
-                    ),
-                    model=sdk_model,
-                    model_settings=settings,
-                    output_type=ChapterEditReview,
-                )
                 limit = asyncio.Semaphore(budget.cnb_edits.max_concurrency)
                 completed = 0
 
                 async def review_chapter(
                     chapter: WorkspaceChapterSnapshot,
                 ) -> tuple[list[PlannedTextChange], ChapterEditReview]:
-                    """Review the actual resolved text, without any edit tools."""
+                    """Review the actual resolved text; the only tool reads sources."""
                     nonlocal completed
                     async with limit:
+                        # A per-chapter agent gives each review its own lookup limit.
+                        reviewer = Agent(
+                            name="Concept Note edit semantic reviewer",
+                            instructions=review_prompt,
+                            model=sdk_model,
+                            model_settings=settings,
+                            tools=[
+                                build_source_query_tool(
+                                    source_lookup,
+                                    stage="reviewing",
+                                    max_queries=budget.cnb_edits.max_source_queries,
+                                    max_answer_chars=(
+                                        budget.cnb_edits.max_source_answer_chars
+                                    ),
+                                    cache=lookup_cache,
+                                )
+                            ],
+                            output_type=ChapterEditReview,
+                        )
                         changes = chapter_changes[chapter.chapter_id]
+                        chapter_input = chapter_inputs[chapter.position]
+                        # A source claim is judged against its cited sources, so the
+                        # reviewer gets those sources' quotations from every chapter.
+                        cited = {ref for change in changes for ref in change.source_refs}
+                        run_context = chapter_input["run_context"]
                         review_payload = {
-                            **chapter_inputs[chapter.position],
+                            **chapter_input,
+                            "run_context": {
+                                **run_context,
+                                "source_excerpts": [
+                                    excerpt
+                                    for excerpt in run_context["source_excerpts"]
+                                    if excerpt["source_index"] in cited
+                                ],
+                            },
                             "changes": [
                                 change.model_dump(exclude={"chapter_id"})
                                 for change in changes
                             ],
                         }
-                        if (
-                            count_prompt_tokens(
-                                [reviewer.instructions, review_payload],
+                        # Large rewrites can leave no room for every quotation; the
+                        # reviewer looks up any it does not receive.
+                        review_payload = fit_review_evidence(
+                            review_payload,
+                            review_prompt,
+                            count=lambda value: count_prompt_tokens(
+                                value,
                                 model=model.name,
                                 fallback_encoding=budget.tokenizer_encoding,
-                            ).tokens
-                            > budget.cnb_edits.max_prompt_tokens
-                        ):
+                            ).tokens,
+                            limit=budget.cnb_edits.max_prompt_tokens,
+                        )
+                        if review_payload is None:
                             raise EditOperationError(
                                 "context_limit",
                                 "The edit review exceeds the chapter context limit.",
@@ -367,11 +430,23 @@ class ConceptNoteEditPlanner:
                     extra={"attempt": attempt + 1, "rejected_count": rejected_count},
                 )
                 if attempt == budget.cnb_edits.max_review_repairs:
+                    # Keep the final objections so chat can say what lacked support.
                     raise EditOperationError(
                         "unsupported_edit",
                         "The proposal could not pass semantic review after the "
                         "allowed repair attempts. The draft is unchanged.",
                         status_code=422,
+                        objections=[
+                            EditReviewObjection(
+                                chapter_title=chapter.title,
+                                explanation=decision.explanation,
+                            )
+                            for chapter, (_, review) in zip(
+                                affected, reviews, strict=True
+                            )
+                            for decision in review.decisions
+                            if decision.support == "unsupported"
+                        ],
                     )
                 payload["review_feedback"] = [
                     {
@@ -436,6 +511,8 @@ def build_planner_input(
             for excerpt in source.get("key_excerpts", [])
         ]
         context["selected_sources"].append(projected)
+    # Planner and reviewer share every source quotation, whichever chapter kept it.
+    context["source_excerpts"] = document_source_excerpts(sources)
 
     # Project proposal metadata separately so model reference fields are retained.
     return {
@@ -456,14 +533,6 @@ def build_planner_input(
             "confirmed_body_markdown": chapter.confirmed_body_markdown,
             "gaps": [
                 {"question": gap.question, "state": gap.state} for gap in chapter.gaps
-            ],
-            # Quotations each source keeps for this chapter's template requirements.
-            "source_excerpts": [
-                {"source_index": str(index), **excerpt}
-                for index, source in enumerate(sources, start=1)
-                for excerpt in omit_context_identifiers(
-                    chapter_excerpts_for(source, chapter.chapter_ref)
-                )
             ],
         },
         "run_context": omit_context_identifiers(context),
@@ -502,6 +571,70 @@ def build_planner_input(
             }
         ),
     }
+
+
+def fit_review_evidence(
+    payload: dict[str, Any],
+    prompt: str,
+    *,
+    count: Callable[[Any], int],
+    limit: int,
+) -> dict[str, Any] | None:
+    """Keep a review within ``limit`` tokens by leaving out trailing quotations.
+
+    A payload that fits is returned unchanged. Otherwise quotations are kept in
+    order while they fit, and ``run_context.source_excerpts_omitted`` says how
+    many were left out so the reviewer can look them up. Returns None when the
+    chapter and changes alone exceed the limit.
+    """
+    if count([prompt, payload]) <= limit:
+        return payload
+    run_context = payload["run_context"]
+    excerpts = run_context["source_excerpts"]
+    trimmed = {
+        **payload,
+        "run_context": {
+            **run_context,
+            "source_excerpts": [],
+            "source_excerpts_omitted": len(excerpts),
+        },
+    }
+    remaining = limit - count([prompt, trimmed])
+    if remaining < 0:
+        return None
+    for excerpt in excerpts:
+        # Two extra tokens cover the list separator around each quotation.
+        cost = count(excerpt) + 2
+        if cost > remaining:
+            break
+        trimmed["run_context"]["source_excerpts"].append(excerpt)
+        trimmed["run_context"]["source_excerpts_omitted"] -= 1
+        remaining -= cost
+    return trimmed
+
+
+def document_source_excerpts(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return each source's chapter quotations once, across all template chapters.
+
+    A quotation kept for one chapter can support an edit in another, so the
+    planner and every reviewer receive the same deduplicated list.
+    """
+    excerpts = []
+    seen = set()
+    for index, source in enumerate(sources, start=1):
+        for chapter in source.get("chapter_excerpts") or []:
+            for excerpt in chapter.get("excerpts", []):
+                key = (
+                    index,
+                    excerpt.get("text"),
+                    excerpt.get("page"),
+                    excerpt.get("anchor"),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                excerpts.append({"source_index": str(index), **excerpt})
+    return excerpts
 
 
 def bind_semantic_review(

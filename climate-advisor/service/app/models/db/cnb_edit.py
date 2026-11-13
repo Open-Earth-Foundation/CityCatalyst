@@ -53,6 +53,9 @@ class ConceptNoteEditProposal(CnbBase):
     structure: Mapped[dict[str, Any] | None] = mapped_column(JSONBCompat())
     clarification: Mapped[str | None] = mapped_column(Text)
     error_code: Mapped[str | None] = mapped_column(String(64))
+    review_objections: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
     apply_key: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     apply_fingerprint: Mapped[str | None] = mapped_column(String(64))
     applied_result: Mapped[dict[str, Any] | None] = mapped_column(JSONBCompat())

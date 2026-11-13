@@ -11,6 +11,7 @@ from functools import partial
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.context_bundle import (
@@ -32,6 +33,7 @@ from app.persistence.concept_notes.context_bundle import (
     recover_stale_builds,
     set_selected_inventory,
 )
+from app.persistence.concept_notes.edits import edit_planning_in_progress
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.persistence.concept_notes.source_revalidation import (
     claim_source_revalidation,
@@ -111,13 +113,15 @@ class ContextBundleService:
         extract_chapter_evidence_fn: Callable[
             ..., Awaitable[list[ChapterExcerpts]]
         ] = extract_chapter_evidence,
+        edit_in_progress_fn: Callable[[UUID], Awaitable[bool]] | None = None,
     ) -> None:
         """Store dependencies so background resources are created inside the task.
 
         ``revalidate_fn`` redrafts chapters affected by new sources and returns
         whether the pass succeeded; without it no revalidation job is queued.
         ``load_template_fn`` returns the run's application template; without it
-        no per-chapter quotations are extracted.
+        no per-chapter quotations are extracted. ``edit_in_progress_fn`` reports
+        whether a chat edit is being planned; revalidation waits for it.
         """
         self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
@@ -126,6 +130,7 @@ class ContextBundleService:
         self.revalidate_fn = revalidate_fn
         self.load_template_fn = load_template_fn
         self.extract_chapter_evidence_fn = extract_chapter_evidence_fn
+        self.edit_in_progress_fn = edit_in_progress_fn
 
     async def begin(
         self,
@@ -431,6 +436,16 @@ class ContextBundleService:
         stays queued for the reconciler to retry.
         """
         if self.revalidate_fn is None:
+            return False
+        # Rewriting chapters mid-plan would make that edit stale; the pending job
+        # stays queued and the reconciler retries it.
+        if self.edit_in_progress_fn is not None and await self.edit_in_progress_fn(
+            run_id
+        ):
+            logger.info(
+                "Deferred Concept Note source revalidation during an edit run_id=%s",
+                run_id,
+            )
             return False
         claim = await claim_source_revalidation(
             session_factory=self.session_factory,
@@ -1224,6 +1239,11 @@ def get_context_bundle_service() -> ContextBundleService | None:
             session_factory,
             revalidate_fn=_revalidate_with_chapter_service,
             load_template_fn=partial(load_run_template, session_factory),
+            edit_in_progress_fn=(
+                partial(edit_planning_in_progress, get_cnb_reference_session_factory())
+                if get_settings().cnb_database_url
+                else None
+            ),
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")

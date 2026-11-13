@@ -351,7 +351,7 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20260921_120000"]
+            ).scalars().all() == ["20261111_120000"]
             assert connection.execute(
                 text(
                     "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
@@ -442,6 +442,106 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
             args=["downgrade", "20260909_120000"],
         )
         assert "notices" not in {
+            column["name"]
+            for column in inspect(engine).get_columns("concept_note_edit_proposals")
+        }
+        with engine.connect() as connection:
+            assert (
+                dict(
+                    connection.execute(
+                        text("SELECT * FROM concept_note_edit_proposals")
+                    )
+                    .mappings()
+                    .one()
+                )
+                == original
+            )
+    finally:
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        engine.dispose()
+
+
+@pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
+def test_cnb_review_objections_migration_preserves_existing_proposal() -> None:
+    assert CNB_DATABASE_URL is not None
+    engine = create_engine(CNB_DATABASE_URL)
+    try:
+        # Seed a proposal on the parent revision, before objections existed.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "base"],
+        )
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", "20260921_120000"],
+        )
+        with engine.begin() as connection:
+            original = dict(
+                connection.execute(
+                    text("""
+                        INSERT INTO concept_note_edit_proposals
+                            (proposal_id, run_id, actor_user_id, idempotency_key,
+                             request_fingerprint, instruction, scope, changes,
+                             status, error_code)
+                        VALUES (:proposal_id, :run_id, 'migration-test', :idempotency_key,
+                            'fingerprint', 'Fill the financing gaps.', '{"type": "document"}',
+                            '[]', 'failed', 'unsupported_edit')
+                        RETURNING *
+                    """),
+                    {
+                        "proposal_id": uuid4(),
+                        "run_id": uuid4(),
+                        "idempotency_key": uuid4(),
+                    },
+                )
+                .mappings()
+                .one()
+            )
+
+        # Existing proposals get an empty objection list and keep every other field.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["upgrade", "20261111_120000"],
+        )
+        columns = {
+            column["name"]: column
+            for column in inspect(engine).get_columns("concept_note_edit_proposals")
+        }
+        assert columns["review_objections"]["nullable"] is False
+        assert columns["review_objections"]["default"] is not None
+        with engine.begin() as connection:
+            upgraded = dict(
+                connection.execute(text("SELECT * FROM concept_note_edit_proposals"))
+                .mappings()
+                .one()
+            )
+            assert upgraded.pop("review_objections") == []
+            assert upgraded == original
+            connection.execute(
+                text("""
+                    UPDATE concept_note_edit_proposals
+                    SET review_objections = '[{"chapter_title": "Financing plan",
+                        "explanation": "No source states 70% CPI indexation."}]'::jsonb
+                """)
+            )
+
+        # Downgrading removes populated objections while preserving the proposal.
+        _run_alembic(
+            config="cnb-alembic.ini",
+            database_env="CNB_DATABASE_URL",
+            args=["downgrade", "20260921_120000"],
+        )
+        assert "review_objections" not in {
             column["name"]
             for column in inspect(engine).get_columns("concept_note_edit_proposals")
         }
@@ -839,7 +939,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260921_120000"
+    assert revision == "20261111_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

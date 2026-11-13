@@ -1,17 +1,26 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { TFunction } from "i18next";
 import { Badge, Box, Card, HStack, NativeSelect, Text } from "@chakra-ui/react";
 import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import type { ImportRowReview } from "@/util/types";
 import type { ImportRowDecision } from "./import-row-decisions";
+import { scopeFromLabel } from "@/util/GHGI/gpc-ref-resolver";
 
 interface ImportReviewRowsProps {
   t: TFunction;
+  /** UI language, used to format numbers. */
+  lng: string;
   fileId: string;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
+}
+
+/** A value in tonnes CO2e, formatted in the UI language. */
+function formatTonnes(lng: string, value: number): string {
+  return `${value.toLocaleString(lng)} tCO2e`;
 }
 
 /** What the user decided on, so the server can tell a stale decision. */
@@ -34,8 +43,78 @@ function ContextLine({ label, value }: { label: string; value: string }) {
   );
 }
 
+function Cell({
+  caption,
+  children,
+}: {
+  caption?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Box minW={0}>
+      {caption && (
+        <Text fontSize="body.sm" color="content.tertiary">
+          {caption}
+        </Text>
+      )}
+      <Text fontSize="body.md">{children}</Text>
+    </Box>
+  );
+}
+
+/** The row's content: page, text, sector, value, reference and scope. */
+function RowContent({
+  t,
+  lng,
+  row,
+}: {
+  t: TFunction;
+  lng: string;
+  row: ImportRowReview;
+}) {
+  const sector = [row.sector, row.subsector].filter(Boolean).join(" > ");
+  const shownScope =
+    row.scopeOrigin === "reference" ? row.finalScope : row.scope;
+  const scopeNumber = scopeFromLabel(shownScope);
+  // A row with no scope shows only why; the stated text adds nothing.
+  const scopeText =
+    row.scopeOrigin === "not-applicable"
+      ? null
+      : scopeNumber != null
+        ? t("import-review-scope", { scope: scopeNumber })
+        : shownScope?.trim() || null;
+  return (
+    <Box
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(160px, 1fr))"
+      gap="8px 16px"
+    >
+      <Cell caption={t("import-review-col-page")}>{row.page ?? "—"}</Cell>
+      <Cell caption={t("import-review-col-text")}>
+        {row.category || row.activityType || "—"}
+      </Cell>
+      <Cell caption={t("import-review-col-sector")}>{sector || "—"}</Cell>
+      <Cell caption={t("import-review-col-value")}>
+        {row.value != null
+          ? formatTonnes(lng, row.value)
+          : (row.notationKey ?? "—")}
+      </Cell>
+      <Cell caption={t("import-review-col-reference")}>
+        <Text as="span" fontWeight="medium">
+          {row.suggestedRefNo}
+        </Text>
+      </Cell>
+      <Cell caption={t("import-review-col-scope")}>
+        {[scopeText, t(`import-scope-origin-${row.scopeOrigin}`)]
+          .filter(Boolean)
+          .join(" · ")}
+      </Cell>
+    </Box>
+  );
+}
+
 function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
-  if (!row.quote && row.page == null && !row.source) {
+  if (!row.quote && !row.source) {
     return (
       <Text fontSize="body.sm" color="content.tertiary">
         {t("import-review-no-context")}
@@ -61,9 +140,6 @@ function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
           </Badge>
         </HStack>
       )}
-      {row.page != null && (
-        <ContextLine label={t("import-review-page")} value={String(row.page)} />
-      )}
       {row.source && (
         <ContextLine label={t("import-review-table")} value={row.source} />
       )}
@@ -77,6 +153,7 @@ function SourceContext({ t, row }: { t: TFunction; row: ImportRowReview }) {
  */
 export default function ImportReviewRows({
   t,
+  lng,
   fileId,
   rows,
   onDecide,
@@ -116,23 +193,7 @@ export default function ImportReviewRows({
           borderColor="border.default"
           data-testid="import-review-row"
         >
-          <Text fontWeight="medium">
-            {row.value != null
-              ? `${row.value} tCO2e`
-              : (row.notationKey ?? t("import-row-no-reference"))}
-            {" · "}
-            {t("import-review-suggested", { reference: row.suggestedRefNo })}
-          </Text>
-          <ContextLine
-            label={t("import-review-label")}
-            value={[row.sector, row.subsector].filter(Boolean).join(" > ")}
-          />
-          {row.category && (
-            <ContextLine
-              label={t("import-review-category")}
-              value={row.category}
-            />
-          )}
+          <RowContent t={t} lng={lng} row={row} />
           {row.expectedScope != null && (
             <Text fontSize="body.sm" color="sentiment.negativeDefault">
               {t("import-review-conflict", {

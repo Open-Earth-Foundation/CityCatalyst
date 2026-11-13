@@ -1,5 +1,5 @@
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
-import type { LLMClient, LLMCompleteResult } from "@/backend/llm";
+import type { LLMClient } from "@/backend/llm";
 import type { MistralOcrResult } from "@/backend/MistralOcrService";
 import { z } from "zod";
 import { IngestItemError } from "../../types";
@@ -148,22 +148,14 @@ export function chunkPages(pages: ReadonlyMap<number, string>): string[] {
   return chunks;
 }
 
-/** `raw` until PR #3364 (CC-1191) gives LLMCompleteResult a finishReason. */
-function finishReason(result: LLMCompleteResult): string | undefined {
-  const raw = result.raw as
-    { choices?: Array<{ finish_reason?: string }> } | undefined;
-  return raw?.choices?.[0]?.finish_reason;
-}
-
 async function extractChunk(
   client: LLMClient,
-  model: string | undefined,
   file: string,
   group: CrvaFieldGroup,
   chunk: string,
 ): Promise<{ values: CrvaDraftValue[]; dropped: CrvaDroppedValue[] }> {
   const result = await client.complete({
-    model,
+    use: "crva_extraction",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       {
@@ -172,10 +164,9 @@ async function extractChunk(
       },
     ],
     jsonMode: true,
-    temperature: 0,
     maxTokens: MAX_RESPONSE_TOKENS,
   });
-  const reason = finishReason(result);
+  const reason = result.finishReason;
   if (reason !== undefined && reason !== "stop") {
     throw new IngestItemError(
       "validation_failed",
@@ -227,7 +218,6 @@ async function extractChunk(
 /** One call per field group and chunk. Any failed call fails the item. */
 export async function extractCrvaFields(input: {
   client: LLMClient;
-  model?: string;
   file: string;
   pages: ReadonlyMap<number, string>;
 }): Promise<{ values: CrvaDraftValue[]; dropped: CrvaDroppedValue[] }> {
@@ -242,8 +232,7 @@ export async function extractCrvaFields(input: {
   const results = await mapPool(
     tasks,
     getLlmChunkConcurrency(),
-    ({ group, chunk }) =>
-      extractChunk(input.client, input.model, input.file, group, chunk),
+    ({ group, chunk }) => extractChunk(input.client, input.file, group, chunk),
   );
   return {
     values: results.flatMap((result) => result.values),

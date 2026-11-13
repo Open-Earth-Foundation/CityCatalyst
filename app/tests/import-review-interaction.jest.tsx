@@ -48,6 +48,7 @@ describe("scope review interaction", () => {
         <ChakraProvider value={defaultSystem}>
           <ImportReviewRows
             t={((key: string) => key) as never}
+            lng="en"
             fileId="file-a"
             rows={[row]}
             onDecide={decide}
@@ -106,6 +107,7 @@ describe("scope review interaction", () => {
         <ChakraProvider value={defaultSystem}>
           <ImportReviewRows
             t={((key: string) => key) as never}
+            lng="en"
             fileId="file-b"
             rows={[row]}
             onDecide={decide}

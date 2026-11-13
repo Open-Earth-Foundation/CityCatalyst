@@ -77,18 +77,23 @@ type Reply = { content: string; finishReason?: string };
 function fakeLlm(reply: (prompt: string) => Reply): {
   llm: () => LLMClient;
   calls: string[];
+  options: Array<Record<string, unknown>>;
 } {
   const calls: string[] = [];
+  const options: Array<Record<string, unknown>> = [];
   const client = {
-    complete: async ({ messages }: { messages: { content: string }[] }) => {
-      const prompt = messages[1].content;
+    complete: async (completeOptions: { messages: { content: string }[] }) => {
+      options.push(completeOptions);
+      const prompt = completeOptions.messages[1].content;
       calls.push(prompt);
       const { content, finishReason = "stop" } = reply(prompt);
-      return { content, raw: { choices: [{ finish_reason: finishReason }] } };
+      return { content, finishReason };
     },
-    getConfig: () => ({ model: "test-model" }),
+    getConfig: () => ({
+      models: { crva_extraction: { name: "test-model" } },
+    }),
   } as unknown as LLMClient;
-  return { llm: () => client, calls };
+  return { llm: () => client, calls, options };
 }
 
 /** Answers each field group with the values whose field it asks for. */
@@ -157,6 +162,18 @@ describe("CcraIngestPlugin", () => {
         confirmed: false,
       },
     ]);
+  });
+
+  it("calls the LLM with the crva_extraction role", async () => {
+    const { llm, options } = fakeLlm(valuesReply([HAZARD]));
+    await runPlugin(llm);
+
+    expect(options.length).toBeGreaterThan(0);
+    for (const option of options) {
+      expect(option.use).toBe("crva_extraction");
+      expect(option).not.toHaveProperty("model");
+      expect(option).not.toHaveProperty("temperature");
+    }
   });
 
   it("commit always throws", async () => {

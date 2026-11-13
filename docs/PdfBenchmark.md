@@ -1,6 +1,6 @@
 # PDF extraction benchmark
 
-**Ticket:** CC-1124. Related: CC-1123 (benchmark contract), CC-1132 (first measurements).
+**Ticket:** CC-1124. Related: CC-1123 (benchmark contract), CC-1132 (first measurements, see [IngestionAccuracyBaseline.md](./IngestionAccuracyBaseline.md)).
 
 A command that runs PDF inventories through the real GHGI import flow (upload, OCR, extraction, approve), compares the stored values with a Product answer key, and writes a report you can review in a PR. Use it before and after any change to the PDF import, the extraction prompt or the models.
 
@@ -56,7 +56,7 @@ npx tsx scripts/pdf-benchmark.ts --set validated --eligible
 npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010 --update-baseline
 
 # Rescore an earlier run with the current scorer and keys. No DB, LLM or OCR call.
-npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-folder>/results.json
+npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/2026-10-31-0417-34131e4ec/results.json
 ```
 
 | Flag                             | Effect                                                                                                                                                                                                          |
@@ -101,7 +101,15 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 3. Commit the change to `app/benchmarks/pdf/baseline.json` together with the run folders that it points to. The next comparison reads the stored values from those folders.
 4. After a change to the scorer (`score.ts`, `profiles.ts`, `tolerance.ts` or the metrics), raise `SCORER_VERSION` in `score.ts`. Each baseline entry records the scorer version it was computed with; an entry from another version is rescored from its run folder, so the baseline and the new run are scored by the same rules. If that rescore cannot complete (run folder or case missing, file unreadable), the case is reported as `baseline stale: <cause>` and is not compared, so results scored under different rules are never compared. The run header shows the scorer version. Run `--rescore` on the baseline's run folders to see the effect first.
 
-**Current baseline.** `baseline.json` starts empty: every case is reported as `no baseline` until a run records it.
+**Current baseline (12 Nov 2026).** It covers 26 of the 27 cases, all recorded by one run of the merged harness: run folder `2026-11-12-1722-fe14d3a05`, commit `fe14d3a05`, prompt hash `fa433ff5842e`, scorer version 2, 3 attempts per case. Read it as provisional:
+
+- C-005 has no entry: one attempt ended in `approve_error`, and the harness does not record a case with that failure. It is reported as `no baseline`, so any failed attempt gives `error`.
+- C-019 (3 truncated attempts), C-020 and C-025 (3 zero-row attempts each) and C-009 (1 zero-row attempt) are recorded with their failures. The `error` verdict fires only when the baseline had no failed attempt, so the gate does not flag new failures on these four cases. It still flags the other regression rules, and a fix shows up in "Change from the baseline".
+- Headline recall is `n/a` in both blocks: it counts only cases whose `textTables` is known, and no case with row recall has it yet. Read the provisional recall (validated 64% over 17 cases, held-out 51% over 5 cases) until Product sets `textTables` in the manifest.
+- C-022..C-024 are total-only cases and store no recall (`null`). The gate compares recall only when both sides have it, so on these cases it checks pass/fail, 10x and failed attempts only.
+- The 9 Nov run folders (`2026-11-09-1845-c0b125fe5`, `2026-11-09-2100-75c9e8a8f`) stay as history. The baseline no longer points to them.
+
+Record the baseline again after a change meant to move the numbers, or once Product sets `textTables`.
 
 ## Read the results
 

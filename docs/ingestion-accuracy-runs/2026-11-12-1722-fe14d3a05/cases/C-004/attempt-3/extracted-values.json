@@ -1,0 +1,156 @@
+[
+  {
+    "gpc": "I.2.1",
+    "scope": "1",
+    "valueT": 151613.13,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.3.1",
+    "scope": "1",
+    "valueT": 1327000132.7,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.4.1",
+    "scope": "1",
+    "valueT": 765606000000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.4.4",
+    "scope": "1",
+    "valueT": 765606,
+    "omit": true,
+    "notation": null
+  },
+  {
+    "gpc": "I.6.1",
+    "scope": "1",
+    "valueT": 3347608875992.55,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.6.2",
+    "scope": "2",
+    "valueT": 3925632475628.55,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.6.3",
+    "scope": "3",
+    "valueT": 193713443713.25,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.8.1",
+    "scope": "1",
+    "valueT": 230930300930.07,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.1.1",
+    "scope": "1",
+    "valueT": 3341067653711.36,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.2.1",
+    "scope": "1",
+    "valueT": 185427281729.04,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.2.3",
+    "scope": "3",
+    "valueT": 46301990000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.3.1",
+    "scope": "1",
+    "valueT": 34378044378.01,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.4.1",
+    "scope": "1",
+    "valueT": 16563005789,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.4.3",
+    "scope": "3",
+    "valueT": 2989229000000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.1.1",
+    "scope": "1",
+    "valueT": 398025.29,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.1.2",
+    "scope": "3",
+    "valueT": 398025290000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.3.1",
+    "scope": "1",
+    "valueT": 4528.14,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.3.2",
+    "scope": "3",
+    "valueT": 4528140000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.4.1",
+    "scope": "1",
+    "valueT": 65612.4,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "IV.2",
+    "scope": "1",
+    "valueT": 1675491.14,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "V.3",
+    "scope": "1",
+    "valueT": -40472.15,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "VI.1",
+    "scope": "3",
+    "valueT": 24477344477.32,
+    "omit": true,
+    "notation": null
+  }
+]

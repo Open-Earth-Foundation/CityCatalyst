@@ -1,0 +1,341 @@
+[
+  {
+    "run": 1,
+    "ok": true,
+    "message": null,
+    "extractedRows": 13,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 8362233000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 12866081000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.1",
+        "scope": "1",
+        "valueT": 22000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.6.1",
+        "scope": "1",
+        "valueT": 127000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 208674000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 4795501000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 352940000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 2674000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1569375000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 784479000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 1995387000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.1",
+        "scope": "1",
+        "valueT": 103000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 97789000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "ok": true,
+    "message": null,
+    "extractedRows": 13,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 8362233000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 12866081000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.1",
+        "scope": "1",
+        "valueT": 22000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.6.1",
+        "scope": "1",
+        "valueT": 127000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 208674000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 4795501000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 352940000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 2674000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1569375000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 784479000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.1",
+        "scope": "1",
+        "valueT": 1995387000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.1",
+        "scope": "1",
+        "valueT": 103000000,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 97789000000,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "ok": true,
+    "message": null,
+    "extractedRows": 24,
+    "stored": [
+      {
+        "gpc": "I.1.1",
+        "scope": "1",
+        "valueT": 4893822,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.1.2",
+        "scope": "2",
+        "valueT": 3468411,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.1",
+        "scope": "1",
+        "valueT": 2586242,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.2.2",
+        "scope": "2",
+        "valueT": 5119282,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.1",
+        "scope": "1",
+        "valueT": 943836,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.3.2",
+        "scope": "2",
+        "valueT": 4216720,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.4.1",
+        "scope": "1",
+        "valueT": 22,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.6.1",
+        "scope": "1",
+        "valueT": 127,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "I.8.1",
+        "scope": "1",
+        "valueT": 208674,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.1.1",
+        "scope": "1",
+        "valueT": 4795501,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.1",
+        "scope": "1",
+        "valueT": 106179,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.2.2",
+        "scope": "2",
+        "valueT": 246761,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.3.1",
+        "scope": "1",
+        "valueT": 2674,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.4.1",
+        "scope": "1",
+        "valueT": 1569375,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "II.5.1",
+        "scope": "1",
+        "valueT": 784479,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.1.2",
+        "scope": "3",
+        "valueT": 1995387,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.2.2",
+        "scope": "3",
+        "valueT": 103,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.1",
+        "scope": "1",
+        "valueT": 2326,
+        "omit": false,
+        "notation": null
+      },
+      {
+        "gpc": "III.4.2",
+        "scope": "3",
+        "valueT": 95463,
+        "omit": false,
+        "notation": null
+      }
+    ]
+  }
+]

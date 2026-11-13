@@ -1,0 +1,44 @@
+[
+  {
+    "gpc": "I.6.1",
+    "scope": "1",
+    "valueT": 1576678.4,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.6.2",
+    "scope": "2",
+    "valueT": 1989402,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "III.4.1",
+    "scope": "1",
+    "valueT": 6737.76,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.2.1",
+    "scope": "1",
+    "valueT": 40392.05,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.2.2",
+    "scope": "2",
+    "valueT": 18570.72,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.1.1",
+    "scope": "1",
+    "valueT": 1012521.81,
+    "omit": false,
+    "notation": null
+  }
+]

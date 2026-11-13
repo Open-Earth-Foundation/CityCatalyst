@@ -1084,6 +1084,7 @@ async function extractRowsFromDocument(
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
   const metadata = options?.sourceMetadata;
+  const documentStyle = detectNumberStyle(documentContent);
   const pages = splitDocumentPages(documentContent).filter((p) =>
     isCandidatePage(p.text),
   );
@@ -1119,6 +1120,7 @@ async function extractRowsFromDocument(
               deferYearAssumption: true,
               source: { text: page.text, kind: "page" },
               sourceMetadata: metadata,
+              documentStyle,
             },
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
@@ -1957,28 +1959,31 @@ function isAmbiguousMtUnit(unit: string | null | undefined): boolean {
   return unit != null && cleanUnit(unit) === "MT";
 }
 
-/** A printed number may differ from the stored tonnes by one of these factors (kt, Mt). */
-const PRINTED_FACTORS = [1, 1000, 1_000_000];
 /** Rounding allowed between the stored value and printed number × factor. */
 const PRINTED_FACTOR_TOLERANCE = 0.005;
 
-/** The factor from `printed` to `value`, or null when none fits within rounding. */
-function printedFactorOf(value: number, printed: number | null): number | null {
-  if (printed == null) return null;
-  if (printed === 0) return value === 0 ? 1 : null;
-  const ratio = value / printed;
-  return (
-    PRINTED_FACTORS.find(
-      (factor) => Math.abs(ratio / factor - 1) <= PRINTED_FACTOR_TOLERANCE,
-    ) ?? null
-  );
+/** True when `printed × factor` equals `value` within rounding. */
+function matchesPrinted(
+  value: number,
+  printed: number | null,
+  factor: number,
+): boolean {
+  if (printed == null) return false;
+  const expected = printed * factor;
+  if (expected === 0) return value === 0;
+  return Math.abs(value / expected - 1) <= PRINTED_FACTOR_TOLERANCE;
 }
 
 type PrintedTextContext = {
-  /** The source text prints no unambiguous number of either style. */
+  /** The document prints no unambiguous number of either style. */
   undetected: boolean;
-  /** Reading the stored values follow: the source style, else the metadata format, else english. */
+  /**
+   * Reading the stored values follow: a user format, else the document style,
+   * else the metadata format, else english.
+   */
   reading: NumberReading;
+  /** The source text names kt or Mt on a caption: a printed number may be scaled. */
+  largeUnit: boolean;
 };
 
 /** Reading of an ambiguous number when the document style is undetected. */
@@ -1998,41 +2003,55 @@ function withoutPrintedText(row: ExtractedRow): ExtractedRow {
 
 /**
  * Checks the printed text of a row against its stored totalCO2e (already in
- * tonnes). The text stands when stored = printed × 1, 1000 or 1,000,000 under
- * the current reading; it then sets `printedFactor`, and `numberCheck` when the
- * number reads two ways. When an ambiguous number matches only the other reading
- * (the model read it the other way), the value is stored under the current one.
- * Otherwise the text is dropped, the model's number kept, and the mismatch logged.
+ * tonnes) and sets `printedFactor`, plus `numberCheck` when the number reads
+ * two ways in a document of undetected style.
+ *
+ * The factor comes from unit evidence, never from the ratio alone: for
+ * `6.600`, english × 1000 equals european × 1. It is the unit multiplier when
+ * the model left the number in kt or Mt; 1000, 1,000,000 or 1, in that order,
+ * when the source names a large unit; else 1. At each factor the current
+ * reading is tried first, then, for an ambiguous number, the other one. When
+ * only the other reading matches (the model read it the other way), the value
+ * is stored under the current reading. With no match the text is dropped, the
+ * model's number kept, and the mismatch logged.
+ *
+ * A row that already has a `printedFactor` was checked before (page selection
+ * finalizes again without the source) and is returned as is.
  */
 function withPrintedText(
   row: ExtractedRow,
   context: PrintedTextContext,
+  multiplier: number,
 ): ExtractedRow {
   const text = row.totalCO2eText;
-  if (text == null) return row;
+  if (text == null || row.printedFactor != null) return row;
   const value = row.totalCO2e;
   if (value == null) return withoutPrintedText(row);
   const ambiguous = context.undetected && isAmbiguousNumberText(text);
-  const factor = printedFactorOf(
-    value,
-    parseNumberString(text, context.reading),
-  );
-  if (factor != null) {
-    return {
-      ...withoutPrintedText(row),
-      totalCO2eText: text,
-      printedFactor: factor,
-      ...(ambiguous ? { numberCheck: true } : {}),
-    };
-  }
-  if (ambiguous) {
-    const other: NumberReading =
-      context.reading === "english" ? "european" : "english";
-    const otherFactor = printedFactorOf(value, parseNumberString(text, other));
-    if (otherFactor != null) {
+  const other: NumberReading =
+    context.reading === "english" ? "european" : "english";
+  const readings = ambiguous ? [context.reading, other] : [context.reading];
+  const factors =
+    multiplier !== 1
+      ? [multiplier]
+      : context.largeUnit
+        ? [1000, 1_000_000, 1]
+        : [1];
+  for (const factor of factors) {
+    for (const reading of readings) {
+      if (!matchesPrinted(value, parseNumberString(text, reading), factor)) {
+        continue;
+      }
+      const checked: ExtractedRow = {
+        ...withoutPrintedText(row),
+        totalCO2eText: text,
+        printedFactor: factor,
+        ...(ambiguous ? { numberCheck: true } : {}),
+      };
+      if (reading === context.reading) return checked;
       const [converted] = applyReadings(
-        [{ ...row, numberCheck: true, printedFactor: otherFactor }],
-        { unit: null, numberFormat: other },
+        [checked],
+        { unit: null, numberFormat: reading },
         { unit: null, numberFormat: context.reading },
       );
       return converted;
@@ -2349,6 +2368,12 @@ export type FinalizeOptions = {
   sourceMetadata?: SourceMetadata | null;
   /** Inventory level (`gpc_basic`, `gpc_basic_plus`): picks the suggested document total. */
   inventoryType?: string | null;
+  /**
+   * Number style detected on the whole document. Page extraction passes it so
+   * a page with few numbers of its own does not raise a number check.
+   * Defaults to the style detected on `source`.
+   */
+  documentStyle?: NumberStyle;
 };
 
 /**
@@ -2458,15 +2483,20 @@ function finalizeRows(
   // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
   const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
 
-  // Printed text is checked against the style of the text the model read; an
-  // undetected style leaves the metadata format, else english, as the reading.
-  const sourceStyle = resolveNumberStyle(
-    source?.text ?? "",
-    options?.sourceMetadata,
-  );
+  // The document's own style decides whether a printed number is ambiguous;
+  // a page alone often prints too few numbers to tell.
+  const documentStyle =
+    options?.documentStyle ?? detectNumberStyle(source?.text ?? "");
+  const metadata = options?.sourceMetadata;
   const printedContext: PrintedTextContext = {
-    undetected: detectNumberStyle(source?.text ?? "") === "unknown",
-    reading: sourceStyle === "unknown" ? "english" : sourceStyle,
+    undetected: documentStyle === "unknown",
+    reading:
+      metadata?.numberFormatSource === "user" && metadata.numberFormat
+        ? metadata.numberFormat
+        : documentStyle !== "unknown"
+          ? documentStyle
+          : ambiguousReading(metadata),
+    largeUnit: !!source && namesLargeUnit(source.text),
   };
 
   for (const row of rows) {
@@ -2500,7 +2530,7 @@ function finalizeRows(
       drop("unsupported_unit");
       continue;
     }
-    const checked = withPrintedText(scaled, printedContext);
+    const checked = withPrintedText(scaled, printedContext, multiplier);
     // The value as the model printed it, for the in-text checks: re-read when
     // the printed text moved it to the current reading.
     const rawTotal =

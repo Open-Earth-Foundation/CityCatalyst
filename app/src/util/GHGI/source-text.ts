@@ -477,12 +477,13 @@ export function namesLargeUnit(text: string): boolean {
 
 /**
  * True when `text` is one number with a single `.` or `,` followed by exactly
- * three digits (`6.600`, `1,500`, `-2,345 tCO2e`). Such a number reads two ways:
- * as a group separator or as a decimal mark. Sign, spaces and a trailing unit
- * are ignored.
+ * three digits (`6.600`, `1,500`, `-2,345 tCO2e`, `(6.600)`). Such a number
+ * reads two ways: as a group separator or as a decimal mark. Sign, parentheses,
+ * spaces and a trailing unit are ignored.
  */
 export function isAmbiguousNumberText(text: string): boolean {
   let t = text.trim().replace(/[ \u00a0\u202f']/g, "");
+  t = t.replace(/^\((.*)\)$/, "$1");
   t = t.replace(/^[+\-\u2212]/, "");
   t = t.replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
   return /^\d{1,3}[.,]\d{3}$/.test(t);

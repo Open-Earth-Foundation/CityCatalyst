@@ -24,9 +24,13 @@ jest.unstable_mockModule("@/services/logger", () => ({
   logger: { warn, info: jest.fn(), debug: jest.fn(), error: jest.fn() },
 }));
 
-const { extractInventoryFromDocument, finalizeExtractedRows } =
-  await import("@/backend/InventoryExtractionService");
-const { selectLevelTotal } = await import("@/util/GHGI/source-checks");
+const {
+  extractInventoryFromDocument,
+  finalizeExtractedRows,
+  selectReconciledPages,
+} = await import("@/backend/InventoryExtractionService");
+const { applyReadings, selectLevelTotal } =
+  await import("@/util/GHGI/source-checks");
 type ExtractedRow = Parameters<typeof finalizeExtractedRows>[0][number];
 
 beforeEach(() => {
@@ -235,6 +239,98 @@ describe("number format check", () => {
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
+  it("without unit evidence the factor is 1, never the 1000 alias", () => {
+    // english 6.6 × 1000 equals european 6600 × 1: only unit evidence decides.
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6600 })],
+      2021,
+      { source: { text: undetected, kind: "document" } },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 6.6,
+      printedFactor: 1,
+      numberCheck: true,
+    });
+    const [european] = applyReadings(
+      rows,
+      { unit: null, numberFormat: "english" },
+      { unit: null, numberFormat: "european" },
+    );
+    expect(european.totalCO2e).toBe(6600);
+  });
+
+  it("an ambiguous number on a kt page takes the kt factor", () => {
+    const text = "Table 3: Emissions (kt CO2e)\n| Natural gas | 6.600 |\n";
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6600, unit: "t" })],
+      2021,
+      { source: { text, kind: "page" } },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 6600,
+      printedFactor: 1000,
+      numberCheck: true,
+    });
+    const [european] = applyReadings(
+      rows,
+      { unit: null, numberFormat: "english" },
+      { unit: null, numberFormat: "european" },
+    );
+    expect(european.totalCO2e).toBe(6_600_000);
+  });
+
+  it("a number the model left in kt takes the unit multiplier", () => {
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6.6, unit: "kt" })],
+      2021,
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 6600, printedFactor: 1000 });
+  });
+
+  it("page selection fallback keeps the checked fields", () => {
+    const european = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "6.600", totalCO2e: 6.6 })],
+      2021,
+      {
+        source: { text: undetected, kind: "page" },
+        sourceMetadata: countryDefault("european"),
+        deferYearAssumption: true,
+      },
+    );
+    const detected = finalizeExtractedRows(
+      [
+        lineItem({
+          category: "Diesel",
+          gpcRefNo: "II.1.1",
+          sector: "Transportation",
+          subsector: "On Road Transportation",
+          totalCO2eText: "1.500",
+          totalCO2e: 1500,
+        }),
+      ],
+      2021,
+      {
+        source: { text: "1.234.567 2.345.678 1.500\n", kind: "page" },
+        deferYearAssumption: true,
+      },
+    );
+    const selected = selectReconciledPages(
+      [
+        { page: 1, result: european },
+        { page: 2, result: detected },
+      ],
+      2021,
+    );
+    expect(selected.summary.pageSelection).toBe("fallback");
+    expect(selected.rows.map((r) => r.totalCO2e)).toEqual([6600, 1500]);
+    expect(selected.rows[0]).toMatchObject({
+      numberCheck: true,
+      printedFactor: 1,
+    });
+    expect(selected.rows[1].numberCheck).toBeUndefined();
+    expect(selected.rows[1].printedFactor).toBe(1);
+  });
+
   it("an ambiguous total gets the same fields as its rows", () => {
     const { summary } = finalizeExtractedRows(
       [
@@ -419,6 +515,37 @@ describe("extraction from a document", () => {
       ["Total"],
     );
     expect(summary.sourceChecks?.total?.suggested).toBe(0);
+  });
+});
+
+describe("document style decides the number check", () => {
+  it("a page with only an ambiguous number raises no check in a european document", async () => {
+    mockByPage({
+      2: [
+        modelRow(6600, { totalCO2eText: "6.600" }),
+        modelRow(1234, {
+          category: "Electricity",
+          scope: "2",
+          gpcRefNo: "I.1.2",
+          totalCO2eText: "1234",
+        }),
+        { year: 2021, category: "Total", totalCO2e: 7834, rowType: "total" },
+      ],
+    });
+    const text =
+      onePage(1, "Summary\n1.234.567 2.345.678 3.456.789\n") +
+      onePage(
+        2,
+        "PAGE_2\n100 200 300 400 500 600 700 800\n" +
+          "| I.1.1 | 6.600 |\n| I.1.2 | 1234 |\n| Total | 7834 |\n",
+      );
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(rows[0]).toMatchObject({ totalCO2e: 6600, printedFactor: 1 });
+    expect(rows[0].numberCheck).toBeUndefined();
+    expect(summary.sourceChecks?.numberFormat).toBeUndefined();
   });
 });
 

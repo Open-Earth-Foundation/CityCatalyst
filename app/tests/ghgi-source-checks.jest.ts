@@ -184,7 +184,7 @@ describe("selectLevelTotal", () => {
 });
 
 describe("isAmbiguousNumberText", () => {
-  it.each(["6.600", "1,500", "-2,345 tCO2e"])("true for %s", (t) =>
+  it.each(["6.600", "1,500", "-2,345 tCO2e", "(6.600)"])("true for %s", (t) =>
     expect(isAmbiguousNumberText(t)).toBe(true),
   );
   it.each(["1.234.567", "1,5", "1.234,5", "6600"])("false for %s", (t) =>

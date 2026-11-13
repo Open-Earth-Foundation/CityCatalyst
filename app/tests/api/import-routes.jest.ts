@@ -1425,27 +1425,42 @@ describe("Import Routes API", () => {
 
     it("rejects a stale write with 409 source-checks-conflict", async () => {
       const file = await createChecked();
-      // Both requests read the same stored version before either writes.
-      const responses = await Promise.all([
-        patch(file.id, { unit: "Mt" }),
-        patch(file.id, { total: { candidate: 0 } }),
-      ]);
-      expect(responses.map((res) => res.status).sort()).toEqual([200, 409]);
-      const conflict = responses.find((res) => res.status === 409)!;
-      expect((await conflict.json()).error.code).toBe("source-checks-conflict");
+      // Snapshot of the stored version before any answer is written.
+      const stale = await db.models.ImportedInventoryFile.findByPk(file.id);
+      assert.ok(stale);
 
-      const winner = responses[0].status === 200 ? "unit" : "total";
-      const afterRace = await storedSummary(file);
-      expect(afterRace.extractionSummary.sourceChecks?.[winner]?.status).toBe(
-        "confirmed",
+      await expectStatusCode(await patch(file.id, { unit: "Mt" }), 200);
+
+      // The second request reads the old snapshot, as if it had read before the
+      // first write landed.
+      const findOne = jest
+        .spyOn(db.models.ImportedInventoryFile, "findOne")
+        .mockResolvedValueOnce(stale);
+      try {
+        const conflict = await patch(file.id, { total: { candidate: 0 } });
+        await expectStatusCode(conflict, 409);
+        expect((await conflict.json()).error.code).toBe(
+          "source-checks-conflict",
+        );
+        expect(findOne).toHaveBeenCalledTimes(1);
+      } finally {
+        findOne.mockRestore();
+      }
+
+      // The first answer was not reverted by the stale write.
+      const afterConflict = await storedSummary(file);
+      expect(afterConflict.extractionSummary.sourceChecks?.unit).toMatchObject({
+        status: "confirmed",
+        reading: "Mt",
+      });
+      expect(afterConflict.extractionSummary.sourceChecks?.total?.status).toBe(
+        "pending",
       );
+      expect(afterConflict.rows[0].totalCO2e).toBe(2_000_000);
 
       // The refetched client resends the losing answer: nothing is lost.
       await expectStatusCode(
-        await patch(
-          file.id,
-          winner === "unit" ? { total: { candidate: 0 } } : { unit: "Mt" },
-        ),
+        await patch(file.id, { total: { candidate: 0 } }),
         200,
       );
       const stored = await storedSummary(file);

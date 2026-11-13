@@ -1,4 +1,3 @@
-import type { SourceMetadata } from "@/util/GHGI/source-metadata";
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import type { NumberReading, UnitReading } from "@/util/GHGI/source-checks";
 import { env } from "@/lib/runtime-env";
@@ -2348,13 +2347,11 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          sourceMetadata?: Partial<SourceMetadata>;
         }
       >({
-        query: ({ cityId, inventoryId, importedFileId, sourceMetadata }) => ({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
           url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/extract`,
           method: "POST",
-          ...(sourceMetadata ? { body: { sourceMetadata } } : {}),
         }),
         transformResponse: (response: {
           data:

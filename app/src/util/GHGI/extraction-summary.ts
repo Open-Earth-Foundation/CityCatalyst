@@ -4,10 +4,6 @@
  * shown on the review screen. No server imports: the browser uses this file too.
  */
 
-import type {
-  NumberFormatConflict,
-  ReportedTotalKind,
-} from "@/util/GHGI/source-metadata";
 import type { CheckableValue, SourceChecks } from "@/util/GHGI/source-checks";
 
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
@@ -67,10 +63,6 @@ export type ExtractionSummary = {
    * removals out. Missing on summaries stored before this field.
    */
   orphanRemovals?: number[];
-  /** The user's number format disagrees with what the document prints. */
-  numberFormatConflict?: NumberFormatConflict;
-  /** Total the user gave for the document; reconciliation target in the review. */
-  userReportedTotal?: { value: number; kind: ReportedTotalKind };
   /** Checks the review asks before approval. Missing on imports stored before them: no checks. */
   sourceChecks?: SourceChecks;
 };
@@ -292,25 +284,26 @@ export type Reconciliation = {
   deviation: number;
   /** True when no target is within the tolerance. */
   mismatch: boolean;
-  /** "user" when the target is the total the user gave (or a document total equal to it). */
-  source: "user" | "document";
-  /** Total the user gave, when there is one. */
-  userTotal?: number;
+  /** "confirmed" when the target is the total the user confirmed (or a document total equal to it). */
+  source: "confirmed" | "document";
+  /** Total the user confirmed in the review, when there is one. */
+  confirmedTotal?: number;
 };
 
 /**
  * Compare the imported sum with the totals the document reports. A document can
  * report several (BASIC, BASIC+): the sum is fine when it matches any of them.
  *
- * A total the user gave is a target too. It confirms the document when a document
- * total of the same kind (grand for gross, net for net) is within the tolerance of
- * it; only then do the document totals stay targets. Otherwise the user total is the
- * only target. Returns null when there is no usable target.
+ * The total confirmed in the review (`sourceChecks.total.selected`, status
+ * `confirmed`) is the reconciliation target. One the user picked from the document
+ * ("document" origin) comes first among the document totals, which stay targets. One
+ * the user typed ("user" origin) is the only target. Returns null when there is no
+ * usable target.
  */
 export function reconcileExtraction(
   summary: Pick<
     ExtractionSummary,
-    "reportedTotals" | "importedSum" | "targetYear" | "userReportedTotal"
+    "reportedTotals" | "importedSum" | "targetYear" | "sourceChecks"
   > | null,
 ): Reconciliation | null {
   if (!summary) return null;
@@ -318,18 +311,20 @@ export function reconcileExtraction(
     summary.reportedTotals,
     summary.targetYear,
   );
-  const user = summary.userReportedTotal;
+  const total = summary.sourceChecks?.total;
+  const confirmed = total?.status === "confirmed" ? total.selected : null;
   const documentTargets = [...targets.grand, ...targets.net];
   let candidates = documentTargets;
   let scale = targets.scale;
-  if (user) {
-    scale = Math.max(Math.abs(user.value), targets.scale);
-    const sameKind = user.kind === "net" ? targets.net : targets.grand;
-    const confirmed = sameKind.some(
-      (value) =>
-        targetDeviation(value, user.value, scale) <= RECONCILIATION_TOLERANCE,
-    );
-    candidates = confirmed ? [user.value, ...documentTargets] : [user.value];
+  if (confirmed) {
+    scale = Math.max(Math.abs(confirmed.value), targets.scale);
+    candidates =
+      confirmed.origin === "user"
+        ? [confirmed.value]
+        : [
+            confirmed.value,
+            ...documentTargets.filter((value) => value !== confirmed.value),
+          ];
   }
   if (candidates.length === 0) return null;
 
@@ -348,11 +343,11 @@ export function reconcileExtraction(
     deviation: bestDeviation,
     mismatch: bestDeviation > RECONCILIATION_TOLERANCE,
     source:
-      user &&
-      targetDeviation(best, user.value, scale) <= RECONCILIATION_TOLERANCE
-        ? "user"
+      confirmed &&
+      targetDeviation(best, confirmed.value, scale) <= RECONCILIATION_TOLERANCE
+        ? "confirmed"
         : "document",
-    ...(user ? { userTotal: user.value } : {}),
+    ...(confirmed ? { confirmedTotal: confirmed.value } : {}),
   };
 }
 
@@ -465,13 +460,6 @@ export type ExtractionReviewNotes = {
   failedPages: number[];
   droppedReasons: DroppedRowReason[];
   removalsWarning: RemovalsWarning | null;
-  /** The sum matches another document total than the one the user entered. */
-  userTotalNote: {
-    kind: "matched-other-document-total";
-    matched: number;
-    entered: number;
-  } | null;
-  numberFormatConflict: NumberFormatConflict | null;
 };
 
 /** What the review screen tells the user about an extraction. */
@@ -483,18 +471,6 @@ export function extractionReviewNotes(
   return {
     reconciliation,
     removalsWarning: warning,
-    userTotalNote:
-      reconciliation != null &&
-      !reconciliation.mismatch &&
-      reconciliation.source === "document" &&
-      reconciliation.userTotal != null
-        ? {
-            kind: "matched-other-document-total",
-            matched: reconciliation.reportedTotal,
-            entered: reconciliation.userTotal,
-          }
-        : null,
-    numberFormatConflict: summary?.numberFormatConflict ?? null,
     // Only when the sum really matches; otherwise the mismatch banner speaks. With a
     // removals warning the note "adds up to the total" would contradict it.
     reconciledPages:

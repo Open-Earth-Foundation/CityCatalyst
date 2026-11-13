@@ -631,26 +631,6 @@ describe("PdfOcrJob queue", () => {
     );
   });
 
-  it("passes the stored source metadata to extraction, null when invalid", async () => {
-    extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
-    const metadata = {
-      numberFormat: "european",
-      numberFormatSource: "user",
-      reportedTotal: 100,
-      reportedTotalKind: "net",
-    };
-    await runStoredExtraction({ sourceMetadata: metadata });
-    expect(extractRows).toHaveBeenLastCalledWith(
-      "OCR Markdown",
-      expect.objectContaining({ sourceMetadata: metadata }),
-    );
-    await runStoredExtraction({ sourceMetadata: { numberFormat: "european" } });
-    expect(extractRows).toHaveBeenLastCalledWith(
-      "OCR Markdown",
-      expect.objectContaining({ sourceMetadata: null }),
-    );
-  });
-
   it("passes the city's country default and the inventory level (CC-1163)", async () => {
     extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
     const city = { countryLocode: "BR", locode: "BR SAO" };
@@ -665,30 +645,47 @@ describe("PdfOcrJob queue", () => {
         sourceMetadata: {
           numberFormat: "european",
           numberFormatSource: "country_default",
-          reportedTotal: null,
-          reportedTotalKind: null,
         },
       }),
     );
-    // Without a country code the locode prefix decides; a stored format wins.
+    // Without a country code the locode prefix decides.
     await runStoredExtraction({}, { year: 2022, city: { locode: "US NYC" } });
     expect(extractRows).toHaveBeenLastCalledWith(
       "OCR Markdown",
       expect.objectContaining({
         inventoryType: null,
-        sourceMetadata: expect.objectContaining({ numberFormat: "english" }),
+        sourceMetadata: {
+          numberFormat: "english",
+          numberFormatSource: "country_default",
+        },
       }),
     );
-    const stored = {
+  });
+
+  it("ignores stored sourceMetadata: the city's country default decides", async () => {
+    extractRows.mockResolvedValue({ rows: [], summary: extraction.summary });
+    const city = { countryLocode: "BR", locode: "BR SAO" };
+    const legacy = {
       numberFormat: "english",
       numberFormatSource: "user",
-      reportedTotal: null,
-      reportedTotalKind: null,
+      reportedTotal: 100,
+      reportedTotalKind: "net",
     };
-    await runStoredExtraction({ sourceMetadata: stored }, { year: 2022, city });
+    await runStoredExtraction({ sourceMetadata: legacy }, { year: 2022, city });
     expect(extractRows).toHaveBeenLastCalledWith(
       "OCR Markdown",
-      expect.objectContaining({ sourceMetadata: stored }),
+      expect.objectContaining({
+        sourceMetadata: {
+          numberFormat: "european",
+          numberFormatSource: "country_default",
+        },
+      }),
+    );
+    // No country: no metadata at all.
+    await runStoredExtraction({ sourceMetadata: legacy }, { year: 2022 });
+    expect(extractRows).toHaveBeenLastCalledWith(
+      "OCR Markdown",
+      expect.objectContaining({ sourceMetadata: null }),
     );
   });
 

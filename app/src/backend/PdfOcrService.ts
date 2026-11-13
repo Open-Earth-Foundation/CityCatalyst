@@ -1,7 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import {
   defaultNumberStyleForCountry,
-  sourceMetadataSchema,
   type SourceMetadata,
 } from "@/util/GHGI/source-metadata";
 import { literal, Op } from "sequelize";
@@ -665,26 +664,18 @@ async function finalizeInventoryExtraction(
 }
 
 /**
- * Stored source metadata with the city's country default as the number format
- * when none was stored. The default reads the separator of an ambiguous number
- * only when the document style is undetected.
+ * The city's country default as the number format. It reads the separator of an
+ * ambiguous number only when the document style is undetected. Metadata stored by
+ * an earlier version is ignored.
  */
 function withCountryNumberFormat(
-  stored: SourceMetadata | null,
   city: { countryLocode?: string; locode?: string } | null | undefined,
 ): SourceMetadata | null {
-  if (stored?.numberFormat) return stored;
   const numberFormat = defaultNumberStyleForCountry(
     city?.countryLocode ?? city?.locode?.slice(0, 2),
   );
-  if (!numberFormat) return stored;
-  return {
-    reportedTotal: null,
-    reportedTotalKind: null,
-    ...stored,
-    numberFormat,
-    numberFormatSource: "country_default",
-  };
+  if (!numberFormat) return null;
+  return { numberFormat, numberFormatSource: "country_default" };
 }
 
 export async function extractInventoryRowsFromStoredMarkdown(
@@ -717,15 +708,9 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const storedMetadata = sourceMetadataSchema.safeParse(
-      importedFile.mappingConfiguration?.sourceMetadata,
-    );
     const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
-      sourceMetadata: withCountryNumberFormat(
-        storedMetadata.success ? storedMetadata.data : null,
-        inventory?.city,
-      ),
+      sourceMetadata: withCountryNumberFormat(inventory?.city),
       inventoryType: inventory?.inventoryType ?? null,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");

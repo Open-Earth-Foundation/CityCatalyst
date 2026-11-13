@@ -69,8 +69,6 @@ const total = (
 const countryDefault = (numberFormat: "european" | "english") => ({
   numberFormat,
   numberFormatSource: "country_default" as const,
-  reportedTotal: null,
-  reportedTotalKind: null,
 });
 
 describe("unit check", () => {

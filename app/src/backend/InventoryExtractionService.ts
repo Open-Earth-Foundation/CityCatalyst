@@ -48,7 +48,6 @@ import {
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
 import {
-  numberFormatConflict,
   resolveNumberStyle,
   type SourceMetadata,
 } from "@/util/GHGI/source-metadata";
@@ -922,7 +921,6 @@ export async function extractInventoryFromDocument(
   const result = await extractRowsFromDocument(documentContent, options);
   const rows = verifyRowProvenance(result.rows, documentContent);
   const metadata = options?.sourceMetadata;
-  const conflict = numberFormatConflict(documentContent, metadata);
   // The activity-class rules can move a row onto or off a reference left out
   // of the total (I.4.4), so the reconciliation sum is taken after them.
   // Mismatch and deviation are derived from it on read (reconcileExtraction).
@@ -939,13 +937,6 @@ export async function extractInventoryFromDocument(
     reading: ambiguousReading(metadata),
   });
   if (sourceChecks) summary.sourceChecks = sourceChecks;
-  if (conflict) summary.numberFormatConflict = conflict;
-  if (metadata?.reportedTotal != null && metadata.reportedTotalKind) {
-    summary.userReportedTotal = {
-      value: metadata.reportedTotal,
-      kind: metadata.reportedTotalKind,
-    };
-  }
   return {
     ...result,
     rows,
@@ -1033,11 +1024,7 @@ function numberStyleInstruction(
   metadata: SourceMetadata | null | undefined,
 ): string {
   if (!metadata?.numberFormat) return "";
-  const decided =
-    metadata.numberFormatSource === "user" ||
-    (metadata.numberFormatSource === "country_default" &&
-      detectNumberStyle(text) === "unknown");
-  if (!decided) return "";
+  if (detectNumberStyle(text) !== "unknown") return "";
   return metadata.numberFormat === "european"
     ? 'Numbers in this document use "," as the decimal separator and "." for thousands.\n\n'
     : 'Numbers in this document use "." as the decimal separator and "," for thousands.\n\n';
@@ -2491,11 +2478,9 @@ function finalizeRows(
   const printedContext: PrintedTextContext = {
     undetected: documentStyle === "unknown",
     reading:
-      metadata?.numberFormatSource === "user" && metadata.numberFormat
-        ? metadata.numberFormat
-        : documentStyle !== "unknown"
-          ? documentStyle
-          : ambiguousReading(metadata),
+      documentStyle !== "unknown"
+        ? documentStyle
+        : ambiguousReading(metadata),
     largeUnit: !!source && namesLargeUnit(source.text),
   };
 

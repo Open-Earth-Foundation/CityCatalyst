@@ -255,8 +255,6 @@ describe("3. review notes", () => {
       failedPages: [],
       droppedReasons: [],
       removalsWarning: null,
-      userTotalNote: null,
-      numberFormatConflict: null,
     });
   });
 });

@@ -17,12 +17,6 @@ import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import {
-  PdfSourceMetadataForm,
-  draftToSourceMetadata,
-  initialPdfSourceMetadataDraft,
-  type PdfSourceMetadataDraft,
-} from "@/components/steps/GHGI/import/pdf-source-metadata-form";
-import {
   decisionsForFile,
   type ImportRowDecision,
   NO_ROW_DECISIONS,
@@ -390,28 +384,6 @@ export default function GhgiImportWizard({
   const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
     skip: !inventoryId,
   });
-  const pdfCountryCode =
-    inventory?.city?.countryLocode ??
-    inventory?.city?.locode?.slice(0, 2) ??
-    null;
-  const [pdfMetadataDraft, setPdfMetadataDraft] =
-    useState<PdfSourceMetadataDraft>(() =>
-      initialPdfSourceMetadataDraft(pdfCountryCode),
-    );
-  const pdfMetadataErrors = draftToSourceMetadata(pdfMetadataDraft).errors;
-  // The inventory can load after the form first renders: refresh the country
-  // default until the user picks a format themselves.
-  useEffect(() => {
-    setPdfMetadataDraft((draft) =>
-      draft.numberFormatTouched
-        ? draft
-        : {
-            ...draft,
-            numberFormat:
-              initialPdfSourceMetadataDraft(pdfCountryCode).numberFormat,
-          },
-    );
-  }, [pdfCountryCode]);
   const { data: inventoryProgress } = api.useGetInventoryProgressQuery(
     inventoryId ?? "",
     { skip: !inventoryId },
@@ -773,7 +745,6 @@ export default function GhgiImportWizard({
     selectImportedFile(null);
     setLastImportStatus(null);
     setPdfPendingExtraction(false);
-    setPdfMetadataDraft(initialPdfSourceMetadataDraft(pdfCountryCode));
     setTabularPendingInterpretation(false);
     setStep(0);
     fileYearMismatchToastShownRef.current = false;
@@ -781,9 +752,6 @@ export default function GhgiImportWizard({
 
   const handleExtractWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
-    const { metadata: sourceMetadata, errors: metadataErrors } =
-      draftToSourceMetadata(pdfMetadataDraft);
-    if (metadataErrors.length > 0) return;
     stopExtractionPolling();
     setIsExtractInProgress(true);
     setExtractionProgress(null);
@@ -793,7 +761,6 @@ export default function GhgiImportWizard({
         cityId,
         inventoryId,
         importedFileId,
-        sourceMetadata,
       }).unwrap();
       if ("accepted" in result && result.accepted) return;
       stopExtractionPolling();
@@ -1043,15 +1010,6 @@ export default function GhgiImportWizard({
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
-                    {pdfPendingExtraction &&
-                      !(isExtracting || isExtractInProgress) && (
-                        <PdfSourceMetadataForm
-                          t={t}
-                          countryCode={pdfCountryCode}
-                          value={pdfMetadataDraft}
-                          onChange={setPdfMetadataDraft}
-                        />
-                      )}
                     {pdfPendingExtraction &&
                       (isExtracting || isExtractInProgress) && (
                         <Box w="full" mt={2}>
@@ -1305,9 +1263,7 @@ export default function GhgiImportWizard({
                     !uploadedFile ||
                     !importedFileId ||
                     (pdfPendingExtraction &&
-                      (isExtracting ||
-                        isExtractInProgress ||
-                        pdfMetadataErrors.length > 0)) ||
+                      (isExtracting || isExtractInProgress)) ||
                     (tabularPendingInterpretation &&
                       (isInterpreting || isInterpretInProgress))
                   }

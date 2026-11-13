@@ -17,8 +17,8 @@ import {
 import {
   GRID_GENERATION_GPC_REF,
   isImportedWasteRef,
-  isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
+import { sumImported } from "@/util/GHGI/source-checks";
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
@@ -222,6 +222,8 @@ const SUBSECTOR_DICTIONARY_TEXT = Object.entries(SUBSECTOR_VARIANT_TO_CANONICAL)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([term, canonical]) => `"${term}" → ${canonical}`)
   .join("; ");
+
+export { sumImported };
 
 export type ExtractedRowType = "line_item" | "subtotal" | "total";
 
@@ -1938,17 +1940,6 @@ function scaleOrNull(
   multiplier: number,
 ): number | null | undefined {
   return value == null ? value : value * multiplier;
-}
-
-/** Sum of imported values in tonnes, without rows left out of totals. */
-export function sumImported(rows: ExtractedRow[]): number {
-  return rows.reduce(
-    (sum, row) =>
-      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
-        ? sum
-        : sum + row.totalCO2e,
-    0,
-  );
 }
 
 /** Sub-sector key of a row: the GPC reference without its scope digit, else the names. */

@@ -54,7 +54,9 @@
  *       404:
  *         description: Import file not found.
  *       409:
- *         description: The inventory already has data and replaceExisting was not set (error code inventory-has-data).
+ *         description: |
+ *           The inventory already has data and replaceExisting was not set (error code inventory-has-data),
+ *           rows need a decision (import-rows-pending), or a source check is still pending (source-checks-pending).
  *       401:
  *         description: Unauthorized.
  */
@@ -83,6 +85,7 @@ import { db } from "@/models";
 import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -535,6 +538,23 @@ export const POST = apiHandler(
     if (importedFile.importStatus !== ImportStatusEnum.WAITING_FOR_APPROVAL) {
       throw new createHttpError.BadRequest(
         `Cannot approve import with status: ${importedFile.importStatus}. Expected status: ${ImportStatusEnum.WAITING_FOR_APPROVAL}`,
+      );
+    }
+
+    // Checks the review asks about the source must be answered first. A summary
+    // stored before source checks has none.
+    const sourceChecks = (
+      importedFile.mappingConfiguration?.extractionSummary as
+        ExtractionSummary | undefined
+    )?.sourceChecks;
+    if (
+      sourceChecks &&
+      Object.values(sourceChecks).some((check) => check?.status === "pending")
+    ) {
+      throw createHttpError(
+        409,
+        "Some source checks need an answer before this import can be approved.",
+        { code: "source-checks-pending" },
       );
     }
 

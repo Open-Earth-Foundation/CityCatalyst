@@ -13,6 +13,10 @@ import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inve
 import { POST as extractImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/extract/route";
 import { NextRequest } from "next/server";
 import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
+import { PATCH as patchSourceChecks } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/source-checks/route";
+import type { ExtractedRow } from "@/backend/InventoryExtractionService";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import { optionTotals, type SourceChecks } from "@/util/GHGI/source-checks";
 import { db } from "@/models";
 import assert from "node:assert";
 import { AppSession, Auth } from "@/lib/auth";
@@ -1109,6 +1113,389 @@ describe("Import Routes API", () => {
         current: 2,
         total: 5,
       });
+    });
+  });
+  describe("source-checks", () => {
+    const candidates = [
+      {
+        label: "Total BASIC",
+        value: 5,
+        year: 2023,
+        scope: null,
+        sector: null,
+        subsector: null,
+        level: "total" as const,
+        unitCheck: "MT" as const,
+        source: "Table 3",
+        page: 12,
+      },
+      {
+        label: "Grand total",
+        value: 105,
+        year: 2023,
+        scope: null,
+        sector: null,
+        subsector: null,
+        level: "total" as const,
+        source: "Table 4",
+        page: 13,
+      },
+    ];
+
+    const row = (
+      gpcRefNo: string,
+      totalCO2e: number,
+      extra: Record<string, unknown> = {},
+    ) => ({
+      year: 2023,
+      sector: "Stationary Energy",
+      subsector: "Residential buildings",
+      scope: "1",
+      category: null,
+      totalCO2e,
+      gpcRefNo,
+      ...extra,
+    });
+
+    const storedRows = [
+      row("I.1.1", 2, { co2: 1, ch4: 0.5, n2o: 0.5, unitCheck: "MT" }),
+      row("I.2.1", 3, { unitCheck: "MT" }),
+      row("II.1.1", 100),
+    ] as ExtractedRow[];
+
+    const sourceChecks = (overrides: Partial<SourceChecks> = {}) =>
+      ({
+        unit: {
+          status: "pending",
+          reading: "t",
+          evidence: {
+            unitText: "MT CO2e",
+            sources: ["Table 3"],
+            pages: [12],
+            example: null,
+          },
+        },
+        total: {
+          status: "pending",
+          candidates,
+          selected: null,
+          suggested: 0,
+        },
+        ...overrides,
+      }) as SourceChecks;
+
+    const createChecked = (
+      options: {
+        status?: ImportStatusEnum;
+        userId?: string;
+        checks?: SourceChecks | undefined;
+        overrides?: Record<string, unknown>;
+      } = {},
+    ) =>
+      db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: options.userId ?? testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "plan.pdf",
+        fileType: "pdf",
+        fileSize: 10,
+        originalFileName: "plan.pdf",
+        importStatus: options.status ?? ImportStatusEnum.WAITING_FOR_APPROVAL,
+        mappingConfiguration: {
+          rows: storedRows,
+          extractionSummary: {
+            reportedTotals: candidates,
+            droppedRows: {},
+            importedSum: 105,
+            yearAssumed: false,
+            sourceChecks: "checks" in options ? options.checks : sourceChecks(),
+          },
+          ...(options.overrides ? { overrides: options.overrides } : {}),
+        },
+      });
+
+    const patch = (importedFileId: string, body: unknown) =>
+      patchSourceChecks(mockRequest(body), {
+        params: Promise.resolve({
+          city: city.cityId,
+          inventory: inventory.inventoryId,
+          importedFileId,
+        }),
+      });
+
+    const storedSummary = async (file: { reload: () => Promise<unknown> }) => {
+      await file.reload();
+      return (
+        file as unknown as {
+          mappingConfiguration: {
+            rows: ExtractedRow[];
+            extractionSummary: ExtractionSummary;
+            overrides?: Record<string, unknown>;
+          };
+        }
+      ).mappingConfiguration;
+    };
+
+    const decision = (value: number, ref: string) => ({
+      reviewDecision: "keep",
+      decisionFileId: "file",
+      decisionToken: "token",
+      decisionRef: ref,
+      decisionScope: "1",
+      decisionValue: value,
+    });
+
+    it("applies unit reading", async () => {
+      const file = await createChecked();
+      const res = await patch(file.id, { unit: "Mt" });
+      await expectStatusCode(res, 200);
+      const json = await res.json();
+
+      const stored = await storedSummary(file);
+      expect(stored.rows[0]).toMatchObject({
+        totalCO2e: 2_000_000,
+        co2: 1_000_000,
+        ch4: 500_000,
+        n2o: 500_000,
+      });
+      expect(stored.rows[1].totalCO2e).toBe(3_000_000);
+      expect(stored.rows[2].totalCO2e).toBe(100);
+
+      const optionTotal = optionTotals(
+        storedRows,
+        { unit: "t", numberFormat: null },
+        "unit",
+      ).find((option) => option.reading === "Mt")?.total;
+      expect(stored.extractionSummary.importedSum).toBe(optionTotal);
+      expect(stored.extractionSummary.importedSum).toBe(5_000_100);
+      expect(stored.extractionSummary.sourceChecks?.unit).toMatchObject({
+        status: "confirmed",
+        reading: "Mt",
+      });
+      expect(stored.extractionSummary.reportedTotals[0].value).toBe(5_000_000);
+      expect(
+        stored.extractionSummary.sourceChecks?.total?.candidates[0].value,
+      ).toBe(5_000_000);
+      expect(stored.extractionSummary.sourceChecks?.total?.status).toBe(
+        "pending",
+      );
+      expect(json.data.extractionSummary).toEqual(stored.extractionSummary);
+    });
+
+    it("confirm same reading", async () => {
+      const file = await createChecked();
+      const res = await patch(file.id, { unit: "t" });
+      await expectStatusCode(res, 200);
+      const stored = await storedSummary(file);
+      expect(stored.rows).toEqual(storedRows);
+      expect(stored.extractionSummary.importedSum).toBe(105);
+      expect(stored.extractionSummary.sourceChecks?.unit).toMatchObject({
+        status: "confirmed",
+        reading: "t",
+      });
+    });
+
+    it("confirms printed total", async () => {
+      const file = await createChecked();
+      const res = await patch(file.id, { total: { candidate: 0 } });
+      await expectStatusCode(res, 200);
+      const stored = await storedSummary(file);
+      expect(stored.extractionSummary.sourceChecks?.total).toMatchObject({
+        status: "confirmed",
+        selected: {
+          value: 5,
+          origin: "document",
+          label: "Total BASIC",
+          source: "Table 3",
+          page: 12,
+        },
+      });
+      expect(stored.extractionSummary.sourceChecks?.unit?.status).toBe(
+        "pending",
+      );
+    });
+
+    it("keeps a confirmed printed total in the new unit reading", async () => {
+      const file = await createChecked({
+        checks: sourceChecks({
+          total: {
+            status: "confirmed",
+            candidates,
+            selected: {
+              value: 5,
+              origin: "document",
+              label: "Total BASIC",
+              source: "Table 3",
+              page: 12,
+            },
+            suggested: 0,
+          },
+        }),
+      });
+      const res = await patch(file.id, { unit: "Mt" });
+      await expectStatusCode(res, 200);
+      const stored = await storedSummary(file);
+      expect(stored.extractionSummary.sourceChecks?.total?.selected).toEqual({
+        value: 5_000_000,
+        origin: "document",
+        label: "Total BASIC",
+        source: "Table 3",
+        page: 12,
+      });
+    });
+
+    it("typed total is no-source", async () => {
+      const file = await createChecked();
+      const typed = await patch(file.id, { total: { value: 412300 } });
+      await expectStatusCode(typed, 200);
+      const stored = await storedSummary(file);
+      expect(stored.extractionSummary.sourceChecks?.total).toMatchObject({
+        status: "confirmed",
+        selected: { value: 412300, origin: "user" },
+      });
+
+      await expectStatusCode(
+        await patch(file.id, { total: { candidate: 2 } }),
+        400,
+      );
+      await expectStatusCode(
+        await patch(file.id, { total: { skip: true } }),
+        400,
+      );
+      await expectStatusCode(
+        await patch(file.id, { total: { value: 0 } }),
+        400,
+      );
+
+      const empty = await createChecked({
+        checks: sourceChecks({
+          total: {
+            status: "pending",
+            candidates: [],
+            selected: null,
+            suggested: null,
+          },
+        }),
+      });
+      const skipped = await patch(empty.id, { total: { skip: true } });
+      await expectStatusCode(skipped, 200);
+      const emptyStored = await storedSummary(empty);
+      expect(emptyStored.extractionSummary.sourceChecks?.total).toMatchObject({
+        status: "confirmed",
+        selected: null,
+      });
+    });
+
+    it("rejects an answer to a check the import does not have", async () => {
+      const file = await createChecked();
+      await expectStatusCode(
+        await patch(file.id, { numberFormat: "european" }),
+        400,
+      );
+      await expectStatusCode(await patch(file.id, {}), 400);
+      const unchecked = await createChecked({ checks: undefined });
+      await expectStatusCode(await patch(unchecked.id, { unit: "t" }), 400);
+    });
+
+    it("clears overrides of converted rows", async () => {
+      const file = await createChecked({
+        overrides: { "0": decision(2, "I.1.1"), "2": decision(100, "II.1.1") },
+      });
+      await expectStatusCode(await patch(file.id, { unit: "Mt" }), 200);
+      const stored = await storedSummary(file);
+      expect(stored.overrides).toEqual({ "2": decision(100, "II.1.1") });
+
+      const namespaced = await createChecked({
+        overrides: {
+          columnMappings: {},
+          rowDecisions: {
+            "1": decision(3, "I.2.1"),
+            "2": decision(100, "II.1.1"),
+          },
+        },
+      });
+      await expectStatusCode(await patch(namespaced.id, { unit: "Mt" }), 200);
+      const namespacedStored = await storedSummary(namespaced);
+      expect(namespacedStored.overrides).toEqual({
+        columnMappings: {},
+        rowDecisions: { "2": decision(100, "II.1.1") },
+      });
+    });
+
+    it("rejects wrong status", async () => {
+      const extracting = await createChecked({
+        status: ImportStatusEnum.EXTRACTING,
+      });
+      await expectStatusCode(await patch(extracting.id, { unit: "Mt" }), 400);
+
+      const otherUserId = randomUUID();
+      await db.models.User.upsert({ userId: otherUserId, name: "OTHER_USER" });
+      const others = await createChecked({ userId: otherUserId });
+      await expectStatusCode(await patch(others.id, { unit: "Mt" }), 404);
+      const stored = await storedSummary(others);
+      expect(stored.rows).toEqual(storedRows);
+    });
+
+    it("approve blocks pending checks", async () => {
+      const pending = await createChecked();
+      const res = await approveImport(
+        mockRequest({ importedFileId: pending.id }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+          }),
+        },
+      );
+      await expectStatusCode(res, 409);
+      const json = await res.json();
+      expect(json.error.code).toBe("source-checks-pending");
+      await pending.reload();
+      expect(pending.importStatus).toBe(ImportStatusEnum.WAITING_FOR_APPROVAL);
+
+      // A summary stored before source checks has none: approval as before.
+      const fileContent = await createMockXLSXFile();
+      const legacy = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "test-file.xlsx",
+        fileType: "xlsx",
+        fileSize: fileContent.length,
+        originalFileName: "test-file.xlsx",
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        data: fileContent,
+        validationResults: {
+          detectedColumns: { gpcRefNo: 0, activityAmount: 4 },
+          errors: [],
+          warnings: [],
+        },
+        mappingConfiguration: {
+          rows: [],
+          extractionSummary: {
+            reportedTotals: [],
+            droppedRows: {},
+            importedSum: 0,
+            yearAssumed: false,
+          },
+        },
+      });
+      const approved = await approveImport(
+        mockRequest({ importedFileId: legacy.id, mappingOverrides: {} }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+          }),
+        },
+      );
+      await expectStatusCodes(approved, [200, 202, 500]);
+      await legacy.reload();
+      expect(legacy.importStatus).not.toBe(
+        ImportStatusEnum.WAITING_FOR_APPROVAL,
+      );
     });
   });
 });

@@ -1,4 +1,6 @@
 import type { SourceMetadata } from "@/util/GHGI/source-metadata";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import type { NumberReading, UnitReading } from "@/util/GHGI/source-checks";
 import { env } from "@/lib/runtime-env";
 import {
   type CityAttributes,
@@ -222,6 +224,7 @@ export const api = createApi({
     "ConceptNoteDraft",
     "ConceptNoteEdits",
     "BulkInventoryImport",
+    "ImportStatus",
     "ConceptNoteApplicationContext",
     "ConceptNoteFundingCatalogue",
     "ConceptNoteFunderImport",
@@ -2289,6 +2292,9 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
+        providesTags: (_result, _error, { importedFileId }) => [
+          { type: "ImportStatus", id: importedFileId },
+        ],
       }),
       getImportRowPreview: builder.query<
         ImportRowPreview,
@@ -2306,7 +2312,34 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: ImportRowPreview }) =>
           response.data,
-        providesTags: ["Inventory"],
+        providesTags: (_result, _error, { importedFileId }) => [
+          "Inventory",
+          { type: "ImportStatus", id: importedFileId },
+        ],
+      }),
+      /** Answers the review source checks; the stored rows and summary change. */
+      updateImportSourceChecks: builder.mutation<
+        { extractionSummary: ExtractionSummary },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          unit?: UnitReading;
+          numberFormat?: NumberReading;
+          total?: { candidate: number } | { value: number } | { skip: true };
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, ...body }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/source-checks`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: {
+          data: { extractionSummary: ExtractionSummary };
+        }) => response.data,
+        invalidatesTags: (_result, _error, { importedFileId }) => [
+          { type: "ImportStatus", id: importedFileId },
+        ],
       }),
       extractImport: builder.mutation<
         | { id: string; importStatus: string; rowCount: number }

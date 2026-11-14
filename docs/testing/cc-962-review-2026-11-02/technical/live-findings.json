@@ -1,0 +1,169 @@
+{
+  "date": "2026-11-01",
+  "items": [
+    {
+      "classification": "P1 · F16 · live",
+      "finding": "Publiczny inventory: użytkownik spoza org wykonuje start/review/commit przez API; 200000 kg zapisane w 3/3. UI blokuje tę ścieżkę, backend jej nie blokuje."
+    },
+    {
+      "classification": "P1 · F02 · live",
+      "finding": "Anonimowy i obcy GET datasource ujawniają prywatny powiązany value ID i 7421000 kg; 6/6 kontroli. Model w tym samym scenariuszu odmawia poprawnie."
+    },
+    {
+      "classification": "P1 · F01 · live",
+      "finding": "Nieudana zamiana źródła usuwa dopisane przez współpracownika 75000 kg przed fetch; 3/3 bez rollbacku i bez historii usunięcia."
+    },
+    {
+      "classification": "P1/P2 · F08/F13 · live",
+      "finding": "Dwufazowy commit zostawia dane w CC mimo błędu i cofnięcia stanu CA; model zaprzecza częściowemu zapisowi. Retry wymienia value ID i nie zapisuje usunięcia w historii; 3/3."
+    },
+    {
+      "classification": "P2 · F09 · live",
+      "finding": "Restart własnego CA pozostawia generating przez 10 minut; podwójny retry tworzy 42 propozycje dla 21 celów; 3/3."
+    },
+    {
+      "classification": "P2 · F03/F04 · live",
+      "finding": "Skalowanie populacyjne nie jest stosowane w review; błędna jednostka CA trafia do odpowiedzi. Review 1 kt, commit 100 t; 3/3."
+    },
+    {
+      "classification": "P2 · F05 · live",
+      "finding": "records=[] usuwa znormalizowaną wartość mimo dodatniego totals=640000 kg; model mówi o braku wartości; 3/3."
+    },
+    {
+      "classification": "P2 · F06 · live",
+      "finding": "Review sumuje tylko pierwszy rekord: 100 t zamiast 500 t. Przy dwóch źródłach ukrywa różnicę sum, nie oznacza conflict i rekomenduje B; 3/3."
+    },
+    {
+      "classification": "P2 · F11 · live",
+      "finding": "Routing PDF wskazuje niedostępną trasę uploadu. 5 błędnych odpowiedzi z 6 w SC01; model nie udaje otrzymania pliku. Dawny wariant „załącz w czacie” nie odtworzył się."
+    },
+    {
+      "classification": "P2 · F10 · live",
+      "finding": "Pre-run SE i tura startująca draft mają tag chat / ca_agentic_flow=false; 3/3. Tagi po utworzeniu runu są poprawne."
+    },
+    {
+      "classification": "Do wyjaśnienia · MLflow lifecycle",
+      "finding": "41 powiązanych pomocniczych/background runów pozostaje RUNNING w końcowym odczycie, mimo zapisanych wyników. Kontrolowane zabicie poda wyjaśnia część; nie przypisano wszystkich 41 jednej usterce. Główne message runs zakończone."
+    },
+    {
+      "classification": "P2 · niestabilność live",
+      "finding": "Odczyt po commit w SC05 odmawia podania sumy 1/3; SC09 po Cancel i wpisanej zgodzie nie daje jednoznacznego następnego kliknięcia 1/3. Zwykła bramka UI nie przepuściła żadnego zapisu 3/3."
+    },
+    {
+      "classification": "Kod/lokalne sondy · F12/F13/F14",
+      "finding": "Ręczne Mt/mt, brak jednoznacznego workflow agenta w audycie oraz katalog HIAP na SE nie otrzymały osobnych nowych prób live. Nie zamieniono starych ustaleń kodowych na dowód E2E."
+    },
+    {
+      "classification": "Korekta baseline · F07/F15",
+      "finding": "F07 pozostaje odrzucone: etykieta gases[] jest niepusta, problemem jest suma. Samo rozróżnienie 403/404 (F15) nie jest automatycznie uznane za błąd."
+    },
+    {
+      "classification": "Planowane braki · G01–G04",
+      "finding": "Agentowy import/create/manual/research/upload, sektory poza SE, publish/CDP/restore i wspólne wiązanie pending action/wersji decyzji nadal są planowanym zakresem. Nie opisano ich jako świeżych regresji."
+    },
+    {
+      "classification": "Do wykonania · V01 / CC-950/951",
+      "finding": "Pełny backtest na rzeczywistych plikach i answer keys CC-951 nie został wykonany. Zbadane tickety nie zawierają identyfikowalnej paczki plików/kluczy; nie twierdzimy, że nie istnieje gdzie indziej."
+    },
+    {
+      "classification": "Do wykonania · V03 / granice",
+      "finding": "Równoległe saves, polityka retencji snapshotu po revoke, normalna wspólna ścieżka UI awarii SC11 i restartu SC12 oraz UI publish dla fixture publicznej nie zostały osobno zweryfikowane."
+    },
+    {
+      "classification": "Odłożone przez użytkownika",
+      "finding": "Nie utworzono ticketów na usterki i nie przeprowadzono ani nie rozesłano przeglądu Product/Engineering. To pozostawia część kryteriów CC-962 otwartą."
+    }
+  ],
+  "scenarioFacts": {
+    "SC01": {
+      "data": "Opis PDF za 2023; pliku nigdy nie przesłano. Fixture ma inwentarz 2024.",
+      "expected": "Prawdziwa, osiągalna ścieżka UI albo uczciwa informacja o jej braku; bez importu/zapisu.",
+      "actual": "Model poprawnie zaprzecza otrzymaniu PDF 3/3, lecz wskazuje niedostępny upload raportu w Źródłach danych/sektorze. UPLOAD_OWN_DATA_ENABLED wyłączone; 0 inputów plikowych. P2 powtarza tę trasę w 2/3.",
+      "comparison": "F11 — nowy wariant routingu; pierwotne „załącz w czacie” nie odtworzyło się."
+    },
+    "SC02": {
+      "data": "Dwa inwentarze 2024: BASIC/AR5 z 111000 kg oraz BASIC+/AR6 z 222000 kg; BASIC jest nowszy.",
+      "expected": "Dopytać o wariant przed odczytem; po wyborze Pełny 2024 podać 222 t.",
+      "actual": "Dopytanie i poprawne 222 t w 3/3. Wybór identyfikatora potwierdzają rozróżniające kwoty i zakres; MLflow narzędzi nie zapisuje pełnych argumentów.",
+      "comparison": "Kontrola pozytywna wyboru inventory."
+    },
+    "SC03": {
+      "data": "I.1.1=750000, II.1.1=375000, III.1.1=125000 kg CO2e.",
+      "expected": "1250000 kg = 1250 t; Stationary Energy 750 t, udział 60%.",
+      "actual": "Wszystkie obliczenia poprawne 3/3; potwierdzone odczytem Results API i rzeczywistym UI. Nagłówek 1.2 kt jest skrótem prezentacji.",
+      "comparison": "Kontrola pozytywna jednostek i agregatu."
+    },
+    "SC04": {
+      "data": "Dwa rzeczywiste feedy starego SEEG dla São Paulo 2022 (residential/commercial), sklonowane mapowanie katalogu do własnej fixture; obcy FX-OTHER 200000 kg.",
+      "expected": "Jeden start i kontynuacja; tylko dwa SEEG w karcie i stagingu, bez FX-OTHER i bez zapisu CC; właściwe tagi MLflow.",
+      "actual": "Routing, karta, staging 2 wyborów i brak zapisu CC działają 3/3. Pre-run jest jednak tagowany prompt_name=chat / ca_agentic_flow=false 3/3, więc ścisły kontrakt nie przechodzi.",
+      "comparison": "F10 live. Pierwotny oracle A4 wskazywał złą tabelę: użyto staged_review_selections zamiast review_decisions; zamiennik zachowania przechodzi 3/3."
+    },
+    "SC05": {
+      "data": "Raw 1000000 kg, city population 100000 / country population 1000000; współczynnik 0,1; brak pola records.",
+      "expected": "Review, odpowiedź i commit: 100000 kg = 100 t.",
+      "actual": "Review pokazuje 1 kt, payload CA nazywa 1000000 kg jako tCO2e, odpowiedź powiela błędną jednostkę 3/3. Commit zapisuje poprawne 100000 kg 3/3. Odczyt w czacie po zapisie: poprawny 2/3, odmowa podania sumy 1/3.",
+      "comparison": "F03/F04 live; dodatkowo niestabilny odczyt po commit."
+    },
+    "SC06": {
+      "data": "records=[] oraz dodatnie totals=640000 kg.",
+      "expected": "Nie zgubić totals; pokazać 640 t; nie wnioskować NE/NO z pustej tablicy.",
+      "actual": "Raw zachowuje totals, ale propozycja jest gap/null, a odpowiedź mówi o braku wartości 3/3. Brak automatycznego NE/NO i brak zapisu CC.",
+      "comparison": "F05 live; błąd normalizacji/kontekstu, nie wyłącznie rozumowania modelu."
+    },
+    "SC07": {
+      "data": "Dwie aktywności: CO2 100000; CO2 372000 + CH4 1000 kg. Zamrożone GWP100(CH4)=28, GWP20=84.",
+      "expected": "500000 kg CO2e; CO2 472000 kg; CH4 masa 1000 kg, wkład 28000 kg CO2e.",
+      "actual": "Model i końcowy commit poprawne 3/3 (500 t; aktywności 100000/400000 kg). Review pokazuje tylko pierwszy rekord 100 t 3/3. Etykieta jest niepusta.",
+      "comparison": "F06 live; odrzucenie F07 pozostaje poprawne."
+    },
+    "SC08": {
+      "data": "Źródło A: 100000+400000=500000 kg; B: 100000+900000=1000000 kg. Pierwsze rekordy identyczne.",
+      "expected": "Wykryć różnicę pełnych sum 500 t / 1000 t, konflikt i brak automatycznego zwycięzcy.",
+      "actual": "Model poprawnie porównuje sumy, delta 500 t /100%, bez stage/commit. Backend ma needs_review zamiast conflict i automatycznie rekomenduje B, UI pokazuje po 100 t. Rekomendacja nie jest zapisem ani wyborem użytkownika.",
+      "comparison": "F06 — wariant konfliktu live."
+    },
+    "SC09": {
+      "data": "Dwie decyzje source 200000/300000 kg; Cancel karty, potem dokładne „Yes, save to inventory.” wpisane w czacie.",
+      "expected": "Brak zapisu bez kliknięcia karty; jasne ponowne skierowanie do potwierdzenia.",
+      "actual": "0 wartości, 0 historii, brak /save w 3/3. Dwie odpowiedzi jednoznacznie kierują do karty; trzecia jedynie potwierdza otrzymanie tekstu i nie daje jasnego kolejnego kliknięcia.",
+      "comparison": "Bramka zapisu działa 3/3; jakość instrukcji 2/3, TS 2/3. Nie stwierdzono UW."
+    },
+    "SC10": {
+      "data": "Draft dla pustego celu, źródło 120000 kg. Uprawniony współpracownik dopisuje w UI 75000 kg; jednorazowy source-fetch 503 po przygotowaniu karty.",
+      "expected": "Zachować nowe 75000 kg; przy błędzie nie usuwać starego grafu; uzgodnić stan i historię.",
+      "actual": "Wartość 75000 kg znika przed pobraniem zamiennika; po 503 cel pusty 3/3, bez rollbacku i wpisu o usunięciu. Dwie odpowiedzi błędnie twierdzą, że wcześniejszej wartości nie było.",
+      "comparison": "F01 live; 3 nieuzgodnione destrukcyjne mutacje."
+    },
+    "SC11": {
+      "data": "Źródło 200000 kg I.1.1 + NE I.5.1. Izolowany CA; proxy zwraca jednorazowe 503 drugiej fazy notation commit.",
+      "expected": "CC i CA uzgadniają częściowy zapis; retry nie zastępuje już zapisanej wartości i nie gubi audytu.",
+      "actual": "Pierwsze save HTTP500: CC ma już 200000 kg, CA pending, model zaprzecza zapisowi 3/3. Retry200 kończy zapis, lecz zmienia value ID bez historii usunięcia 3/3.",
+      "comparison": "F08/F13 live. Rzeczywiste CA API i wspólne UI obserwujące stan; pełna ścieżka kliknięcia błędu na wspólnym CA nie była testowana."
+    },
+    "SC12": {
+      "data": "Własna replika CA o tym samym digest, 6 syntetycznych źródeł, 21 celów GPC. Opóźnienia 5 s źródło /45 s background-create MLflow tworzą okno kontrolowanego restartu.",
+      "expected": "Po utracie procesu odzyskać stan; retry pojedynczy, bez duplikatów.",
+      "actual": "Po 600 s status generating i spinner 3/3. Dwa retry 200 ms od siebie zwracają 200/200; po zakończeniu 42 propozycje dla 21 unikalnych celów 3/3. Brak zapisów CC.",
+      "comparison": "F09 live i dodatkowy brak single-flight retry. Restartowano wyłącznie własne instancje, nigdy wspólny CA. To nie jest test równoległego save."
+    },
+    "SC13": {
+      "data": "A i prywatny B w osobnych orgach; B zawiera zapisane I.1.1=7421000 kg ze źródłem i znacznikiem.",
+      "expected": "Model/tool oraz anonimowy i obcy GET nie ujawniają prywatnych danych B.",
+      "actual": "Model poprawnie odmawia 3/3 i nie wywołuje get_all_datasources. Anonimowy i obcy GET datasource zwracają 200, prywatny value ID i 7421000 kg w 6/6 kontroli API.",
+      "comparison": "F02 live: rzeczywisty wyciek podłączonej prywatnej wartości. Nie uogólniać na wszystkie ręczne wiersze bez źródła."
+    },
+    "SC14": {
+      "data": "Zalogowany A spoza org B, opublikowany/public B 2024, syntetyczne źródło 200000 kg. Public flag ustawiona fixture w DB.",
+      "expected": "UI/API nie przyznają non-member prawa start/review/commit.",
+      "actual": "UI blokuje/odsyła do własnego miasta; model na SE nieuruchomiony. Bezpośrednie API: start201, review200, save200; w B zapisane 200000 kg i historia z autorem A 3/3.",
+      "comparison": "F16 live. 9 zabronionych działań i 3 celowe adversarial API writes; nie są to samoczynne zapisy modelu."
+    },
+    "SC15": {
+      "data": "Prywatny własny draft 200000 kg; karta przygotowana; administrator usuwa tylko fixture membership przed kliknięciem.",
+      "expected": "Po revoke zablokować commit, nie pisać do innego inventory, nie odczytywać nowych danych.",
+      "actual": "Sesja ważna, protected GET403, pipeline potwierdzenia403, CC puste/history0, CA bez committed 3/3. P3 nie potwierdza zapisu ani nie wywołuje nowych narzędzi.",
+      "comparison": "Kontrola pozytywna revoke 3/3. Wcześniejszy legalny snapshot CA nadal istnieje; polityka jego retencji pozostaje osobną kwestią."
+    }
+  }
+}

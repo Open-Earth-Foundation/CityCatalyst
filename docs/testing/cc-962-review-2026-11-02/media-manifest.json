@@ -1,0 +1,1432 @@
+[
+  {
+    "id": "ca/UA01-r1/UA01-r1",
+    "group": "ca",
+    "relative": "UA01-r1/UA01-r1.mp4",
+    "filename": "ca-UA01-r1--UA01-r1.mp4",
+    "bytes": 2081776,
+    "sha256": "acb3e07401797a6ad7327346cc0f22d31ed070163e7159a4bed9c0993959ae63",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/78a04d80-85c8-474c-af4b-aa1bef74ea9d"
+  },
+  {
+    "id": "ca/UA01-r2/UA01-r2",
+    "group": "ca",
+    "relative": "UA01-r2/UA01-r2.mp4",
+    "filename": "ca-UA01-r2--UA01-r2.mp4",
+    "bytes": 2234875,
+    "sha256": "60d7256c4053b332ebc3a7c0e4279a0d29d011ce764b9579a8ee7335dea1b9f2",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/7eaca87a-845e-4d63-82f9-c61f0152649c"
+  },
+  {
+    "id": "ca/UA01-r3/UA01-r3",
+    "group": "ca",
+    "relative": "UA01-r3/UA01-r3.mp4",
+    "filename": "ca-UA01-r3--UA01-r3.mp4",
+    "bytes": 2278979,
+    "sha256": "5ee49926782d7d48ded7e8f5764b72ac04f23ede4633123b95087f6ee98bc69f",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/a2038649-e983-4d9e-ad36-c64cef42cb2b"
+  },
+  {
+    "id": "ca/UA02-r1/UA02-r1",
+    "group": "ca",
+    "relative": "UA02-r1/UA02-r1.mp4",
+    "filename": "ca-UA02-r1--UA02-r1.mp4",
+    "bytes": 1424937,
+    "sha256": "ce51294c645590d24c24d45f8d30df90112f43bdc2dc9bb61818402424eea615",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/d86cc3af-2a37-4628-a76e-d6510232c38c"
+  },
+  {
+    "id": "ca/UA02-r2/UA02-r2",
+    "group": "ca",
+    "relative": "UA02-r2/UA02-r2.mp4",
+    "filename": "ca-UA02-r2--UA02-r2.mp4",
+    "bytes": 1626310,
+    "sha256": "869a602761a4bd8b577d1a67a4c0e38708553fb4dec01dffb9a36be6ff540eba",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9f1b8f1a-3e4f-493d-99a8-e7b47cd77d72"
+  },
+  {
+    "id": "ca/UA02-r3/UA02-r3",
+    "group": "ca",
+    "relative": "UA02-r3/UA02-r3.mp4",
+    "filename": "ca-UA02-r3--UA02-r3.mp4",
+    "bytes": 1424996,
+    "sha256": "7fc471e3d418ba5aee76fdafa44d206d4bca35662a08b13f80087ced17ba377a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/0143bc9b-b041-4292-b31f-14cbf191aa58"
+  },
+  {
+    "id": "ca/UA03-r1/UA03-r1",
+    "group": "ca",
+    "relative": "UA03-r1/UA03-r1.mp4",
+    "filename": "ca-UA03-r1--UA03-r1.mp4",
+    "bytes": 3935291,
+    "sha256": "512ef8b74d5a1a9c8a4cd7228a152bf46fdb17c56fb9a88e5381a315f9721ef6",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/12be3270-5d75-4fe8-9a81-11f1dec0a0da"
+  },
+  {
+    "id": "ca/UA03-r2/UA03-r2",
+    "group": "ca",
+    "relative": "UA03-r2/UA03-r2.mp4",
+    "filename": "ca-UA03-r2--UA03-r2.mp4",
+    "bytes": 3630260,
+    "sha256": "569ffd974dd7908c34f5d52a7bcdc9ebff66079af785e918bab35e3187a1bb49",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/79002607-eb3b-47dc-ad5a-c577d3bc3577"
+  },
+  {
+    "id": "ca/UA03-r3/UA03-r3",
+    "group": "ca",
+    "relative": "UA03-r3/UA03-r3.mp4",
+    "filename": "ca-UA03-r3--UA03-r3.mp4",
+    "bytes": 3418786,
+    "sha256": "81ba723ffaefd21918e8ff98db2bb7f4cd4c462b7743d5fa7f0b0d25ba876fb4",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/39fcc5ce-7a45-4af4-a103-cc58596b1e8a"
+  },
+  {
+    "id": "ca/UA04-r1/UA04-r1",
+    "group": "ca",
+    "relative": "UA04-r1/UA04-r1.mp4",
+    "filename": "ca-UA04-r1--UA04-r1.mp4",
+    "bytes": 3249137,
+    "sha256": "1f2de8607ef815be83752b8f35e8cef06ec1551a036464f714b7a16355c8671a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/cd928a50-bc50-4902-a587-4db8abca6a00"
+  },
+  {
+    "id": "ca/UA04-r2/UA04-r2",
+    "group": "ca",
+    "relative": "UA04-r2/UA04-r2.mp4",
+    "filename": "ca-UA04-r2--UA04-r2.mp4",
+    "bytes": 3178992,
+    "sha256": "8eda467f79e0a6e653f2ae08957f7f8e69ed472444525438748a2118ce3ae59e",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/c563fe6d-4b64-4348-b84b-2515295fdc09"
+  },
+  {
+    "id": "ca/UA04-r3/UA04-r3",
+    "group": "ca",
+    "relative": "UA04-r3/UA04-r3.mp4",
+    "filename": "ca-UA04-r3--UA04-r3.mp4",
+    "bytes": 3332298,
+    "sha256": "7168089470200f16fd2566e3947e8e7fe0498b45956ff689e8f9d7664409f737",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/dc780ecc-d2ac-4f1a-a2cd-df638d5000cf"
+  },
+  {
+    "id": "ca/UA05-r1/UA05-r1",
+    "group": "ca",
+    "relative": "UA05-r1/UA05-r1.mp4",
+    "filename": "ca-UA05-r1--UA05-r1.mp4",
+    "bytes": 2254588,
+    "sha256": "a0c127219ac521ea6426635386f58e386effefc56be9f95f41c529f2020abc41",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/bedb53c6-14c8-4083-89f9-1499bf4e24d6"
+  },
+  {
+    "id": "ca/UA05-r2/UA05-r2",
+    "group": "ca",
+    "relative": "UA05-r2/UA05-r2.mp4",
+    "filename": "ca-UA05-r2--UA05-r2.mp4",
+    "bytes": 2434653,
+    "sha256": "f547cf2bd1931529e889bbf31c0382cf4a26cfaec7a0905ef5da06f9e3d2ef4d",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/b1bcfedf-0a67-4981-8a9d-66d8aeca76e9"
+  },
+  {
+    "id": "ca/UA05-r3/UA05-r3",
+    "group": "ca",
+    "relative": "UA05-r3/UA05-r3.mp4",
+    "filename": "ca-UA05-r3--UA05-r3.mp4",
+    "bytes": 2583311,
+    "sha256": "6d8a95fce6ae5309487810d2535d591ee39ec66eef96ac264129a032230d1605",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/1eb3622a-96a3-4491-a1c5-b231c788fc17"
+  },
+  {
+    "id": "ca/UB01-r1/UB01-r1",
+    "group": "ca",
+    "relative": "UB01-r1/UB01-r1.mp4",
+    "filename": "ca-UB01-r1--UB01-r1.mp4",
+    "bytes": 1614329,
+    "sha256": "8a53f21155857468ec596ef5fd80ca34d0dbb6ea0aa706eeaab2997e353fd798",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/f9a461b3-fc5a-441f-a3cf-fdf6affc09c8"
+  },
+  {
+    "id": "ca/UB01-r2/UB01-r2",
+    "group": "ca",
+    "relative": "UB01-r2/UB01-r2.mp4",
+    "filename": "ca-UB01-r2--UB01-r2.mp4",
+    "bytes": 1503672,
+    "sha256": "f1f32888707425862140649f5498f07727ad25352545fdcfa0529f8b9b36dafe",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/09a2f747-3ebb-4911-8f10-1cb55f392bd4"
+  },
+  {
+    "id": "ca/UB01-r3/UB01-r3",
+    "group": "ca",
+    "relative": "UB01-r3/UB01-r3.mp4",
+    "filename": "ca-UB01-r3--UB01-r3.mp4",
+    "bytes": 1636069,
+    "sha256": "a66959807b38ffb1a31093fd817becc784515315d883c9a522c0bf32ec786600",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/74cf9702-261f-419a-a66b-6877a1bf08f0"
+  },
+  {
+    "id": "ca/UB02-r1/UB02-r1",
+    "group": "ca",
+    "relative": "UB02-r1/UB02-r1.mp4",
+    "filename": "ca-UB02-r1--UB02-r1.mp4",
+    "bytes": 2165490,
+    "sha256": "c7980c51fa1f8e2246ba76683e93badebc63d9ff7705ca38bd15e24d0fc9f668",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/93aeda0e-8a02-4a98-90f3-71e23f2ca2fb"
+  },
+  {
+    "id": "ca/UB02-r2/UB02-r2",
+    "group": "ca",
+    "relative": "UB02-r2/UB02-r2.mp4",
+    "filename": "ca-UB02-r2--UB02-r2.mp4",
+    "bytes": 2260745,
+    "sha256": "53d78a72bfb0c8a4395c574dc4579e0b0784c4a71a9d6b24e4025e3607f36bf6",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/b1ef567f-acbc-4535-b3f8-51bf78cbcf7f"
+  },
+  {
+    "id": "ca/UB02-r3/UB02-r3",
+    "group": "ca",
+    "relative": "UB02-r3/UB02-r3.mp4",
+    "filename": "ca-UB02-r3--UB02-r3.mp4",
+    "bytes": 2072689,
+    "sha256": "586a3f930c8d24b7b467896db19888452b4884601b9d37f133dc8959ceaee84c",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9b1d8927-5112-492e-b802-c2a1da4f1082"
+  },
+  {
+    "id": "ca/UB03-r1/UB03-r1",
+    "group": "ca",
+    "relative": "UB03-r1/UB03-r1.mp4",
+    "filename": "ca-UB03-r1--UB03-r1.mp4",
+    "bytes": 1839648,
+    "sha256": "1c49aff8fc3c4b3dccaa81521370555daeda1809f3b0b713a840d46d93c453e9",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/65acbf12-eae3-4c89-87a1-b21841a98257"
+  },
+  {
+    "id": "ca/UB03-r2/UB03-r2",
+    "group": "ca",
+    "relative": "UB03-r2/UB03-r2.mp4",
+    "filename": "ca-UB03-r2--UB03-r2.mp4",
+    "bytes": 2071184,
+    "sha256": "d16c688231c52d9fc73ad6959dd6fd96e7a12444705243f1b23eb9e1b7e48db5",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/c5b83e50-a67f-4d4f-b66b-aed571c17bf8"
+  },
+  {
+    "id": "ca/UB03-r3/UB03-r3",
+    "group": "ca",
+    "relative": "UB03-r3/UB03-r3.mp4",
+    "filename": "ca-UB03-r3--UB03-r3.mp4",
+    "bytes": 1965253,
+    "sha256": "491660e25c1566a2e7c4643b581f5b1bb9e323b093098ce71542f7820113eb3a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9eb1b824-e82d-4233-9cb8-3ef90094a5a5"
+  },
+  {
+    "id": "ca/UB04-r1/UB04-r1",
+    "group": "ca",
+    "relative": "UB04-r1/UB04-r1.mp4",
+    "filename": "ca-UB04-r1--UB04-r1.mp4",
+    "bytes": 2495633,
+    "sha256": "09ee25043d50abd41340cb692dcd95c608c8b37242c9ad244f2fd2e99c0b6629",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9438fd34-8312-4903-ac04-325ec87bdf22"
+  },
+  {
+    "id": "ca/UB04-r2/UB04-r2",
+    "group": "ca",
+    "relative": "UB04-r2/UB04-r2.mp4",
+    "filename": "ca-UB04-r2--UB04-r2.mp4",
+    "bytes": 2394006,
+    "sha256": "107e86d4227ab29414a0942639b7a882abe312d21047e2729a72c0d711ca5182",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/c9d6de26-975c-4499-9a51-7786627fe69a"
+  },
+  {
+    "id": "ca/UB04-r3/UB04-r3",
+    "group": "ca",
+    "relative": "UB04-r3/UB04-r3.mp4",
+    "filename": "ca-UB04-r3--UB04-r3.mp4",
+    "bytes": 2083849,
+    "sha256": "19eb8ae4df7ed082b8024fb91f19a5a036f2c4196888470597ab205c5ad45c1c",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/6ecbfbbd-e15a-4b98-aeeb-18c192defedd"
+  },
+  {
+    "id": "ca/UB05-r1/UB05-r1",
+    "group": "ca",
+    "relative": "UB05-r1/UB05-r1.mp4",
+    "filename": "ca-UB05-r1--UB05-r1.mp4",
+    "bytes": 3734714,
+    "sha256": "ca384d19c824c274c5250fe58a4a4a57de4843250bbae198c08029423c867868",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/4070f8e5-98d7-4fc4-a0a2-f9e829778999"
+  },
+  {
+    "id": "ca/UB05-r2/UB05-r2",
+    "group": "ca",
+    "relative": "UB05-r2/UB05-r2.mp4",
+    "filename": "ca-UB05-r2--UB05-r2.mp4",
+    "bytes": 4356185,
+    "sha256": "0d5888e6ead2f9d464b90b90f9135077334aa147ea05eac8573fb7667e60323a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/26fa62cc-260e-4531-aa9c-c9f95f10aafb"
+  },
+  {
+    "id": "ca/UB05-r3/UB05-r3",
+    "group": "ca",
+    "relative": "UB05-r3/UB05-r3.mp4",
+    "filename": "ca-UB05-r3--UB05-r3.mp4",
+    "bytes": 4128842,
+    "sha256": "33d4ead5eaf2da59d59fcf03ffb25f229ad452f138367c82d52b6034a9d81023",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/dc70b5d3-12ea-4c6f-8540-703f151312c8"
+  },
+  {
+    "id": "ca/UC01-r1/UC01-r1",
+    "group": "ca",
+    "relative": "UC01-r1/UC01-r1.mp4",
+    "filename": "ca-UC01-r1--UC01-r1.mp4",
+    "bytes": 6199935,
+    "sha256": "7ab9e981c2a628dadb25c5fd72fef9ce7a52af0d3a701c7ca57ec24171f4d1de",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/bb0044d6-7978-4890-aa44-798e72718196"
+  },
+  {
+    "id": "ca/UC01-r2/UC01-r2",
+    "group": "ca",
+    "relative": "UC01-r2/UC01-r2.mp4",
+    "filename": "ca-UC01-r2--UC01-r2.mp4",
+    "bytes": 5845101,
+    "sha256": "a74fde4a2fe72b6669be178f1bde7212dbdccef4b60fcae34328f0ee4a71dbe1",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/a2e4571d-20ba-48a9-91e2-fe9386db33ab"
+  },
+  {
+    "id": "ca/UC01-r3/UC01-r3",
+    "group": "ca",
+    "relative": "UC01-r3/UC01-r3.mp4",
+    "filename": "ca-UC01-r3--UC01-r3.mp4",
+    "bytes": 6762875,
+    "sha256": "5e6a0f7a474a17c7826e84994cd84bcefb4c88cf9f09409f207fe86c0f959511",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/1df35530-687f-4981-9872-2bde9170b4d2"
+  },
+  {
+    "id": "ca/UC02-r1/UC02-r1",
+    "group": "ca",
+    "relative": "UC02-r1/UC02-r1.mp4",
+    "filename": "ca-UC02-r1--UC02-r1.mp4",
+    "bytes": 3284413,
+    "sha256": "3d0ea1f85e2c93bba93f7e40b2d054e558fa9c4134687a6f90e93a586ba3df1a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/b1d7bf44-addd-4d63-9348-611fe9c8d159"
+  },
+  {
+    "id": "ca/UC02-r2/UC02-r2",
+    "group": "ca",
+    "relative": "UC02-r2/UC02-r2.mp4",
+    "filename": "ca-UC02-r2--UC02-r2.mp4",
+    "bytes": 3274645,
+    "sha256": "b9ed3a55dd684e2a0568865fa573bce6d2ccbbbef6fa136b8b7ec4d4dc427f28",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/101a1e55-cb1a-4aba-8759-4f987683ce94"
+  },
+  {
+    "id": "ca/UC02-r3/UC02-r3",
+    "group": "ca",
+    "relative": "UC02-r3/UC02-r3.mp4",
+    "filename": "ca-UC02-r3--UC02-r3.mp4",
+    "bytes": 2674135,
+    "sha256": "490591716fb263aeb7d4bf53f17c74b81527665de1d8c12f40fb201a555e6abb",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/8de26817-ea0e-4a32-9650-4bfe5f100d20"
+  },
+  {
+    "id": "ca/UC03-r1-continuation/UC03-r1-continuation",
+    "group": "ca",
+    "relative": "UC03-r1-continuation/UC03-r1-continuation.mp4",
+    "filename": "ca-UC03-r1-continuation--UC03-r1-continuation.mp4",
+    "bytes": 2910047,
+    "sha256": "63c44da3e8a03d0dff85b2dabaf7311a9d6a3153d9ba6560fdbb1ac2d8f5ccce",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/6dd4c81d-9bd5-4af6-85e5-290cb8dc4004"
+  },
+  {
+    "id": "ca/UC03-r1/UC03-r1-complete",
+    "group": "ca",
+    "relative": "UC03-r1/UC03-r1-complete.mp4",
+    "filename": "ca-UC03-r1--UC03-r1-complete.mp4",
+    "bytes": 6255327,
+    "sha256": "45d5e2b323fe5d856ff5ceda5267cf79cc98e45d779ce2ff89ebe9ef59fcf29f",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/01032ff5-573d-4895-9d0d-8cee204b51f8"
+  },
+  {
+    "id": "ca/UC03-r1/UC03-r1",
+    "group": "ca",
+    "relative": "UC03-r1/UC03-r1.mp4",
+    "filename": "ca-UC03-r1--UC03-r1.mp4",
+    "bytes": 3345330,
+    "sha256": "5bdcacf86e44b69e6238aebd36f169d74bb3da26df75dbd7f4f23a0128055285",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/30d362af-4866-456e-9804-916b3b46cf38"
+  },
+  {
+    "id": "ca/UC03-r2/UC03-r2",
+    "group": "ca",
+    "relative": "UC03-r2/UC03-r2.mp4",
+    "filename": "ca-UC03-r2--UC03-r2.mp4",
+    "bytes": 4036920,
+    "sha256": "1e0c2628bcb2ca8ce3a54a58e78a66baf9a1025a1654fdfb6bf2727288d7114e",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9a0496dd-a8ac-4bb6-92aa-d16898f203f2"
+  },
+  {
+    "id": "ca/UC03-r3/UC03-r3",
+    "group": "ca",
+    "relative": "UC03-r3/UC03-r3.mp4",
+    "filename": "ca-UC03-r3--UC03-r3.mp4",
+    "bytes": 4063050,
+    "sha256": "07652bee3895474188b3da3449d092e831b36cb3c89ddc0bfecb69a5db9c919a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/9fd0c646-c703-4654-983b-7305ec8ab475"
+  },
+  {
+    "id": "ca/UC04-r1-recovery/UC04-r1-recovery",
+    "group": "ca",
+    "relative": "UC04-r1-recovery/UC04-r1-recovery.mp4",
+    "filename": "ca-UC04-r1-recovery--UC04-r1-recovery.mp4",
+    "bytes": 2857050,
+    "sha256": "d057fad218eca9df56d7d8da71fc2297d595f93496958ba0a706f30671451a0c",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/3185adf3-d2a6-43c1-b22e-e23e464b5527"
+  },
+  {
+    "id": "ca/UC04-r1/UC04-r1-complete",
+    "group": "ca",
+    "relative": "UC04-r1/UC04-r1-complete.mp4",
+    "filename": "ca-UC04-r1--UC04-r1-complete.mp4",
+    "bytes": 8116841,
+    "sha256": "940070c5ea5f65a0d3c22f5659b38bcf2fd40712d4c782aeae9b1f565c54efc9",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/c8a2c9aa-b6ba-4551-b0d6-22aa40e2f755"
+  },
+  {
+    "id": "ca/UC04-r1/UC04-r1",
+    "group": "ca",
+    "relative": "UC04-r1/UC04-r1.mp4",
+    "filename": "ca-UC04-r1--UC04-r1.mp4",
+    "bytes": 5259587,
+    "sha256": "713bbaf39743cb304ba5d053c5356fed6ec439c6ad7342738c70145af9309153",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/718fc80f-8302-4456-908f-0a6d5f45a75e"
+  },
+  {
+    "id": "ca/UC04-r2-recovery/UC04-r2-recovery",
+    "group": "ca",
+    "relative": "UC04-r2-recovery/UC04-r2-recovery.mp4",
+    "filename": "ca-UC04-r2-recovery--UC04-r2-recovery.mp4",
+    "bytes": 3103615,
+    "sha256": "20c412e10664a575c56bca918f6dfa96f4f63408b56507a5618385f8c51db06c",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/cc5e96e0-ffe9-4290-9609-30eba527ea8b"
+  },
+  {
+    "id": "ca/UC04-r2/UC04-r2-complete",
+    "group": "ca",
+    "relative": "UC04-r2/UC04-r2-complete.mp4",
+    "filename": "ca-UC04-r2--UC04-r2-complete.mp4",
+    "bytes": 4836864,
+    "sha256": "5eee9a2f6a1d53ff7228ae8107956bf7c9cfb0b1b8b14a94846fc8523157c541",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/a342574a-0f25-4415-b612-792d1298347e"
+  },
+  {
+    "id": "ca/UC04-r2/UC04-r2",
+    "group": "ca",
+    "relative": "UC04-r2/UC04-r2.mp4",
+    "filename": "ca-UC04-r2--UC04-r2.mp4",
+    "bytes": 1733352,
+    "sha256": "b790164b40e27e8c8c58236ebb3df71e6de6aa587de448841866cbe7b331f6c1",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/0940870c-68dc-4594-a6bf-ea3214b450b3"
+  },
+  {
+    "id": "ca/UC04-r3-initial-availability/UC04-r3",
+    "group": "ca",
+    "relative": "UC04-r3-initial-availability/UC04-r3.mp4",
+    "filename": "ca-UC04-r3-initial-availability--UC04-r3.mp4",
+    "bytes": 164072,
+    "sha256": "36d6903d5cf2a523269da2ca866d98da763bb6736bb2a8c1a9e2e82491a81d52",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/71d4fcc3-c56d-45f9-9526-94408119538b"
+  },
+  {
+    "id": "ca/UC04-r3/UC04-r3",
+    "group": "ca",
+    "relative": "UC04-r3/UC04-r3.mp4",
+    "filename": "ca-UC04-r3--UC04-r3.mp4",
+    "bytes": 3238335,
+    "sha256": "11cc9c8f6850a41cf1d3c1fbc013b46c651727a68c160dfe38f52c6408f0c426",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/18167d37-3bbf-45eb-86de-74a626fe38c7"
+  },
+  {
+    "id": "ca/UC05-r1/UC05-r1",
+    "group": "ca",
+    "relative": "UC05-r1/UC05-r1.mp4",
+    "filename": "ca-UC05-r1--UC05-r1.mp4",
+    "bytes": 1599926,
+    "sha256": "bf74e4aaf41197e16f67caa1bbd5c6d0f443b155e6422deb556ce7b6b441d982",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/48ef59f0-bfe7-4cb0-ab5c-51bd33c61956"
+  },
+  {
+    "id": "ca/UC05-r2/UC05-r2",
+    "group": "ca",
+    "relative": "UC05-r2/UC05-r2.mp4",
+    "filename": "ca-UC05-r2--UC05-r2.mp4",
+    "bytes": 1724265,
+    "sha256": "f9f07fa5c2bf4bc26fc9d1ac5a2f8949896a8c9412b1d1c8821819c23664a294",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/40d4d294-20a6-48ab-83ac-d4798a703904"
+  },
+  {
+    "id": "ca/UC05-r3/UC05-r3",
+    "group": "ca",
+    "relative": "UC05-r3/UC05-r3.mp4",
+    "filename": "ca-UC05-r3--UC05-r3.mp4",
+    "bytes": 1445775,
+    "sha256": "b9785e5aa78de6328dce3dc75c690d7489bec410d06a55d46312d94102fd0b3a",
+    "role": "original conversation",
+    "url": "https://github.com/user-attachments/assets/ac284308-1d73-4073-a3c6-0e27295daa74"
+  },
+  {
+    "id": "ca/calibration-UC01-r1-before-consent/UC01-r1",
+    "group": "ca",
+    "relative": "calibration-UC01-r1-before-consent/UC01-r1.mp4",
+    "filename": "ca-calibration-UC01-r1-before-consent--UC01-r1.mp4",
+    "bytes": 2560142,
+    "sha256": "9fb02b272b166bdebe4e3062864fe03efd745011135cd03388c347f60491e081",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/a726e880-3aa0-4749-97fc-5c7e6d721c16"
+  },
+  {
+    "id": "ca/calibration-UC01-r2-before-consent/UC01-r2",
+    "group": "ca",
+    "relative": "calibration-UC01-r2-before-consent/UC01-r2.mp4",
+    "filename": "ca-calibration-UC01-r2-before-consent--UC01-r2.mp4",
+    "bytes": 2834708,
+    "sha256": "2be07b6bb8f228feb04b3dd4e6ed7a81556be1af0548cdcecf1c3f4850ea9d47",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/1426cd43-1932-4edf-80ad-57043846c8c8"
+  },
+  {
+    "id": "ca/calibration-UC01-r3-before-consent/UC01-r3",
+    "group": "ca",
+    "relative": "calibration-UC01-r3-before-consent/UC01-r3.mp4",
+    "filename": "ca-calibration-UC01-r3-before-consent--UC01-r3.mp4",
+    "bytes": 2777277,
+    "sha256": "82a60e796d4d2ebae717874456ddd15bc57e3fe3d9c5d502b537e040a6896e47",
+    "role": "supplemental/recovery archive",
+    "url": "https://github.com/user-attachments/assets/9078cd88-c30e-4c06-af2a-c358ed0f8e15"
+  },
+  {
+    "id": "postfix/UC01-r1/UC01-r1-continuation",
+    "group": "postfix",
+    "relative": "UC01-r1/UC01-r1-continuation.mp4",
+    "filename": "postfix-UC01-r1--UC01-r1-continuation.mp4",
+    "bytes": 1737798,
+    "sha256": "b4dc8d3d1a1cc1f3fffebacd40148709c1857c61c47cb8f9bb7030a569d78ef5",
+    "role": "interrupted/recovery archive",
+    "url": "https://github.com/user-attachments/assets/dbf5f9e0-6a59-4e16-8346-e618a656e647"
+  },
+  {
+    "id": "postfix/UC01-r1/UC01-r1",
+    "group": "postfix",
+    "relative": "UC01-r1/UC01-r1.mp4",
+    "filename": "postfix-UC01-r1--UC01-r1.mp4",
+    "bytes": 5316516,
+    "sha256": "6faa8620850533c2a4043a8f724e3d8b7dc558bdc9fb2dae70788c4503bd2a28",
+    "role": "interrupted/recovery archive",
+    "url": "https://github.com/user-attachments/assets/d05d904e-0760-4bf2-b2fc-5bf95cba6377"
+  },
+  {
+    "id": "postfix/UC01-r2/UC01-r2",
+    "group": "postfix",
+    "relative": "UC01-r2/UC01-r2.mp4",
+    "filename": "postfix-UC01-r2--UC01-r2.mp4",
+    "bytes": 6396255,
+    "sha256": "08bc85ebc386761915a6a468310d8435d08b6565d3590a6eed9a7bc4ee403c2c",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/4c7fa2b4-4ac4-47a1-ac9d-d244ad185176"
+  },
+  {
+    "id": "postfix/UC01-r3/UC01-r3",
+    "group": "postfix",
+    "relative": "UC01-r3/UC01-r3.mp4",
+    "filename": "postfix-UC01-r3--UC01-r3.mp4",
+    "bytes": 6512617,
+    "sha256": "95b10de129f761874d1f1b02729d28287e7d96ae29596bd6f22eb8737867b882",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/a66de374-6742-4bb8-ac13-e64a96b2ae52"
+  },
+  {
+    "id": "postfix/UC01-r4/UC01-r4",
+    "group": "postfix",
+    "relative": "UC01-r4/UC01-r4.mp4",
+    "filename": "postfix-UC01-r4--UC01-r4.mp4",
+    "bytes": 7260061,
+    "sha256": "80969c9d1a7a1adefbf70d197e2cd0004484b1ee62650dfde3a9ce8a7279cee7",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/63fb98fa-7805-4d31-abf8-ba45f58ca67c"
+  },
+  {
+    "id": "postfix/UC02-r1/UC02-r1",
+    "group": "postfix",
+    "relative": "UC02-r1/UC02-r1.mp4",
+    "filename": "postfix-UC02-r1--UC02-r1.mp4",
+    "bytes": 5277968,
+    "sha256": "ebea89b2a2207b82723f2dc849855d5d12199b795631a69b7ead69746ca29a6e",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/9c43835d-8d53-41ca-bd8a-e5b4696b886f"
+  },
+  {
+    "id": "postfix/UC02-r2/UC02-r2",
+    "group": "postfix",
+    "relative": "UC02-r2/UC02-r2.mp4",
+    "filename": "postfix-UC02-r2--UC02-r2.mp4",
+    "bytes": 4150555,
+    "sha256": "be09fb509427a329747b7a8fb6f46bdd60a06c8d6f44e25730a446879871f429",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/48ce80c6-626f-45b1-bf96-39e214f9676e"
+  },
+  {
+    "id": "postfix/UC02-r3/UC02-r3",
+    "group": "postfix",
+    "relative": "UC02-r3/UC02-r3.mp4",
+    "filename": "postfix-UC02-r3--UC02-r3.mp4",
+    "bytes": 5476461,
+    "sha256": "fc0fb15456ffaa1b54834b4047b880e936dc633a8527db35bb6f4ded5e76dd2f",
+    "role": "post-fix scored conversation",
+    "url": "https://github.com/user-attachments/assets/2e0b0c89-b7ab-43cc-b060-bf1f75b25226"
+  },
+  {
+    "id": "technical/SC01-r1-results/SC01-r1",
+    "group": "technical",
+    "relative": "SC01-r1-results/SC01-r1.mp4",
+    "filename": "technical-SC01-r1-results--SC01-r1.mp4",
+    "bytes": 239940,
+    "sha256": "4c781e57b32c5cd021c66a18b5c7cbbc84fad57aff1a93f610f45093548c11f2",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/e654cac3-303c-4b9f-9b3c-624878264f1b"
+  },
+  {
+    "id": "technical/SC01-r1-take2/SC01-r1",
+    "group": "technical",
+    "relative": "SC01-r1-take2/SC01-r1.mp4",
+    "filename": "technical-SC01-r1-take2--SC01-r1.mp4",
+    "bytes": 1340373,
+    "sha256": "aef5202afa671480b1541062ee8b356d29b39a702c5d9a69c77355bf75861c37",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/ffbe8557-cbcf-4945-863a-32dde7d46488"
+  },
+  {
+    "id": "technical/SC01-r1/SC01-r1",
+    "group": "technical",
+    "relative": "SC01-r1/SC01-r1.mp4",
+    "filename": "technical-SC01-r1--SC01-r1.mp4",
+    "bytes": 732814,
+    "sha256": "19aba6ba4279bdc9321cf13f9f763d4eb0e8464f6a4884280037c1e3dad8c731",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/7b47d17c-2c73-489a-b2a9-67c38f454439"
+  },
+  {
+    "id": "technical/SC01-r2-results/SC01-r2",
+    "group": "technical",
+    "relative": "SC01-r2-results/SC01-r2.mp4",
+    "filename": "technical-SC01-r2-results--SC01-r2.mp4",
+    "bytes": 243239,
+    "sha256": "8998e87491fdfb3f322f6caed89c649fca0677e723c08dc97001cbeffbf85eb9",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/22057e9f-06fc-4736-b2b1-d2b8e1a11394"
+  },
+  {
+    "id": "technical/SC01-r2/SC01-r2",
+    "group": "technical",
+    "relative": "SC01-r2/SC01-r2.mp4",
+    "filename": "technical-SC01-r2--SC01-r2.mp4",
+    "bytes": 1408249,
+    "sha256": "53cfc33800316a3fc5cb3fbb619176f96dad073d0e4b4c72dded6778ead0a7e4",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/f58ecc8b-41b9-4804-b6b5-b83fa151c6b6"
+  },
+  {
+    "id": "technical/SC01-r3-results/SC01-r3",
+    "group": "technical",
+    "relative": "SC01-r3-results/SC01-r3.mp4",
+    "filename": "technical-SC01-r3-results--SC01-r3.mp4",
+    "bytes": 256619,
+    "sha256": "07107393167130a197a551ee5a06e928e0bb7bef53eefa2ec3c1e5fc0f05cbf3",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/084da330-fe93-497a-8517-bb903eaee9d1"
+  },
+  {
+    "id": "technical/SC01-r3/SC01-r3",
+    "group": "technical",
+    "relative": "SC01-r3/SC01-r3.mp4",
+    "filename": "technical-SC01-r3--SC01-r3.mp4",
+    "bytes": 1570119,
+    "sha256": "c63f9da12a567346f4f32e83bb9d8ced7d357c3deedeb9d786ecf495a95e7fa8",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/c2ff86fe-5b76-40ab-b737-d722d7aa30d6"
+  },
+  {
+    "id": "technical/SC02-r1/SC02-r1",
+    "group": "technical",
+    "relative": "SC02-r1/SC02-r1.mp4",
+    "filename": "technical-SC02-r1--SC02-r1.mp4",
+    "bytes": 1460839,
+    "sha256": "5ed21aabc935a346a3c2a1ceb268bb24b0b25ca5387fd60cd713edf901910f75",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/47f874af-a4dc-4fed-b243-8caa50763c91"
+  },
+  {
+    "id": "technical/SC02-r2/SC02-r2",
+    "group": "technical",
+    "relative": "SC02-r2/SC02-r2.mp4",
+    "filename": "technical-SC02-r2--SC02-r2.mp4",
+    "bytes": 1516413,
+    "sha256": "ffe6d4f64cb9f85433d48c27735e551ef71b6290f60037c67a731badb562054b",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/1f45d2e9-4177-4853-9fa5-cff669a1a4cd"
+  },
+  {
+    "id": "technical/SC02-r3/SC02-r3",
+    "group": "technical",
+    "relative": "SC02-r3/SC02-r3.mp4",
+    "filename": "technical-SC02-r3--SC02-r3.mp4",
+    "bytes": 1400924,
+    "sha256": "162601d8ededca065863f1c472a1a7088e9f19d6f7ee6ecebe224e1e86822db8",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/b1bb45e6-30ea-4732-86e0-7719e43fcaaf"
+  },
+  {
+    "id": "technical/SC03-r1-results/SC03-r1",
+    "group": "technical",
+    "relative": "SC03-r1-results/SC03-r1.mp4",
+    "filename": "technical-SC03-r1-results--SC03-r1.mp4",
+    "bytes": 290497,
+    "sha256": "06e3318e36d02639c16665bea0b23720d1bc2ee86059ab73fbb45445b985d8e2",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/6d682eba-e6e9-49d0-a298-6b0047c377c5"
+  },
+  {
+    "id": "technical/SC03-r1/SC03-r1",
+    "group": "technical",
+    "relative": "SC03-r1/SC03-r1.mp4",
+    "filename": "technical-SC03-r1--SC03-r1.mp4",
+    "bytes": 922099,
+    "sha256": "55e21317a1f02bef93b5ed55d1bf37060d04c36053c5a75fa9a496f868d97e99",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/f1b06232-5ced-4771-9002-1bfe8fe37011"
+  },
+  {
+    "id": "technical/SC03-r2-results/SC03-r2",
+    "group": "technical",
+    "relative": "SC03-r2-results/SC03-r2.mp4",
+    "filename": "technical-SC03-r2-results--SC03-r2.mp4",
+    "bytes": 319608,
+    "sha256": "4809897342b0fc4bbb46c0f029e089b6c161295202e8a2be7816bed6052cbc9a",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/2fadecd5-b34b-4a78-afc2-8d284f8c5378"
+  },
+  {
+    "id": "technical/SC03-r2/SC03-r2",
+    "group": "technical",
+    "relative": "SC03-r2/SC03-r2.mp4",
+    "filename": "technical-SC03-r2--SC03-r2.mp4",
+    "bytes": 1215329,
+    "sha256": "5351e0d3e4c16430ea7d19803b4e87682ab5e3dd73ea8e88f6b08d328e642a57",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/0138fa40-8f16-431d-9817-9fc70033bbfe"
+  },
+  {
+    "id": "technical/SC03-r3-results/SC03-r3",
+    "group": "technical",
+    "relative": "SC03-r3-results/SC03-r3.mp4",
+    "filename": "technical-SC03-r3-results--SC03-r3.mp4",
+    "bytes": 272952,
+    "sha256": "c90f4e6dfd30fefa754dca61058a0afd77e3422ad74d4000602b74637bab1d8e",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/c0475dea-cdb9-4219-a65f-473530212edd"
+  },
+  {
+    "id": "technical/SC03-r3/SC03-r3",
+    "group": "technical",
+    "relative": "SC03-r3/SC03-r3.mp4",
+    "filename": "technical-SC03-r3--SC03-r3.mp4",
+    "bytes": 1086426,
+    "sha256": "5d1de5f655ee985261941e7268958fa848a33e1b2363f00784fcb41d8494b44a",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/a9d70dfe-e30c-4483-8a8b-a50209e0b6f7"
+  },
+  {
+    "id": "technical/SC04-r1-take2/SC04-r1",
+    "group": "technical",
+    "relative": "SC04-r1-take2/SC04-r1.mp4",
+    "filename": "technical-SC04-r1-take2--SC04-r1.mp4",
+    "bytes": 3523744,
+    "sha256": "595bec46d051d3f369d8df83249cdbd60b0dd664cb6bcbdc4ccf79fbe6ed8dbf",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/74ae3744-0977-485b-9874-4f30a1b722be"
+  },
+  {
+    "id": "technical/SC04-r1/SC04-r1",
+    "group": "technical",
+    "relative": "SC04-r1/SC04-r1.mp4",
+    "filename": "technical-SC04-r1--SC04-r1.mp4",
+    "bytes": 6043177,
+    "sha256": "d02244a467fe5ac7db30880559a48f755f553028517c66ab7cb4c511a0f65f43",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/2c8ddcc2-0bf1-44fd-bdd8-7976edd073ba"
+  },
+  {
+    "id": "technical/SC04-r2-take2/SC04-r2",
+    "group": "technical",
+    "relative": "SC04-r2-take2/SC04-r2.mp4",
+    "filename": "technical-SC04-r2-take2--SC04-r2.mp4",
+    "bytes": 3391870,
+    "sha256": "20fa6887616a6590f3f5d1f15d11539944ddd70e2c349fc4be405f5f3087d92a",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/22de6acf-3a6d-4e96-b056-41e3659560c7"
+  },
+  {
+    "id": "technical/SC04-r2/SC04-r2",
+    "group": "technical",
+    "relative": "SC04-r2/SC04-r2.mp4",
+    "filename": "technical-SC04-r2--SC04-r2.mp4",
+    "bytes": 4729373,
+    "sha256": "576d89d53bc4505c39127941b003ed44439f7d55887391b95c15eab6d61fcb4d",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/378e5483-6eee-46a0-9e14-79fd5ccf741d"
+  },
+  {
+    "id": "technical/SC04-r3-take2/SC04-r3",
+    "group": "technical",
+    "relative": "SC04-r3-take2/SC04-r3.mp4",
+    "filename": "technical-SC04-r3-take2--SC04-r3.mp4",
+    "bytes": 2693122,
+    "sha256": "5af9d46f69dd0861c84ae4fbd7362d16f6f2ee9971e7e2bfc7d27fd5f03d3475",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/19f89de2-f859-4341-929a-72289782dd5e"
+  },
+  {
+    "id": "technical/SC04-r3/SC04-r3",
+    "group": "technical",
+    "relative": "SC04-r3/SC04-r3.mp4",
+    "filename": "technical-SC04-r3--SC04-r3.mp4",
+    "bytes": 5689069,
+    "sha256": "2b21dbe68b7e71372800b16138e6dbf4aa4671b3ee5d5047c26fd29308f0943e",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/935f2517-8413-4022-87e4-339c882464ab"
+  },
+  {
+    "id": "technical/SC05-r1-results/SC05-r1",
+    "group": "technical",
+    "relative": "SC05-r1-results/SC05-r1.mp4",
+    "filename": "technical-SC05-r1-results--SC05-r1.mp4",
+    "bytes": 232373,
+    "sha256": "3bc46b5476097f6370ac404340e99334d44d217c5a4e59c65241550f86cde223",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/8e35c963-9cdd-44be-a1d6-103803450e9b"
+  },
+  {
+    "id": "technical/SC05-r1/SC05-r1",
+    "group": "technical",
+    "relative": "SC05-r1/SC05-r1.mp4",
+    "filename": "technical-SC05-r1--SC05-r1.mp4",
+    "bytes": 3626381,
+    "sha256": "d97f69f1e2de8956daebbec67f6070cade190bbcd7847880b85e5e16508fdbfa",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/4c7ebb72-dfaa-47b2-ad70-257ad8d066a3"
+  },
+  {
+    "id": "technical/SC05-r2-results/SC05-r2",
+    "group": "technical",
+    "relative": "SC05-r2-results/SC05-r2.mp4",
+    "filename": "technical-SC05-r2-results--SC05-r2.mp4",
+    "bytes": 267464,
+    "sha256": "3db43077ee4b639ccf5ab039cb5302021049c3243d3357a3a5cfe25e3a1f8f93",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/96850b6e-ada3-4083-a94e-23a5eb705c2a"
+  },
+  {
+    "id": "technical/SC05-r2/SC05-r2",
+    "group": "technical",
+    "relative": "SC05-r2/SC05-r2.mp4",
+    "filename": "technical-SC05-r2--SC05-r2.mp4",
+    "bytes": 4648828,
+    "sha256": "f3995885aa66971db11564ba49285d6b6a527ca4131a8c41c2a0fe5526e99ada",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/1f1a6e5d-372c-4575-8ac0-8fe95a005a7c"
+  },
+  {
+    "id": "technical/SC05-r3-results/SC05-r3",
+    "group": "technical",
+    "relative": "SC05-r3-results/SC05-r3.mp4",
+    "filename": "technical-SC05-r3-results--SC05-r3.mp4",
+    "bytes": 317664,
+    "sha256": "5315cf1a2acc3f267ce8eb6323bef4ec878732a94141328528d08eafbf391b38",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/39cd6160-bf1a-408d-bf69-d9cd24c0c745"
+  },
+  {
+    "id": "technical/SC05-r3/SC05-r3",
+    "group": "technical",
+    "relative": "SC05-r3/SC05-r3.mp4",
+    "filename": "technical-SC05-r3--SC05-r3.mp4",
+    "bytes": 5190191,
+    "sha256": "7b2f2e5a3f43e513a6571483cdeb88dc7783e30b0d1b5747ebfbdc5b2924a7e4",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/5a4a71e0-5d95-45f3-b956-8399283ef36c"
+  },
+  {
+    "id": "technical/SC06-r1/SC06-r1",
+    "group": "technical",
+    "relative": "SC06-r1/SC06-r1.mp4",
+    "filename": "technical-SC06-r1--SC06-r1.mp4",
+    "bytes": 4607176,
+    "sha256": "dcfe3de42016baf2726e09a012ed78f118f7e68a893b5ad4359d243c5c966a79",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/46aef48f-9765-4274-8764-c6835f6ad674"
+  },
+  {
+    "id": "technical/SC06-r2/SC06-r2",
+    "group": "technical",
+    "relative": "SC06-r2/SC06-r2.mp4",
+    "filename": "technical-SC06-r2--SC06-r2.mp4",
+    "bytes": 4018944,
+    "sha256": "8636fc7b370a21298e5620016b06f2ec6bc8cd05f11fdce94619d4f30a233499",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/e9c14f93-f9c6-4402-a98b-e44e7feb200b"
+  },
+  {
+    "id": "technical/SC06-r3/SC06-r3",
+    "group": "technical",
+    "relative": "SC06-r3/SC06-r3.mp4",
+    "filename": "technical-SC06-r3--SC06-r3.mp4",
+    "bytes": 2076908,
+    "sha256": "6523b5e7af3ab7fbae124e5e08404da12d2b0e485cf97597cddc4c70b6a2044f",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/1b1b188a-408c-4d57-a589-5f2fb4187a44"
+  },
+  {
+    "id": "technical/SC07-r1-results/SC07-r1",
+    "group": "technical",
+    "relative": "SC07-r1-results/SC07-r1.mp4",
+    "filename": "technical-SC07-r1-results--SC07-r1.mp4",
+    "bytes": 313767,
+    "sha256": "f0bb82f954e5cb420091985b69fac2f4c5bcdc9f94904ef49af237ba3b15f7a6",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/5aa5625e-00a9-4adc-8621-8607a34775f8"
+  },
+  {
+    "id": "technical/SC07-r1/SC07-r1",
+    "group": "technical",
+    "relative": "SC07-r1/SC07-r1.mp4",
+    "filename": "technical-SC07-r1--SC07-r1.mp4",
+    "bytes": 3843580,
+    "sha256": "6830b9a32292605a4cb661ebf6d1d991475907300a364034e1073b1776639f5c",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/4d929b95-f8a5-4e84-ae6f-61c80f4c3d7f"
+  },
+  {
+    "id": "technical/SC07-r2-results/SC07-r2",
+    "group": "technical",
+    "relative": "SC07-r2-results/SC07-r2.mp4",
+    "filename": "technical-SC07-r2-results--SC07-r2.mp4",
+    "bytes": 286323,
+    "sha256": "a555fd5c161e85c427c4a20c1e96fabfcc35cc3f8df98ae661d38c62d8a82547",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/75caaf1e-d061-4439-b1e5-e919008ec4c5"
+  },
+  {
+    "id": "technical/SC07-r2/SC07-r2",
+    "group": "technical",
+    "relative": "SC07-r2/SC07-r2.mp4",
+    "filename": "technical-SC07-r2--SC07-r2.mp4",
+    "bytes": 3645545,
+    "sha256": "983b0afee5a83dd61115b39c8946f2ad2d71e9c16ec32cb2af3ee2cd92711c62",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/3f547f65-21af-463c-b815-df21fe0d4ca9"
+  },
+  {
+    "id": "technical/SC07-r3-results/SC07-r3",
+    "group": "technical",
+    "relative": "SC07-r3-results/SC07-r3.mp4",
+    "filename": "technical-SC07-r3-results--SC07-r3.mp4",
+    "bytes": 273725,
+    "sha256": "7ea46e3e274ff9da9115cfae9d557f1115cd518ed52eb0f5c6e813ca6f918c3c",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/8e9e935c-141e-450a-bed4-0d9e63b8129a"
+  },
+  {
+    "id": "technical/SC07-r3/SC07-r3",
+    "group": "technical",
+    "relative": "SC07-r3/SC07-r3.mp4",
+    "filename": "technical-SC07-r3--SC07-r3.mp4",
+    "bytes": 3041479,
+    "sha256": "25602b9efbf574477d2d9c6d16e9b14ea88f0aa6c99628815a4a0902a79986e9",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/d1eb2a94-743d-4f89-96c9-7e83168cc929"
+  },
+  {
+    "id": "technical/SC08-r1/SC08-r1",
+    "group": "technical",
+    "relative": "SC08-r1/SC08-r1.mp4",
+    "filename": "technical-SC08-r1--SC08-r1.mp4",
+    "bytes": 1316829,
+    "sha256": "87a795a76c77e353e587081aef67b381e15d3f7ba637d1db7af21123b374fa3f",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/516dbed8-b701-4c94-ae16-889ea196cc24"
+  },
+  {
+    "id": "technical/SC08-r2/SC08-r2",
+    "group": "technical",
+    "relative": "SC08-r2/SC08-r2.mp4",
+    "filename": "technical-SC08-r2--SC08-r2.mp4",
+    "bytes": 1647433,
+    "sha256": "b719709fbd73b8caee70b8cb8deb9ad60c7ec2f4327c886aadc71fc574e82291",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/2c4f611c-eb3c-4c6c-b6e1-c5add5380a02"
+  },
+  {
+    "id": "technical/SC08-r3/SC08-r3",
+    "group": "technical",
+    "relative": "SC08-r3/SC08-r3.mp4",
+    "filename": "technical-SC08-r3--SC08-r3.mp4",
+    "bytes": 1670352,
+    "sha256": "cc07cc246985ceb92e36872813b4b1e7dcef0e7ef249344ec6d4d3e83e2b1e32",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/7e7ae283-030d-4b87-ae4f-34beec533412"
+  },
+  {
+    "id": "technical/SC09-r1-take2/SC09-r1",
+    "group": "technical",
+    "relative": "SC09-r1-take2/SC09-r1.mp4",
+    "filename": "technical-SC09-r1-take2--SC09-r1.mp4",
+    "bytes": 3159843,
+    "sha256": "2fd4b58c09bfeb9d8fa3549afd4265f65aab2117c415411d6ec1e1f72bfc9321",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/7dafbf2b-1e64-4ce2-b6fe-9228fbf84d08"
+  },
+  {
+    "id": "technical/SC09-r1/SC09-r1",
+    "group": "technical",
+    "relative": "SC09-r1/SC09-r1.mp4",
+    "filename": "technical-SC09-r1--SC09-r1.mp4",
+    "bytes": 2154901,
+    "sha256": "ce703f6e00ea3a24a8433ced38dad843f38a61a338172b7e8a5d59dade45e63c",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/4f568292-85c2-4396-9e81-b6b582f1a1f0"
+  },
+  {
+    "id": "technical/SC09-r2-take2/SC09-r2",
+    "group": "technical",
+    "relative": "SC09-r2-take2/SC09-r2.mp4",
+    "filename": "technical-SC09-r2-take2--SC09-r2.mp4",
+    "bytes": 3167735,
+    "sha256": "45160f044e3aa81ad0213b3bd1deb3f1c1ed939f19f50b3ea78a2751bfb5af86",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/46ab89bc-ffbc-49ec-aa59-c8e82c0ed55a"
+  },
+  {
+    "id": "technical/SC09-r2/SC09-r2",
+    "group": "technical",
+    "relative": "SC09-r2/SC09-r2.mp4",
+    "filename": "technical-SC09-r2--SC09-r2.mp4",
+    "bytes": 2272025,
+    "sha256": "9144e5fdfbc9fa61a6f6d670c6a22aa2466f156f733d71e347b7f6c3fc019a57",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/4bd3c5d2-47d8-427d-b9bd-796e6c628eda"
+  },
+  {
+    "id": "technical/SC09-r3-take2/SC09-r3",
+    "group": "technical",
+    "relative": "SC09-r3-take2/SC09-r3.mp4",
+    "filename": "technical-SC09-r3-take2--SC09-r3.mp4",
+    "bytes": 3260673,
+    "sha256": "4607ef9fc395b7c120cc5f85ce939df034fd261ed273ab6aa0e9b250faf1bcee",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/5ea45590-f61e-4fa4-a2d1-7a1321676f32"
+  },
+  {
+    "id": "technical/SC09-r3/SC09-r3",
+    "group": "technical",
+    "relative": "SC09-r3/SC09-r3.mp4",
+    "filename": "technical-SC09-r3--SC09-r3.mp4",
+    "bytes": 1912125,
+    "sha256": "fa0a92f0fd7fe21fd59b29ebfea6250b2b14713fa815f5fd07ee0944ddb78103",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/fc469465-86e6-49b9-8da9-29099b20fb08"
+  },
+  {
+    "id": "technical/SC10-r1-take2/SC10-r1",
+    "group": "technical",
+    "relative": "SC10-r1-take2/SC10-r1.mp4",
+    "filename": "technical-SC10-r1-take2--SC10-r1.mp4",
+    "bytes": 5003223,
+    "sha256": "f6a6fd8ed7f9d89b0a8e371a80b33df161e6513913ca792cd4d800b84fe43784",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/6b2c0098-9494-458e-b012-523c68d05ae2"
+  },
+  {
+    "id": "technical/SC10-r1/SC10-r1",
+    "group": "technical",
+    "relative": "SC10-r1/SC10-r1.mp4",
+    "filename": "technical-SC10-r1--SC10-r1.mp4",
+    "bytes": 10529581,
+    "sha256": "d2ac3c408e4595e5a0dee8a3a00b01070cf4b7494eaabe86bc195588429feef2",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/21c2e875-176b-4dfc-9f8e-0ae9adc20ec8"
+  },
+  {
+    "id": "technical/SC10-r2-take2/SC10-r2",
+    "group": "technical",
+    "relative": "SC10-r2-take2/SC10-r2.mp4",
+    "filename": "technical-SC10-r2-take2--SC10-r2.mp4",
+    "bytes": 4772698,
+    "sha256": "0e6e5c4c2a32d9493933ce14fd1a6a2d0f2bb6c3a278b75795dde959ef0b5f27",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/b94e60ae-0e91-4bfc-9cde-a7d20e8b577d"
+  },
+  {
+    "id": "technical/SC10-r2/SC10-r2",
+    "group": "technical",
+    "relative": "SC10-r2/SC10-r2.mp4",
+    "filename": "technical-SC10-r2--SC10-r2.mp4",
+    "bytes": 10460747,
+    "sha256": "31257790a687402889708e0cec2f220bdd99f1aee91d429f5a362dce0848eb3b",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/e6768727-e933-451f-8e9f-dc429f49aead"
+  },
+  {
+    "id": "technical/SC10-r3/SC10-r3",
+    "group": "technical",
+    "relative": "SC10-r3/SC10-r3.mp4",
+    "filename": "technical-SC10-r3--SC10-r3.mp4",
+    "bytes": 4828477,
+    "sha256": "f37bd3695af28142141dad94cff242b57a2b5a640a4827bd7e8f59034234e41e",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/27de99d6-8339-47fa-8de7-8794a271ab4d"
+  },
+  {
+    "id": "technical/SC11-r1-take2/SC11-r1",
+    "group": "technical",
+    "relative": "SC11-r1-take2/SC11-r1.mp4",
+    "filename": "technical-SC11-r1-take2--SC11-r1.mp4",
+    "bytes": 3486326,
+    "sha256": "1f4add41edc005b5da6578399db774475f7460dae14b3fe843a453365d1d4329",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/e849129e-2b68-4f97-9efc-e7dfae724cd5"
+  },
+  {
+    "id": "technical/SC11-r1/SC11-r1",
+    "group": "technical",
+    "relative": "SC11-r1/SC11-r1.mp4",
+    "filename": "technical-SC11-r1--SC11-r1.mp4",
+    "bytes": 3890466,
+    "sha256": "608d62ba0ff941f96c90b93d32c97ead98b75b4eca5c7fb1fd82e69421b901ee",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/54631cdb-3842-4bd0-bef0-7478a6b53f57"
+  },
+  {
+    "id": "technical/SC11-r2-take2/SC11-r2",
+    "group": "technical",
+    "relative": "SC11-r2-take2/SC11-r2.mp4",
+    "filename": "technical-SC11-r2-take2--SC11-r2.mp4",
+    "bytes": 3330945,
+    "sha256": "6fcdb53de8dc7a5d76fb99d4459f193baca9258cd4156e11862e4d713fa081f8",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/0588cedb-c483-4cf7-87c8-b3fa1f010e7e"
+  },
+  {
+    "id": "technical/SC11-r2/SC11-r2",
+    "group": "technical",
+    "relative": "SC11-r2/SC11-r2.mp4",
+    "filename": "technical-SC11-r2--SC11-r2.mp4",
+    "bytes": 3944815,
+    "sha256": "b78c87c420548d5445dff565141c4a5361b4bd0822b1a3ef93e262ca557aa62c",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/a9fc1abe-fcee-4ab7-a57f-491c7e47a554"
+  },
+  {
+    "id": "technical/SC11-r3/SC11-r3",
+    "group": "technical",
+    "relative": "SC11-r3/SC11-r3.mp4",
+    "filename": "technical-SC11-r3--SC11-r3.mp4",
+    "bytes": 3394003,
+    "sha256": "a9724e4fba26f689cebd80c405ea1214ed2b6ad9e50c14edbf124eb9e48126ff",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/140bd5ea-3923-4807-87f0-74a431371c31"
+  },
+  {
+    "id": "technical/SC12-r1-results/SC12-r1",
+    "group": "technical",
+    "relative": "SC12-r1-results/SC12-r1.mp4",
+    "filename": "technical-SC12-r1-results--SC12-r1.mp4",
+    "bytes": 1157407,
+    "sha256": "580069fad2bc53cb8d0111447e1f5916c84e01e6e754cc42a3e57a1a55a992c1",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/f39b2892-00ae-466d-b45a-1520f6a39e6e"
+  },
+  {
+    "id": "technical/SC12-r1-take2/SC12-r1",
+    "group": "technical",
+    "relative": "SC12-r1-take2/SC12-r1.mp4",
+    "filename": "technical-SC12-r1-take2--SC12-r1.mp4",
+    "bytes": 15076625,
+    "sha256": "b7989c2281d50ffaa8490bfcb1199b74036f6abca29e0be94d474d64e99048d9",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/e42260de-6420-4b06-978f-2525304a2965"
+  },
+  {
+    "id": "technical/SC12-r1/SC12-r1",
+    "group": "technical",
+    "relative": "SC12-r1/SC12-r1.mp4",
+    "filename": "technical-SC12-r1--SC12-r1.mp4",
+    "bytes": 186983,
+    "sha256": "cc9cc813dfb2c33b5708f906afcdd5c25af67c060a610edb78b218d05a262f1f",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/1297bff8-0820-418d-9cb1-01e9ea8c29de"
+  },
+  {
+    "id": "technical/SC12-r2-results/SC12-r2",
+    "group": "technical",
+    "relative": "SC12-r2-results/SC12-r2.mp4",
+    "filename": "technical-SC12-r2-results--SC12-r2.mp4",
+    "bytes": 1175091,
+    "sha256": "3b53d91efe3087f01f2c9af3741f1eb3ea9b5130449059e8e1f20787fe332694",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/5006263f-1982-4080-9fee-1a31bff6dc1f"
+  },
+  {
+    "id": "technical/SC12-r2-take2/SC12-r2",
+    "group": "technical",
+    "relative": "SC12-r2-take2/SC12-r2.mp4",
+    "filename": "technical-SC12-r2-take2--SC12-r2.mp4",
+    "bytes": 12612974,
+    "sha256": "53ddb8395fcebdc9639c164577dd58a8e142673c2d764de189b8d3fe9b05fcd5",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/c913f595-416e-4cf9-8d88-7f1962eaf344"
+  },
+  {
+    "id": "technical/SC12-r2/SC12-r2",
+    "group": "technical",
+    "relative": "SC12-r2/SC12-r2.mp4",
+    "filename": "technical-SC12-r2--SC12-r2.mp4",
+    "bytes": 179298,
+    "sha256": "6573a25a0ea0312e7668812f11e6606502c734732bd3606a5b0653c8b75b17fd",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/5cde5827-b4a6-4e35-bedd-39e09742450f"
+  },
+  {
+    "id": "technical/SC12-r3-results/SC12-r3",
+    "group": "technical",
+    "relative": "SC12-r3-results/SC12-r3.mp4",
+    "filename": "technical-SC12-r3-results--SC12-r3.mp4",
+    "bytes": 1154422,
+    "sha256": "82531b857e8abd14fb9794a2cfd4e38c1d33c9f1da3beaa872caa80203cf9067",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/36f45c45-ec4e-4df9-b830-3449fe20ad5a"
+  },
+  {
+    "id": "technical/SC12-r3-take2/SC12-r3",
+    "group": "technical",
+    "relative": "SC12-r3-take2/SC12-r3.mp4",
+    "filename": "technical-SC12-r3-take2--SC12-r3.mp4",
+    "bytes": 12475076,
+    "sha256": "929fb4a812ade9703bbfa5f9fc690f3a5b1268094ff66ab7f95ed4ad2d37ec54",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/fc2235ff-5cd6-4060-b0fe-9a60d6f0749d"
+  },
+  {
+    "id": "technical/SC12-r3/SC12-r3",
+    "group": "technical",
+    "relative": "SC12-r3/SC12-r3.mp4",
+    "filename": "technical-SC12-r3--SC12-r3.mp4",
+    "bytes": 188487,
+    "sha256": "c3fcaed1bbd3f7fa96f9e3b56e4f4526cd2fd6242e17873610f351d7f34e066c",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/0cdfc335-46f9-48c3-b79a-0b639aaff81d"
+  },
+  {
+    "id": "technical/SC13-r1-take2/SC13-r1",
+    "group": "technical",
+    "relative": "SC13-r1-take2/SC13-r1.mp4",
+    "filename": "technical-SC13-r1-take2--SC13-r1.mp4",
+    "bytes": 1186008,
+    "sha256": "f886f6d404e47e451ad930c4d45c958ba8b12c62ed1510c41e1b8b958e9b1327",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/264efa75-8ee7-4b64-aa16-66bacdf29ea3"
+  },
+  {
+    "id": "technical/SC13-r1/SC13-r1",
+    "group": "technical",
+    "relative": "SC13-r1/SC13-r1.mp4",
+    "filename": "technical-SC13-r1--SC13-r1.mp4",
+    "bytes": 1536550,
+    "sha256": "4b098fde2423b167a9bde48a5eaf7b3b421c7e23458bbd1939778f415c3ea762",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/42e77519-0086-478a-bb04-346d3dc5b033"
+  },
+  {
+    "id": "technical/SC13-r2-take2/SC13-r2",
+    "group": "technical",
+    "relative": "SC13-r2-take2/SC13-r2.mp4",
+    "filename": "technical-SC13-r2-take2--SC13-r2.mp4",
+    "bytes": 987405,
+    "sha256": "4ae9674c573a8491c3a9107b4ec0e6df97ba78134e14ac3b2f2aae8d1ac94f82",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/cc7cd0e3-187c-434e-a645-183e79831b18"
+  },
+  {
+    "id": "technical/SC13-r2/SC13-r2",
+    "group": "technical",
+    "relative": "SC13-r2/SC13-r2.mp4",
+    "filename": "technical-SC13-r2--SC13-r2.mp4",
+    "bytes": 1270879,
+    "sha256": "784223f3f3a5542b378f6bdd3e5db823c3606e1dc1f4e90d2ed13eba1379b3fe",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/cfca2d5c-3497-46bd-8b48-23f3fd375072"
+  },
+  {
+    "id": "technical/SC13-r3-take2/SC13-r3",
+    "group": "technical",
+    "relative": "SC13-r3-take2/SC13-r3.mp4",
+    "filename": "technical-SC13-r3-take2--SC13-r3.mp4",
+    "bytes": 946474,
+    "sha256": "979df566fbcbad5e1195d4084c134c67ffc626da7248a46b96e5424aaba7a708",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/81819a50-5ec8-4c41-accd-baf2bd4abcca"
+  },
+  {
+    "id": "technical/SC13-r3/SC13-r3",
+    "group": "technical",
+    "relative": "SC13-r3/SC13-r3.mp4",
+    "filename": "technical-SC13-r3--SC13-r3.mp4",
+    "bytes": 1519448,
+    "sha256": "04931ac51c83e0c0deae1d430e183fc3f8ebedc6bc54bcff38ee9156fc348632",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/1acf6292-e5f2-4c14-a9be-906a4a11b0af"
+  },
+  {
+    "id": "technical/SC14-r1-take2/SC14-r1",
+    "group": "technical",
+    "relative": "SC14-r1-take2/SC14-r1.mp4",
+    "filename": "technical-SC14-r1-take2--SC14-r1.mp4",
+    "bytes": 966640,
+    "sha256": "99cbbd47f6422e251a061f5d048879f582ac2f36721dd97271fad1b29bfca810",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/415c3515-f313-4390-891d-059f6eacfccf"
+  },
+  {
+    "id": "technical/SC14-r1/SC14-r1",
+    "group": "technical",
+    "relative": "SC14-r1/SC14-r1.mp4",
+    "filename": "technical-SC14-r1--SC14-r1.mp4",
+    "bytes": 1163947,
+    "sha256": "27a2d45a475438b79dbf15acd2abbb2ae9441c88e73d9e2390feb2d2bf58798d",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/26b41dc6-e44d-48d8-bcb6-98ad1fb5926d"
+  },
+  {
+    "id": "technical/SC14-r2-take2/SC14-r2",
+    "group": "technical",
+    "relative": "SC14-r2-take2/SC14-r2.mp4",
+    "filename": "technical-SC14-r2-take2--SC14-r2.mp4",
+    "bytes": 967531,
+    "sha256": "294286fa6d7fc2735b935f85454be9fdb4f4fcb0ae33d3701afc8926b1e49fa3",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/22761914-52a0-45ae-9b7c-16003fd1c75e"
+  },
+  {
+    "id": "technical/SC14-r2/SC14-r2",
+    "group": "technical",
+    "relative": "SC14-r2/SC14-r2.mp4",
+    "filename": "technical-SC14-r2--SC14-r2.mp4",
+    "bytes": 723797,
+    "sha256": "c64c53f7229c9cde8bed2646e43c18c2aa1ab1fb6d0f049483ee4bb7b6f22879",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/4f77f826-6352-44bf-bf61-4a49707e838f"
+  },
+  {
+    "id": "technical/SC14-r3-take2/SC14-r3",
+    "group": "technical",
+    "relative": "SC14-r3-take2/SC14-r3.mp4",
+    "filename": "technical-SC14-r3-take2--SC14-r3.mp4",
+    "bytes": 769499,
+    "sha256": "c3d240ecf1f5739a1be7540254c6e92129a52e18ddeed299fd3f7c5c27a966c0",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/01ec0a75-4fbf-4e92-a60e-7a8183311de4"
+  },
+  {
+    "id": "technical/SC14-r3/SC14-r3",
+    "group": "technical",
+    "relative": "SC14-r3/SC14-r3.mp4",
+    "filename": "technical-SC14-r3--SC14-r3.mp4",
+    "bytes": 684937,
+    "sha256": "132545621dfcc5dc1dbffa280dc991d5d07aef6e6e093de762d9de03e5a6c53b",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/3a5e5761-6d24-4dbb-bb51-463a2b477275"
+  },
+  {
+    "id": "technical/SC15-r1/SC15-r1",
+    "group": "technical",
+    "relative": "SC15-r1/SC15-r1.mp4",
+    "filename": "technical-SC15-r1--SC15-r1.mp4",
+    "bytes": 3306707,
+    "sha256": "9c1a416cdbd999c7824d91b535de4ffed27a7d734554895c85b035f2c8cab144",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/86135065-4312-43fc-9978-3fe67d3e786e"
+  },
+  {
+    "id": "technical/SC15-r2/SC15-r2",
+    "group": "technical",
+    "relative": "SC15-r2/SC15-r2.mp4",
+    "filename": "technical-SC15-r2--SC15-r2.mp4",
+    "bytes": 3136711,
+    "sha256": "368ba645755f09f1fbcc932dcb774807f404d7581d45baad2ba5685a35f63349",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/924a9de6-9e4d-4c7b-90cf-59ab4ec6d2cf"
+  },
+  {
+    "id": "technical/SC15-r3/SC15-r3",
+    "group": "technical",
+    "relative": "SC15-r3/SC15-r3.mp4",
+    "filename": "technical-SC15-r3--SC15-r3.mp4",
+    "bytes": 2886947,
+    "sha256": "4a797d445face1e23629dac522d139c61a1b15f693dfc0b27d232b9f4fb47614",
+    "role": "technical/fault-injection appendix",
+    "url": "https://github.com/user-attachments/assets/23ba0abf-9c61-467d-bf8e-970f999f1605"
+  }
+]

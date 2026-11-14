@@ -1,0 +1,1674 @@
+{
+  "model": "gpt-6-astra",
+  "reasoningEffort": "xhigh",
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "checkedAt": "2026-10-31T23:21:11Z",
+  "timezone": "Europe/Warsaw",
+  "scope": "Niezależny read-only functional rescan CC-962; faza scan; bez subagentów",
+  "checksActuallyPerformed": [
+    {
+      "id": "C01",
+      "performed": "Odczyt AGENTS.md app/climate-advisor, dwóch baseline, git rev-parse HEAD i status/diff",
+      "result": "Pinned HEAD zgodny; brak zmian śledzonego kodu",
+      "evidenceLevel": "code"
+    },
+    {
+      "id": "C02",
+      "performed": "ChatInput/SectorCard, prompt composition, general/pre-run/active SE tools, native catalog i callery",
+      "result": "Dwie powierzchnie; scoped reads w SE; katalog GHGI istnieje",
+      "evidenceLevel": "code"
+    },
+    {
+      "id": "C03",
+      "performed": "UI import upload/status/row-preview/approve, history/transaction, IngestRunner i callery",
+      "result": "Brak agentic entry i produkcyjnej integracji runnera",
+      "evidenceLevel": "code"
+    },
+    {
+      "id": "C04",
+      "performed": "CA review/save/owner/token/scope oraz CC service key/user/city/inventory permissions i UI confirmation",
+      "result": "Brak potwierdzonego auth bypassu; A01 narusza atomicity, nie wykazano samodzielnego model write",
+      "evidenceLevel": "code"
+    },
+    {
+      "id": "C05",
+      "performed": "pytest tests/test_inventory_context_tools.py tests/test_agent_inventory_tools.py tests/stationary_energy/test_proposal_builder.py",
+      "result": "17 passed, 2 warnings, 4.17 s",
+      "evidenceLevel": "local-test"
+    },
+    {
+      "id": "C06",
+      "performed": "pytest tests/test_native_input_catalog_tools.py z pytest_asyncio.plugin",
+      "result": "74 passed, 3.19 s",
+      "evidenceLevel": "local-test"
+    },
+    {
+      "id": "C07",
+      "performed": "Node/TypeScript in-memory commit.ts/DataSourceService.ts z atrapami",
+      "result": "Kontrola no-force PASS; błędy selected source/manual usuwają poprzedni rekord",
+      "evidenceLevel": "local-test"
+    },
+    {
+      "id": "C08",
+      "performed": "AST normalizeSourceRows + getSourceWithData/applyGlobalAPISource; Python proposal builder",
+      "result": "Skala 1000000 vs100000; kg opisane t; []→gap; pierwszy record100000 zamiast total500000",
+      "evidenceLevel": "local-test"
+    },
+    {
+      "id": "C09",
+      "performed": "Wyszukiwanie CC-950/golden/backtest; telemetry wiring, manifest test i źródła testów",
+      "result": "Brak identyfikowalnego golden CC-950; MLflow kod/flag obecne, live readback niewykonany",
+      "evidenceLevel": "code"
+    }
+  ],
+  "baselineComparison": [
+    {
+      "id": "D1",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Read all sectors; brak tworzenia danych",
+      "stationaryEnergyBuilder": "SE only",
+      "conclusion": "Transport/Waste/IPPU/AFOLU to nadal planned scope, nie regresja.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Trzy query."
+        },
+        {
+          "path": "app/src/components/Cards/SectorCard.tsx",
+          "lineStart": 52,
+          "lineEnd": 55,
+          "claim": "CTA SE."
+        }
+      ],
+      "findingIds": [
+        "A07"
+      ]
+    },
+    {
+      "id": "D2",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Brak manual/assisted/research/upload",
+      "stationaryEnergyBuilder": "Źródła + NO/NE/IE/C; manual override backend",
+      "conclusion": "Korekta: manual API i IE/C istnieją; brak osiągalnego manual-entry tool/UI, research i upload pozostaje.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 105,
+          "lineEnd": 117,
+          "claim": "Manual kontrakt."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "claim": "Cztery klucze."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Tool pack."
+        }
+      ],
+      "findingIds": [
+        "A04",
+        "A07"
+      ]
+    },
+    {
+      "id": "D3",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Brak chat upload",
+      "stationaryEnergyBuilder": "Brak agentic upload/Transport mapping",
+      "conclusion": "UI import nie jest uploadem agenta.",
+      "evidence": [
+        {
+          "path": "app/src/components/ChatBot/ChatInput.tsx",
+          "lineStart": 32,
+          "lineEnd": 78,
+          "claim": "Textarea/send/stop."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Brak upload."
+        }
+      ],
+      "findingIds": [
+        "A07",
+        "A08"
+      ]
+    },
+    {
+      "id": "D4",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Odczyt totals, brak calculate command",
+      "stationaryEnergyBuilder": "Save stosuje istniejące obliczenia; scoped wynik można odczytać",
+      "conclusion": "Brak osobnego calculate nie oznacza braku obliczeń. Automatyczny wynik w chat nie jest gwarantowany; A02/A05.",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Skalowanie zapisu."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 722,
+          "lineEnd": 732,
+          "claim": "Scoped wynik."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-save.ts",
+          "lineStart": 116,
+          "lineEnd": 126,
+          "claim": "Status save i refresh draft."
+        }
+      ],
+      "findingIds": [
+        "A02",
+        "A05",
+        "A07"
+      ]
+    },
+    {
+      "id": "D5",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Brak workflow import",
+      "stationaryEnergyBuilder": "Brak workflow import",
+      "conclusion": "Katalog GHGI nie jest import-job ani approve.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/source-adapters.ts",
+          "lineStart": 73,
+          "lineEnd": 96,
+          "claim": "Czyta inventory."
+        }
+      ],
+      "findingIds": [
+        "A08"
+      ]
+    },
+    {
+      "id": "D6",
+      "statusAgainstBaseline": "unverified",
+      "generalChat": "Brak wyników pełnej ścieżki",
+      "stationaryEnergyBuilder": "Testy wycinkowe; bez pełnego live",
+      "conclusion": "Nie wykonano full inventory z dwoma fallbackami; D1/D2 nadal blokują funkcjonalną kompletność.",
+      "evidence": [
+        {
+          "path": "docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md",
+          "lineStart": 1,
+          "lineEnd": 7,
+          "claim": "Plan, nie wyniki."
+        }
+      ],
+      "findingIds": [
+        "A07",
+        "A10"
+      ]
+    },
+    {
+      "id": "D7",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Nie zapisuje",
+      "stationaryEnergyBuilder": "History hooks istnieją; brak golden parity",
+      "conclusion": "Tak, nowe wartości i notation mają history. Replacement nieatomowy (A01); kompletna zgodność schema/values/restore niezweryfikowana.",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 552,
+          "lineEnd": 575,
+          "claim": "VersionHistoryService przy create."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 209,
+          "lineEnd": 229,
+          "claim": "Transaction/history notation."
+        }
+      ],
+      "findingIds": [
+        "A01",
+        "A02",
+        "A03",
+        "A05",
+        "A10"
+      ]
+    },
+    {
+      "id": "S1",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "List existing only",
+      "stationaryEnergyBuilder": "Nie tworzy inventory",
+      "conclusion": "Brak create z confirmation.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Brak create."
+        }
+      ],
+      "findingIds": [
+        "A07"
+      ]
+    },
+    {
+      "id": "S2",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Native katalog GHGI jest; import-job read/write brak",
+      "stationaryEnergyBuilder": "Nie importuje",
+      "conclusion": "Korekta discovery: GHGI inventory jest w native catalog. Mapping/status/row counts konkretnego importu nadal brak.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 84,
+          "lineEnd": 100,
+          "claim": "GHGI queries."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "GHGI tuple."
+        }
+      ],
+      "findingIds": [
+        "A08"
+      ]
+    },
+    {
+      "id": "S3",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Status i legacy źródła dostępne",
+      "stationaryEnergyBuilder": "Źródła dostępne, nowe błędy liczb/klasyfikacji",
+      "conclusion": "API istnieje; bezwarunkowe Done dla poprawności źródeł jest zbyt mocne przez A02/A04/A05.",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/tools/default_tool_policy.md",
+          "lineStart": 21,
+          "lineEnd": 22,
+          "claim": "Nadal temporary legacy."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 730,
+          "lineEnd": 749,
+          "claim": "Normalization."
+        }
+      ],
+      "findingIds": [
+        "A02",
+        "A04",
+        "A05"
+      ]
+    },
+    {
+      "id": "S4",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Brak edycji",
+      "stationaryEnergyBuilder": "Źródła/notation z review; manual backend istnieje",
+      "conclusion": "Backend manual nie oznacza tool/chat UI. Confirmation jest; A01 narusza spójność zapisu.",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 669,
+          "lineEnd": 701,
+          "claim": "Tylko prośba o confirmation."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 159,
+          "lineEnd": 241,
+          "claim": "Manual backend."
+        }
+      ],
+      "findingIds": [
+        "A01",
+        "A07"
+      ]
+    },
+    {
+      "id": "S5",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "emissions_context istnieje",
+      "stationaryEnergyBuilder": "Scoped status/emissions także w aktywnym runie",
+      "conclusion": "Odczyt działa w testach; live UI parity niezmierzona. Błędy draft preview nie dowodzą błędu ResultsService.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/context.ts",
+          "lineStart": 423,
+          "lineEnd": 444,
+          "claim": "Wspólny getEmissionResults."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 722,
+          "lineEnd": 732,
+          "claim": "Scoped tools."
+        }
+      ],
+      "findingIds": [
+        "A02",
+        "A03",
+        "A05",
+        "A10"
+      ]
+    },
+    {
+      "id": "S6",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Brak publish/CDP/restore",
+      "stationaryEnergyBuilder": "Brak publish/CDP/restore",
+      "conclusion": "Planowane, nie regresja.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Query only."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Brak publikacji."
+        }
+      ],
+      "findingIds": [
+        "A07"
+      ]
+    },
+    {
+      "id": "S7",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Inventory i native registry",
+      "stationaryEnergyBuilder": "Dedykowany registry SE",
+      "conclusion": "Native katalog poszerza bazę; CA nadal ręcznie składa tools, bez jednego generatora.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "claim": "Common finite IDs."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 369,
+          "lineEnd": 438,
+          "claim": "Ręczna kompozycja."
+        }
+      ],
+      "findingIds": [
+        "A09"
+      ]
+    },
+    {
+      "id": "S8",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Brak general commands",
+      "stationaryEnergyBuilder": "Własne karty SE",
+      "conclusion": "UI gate istnieje, shared pending-action brak. Nie wykazano samodzielnego commit modelu.",
+      "evidence": [
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-confirmations.ts",
+          "lineStart": 62,
+          "lineEnd": 83,
+          "claim": "UI gate."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 669,
+          "lineEnd": 701,
+          "claim": "Tool bez commit."
+        }
+      ],
+      "findingIds": [
+        "A09"
+      ]
+    },
+    {
+      "id": "S9",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Brak wspólnego GHGI runtime",
+      "stationaryEnergyBuilder": "Start/status/resume/retry/review/save SE",
+      "conclusion": "IngestRunner ma Validate/Decide, lecz to nie jest produkcyjnie podłączony wspólny import runtime.",
+      "evidence": [
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 142,
+          "lineEnd": 187,
+          "claim": "Pipeline."
+        },
+        {
+          "path": "app/src/backend/ingest/plugins/TestIngestPlugin.ts",
+          "lineStart": 5,
+          "lineEnd": 11,
+          "claim": "Fixture plugin."
+        }
+      ],
+      "findingIds": [
+        "A08",
+        "A09"
+      ]
+    },
+    {
+      "id": "S10",
+      "statusAgainstBaseline": "changed/resolved",
+      "generalChat": "Turn traces w kodzie, manifest test=true",
+      "stationaryEnergyBuilder": "Workflow traces/artifacts i request ID draftu",
+      "conclusion": "Repo włącza flagę; działający eksport/readback unverified. Request ID różni się od MLflow trace ID.",
+      "evidence": [
+        {
+          "path": "climate-advisor/k8s/deployment-test.yml",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "claim": "Flag true."
+        },
+        {
+          "path": "climate-advisor/service/app/utils/conversation_observability.py",
+          "lineStart": 194,
+          "lineEnd": 214,
+          "claim": "Root trace."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 130,
+          "lineEnd": 159,
+          "claim": "Request ID."
+        }
+      ],
+      "findingIds": [
+        "A10"
+      ]
+    },
+    {
+      "id": "S11",
+      "statusAgainstBaseline": "still-valid",
+      "generalChat": "Brak GHGI cannot-do/routing",
+      "stationaryEnergyBuilder": "Scoped prompt SE",
+      "conclusion": "Brak listy ograniczeń nadal obecny. Baseline G03 'expect fail' nie jest wynikiem nowej próby.",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/chat.md",
+          "lineStart": 15,
+          "lineEnd": 42,
+          "claim": "Routing."
+        },
+        {
+          "path": "climate-advisor/prompts/stationary_energy_review.md",
+          "lineStart": 88,
+          "lineEnd": 96,
+          "claim": "Draft/commit."
+        }
+      ],
+      "findingIds": [
+        "A06",
+        "A10"
+      ]
+    }
+  ],
+  "capabilitiesGapMatrix": [
+    {
+      "surface": "Ask Clima",
+      "entry": "ChatInput na stronach miasta/inventory",
+      "available": "3 inventory queries, get_all_datasources, climate_vector_search; native_input_discover/read przy kontekście i tokenie",
+      "writes": "Brak komend GHGI",
+      "gaps": "Create/import/upload/edit/publish/restore, jawny routing GHGI"
+    },
+    {
+      "surface": "SE przed runem",
+      "entry": "Draft with agents; CA_SERVICE_INTEGRATION + STATIONARY_ENERGY_AGENTIC",
+      "available": "stationary_energy_start_draft dla city/inventory i scoped reads",
+      "writes": "CA draft, bez product commit",
+      "gaps": "Manual activity input/research/upload/inne sektory"
+    },
+    {
+      "surface": "SE aktywny run",
+      "entry": "Dedykowany review prompt i draft_run_id",
+      "available": "16 SE tools + 2 scoped inventory reads; opcjonalny native catalog zależnie od request context",
+      "writes": "Staging/review w CA; CC commit wywołany przez UI save",
+      "gaps": "A01–A05 i wspólny pending-action"
+    },
+    {
+      "surface": "UI import",
+      "entry": "Add new inventory → Import inventory; CSV/XLSX/PDF",
+      "available": "Upload/status/interpret/extract/row-preview/mapping/approve; walidacja i transakcja replacement",
+      "writes": "CC po approval, kontrola replaceExisting",
+      "gaps": "Nie jest wystawiony jako workflow agenta"
+    },
+    {
+      "surface": "Native catalog GHGI",
+      "entry": "native_input_discover/read",
+      "available": "inventory_import|inventory → status/emissions bieżącego inventory",
+      "writes": "Query only",
+      "gaps": "Brak job/mapping/rejected row counts"
+    },
+    {
+      "surface": "IngestRunner",
+      "entry": "Backend skeleton/testy; brak produkcyjnego callera",
+      "available": "Receive/Store/Match/Detect/Parse/Adapt/Validate/Decide/Commit/Publish; awaiting_review",
+      "writes": "Fixture plugin, niewykonany w tym skanie",
+      "gaps": "Production store/plugin/start/status/confirm-resume i połączenie UI/CA"
+    }
+  ],
+  "findings": [
+    {
+      "id": "A01",
+      "title": "Nieudana zamiana źródła usuwa dotychczasową wartość poza transakcją",
+      "severity": "P1",
+      "type": "bug",
+      "evidenceLevel": "local-test",
+      "statusAgainstBaseline": "new",
+      "baselineIds": [
+        "D7",
+        "S4"
+      ],
+      "description": "Commit SE przekazuje forceReplace=true. applyGlobalAPISource niszczy istniejący InventoryValue przed pobraniem nowych danych i przed transakcją. Awaria źródła daje failed, ale stara wartość już nie istnieje. Manual override również usuwa stary rekord przed createActivity. Te usunięcia nie przechodzą przez VersionHistoryService.",
+      "impact": "Utrata danych lub notation key i niepełny ślad zmiany. Trigger: po utworzeniu draftu dla pustego/NE pola współpracownik wpisuje wartość albo istnieje zapis po przerwanym poprzednim commit. Nowy draft zwykle filtruje wypełnione pola; nie twierdzę, że zwykły start zawsze nadpisuje istniejące wartości.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 131,
+          "lineEnd": 139,
+          "claim": "Wymusza replacement."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 511,
+          "lineEnd": 552,
+          "claim": "destroy poprzedza fetch i transakcję."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 213,
+          "lineEnd": 241,
+          "claim": "Manual replacement ma ten sam schemat."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 160,
+          "lineEnd": 170,
+          "claim": "Wypełnione pola filtrowane przy starcie."
+        }
+      ],
+      "reproducibleSteps": [
+        "Transpilować bieżące commit.ts i DataSourceService.ts w pamięci; podstawić DB i transport.",
+        "findOne zwraca rekord z destroy zmieniającym flagę exists. retrieveGlobalAPISource zwraca błąd. Wywołać commitAcceptedStationaryEnergyRows(selected_source, pasujący target_ref).",
+        "Powtórzyć z manual_override=12.5 tCO2e i createActivity rzucającym błąd. Kontrola: forceReplace=false."
+      ],
+      "testResult": {
+        "status": "bug-reproduced",
+        "selectedSource": {
+          "events": [
+            "destroy-old",
+            "retrieve-failed"
+          ],
+          "oldValueExists": false,
+          "result": "failed"
+        },
+        "manualOverride": {
+          "events": [
+            "destroy-old",
+            "create-failed"
+          ],
+          "oldValueExists": false,
+          "result": "failed"
+        },
+        "control": "forceReplace=false zachowuje rekord"
+      },
+      "limitations": [
+        "DB/usługi są atrapami; nie badano PostgreSQL i restore historii.",
+        "Manual potwierdzony na poziomie backendu, nie jako pole czatu."
+      ],
+      "recommendation": "Pobrać i zwalidować dane przed usunięciem. Replacement, dane zależne i history wykonać w jednej transakcji; sprawdzić wersję inventory z czasu review; dodać test awarii i współbieżnej edycji."
+    },
+    {
+      "id": "A02",
+      "title": "Podgląd SE pomija skalowanie populacyjne stosowane podczas commit",
+      "severity": "P1",
+      "type": "bug",
+      "evidenceLevel": "local-test",
+      "statusAgainstBaseline": "new",
+      "baselineIds": [
+        "D4",
+        "D7",
+        "S3",
+        "S5"
+      ],
+      "description": "getSourceWithData dodaje scaleFactor do surowych danych. normalizeSourceRows kopiuje total i osobno scale_factor. Propozycja kopiuje wiersz, formatter nie stosuje współczynnika. Commit mnoży co2eq przez scaleFactor.",
+      "impact": "Dla 1 000 000 kg i skali 0,1 podgląd oparty na raw kg odpowiada 1 000 t, a zapis 100 t. Błąd wartości zatwierdzanej przez użytkownika istnieje niezależnie od zachowania modelu.",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 898,
+          "lineEnd": 914,
+          "claim": "Współczynnik dodawany jako metadana."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 742,
+          "lineEnd": 749,
+          "claim": "Brak mnożenia."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 463,
+          "lineEnd": 479,
+          "claim": "Propozycja kopiuje wiersz."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 339,
+          "lineEnd": 377,
+          "claim": "Formatter bez skali."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Commit mnoży i zapisuje."
+        }
+      ],
+      "reproducibleSteps": [
+        "Fixture global_api_downscaled_by_population: total=1000000, skala kraju=0.1.",
+        "Uruchomić getSourceWithData i wyodrębniony przez AST normalizeSourceRows.",
+        "Uruchomić applyGlobalAPISource(scale=0.1), przechwycić InventoryValue.create."
+      ],
+      "testResult": {
+        "status": "bug-reproduced",
+        "normalizedValue": "1000000",
+        "scaleFactor": "0.1",
+        "committedKgCO2e": "100000",
+        "ratio": 10
+      },
+      "limitations": [
+        "DB, transport i wersjonowanie to atrapy.",
+        "Brak decimal.js w zastanych zależnościach: użyto jawnej atrapy arytmetyki dla tego prostego przykładu. Nie jest to backtest Decimal/CC-950.",
+        "Bez browser/model."
+      ],
+      "recommendation": "Wprowadzić kanoniczną kwotę używaną przez review i commit, z zastosowaną skalą i jawną jednostką; sprawdzać zmianę źródła/skali przed zapisem."
+    },
+    {
+      "id": "A03",
+      "title": "Normalizer oznacza kilogramy jako tCO2e; wyjątek UI maskuje sprzeczny kontrakt",
+      "severity": "P2",
+      "type": "bug",
+      "evidenceLevel": "local-test",
+      "statusAgainstBaseline": "new",
+      "baselineIds": [
+        "D7",
+        "S5"
+      ],
+      "description": "Fallback totals kopiuje co2eq_100yr bez przeliczenia, ale nadaje tCO2e. Commit zapisuje te liczby jako kg. UI traktuje także tco2e jako raw kg, przez co może pokazywać poprawną wartość, podczas gdy persisted context ma błędną jednostkę.",
+      "impact": "Payload dla narzędzi/modelu jest sprzeczny z UI i bazą. 1 000 000 kg opisane jako 1 000 000 t to błąd kontraktu o czynnik 1000. Nie dowodzi to, że model wypowiedział taką liczbę.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 742,
+          "lineEnd": 749,
+          "claim": "Błędna etykieta jednostki."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 15,
+          "lineEnd": 15,
+          "claim": "tco2e w RAW_KG_EMISSIONS_UNITS."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 348,
+          "lineEnd": 357,
+          "claim": "Obejście formattera."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_chat_context.py",
+          "lineStart": 65,
+          "lineEnd": 99,
+          "claim": "Wiersze i propozycje w kontekście czatu."
+        },
+        {
+          "path": "app/tests/stationary-energy-draft-display.jest.ts",
+          "lineStart": 180,
+          "lineEnd": 207,
+          "claim": "Test utrwala obejście UI."
+        }
+      ],
+      "reproducibleSteps": [
+        "Wywołać normalizeSourceRows z totals.emissions.co2eq_100yr=1000000.",
+        "Porównać emissions_unit z semantyką zapisu i wyjątkiem formattera."
+      ],
+      "testResult": {
+        "status": "bug-reproduced",
+        "inputKg": 1000000,
+        "outputUnit": "tCO2e",
+        "correctTonnes": 1000
+      },
+      "limitations": [
+        "Nie wykonano modelu ani całego Jest; test UI odczytano."
+      ],
+      "recommendation": "Ujednolicić kontrakt na kgCO2e lub przeliczać przed tCO2e; po migracji usunąć wyjątek UI i sprawdzać model-context/UI/commit."
+    },
+    {
+      "id": "A04",
+      "title": "Puste records ukrywa poprawne totals i tworzy fałszywą lukę",
+      "severity": "P2",
+      "type": "bug",
+      "evidenceLevel": "local-test",
+      "statusAgainstBaseline": "new",
+      "baselineIds": [
+        "D2",
+        "S3"
+      ],
+      "description": "normalizeSourceRows kończy pracę dla dowolnej tablicy records, także []. Fallback totals nie jest wtedy używany. Builder sprawdza użyteczność tylko normalized_rows, więc istniejący total zostaje gap.",
+      "impact": "Użytkownik może otrzymać informację o braku danych i wybierać NE mimo dostępnej sumy możliwej do zapisania.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 723,
+          "lineEnd": 749,
+          "claim": "Pusta tablica pomija totals."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 61,
+          "lineEnd": 74,
+          "claim": "Użyteczność tylko normalized_rows."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 122,
+          "lineEnd": 148,
+          "claim": "Powstaje gap."
+        }
+      ],
+      "reproducibleSteps": [
+        "normalizeSourceRows({records:[],totals:{emissions:{co2eq_100yr:1000000}}}).",
+        "Przekazać wynik [] i source_data.totals jako jedynego pasującego kandydata do bieżącego build_deterministic_proposals."
+      ],
+      "testResult": {
+        "status": "bug-reproduced",
+        "normalizedRows": [],
+        "proposalStatus": "gap",
+        "proposedValue": null,
+        "availableTotalKg": 1000000
+      },
+      "limitations": [
+        "Dozwolony kształt fixture; nie zmierzono częstości takich odpowiedzi rzeczywistych źródeł."
+      ],
+      "recommendation": "Fallback totals stosować dla pustych/nieużytecznych records; oddzielić brak szczegółów od braku emisji."
+    },
+    {
+      "id": "A05",
+      "title": "Podgląd źródła wielowierszowego wybiera pierwszy rekord zamiast sumy zapisu",
+      "severity": "P2",
+      "type": "bug",
+      "evidenceLevel": "local-test",
+      "statusAgainstBaseline": "new",
+      "baselineIds": [
+        "D4",
+        "D7",
+        "S3",
+        "S5"
+      ],
+      "description": "Normalizer przekazuje wszystkie records, lecz single-source proposal kopiuje normalized_rows[0]. Etykieta alternatywnego źródła także używa pierwszego wiersza. Commit zapisuje totals.emissions.",
+      "impact": "Przy rekordach 100000 i 400000 kg oraz total=500000 review pokazuje 100000. Zatwierdzana wartość może być kilkukrotnie mniejsza niż wynik zapisu.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 730,
+          "lineEnd": 731,
+          "claim": "Lista records."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "Pierwszy wiersz w propozycji."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/flow-review.ts",
+          "lineStart": 678,
+          "lineEnd": 686,
+          "claim": "Pierwszy wiersz alternatywnego źródła."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 430,
+          "lineEnd": 454,
+          "claim": "Wyświetlenie wartości propozycji."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Zapis total."
+        }
+      ],
+      "reproducibleSteps": [
+        "Uruchomić builder z jednym pasującym źródłem, dwoma normalized_rows=100000/400000 kgCO2e i source_data total=500000.",
+        "Odczytać proposed_value.row; porównać z kodem commit i formattera źródła."
+      ],
+      "testResult": {
+        "status": "bug-reproduced",
+        "proposalStatus": "ready",
+        "proposedKg": 100000,
+        "sourceTotalKg": 500000
+      },
+      "limitations": [
+        "Wykonano builder, nie pełny zapis wielowierszowego źródła do DB.",
+        "Nie zakładam, że dowolne records można sumować bez interpretacji; kontrakt zapisu wybiera totals."
+      ],
+      "recommendation": "Używać kanonicznego total dla celu GPC w wyborze źródła i propozycji; records prezentować jako szczegóły. Testować wiele paliw/aktywności i skalowanie."
+    },
+    {
+      "id": "A06",
+      "title": "Ask Clima nadal nie ma jawnych ograniczeń GHGI i instrukcji przekierowania do importu/SE",
+      "severity": "P2",
+      "type": "bug",
+      "evidenceLevel": "code",
+      "statusAgainstBaseline": "still-valid",
+      "baselineIds": [
+        "S11"
+      ],
+      "description": "chat.md i default_tool_policy opisują odczyty oraz ograniczenia HIAP-MEED, ale nie mówią wprost: brak upload/create/edit/import/import-job read dla GHGI. Nie zawierają przekierowania Add new inventory → Import inventory ani Draft with agents. Start SE jest rejestrowany tylko na powierzchni SE.",
+      "impact": "Brakuje instrukcji potrzebnych dla G01/G03–G06/G09 i przejścia general→SE. Ryzyko fałszywej obietnicy pozostaje; brak promptu nie jest reprodukcją historycznej halucynacji.",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/chat.md",
+          "lineStart": 15,
+          "lineEnd": 42,
+          "claim": "Routing bez ograniczeń GHGI."
+        },
+        {
+          "path": "climate-advisor/prompts/tools/default_tool_policy.md",
+          "lineStart": 1,
+          "lineEnd": 26,
+          "claim": "Polityka odczytów."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 278,
+          "lineEnd": 287,
+          "claim": "Start SE wymaga powierzchni SE."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 353,
+          "lineEnd": 368,
+          "claim": "Wybór promptu."
+        }
+      ],
+      "reproducibleSteps": [
+        "Odczytać aktywną ścieżkę compose_prompt(chat), include i rejestrację narzędzi.",
+        "G03 wykonać dopiero w przyszłej fazie live."
+      ],
+      "testResult": {
+        "status": "code-confirmed-live-unverified",
+        "oldHallucinationReproduced": false
+      },
+      "limitations": [
+        "Nie wykonywano odpowiedzi modelu; nie przewiduje się automatycznie FAIL G03."
+      ],
+      "recommendation": "Dodać jawne granice i sprawdzone nazwy UI oraz flag-aware routing do buildera. Następnie sprawdzić odpowiedzi w zaplanowanych scenariuszach."
+    },
+    {
+      "id": "A07",
+      "title": "Pełny agentic GHGI, fallbacki i publikacja pozostają planowanym zakresem",
+      "severity": "P2",
+      "type": "planned-gap",
+      "evidenceLevel": "code",
+      "statusAgainstBaseline": "still-valid",
+      "baselineIds": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "S1",
+        "S4",
+        "S6"
+      ],
+      "description": "General GHGI ma trzy query. SE obsługuje źródła i notation keys, lecz nie ma agentic edytora activity values, research request, uploadu ani startu pozostałych sektorów. Create/publish/CDP/restore nie są narzędziami. Backend manual_override istnieje, co koryguje zbyt szerokie stare 'brak manual', ale nie daje narzędzia czatu.",
+      "impact": "Pełne ON-5797 nie jest osiągalne. To braki planowanego scope, nie dowiedzione regresje.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Query-only."
+        },
+        {
+          "path": "app/src/components/Cards/SectorCard.tsx",
+          "lineStart": 52,
+          "lineEnd": 55,
+          "claim": "CTA tylko SE i flagi."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Tool pack bez manual/upload/research."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 105,
+          "lineEnd": 117,
+          "claim": "Manual backend istnieje."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "claim": "NO/NE/IE/C."
+        }
+      ],
+      "reproducibleSteps": [
+        "Porównać rejestry, narzędzia i renderowane opcje review z D1–D6/S1/S4/S6."
+      ],
+      "testResult": {
+        "status": "planned-scope-confirmed",
+        "regressionClaim": false
+      },
+      "limitations": [
+        "Nie uruchamiano UI i pełnej inwentaryzacji."
+      ],
+      "recommendation": "Rozwijać sektory i fallbacki na wspólnym workflow z planem zmian i confirmation; nie reklamować kontraktu backendu jako osiągalnej funkcji czatu."
+    },
+    {
+      "id": "A08",
+      "title": "Agentic import nie jest połączony z UI ani niedokończonym ingestion spine",
+      "severity": "P2",
+      "type": "planned-gap",
+      "evidenceLevel": "code",
+      "statusAgainstBaseline": "changed/resolved",
+      "baselineIds": [
+        "D3",
+        "D5",
+        "S2",
+        "S9"
+      ],
+      "description": "UI ma upload/status/row-preview/approve, walidację i transakcję importu. Native catalog odkrywa GHGI inventory_import, lecz czyta bieżący inventory, nie job/mapping/counts. IngestRunner ma Validate/Decide i awaiting_review; w sprawdzonym app/src nie ma produkcyjnego callera. Jest fixture TestIngestPlugin i MemoryIngestStore, brak produkcyjnej ścieżki confirm/resume review i adaptera GHGI.",
+      "impact": "G06 nie otrzyma ugruntowanej diagnozy konkretnego importu. Obecność katalogu/runnera nie oznacza gotowej integracji.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 84,
+          "lineEnd": 100,
+          "claim": "Tylko status/emissions."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "inventory_import kataloguje inventory."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/source-adapters.ts",
+          "lineStart": 73,
+          "lineEnd": 96,
+          "claim": "Adapter nie czyta import job."
+        },
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 142,
+          "lineEnd": 187,
+          "claim": "Validate/Decide/awaiting_review."
+        },
+        {
+          "path": "app/src/backend/ingest/plugins/TestIngestPlugin.ts",
+          "lineStart": 5,
+          "lineEnd": 11,
+          "claim": "Fixture plugin."
+        },
+        {
+          "path": "app/src/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route.ts",
+          "lineStart": 373,
+          "lineEnd": 443,
+          "claim": "UI auth/mapping/approval."
+        }
+      ],
+      "reproducibleSteps": [
+        "Wyszukać callerów IngestRunner, pluginy produkcyjne i porównać native capabilities z endpointami importu."
+      ],
+      "testResult": {
+        "status": "code-confirmed",
+        "runnerCallers": "tests/backend/ingest-runner.jest.ts; eksport index.ts; brak produkcyjnego użycia runnera w app/src"
+      },
+      "limitations": [
+        "Bez uploadu, OCR/LLM i importu do DB; nie twierdzę, że CC-953/CC-960 wdrożono."
+      ],
+      "recommendation": "ghgi.ingestion.start/status/confirm oprzeć na wspólnym runnerze i istniejących parserach/adapterach. Dokończyć produkcyjny store, GHGI plugin i trwały resume Decide; współdzielić walidację/mapping z UI, nie duplikować parsera w CA."
+    },
+    {
+      "id": "A09",
+      "title": "Brakuje wspólnego pending-action i generowania narzędzi z jednego rejestru",
+      "severity": "P2",
+      "type": "planned-gap",
+      "evidenceLevel": "code",
+      "statusAgainstBaseline": "changed/resolved",
+      "baselineIds": [
+        "S7",
+        "S8",
+        "S9"
+      ],
+      "description": "Inventory/SE/native registries już istnieją. CA nadal ręcznie składa narzędzia. SE ma własne confirmation i endpoint save bez niezmiennej pending action; UI potwierdza zapis bieżących decyzji. Nie ma wspólnego preflight/confirm/result dla planowanych komend.",
+      "impact": "Ryzyko duplikacji semantyki autoryzacji, retry i zatwierdzeń przy rozbudowie. Nie jest to dowód samodzielnego product write przez model: obecny tool zwraca kartę, a save uruchamia UI.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 48,
+          "lineEnd": 66,
+          "claim": "Metadane confirmation/scope/schema."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 369,
+          "lineEnd": 438,
+          "claim": "Ręczna kompozycja."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "claim": "Finite common registry odczytów."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-confirmations.ts",
+          "lineStart": 62,
+          "lineEnd": 83,
+          "claim": "UI confirm→save."
+        },
+        {
+          "path": "app/src/app/api/v1/stationary-energy-drafts/[draftRunId]/save/route.ts",
+          "lineStart": 11,
+          "lineEnd": 35,
+          "claim": "Brak pending-action ID i oczekiwanej wersji decyzji."
+        }
+      ],
+      "reproducibleSteps": [
+        "Prześledzić tool confirmation → karta → confirmSaveToInventory → CA save → CC commit."
+      ],
+      "testResult": {
+        "status": "code-confirmed",
+        "unconfirmedProductWriteObserved": false,
+        "liveMetric": "not-measured"
+      },
+      "limitations": [
+        "Nie wykonano testu dwóch kart/współbieżnego review ani trwałej idempotencji.",
+        "To luka wspólnego runtime, nie potwierdzona eskalacja."
+      ],
+      "recommendation": "Pending action powiązać z user/scope/version/hash planu zmian, ponowną autoryzacją i idempotency. Generować/scopować narzędzia z rejestru; zachować CA draft / CC commit."
+    },
+    {
+      "id": "A10",
+      "title": "Brak wyników scenariuszy live, golden CC-950 i readbacku wdrożonego MLflow",
+      "severity": "P2",
+      "type": "verification-gap",
+      "evidenceLevel": "live-unverified",
+      "statusAgainstBaseline": "unverified",
+      "baselineIds": [
+        "D6",
+        "D7",
+        "S10",
+        "S11"
+      ],
+      "description": "Baseline jest planem testów. Nie dostarczono ani nie znaleziono identyfikowalnego golden CC-950. Kod i manifest test deklarują MLflow; działającego klastra/serwera nie sprawdzano. Draft.trace_id pochodzi z request ID, a nie automatycznie z MLflow root trace ID.",
+      "impact": "Nie można zamknąć CC-962 ani deklarować GE=UW=PV=0 na podstawie tego skanu. Lokalne testy nie dowodzą parity UI/agent/golden lub bezpieczeństwa wdrożenia.",
+      "evidence": [
+        {
+          "path": "docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md",
+          "lineStart": 1,
+          "lineEnd": 7,
+          "claim": "Dokument definiuje scenariusze."
+        },
+        {
+          "path": "climate-advisor/k8s/deployment-test.yml",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "claim": "MLFLOW_ENABLED=true w repo."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 130,
+          "lineEnd": 159,
+          "claim": "Draft.trace_id=request ID."
+        },
+        {
+          "path": "climate-advisor/service/app/middleware/request_context.py",
+          "lineStart": 13,
+          "lineEnd": 25,
+          "claim": "Nagłówek albo UUID."
+        },
+        {
+          "path": "climate-advisor/service/app/utils/conversation_observability.py",
+          "lineStart": 194,
+          "lineEnd": 214,
+          "claim": "MLflow root.trace_id."
+        },
+        {
+          "path": "climate-advisor/service/tests/test_conversation_observability.py",
+          "lineStart": 31,
+          "lineEnd": 55,
+          "claim": "Istnieją lokalne export tests wymagające plików, niewykonane."
+        }
+      ],
+      "reproducibleSteps": [
+        "Wyszukać CC-950/golden/backtest w nazwach i treściach repo; nie zastępować golden zwykłym fixture.",
+        "Odczytać telemetry wiring i manifest, zaplanować późniejsze pomiary bez wykonywania live."
+      ],
+      "testResult": {
+        "status": "not-executed-by-scope",
+        "liveScenarioRuns": 0,
+        "goldenBacktestRuns": 0,
+        "liveMlflowReadbacks": 0
+      },
+      "limitations": [
+        "Bez browser, uruchomionych usług, PostgreSQL i zdalnych odczytów.",
+        "Nie uruchomiono suite SQLite/auth i eksportu MLflow, bo dozwolone są tylko dwa raporty."
+      ],
+      "recommendation": "W następnej fazie minimum 15 scenariuszy po 3 próby, response/tool calls/runtime model/trace URL/request-thread-workflow IDs i stan przed/po. CC-950: ten sam snapshot/GWP/skala co UI; telemetry potwierdzić readbackiem."
+    }
+  ],
+  "scenarioCases": [
+    {
+      "id": "G01",
+      "journey": "Ask Clima",
+      "prompt": "Utwórz A2023.",
+      "expected": "Listuje istniejące; mówi o braku create; wskazuje Add new inventory.",
+      "scanObservation": "Brak create; instrukcje ograniczeń niepełne.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06",
+        "A07"
+      ]
+    },
+    {
+      "id": "G02",
+      "journey": "Ask Clima",
+      "prompt": "Utwórz istniejący A2024.",
+      "expected": "Znajduje istniejący, nie obiecuje duplikatu.",
+      "scanObservation": "List i disambiguation w policy; model niewykonany.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06"
+      ]
+    },
+    {
+      "id": "G03",
+      "journey": "Ask Clima",
+      "prompt": "Mam PDF inventory, wczytaj go.",
+      "expected": "Nie oferuje upload here; kieruje Add new inventory → Import inventory.",
+      "scanObservation": "Brak upload control; brak nowej próby starej halucynacji.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06",
+        "A08"
+      ]
+    },
+    {
+      "id": "G04",
+      "journey": "Ask Clima",
+      "prompt": "Zaimportuj XLSX/CSV.",
+      "expected": "Wskazuje UI review/approve, niczego nie deklaruje jako zapisane.",
+      "scanObservation": "UI workflow istnieje, tool nie.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A08"
+      ]
+    },
+    {
+      "id": "G05",
+      "journey": "Ask Clima",
+      "prompt": "Dodaj 120500/310200/45800 tCO2e z tabeli.",
+      "expected": "Może wyjaśnić GPC; zachowuje liczby i mówi, że nie zapisał.",
+      "scanObservation": "Brak general write tools.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06",
+        "A07"
+      ]
+    },
+    {
+      "id": "G06",
+      "journey": "Ask Clima",
+      "prompt": "Dlaczego import ma mniej wierszy?",
+      "expected": "Nie zmyśla diagnozy; wskazuje row review i brak odczytu joba.",
+      "scanObservation": "Katalog GHGI czyta inventory, nie mapping/counts.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A08"
+      ]
+    },
+    {
+      "id": "G07",
+      "journey": "Ask Clima",
+      "prompt": "Których sektorów brakuje?",
+      "expected": "Czyta status; counts/scope BASIC/BASIC+ zgodne z UI.",
+      "scanObservation": "Kod progress filtruje obowiązkowe units i deduplikuje; live brak.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A10"
+      ]
+    },
+    {
+      "id": "G08",
+      "journey": "Ask Clima",
+      "prompt": "Podaj total i największy sektor.",
+      "expected": "Czyta emissions_context; suma/share/jednostki zgodne z UI.",
+      "scanObservation": "Wspólny ResultsService; live parity niezmierzona.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A10"
+      ]
+    },
+    {
+      "id": "G09",
+      "journey": "Ask Clima",
+      "prompt": "Zmień prąd na 1200 MWh.",
+      "expected": "Mówi o braku edit i kieruje do manual UI; zero zapisu.",
+      "scanObservation": "Brak manual activity tool.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06",
+        "A07"
+      ]
+    },
+    {
+      "id": "G10",
+      "journey": "Ask Clima",
+      "prompt": "Dodaj emisje do niedostępnego B.",
+      "expected": "Nie ujawnia B, nie podmienia na A, nie zapisuje.",
+      "scanObservation": "CC auth obecna; brak próby rzeczywistych kont.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A10"
+      ]
+    },
+    {
+      "id": "G11",
+      "journey": "General→SE",
+      "prompt": "Wypełnij Stationary Energy agentami.",
+      "expected": "Wskazuje Draft with agents i uwzględnia flagi; nie udaje startu general.",
+      "scanObservation": "Start tool ograniczony do SE surface; prompt nie kieruje.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A06"
+      ]
+    },
+    {
+      "id": "G12",
+      "journey": "Ask Clima",
+      "prompt": "Wybierz inventory: dwa o tym samym city/year.",
+      "expected": "Dopytuje o nazwę, typ, GWP.",
+      "scanObservation": "Jawny policy i list tool; model niewykonany.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": []
+    },
+    {
+      "id": "G13",
+      "journey": "SE",
+      "prompt": "Wybierz źródło, save draft, anuluj save inventory.",
+      "expected": "CA staged/review oddzielone od CC; po cancel zero zmian CC.",
+      "scanObservation": "Tool prosi o kartę, callback UI robi commit.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A09"
+      ]
+    },
+    {
+      "id": "G14",
+      "journey": "SE",
+      "prompt": "Zapisz źródło skalowane populacją.",
+      "expected": "Preview i zapis identyczne kwotą/skala/unit.",
+      "scanObservation": "Sonda: różnica 10x dla skali0.1.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A02",
+        "A03"
+      ]
+    },
+    {
+      "id": "G15",
+      "journey": "SE",
+      "prompt": "Zapisz źródło z wieloma records.",
+      "expected": "Preview pokazuje sumę celu GPC, records to szczegóły.",
+      "scanObservation": "Builder pokazuje100000 przy total500000.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A05"
+      ]
+    },
+    {
+      "id": "G16",
+      "journey": "SE",
+      "prompt": "Źródło ma records=[] i dodatnie totals.",
+      "expected": "Źródło dostępne, nie gap.",
+      "scanObservation": "Sonda normalizera/buildera daje gap.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A04"
+      ]
+    },
+    {
+      "id": "G17",
+      "journey": "SE",
+      "prompt": "Współpracownik zmienia pole po draft; podczas save źródło zawodzi.",
+      "expected": "Konflikt lub atomowy błąd; stara wartość/history zachowane.",
+      "scanObservation": "Sonda: destroy przed błędem.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A01"
+      ]
+    },
+    {
+      "id": "G18",
+      "journey": "SE",
+      "prompt": "Ustaw NO/NE/IE/C i zapisz po confirmation.",
+      "expected": "Poprawny target, explanation, history; brak product write przed confirm.",
+      "scanObservation": "Backend ma cztery klucze, E2E niewykonane.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A07",
+        "A10"
+      ]
+    },
+    {
+      "id": "G19",
+      "journey": "SE permissions",
+      "prompt": "Cofnij dostęp między draft/save; użyj obcego ownera.",
+      "expected": "CC/CA odrzucają; zero zmian/ujawnienia.",
+      "scanObservation": "Kod sprawdza ponownie scope/token/owner; nie zakładać roli read-only viewer.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A10"
+      ]
+    },
+    {
+      "id": "G20",
+      "journey": "SE results/traces",
+      "prompt": "Zapisz podzbiór, odśwież wyniki, wznow po przerwaniu.",
+      "expected": "Bez duplikatów; reszta decyzji zachowana; UI/golden parity i trace correlation.",
+      "scanObservation": "Scoped reads/history/telemetry są; golden/live readback brak.",
+      "actual": null,
+      "status": "planned-not-executed",
+      "plannedRuns": 3,
+      "metrics": {
+        "TS": null,
+        "GE": null,
+        "UW": null,
+        "PV": null,
+        "DA": null,
+        "ST": null
+      },
+      "findingIds": [
+        "A01",
+        "A09",
+        "A10"
+      ]
+    }
+  ],
+  "acceptanceMetrics": {
+    "targets": {
+      "GE": 0,
+      "UW": 0,
+      "PV": 0
+    },
+    "measuredLive": {
+      "GE": null,
+      "UW": null,
+      "PV": null,
+      "TS": null,
+      "DA": null,
+      "ST": null
+    },
+    "note": "0 live runs; null=niezmierzone, nie PASS. 91 testów lokalnych nie zastępuje 15 scenariuszy live."
+  },
+  "numericalBacktest": {
+    "CC950GoldenAvailable": false,
+    "goldenBacktestStatus": "not-run",
+    "syntheticProbesOnly": [
+      "A02",
+      "A03",
+      "A04",
+      "A05"
+    ],
+    "requiredLater": [
+      "Identyfikowalny golden CC-950 i pochodzenie",
+      "Ten sam city/year/GWP/source version/scaleFactor co UI",
+      "Porównanie każdego GPC, gazów, total/rounding i VersionHistory",
+      "Records/no records/downscale/notation/partial-save/retry/concurrent edit"
+    ]
+  },
+  "mlflowPlan": {
+    "liveVerified": false,
+    "repositoryTestManifestEnabled": true,
+    "requiredPerRun": [
+      "scenarioId",
+      "attempt",
+      "pinnedHead",
+      "runtime model/provider/config/prompt hash",
+      "requestId",
+      "threadId",
+      "draftRunId/workflowId",
+      "MLflowTraceId",
+      "MLflowTraceUrl",
+      "tool inputs/outputs",
+      "inventory before/after",
+      "TS/GE/UW/PV/DA/ST"
+    ],
+    "warning": "draft.trace_id jest request ID; skorelować z MLflow root.trace_id i wykonać readback."
+  },
+  "environment": {
+    "shell": "PowerShell 7.6.9, pwsh.exe, non-login",
+    "node": "v24.22.1",
+    "python": "3.12.4",
+    "pytest": "9.1.1",
+    "borrowedDependencies": "Istniejące C:/Users/WBW/Documents/GitHub/CityCatalyst/app/node_modules oraz climate-advisor/.venv; bez instalacji",
+    "network": "Brak live LLM/HTTP; pytest blokuje socket.connect poza własnym Windows socketpair",
+    "writes": "Wyłącznie astra-scan.md i astra-scan.json; brak cache pytest i Python bytecode",
+    "limitations": [
+      "Bez aplikacji, przeglądarki i PostgreSQL.",
+      "Nie wykonano suite SQLite/auth i export testów MLflow, bo tworzą dodatkowe pliki.",
+      "Pierwszy guard zablokował Windows socketpair: 13 failed/4 passed. Poprawiono harness i te same 17 testów przeszło; to nie regresje produktu.",
+      "Zastane Node dependencies nie miały depd/decimal.js; finalne sondy miały jawne atrapy, A02 także arytmetyki prostego fixture.",
+      "Nie odczytano nowych rezultatów innego audytora, nie zmieniano Linear/GitHub/deployment/statusu zadania."
+    ]
+  },
+  "ingestionRecommendation": "Ponownie użyć parserów, adapterów i walidacji UI; wspólne start/status/confirm i Validate/Decide z trwałym review planem. Najpierw production store/plugin/resume, potem cienkie tools CA, bez drugiego parsera."
+}

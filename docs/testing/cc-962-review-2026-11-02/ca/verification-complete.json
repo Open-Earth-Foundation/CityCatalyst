@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-01T11:31:38.257Z",
+  "realConversations": 45,
+  "decodedMp4Files": 45,
+  "visualProofFramesReviewed": 15,
+  "judgeTurns": 142,
+  "textResponses": 140,
+  "mlflowCorrelatedTrials": 45,
+  "independentSingleSourceWrites": 3,
+  "groundTruthArchived": true,
+  "caArchivePresent": true,
+  "purpose": "Permit scoped cleanup only after evidence is retained"
+}

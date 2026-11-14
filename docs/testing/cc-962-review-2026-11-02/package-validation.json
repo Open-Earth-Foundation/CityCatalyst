@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-02T01:37:31.665Z",
+  "documents": 218,
+  "jsonValid": true,
+  "media": 143,
+  "uploaded": 143,
+  "forbiddenFiles": [],
+  "missingLinks": [],
+  "errors": [],
+  "remote": {
+    "url": "https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3369",
+    "draft": true,
+    "inlineVideos": 143,
+    "bodyVideoMarkers": 143,
+    "localMediaReferences": false,
+    "bodyBytes": 37232
+  },
+  "basis": "Local prepared documentation tree and remote PR body/media readback, before the final documentation commit"
+}

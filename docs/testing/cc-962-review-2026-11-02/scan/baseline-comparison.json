@@ -1,0 +1,489 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "baselineHead": "6a9ab077f",
+  "rows": [
+    {
+      "id": "D1",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Transport/Waste/IPPU/AFOLU to nadal planned scope, nie regresja.",
+      "general": "Read all sectors; brak tworzenia danych",
+      "stationaryEnergy": "SE only",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "SE is the only agentic sector",
+      "baseline": "General Missing / SE Partial",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Trzy query."
+        },
+        {
+          "path": "app/src/components/Cards/SectorCard.tsx",
+          "lineStart": 52,
+          "lineEnd": 55,
+          "claim": "CTA SE."
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "classification": "korekta opisu",
+      "rootConclusion": "Korekta: manual API i IE/C istnieją; brak osiągalnego manual-entry tool/UI, research i upload pozostaje.",
+      "general": "Brak manual/assisted/research/upload",
+      "stationaryEnergy": "Źródła + NO/NE/IE/C; manual override backend",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid (corrected)",
+      "opusNote": "The agent can stage NO/NE/IE/C. The backend has override_manual, but the UI and the agent do not expose it. No research request and no upload.",
+      "baseline": "General Missing / SE Partial (NE/NO)",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 105,
+          "lineEnd": 117,
+          "claim": "Manual kontrakt."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "claim": "Cztery klucze."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Tool pack."
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "UI import nie jest uploadem agenta.",
+      "general": "Brak chat upload",
+      "stationaryEnergy": "Brak agentic upload/Transport mapping",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "Spine foundation exists, but there is no chat upload and no agentic entry (O14)",
+      "baseline": "Missing / Missing",
+      "evidence": [
+        {
+          "path": "app/src/components/ChatBot/ChatInput.tsx",
+          "lineStart": 32,
+          "lineEnd": 78,
+          "claim": "Textarea/send/stop."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Brak upload."
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "classification": "korekta opisu",
+      "rootConclusion": "Brak osobnego calculate nie oznacza braku obliczeń. Automatyczny wynik w chat nie jest gwarantowany; A02/A05.",
+      "general": "Odczyt totals, brak calculate command",
+      "stationaryEnergy": "Save stosuje istniejące obliczenia; scoped wynik można odczytać",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid",
+      "opusNote": "CC computes results on read. No post-save results summary in chat.",
+      "baseline": "Partial / Partial",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Skalowanie zapisu."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 722,
+          "lineEnd": 732,
+          "claim": "Scoped wynik."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-save.ts",
+          "lineStart": 116,
+          "lineEnd": 126,
+          "claim": "Status save i refresh draft."
+        }
+      ]
+    },
+    {
+      "id": "D5",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Katalog GHGI nie jest import-job ani approve.",
+      "general": "Brak workflow import",
+      "stationaryEnergy": "Brak workflow import",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "No GHGI plugin (CC-991), no ingest.start/status/confirm (CC-993)",
+      "baseline": "Missing / Missing",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/source-adapters.ts",
+          "lineStart": 73,
+          "lineEnd": 96,
+          "claim": "Czyta inventory."
+        }
+      ]
+    },
+    {
+      "id": "D6",
+      "classification": "brak pomiaru",
+      "rootConclusion": "Nie wykonano full inventory z dwoma fallbackami; D1/D2 nadal blokują funkcjonalną kompletność.",
+      "general": "Brak wyników pełnej ścieżki",
+      "stationaryEnergy": "Testy wycinkowe; bez pełnego live",
+      "astraStatus": "unverified",
+      "opusVerdict": "still valid",
+      "opusNote": "No agentic full-inventory E2E",
+      "baseline": "Missing / Missing",
+      "evidence": [
+        {
+          "path": "docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md",
+          "lineStart": 1,
+          "lineEnd": 7,
+          "claim": "Plan, nie wyniki."
+        }
+      ]
+    },
+    {
+      "id": "D7",
+      "classification": "korekta opisu",
+      "rootConclusion": "Tak, nowe wartości i notation mają history. Replacement nieatomowy (A01); kompletna zgodność schema/values/restore niezweryfikowana.",
+      "general": "Nie zapisuje",
+      "stationaryEnergy": "History hooks istnieją; brak golden parity",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "changed",
+      "opusNote": "SE commits use the same services as the UI and create VersionHistory. New gaps: unversioned forceReplace deletions, no agentic label (O11), overwrite (O01). Runtime unverified.",
+      "baseline": "n/a / Partial (verify version history)",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 552,
+          "lineEnd": 575,
+          "claim": "VersionHistoryService przy create."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 209,
+          "lineEnd": 229,
+          "claim": "Transaction/history notation."
+        }
+      ]
+    },
+    {
+      "id": "S1",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Brak create z confirmation.",
+      "general": "List existing only",
+      "stationaryEnergy": "Nie tworzy inventory",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "",
+      "baseline": "Missing",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Brak create."
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "classification": "korekta opisu",
+      "rootConclusion": "Korekta discovery: GHGI inventory jest w native catalog. Mapping/status/row counts konkretnego importu nadal brak.",
+      "general": "Native katalog GHGI jest; import-job read/write brak",
+      "stationaryEnergy": "Nie importuje",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid",
+      "opusNote": "Questions like 'why fewer rows?' still cannot be answered",
+      "baseline": "Missing",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 84,
+          "lineEnd": 100,
+          "claim": "GHGI queries."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "GHGI tuple."
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "classification": "korekta opisu",
+      "rootConclusion": "API istnieje; bezwarunkowe Done dla poprawności źródeł jest zbyt mocne przez A02/A04/A05.",
+      "general": "Status i legacy źródła dostępne",
+      "stationaryEnergy": "Źródła dostępne, nowe błędy liczb/klasyfikacji",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "changed (baseline overstated)",
+      "opusNote": "get_all_datasources hits a route with no authorization (O02)",
+      "baseline": "Done / Done",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/tools/default_tool_policy.md",
+          "lineStart": 21,
+          "lineEnd": 22,
+          "claim": "Nadal temporary legacy."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 730,
+          "lineEnd": 749,
+          "claim": "Normalization."
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "classification": "korekta opisu",
+      "rootConclusion": "Backend manual nie oznacza tool/chat UI. Confirmation jest; A01 narusza spójność zapisu.",
+      "general": "Brak edycji",
+      "stationaryEnergy": "Źródła/notation z review; manual backend istnieje",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid",
+      "opusNote": "Manual override exists only in the API (O10)",
+      "baseline": "Missing / Partial",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 669,
+          "lineEnd": 701,
+          "claim": "Tylko prośba o confirmation."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 159,
+          "lineEnd": 241,
+          "claim": "Manual backend."
+        }
+      ]
+    },
+    {
+      "id": "S5",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Odczyt działa w testach; live UI parity niezmierzona. Błędy draft preview nie dowodzą błędu ResultsService.",
+      "general": "emissions_context istnieje",
+      "stationaryEnergy": "Scoped status/emissions także w aktywnym runie",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "Unit presentation unverified (O07)",
+      "baseline": "Done / Done",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/context.ts",
+          "lineStart": 423,
+          "lineEnd": 444,
+          "claim": "Wspólny getEmissionResults."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 722,
+          "lineEnd": 732,
+          "claim": "Scoped tools."
+        }
+      ]
+    },
+    {
+      "id": "S6",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Planowane, nie regresja.",
+      "general": "Brak publish/CDP/restore",
+      "stationaryEnergy": "Brak publish/CDP/restore",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid",
+      "opusNote": "",
+      "baseline": "Missing / Missing",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Query only."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Brak publikacji."
+        }
+      ]
+    },
+    {
+      "id": "S7",
+      "classification": "korekta opisu",
+      "rootConclusion": "Native katalog poszerza bazę; CA nadal ręcznie składa tools, bez jednego generatora.",
+      "general": "Inventory i native registry",
+      "stationaryEnergy": "Dedykowany registry SE",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid",
+      "opusNote": "CA tools are handwritten and not generated from the registries",
+      "baseline": "Partial / Done",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "claim": "Common finite IDs."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 369,
+          "lineEnd": 438,
+          "claim": "Ręczna kompozycja."
+        }
+      ]
+    },
+    {
+      "id": "S8",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "UI gate istnieje, shared pending-action brak. Nie wykazano samodzielnego commit modelu.",
+      "general": "Brak general commands",
+      "stationaryEnergy": "Własne karty SE",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid (clarified)",
+      "opusNote": "Bulk confirmations are client-asserted ui_context. The save card is generic (O08).",
+      "baseline": "n/a / Partial",
+      "evidence": [
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-confirmations.ts",
+          "lineStart": 62,
+          "lineEnd": 83,
+          "claim": "UI gate."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 669,
+          "lineEnd": 701,
+          "claim": "Tool bez commit."
+        }
+      ]
+    },
+    {
+      "id": "S9",
+      "classification": "korekta opisu",
+      "rootConclusion": "IngestRunner ma Validate/Decide, lecz to nie jest produkcyjnie podłączony wspólny import runtime.",
+      "general": "Brak wspólnego GHGI runtime",
+      "stationaryEnergy": "Start/status/resume/retry/review/save SE",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "still valid + new defects",
+      "opusNote": "No interrupted-run recovery (O04). Non-atomic save (O03).",
+      "baseline": "n/a / Partial",
+      "evidence": [
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 142,
+          "lineEnd": 187,
+          "claim": "Pipeline."
+        },
+        {
+          "path": "app/src/backend/ingest/plugins/TestIngestPlugin.ts",
+          "lineStart": 5,
+          "lineEnd": 11,
+          "claim": "Fixture plugin."
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "classification": "korekta opisu",
+      "rootConclusion": "Repo włącza flagę; działający eksport/readback unverified. Request ID różni się od MLflow trace ID.",
+      "general": "Turn traces w kodzie, manifest test=true",
+      "stationaryEnergy": "Workflow traces/artifacts i request ID draftu",
+      "astraStatus": "changed/resolved",
+      "opusVerdict": "changed",
+      "opusNote": "MLFLOW_ENABLED=true in dev, test and prod. All use mlflow-dev.openearth.dev and experiment Clima, separated only by the MLFLOW_ENVIRONMENT tag. request_id is available for correlation. Pre-run SE turns are mislabeled (O06). Runtime unverified.",
+      "baseline": "Partial / Partial",
+      "evidence": [
+        {
+          "path": "climate-advisor/k8s/deployment-test.yml",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "claim": "Flag true."
+        },
+        {
+          "path": "climate-advisor/service/app/utils/conversation_observability.py",
+          "lineStart": 194,
+          "lineEnd": 214,
+          "claim": "Root trace."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 130,
+          "lineEnd": 159,
+          "claim": "Request ID."
+        }
+      ]
+    },
+    {
+      "id": "S11",
+      "classification": "potwierdzony stan",
+      "rootConclusion": "Brak listy ograniczeń nadal obecny. Baseline G03 'expect fail' nie jest wynikiem nowej próby.",
+      "general": "Brak GHGI cannot-do/routing",
+      "stationaryEnergy": "Scoped prompt SE",
+      "astraStatus": "still-valid",
+      "opusVerdict": "still valid (general) / changed (SE)",
+      "opusNote": "General: O05. SE: no list of unsupported features, and HIAP tools are registered outside the prompt (O09).",
+      "baseline": "General Missing / SE Done",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/chat.md",
+          "lineStart": 15,
+          "lineEnd": 42,
+          "claim": "Routing."
+        },
+        {
+          "path": "climate-advisor/prompts/stationary_energy_review.md",
+          "lineStart": 88,
+          "lineEnd": 96,
+          "claim": "Draft/commit."
+        }
+      ]
+    }
+  ],
+  "interpretation": "Korekta opisu nie oznacza dostarczenia całego wymagania. Kod CA/agentic nie zmienił się względem baseline; nowe znaleziska są nowo odkryte, a nie dowiedzionymi świeżymi regresjami.",
+  "additionalFactCorrections": [
+    {
+      "claim": "CC checks inventory access on every call",
+      "status": "false for get_all_datasources",
+      "findingId": "O02"
+    },
+    {
+      "claim": "Inaccessible inventory gets the same answer as a non-existent one",
+      "status": "false: 403 vs 404, and status_code is passed to the model",
+      "findingId": "O12"
+    },
+    {
+      "claim": "Before a run the SE agent has start_draft + inventory status/emissions",
+      "status": "incomplete: native_input_* is added when catalog context exists",
+      "findingId": "O09"
+    },
+    {
+      "claim": "16 stationary_energy_* review tools",
+      "status": "true",
+      "evidence": "climate-advisor/service/app/tools/stationary_energy_review_tools.py:731-749"
+    },
+    {
+      "claim": "UI label 'Draft with agents'",
+      "status": "actual label is 'Draft with agent'",
+      "evidence": "app/src/i18n/locales/en/stationary-energy-agentic.json:9"
+    },
+    {
+      "claim": "Candidate scenario: viewer-role collaborator asking for an edit",
+      "status": "not representable: canEditInventory delegates to canAccessInventory",
+      "evidence": "app/src/backend/permissions/PermissionService.ts:380-388"
+    }
+  ]
+}

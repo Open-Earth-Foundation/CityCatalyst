@@ -56,6 +56,7 @@ const save = jest.fn(() => ({
   },
 }));
 const onClose = jest.fn();
+const onSaved = jest.fn();
 const createFunder = jest.fn();
 const refetch = jest.fn<() => { unwrap: () => Promise<unknown> }>();
 jest.unstable_mockModule("@/services/api", () => ({
@@ -149,6 +150,7 @@ const applicationContext: ConceptNoteApplicationContext = {
 async function renderDialog(
   context = applicationContext,
   templateImport?: FunderImportFlow,
+  infoFirst = false,
 ) {
   await act(async () => {
     root.render(
@@ -160,6 +162,8 @@ async function renderDialog(
           lng="en"
           runId="run"
           onClose={onClose}
+          onSaved={onSaved}
+          infoFirst={infoFirst}
           templateImport={templateImport}
         />
       </ChakraProvider>,
@@ -364,6 +368,25 @@ describe("own template", () => {
         expected_custom_template_id: null,
       }),
     });
+  });
+
+  it("saves information-first setup and returns to the workspace instead of promising drafting", async () => {
+    await renderDialog(applicationContext, undefined, true);
+    await click(translations["template-own-entry"]);
+    await type(
+      translations["funder-field-template-name"],
+      "Information first note",
+    );
+    await type("Chapter", "Summary");
+    await click(translations["template-use-submit"]);
+    const footer = document.querySelector<HTMLButtonElement>(
+      '[data-testid="concept-note-funding-save"]',
+    )!;
+    expect(footer.textContent).toBe(translations["workspace-save-setup"]);
+    expect(footer.title).toBe(translations["workspace-setup-next-step"]);
+    await act(async () => footer.click());
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(onSaved).toHaveBeenCalledTimes(1);
   });
 
   it("shows a saved own template and replaces it with a funder", async () => {

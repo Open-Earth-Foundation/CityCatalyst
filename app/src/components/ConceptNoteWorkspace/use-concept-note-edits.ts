@@ -20,14 +20,19 @@ function revisionKey(revisions: Record<string, number>): string {
 export function useConceptNoteEdits({
   runId,
   onApplied,
+  observeBackgroundUpdates = false,
 }: {
   runId: string | null;
   onApplied: (chapterIds: string[]) => Promise<void>;
+  observeBackgroundUpdates?: boolean;
 }) {
   const dispatch = useAppDispatch();
   const query = editApi.useListEditProposalsQuery(runId ?? "", {
     skip: !runId,
     refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    pollingInterval: observeBackgroundUpdates ? 2000 : 0,
+    skipPollingIfUnfocused: true,
   });
   useConceptNoteWorkspaceEvents({
     cityId: "",
@@ -38,7 +43,8 @@ export function useConceptNoteEdits({
     observeUpload: false,
     observeEdits: Boolean(
       runId &&
-      (query.isError ||
+      (observeBackgroundUpdates ||
+        query.isError ||
         query.currentData?.some((item) => item.status === "processing")),
     ),
   });

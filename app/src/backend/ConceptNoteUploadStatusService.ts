@@ -1,4 +1,5 @@
 import { loadConceptNoteUpload } from "@/backend/ConceptNoteUploadService";
+import { loadConceptNoteUploadDocument } from "@/backend/ingest/cnb-path-b";
 import {
   getConceptNotePdfOcrJob,
   normalizeConceptNotePdfOcrStatus,
@@ -14,6 +15,7 @@ export async function loadConceptNoteUploadStatus(args: {
   signal?: AbortSignal;
 }): Promise<ConceptNoteUploadResponse> {
   const upload = await loadConceptNoteUpload(args);
+  const document = await loadConceptNoteUploadDocument(args.uploadId);
   const job = await getConceptNotePdfOcrJob(args.uploadId);
   const workerState = job ? normalizeConceptNotePdfOcrStatus(job) : null;
   const completed = upload.status === "ready";
@@ -28,6 +30,7 @@ export async function loadConceptNoteUploadStatus(args: {
 
   return {
     uploadId: upload.uploadId,
+    ...document,
     runId: upload.runId,
     status,
     stage,

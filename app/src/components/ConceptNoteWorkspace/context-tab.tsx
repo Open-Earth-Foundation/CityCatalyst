@@ -64,6 +64,7 @@ import {
 import { getClimateActionPlanState } from "../ConceptNoteDashboard/climate-action-plan-status";
 import { ApplicationTemplateDialog } from "./application-template-dialog";
 import { InventorySelectionDialog } from "./inventory-selection-dialog";
+import { UploadSharingButton } from "./upload-sharing-button";
 
 interface ContextTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -372,15 +373,21 @@ export function ContextTab({
   const planUploading = uploadingRole === "climate_action_plan";
   const uploadBusy = isUploading || uploadingRole !== null;
   const uploadLimitReasonId = useId();
+  const handledUploadRequest = useRef<number | undefined>(undefined);
   useEffect(() => {
+    if (
+      !uploadPickerRequest ||
+      handledUploadRequest.current === uploadPickerRequest
+    )
+      return;
+    handledUploadRequest.current = uploadPickerRequest;
     // The buttons are disabled while busy; an external request must respect that too.
-    if (uploadPickerRequest && !uploadBusy) {
+    if (!uploadBusy) {
       fileSourceRoleRef.current = "reference";
       fileInputRef.current?.click();
     }
     // Only a new request opens the picker, not uploadBusy settling.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadPickerRequest]);
+  }, [uploadPickerRequest, uploadBusy]);
   const [editingPopulation, setEditingPopulation] = useState(false);
   const [populationInput, setPopulationInput] = useState("");
   const [yearInput, setYearInput] = useState("");
@@ -1079,6 +1086,11 @@ export function ContextTab({
                   }`}
                   statusLabel={statusLabel}
                 >
+                  <UploadSharingButton
+                    upload={upload}
+                    runId={runId}
+                    lng={lng}
+                  />
                   {upload.status === "failed" && (
                     <UploadRetryButton
                       label={t("retry")}

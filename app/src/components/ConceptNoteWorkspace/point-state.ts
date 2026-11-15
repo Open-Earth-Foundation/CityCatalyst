@@ -14,10 +14,10 @@ export const pointGroups = [
 export type PointGroup = (typeof pointGroups)[number];
 
 export function pointGroup(point: DocumentWorkspacePoint): PointGroup {
-  if (["answered", "assumption", "not_applicable"].includes(point.status))
-    return "covered";
   if (point.task?.status === "parked" || point.task?.status === "waiting")
     return "waiting";
+  if (["answered", "assumption", "not_applicable"].includes(point.status))
+    return "covered";
   if (point.status === "conflict") return "conflict";
   if (point.status === "needs_confirmation") return "confirmation";
   return point.kind === "decision" ? "decision" : "evidence";

@@ -43,7 +43,8 @@ const normalizeStatus = jest.fn<
 const callConceptNoteApi =
   jest.fn<(request: { body?: { upload_id?: string } }) => Promise<Response>>();
 const canAccessCity = jest.fn<() => Promise<void>>();
-const registerOnPool = jest.fn<() => Promise<void>>();
+const registerOnPool =
+  jest.fn<() => Promise<{ documentId: string; visibility: string }>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteUploadRun: loadRunCity,
@@ -121,6 +122,10 @@ describe("Concept Note source upload route", () => {
     expect(response.status).toBe(202);
     const result = await response.json();
     expect(result.sourceRole).toBe("climate_action_plan");
+    expect(result).toMatchObject({
+      documentId: "55555555-5555-4555-8555-555555555555",
+      visibility: "run",
+    });
     expect(callConceptNoteApi).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.objectContaining({
@@ -159,7 +164,10 @@ describe("Concept Note source upload route", () => {
       initialUploads: [],
     });
     canAccessCity.mockResolvedValue(undefined);
-    registerOnPool.mockResolvedValue(undefined);
+    registerOnPool.mockResolvedValue({
+      documentId: "55555555-5555-4555-8555-555555555555",
+      visibility: "run",
+    });
     callConceptNoteApi.mockImplementation(async (request) =>
       Response.json({
         upload_id: request.body?.upload_id,
@@ -397,6 +405,8 @@ describe("Concept Note source upload route", () => {
     const payload = await response.json();
     expect(payload).toEqual({
       uploadId: expect.any(String),
+      documentId: "55555555-5555-4555-8555-555555555555",
+      visibility: "run",
       status: "queued",
       stage: "ocr",
       canRetry: false,
@@ -462,6 +472,8 @@ describe("Concept Note source upload route", () => {
     const payload = await response.json();
     expect(payload).toEqual({
       uploadId: expect.any(String),
+      documentId: "55555555-5555-4555-8555-555555555555",
+      visibility: "run",
       status: "processing",
       stage: "delivery",
       canRetry: false,

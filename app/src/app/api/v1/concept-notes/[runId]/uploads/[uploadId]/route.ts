@@ -39,6 +39,13 @@
  *                 uploadId:
  *                   type: string
  *                   format: uuid
+ *                 documentId:
+ *                   type: string
+ *                   format: uuid
+ *                   description: Present when this upload has an existing pooled document.
+ *                 visibility:
+ *                   type: string
+ *                   enum: [run, city]
  *                 runId:
  *                   type: string
  *                   format: uuid

@@ -1048,5 +1048,16 @@
   "workspace-need-unavailable": "Evidence unavailable",
   "export-format-docx": "Word (DOCX)",
   "export-format-pdf": "PDF",
-  "workspace-choices-unavailable": "The allowed options are unavailable. Reload the workspace or sync document points from the selected template."
+  "workspace-choices-unavailable": "The allowed options are unavailable. Reload the workspace or sync document points from the selected template.",
+  "workspace-evidence-uploading": "Uploading evidence…",
+  "workspace-source-city-shared": "Shared with city",
+  "workspace-share-source": "Share with city",
+  "workspace-share-source-name": "Share {{filename}} with city",
+  "workspace-share-source-error": "This source could not be shared with the city. Check your access and try again.",
+  "workspace-save-setup": "Save document setup",
+  "workspace-setup-next-step": "Review the required information and decisions in Overview before drafting.",
+  "chat-welcome-info-first-intro": "I’ll help you confirm the evidence and make the decisions this document needs before shaping the prose.",
+  "chat-welcome-gather-points": "Your setup is ready. Review To do to confirm what the sources say, answer missing questions, or park work you are waiting on. You can start a working draft from the Draft tab whenever it helps.",
+  "chat-welcome-open-todos": "Review To do",
+  "workspace-accepted-basis": "Saved basis or reason"
 }

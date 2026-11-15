@@ -12,9 +12,14 @@ import type { PdfOcrJob } from "@/models/PdfOcrJob";
 const issueToken = jest.fn<() => Promise<{ access_token: string }>>();
 const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
 const isLegacyMarkdownOnlyPdfJobMock = jest.fn<(job: PdfOcrJob) => boolean>();
+const markPoolReady = jest.fn<() => Promise<void>>();
+const findDeliveryJobs = jest.fn<() => Promise<PdfOcrJob[]>>();
+jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
+  markConceptNoteDocumentMarkdownReady: markPoolReady,
+}));
 
 jest.unstable_mockModule("@/models", () => ({
-  db: { models: { PdfOcrJob: { findAll: jest.fn() } } },
+  db: { models: { PdfOcrJob: { findAll: findDeliveryJobs } } },
 }));
 jest.unstable_mockModule("@/backend/climate-advisor-token", () => ({
   issueClimateAdvisorUserToken: issueToken,
@@ -30,6 +35,7 @@ jest.unstable_mockModule("@/services/logger", () => ({
 let deliverPdfOcrJob: typeof import("@/backend/PdfOcrDeliveryService").deliverPdfOcrJob;
 let serializeMarkdownDeliveryPayload: typeof import("@/backend/PdfOcrDeliveryService").serializeMarkdownDeliveryPayload;
 let resolvePdfOcrDeliverySource: typeof import("@/backend/PdfOcrDeliveryService").resolvePdfOcrDeliverySource;
+let processPdfOcrDeliveries: typeof import("@/backend/PdfOcrDeliveryService").processPdfOcrDeliveries;
 
 const job = {
   status: "succeeded",
@@ -56,6 +62,7 @@ beforeAll(async () => {
     deliverPdfOcrJob,
     serializeMarkdownDeliveryPayload,
     resolvePdfOcrDeliverySource,
+    processPdfOcrDeliveries,
   } = await import("@/backend/PdfOcrDeliveryService"));
 });
 
@@ -77,6 +84,7 @@ describe("PDF OCR delivery", () => {
         candidate.structuredSchemaVersion == null,
     );
     issueToken.mockResolvedValue({ access_token: "token" });
+    markPoolReady.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -265,4 +273,37 @@ describe("PDF OCR delivery", () => {
       "X-CC-Service-Key": "shared-key",
     });
   });
+
+  it.each([true, false])(
+    "repairs pooled PDF readiness only after successful delivery: %s",
+    async (success) => {
+      process.env.CA_BASE_URL = "http://climate-advisor";
+      jest
+        .spyOn(global, "fetch")
+        .mockResolvedValue(new Response("", { status: success ? 202 : 503 }));
+      const update = jest
+        .fn<(values: Record<string, unknown>) => Promise<void>>()
+        .mockResolvedValue(undefined);
+      findDeliveryJobs.mockResolvedValue([
+        {
+          ...job,
+          sourceId: source.uploadId,
+          deliveryAttemptCount: 0,
+          update,
+        } as unknown as PdfOcrJob,
+      ]);
+      await processPdfOcrDeliveries(async () => source);
+      if (success) {
+        expect(markPoolReady).toHaveBeenCalledWith(source.uploadId);
+        expect(update).toHaveBeenLastCalledWith(
+          expect.objectContaining({ deliveryStatus: "delivered" }),
+        );
+      } else {
+        expect(markPoolReady).not.toHaveBeenCalled();
+        expect(update).toHaveBeenLastCalledWith(
+          expect.objectContaining({ deliveryStatus: "pending" }),
+        );
+      }
+    },
+  );
 });

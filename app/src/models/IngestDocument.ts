@@ -18,6 +18,8 @@ export interface IngestDocumentAttributes {
   projectId?: string | null;
   organizationId?: string | null;
   uploadedByUserId?: string | null;
+  /** Immutable origin identity; retained when a private document becomes city-visible. */
+  privateOwnerId?: string | null;
   visibility: IngestVisibility;
   markdownReady: boolean;
   catalogId?: string | null;
@@ -37,6 +39,7 @@ export type IngestDocumentOptionalAttributes =
   | "projectId"
   | "organizationId"
   | "uploadedByUserId"
+  | "privateOwnerId"
   | "visibility"
   | "markdownReady"
   | "catalogId"
@@ -62,6 +65,7 @@ export class IngestDocument
   declare projectId?: string | null;
   declare organizationId?: string | null;
   declare uploadedByUserId?: string | null;
+  declare privateOwnerId?: string | null;
   declare visibility: IngestVisibility;
   declare markdownReady: boolean;
   declare catalogId?: string | null;
@@ -120,6 +124,11 @@ export class IngestDocument
           allowNull: true,
           field: "uploaded_by_user_id",
           references: { model: "User", key: "user_id" },
+        },
+        privateOwnerId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "private_owner_id",
         },
         visibility: {
           type: DataTypes.STRING(16),
@@ -187,6 +196,7 @@ export class IngestDocument
               { name: "city_id" },
               { name: "project_id" },
               { name: "organization_id" },
+              { name: "private_owner_id" },
             ],
             where: { withdrawnAt: null },
           },

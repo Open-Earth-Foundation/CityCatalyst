@@ -11,6 +11,7 @@ import type {
   PdfOcrStatus,
 } from "@/models/PdfOcrJob";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
+import { markConceptNoteDocumentMarkdownReady } from "@/backend/ingest/cnb-path-b";
 import {
   convertPdfUrlToMarkdown,
   MistralOcrError,
@@ -514,6 +515,9 @@ async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
   }
   const completedJob = await db.models.PdfOcrJob.findByPk(job.id);
   if (completedJob) await syncGHGIOcrArtifact(completedJob);
+  if (job.sourceType === CONCEPT_NOTE_SOURCE_TYPE) {
+    await markConceptNoteDocumentMarkdownReady(job.sourceId);
+  }
 }
 
 async function failOrRetry(

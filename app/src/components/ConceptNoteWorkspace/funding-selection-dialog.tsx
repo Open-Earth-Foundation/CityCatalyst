@@ -72,6 +72,8 @@ interface FundingSelectionDialogProps {
   runId: string;
   onClose: () => void;
   onSaved?: () => void;
+  /** The point workspace returns to its information overview before drafting. */
+  infoFirst?: boolean;
   /** Enables adding a funder from a document; by hand works without it. */
   funderImport?: FunderImportFlow;
   /** Enables reading the note's own template from a document. */
@@ -121,6 +123,7 @@ export function FundingSelectionDialog({
   runId,
   onClose,
   onSaved,
+  infoFirst = false,
   funderImport,
   templateImport,
 }: FundingSelectionDialogProps) {
@@ -280,7 +283,7 @@ export function FundingSelectionDialog({
       }).unwrap();
       toaster.create({ title: t("funding-saved"), type: "success" });
       onClose();
-      if (savesIntoDrafting) onSaved?.();
+      if (infoFirst || savesIntoDrafting) onSaved?.();
     } catch (cause) {
       const status = isFetchBaseQueryError(cause) ? cause.status : null;
       const code = funderApiErrorCode(cause);
@@ -582,7 +585,12 @@ export function FundingSelectionDialog({
                         truncate
                       >
                         {templateImport && templateImport.phase !== "idle"
-                          ? t(importPhaseLabel("template", templateImport.phase))
+                          ? t(
+                              importPhaseLabel(
+                                "template",
+                                templateImport.phase,
+                              ),
+                            )
                           : (ownTemplate?.preview.name ??
                             t("template-own-entry-help"))}
                       </Text>
@@ -873,10 +881,20 @@ export function FundingSelectionDialog({
                 }
                 onClick={() => void save()}
                 data-testid="concept-note-funding-save"
-                title={savesIntoDrafting ? t("funding-next-step") : undefined}
+                title={
+                  infoFirst
+                    ? t("workspace-setup-next-step")
+                    : savesIntoDrafting
+                      ? t("funding-next-step")
+                      : undefined
+                }
               >
                 {t(
-                  savesIntoDrafting ? "funding-save-and-draft" : "funding-save",
+                  infoFirst
+                    ? "workspace-save-setup"
+                    : savesIntoDrafting
+                      ? "funding-save-and-draft"
+                      : "funding-save",
                 )}
               </Button>
             </Flex>

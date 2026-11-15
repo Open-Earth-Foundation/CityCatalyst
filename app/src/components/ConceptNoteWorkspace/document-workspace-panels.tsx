@@ -26,8 +26,8 @@ export function WorkspaceOverview({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const { overview } = workspace;
-  const covered = workspace.points.filter(
-    (point) => pointGroup(point) === "covered",
+  const covered = workspace.points.filter((point) =>
+    ["answered", "assumption", "not_applicable"].includes(point.status),
   );
   const waiting = workspace.points.filter(
     (point) => pointGroup(point) === "waiting",
@@ -241,10 +241,12 @@ export function WorkspaceTodos({
   selectedKey,
   runId,
   onAddSource,
+  sourceBusy,
 }: PanelProps & {
   selectedKey: string | null;
   runId: string;
   onAddSource: () => void;
+  sourceBusy?: boolean;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const selected =
@@ -331,6 +333,7 @@ export function WorkspaceTodos({
           runId={runId}
           lng={lng}
           onAddSource={onAddSource}
+          sourceBusy={sourceBusy}
         />
       ) : (
         <Text color="content.secondary">{t("workspace-points-empty")}</Text>

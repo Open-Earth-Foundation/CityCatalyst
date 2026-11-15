@@ -1290,6 +1290,8 @@ export interface ConceptNoteRun {
     source_label?: string | null;
     source_role?: ConceptNoteSourceRole;
     source_format: "pdf" | "markdown";
+    document_id?: string;
+    visibility?: "run" | "city";
     page_count?: number | null;
     error_code?: string | null;
     received_at: string;
@@ -1608,6 +1610,8 @@ export type ConceptNoteSourceRole = "reference" | "climate_action_plan";
 
 export interface ConceptNoteUploadResponse {
   uploadId: string;
+  documentId?: string;
+  visibility?: "run" | "city";
   runId?: string;
   status: ConceptNoteUploadStatus;
   pageCount?: number | null;

@@ -11,10 +11,17 @@ import {
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import type { DocumentWorkspacePoint } from "@/util/document-workspace";
+import type {
+  DocumentWorkspace,
+  DocumentWorkspacePoint,
+} from "@/util/document-workspace";
 
 const save = jest.fn<(payload: unknown) => void>();
 const ask = jest.fn();
+const addSource = jest.fn();
+let questionData:
+  | { why_asking: string; questions: { question: string; options: string[] }[] }
+  | undefined;
 let commandError: { status: number } | undefined;
 const reload = jest.fn<() => Promise<void>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -36,11 +43,12 @@ jest.unstable_mockModule("@/services/document-workspace-api", () => ({
         },
       },
     ],
-    useGetDocumentPointQuestionMutation: () => [ask, {}],
+    useGetDocumentPointQuestionMutation: () => [ask, { data: questionData }],
     useLazyGetDocumentWorkspaceQuery: () => [reload, {}],
   },
 }));
 let DocumentPointCard: typeof import("@/components/ConceptNoteWorkspace/document-point-card").DocumentPointCard;
+let WorkspaceOverview: typeof import("@/components/ConceptNoteWorkspace/document-workspace-panels").WorkspaceOverview;
 let root: Root;
 let container: HTMLDivElement;
 const point: DocumentWorkspacePoint = {
@@ -82,6 +90,8 @@ beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   ({ DocumentPointCard } =
     await import("@/components/ConceptNoteWorkspace/document-point-card"));
+  ({ WorkspaceOverview } =
+    await import("@/components/ConceptNoteWorkspace/document-workspace-panels"));
 });
 afterAll(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
@@ -89,7 +99,9 @@ afterAll(() => {
 });
 beforeEach(() => {
   save.mockClear();
+  addSource.mockClear();
   ask.mockClear();
+  questionData = undefined;
   commandError = undefined;
   reload.mockReset().mockResolvedValue(undefined);
   container = document.createElement("div");
@@ -100,7 +112,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
 });
-async function render(nextPoint = point) {
+async function render(nextPoint = point, sourceBusy = false) {
   await act(async () =>
     root.render(
       <ChakraProvider value={defaultSystem}>
@@ -108,7 +120,8 @@ async function render(nextPoint = point) {
           point={nextPoint}
           runId="run-1"
           lng="en"
-          onAddSource={() => {}}
+          onAddSource={addSource}
+          sourceBusy={sourceBusy}
         />
       </ChakraProvider>,
     ),
@@ -282,4 +295,205 @@ it("does not save undeclared choice values or invent options when the schema is 
   });
   expect(container.querySelector("select")!.disabled).toBe(true);
   expect(container.textContent).toContain("workspace-choices-unavailable");
+});
+
+it("renders model options as draft input without accepting a value automatically", async () => {
+  questionData = {
+    why_asking: "Choose a starting estimate",
+    questions: [
+      { question: "Which budget estimate?", options: ["100", "250"] },
+    ],
+  };
+  await render({ ...point, candidates: [] });
+  expect(container.textContent).toContain("Which budget estimate?");
+  await act(async () => button("250").click());
+  expect(
+    container.querySelector<HTMLInputElement>('input[type="number"]')!.value,
+  ).toBe("250");
+  expect(save).not.toHaveBeenCalled();
+  await act(async () =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      command: expect.objectContaining({ value: 250 }),
+    }),
+  );
+});
+
+it("keeps model suggestions outside declared choices disabled", async () => {
+  questionData = {
+    why_asking: "Compare delivery models",
+    questions: [
+      { question: "Which option?", options: ["Allowed", "Invented"] },
+    ],
+  };
+  await render({
+    ...point,
+    answer_type: "choice",
+    choices: ["Allowed"],
+    candidates: [],
+  });
+  expect(button("Invented").disabled).toBe(true);
+  await act(async () => button("Allowed").click());
+  expect(container.querySelector("select")!.value).toBe("Allowed");
+  expect(save).not.toHaveBeenCalled();
+});
+
+it("explains that another upload is busy instead of silently dropping Add evidence", async () => {
+  await render(point, true);
+  expect(button("workspace-evidence-uploading").disabled).toBe(true);
+  await act(async () => button("workspace-evidence-uploading").click());
+  expect(addSource).not.toHaveBeenCalled();
+});
+
+it("shows an accepted waiting point in Overview without claiming nothing is waiting", async () => {
+  const acceptedWaiting = {
+    ...point,
+    status: "answered",
+    value: 100,
+    task: {
+      status: "waiting",
+      waiting_for: "Treasurer",
+      requested_information: "Updated approval",
+      note: null,
+    },
+  } as DocumentWorkspacePoint;
+  const workspace = {
+    revision: 1,
+    points: [acceptedWaiting],
+    needs: [],
+    setup: null,
+    overview: {
+      required_total: 1,
+      required_covered: 1,
+      optional_total: 0,
+      optional_covered: 0,
+      waiting_count: 1,
+      next_steps: [],
+    },
+    export_eligibility: {
+      working: true,
+      final: false,
+      blockers: [],
+      workspace_revision: 1,
+    },
+  } as DocumentWorkspace;
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <WorkspaceOverview
+          workspace={workspace}
+          lng="en"
+          chapters={[]}
+          onSelectPoint={() => {}}
+          onOpenDraft={() => {}}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  expect(container.textContent).toContain("Treasurer");
+  expect(container.textContent).toContain("Updated approval");
+  expect(container.textContent).not.toContain("workspace-nothing-waiting");
+  expect(container.textContent).toContain("workspace-known-facts");
+});
+
+it.each(["not_applicable", "assumption", "answered"] as const)(
+  "shows the saved basis for %s after remount without relying on the editable reason field",
+  async (status) => {
+    const savedPoint: DocumentWorkspacePoint = {
+      ...point,
+      status,
+      value: status === "not_applicable" ? null : 100,
+      candidates: [],
+      task: {
+        status: "done",
+        waiting_for: null,
+        requested_information: null,
+        note: "Finance confirmed: no grant applies to this phase.",
+      },
+    };
+    await render(savedPoint);
+    const accepted = () =>
+      container.querySelector(
+        '[data-testid="document-point-accepted-answer"]',
+      )!;
+    expect(accepted().textContent).toContain("workspace-accepted-basis");
+    expect(accepted().textContent).toContain(savedPoint.task!.note);
+    if (status === "not_applicable") {
+      expect(accepted().textContent).toContain("workspace-not-applicable");
+      expect(accepted().textContent).not.toContain("workspace-no-value");
+    }
+    await type(
+      container.querySelector("textarea")!,
+      "Unsaved replacement reason",
+    );
+    await act(async () => root.unmount());
+    root = createRoot(container);
+    await render(savedPoint);
+    expect(accepted().textContent).toContain(savedPoint.task!.note);
+    expect(accepted().textContent).not.toContain("Unsaved replacement reason");
+    expect(container.querySelector("textarea")!.value).toBe("");
+    expect(save).not.toHaveBeenCalled();
+  },
+);
+
+it("keeps the immutable accepted basis after parking and remounting, rather than replacing it with a task note", async () => {
+  const savedPoint: DocumentWorkspacePoint = {
+    ...point,
+    status: "assumption",
+    value: 100,
+    candidates: [],
+    accepted_reason: "Finance estimate approved as a planning assumption.",
+    task: {
+      status: "done",
+      waiting_for: null,
+      requested_information: null,
+      note: "Finance estimate approved as a planning assumption.",
+    },
+  };
+  await render(savedPoint);
+  const parkedPoint: DocumentWorkspacePoint = {
+    ...savedPoint,
+    version: 8,
+    task: {
+      status: "waiting",
+      waiting_for: "Treasurer",
+      requested_information: "Final budget",
+      note: "Parking note is not the basis of acceptance.",
+    },
+  };
+  await render(parkedPoint);
+  const accepted = () =>
+    container.querySelector('[data-testid="document-point-accepted-answer"]')!;
+  expect(accepted().textContent).toContain(savedPoint.accepted_reason);
+  expect(accepted().textContent).not.toContain(parkedPoint.task!.note);
+  await act(async () => root.unmount());
+  root = createRoot(container);
+  await render(parkedPoint);
+  expect(accepted().textContent).toContain(savedPoint.accepted_reason);
+  expect(accepted().textContent).not.toContain(parkedPoint.task!.note);
+});
+
+it("does not promote a mutable park note to an accepted reason when the server explicitly returns null", async () => {
+  await render({
+    ...point,
+    status: "answered",
+    value: 100,
+    candidates: [],
+    accepted_reason: null,
+    task: {
+      status: "parked",
+      waiting_for: null,
+      requested_information: "Updated evidence",
+      note: "A later task note",
+    },
+  });
+  const accepted = container.querySelector(
+    '[data-testid="document-point-accepted-answer"]',
+  )!;
+  expect(accepted.textContent).not.toContain("workspace-accepted-basis");
+  expect(accepted.textContent).not.toContain("A later task note");
 });

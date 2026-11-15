@@ -1,18 +1,44 @@
 "use client";
 
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
-import { LuFileText, LuLandmark } from "react-icons/lu";
+import { LuFileText, LuLandmark, LuListTodo } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import type { DocumentWorkspace } from "@/util/document-workspace";
 
-export type ChatWelcomeStage = "choose-funding" | "ready-to-draft" | "drafted";
+export type ChatWelcomeStage =
+  "choose-funding" | "gather-points" | "ready-to-draft" | "drafted";
+
+export function getChatWelcomeStage({
+  draftHasContent,
+  canStartDrafting,
+  workspace,
+}: {
+  draftHasContent: boolean;
+  canStartDrafting: boolean;
+  workspace?: DocumentWorkspace;
+}): ChatWelcomeStage {
+  if (draftHasContent) return "drafted";
+  if (
+    workspace?.setup?.ready &&
+    workspace.points.some(
+      (point) =>
+        point.status === "conflict" ||
+        (point.required &&
+          !["answered", "assumption", "not_applicable"].includes(point.status)),
+    )
+  )
+    return "gather-points";
+  return canStartDrafting ? "ready-to-draft" : "choose-funding";
+}
 
 interface ChatWelcomeProps {
   lng: string;
   stage: ChatWelcomeStage;
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
+  onOpenTodos?: () => void;
 }
 
 /**
@@ -25,6 +51,7 @@ export function ChatWelcome({
   stage,
   onOpenDraft,
   onOpenFundingSetup,
+  onOpenTodos,
 }: ChatWelcomeProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const action =
@@ -34,13 +61,19 @@ export function ChatWelcome({
           icon: LuLandmark,
           onClick: onOpenFundingSetup,
         }
-      : stage === "ready-to-draft" && onOpenDraft
+      : stage === "gather-points" && onOpenTodos
         ? {
-            label: t("chat-welcome-open-draft"),
-            icon: LuFileText,
-            onClick: onOpenDraft,
+            label: t("chat-welcome-open-todos"),
+            icon: LuListTodo,
+            onClick: onOpenTodos,
           }
-        : null;
+        : stage === "ready-to-draft" && onOpenDraft
+          ? {
+              label: t("chat-welcome-open-draft"),
+              icon: LuFileText,
+              onClick: onOpenDraft,
+            }
+          : null;
 
   return (
     <Box
@@ -57,7 +90,11 @@ export function ChatWelcome({
       data-stage={stage}
     >
       <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
-        {t("chat-welcome-intro")}
+        {t(
+          stage === "gather-points"
+            ? "chat-welcome-info-first-intro"
+            : "chat-welcome-intro",
+        )}
       </Text>
       <Text
         mt={2}

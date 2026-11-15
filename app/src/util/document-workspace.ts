@@ -49,6 +49,8 @@ export interface DocumentWorkspacePoint {
     | "assumption"
     | "not_applicable";
   value: DocumentPointValue;
+  /** Basis from the current accepted revision; null means no accepted reason. */
+  accepted_reason?: string | null;
   chapter_refs: string[];
   candidates: DocumentPointCandidate[];
   task: DocumentPointTask | null;

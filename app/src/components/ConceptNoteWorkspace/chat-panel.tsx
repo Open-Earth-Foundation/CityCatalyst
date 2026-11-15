@@ -92,6 +92,7 @@ interface ConceptNoteChatPanelProps {
   draftCompletedAt?: string | null;
   welcomeStage?: ChatWelcomeStage | null;
   onOpenDraft?: () => void;
+  onOpenTodos?: () => void;
   onOpenFundingSetup?: () => void;
   onDraftOverviewComplete?: () => void;
 }
@@ -254,6 +255,7 @@ export function ConceptNoteChatPanel({
   draftCompletedAt = null,
   welcomeStage = null,
   onOpenDraft,
+  onOpenTodos,
   onOpenFundingSetup,
   onDraftOverviewComplete,
 }: ConceptNoteChatPanelProps) {
@@ -582,6 +584,7 @@ export function ConceptNoteChatPanel({
                   lng={lng}
                   stage={welcomeStage}
                   onOpenDraft={onOpenDraft}
+                  onOpenTodos={onOpenTodos}
                   onOpenFundingSetup={onOpenFundingSetup}
                 />
               )}

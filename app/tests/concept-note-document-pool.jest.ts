@@ -32,6 +32,7 @@ const readBytes = jest.fn<() => Promise<Buffer | null>>();
 const trigger = jest.fn();
 const moduleEnabled = jest.fn<() => boolean>();
 const createDocument = jest.fn();
+const createAssociation = jest.fn<(data: Row) => Promise<Row>>();
 const findDocuments = jest.fn<(query: Query) => Promise<Row[]>>();
 const findDocument = jest.fn<(query: Query) => Promise<Row | null>>();
 const createUpload =
@@ -86,11 +87,7 @@ jest.unstable_mockModule("@/models", () => ({
               row.sourceId === query.where.sourceId &&
               row.availability !== "withdrawn",
           ) ?? null,
-        create: async (data: Row) => {
-          const row = saved({ id: `association-${++catalogCounter}`, ...data });
-          catalogs.set(row.id as string, row);
-          return row;
-        },
+        create: createAssociation,
       },
       PdfOcrJob: {
         findOne: async (query: Query) =>
@@ -197,6 +194,11 @@ beforeEach(() => {
   catalogCounter = 0;
   addDocument();
   canAccessCity.mockResolvedValue({ organizationId: "org-id" });
+  createAssociation.mockImplementation(async (data) => {
+    const row = saved({ id: `association-${++catalogCounter}`, ...data });
+    catalogs.set(row.id as string, row);
+    return row;
+  });
   moduleEnabled.mockReturnValue(true);
   putFile.mockResolvedValue(undefined);
   putTextFile.mockResolvedValue(undefined);
@@ -353,6 +355,20 @@ describe("Concept Note shared city documents (real pool/catalog/OCR helpers)", (
       catalogId: "source-catalog",
     });
     expect(trigger).toHaveBeenCalledTimes(2);
+    expect(createAssociation.mock.invocationCallOrder[0]).toBeLessThan(
+      pdfFindOrCreate.mock.invocationCallOrder[0],
+    );
+  });
+
+  it("never queues a reusable upload without its lifecycle association", async () => {
+    createAssociation.mockRejectedValueOnce(new Error("catalog unavailable"));
+    await expect(
+      POST(request({ document_id: documentId }), context as never),
+    ).rejects.toMatchObject({ status: 503 });
+    expect(jobs.size).toBe(0);
+    expect(pdfFindOrCreate).not.toHaveBeenCalled();
+    expect(putFile).not.toHaveBeenCalled();
+    expect(putTextFile).not.toHaveBeenCalled();
   });
 
   it("registers Markdown through real normalization, durable artifact, and delivery helpers without PDF OCR", async () => {

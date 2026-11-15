@@ -26,6 +26,7 @@ export function WorkspaceSources({
   onAttached,
   onAddSource,
   onSelectPoint,
+  sourceBusy = false,
 }: {
   runId: string;
   lng: string;
@@ -33,6 +34,7 @@ export function WorkspaceSources({
   onAttached: () => void;
   onAddSource: () => void;
   onSelectPoint: (key: string) => void;
+  sourceBusy?: boolean;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
@@ -42,7 +44,7 @@ export function WorkspaceSources({
   );
   const documents = documentWorkspaceApi.useGetWorkspaceDocumentsQuery(
     { runId, offset },
-    { skip: !open },
+    { skip: !open, refetchOnMountOrArgChange: true },
   );
   const [attach, attachState] =
     documentWorkspaceApi.useAttachWorkspaceDocumentMutation();
@@ -104,8 +106,17 @@ export function WorkspaceSources({
             </Text>
           ))}
           <HStack mt={3} flexWrap="wrap">
-            <Button size="sm" variant="outline" onClick={onAddSource}>
-              {t("workspace-add-evidence")}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onAddSource}
+              disabled={sourceBusy}
+            >
+              {t(
+                sourceBusy
+                  ? "workspace-evidence-uploading"
+                  : "workspace-add-evidence",
+              )}
             </Button>
             {need.point_keys.map((key) => (
               <Button

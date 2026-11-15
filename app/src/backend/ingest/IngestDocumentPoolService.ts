@@ -29,6 +29,7 @@ function toRecord(
     projectId?: string | null;
     organizationId?: string | null;
     uploadedByUserId?: string | null;
+    privateOwnerId?: string | null;
     visibility: IngestDocumentRecord["visibility"];
     markdownReady: boolean;
     catalogId?: string | null;
@@ -48,6 +49,7 @@ function toRecord(
     projectId: row.projectId,
     organizationId: row.organizationId,
     uploadedByUserId: row.uploadedByUserId,
+    privateOwnerId: row.privateOwnerId ?? null,
     visibility: row.visibility,
     markdownReady: row.markdownReady,
     catalogId: row.catalogId,
@@ -117,10 +119,28 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       projectId: input.scope.projectId ?? null,
       organizationId: input.scope.organizationId ?? null,
     };
-    const activeWhere = { ...where, withdrawnAt: { [Op.is]: null } };
-    const existing = await db.models.IngestDocument.findOne({
-      where: activeWhere,
-    });
+    const privateOwnerId =
+      input.visibility === "run" ? (input.uploadedByUserId ?? null) : null;
+    const privateWhere =
+      input.visibility === "run"
+        ? {
+            ...where,
+            privateOwnerId,
+            visibility: "run",
+            withdrawnAt: { [Op.is]: null },
+          }
+        : null;
+    const sharedWhere = {
+      ...where,
+      visibility: input.visibility === "run" ? "city" : { [Op.ne]: "run" },
+      withdrawnAt: { [Op.is]: null },
+    };
+    const findExisting = async () =>
+      (privateWhere
+        ? await db.models.IngestDocument.findOne({ where: privateWhere })
+        : null) ??
+      (await db.models.IngestDocument.findOne({ where: sharedWhere }));
+    const existing = await findExisting();
     if (existing) {
       if (input.s3Key && !existing.s3Key) {
         await existing.update({ s3Key: input.s3Key });
@@ -133,6 +153,7 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
         ...where,
         originalFileName: input.originalFileName,
         uploadedByUserId: input.uploadedByUserId ?? null,
+        privateOwnerId,
         visibility: input.visibility,
         markdownReady:
           input.markdownReady ?? initialMarkdownReady(input.originalFileName),
@@ -142,9 +163,7 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
       return { document: toRecord(created), created: true };
     } catch (error) {
       if (!(error instanceof UniqueConstraintError)) throw error;
-      const raced = await db.models.IngestDocument.findOne({
-        where: activeWhere,
-      });
+      const raced = await findExisting();
       if (!raced) throw error;
       return { document: toRecord(raced), created: false };
     }
@@ -178,7 +197,9 @@ export class SequelizeIngestDocumentPool implements IngestDocumentPool {
     }
     await row.update({ markdownReady: true });
     if (row.catalogId) {
-      const catalog = await db.models.NativeInputCatalog.findByPk(row.catalogId);
+      const catalog = await db.models.NativeInputCatalog.findByPk(
+        row.catalogId,
+      );
       if (catalog) {
         await catalog.update({ markdownReady: true });
       }

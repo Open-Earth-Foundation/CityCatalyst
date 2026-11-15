@@ -31,6 +31,7 @@ export function DocumentPointCard({
   onAddSource,
   compact = false,
   onOpenPoint,
+  sourceBusy = false,
 }: {
   point: DocumentWorkspacePoint;
   runId: string;
@@ -38,6 +39,7 @@ export function DocumentPointCard({
   onAddSource: () => void;
   compact?: boolean;
   onOpenPoint?: () => void;
+  sourceBusy?: boolean;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [command, commandState] =
@@ -89,6 +91,10 @@ export function DocumentPointCard({
   const accepted = ["answered", "assumption", "not_applicable"].includes(
     point.status,
   );
+  const acceptedBasis =
+    point.accepted_reason === undefined
+      ? point.task?.note
+      : point.accepted_reason;
   const pending = point.candidates.filter(
     (candidate) => candidate.status !== "dismissed",
   );
@@ -127,10 +133,36 @@ export function DocumentPointCard({
         </HStack>
       </Box>
       {accepted && (
-        <Box bg="background.alternativeLight" p={3} borderRadius="rounded">
+        <Box
+          bg="background.alternativeLight"
+          p={3}
+          borderRadius="rounded"
+          data-testid="document-point-accepted-answer"
+        >
           <Text whiteSpace="pre-wrap">
-            {pointValueText(point.value) || t("workspace-no-value")}
+            {point.status === "not_applicable"
+              ? t("workspace-not-applicable")
+              : pointValueText(point.value) || t("workspace-no-value")}
           </Text>
+          {acceptedBasis?.trim() && (
+            <Box mt={3}>
+              <Text
+                fontSize="label.sm"
+                fontWeight="medium"
+                color="content.secondary"
+              >
+                {t("workspace-accepted-basis")}
+              </Text>
+              <Text
+                mt={1}
+                fontSize="body.sm"
+                whiteSpace="pre-wrap"
+                color="content.primary"
+              >
+                {acceptedBasis}
+              </Text>
+            </Box>
+          )}
         </Box>
       )}
       {pending.slice(0, compact ? 1 : undefined).map((candidate) => (
@@ -228,11 +260,34 @@ export function DocumentPointCard({
           {questionState.data && (
             <Box bg="background.alternativeLight" p={3} borderRadius="rounded">
               <Text fontSize="body.sm">{questionState.data.why_asking}</Text>
-              {questionState.data.questions.map((question, index) => (
-                <Text key={index} mt={2} fontWeight="medium">
-                  {question.question}
-                </Text>
-              ))}
+              {questionState.data.questions
+                .slice(0, 4)
+                .map((question, index) => (
+                  <Box key={index} mt={2}>
+                    <Text fontWeight="medium">{question.question}</Text>
+                    <HStack mt={2} flexWrap="wrap">
+                      {question.options.slice(0, 6).map((option) => (
+                        <Button
+                          key={option}
+                          size="sm"
+                          variant="outline"
+                          whiteSpace="normal"
+                          h="auto"
+                          minH="32px"
+                          py={2}
+                          aria-pressed={answer === option}
+                          disabled={
+                            point.answer_type === "choice" &&
+                            !options.includes(option)
+                          }
+                          onClick={() => setAnswer(option)}
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </HStack>
+                  </Box>
+                ))}
             </Box>
           )}
           <form
@@ -254,6 +309,9 @@ export function DocumentPointCard({
                     : "workspace-your-answer",
                 )}
                 required
+                disabled={
+                  point.answer_type === "choice" && options.length === 0
+                }
               >
                 {point.answer_type === "choice" ? (
                   <NativeSelectRoot disabled={options.length === 0}>
@@ -343,8 +401,17 @@ export function DocumentPointCard({
             </VStack>
           </form>
           <HStack flexWrap="wrap">
-            <Button size="sm" variant="outline" onClick={onAddSource}>
-              {t("workspace-add-evidence")}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onAddSource}
+              disabled={sourceBusy}
+            >
+              {t(
+                sourceBusy
+                  ? "workspace-evidence-uploading"
+                  : "workspace-add-evidence",
+              )}
             </Button>
             {point.task?.status === "waiting" ||
             point.task?.status === "parked" ? (

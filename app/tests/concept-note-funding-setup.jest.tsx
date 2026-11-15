@@ -327,6 +327,11 @@ it("shows one ready-to-draft banner without its own start button until funding i
   await clickSetup();
   const save = container.querySelector('[aria-label="save-funding"]');
   await act(async () => (save as HTMLButtonElement).click());
+  expect(
+    [...container.querySelectorAll('[role="tab"]')]
+      .find((tab) => tab.textContent === "workspace-overview-tab")
+      ?.getAttribute("aria-selected"),
+  ).toBe("true");
   await showDraft();
 
   const banner = () =>
@@ -431,4 +436,30 @@ it("waits for sources before showing ready-to-draft guidance after saving fundin
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
   expect(container.textContent).toContain("next-step-funding-saved-title");
+});
+
+it("opens an existing review deep link directly in Draft instead of Overview", async () => {
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ConceptNoteWorkspace
+          cityId="city"
+          runId="run"
+          lng="en"
+          initialReviewChapterId="chapter"
+        />
+      </ChakraProvider>,
+    ),
+  );
+  const tabs = [...container.querySelectorAll('[role="tab"]')];
+  expect(
+    tabs
+      .find((tab) => tab.textContent === "draft-tab")
+      ?.getAttribute("aria-selected"),
+  ).toBe("true");
+  expect(
+    tabs
+      .find((tab) => tab.textContent === "workspace-overview-tab")
+      ?.getAttribute("aria-selected"),
+  ).toBe("false");
 });

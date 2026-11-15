@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import { db } from "@/models";
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
 import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
+import { markConceptNoteDocumentMarkdownReady } from "@/backend/ingest/cnb-path-b";
 import {
   getConceptNoteSourceFormat,
   isLegacyMarkdownOnlyPdfJob,
@@ -233,6 +234,13 @@ export async function processPdfOcrDeliveries(
       }
       await job.update({ deliveryStatus: "delivering" });
       await deliverPdfOcrJob(job, source);
+      if (
+        job.status === "succeeded" &&
+        getConceptNoteSourceFormat(job) === "pdf"
+      ) {
+        // Repairs uploads whose OCR completed before their Path B link was published.
+        await markConceptNoteDocumentMarkdownReady(job.sourceId);
+      }
       await job.update({
         deliveryStatus: "delivered",
         deliveryAttemptCount: job.deliveryAttemptCount + 1,

@@ -9,10 +9,10 @@ import { db } from "@/models";
 
 const associationLabels = z.object({
   documentId: z.string().uuid(),
-  runId: z.string().uuid(),
+  runId: z.string().uuid().optional(),
 });
 
-/** Recheck original lifecycle and scope whenever a reused run artifact is consumed. */
+/** Recheck catalog-backed source lifecycle for both original and reused artifacts. */
 export async function assertReusedDocumentSourceAvailable(
   uploadId: string,
   session: AppSession,
@@ -20,24 +20,27 @@ export async function assertReusedDocumentSourceAvailable(
   const association = await db.models.NativeInputCatalog.findOne({
     where: { sourceType: "cnb_upload", sourceId: uploadId },
   });
-  // Direct uploads retain their existing run authorization, without a reuse association.
-  if (!association?.labels?.runId) return;
+  // Only genuinely pre-catalog uploads retain their existing legacy read path.
+  if (!association) return;
   const labels = associationLabels.safeParse(association.labels);
   if (!labels.success || association.userId !== session.user.id) {
     throw new createHttpError.NotFound("Document source not found");
   }
-  await loadConceptNoteUpload({
-    runId: labels.data.runId,
-    uploadId,
-    userId: session.user.id,
-  });
+  if (labels.data.runId) {
+    await loadConceptNoteUpload({
+      runId: labels.data.runId,
+      uploadId,
+      userId: session.user.id,
+    });
+  }
   const source = await new SequelizeIngestDocumentPool().get(
     labels.data.documentId,
   );
   if (
     !source ||
     !source.cityId ||
-    source.visibility !== "city" ||
+    (source.visibility !== "city" &&
+      (labels.data.runId !== undefined || source.visibility !== "run")) ||
     source.availability !== "active" ||
     source.withdrawnAt ||
     source.bytesPurgedAt ||
@@ -48,8 +51,14 @@ export async function assertReusedDocumentSourceAvailable(
     source.contentHash !== association.contentDigest
   ) {
     throw new createHttpError.Conflict(
-      "The shared document is unavailable or changed",
+      "The document source is unavailable or changed",
     );
+  }
+  if (
+    source.visibility === "run" &&
+    source.uploadedByUserId !== session.user.id
+  ) {
+    throw new createHttpError.NotFound("Document source not found");
   }
   await PermissionService.canAccessCity(session, source.cityId, {
     includeResource: false,

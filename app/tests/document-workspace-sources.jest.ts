@@ -203,20 +203,125 @@ describe("reused document source lifecycle (real pool and target upload authoriz
     expect(callCa).not.toHaveBeenCalled();
   });
 
-  it.each(["no association", "historical direct catalog"])(
-    "preserves the existing direct-upload path for %s",
-    async (variant) => {
-      if (variant === "no association")
-        findAssociation.mockResolvedValueOnce(null);
-      else association.labels = { documentId };
+  it("preserves the existing legacy path only when there is no catalog association", async () => {
+    findAssociation.mockResolvedValueOnce(null);
+    await expect(
+      assertAvailable(uploadId, session as never),
+    ).resolves.toBeUndefined();
+    expect(callCa).not.toHaveBeenCalled();
+    expect(findSource).not.toHaveBeenCalled();
+    expect(canAccessCity).not.toHaveBeenCalled();
+  });
+});
+
+describe("catalog-backed original sources without reuse runId", () => {
+  beforeEach(() => {
+    association.labels = { documentId, visibility: "run" };
+    source.visibility = "run";
+    source.uploadedByUserId = userId;
+  });
+
+  it("allows the original actor's active run-private source after checking current city access", async () => {
+    await expect(
+      assertAvailable(uploadId, session as never),
+    ).resolves.toBeUndefined();
+    expect(findSource).toHaveBeenCalledWith(documentId);
+    expect(canAccessCity).toHaveBeenCalledWith(session, cityId, {
+      includeResource: false,
+    });
+    expect(callCa).not.toHaveBeenCalled();
+  });
+
+  it("allows the original source after explicit city promotion", async () => {
+    source.visibility = "city";
+    await expect(
+      assertAvailable(uploadId, session as never),
+    ).resolves.toBeUndefined();
+    expect(canAccessCity).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["withdrawn original catalog", {}, { availability: "withdrawn" }, {}],
+    ["superseded original catalog", {}, { availability: "superseded" }, {}],
+    ["withdrawn original source", { withdrawnAt: new Date() }, {}, {}],
+    ["purged original bytes", { bytesPurgedAt: new Date() }, {}, {}],
+    ["changed original digest", { contentHash: "b".repeat(64) }, {}, {}],
+    ["changed original city", { cityId: "other-city" }, {}, {}],
+    ["changed original project", { projectId: "other-project" }, {}, {}],
+    [
+      "changed original organization",
+      { organizationId: "other-organization" },
+      {},
+      {},
+    ],
+    ["withdrawn original association", {}, {}, { availability: "withdrawn" }],
+    ["project visibility", { visibility: "project" }, {}, {}],
+    ["organization visibility", { visibility: "org" }, {}, {}],
+  ])(
+    "rejects %s before artifact metadata is fetched",
+    async (_label, sourceChange, catalogChange, associationChange) => {
+      Object.assign(source, sourceChange);
+      Object.assign(sourceCatalog, catalogChange);
+      Object.assign(association, associationChange);
       await expect(
-        assertAvailable(uploadId, session as never),
-      ).resolves.toBeUndefined();
+        availability(request(), context as never),
+      ).rejects.toMatchObject({ statusCode: 409 });
+      expect(getJob).not.toHaveBeenCalled();
       expect(callCa).not.toHaveBeenCalled();
-      expect(findSource).not.toHaveBeenCalled();
-      expect(canAccessCity).not.toHaveBeenCalled();
     },
   );
+
+  it("rejects both an association belonging to another actor and another actor's private pool row", async () => {
+    association.userId = "other-owner";
+    await expect(
+      assertAvailable(uploadId, session as never),
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(findSource).not.toHaveBeenCalled();
+    association.userId = userId;
+    source.uploadedByUserId = "other-owner";
+    await expect(
+      assertAvailable(uploadId, session as never),
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(canAccessCity).not.toHaveBeenCalled();
+  });
+
+  it("rejects revoked source-city access even for the original actor", async () => {
+    canAccessCity.mockRejectedValueOnce(
+      Object.assign(new Error("City access revoked"), { statusCode: 403 }),
+    );
+    await expect(
+      availability(request(), context as never),
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(getJob).not.toHaveBeenCalled();
+  });
+
+  it("rejects an original catalog whose pooled source is missing", async () => {
+    findSource.mockResolvedValueOnce(null);
+    await expect(
+      availability(request(), context as never),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect(getJob).not.toHaveBeenCalled();
+  });
+
+  it.each([{}, { documentId: "invalid" }, { documentId, runId: "" }])(
+    "does not treat malformed existing catalog labels as legacy: %j",
+    async (labels) => {
+      association.labels = labels;
+      await expect(
+        assertAvailable(uploadId, session as never),
+      ).rejects.toMatchObject({ statusCode: 404 });
+      expect(findSource).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rejects source artifacts removed with the original note even while catalog metadata remains", async () => {
+    getJob.mockResolvedValueOnce(null);
+    await expect(
+      availability(request(), context as never),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect(findSource).toHaveBeenCalledWith(documentId);
+    expect(canAccessCity).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("internal source availability route with real service authentication", () => {
@@ -283,8 +388,8 @@ describe("internal source availability route with real service authentication", 
     },
   );
 
-  it("keeps historical direct uploads on the established job-read path", async () => {
-    association.labels = { documentId };
+  it("keeps genuine pre-catalog uploads on the established job-read path", async () => {
+    findAssociation.mockResolvedValueOnce(null);
     const response = await availability(request(), context as never);
     expect(response.status).toBe(200);
     expect(callCa).not.toHaveBeenCalled();

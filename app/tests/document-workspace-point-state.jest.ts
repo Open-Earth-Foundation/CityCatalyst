@@ -74,3 +74,19 @@ describe("typed point answers", () => {
     expect(pointValueText(null)).toBe("");
   });
 });
+
+it("keeps waiting work visible even when an accepted value remains covered", () => {
+  expect(
+    pointGroup({
+      ...point,
+      status: "answered",
+      value: 100,
+      task: {
+        status: "waiting",
+        waiting_for: "Treasurer",
+        requested_information: "Updated approval",
+        note: null,
+      },
+    }),
+  ).toBe("waiting");
+});

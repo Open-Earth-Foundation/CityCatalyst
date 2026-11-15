@@ -16,6 +16,8 @@ import type { DocumentWorkspace } from "@/util/document-workspace";
 const request = jest.fn<(body: unknown) => void>();
 const renderSnapshot = jest.fn<(...args: unknown[]) => Promise<void>>();
 let rejectSnapshot = false;
+let exportError: { status: number } | undefined;
+const reloadWorkspace = jest.fn<() => Promise<void>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -35,7 +37,13 @@ jest.unstable_mockModule("@/services/document-workspace-api", () => ({
           },
         };
       },
-      {},
+      {
+        isError: Boolean(exportError),
+        error: exportError,
+        reset: () => {
+          exportError = undefined;
+        },
+      },
     ],
   },
 }));
@@ -60,6 +68,8 @@ afterAll(() => {
 });
 beforeEach(() => {
   rejectSnapshot = false;
+  exportError = undefined;
+  reloadWorkspace.mockReset().mockResolvedValue(undefined);
   request.mockClear();
   renderSnapshot.mockReset().mockResolvedValue(undefined);
   container = document.createElement("div");
@@ -88,6 +98,7 @@ async function render(final = false) {
           runId="run-1"
           noteName="City proposal"
           lng="en"
+          onReload={reloadWorkspace}
         />
       </ChakraProvider>,
     ),
@@ -126,4 +137,16 @@ it("does not produce a download when server eligibility or revision rejects expo
   expect(container.querySelector('[role="alert"]')?.textContent).toContain(
     "workspace-export-error",
   );
+});
+
+it("provides explicit reload after a stale export and permits a reviewed retry", async () => {
+  exportError = { status: 409 };
+  await render(true);
+  expect(button("workspace-reload")).toBeDefined();
+  await act(async () => button("workspace-reload").click());
+  expect(reloadWorkspace).toHaveBeenCalledTimes(1);
+  await render(true);
+  expect(container.querySelector('[role="alert"]')).toBeNull();
+  await act(async () => button("workspace-export-final").click());
+  expect(renderSnapshot).toHaveBeenCalledTimes(1);
 });

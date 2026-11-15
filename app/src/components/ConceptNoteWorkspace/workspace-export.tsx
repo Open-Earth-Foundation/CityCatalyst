@@ -20,11 +20,13 @@ export function WorkspaceExport({
   runId,
   noteName,
   lng,
+  onReload,
 }: {
   workspace: DocumentWorkspace;
   runId: string;
   noteName: string;
   lng: string;
+  onReload: () => Promise<unknown>;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [format, setFormat] = useState<ConceptNoteExportFormat>("docx");
@@ -32,6 +34,10 @@ export function WorkspaceExport({
     documentWorkspaceApi.useExportDocumentWorkspaceMutation();
   const [building, setBuilding] = useState(false);
   const [buildFailed, setBuildFailed] = useState(false);
+  const [reloading, setReloading] = useState(false);
+  const stale = Boolean(
+    state.error && "status" in state.error && state.error.status === 409,
+  );
   async function download(mode: "working" | "final") {
     setBuildFailed(false);
     try {
@@ -126,6 +132,28 @@ export function WorkspaceExport({
               : "workspace-export-error",
           )}
         </Text>
+      )}
+      {stale && (
+        <Button
+          size="sm"
+          variant="outline"
+          alignSelf="start"
+          loading={reloading}
+          onClick={async () => {
+            setReloading(true);
+            try {
+              await onReload();
+              state.reset();
+              setBuildFailed(false);
+            } catch {
+              setBuildFailed(true);
+            } finally {
+              setReloading(false);
+            }
+          }}
+        >
+          {t("workspace-reload")}
+        </Button>
       )}
     </VStack>
   );

@@ -479,6 +479,8 @@ type RunUpload = NonNullable<ConceptNoteRun["uploads"]>[number];
 function toUploadResponse(upload: RunUpload): ConceptNoteUploadResponse {
   return {
     uploadId: upload.upload_id,
+    documentId: upload.document_id,
+    visibility: upload.visibility,
     runId: upload.run_id,
     status: upload.status,
     filename: upload.filename,

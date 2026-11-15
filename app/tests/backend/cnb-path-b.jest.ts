@@ -19,12 +19,24 @@ function registry() {
     catalogs,
     async findCatalog(uploadId: string) {
       const row = catalogs.get(uploadId);
-      return row ? { id: row.id } : null;
+      return row
+        ? {
+            id: row.id,
+            documentId: row.labels?.documentId as string | undefined,
+            userId: row.userId,
+          }
+        : null;
     },
     async registerCatalog(input: RegisterNativeInputInput) {
       const id = `catalog-${catalogs.size + 1}`;
       catalogs.set(input.sourceId, { ...input, id });
       return { id, created: true };
+    },
+    async updateCatalog(catalogId: string, input: RegisterNativeInputInput) {
+      const entry = [...catalogs.entries()].find(
+        ([, row]) => row.id === catalogId,
+      );
+      if (entry) catalogs.set(entry[0], { ...entry[1], ...input });
     },
     async linkCatalog(documentId: string, catalogId: string) {
       const pool = this.pool as MemoryIngestDocumentPool | undefined;
@@ -38,6 +50,83 @@ function registry() {
 }
 
 describe("CNB Path B registration", () => {
+  it("isolates identical private uploads by actor and permits independent sharing", async () => {
+    const pool = new MemoryIngestDocumentPool();
+    const catalogs = registry();
+    catalogs.pool = pool;
+    const bytes = {
+      cityId: CITY_ID,
+      contentHash: "a".repeat(64),
+      buffer: Buffer.from("# Same private content"),
+      markdownReady: true,
+    };
+    const first = await registerCnbUploadOnPool(
+      pool,
+      {
+        ...bytes,
+        uploadId: UPLOAD_ID,
+        userId: "first",
+        filename: "first-private.md",
+      },
+      catalogs,
+    );
+    const secondId = "55555555-5555-4555-8555-555555555555";
+    const second = await registerCnbUploadOnPool(
+      pool,
+      {
+        ...bytes,
+        uploadId: secondId,
+        userId: "second",
+        filename: "second-private.md",
+      },
+      catalogs,
+    );
+    expect(second.documentId).not.toBe(first.documentId);
+    expect(await pool.get(first.documentId)).toMatchObject({
+      uploadedByUserId: "first",
+      privateOwnerId: "first",
+      visibility: "run",
+      originalFileName: "first-private.md",
+    });
+    expect(await pool.get(second.documentId)).toMatchObject({
+      uploadedByUserId: "second",
+      privateOwnerId: "second",
+      visibility: "run",
+      originalFileName: "second-private.md",
+    });
+    expect(catalogs.catalogs.get(secondId)).toMatchObject({
+      userId: "second",
+      labels: {
+        documentId: second.documentId,
+        originalFileName: "second-private.md",
+      },
+    });
+    await pool.promoteToCity(second.documentId);
+    expect(await pool.get(first.documentId)).toMatchObject({
+      visibility: "run",
+      privateOwnerId: "first",
+    });
+    expect(await pool.get(second.documentId)).toMatchObject({
+      visibility: "city",
+      privateOwnerId: "second",
+    });
+    const thirdId = "66666666-6666-4666-8666-666666666666";
+    const third = await registerCnbUploadOnPool(
+      pool,
+      {
+        ...bytes,
+        uploadId: thirdId,
+        userId: "third",
+        filename: "third-upload.md",
+      },
+      catalogs,
+    );
+    expect(third.documentId).toBe(second.documentId);
+    expect(catalogs.catalogs.get(thirdId)).toMatchObject({
+      userId: "third",
+      labels: { originalFileName: "third-upload.md" },
+    });
+  });
   it("stores a run-scoped document and a cnb_upload catalog keyed by the CA upload id", async () => {
     const pool = new MemoryIngestDocumentPool();
     const catalogs = registry();
@@ -114,7 +203,9 @@ describe("CNB Path B registration", () => {
     expect((await pool.get(first.documentId))?.catalogId ?? null).toBeNull();
     const second = await registerCnbUploadOnPool(pool, input, catalogs);
     expect(second.catalogId).toBe(first.catalogId);
-    expect((await pool.get(second.documentId))?.catalogId).toBe(first.catalogId);
+    expect((await pool.get(second.documentId))?.catalogId).toBe(
+      first.catalogId,
+    );
   });
 
   it("stores a new document when the same bytes are uploaded after withdraw", async () => {
@@ -240,9 +331,11 @@ describe("withdrawn document byte clock", () => {
   });
 
   it("does not treat Climate Advisor prefixes as pool-owned objects", () => {
-    expect(isClimateAdvisorObjectKey("pdf-ocr/sources/concept_note_upload/x/source.pdf")).toBe(
-      true,
-    );
+    expect(
+      isClimateAdvisorObjectKey(
+        "pdf-ocr/sources/concept_note_upload/x/source.pdf",
+      ),
+    ).toBe(true);
     expect(isClimateAdvisorObjectKey("ingest/documents/abc")).toBe(false);
     expect(isClimateAdvisorObjectKey(null)).toBe(false);
   });

@@ -32,6 +32,10 @@ const originalFetch = globalThis.fetch;
 const stopStream = jest.fn();
 const startStream = jest.fn(async () => undefined);
 let streamOptions: { onError?: (message: string, code?: string) => void };
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/upload-sharing-button",
+  () => ({ UploadSharingButton: () => null }),
+);
 jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
   STREAM_STALLED_CODE: "stream_stalled",
   useSSEStream: (options: typeof streamOptions) => {

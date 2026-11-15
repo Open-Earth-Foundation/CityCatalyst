@@ -34,6 +34,7 @@ import { DocumentPointCard } from "./document-point-card";
 import { WorkspaceOverview, WorkspaceTodos } from "./document-workspace-panels";
 import { WorkspaceSources } from "./workspace-source-picker";
 import { WorkspaceExport } from "./workspace-export";
+import { getChatWelcomeStage } from "./chat-welcome";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
@@ -108,7 +109,9 @@ export function ConceptNoteWorkspace({
 }: ConceptNoteWorkspaceProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
-  const [tab, setTab] = useState<WorkspaceTab>("overview");
+  const [tab, setTab] = useState<WorkspaceTab>(
+    initialReviewChapterId || initialReviewFindingKey ? "draft" : "overview",
+  );
   const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
   const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
   const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
@@ -262,6 +265,13 @@ export function ConceptNoteWorkspace({
   const templateImport = useFunderImport({ cityId, runId, kind: "template" });
   const edits = useConceptNoteEdits({
     runId,
+    observeBackgroundUpdates: Boolean(
+      workspace?.points.some(
+        (point) =>
+          point.freshness === "updating" ||
+          point.freshness === "pending_review",
+      ),
+    ),
     onApplied: async (chapterIds) => {
       await refetchDraft().unwrap();
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
@@ -594,6 +604,7 @@ export function ConceptNoteWorkspace({
                     onOpenPoint={() =>
                       selectedPointKey && openPoint(selectedPointKey)
                     }
+                    sourceBusy={uploadState.isLoading}
                   />
                 ) : undefined
               }
@@ -619,14 +630,13 @@ export function ConceptNoteWorkspace({
               draft={draft ?? null}
               draftStartedAt={draftProgress?.startedAt ?? null}
               draftCompletedAt={draftProgress?.completedAt ?? null}
-              welcomeStage={
-                draftHasContent
-                  ? "drafted"
-                  : canStartDrafting
-                    ? "ready-to-draft"
-                    : "choose-funding"
-              }
+              welcomeStage={getChatWelcomeStage({
+                draftHasContent,
+                canStartDrafting,
+                workspace,
+              })}
               onOpenDraft={() => setTab("draft")}
+              onOpenTodos={() => setTab("todo")}
               onOpenFundingSetup={() => void openFundingSetup()}
             />
 
@@ -902,6 +912,12 @@ export function ConceptNoteWorkspace({
                       runId={runId}
                       noteName={run.name}
                       lng={lng}
+                      onReload={async () => {
+                        await Promise.all([
+                          refetchWorkspace().unwrap(),
+                          refetchDraft().unwrap(),
+                        ]);
+                      }}
                     />
                     <WorkspaceOverview
                       workspace={workspace}
@@ -928,6 +944,7 @@ export function ConceptNoteWorkspace({
                     selectedKey={selectedPointKey}
                     onSelectPoint={openPoint}
                     onAddSource={addPointSource}
+                    sourceBusy={uploadState.isLoading}
                   />
                 ) : (
                   <Box p={6}>
@@ -1063,6 +1080,7 @@ export function ConceptNoteWorkspace({
                   lng={lng}
                   onSelectPoint={openPoint}
                   onAddSource={addPointSource}
+                  sourceBusy={uploadState.isLoading}
                   onAttached={() => {
                     void refetchRun();
                     void refetchWorkspace();
@@ -1146,6 +1164,7 @@ export function ConceptNoteWorkspace({
         <FundingSelectionDialog
           applicationContext={applicationContext}
           hasDraft={Boolean(draft?.chapters.length)}
+          infoFirst={!draftHasContent}
           busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}

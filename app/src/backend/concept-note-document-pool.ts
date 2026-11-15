@@ -285,6 +285,18 @@ export async function attachConceptNoteDocument(
   }
   let job;
   try {
+    // Publish reuse provenance before a worker can consume the new upload's job.
+    const registration = buildCnbUploadPathBInput(document, uploadId);
+    await registerNativeInput({
+      ...registration,
+      userId: target.userId,
+      labels: {
+        ...registration.labels,
+        visibility: "run",
+        runId: target.runId,
+        sourceRole: input.source_role,
+      },
+    });
     if (format === "pdf") {
       // OCR source keys are immutable and upload-specific; copy only on first handoff.
       const existing = await getConceptNotePdfOcrJob(uploadId);
@@ -300,18 +312,6 @@ export async function attachConceptNoteDocument(
     }
     if (normalizeConceptNotePdfOcrStatus(job).status === "failed")
       await retryConceptNotePdfOcr(job);
-    // Publish the association against the existing document; never store another pool row.
-    const registration = buildCnbUploadPathBInput(document, uploadId);
-    await registerNativeInput({
-      ...registration,
-      userId: target.userId,
-      labels: {
-        ...registration.labels,
-        visibility: "run",
-        runId: target.runId,
-        sourceRole: input.source_role,
-      },
-    });
   } catch {
     await updateConceptNoteUpload({
       ...target,
@@ -328,6 +328,7 @@ export async function attachConceptNoteDocument(
   return {
     payload: {
       documentId: document.id,
+      visibility: document.visibility,
       uploadId,
       status: state.status,
       stage: state.stage,

@@ -8,12 +8,16 @@ import {
 } from "@jest/globals";
 
 const loadUpload = jest.fn<() => Promise<Record<string, unknown>>>();
+const loadDocument = jest.fn<() => Promise<Record<string, unknown>>>();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const normalizeStatus =
   jest.fn<(job: Record<string, unknown>) => Record<string, unknown>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteUpload: loadUpload,
+}));
+jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
+  loadConceptNoteUploadDocument: loadDocument,
 }));
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNotePdfOcrJob: getJob,
@@ -29,6 +33,10 @@ beforeAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  loadDocument.mockResolvedValue({
+    documentId: "pool-document",
+    visibility: "city",
+  });
   loadUpload.mockResolvedValue({
     uploadId: "upload-1",
     runId: "run-1",
@@ -64,6 +72,8 @@ describe("loadConceptNoteUploadStatus", () => {
         stage: "ocr",
         canRetry: true,
         retryKind: "ocr",
+        documentId: "pool-document",
+        visibility: "city",
         errorCode: "ocr_failed",
       }),
     );

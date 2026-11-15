@@ -49,6 +49,10 @@ const syncGHGIImportedInventorySource = jest.fn<AsyncMock>();
 const syncGHGIOcrArtifact = jest.fn<AsyncMock>();
 const syncPendingGHGIOcrArtifacts = jest.fn<AsyncMock>();
 const withdrawGHGIImportCatalog = jest.fn<AsyncMock>();
+const markPoolReady = jest.fn<AsyncMock>();
+jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
+  markConceptNoteDocumentMarkdownReady: markPoolReady,
+}));
 
 class MistralOcrError extends Error {
   code: string;
@@ -746,6 +750,10 @@ describe("PdfOcrJob queue", () => {
     const successCall = pdfOcrUpdate.mock.invocationCallOrder[0];
     const secondPut = putTextFile.mock.invocationCallOrder[1];
     expect(secondPut).toBeLessThan(successCall);
+    expect(markPoolReady).toHaveBeenCalledWith(uploadId);
+    expect(markPoolReady.mock.invocationCallOrder[0]).toBeGreaterThan(
+      successCall,
+    );
   });
 
   it("stores page headers and footers in the Markdown and hashes that text", async () => {
@@ -803,6 +811,7 @@ describe("PdfOcrJob queue", () => {
       "https://signed.example/source.pdf",
       "none",
     );
+    expect(markPoolReady).not.toHaveBeenCalled();
     expect(pdfOcrUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ annotationMode: "none" }),
       expect.anything(),
@@ -826,6 +835,7 @@ describe("PdfOcrJob queue", () => {
     await processPdfOcrJobs();
 
     expect(putTextFile).toHaveBeenCalledTimes(2);
+    expect(markPoolReady).not.toHaveBeenCalled();
     expect(pdfOcrUpdate).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({ status: "succeeded" }),
@@ -864,6 +874,7 @@ describe("PdfOcrJob queue", () => {
     await processPdfOcrJobs();
 
     expect(putTextFile).not.toHaveBeenCalled();
+    expect(markPoolReady).not.toHaveBeenCalled();
     expect(pdfOcrUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "queued",
@@ -899,6 +910,7 @@ describe("PdfOcrJob queue", () => {
     await processPdfOcrJobs();
 
     expect(putTextFile).not.toHaveBeenCalled();
+    expect(markPoolReady).not.toHaveBeenCalled();
     expect(pdfOcrUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "failed",

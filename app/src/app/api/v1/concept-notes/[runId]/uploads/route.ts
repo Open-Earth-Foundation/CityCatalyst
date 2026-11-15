@@ -49,6 +49,13 @@
  *                 uploadId:
  *                   type: string
  *                   format: uuid
+ *                 documentId:
+ *                   type: string
+ *                   format: uuid
+ *                   description: Stable pooled identity used by the authorized city-sharing endpoint.
+ *                 visibility:
+ *                   type: string
+ *                   enum: [run, city]
  *                 status:
  *                   type: string
  *                   enum: [queued, processing, ready, failed]
@@ -324,6 +331,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
   let job:
     | Awaited<ReturnType<typeof enqueueConceptNotePdfOcr>>
     | Awaited<ReturnType<typeof registerConceptNoteMarkdownUpload>>;
+  let document: Awaited<ReturnType<typeof registerConceptNoteOnDocumentPool>>;
   try {
     if (isPdf) {
       await InventoryFileStorageService.putFile(
@@ -346,7 +354,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     }
     // Path B only after CA accepted the id and the bytes are stored.
     failureCode = "path_b_registration_failed";
-    await registerConceptNoteOnDocumentPool({
+    document = await registerConceptNoteOnDocumentPool({
       uploadId,
       cityId,
       userId,
@@ -393,6 +401,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
   return NextResponse.json(
     {
       uploadId,
+      documentId: document.documentId,
+      ...(document.visibility === "run" || document.visibility === "city"
+        ? { visibility: document.visibility }
+        : {}),
       status: state.status,
       stage: state.stage,
       canRetry: state.canRetry,

@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import type { RegisterNativeInputInput } from "@/backend/NativeInputCatalogService";
 import type { NativeInputCatalogAvailability } from "@/models/NativeInputCatalog";
-import { IngestItemError, type IngestModuleId, type IngestScope, type IngestVisibility } from "./types";
+import {
+  IngestItemError,
+  type IngestModuleId,
+  type IngestScope,
+  type IngestVisibility,
+} from "./types";
 
 /** Path B catalog identity for the Core document pool (not a module extract). */
 export const INGEST_DOCUMENT_CATALOG_KIND = "ingest_document";
@@ -20,6 +25,8 @@ export interface IngestDocumentRecord {
   projectId?: string | null;
   organizationId?: string | null;
   uploadedByUserId?: string | null;
+  /** Private origin remains stable after explicit city promotion. */
+  privateOwnerId?: string | null;
   visibility: IngestVisibility;
   markdownReady: boolean;
   catalogId?: string | null;
@@ -184,23 +191,41 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
     document: IngestDocumentRecord;
     created: boolean;
   }> {
-    const key = `${input.contentHash}|${scopeKey(input.scope)}`;
+    const privateOwnerId =
+      input.visibility === "run" ? (input.uploadedByUserId ?? null) : null;
+    const key = `${input.contentHash}|${scopeKey(input.scope)}|${privateOwnerId ?? ""}`;
     const existingId = this.byHashScope.get(key);
-    if (existingId) {
-      const existing = this.documents.get(existingId);
-      if (!existing) {
-        throw new Error(`Ingest document ${existingId} missing`);
+    const own = existingId ? this.documents.get(existingId) : undefined;
+    const existing =
+      (input.visibility === "run" &&
+      own?.visibility === "run" &&
+      (own.availability ?? "active") === "active" &&
+      !own.bytesPurgedAt
+        ? own
+        : undefined) ??
+      [...this.documents.values()].find(
+        (candidate) =>
+          candidate.contentHash === input.contentHash &&
+          scopeKey(candidate) === scopeKey(input.scope) &&
+          (input.visibility === "run"
+            ? candidate.visibility === "city"
+            : candidate.visibility !== "run") &&
+          (candidate.availability ?? "active") === "active" &&
+          !candidate.bytesPurgedAt,
+      );
+    if (existing) {
+      if (input.s3Key && !existing.s3Key) {
+        const withKey = { ...existing, s3Key: input.s3Key };
+        this.documents.set(existing.id, withKey);
+        return {
+          document: { ...withKey, buffer: withKey.buffer },
+          created: false,
+        };
       }
-      const reusable =
-        (existing.availability ?? "active") === "active" && !existing.bytesPurgedAt;
-      if (reusable) {
-        if (input.s3Key && !existing.s3Key) {
-          const withKey = { ...existing, s3Key: input.s3Key };
-          this.documents.set(existingId, withKey);
-          return { document: { ...withKey, buffer: withKey.buffer }, created: false };
-        }
-        return { document: { ...existing, buffer: existing.buffer }, created: false };
-      }
+      return {
+        document: { ...existing, buffer: existing.buffer },
+        created: false,
+      };
     }
 
     const document: IngestDocumentRecord = {
@@ -211,8 +236,10 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
       projectId: input.scope.projectId ?? null,
       organizationId: input.scope.organizationId ?? null,
       uploadedByUserId: input.uploadedByUserId ?? null,
+      privateOwnerId,
       visibility: input.visibility,
-      markdownReady: input.markdownReady ?? initialMarkdownReady(input.originalFileName),
+      markdownReady:
+        input.markdownReady ?? initialMarkdownReady(input.originalFileName),
       buffer: input.buffer,
       s3Key: input.s3Key ?? null,
       availability: "active",
@@ -222,7 +249,10 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
     };
     this.documents.set(document.id, document);
     this.byHashScope.set(key, document.id);
-    return { document: { ...document, buffer: document.buffer }, created: true };
+    return {
+      document: { ...document, buffer: document.buffer },
+      created: true,
+    };
   }
 
   async get(documentId: string): Promise<IngestDocumentRecord | null> {
@@ -320,7 +350,10 @@ export class MemoryIngestDocumentPool implements IngestDocumentPool {
         documentId,
         extracts.map((row) =>
           modules.has(row.owningModule as IngestModuleId)
-            ? ({ ...row, availability: "withdrawn" } as RegisterNativeInputInput)
+            ? ({
+                ...row,
+                availability: "withdrawn",
+              } as RegisterNativeInputInput)
             : row,
         ),
       );

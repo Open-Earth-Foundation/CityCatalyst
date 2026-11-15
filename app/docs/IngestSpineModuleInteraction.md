@@ -66,9 +66,15 @@ sequenceDiagram
   Note over Pool,CA: Chapter text stays in Climate Advisor.<br/>No Path A row.
 ```
 
-A later upload of the same bytes reuses the pool row by content hash. The new catalog row still uses its own `upload_id`. `catalogId` on the pool row is set only when it is empty, so a second catalog row does not replace the first link.
+A later upload can reuse a city-visible pool row with the same content hash and scope. Run-private origins are deduplicated within their actual uploader's immutable `privateOwnerId`, so identical private uploads by different actors retain independent filenames, sharing and withdrawal. The origin key stays unchanged on city promotion; separately published private origins remain distinct, while new public uploads can reuse either authorized city document. The upload association records the current authorized actor, independently of the pooled file's audit author. An upload replay retains its active existing document link. `catalogId` on the pool row is set only when empty, so another upload does not replace its primary link.
 
-`markdownReady` is stored with the file at registration. For a PDF that flag is false. Finishing OCR does not update it.
+Migration `20261115150000-isolate-private-ingest-documents.cjs` backfills existing run-private origins from their uploader and extends the active hash/scope unique index with `private_owner_id`, retaining PostgreSQL `NULLS NOT DISTINCT` for public origins. Apply it before deploying code that reads the new field. Downgrade refuses transactionally if restoring the previous uniqueness would merge independent active origins; it never deletes source rows to force rollback.
+
+Upload creation and status responses expose the stable `documentId` and current `visibility`, so an authorized author or administrator can explicitly share a working attachment through the existing promote endpoint. Sharing retains the pool identity and file bytes.
+
+`markdownReady` starts false for PDFs and becomes true only after the leased OCR result and its immutable artifacts are persisted successfully. Successful delivery also repairs the flag when OCR completed before the upload's Path B association was registered. Native Markdown enters the existing artifact pipeline directly.
+
+Artifact reads and source-availability checks enforce lifecycle, digest, scope and current city access for every catalog-backed CNB source, including original uploads whose catalog labels have no reuse `runId`. A run-private original remains available only to its original actor; reused sources also require an authorized target upload and city-visible original. Withdrawal, supersession or byte purge blocks later consumption in either path. Only uploads with no catalog association retain the legacy read path; deleting an original note's processing artifacts also makes availability fail when its OCR job is gone.
 
 ## Greenhouse gas inventory
 

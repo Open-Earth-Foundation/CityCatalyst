@@ -17,7 +17,7 @@ export interface WorkspaceExportSnapshot {
 
 export const documentWorkspaceApi = api
   .enhanceEndpoints({
-    addTagTypes: ["DocumentWorkspace"],
+    addTagTypes: ["DocumentWorkspace", "WorkspaceDocuments"],
   })
   .injectEndpoints({
     endpoints: (builder) => ({
@@ -61,6 +61,7 @@ export const documentWorkspaceApi = api
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "DocumentWorkspace", id: runId },
           { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
         ],
       }),
       getDocumentPointQuestion: builder.mutation<
@@ -97,6 +98,24 @@ export const documentWorkspaceApi = api
       >({
         query: ({ runId, offset }) =>
           `concept-notes/${runId}/documents?limit=20&offset=${offset}`,
+        providesTags: ["WorkspaceDocuments"],
+      }),
+      shareWorkspaceDocument: builder.mutation<
+        { data: { documentId: string; visibility: "city" } },
+        { runId: string; uploadId: string; documentId: string }
+      >({
+        query: ({ documentId }) => ({
+          url: `ingest/documents/${encodeURIComponent(documentId)}/promote`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, error, { runId, uploadId }) =>
+          error
+            ? []
+            : [
+                "WorkspaceDocuments",
+                { type: "ConceptNoteUpload", id: uploadId },
+                { type: "ConceptNoteRuns", id: runId },
+              ],
       }),
       attachWorkspaceDocument: builder.mutation<
         ConceptNoteUploadResponse,

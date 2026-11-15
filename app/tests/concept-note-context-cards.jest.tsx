@@ -24,6 +24,10 @@ import type {
   ConceptNoteUploadStatus,
 } from "@/util/types";
 
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/upload-sharing-button",
+  () => ({ UploadSharingButton: () => null }),
+);
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
     t: (key: string, values?: Record<string, unknown>) =>

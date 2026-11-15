@@ -4,6 +4,7 @@ import {
   parsePointAnswer,
   pointGroup,
   pointValueText,
+  pointDisplayValue,
 } from "@/components/ConceptNoteWorkspace/point-state";
 import type { DocumentWorkspacePoint } from "@/util/document-workspace";
 
@@ -131,4 +132,26 @@ it("attributes only the current immutable candidate and never a manual same-valu
   expect(
     currentPointCandidate({ ...accepted, accepted_candidate_id: "missing" }),
   ).toBeUndefined();
+});
+
+it("formats display values with declared units and locale without changing zero, precision or ISO storage", () => {
+  expect(
+    pointDisplayValue({ ...point, value: 420000, unit: "USD" }, "en"),
+  ).toBe("USD 420,000");
+  expect(pointDisplayValue({ ...point, value: 0, unit: "USD" }, "en")).toBe(
+    "USD 0",
+  );
+  expect(
+    pointDisplayValue({ ...point, value: 1.123456789, unit: null }, "en"),
+  ).toBe("1.123456789");
+  expect(pointDisplayValue({ ...point, value: 420000, unit: null }, "en")).toBe(
+    "420,000",
+  );
+  expect(
+    pointDisplayValue(
+      { ...point, value: "2027-03-15", answer_type: "date" },
+      "en-GB",
+    ),
+  ).toBe("15 March 2027");
+  expect(parsePointAnswer("2027-03-15", "date")).toBe("2027-03-15");
 });

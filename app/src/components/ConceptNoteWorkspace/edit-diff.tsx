@@ -20,6 +20,8 @@ import {
 } from "./missing-information";
 import { ReviewButton as Button } from "./review-button";
 
+import { paragraphDiff } from "./paragraph-diff";
+
 const noInlineDecisions: Record<string, InlineReviewDecision> = {};
 
 function InlineDecisionControl({
@@ -63,10 +65,10 @@ function InlineDecisionControl({
       type="button"
       display="inline-flex"
       verticalAlign="middle"
-      w="22px"
-      h="22px"
-      minW="22px"
-      minH="22px"
+      w="32px"
+      h="32px"
+      minW="32px"
+      minH="32px"
       p={0}
       mx={0.5}
       borderRadius="full"
@@ -85,7 +87,7 @@ function InlineDecisionControl({
         onClick();
       }}
     >
-      <Icon as={icon} aria-hidden="true" boxSize="12px" />
+      <Icon as={icon} aria-hidden="true" boxSize="14px" />
     </Button>
   );
 }
@@ -114,6 +116,52 @@ export function EditDiff({
     () => missingInformationComponents(components ?? {}),
     [components],
   );
+  const paragraphs = useMemo(
+    () => paragraphDiff(change.before, change.after),
+    [change.before, change.after],
+  );
+  if (
+    paragraphs.some((part) => part.type === "common") &&
+    paragraphs.some((part) => part.type === "change")
+  ) {
+    return (
+      <Box
+        as={inline ? "span" : "div"}
+        data-testid="concept-note-paragraph-diff"
+      >
+        {paragraphs.map((part, index) =>
+          part.type === "common" ? (
+            <Box
+              as={inline ? "span" : "div"}
+              display="block"
+              my={3}
+              key={index}
+              data-testid="concept-note-edit-unchanged-text"
+            >
+              <ReactMarkdown
+                components={markerComponents}
+                remarkPlugins={[remarkGfm, remarkMissingInformation]}
+              >
+                {part.text}
+              </ReactMarkdown>
+            </Box>
+          ) : (
+            <EditDiff
+              key={index}
+              change={{ ...change, before: part.before, after: part.after }}
+              lng={lng}
+              inline={inline}
+              components={components}
+              decision={decision}
+              disabled={disabled}
+              onAccept={onAccept}
+              onReject={onReject}
+            />
+          ),
+        )}
+      </Box>
+    );
+  }
   return (
     <Box
       as={inline ? "span" : "div"}
@@ -222,6 +270,24 @@ export function EditDiff({
         </Box>
       ) : (
         <>
+          {(onReject || onAccept) && (
+            <Box display="flex" justifyContent="flex-end" mb={2}>
+              <InlineDecisionControl
+                action="reject"
+                disabled={disabled}
+                label={t("edit-reject-change")}
+                selected={decision === "rejected"}
+                onClick={onReject}
+              />
+              <InlineDecisionControl
+                action="accept"
+                disabled={disabled}
+                label={t("edit-accept-change")}
+                selected={decision === "accepted"}
+                onClick={onAccept}
+              />
+            </Box>
+          )}
           <Box
             as="del"
             display="block"
@@ -262,24 +328,6 @@ export function EditDiff({
               {change.after || t("edit-deleted")}
             </ReactMarkdown>
           </Box>
-          {(onReject || onAccept) && (
-            <Box display="flex" justifyContent="flex-end" mt={1}>
-              <InlineDecisionControl
-                action="reject"
-                disabled={disabled}
-                label={t("edit-reject-change")}
-                selected={decision === "rejected"}
-                onClick={onReject}
-              />
-              <InlineDecisionControl
-                action="accept"
-                disabled={disabled}
-                label={t("edit-accept-change")}
-                selected={decision === "accepted"}
-                onClick={onAccept}
-              />
-            </Box>
-          )}
         </>
       )}
     </Box>

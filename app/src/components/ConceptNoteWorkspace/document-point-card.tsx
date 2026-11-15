@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Heading,
   HStack,
@@ -27,6 +28,7 @@ import {
   currentPointCandidate,
   parsePointAnswer,
   pointValueText,
+  pointDisplayValue,
 } from "./point-state";
 
 export function DocumentPointCard({
@@ -50,15 +52,18 @@ export function DocumentPointCard({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [command, commandState] =
-    documentWorkspaceApi.useCommandDocumentPointMutation();
+    documentWorkspaceApi.useCommandDocumentPointMutation({
+      fixedCacheKey: `document-point:${runId}:${point.key}`,
+    });
   const [ask, questionState] =
     documentWorkspaceApi.useGetDocumentPointQuestionMutation();
   const [answer, setAnswer] = useState(pointValueText(point.value));
   const incomingValue = pointValueText(point.value);
   const [baseValue, setBaseValue] = useState(incomingValue);
+  const [editing, setEditing] = useState(false);
   if (baseValue !== incomingValue) {
     setBaseValue(incomingValue);
-    if (answer === baseValue) setAnswer(incomingValue);
+    if (!editing && answer === baseValue) setAnswer(incomingValue);
   }
   const [reason, setReason] = useState("");
   const [waitingFor, setWaitingFor] = useState(point.task?.waiting_for ?? "");
@@ -89,6 +94,7 @@ export function DocumentPointCard({
       }).unwrap();
       if (result.point) setAnswer(pointValueText(result.point.value));
       setSaved(true);
+      setEditing(false);
     } catch {
       /* RTK mutation state renders the actionable error. */
     }
@@ -137,14 +143,16 @@ export function DocumentPointCard({
             {t(point.required ? "workspace-required" : "workspace-optional")}
           </Text>
         </HStack>
-        <Text
-          mt={1}
-          fontSize="body.md"
-          lineHeight={1.6}
-          color="content.secondary"
-        >
-          {point.description}
-        </Text>
+        {point.description.trim() !== point.label.trim() && (
+          <Text
+            mt={1}
+            fontSize="body.md"
+            lineHeight={1.6}
+            color="content.secondary"
+          >
+            {point.description}
+          </Text>
+        )}
         <HStack gap={3} mt={2} flexWrap="wrap">
           <Text fontSize="label.sm" color="content.link">
             {t(`workspace-point-status-${point.status}`)}
@@ -172,7 +180,7 @@ export function DocumentPointCard({
           <Text whiteSpace="pre-wrap">
             {point.status === "not_applicable"
               ? t("workspace-not-applicable")
-              : pointValueText(point.value) || t("workspace-no-value")}
+              : pointDisplayValue(point, lng) || t("workspace-no-value")}
           </Text>
           {acceptedCitations.map((citation, index) => (
             <Box
@@ -235,7 +243,9 @@ export function DocumentPointCard({
               borderLeft="2px solid"
               borderColor="border.neutral"
             >
-              <Text fontSize="body.sm">{pointValueText(candidate.value)}</Text>
+              <Text fontSize="body.sm">
+                {pointDisplayValue(point, lng, candidate.value)}
+              </Text>
               {candidate.citations.map((citation, index) => (
                 <Box key={index} mt={1}>
                   <Text fontSize="body.sm">{citation.quote}</Text>
@@ -264,7 +274,7 @@ export function DocumentPointCard({
             </Text>
           )}
           <Text fontWeight="semibold" whiteSpace="pre-wrap">
-            {pointValueText(candidate.value)}
+            {pointDisplayValue(point, lng, candidate.value)}
           </Text>
           {candidate.citations.map((citation, index) => (
             <Box
@@ -290,7 +300,7 @@ export function DocumentPointCard({
               <Button
                 size="sm"
                 variant="outline"
-                disabled={commandState.isLoading}
+                disabled={commandState.isLoading || stale}
                 onClick={() =>
                   void send({
                     command: "confirm_candidate",
@@ -309,7 +319,7 @@ export function DocumentPointCard({
                 <Button
                   size="sm"
                   variant="outline"
-                  disabled={commandState.isLoading}
+                  disabled={commandState.isLoading || stale}
                   onClick={() =>
                     void send({
                       command: "dismiss_candidate",
@@ -330,6 +340,16 @@ export function DocumentPointCard({
         </Button>
       ) : (
         <>
+          {accepted && !editing && (
+            <Button
+              size="sm"
+              variant="outline"
+              alignSelf="start"
+              onClick={() => setEditing(true)}
+            >
+              {t("workspace-edit-answer")}
+            </Button>
+          )}
           <Button
             size="sm"
             variant="outline"
@@ -369,7 +389,10 @@ export function DocumentPointCard({
                             point.answer_type === "choice" &&
                             !options.includes(option)
                           }
-                          onClick={() => setAnswer(option)}
+                          onClick={() => {
+                            setEditing(true);
+                            setAnswer(option);
+                          }}
                         >
                           {option}
                         </Button>
@@ -379,116 +402,146 @@ export function DocumentPointCard({
                 ))}
             </Box>
           )}
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (value !== null)
-                void send({
-                  command: accepted ? "correct" : "answer",
-                  value,
-                  reason: reason.trim() || undefined,
-                });
-            }}
-          >
-            <VStack align="stretch" gap={3}>
-              <Field
-                label={t(
-                  accepted
-                    ? "workspace-correct-answer"
-                    : "workspace-your-answer",
-                )}
-                required
-                disabled={
-                  point.answer_type === "choice" && options.length === 0
-                }
-              >
-                {point.answer_type === "choice" ? (
-                  <NativeSelectRoot disabled={options.length === 0}>
-                    <NativeSelectField
-                      value={options.includes(answer) ? answer : ""}
-                      onChange={(event) => setAnswer(event.target.value)}
-                    >
-                      <option value="">{t("workspace-choose-option")}</option>
-                      {options.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </NativeSelectField>
-                  </NativeSelectRoot>
-                ) : point.answer_type === "multiline" ? (
-                  <Textarea
-                    value={answer}
-                    onChange={(event) => setAnswer(event.target.value)}
-                  />
-                ) : (
-                  <Input
-                    type={
-                      point.answer_type === "number"
-                        ? "number"
-                        : point.answer_type === "date"
-                          ? "date"
-                          : "text"
-                    }
-                    step={point.answer_type === "number" ? "any" : undefined}
-                    value={answer}
-                    onChange={(event) => setAnswer(event.target.value)}
-                  />
-                )}
-              </Field>
-              {point.answer_type === "choice" && options.length === 0 && (
-                <Text role="alert" fontSize="body.sm" color="content.secondary">
-                  {t("workspace-choices-unavailable")}
-                </Text>
-              )}
-              <Field
-                label={t("workspace-reason")}
-                helperText={t("workspace-reason-help")}
-              >
-                <Textarea
-                  value={reason}
-                  onChange={(event) => setReason(event.target.value)}
-                  rows={2}
-                />
-              </Field>
-              <HStack flexWrap="wrap">
-                <Button
-                  type="submit"
-                  size="sm"
-                  loading={commandState.isLoading}
-                  disabled={value === null || Boolean(stale)}
+          {(!accepted || editing) && (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (value !== null)
+                  void send({
+                    command: currentAnswer ? "correct" : "answer",
+                    value,
+                    reason: reason.trim() || undefined,
+                  });
+              }}
+            >
+              <VStack align="stretch" gap={3}>
+                <Field
+                  label={t(
+                    accepted
+                      ? "workspace-correct-answer"
+                      : "workspace-your-answer",
+                  )}
+                  required={!accepted}
+                  disabled={
+                    point.answer_type === "choice" && options.length === 0
+                  }
                 >
-                  {t("workspace-save-answer")}
+                  {point.answer_type === "choice" ? (
+                    <NativeSelectRoot disabled={options.length === 0}>
+                      <NativeSelectField
+                        value={options.includes(answer) ? answer : ""}
+                        onChange={(event) => {
+                          setEditing(true);
+                          setAnswer(event.target.value);
+                        }}
+                      >
+                        <option value="">{t("workspace-choose-option")}</option>
+                        {options.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </NativeSelectField>
+                    </NativeSelectRoot>
+                  ) : point.answer_type === "multiline" ? (
+                    <Textarea
+                      value={answer}
+                      onChange={(event) => {
+                        setEditing(true);
+                        setAnswer(event.target.value);
+                      }}
+                    />
+                  ) : (
+                    <Input
+                      type={
+                        point.answer_type === "number"
+                          ? "number"
+                          : point.answer_type === "date"
+                            ? "date"
+                            : "text"
+                      }
+                      step={point.answer_type === "number" ? "any" : undefined}
+                      value={answer}
+                      onChange={(event) => {
+                        setEditing(true);
+                        setAnswer(event.target.value);
+                      }}
+                    />
+                  )}
+                </Field>
+                {point.answer_type === "choice" && options.length === 0 && (
+                  <Text
+                    role="alert"
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {t("workspace-choices-unavailable")}
+                  </Text>
+                )}
+                <Field
+                  label={t("workspace-reason")}
+                  helperText={t("workspace-reason-help")}
+                >
+                  <Textarea
+                    value={reason}
+                    onChange={(event) => setReason(event.target.value)}
+                    rows={2}
+                  />
+                </Field>
+                <HStack flexWrap="wrap">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    loading={commandState.isLoading}
+                    disabled={value === null || Boolean(stale)}
+                  >
+                    {t("workspace-save-answer")}
+                  </Button>
+                  {point.allow_assumption && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={
+                        value === null ||
+                        !reason.trim() ||
+                        commandState.isLoading
+                      }
+                      onClick={() =>
+                        void send({ command: "assume", value: value!, reason })
+                      }
+                    >
+                      {t("workspace-save-assumption")}
+                    </Button>
+                  )}
+                  {point.allow_not_applicable && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!reason.trim() || commandState.isLoading}
+                      onClick={() =>
+                        void send({ command: "not_applicable", reason })
+                      }
+                    >
+                      {t("workspace-not-applicable")}
+                    </Button>
+                  )}
+                </HStack>
+              </VStack>
+              {accepted && (
+                <Button
+                  size="sm"
+                  variant="plain"
+                  onClick={() => {
+                    setAnswer(pointValueText(point.value));
+                    setReason("");
+                    setEditing(false);
+                  }}
+                >
+                  {t("cancel")}
                 </Button>
-                {point.allow_assumption && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={
-                      value === null || !reason.trim() || commandState.isLoading
-                    }
-                    onClick={() =>
-                      void send({ command: "assume", value: value!, reason })
-                    }
-                  >
-                    {t("workspace-save-assumption")}
-                  </Button>
-                )}
-                {point.allow_not_applicable && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!reason.trim() || commandState.isLoading}
-                    onClick={() =>
-                      void send({ command: "not_applicable", reason })
-                    }
-                  >
-                    {t("workspace-not-applicable")}
-                  </Button>
-                )}
-              </HStack>
-            </VStack>
-          </form>
+              )}
+            </form>
+          )}
           <HStack flexWrap="wrap">
             <Button
               size="sm"
@@ -512,7 +565,7 @@ export function DocumentPointCard({
               >
                 {t("workspace-resume")}
               </Button>
-            ) : (
+            ) : !accepted ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -520,7 +573,7 @@ export function DocumentPointCard({
               >
                 {t("workspace-park")}
               </Button>
-            )}
+            ) : null}
           </HStack>
           {point.task?.waiting_for && (
             <Text fontSize="body.sm">
@@ -582,41 +635,48 @@ export function DocumentPointCard({
         </Text>
       )}
       {commandState.isError && (
-        <Box role="alert">
-          <Text color="sentiment.negativeDefault">
-            {t(
-              errorKind === "source_unavailable"
-                ? "workspace-source-unavailable-error"
-                : stale
-                  ? "workspace-stale-error"
-                  : "workspace-command-error",
+        <Alert.Root
+          role="alert"
+          status={errorKind === "source_unavailable" ? "warning" : "error"}
+          variant="subtle"
+        >
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>
+              {t(
+                errorKind === "source_unavailable"
+                  ? "workspace-source-unavailable-error"
+                  : stale
+                    ? "workspace-stale-error"
+                    : "workspace-command-error",
+              )}
+            </Alert.Description>
+            {stale && (
+              <Button
+                mt={2}
+                size="sm"
+                variant="outline"
+                loading={refreshState.isFetching}
+                onClick={async () => {
+                  await refresh(runId);
+                  commandState.reset();
+                }}
+              >
+                {t("workspace-reload")}
+              </Button>
             )}
-          </Text>
-          {stale && (
-            <Button
-              mt={2}
-              size="sm"
-              variant="outline"
-              loading={refreshState.isFetching}
-              onClick={async () => {
-                await refresh(runId);
-                commandState.reset();
-              }}
-            >
-              {t("workspace-reload")}
-            </Button>
-          )}
-          {errorKind === "source_unavailable" && (
-            <Button
-              mt={2}
-              size="sm"
-              variant="outline"
-              onClick={onOpenContext ?? onAddSource}
-            >
-              {t("workspace-review-evidence")}
-            </Button>
-          )}
-        </Box>
+            {errorKind === "source_unavailable" && (
+              <Button
+                mt={2}
+                size="sm"
+                variant="outline"
+                onClick={onOpenContext ?? onAddSource}
+              >
+                {t("workspace-review-evidence")}
+              </Button>
+            )}
+          </Alert.Content>
+        </Alert.Root>
       )}
     </VStack>
   );

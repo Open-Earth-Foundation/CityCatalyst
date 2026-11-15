@@ -383,8 +383,9 @@ export function FundingSelectionDialog({
                 w={{ base: "full", md: "34%" }}
                 flexShrink={0}
                 minH={0}
-                borderInlineEnd={{ md: "1px solid" }}
-                borderColor="border.neutral"
+                borderInlineEndWidth={{ md: "1px" }}
+                borderInlineEndStyle="solid"
+                borderInlineEndColor="border.neutral"
                 bg="background.alternativeLight"
               >
                 <Box p={4}>
@@ -655,6 +656,25 @@ export function FundingSelectionDialog({
                         lng={lng}
                       />
                     </Box>
+                  </VStack>
+                ) : !funder && funders.length === 0 ? (
+                  <VStack
+                    align="start"
+                    justify="center"
+                    flex={1}
+                    gap={3}
+                    data-testid="funding-empty-next-step"
+                  >
+                    <Icon as={LuFileText} boxSize={7} color="content.link" />
+                    <Heading as="h3" fontSize="title.md">
+                      {t("template-own-entry")}
+                    </Heading>
+                    <Text fontSize="body.md" color="content.secondary">
+                      {t("template-own-entry-help")}
+                    </Text>
+                    <Button size="sm" onClick={openOwnTemplate}>
+                      {t("template-own-entry")}
+                    </Button>
                   </VStack>
                 ) : !funder ? (
                   <VStack align="start" justify="center" flex={1} gap={3}>

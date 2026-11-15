@@ -55,3 +55,33 @@ export function currentPointCandidate(point: DocumentWorkspacePoint) {
         pointValueText(candidate.value) === pointValueText(point.value),
     );
 }
+
+/** Human display only; inputs and commands continue to use the raw value. */
+export function pointDisplayValue(
+  point: DocumentWorkspacePoint,
+  lng: string,
+  value = point.value,
+): string {
+  if (typeof value === "number") {
+    const number = new Intl.NumberFormat(lng, {
+      maximumFractionDigits: 20,
+    }).format(value);
+    return point.unit ? `${point.unit} ${number}` : number;
+  }
+  if (
+    point.answer_type === "date" &&
+    typeof value === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value)
+  ) {
+    const date = new Date(`${value}T12:00:00Z`);
+    if (
+      !Number.isNaN(date.getTime()) &&
+      date.toISOString().slice(0, 10) === value
+    )
+      return new Intl.DateTimeFormat(lng, {
+        dateStyle: "long",
+        timeZone: "UTC",
+      }).format(date);
+  }
+  return pointValueText(value);
+}

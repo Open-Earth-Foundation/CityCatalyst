@@ -614,3 +614,17 @@ it("preserves apostrophes, ampersands and source URLs in the plain-text gap answ
   expect(sendMessage.mock.calls[0][0]).not.toContain("&#");
   expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");
 });
+
+it("keeps Send disabled when the chat thread is unavailable even with retained input", async () => {
+  await renderPanel();
+  await type("An unsent message");
+  await renderPanel(contextStatus, null);
+  expect(composer().placeholder).toBe("chat-unavailable");
+  expect(composer().disabled).toBe(true);
+  const send = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-chat-send"]',
+  )!;
+  expect(send.disabled).toBe(true);
+  await act(async () => send.click());
+  expect(sendMessage).not.toHaveBeenCalled();
+});

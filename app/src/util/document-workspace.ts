@@ -35,6 +35,8 @@ export interface DocumentWorkspacePoint {
   description: string;
   kind: "fact" | "decision";
   answer_type: "text" | "number" | "date" | "choice" | "multiline";
+  /** Display unit supplied by the trusted point definition, never inferred. */
+  unit?: string | null;
   /** Trusted template choices. Model suggestions cannot expand this set. */
   choices?: string[];
   required: boolean;

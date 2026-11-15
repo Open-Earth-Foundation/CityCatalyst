@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Alert, Box, HStack, Text, VStack } from "@chakra-ui/react";
 import { ReviewButton as Button } from "./review-button";
 import {
   NativeSelectField,
@@ -193,15 +193,23 @@ export function WorkspaceExport({
         </Box>
       )}
       {(state.isError || buildFailed) && (
-        <Text role="alert" fontSize="body.md" color="sentiment.negativeDefault">
-          {t(
-            errorKind === "source_unavailable"
-              ? "workspace-source-unavailable-error"
-              : errorKind === "stale"
-                ? "workspace-stale-error"
-                : "workspace-export-error",
-          )}
-        </Text>
+        <Alert.Root
+          role="alert"
+          status={errorKind === "source_unavailable" ? "warning" : "error"}
+        >
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>
+              {t(
+                errorKind === "source_unavailable"
+                  ? "workspace-source-unavailable-error"
+                  : errorKind === "stale"
+                    ? "workspace-stale-error"
+                    : "workspace-export-error",
+              )}
+            </Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
       )}
       {errorKind === "source_unavailable" && onReviewEvidence && (
         <Button

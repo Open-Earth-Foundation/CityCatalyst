@@ -179,6 +179,47 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   });
   expect(onConfirmChapter).toHaveBeenCalledWith(chapter);
 
+  const whole = {
+    ...change,
+    start: 0,
+    before: "Intro unchanged.\n\nBudget is 10.\n\nEvidence remains unchanged.",
+    after: "Intro unchanged.\n\nBudget is 20.\n\nEvidence remains unchanged.",
+  };
+  await render({
+    chapters: [{ ...chapter, body_markdown: whole.before }],
+    reviewChanges: [whole],
+    editFocus: undefined,
+  });
+  expect(
+    container.querySelectorAll(
+      '[data-testid="concept-note-edit-previous-text"]',
+    ),
+  ).toHaveLength(1);
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-previous-text"]')
+      ?.textContent,
+  ).toBe("Budget is 10.");
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-proposed-text"]')
+      ?.textContent,
+  ).toBe("Budget is 20.");
+  expect(
+    [
+      ...container.querySelectorAll(
+        '[data-testid="concept-note-edit-unchanged-text"]',
+      ),
+    ].map((node) => node.textContent),
+  ).toEqual(["Intro unchanged.", "Evidence remains unchanged."]);
+  await act(async () =>
+    (
+      container.querySelector(
+        '[data-testid="concept-note-inline-accept"]',
+      ) as HTMLButtonElement
+    ).click(),
+  );
+  expect(onAcceptReviewChange).toHaveBeenLastCalledWith([whole.change_id]);
+  expect(whole.before).toContain("Intro unchanged.");
+
   const dated = {
     ...chapter,
     body_markdown: "Award [Information needed: Confirm award date]",

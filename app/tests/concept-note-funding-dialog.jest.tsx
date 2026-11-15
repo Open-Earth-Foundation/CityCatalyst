@@ -525,3 +525,15 @@ it("retries a failed catalogue refresh without repeating a successful create", a
   expect(refetch).toHaveBeenCalledTimes(2);
   expect(createFunder).toHaveBeenCalledTimes(1);
 });
+
+it("offers a working own-template path when the funder catalogue is empty", async () => {
+  funders = [];
+  await renderDialog();
+  const next = document.querySelector(
+    '[data-testid="funding-empty-next-step"]',
+  );
+  expect(next?.textContent).toContain("Use your own template");
+  expect(document.body.textContent).not.toContain("database");
+  await act(async () => next!.querySelector("button")!.click());
+  expect(document.body.textContent).toContain("Define your template");
+});

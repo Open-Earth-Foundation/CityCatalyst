@@ -57,7 +57,6 @@ import {
   conceptNoteResumeHref,
   formatRelativeTime,
   getConceptNoteBundleProgress,
-  getRunProgressPercent,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
   normalizePopulationData,
@@ -68,7 +67,7 @@ interface ConceptNoteDashboardProps {
   lng: string;
 }
 
-const runGridColumns = { base: "1fr", lg: "repeat(2, minmax(0, 1fr))" };
+const runGridColumns = "minmax(0, 1fr)";
 
 export function ConceptNoteDashboard({
   cityId,
@@ -400,13 +399,25 @@ export function ConceptNoteDashboard({
           </VStack>
 
           {runsFailed ? null : runsLoading ? (
-            <Grid gap={5} gridTemplateColumns={runGridColumns}>
+            <Grid
+              gap={0}
+              border="1px solid"
+              borderColor="border.neutral"
+              borderRadius="rounded"
+              gridTemplateColumns={runGridColumns}
+            >
               <RunCardSkeleton />
               <RunCardSkeleton />
               <RunCardSkeleton />
             </Grid>
           ) : runs.length ? (
-            <Grid gap={5} gridTemplateColumns={runGridColumns}>
+            <Grid
+              gap={0}
+              border="1px solid"
+              borderColor="border.neutral"
+              borderRadius="rounded"
+              gridTemplateColumns={runGridColumns}
+            >
               {runs.map((run) => {
                 const workflowLabel = t(
                   getWorkflowStepTranslationKey(run.workflow_step),
@@ -417,13 +428,6 @@ export function ConceptNoteDashboard({
                 const runFundingLabel = run.funder_id
                   ? t("funding-linked-short")
                   : t("funding-not-selected-short");
-
-                const progress = getRunProgressPercent(
-                  run.status,
-                  run.workflow_step,
-                  run.progress_summary,
-                  Boolean(run.funder_id),
-                );
 
                 return (
                   <RunCard
@@ -439,8 +443,6 @@ export function ConceptNoteDashboard({
                       workflow: workflowLabel,
                       time: updatedLabel,
                     })}
-                    progressLabel={t("run-progress", { progress })}
-                    progress={progress}
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
                     duplicateLoading={duplicatingRunId === run.run_id}
                     lifecycleDisabled={Boolean(duplicatingRunId)}

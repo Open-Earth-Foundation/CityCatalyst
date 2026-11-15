@@ -426,6 +426,8 @@ it.each(["not_applicable", "assumption", "answered"] as const)(
       expect(accepted().textContent).toContain("workspace-not-applicable");
       expect(accepted().textContent).not.toContain("workspace-no-value");
     }
+    expect(container.querySelector("form")).toBeNull();
+    await act(async () => button("workspace-edit-answer").click());
     await type(
       container.querySelector("textarea")!,
       "Unsaved replacement reason",
@@ -435,6 +437,8 @@ it.each(["not_applicable", "assumption", "answered"] as const)(
     await render(savedPoint);
     expect(accepted().textContent).toContain(savedPoint.task!.note);
     expect(accepted().textContent).not.toContain("Unsaved replacement reason");
+    expect(container.querySelector("form")).toBeNull();
+    await act(async () => button("workspace-edit-answer").click());
     expect(container.querySelector("textarea")!.value).toBe("");
     expect(save).not.toHaveBeenCalled();
   },
@@ -629,4 +633,100 @@ it("Overview uses current candidate attribution and presents actionable setup em
   expect(container.querySelector("progress")).toBeNull();
   await act(async () => button("workspace-choose-template").click());
   expect(choose).toHaveBeenCalledTimes(1);
+});
+
+it("keeps covered points read-only until Edit answer and preserves an unsaved correction through refetch", async () => {
+  const accepted = {
+    ...point,
+    status: "answered" as const,
+    value: 420000,
+    unit: "USD",
+    candidates: [],
+  };
+  await render(accepted);
+  expect(container.querySelector("form")).toBeNull();
+  expect(
+    container.querySelector('[data-testid="document-point-accepted-answer"]')
+      ?.textContent,
+  ).toContain("USD 420,000");
+  expect(button("workspace-park")).toBeUndefined();
+  await act(async () => button("workspace-edit-answer").click());
+  await type(container.querySelector("input")!, "430001.125");
+  await render({ ...accepted, version: 8, value: 420500 });
+  expect(container.querySelector("input")!.value).toBe("430001.125");
+  await act(async () =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      command: expect.objectContaining({
+        command: "correct",
+        value: 430001.125,
+        expected_version: 8,
+      }),
+    }),
+  );
+});
+
+it("prioritizes normalized legacy draft questions and pending proposals over an all-covered message", async () => {
+  const workspace = {
+    revision: 1,
+    setup: { ready: true, name: "Test" },
+    points: [],
+    needs: [],
+    overview: {
+      required_total: 0,
+      required_covered: 0,
+      optional_total: 0,
+      optional_covered: 0,
+      waiting_count: 0,
+      next_steps: [],
+    },
+    export_eligibility: {
+      working: true,
+      final: false,
+      blockers: [],
+      workspace_revision: 1,
+    },
+  } as DocumentWorkspace;
+  const chapter = {
+    chapter_id: "finance",
+    title: "Financing",
+    body_markdown: "Delivery [Information needed: Confirm date]",
+    gaps: [],
+    open_gap_count: 0,
+  } as import("@/util/types").ConceptNoteDraftChapter;
+  const openGap = jest.fn(),
+    viewChanges = jest.fn();
+  async function overview(reviewPending = false) {
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={defaultSystem}>
+          <WorkspaceOverview
+            workspace={workspace}
+            lng="en"
+            chapters={[chapter]}
+            onSelectPoint={() => {}}
+            onOpenDraft={() => {}}
+            onOpenGap={openGap}
+            reviewPending={reviewPending}
+            onViewChanges={viewChanges}
+          />
+        </ChakraProvider>,
+      ),
+    );
+  }
+  await overview();
+  expect(container.textContent).not.toContain("workspace-ready-for-review");
+  await act(async () => button("workspace-open-question").click());
+  expect(openGap).toHaveBeenCalledWith(
+    chapter,
+    expect.objectContaining({ question: "Confirm date", gap: null }),
+  );
+  await overview(true);
+  expect(container.textContent).toContain("workspace-proposal-next");
+  await act(async () => button("edit-view-changes").click());
+  expect(viewChanges).toHaveBeenCalledTimes(1);
 });

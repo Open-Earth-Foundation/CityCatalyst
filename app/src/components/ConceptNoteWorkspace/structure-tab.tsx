@@ -283,6 +283,8 @@ export function StructureTab({
                   {t("structure-chapter-description")}
                 </Text>
                 <Textarea
+                  autoresize
+                  minH="88px"
                   aria-label={t("structure-description-for", {
                     position: index + 1,
                   })}

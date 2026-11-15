@@ -156,3 +156,26 @@ server-authoritative accepted_candidate_id; explicit null denotes a human answer
 without candidate attribution, and earlier accepted candidates remain history. This pass keeps all command,
 review and export authority on the existing backend; deployed screenshots and
 visual critique follow the local component checks.
+
+
+### Screenshot-review follow-up
+
+The desktop pane switch now uses Chakra responsive visibility. At narrow widths
+the breadcrumb/title, status/actions and five short tab labels use a compact
+header; layout verification is recorded separately with the deployed screenshots.
+Covered points open in read mode and retain explicit unsaved edits through query
+refreshes. Numbers use locale separators and only a declared definition unit;
+dates use locale display while commands retain raw numeric and ISO values.
+Required facts and evidence appear first, with optional exceptions disclosed.
+
+Overview derives open draft questions from the same chapterGapRows normalizer as
+Draft, including unpersisted legacy markers. Pending proposals offer View changes
+without changing the current tab or focus. Whole-chapter proposals compare common
+paragraphs for display only (bounded to 256 paragraphs per side); unchanged prose
+renders normally. All displayed changed regions still invoke the original atomic
+EditChange IDs and preserve backend source/gap metadata and approval semantics.
+The two point-card surfaces share pending mutation state via a run-and-point
+fixedCacheKey; source failures explain evidence recovery without blocking manual
+answers or unrelated candidates. Dashboard notes use compact rows, secondary
+content-gated export and a menu for lifecycle actions; illustrative workflow
+percentages are no longer presented as document readiness.

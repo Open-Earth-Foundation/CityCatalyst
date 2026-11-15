@@ -43,6 +43,9 @@ export const documentWorkspaceApi = api
         }),
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "DocumentWorkspace", id: runId },
+          ...(!_error
+            ? [{ type: "ConceptNoteDraft" as const, id: runId }]
+            : []),
         ],
       }),
       commandDocumentPoint: builder.mutation<

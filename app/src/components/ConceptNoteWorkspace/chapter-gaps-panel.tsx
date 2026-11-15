@@ -351,6 +351,11 @@ export function ChapterGapsPanel({
       data-testid="concept-note-chapter-gaps"
       data-state={open ? "open" : "closed"}
       align="center"
+      bg="sentiment.warningOverlay"
+      borderRadius="rounded"
+      px={2}
+      py={1}
+      w="fit-content"
       gap={2}
       flexWrap="wrap"
     >

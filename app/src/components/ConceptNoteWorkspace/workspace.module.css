@@ -39,15 +39,9 @@
     grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
   }
 }
-.mobileSwitch {
-  display: none;
-}
 @media (max-width: 47.99rem) {
   .panes {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .mobileSwitch {
-    display: flex;
   }
   .mobileHidden {
     display: none !important;

@@ -783,16 +783,16 @@ export function ConceptNoteChatPanel({
               _disabled={{
                 bg: "interactive.primary",
                 color: "base.light",
-                opacity: 1,
+                opacity: 0.4,
                 cursor: "not-allowed",
                 _hover: {
                   bg: "interactive.primary",
                   color: "base.light",
-                  opacity: 1,
+                  opacity: 0.4,
                 },
               }}
               p={0}
-              disabled={chatDisabled || !input.trim()}
+              disabled={chatDisabled || composerDisabled || !input.trim()}
               loading={isGenerating}
               size="xs"
               variant="solid"

@@ -1,17 +1,14 @@
-import {
-  Box,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Flex, Heading, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import type { TFunction } from "i18next";
 import NextLink from "next/link";
-import { LuPencil } from "react-icons/lu";
+import { LuEllipsis } from "react-icons/lu";
+import {
+  MenuRoot,
+  MenuTrigger,
+  MenuContent,
+  MenuItem,
+} from "@/components/ui/menu";
 
 import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 import { api } from "@/services/api";
@@ -39,8 +36,6 @@ interface RunCardProps {
   onDuplicate: () => void;
   onExport: () => void;
   onRename: () => void;
-  progress: number;
-  progressLabel: string;
   reducedMotion: boolean;
   resumeHref: string;
   run: ConceptNoteRun;
@@ -58,8 +53,6 @@ export function RunCard({
   onDuplicate,
   onExport,
   onRename,
-  progress,
-  progressLabel,
   reducedMotion,
   resumeHref,
   run,
@@ -78,148 +71,76 @@ export function RunCard({
   const status = getConceptNoteStatusPresentation(run.status, draft);
   const planState = getRunClimateActionPlanState(run);
 
+  const hasDraft = Boolean(
+    draft?.chapters.some((chapter) => chapter.body_markdown),
+  );
+  const showStatus =
+    uploading || incomplete || status.translationKey !== "status-in-progress";
   return (
     <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
-      style={{ height: "100%" }}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15 }}
     >
-      <VStack
+      <Flex
         as="article"
         data-testid={`concept-note-run-${run.run_id}`}
-        align="stretch"
-        gap={2.5}
-        h="full"
-        border="1px solid"
-        borderColor="border.neutral"
-        borderRadius="rounded"
-        bg="base.light"
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "stretch", md: "center" }}
+        gap={3}
         p={4}
-        transition="border-color 160ms ease, box-shadow 160ms ease"
-        _hover={{ borderColor: "content.link" }}
-        _motionReduce={{ transition: "none" }}
+        borderBottom="1px solid"
+        borderColor="border.neutral"
+        bg="base.light"
       >
-        <Flex align="start" justify="space-between" gap={3}>
-          <HStack minW={0} gap={1}>
+        <VStack flex={1} minW={0} align="stretch" gap={1}>
+          <HStack gap={3} flexWrap="wrap">
             <Heading
               as="h2"
-              minW={0}
-              fontFamily="heading"
-              fontSize="title.sm"
-              fontWeight="semibold"
-              lineHeight="20"
+              fontSize="body.lg"
               color="content.primary"
+              overflowWrap="anywhere"
             >
               {run.name}
             </Heading>
-            <IconButton
-              flexShrink={0}
-              size="xs"
-              variant="ghost"
-              boxSize="24px"
-              minW="24px"
-              color="content.tertiary"
-              onClick={onRename}
-              disabled={lifecycleDisabled}
-              aria-label={`${t("rename")}: ${run.name}`}
-              _hover={{ color: "content.link", bg: "background.neutral" }}
-            >
-              <Icon as={LuPencil} boxSize={3.5} />
-            </IconButton>
-          </HStack>
-          <StatusBadge
-            label={t(
-              uploading
-                ? "uploading-sources"
-                : incomplete
-                  ? "upload-incomplete"
-                  : status.translationKey,
-            )}
-            tone={uploading ? "info" : incomplete ? "warning" : status.tone}
-          />
-        </Flex>
-
-        <Text
-          fontFamily="body"
-          fontSize="body.sm"
-          lineHeight="16"
-          color="content.tertiary"
-        >
-          {scopeLabel}
-        </Text>
-
-        {incomplete ? (
-          <Text fontSize="body.sm">{t("upload-incomplete-message")}</Text>
-        ) : (
-          <Box>
-            <Flex justify="space-between" gap={3} mb={1}>
-              <Text fontSize="label.sm" color="content.tertiary">
-                {progressLabel}
-              </Text>
-              <Text
-                fontSize="label.sm"
-                fontWeight="semibold"
-                color="content.secondary"
-              >
-                {progress}%
-              </Text>
-            </Flex>
-            <Box
-              h="8px"
-              overflow="hidden"
-              borderRadius="pill"
-              bg="background.neutral"
-            >
-              <Box
-                h="full"
-                w={`${progress}%`}
-                borderRadius="pill"
-                bg="sentiment.positiveDefault"
-                transition="width 180ms ease"
-                _motionReduce={{ transition: "none" }}
+            {showStatus && (
+              <StatusBadge
+                label={t(
+                  uploading
+                    ? "uploading-sources"
+                    : incomplete
+                      ? "upload-incomplete"
+                      : status.translationKey,
+                )}
+                tone={uploading ? "info" : incomplete ? "warning" : status.tone}
               />
-            </Box>
-          </Box>
-        )}
-
-        {!incomplete && (
-          <Text
-            fontFamily="body"
-            fontSize="label.sm"
-            lineHeight="16"
-            color="content.tertiary"
-          >
-            {activityLabel}
-          </Text>
-        )}
-
-        {planState && (
-          <HStack gap={2} flexWrap="wrap">
-            <Text fontSize="label.sm" color="content.tertiary">
-              {t("hiap-context")}
-            </Text>
-            <ContextStatusBadge
-              label={t(contextSourceStatusKey(planState))}
-              tone={contextSourceTone(planState)}
-            />
+            )}
           </HStack>
-        )}
-        <HStack mt="auto" gap={2} flexWrap="wrap">
+          <Text fontSize="body.sm" color="content.secondary">
+            {scopeLabel}
+          </Text>
+          <Text fontSize="body.sm" color="content.tertiary">
+            {incomplete ? t("upload-incomplete-message") : activityLabel}
+          </Text>
+          {planState && (
+            <HStack gap={2}>
+              <Text fontSize="body.sm" color="content.secondary">
+                {t("hiap-context")}
+              </Text>
+              <ContextStatusBadge
+                label={t(contextSourceStatusKey(planState))}
+                tone={contextSourceTone(planState)}
+              />
+            </HStack>
+          )}
+        </VStack>
+        <HStack flexShrink={0} gap={2}>
           {incomplete ? (
             <Button size="sm" onClick={onRetryUpload}>
               {t("retry-upload")}
             </Button>
           ) : (
-            <Button
-              asChild
-              size="sm"
-              variant="solid"
-              minH="32px"
-              h="auto"
-              px="14px"
-              py="8px"
-            >
+            <Button asChild size="sm">
               <NextLink
                 href={resumeHref}
                 aria-label={`${t("resume")}: ${run.name}`}
@@ -229,53 +150,48 @@ export function RunCard({
             </Button>
           )}
           {!incomplete && (
-            <>
-              <Button
-                size="sm"
-                variant="outline"
-                minH="32px"
-                h="auto"
-                px="14px"
-                py="8px"
-                onClick={onDuplicate}
-                loading={duplicateLoading}
-                disabled={lifecycleDisabled}
-                aria-label={`${t("duplicate")}: ${run.name}`}
-              >
-                {t("duplicate")}
-              </Button>
-              <Button
-                size="sm"
-                variant="solid"
-                minH="32px"
-                h="auto"
-                px="14px"
-                py="8px"
-                bg="sentiment.positiveDefault"
-                color="base.light"
-                onClick={onExport}
-                disabled={lifecycleDisabled}
-                aria-label={`${t("export")}: ${run.name}`}
-              >
-                {t("export")}
-              </Button>
-            </>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={lifecycleDisabled || !hasDraft}
+              title={!hasDraft ? t("workspace-export-needs-draft") : undefined}
+              onClick={onExport}
+              aria-label={`${t("export")}: ${run.name}`}
+            >
+              {t("export")}
+            </Button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            minH="32px"
-            h="auto"
-            px="14px"
-            py="8px"
-            onClick={onDelete}
-            disabled={lifecycleDisabled}
-            aria-label={`${t("delete")}: ${run.name}`}
-          >
-            {t("delete")}
-          </Button>
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <Button
+                size="sm"
+                variant="plain"
+                aria-label={`${t("workspace-more-actions")}: ${run.name}`}
+                disabled={lifecycleDisabled || duplicateLoading}
+              >
+                <Icon as={LuEllipsis} />
+              </Button>
+            </MenuTrigger>
+            <MenuContent bg="base.light" borderColor="border.neutral">
+              <MenuItem value="rename" onClick={onRename}>
+                {t("rename")}
+              </MenuItem>
+              {!incomplete && (
+                <MenuItem value="duplicate" onClick={onDuplicate}>
+                  {t("duplicate")}
+                </MenuItem>
+              )}
+              <MenuItem
+                value="delete"
+                color="sentiment.negativeDefault"
+                onClick={onDelete}
+              >
+                {t("delete")}
+              </MenuItem>
+            </MenuContent>
+          </MenuRoot>
         </HStack>
-      </VStack>
+      </Flex>
     </motion.div>
   );
 }

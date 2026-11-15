@@ -307,7 +307,7 @@ async function clickSetup() {
 async function showDraft() {
   const tab = [
     ...container.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
-  ].find((item) => item.textContent === "draft-tab");
+  ].find((item) => item.getAttribute("aria-label") === "draft-tab");
   expect(tab).toBeDefined();
   await act(async () => tab!.click());
 }
@@ -483,7 +483,7 @@ it("opens an existing review deep link directly in Draft instead of Overview", a
   const tabs = [...container.querySelectorAll('[role="tab"]')];
   expect(
     tabs
-      .find((tab) => tab.textContent === "draft-tab")
+      .find((tab) => tab.getAttribute("aria-label") === "draft-tab")
       ?.getAttribute("aria-selected"),
   ).toBe("true");
   expect(
@@ -530,6 +530,41 @@ it("canonical gap navigation selects the same point in To do", async () => {
   expect(
     [...container.querySelectorAll('[role="tab"]')]
       .find((tab) => tab.textContent === "workspace-todo-tab")
+      ?.getAttribute("aria-selected"),
+  ).toBe("true");
+});
+
+it("keeps To do selected when background proposals arrive and offers intentional navigation", async () => {
+  pointKeys = [{ key: "award_date" }];
+  await clickSetup();
+  await showDraft();
+  await act(async () =>
+    draftActions.onAnswerGap(
+      { chapter_id: "chapter", title: "Funding" },
+      { gap: { field_key: "award_date" } },
+    ),
+  );
+  reviewProposal = { proposal_id: "new-background-proposal" };
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />
+      </ChakraProvider>,
+    ),
+  );
+  expect(
+    container
+      .querySelector('[role="tab"][aria-label="workspace-todo-tab"]')
+      ?.getAttribute("aria-selected"),
+  ).toBe("true");
+  const view = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "edit-view-changes",
+  );
+  expect(view).toBeDefined();
+  await act(async () => view!.click());
+  expect(
+    container
+      .querySelector('[role="tab"][aria-label="draft-tab"]')
       ?.getAttribute("aria-selected"),
   ).toBe("true");
 });

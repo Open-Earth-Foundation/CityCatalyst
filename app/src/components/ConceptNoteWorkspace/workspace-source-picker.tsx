@@ -16,6 +16,7 @@ import {
   NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { useTranslation } from "@/i18n/client";
+import { ContextStatusBadge } from "./context-status-badge";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type { DocumentWorkspace } from "@/util/document-workspace";
 
@@ -72,79 +73,98 @@ export function WorkspaceSources({
           {t("workspace-use-existing-source")}
         </Button>
       </HStack>
-      {workspace?.needs.map((need) => (
-        <Box
-          key={need.need_id}
-          py={3}
-          borderTop="1px solid"
-          borderColor="border.neutral"
-        >
-          <HStack justify="space-between">
-            <Text fontSize="body.md" fontWeight="semibold">
-              {need.label}
-            </Text>
-            <Text fontSize="label.sm" color="content.tertiary">
-              {t(need.required ? "workspace-required" : "workspace-optional")}
-            </Text>
-          </HStack>
-          <Text mt={1} fontSize="body.sm" color="content.secondary">
-            {need.description}
-          </Text>
-          <Text mt={2} fontSize="label.sm" color="content.link">
-            {t(`workspace-need-${need.status}`)}
-          </Text>
-          {need.guidance && (
-            <Box as="details" mt={2}>
-              <Text
-                as="summary"
-                cursor="pointer"
-                fontSize="body.sm"
-                color="content.link"
-              >
-                {t("workspace-evidence-guidance")}
+      {workspace?.needs
+        .toSorted((a, b) => Number(b.required) - Number(a.required))
+        .map((need) => (
+          <Box
+            key={need.need_id}
+            data-testid="workspace-evidence-need"
+            py={3}
+            borderTop="1px solid"
+            borderColor="border.neutral"
+          >
+            <HStack justify="space-between">
+              <Text fontSize="body.md" fontWeight="semibold">
+                {need.label}
               </Text>
-              <Text mt={2} fontSize="body.sm" lineHeight={1.6}>
-                {need.guidance}
+              <Text fontSize="label.sm" color="content.tertiary">
+                {t(need.required ? "workspace-required" : "workspace-optional")}
               </Text>
+            </HStack>
+            {need.description.trim() !== need.label.trim() && (
+              <Text mt={1} fontSize="body.sm" color="content.secondary">
+                {need.description}
+              </Text>
+            )}
+            <Box mt={2}>
+              <ContextStatusBadge
+                label={t(`workspace-need-${need.status}`)}
+                tone={
+                  need.status === "available"
+                    ? "positive"
+                    : need.status === "missing" || need.status === "unavailable"
+                      ? "warning"
+                      : "neutral"
+                }
+              />
             </Box>
-          )}
-          {need.documents.map((document) => (
-            <Text key={document.upload_id} mt={2} fontSize="body.sm">
-              {document.filename} ·{" "}
-              {t(
-                document.ready
-                  ? "workspace-source-ready"
-                  : "workspace-source-processing",
-              )}
-            </Text>
-          ))}
-          <HStack mt={2} flexWrap="wrap">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onAddSource}
-              disabled={sourceBusy}
-            >
-              {t(
-                sourceBusy
-                  ? "workspace-evidence-uploading"
-                  : "workspace-add-evidence",
-              )}
-            </Button>
-            {need.point_keys.map((key) => (
-              <Button
-                key={key}
-                size="sm"
-                variant="plain"
-                onClick={() => onSelectPoint(key)}
-              >
-                {workspace.points.find((point) => point.key === key)?.label ??
-                  key}
-              </Button>
+            {need.guidance && (
+              <Box as="details" mt={2}>
+                <Text
+                  as="summary"
+                  cursor="pointer"
+                  fontSize="body.sm"
+                  color="content.link"
+                >
+                  {t("workspace-evidence-guidance")}
+                </Text>
+                <Text mt={2} fontSize="body.sm" lineHeight={1.6}>
+                  {need.guidance}
+                </Text>
+              </Box>
+            )}
+            {need.documents.map((document) => (
+              <Text key={document.upload_id} mt={2} fontSize="body.sm">
+                {document.filename} ·{" "}
+                {t(
+                  document.ready
+                    ? "workspace-source-ready"
+                    : "workspace-source-processing",
+                )}
+              </Text>
             ))}
-          </HStack>
-        </Box>
-      ))}
+            <HStack mt={2} flexWrap="wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onAddSource}
+                disabled={sourceBusy}
+              >
+                {t(
+                  sourceBusy
+                    ? "workspace-evidence-uploading"
+                    : "workspace-add-evidence",
+                )}
+              </Button>
+              {need.point_keys.length > 0 && (
+                <Text fontSize="body.sm" color="content.secondary">
+                  {t("workspace-used-for")}
+                </Text>
+              )}
+              {need.point_keys.map((key) => (
+                <Button
+                  key={key}
+                  size="sm"
+                  variant="plain"
+                  onClick={() => onSelectPoint(key)}
+                >
+                  {workspace.points.find((point) => point.key === key)?.label ??
+                    key}
+                </Button>
+              ))}
+            </HStack>
+          </Box>
+        ))}
       {attached && (
         <Text role="status" color="content.link">
           {t("workspace-source-attached")}

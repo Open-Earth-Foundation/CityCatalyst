@@ -18,8 +18,9 @@ import {
   currentPointCandidate,
   pointGroup,
   pointGroups,
-  pointValueText,
+  pointDisplayValue,
 } from "./point-state";
+import { chapterGapRows, type ChapterGapRow } from "./chapter-gaps-panel";
 import styles from "./workspace.module.css";
 interface PanelProps {
   workspace: DocumentWorkspace;
@@ -38,6 +39,9 @@ export function WorkspaceOverview({
   hasTemplate,
   setupSaving,
   setupError,
+  onOpenGap,
+  reviewPending,
+  onViewChanges,
 }: PanelProps & {
   chapters: ConceptNoteDraftChapter[];
   onOpenDraft: () => void;
@@ -47,11 +51,19 @@ export function WorkspaceOverview({
   hasTemplate?: boolean;
   setupSaving?: boolean;
   setupError?: boolean;
+  onOpenGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
+  reviewPending?: boolean;
+  onViewChanges?: () => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const { overview } = workspace;
   const covered = workspace.points.filter((point) =>
     ["answered", "assumption", "not_applicable"].includes(point.status),
+  );
+  const requiredFacts = covered.filter((point) => point.required);
+  const optionalFacts = covered.filter((point) => !point.required);
+  const gapEntries = chapters.flatMap((chapter) =>
+    chapterGapRows(chapter).map((row) => ({ chapter, row })),
   );
   const waiting = workspace.points.filter(
     (point) => pointGroup(point) === "waiting",
@@ -218,6 +230,32 @@ export function WorkspaceOverview({
               ))}
             </VStack>
           </>
+        ) : reviewPending ? (
+          <>
+            <Text fontSize="body.md" mb={3} color="content.secondary">
+              {t("workspace-proposal-next")}
+            </Text>
+            <Button size="sm" onClick={onViewChanges}>
+              {t("edit-view-changes")}
+            </Button>
+          </>
+        ) : gapEntries[0] ? (
+          <>
+            <Text fontSize="body.md" mb={3} color="content.secondary">
+              {t("workspace-open-question-next", {
+                count: gapEntries.length,
+                chapter: gapEntries[0].chapter.title,
+              })}
+            </Text>
+            <Button
+              size="sm"
+              onClick={() =>
+                onOpenGap?.(gapEntries[0].chapter, gapEntries[0].row)
+              }
+            >
+              {t("workspace-open-question")}
+            </Button>
+          </>
         ) : (
           <>
             <Text
@@ -248,6 +286,21 @@ export function WorkspaceOverview({
             </Button>
           </>
         )}
+        {gapEntries.length > 0 && (next[0] || reviewPending) && (
+          <Button
+            mt={2}
+            size="sm"
+            variant="plain"
+            onClick={() =>
+              onOpenGap?.(gapEntries[0].chapter, gapEntries[0].row)
+            }
+          >
+            {t("workspace-open-question-next", {
+              count: gapEntries.length,
+              chapter: gapEntries[0].chapter.title,
+            })}
+          </Button>
+        )}
       </Box>
       <Box
         className={styles.overviewColumns}
@@ -262,92 +315,134 @@ export function WorkspaceOverview({
                 {t("workspace-known-facts")}
               </Heading>
               <VStack as="dl" align="stretch" gap={0}>
-                {covered.slice(0, 6).map((point) => {
-                  const citations =
-                    currentPointCandidate(point)?.citations ?? [];
-                  return (
-                    <Box
-                      key={point.key}
-                      py={3}
-                      borderBottom="1px solid"
-                      borderColor="border.neutral"
-                    >
-                      <Box as="dt">
+                {requiredFacts
+                  .concat(
+                    optionalFacts.filter(
+                      (point) => point.status !== "not_applicable",
+                    ),
+                  )
+                  .slice(0, 6)
+                  .map((point) => {
+                    const citations =
+                      currentPointCandidate(point)?.citations ?? [];
+                    return (
+                      <Box
+                        key={point.key}
+                        py={3}
+                        borderBottom="1px solid"
+                        borderColor="border.neutral"
+                      >
+                        <Box as="dt">
+                          <Button
+                            variant="plain"
+                            h="auto"
+                            minH="24px"
+                            p={0}
+                            fontSize="body.sm"
+                            color="content.secondary"
+                            whiteSpace="normal"
+                            textAlign="left"
+                            onClick={() => onSelectPoint(point.key)}
+                          >
+                            {point.label}
+                          </Button>
+                        </Box>
+                        <Text
+                          as="dd"
+                          mt={1}
+                          fontSize="body.md"
+                          whiteSpace="pre-wrap"
+                          overflowWrap="anywhere"
+                        >
+                          {point.status === "not_applicable"
+                            ? t("workspace-not-applicable")
+                            : pointDisplayValue(point, lng)}
+                        </Text>
+                        {point.accepted_reason && (
+                          <Text
+                            mt={1}
+                            fontSize="body.sm"
+                            lineHeight={1.5}
+                            color="content.secondary"
+                          >
+                            {point.accepted_reason}
+                          </Text>
+                        )}
+                        {citations.length > 0 && (
+                          <Box as="details" mt={2}>
+                            <Text
+                              as="summary"
+                              cursor="pointer"
+                              fontSize="body.sm"
+                              color="content.link"
+                            >
+                              {t("workspace-sources-count", {
+                                count: citations.length,
+                              })}
+                            </Text>
+                            {citations.map((citation, index) => (
+                              <Box
+                                key={index}
+                                borderLeft="2px solid"
+                                borderColor="border.neutral"
+                                pl={3}
+                                mt={2}
+                              >
+                                <Text fontSize="body.sm" lineHeight={1.6}>
+                                  {citation.quote}
+                                </Text>
+                                <Text
+                                  mt={1}
+                                  fontSize="body.sm"
+                                  color="content.tertiary"
+                                >
+                                  {citation.source_label}
+                                  {citation.page_number !== null
+                                    ? ` · ${t("workspace-page", { page: citation.page_number })}`
+                                    : ""}
+                                </Text>
+                              </Box>
+                            ))}
+                          </Box>
+                        )}
+                      </Box>
+                    );
+                  })}
+              </VStack>
+              {optionalFacts.some(
+                (point) => point.status === "not_applicable",
+              ) && (
+                <Box as="details" mt={3}>
+                  <Text
+                    as="summary"
+                    fontSize="body.sm"
+                    cursor="pointer"
+                    color="content.secondary"
+                  >
+                    {t("workspace-optional-exceptions")}
+                  </Text>
+                  {optionalFacts
+                    .filter((point) => point.status === "not_applicable")
+                    .map((point) => (
+                      <Box key={point.key} mt={2}>
                         <Button
                           variant="plain"
-                          h="auto"
-                          minH="24px"
-                          p={0}
-                          fontSize="body.sm"
-                          whiteSpace="normal"
-                          textAlign="left"
+                          size="sm"
+                          color="content.secondary"
                           onClick={() => onSelectPoint(point.key)}
                         >
                           {point.label}
                         </Button>
-                      </Box>
-                      <Text
-                        as="dd"
-                        mt={1}
-                        fontSize="body.md"
-                        whiteSpace="pre-wrap"
-                        overflowWrap="anywhere"
-                      >
-                        {point.status === "not_applicable"
-                          ? t("workspace-not-applicable")
-                          : pointValueText(point.value)}
-                      </Text>
-                      {point.accepted_reason && (
-                        <Text
-                          mt={1}
-                          fontSize="body.sm"
-                          lineHeight={1.5}
-                          color="content.secondary"
-                        >
-                          {point.accepted_reason}
+                        <Text fontSize="body.sm">
+                          {t("workspace-not-applicable")}
+                          {point.accepted_reason
+                            ? ` · ${point.accepted_reason}`
+                            : ""}
                         </Text>
-                      )}
-                      {citations.length > 0 && (
-                        <Box as="details" mt={2}>
-                          <Text
-                            as="summary"
-                            cursor="pointer"
-                            fontSize="body.sm"
-                            color="content.link"
-                          >
-                            {t("workspace-sources-count", {
-                              count: citations.length,
-                            })}
-                          </Text>
-                          {citations.map((citation, index) => (
-                            <Box
-                              key={index}
-                              borderLeft="2px solid"
-                              borderColor="border.neutral"
-                              pl={3}
-                              mt={2}
-                            >
-                              <Text fontSize="body.sm" lineHeight={1.6}>
-                                {citation.quote}
-                              </Text>
-                              <Text
-                                mt={1}
-                                fontSize="body.sm"
-                                color="content.tertiary"
-                              >
-                                {citation.source_label}
-                                {citation.page_number !== null
-                                  ? ` · ${t("workspace-page", { page: citation.page_number })}`
-                                  : ""}
-                              </Text>
-                            </Box>
-                          ))}
-                        </Box>
-                      )}
-                    </Box>
-                  );
-                })}
-              </VStack>
+                      </Box>
+                    ))}
+                </Box>
+              )}
             </Box>
           )}
           {waiting.length > 0 && (

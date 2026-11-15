@@ -39,6 +39,7 @@ import styles from "./workspace.module.css";
 
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import { DocumentPointCard } from "./document-point-card";
+import { type ChapterGapRow } from "./chapter-gaps-panel";
 import { WorkspaceOverview, WorkspaceTodos } from "./document-workspace-panels";
 import { WorkspaceSources } from "./workspace-source-picker";
 import { WorkspaceExport } from "./workspace-export";
@@ -428,32 +429,25 @@ export function ConceptNoteWorkspace({
   )
     ? editFocus?.changeId
     : reviewChanges[0]?.change_id;
-  const shownReview = useRef<string | null>(null);
-  const reviewIdentity = reviewProposal?.proposal_id;
-  const firstReviewChapterId = reviewChanges[0]?.chapter_id;
-  const firstReviewChangeId = reviewChanges[0]?.change_id;
-  useEffect(() => {
-    if (
-      !reviewIdentity ||
-      !firstReviewChapterId ||
-      shownReview.current === reviewIdentity
-    )
-      return;
-    shownReview.current = reviewIdentity;
-    const frame = window.requestAnimationFrame(() => {
-      setTab("draft");
-      setReviewChapterId(null);
-      setReviewFindingKey(null);
-      setEditFocus({
-        chapterId: firstReviewChapterId,
-        changeId: firstReviewChangeId,
-        requestId: crypto.randomUUID(),
-        focus: false,
-      });
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [reviewIdentity, firstReviewChapterId, firstReviewChangeId]);
 
+  function openDraftGap(chapter: ConceptNoteDraftChapter, row: ChapterGapRow) {
+    const point = workspace?.points.find(
+      (item) => item.key === row.gap?.field_key,
+    );
+    if (point) {
+      openPoint(point.key);
+      return;
+    }
+    setTab("draft");
+    setReviewChapterId(chapter.chapter_id);
+    setReviewFindingKey(null);
+    setMobilePane("chat");
+    setGapAnswer({
+      chapterId: chapter.chapter_id,
+      chapterTitle: chapter.title,
+      row,
+    });
+  }
   function navigateEdit(chapterId: string, changeId?: string): void {
     setTab("draft");
     setReviewChapterId(null);
@@ -466,6 +460,12 @@ export function ConceptNoteWorkspace({
     });
   }
 
+  function viewChanges() {
+    setMobilePane("workspace");
+    if (reviewChanges[0])
+      navigateEdit(reviewChanges[0].chapter_id, reviewChanges[0].change_id);
+    else setTab("draft");
+  }
   const canReview = reviewAvailabilityDescription === null;
 
   async function confirmChapter(
@@ -546,13 +546,13 @@ export function ConceptNoteWorkspace({
       >
         <VStack
           align="stretch"
-          gap={3}
+          gap={{ base: 2, md: 3 }}
           h="full"
           minH={0}
           maxW="1800px"
           mx="auto"
           px={{ base: 2, md: 5 }}
-          py={{ base: 3, md: 4 }}
+          py={{ base: 2, md: 4 }}
         >
           <HStack
             flexShrink={0}
@@ -560,16 +560,24 @@ export function ConceptNoteWorkspace({
             color="content.tertiary"
             justify="start"
           >
-            <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
+            <NextLink
+              aria-label={t("all-concept-notes")}
+              href={`/${lng}/cities/${cityId}/concept-notes`}
+            >
               <HStack gap={1.5} _hover={{ color: "content.link" }}>
                 <Icon as={LuArrowLeft} />
-                <Text fontSize="label.sm">{t("all-concept-notes")}</Text>
+                <Text hideBelow="md" fontSize="label.sm">
+                  {t("all-concept-notes")}
+                </Text>
               </HStack>
             </NextLink>
-            <Text fontSize="label.sm">/</Text>
+            <Text hideBelow="md" fontSize="label.sm">
+              /
+            </Text>
             <Text
               truncate
-              maxW="420px"
+              minW={0}
+              maxW={{ base: "calc(100vw - 64px)", md: "420px" }}
               fontSize="label.sm"
               color="content.secondary"
             >
@@ -577,11 +585,7 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
-          <HStack
-            className={styles.mobileSwitch}
-            gap={2}
-            aria-label={t("workspace-area-label")}
-          >
+          <HStack hideFrom="md" gap={2} aria-label={t("workspace-area-label")}>
             <Button
               size="sm"
               variant={mobilePane === "workspace" ? "solid" : "outline"}
@@ -725,12 +729,12 @@ export function ConceptNoteWorkspace({
                 align="center"
                 flexWrap="wrap"
                 gap={3}
-                px={4}
-                py={3}
+                px={{ base: 3, md: 4 }}
+                py={{ base: 2, md: 3 }}
                 borderBottom="1px solid"
                 borderColor="border.neutral"
               >
-                <HStack gap={2} flex="1 1 180px" minW={0}>
+                <HStack hideBelow="md" gap={2} flex="1 1 180px" minW={0}>
                   <Icon
                     as={LuFileText}
                     color="content.link"
@@ -760,11 +764,23 @@ export function ConceptNoteWorkspace({
                     </HStack>
                   </Box>
                 </HStack>
-                <HStack gap={2} flexWrap="wrap">
+                <HStack
+                  gap={2}
+                  flexWrap="wrap"
+                  w={{ base: "full", md: "auto" }}
+                >
+                  <Box hideFrom="md" flex={1}>
+                    <StatusBadge label={statusLabel} tone={status.tone} />
+                  </Box>
+                  {reviewProposal && tab !== "draft" && (
+                    <Button size="sm" variant="outline" onClick={viewChanges}>
+                      {t("edit-view-changes")}
+                    </Button>
+                  )}
                   {canReview && (
                     <ReviewButton
-                      size="sm"
-                      variant="outline"
+                      size={{ base: "xs", md: "sm" }}
+                      variant="solid"
                       data-testid="concept-note-review"
                       onClick={() => {
                         setReviewChapterId(null);
@@ -777,10 +793,20 @@ export function ConceptNoteWorkspace({
                     </ReviewButton>
                   )}
                   <ReviewButton
-                    size="sm"
+                    size={{ base: "xs", md: "sm" }}
                     variant="outline"
                     data-testid="concept-note-export"
-                    disabled={!workspace}
+                    aria-label={
+                      !draftHasContent
+                        ? `${t("workspace-export-menu")}. ${t("workspace-export-needs-draft")}`
+                        : undefined
+                    }
+                    disabled={!workspace || !draftHasContent}
+                    title={
+                      !draftHasContent
+                        ? t("workspace-export-needs-draft")
+                        : undefined
+                    }
                     onClick={() => setExportOpen(true)}
                   >
                     {t("workspace-export-menu")}
@@ -788,6 +814,10 @@ export function ConceptNoteWorkspace({
                 </HStack>
               </Flex>
               <Tabs.List
+                css={{
+                  scrollbarWidth: "none",
+                  "&::-webkit-scrollbar": { display: "none" },
+                }}
                 flexShrink={0}
                 gap={0}
                 overflowX="auto"
@@ -796,7 +826,7 @@ export function ConceptNoteWorkspace({
                 borderBottom="1px solid"
                 borderColor="border.neutral"
                 bg="base.light"
-                px={3}
+                px={{ base: 1, md: 3 }}
               >
                 {workspaceTabs.map((item) => (
                   <Tabs.Trigger
@@ -804,16 +834,20 @@ export function ConceptNoteWorkspace({
                     value={item.key}
                     display="flex"
                     flexShrink={0}
+                    aria-label={t(item.translationKey)}
+                    title={t(item.translationKey)}
+                    flex={{ base: "1 1 0", md: "0 0 auto" }}
+                    minW={0}
                     type="button"
                     alignItems="center"
                     gap={2}
                     borderBottom="2px solid"
                     borderColor="transparent"
                     color="content.tertiary"
-                    px={{ base: 2, md: 4 }}
+                    px={{ base: 1, md: 4 }}
                     py={2.5}
                     fontFamily="heading"
-                    fontSize="body.sm"
+                    fontSize={{ base: "12px", md: "body.sm" }}
                     fontWeight="semibold"
                     _selected={{
                       borderColor: "content.link",
@@ -821,8 +855,18 @@ export function ConceptNoteWorkspace({
                     }}
                     _hover={{ color: "content.link" }}
                   >
-                    <Icon as={item.icon} />
-                    {t(item.translationKey)}
+                    <Icon hideBelow="md" as={item.icon} />
+                    <Text
+                      as="span"
+                      hideBelow={item.key === "draft" ? "md" : undefined}
+                    >
+                      {t(item.translationKey)}
+                    </Text>
+                    {item.key === "draft" && (
+                      <Text as="span" hideFrom="md">
+                        {t("workspace-draft-short")}
+                      </Text>
+                    )}
                   </Tabs.Trigger>
                 ))}
               </Tabs.List>
@@ -867,6 +911,9 @@ export function ConceptNoteWorkspace({
                       hasTemplate={hasApplicationTemplate}
                       setupSaving={setupState.isLoading}
                       setupError={setupState.isError}
+                      onOpenGap={openDraftGap}
+                      reviewPending={Boolean(reviewProposal)}
+                      onViewChanges={viewChanges}
                       onOpenExport={() => setExportOpen(true)}
                       onSyncSetup={() =>
                         void saveSetup({
@@ -969,18 +1016,7 @@ export function ConceptNoteWorkspace({
                     focusFindingKey={reviewFindingKey}
                     highlightStartDrafting={highlightStartDrafting}
                     nextStep={nextStepBanner}
-                    onAnswerGap={(chapter, row) => {
-                      const point = workspace?.points.find(
-                        (item) => item.key === row.gap?.field_key,
-                      );
-                      if (point) openPoint(point.key);
-                      else
-                        setGapAnswer({
-                          chapterId: chapter.chapter_id,
-                          chapterTitle: chapter.title,
-                          row,
-                        });
-                    }}
+                    onAnswerGap={openDraftGap}
                     applicationContextFailed={applicationContextFailed}
                     applicationContextLoading={applicationContextLoading}
                     isDraftRunning={isDraftRunning}

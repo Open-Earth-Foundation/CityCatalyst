@@ -348,11 +348,15 @@ export function DraftDocumentPanel({
                 .includes(editFocus.changeId!),
           ) ?? chapter)
         : chapter;
+      const scrollTarget =
+        target.querySelector<HTMLElement>(
+          '[data-testid="concept-note-edit-diff"]',
+        ) ?? target;
       selectChapter(editFocus.chapterId);
       preview.scrollTo({
         top: Math.max(
           0,
-          target.getBoundingClientRect().top -
+          scrollTarget.getBoundingClientRect().top -
             preview.getBoundingClientRect().top +
             preview.scrollTop -
             48,
@@ -674,7 +678,7 @@ export function DraftDocumentPanel({
                       {chapter.position + 1} · {chapter.title}
                     </Text>
                     <HStack mt={1} gap={2} flexWrap="wrap">
-                      <Text fontSize="10px" color="content.tertiary">
+                      <Text fontSize="body.sm" color="content.tertiary">
                         {t(
                           getChapterDisplayStatus(chapter) === "needs_review"
                             ? "chapter-status-needs-review"
@@ -699,18 +703,12 @@ export function DraftDocumentPanel({
                       )}
                     </HStack>
                   </Box>
-                  <ChapterGapsPanel
-                    chapter={chapter}
-                    lng={lng}
-                    rows={gapRows.get(chapter.chapter_id)!}
-                    onAnswerGap={onAnswerGap}
-                  />
                   {chapter.status !== "ready" &&
                     Boolean(chapter.body_markdown) &&
                     chapter.open_gap_count === 0 && (
                       <Button
-                        size="xs"
-                        variant="solid"
+                        size="sm"
+                        variant="outline"
                         loading={isConfirmingChapter}
                         onClick={() => void onConfirmChapter(chapter)}
                       >
@@ -724,6 +722,14 @@ export function DraftDocumentPanel({
                       </Button>
                     )}
                 </Flex>
+                <Box mb={3}>
+                  <ChapterGapsPanel
+                    chapter={chapter}
+                    lng={lng}
+                    rows={gapRows.get(chapter.chapter_id)!}
+                    onAnswerGap={onAnswerGap}
+                  />
+                </Box>
                 {focus.focusedFinding?.chapterId === chapter.chapter_id && (
                   <Box
                     ref={focusedFindingElement}

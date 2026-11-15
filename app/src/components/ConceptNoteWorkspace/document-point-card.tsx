@@ -32,7 +32,7 @@ import {
 } from "./point-state";
 
 export function DocumentPointCard({
-  point,
+  point: incomingPoint,
   runId,
   lng,
   onAddSource,
@@ -53,8 +53,15 @@ export function DocumentPointCard({
   const { t } = useTranslation(lng, "concept-notes");
   const [command, commandState] =
     documentWorkspaceApi.useCommandDocumentPointMutation({
-      fixedCacheKey: `document-point:${runId}:${point.key}`,
+      fixedCacheKey: `document-point:${runId}:${incomingPoint.key}`,
     });
+  const commandPoint = commandState.data?.point;
+  const point =
+    commandPoint?.point_id === incomingPoint.point_id &&
+    commandPoint.key === incomingPoint.key &&
+    commandPoint.version > incomingPoint.version
+      ? commandPoint
+      : incomingPoint;
   const [ask, questionState] =
     documentWorkspaceApi.useGetDocumentPointQuestionMutation();
   const [answer, setAnswer] = useState(pointValueText(point.value));
@@ -92,9 +99,19 @@ export function DocumentPointCard({
           idempotency_key: crypto.randomUUID(),
         },
       }).unwrap();
-      if (result.point) setAnswer(pointValueText(result.point.value));
+      if (
+        [
+          "answer",
+          "correct",
+          "confirm_candidate",
+          "assume",
+          "not_applicable",
+        ].includes(payload.command)
+      ) {
+        if (result.point) setAnswer(pointValueText(result.point.value));
+        setEditing(false);
+      }
       setSaved(true);
-      setEditing(false);
     } catch {
       /* RTK mutation state renders the actionable error. */
     }

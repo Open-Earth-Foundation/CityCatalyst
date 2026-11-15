@@ -9,6 +9,7 @@ import {
 
 const loadUpload = jest.fn<() => Promise<Record<string, unknown>>>();
 const loadDocument = jest.fn<() => Promise<Record<string, unknown>>>();
+const markDocumentReady = jest.fn<() => Promise<void>>();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const normalizeStatus =
   jest.fn<(job: Record<string, unknown>) => Record<string, unknown>>();
@@ -18,6 +19,7 @@ jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
 }));
 jest.unstable_mockModule("@/backend/ingest/cnb-path-b", () => ({
   loadConceptNoteUploadDocument: loadDocument,
+  markConceptNoteDocumentMarkdownReady: markDocumentReady,
 }));
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   getConceptNotePdfOcrJob: getJob,
@@ -33,6 +35,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  markDocumentReady.mockResolvedValue(undefined);
   loadDocument.mockResolvedValue({
     documentId: "pool-document",
     visibility: "city",
@@ -109,5 +112,56 @@ describe("loadConceptNoteUploadStatus", () => {
       }),
     );
     expect(result).not.toHaveProperty("retryKind");
+    expect(markDocumentReady).not.toHaveBeenCalled();
   });
+
+  it("repairs historical PDF catalog readiness only after successful artifact delivery", async () => {
+    loadUpload.mockResolvedValueOnce({
+      uploadId: "upload-1",
+      runId: "run-1",
+      status: "ready",
+      filename: "plan.pdf",
+    });
+    getJob.mockResolvedValue({
+      status: "succeeded",
+      deliveryStatus: "delivered",
+      resultS3Key: "pdf-ocr/results/immutable.md",
+      resultSha256: "a".repeat(64),
+    });
+    normalizeStatus.mockReturnValue({ status: "ready", stage: "complete" });
+    await loadConceptNoteUploadStatus({
+      runId: "run-1",
+      uploadId: "upload-1",
+      userId: "owner-user",
+    });
+    expect(markDocumentReady).toHaveBeenCalledWith("upload-1");
+  });
+
+  it.each(["pending", "failed"])(
+    "does not mark a PDF catalog ready while delivery is %s",
+    async (deliveryStatus) => {
+      loadUpload.mockResolvedValueOnce({
+        uploadId: "upload-1",
+        runId: "run-1",
+        status: "ready",
+        filename: "plan.pdf",
+      });
+      getJob.mockResolvedValue({
+        status: "succeeded",
+        deliveryStatus,
+        resultS3Key: "pdf-ocr/results/immutable.md",
+        resultSha256: "a".repeat(64),
+      });
+      normalizeStatus.mockReturnValue({
+        status: "processing",
+        stage: "delivery",
+      });
+      await loadConceptNoteUploadStatus({
+        runId: "run-1",
+        uploadId: "upload-1",
+        userId: "owner-user",
+      });
+      expect(markDocumentReady).not.toHaveBeenCalled();
+    },
+  );
 });

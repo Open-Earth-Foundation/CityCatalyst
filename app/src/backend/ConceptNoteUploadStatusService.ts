@@ -1,5 +1,8 @@
 import { loadConceptNoteUpload } from "@/backend/ConceptNoteUploadService";
-import { loadConceptNoteUploadDocument } from "@/backend/ingest/cnb-path-b";
+import {
+  loadConceptNoteUploadDocument,
+  markConceptNoteDocumentMarkdownReady,
+} from "@/backend/ingest/cnb-path-b";
 import {
   getConceptNotePdfOcrJob,
   normalizeConceptNotePdfOcrStatus,
@@ -19,6 +22,17 @@ export async function loadConceptNoteUploadStatus(args: {
   const job = await getConceptNotePdfOcrJob(args.uploadId);
   const workerState = job ? normalizeConceptNotePdfOcrStatus(job) : null;
   const completed = upload.status === "ready";
+  if (
+    completed &&
+    upload.filename?.toLowerCase().endsWith(".pdf") &&
+    job?.status === "succeeded" &&
+    job.deliveryStatus === "delivered" &&
+    job.resultS3Key &&
+    job.resultSha256
+  ) {
+    // Repair catalog projections created before OCR readiness was propagated.
+    await markConceptNoteDocumentMarkdownReady(args.uploadId);
+  }
   const status = completed ? "ready" : workerState?.status || upload.status;
   const stage = completed ? "complete" : workerState?.stage || "upload";
   const canRetry = status === "failed" && Boolean(workerState?.canRetry);

@@ -26,9 +26,7 @@ export interface RegisterCnbUploadInput {
 }
 
 export interface CnbCatalogRegistry {
-  findCatalog(
-    uploadId: string,
-  ): Promise<{
+  findCatalog(uploadId: string): Promise<{
     id: string;
     documentId?: string;
     userId?: string | null;
@@ -235,6 +233,7 @@ export async function markConceptNoteDocumentMarkdownReady(
     document.bytesPurgedAt
   )
     return;
+  if (document.markdownReady && association?.markdownReady) return;
   await pool.markMarkdownReady(document.id);
   const where: Record<string, unknown> = {
     sourceType: CNB_UPLOAD_SOURCE_TYPE,

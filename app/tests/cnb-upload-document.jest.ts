@@ -90,6 +90,18 @@ describe("CNB upload sharing metadata and verified OCR readiness", () => {
       }),
     );
   });
+  it("keeps already-ready metadata polling free of writes", async () => {
+    document.markdownReady = true;
+    catalog.markdownReady = true;
+    findAssociation.mockResolvedValue({
+      labels: { documentId },
+      markdownReady: true,
+    });
+    await helpers.markConceptNoteDocumentMarkdownReady("upload");
+    expect(updateDocument).not.toHaveBeenCalled();
+    expect(updateCatalog).not.toHaveBeenCalled();
+    expect(updateAssociations).not.toHaveBeenCalled();
+  });
   it.each([
     ["withdrawn", { withdrawnAt: new Date() }, {}],
     ["purged", { bytesPurgedAt: new Date() }, {}],

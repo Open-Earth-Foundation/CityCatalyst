@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, StrictFloat, StrictInt
 
 
 class Contract(BaseModel):
@@ -63,6 +63,7 @@ class DocumentWorkspacePoint(Contract):
         "not_applicable",
     ]
     value: JsonValue = None
+    accepted_reason: str | None = None
     chapter_refs: list[str]
     candidates: list[DocumentPointCandidate]
     task: DocumentPointTask | None = None
@@ -227,7 +228,9 @@ class DocumentExportResponse(Contract):
 class ExtractedPointCandidate(Contract):
     """Model output uses local quote positions; source identities stay in code."""
 
-    value: JsonValue
+    # Recursive JsonValue becomes an untyped {} definition in the SDK's strict
+    # response schema. The supported point types require only these scalars.
+    value: str | StrictInt | StrictFloat
     evidence_positions: list[int] = Field(min_length=1, max_length=20)
 
 

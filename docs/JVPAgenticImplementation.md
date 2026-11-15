@@ -117,9 +117,16 @@ artifacts): a fresh PostgreSQL 17 schema through the full migration chain,
 English screenshots and a verified working DOCX. PostgreSQL checks use actual
 services and locks with controlled reader/drafter output. Browser checks run
 actual CC components against controlled API fixtures. They do **not** establish
-live provider quality or full authenticated CC-to-CA/storage integration, and
-this branch has not been deployed. Live CNB benchmark evaluation remains a
-release check before a PR.
+live provider quality or full authenticated CC-to-CA/storage integration.
+
+The branch was subsequently deployed to the existing Mikrus test stack. Live
+authenticated verification uses explicitly fictional project materials and real
+storage, OCR, Clima, candidate extraction, drafting and export services. The
+current full-flow audit and recorder artifacts are kept separately in
+`output/browser-demo-recording/jvp-full-flow-20261115/`; its report distinguishes
+preflight failures, fixes, deployed checks and the final continuous recording.
+Do not treat the earlier controlled browser scenarios as live-provider evidence.
+Live CNB benchmark evaluation remains a release check before a PR.
 
 Final focused regression batches passed 189 Jest tests and 189 pytest tests.
 Next route types were regenerated and TypeScript `tsc --noEmit` passed. Changed

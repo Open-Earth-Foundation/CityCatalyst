@@ -9,6 +9,8 @@ from typing import Any
 
 from agents import Agent, OpenAIChatCompletionsModel, RunConfig, Runner
 from agents.exceptions import MaxTurnsExceeded
+from openai import AsyncOpenAI
+
 from app.config.settings import Settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
@@ -31,7 +33,6 @@ from app.utils.concept_note_context import (
     omit_context_identifiers,
 )
 from app.utils.prompt_budget import count_prompt_tokens
-from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -443,7 +444,8 @@ def build_planner_input(
         "recent_messages": [
             {"role": message["role"], "content": message["content"]}
             for message in (recent_messages or [])
-            if message.get("role") in {"user", "assistant"}
+            # Assistant history can quote retired sources without authority.
+            if message.get("role") == "user"
             and isinstance(message.get("content"), str)
             and message["content"].strip()
         ][-3:],

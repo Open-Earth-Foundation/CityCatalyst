@@ -18,7 +18,7 @@ def document_source_validator(
     token = extract_bearer_token(authorization)
 
     async def validate(sources: list[dict[str, Any]]) -> None:
-        """Check only current selected/accepted sources, retaining audit history."""
+        """Check the requested accepted-value and exported-revision source vector."""
         if not sources:
             return
         client = CityCatalystClient()

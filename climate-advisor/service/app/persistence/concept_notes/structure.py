@@ -9,6 +9,9 @@ import re
 from datetime import UTC, datetime
 from uuid import UUID
 
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.cnb.concept_note_structure import (
     StructureChapter,
     StructureSaveRequest,
@@ -21,13 +24,17 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterValidation,
 )
 from app.persistence.concept_notes.edits import EditOperationError
+from app.persistence.concept_notes.source_provenance import (
+    PROVENANCE_KEY,
+    merge_provenance,
+    revision_provenance,
+    sources_provenance,
+)
 from app.persistence.concept_notes.workspace_queries import _latest_revision
 from app.persistence.concept_notes.workspace_snapshots import (
     WorkspaceChapterSnapshot,
     _snapshot_chapters,
 )
-from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +113,7 @@ async def save_structure(
     request: StructureSaveRequest,
     *,
     proposal_id: UUID | None = None,
+    source_provenance: dict | None = None,
 ) -> StructureState:
     """Apply under the caller's run lock; rollback every change on any failure."""
     # Lock chapter records before checking the content-aware optimistic fingerprint.
@@ -194,6 +202,12 @@ async def save_structure(
                         change_type="edit_text",
                         body_markdown=body,
                         patch_summary={
+                            PROVENANCE_KEY: merge_provenance(
+                                revision_provenance(latest),
+                                source_provenance
+                                if source_provenance is not None
+                                else sources_provenance([]),
+                            ),
                             "structure": True,
                             "previous_title": chapter.title,
                         },

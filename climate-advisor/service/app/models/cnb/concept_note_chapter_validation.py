@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar, Literal, Self
+from typing import Annotated, Any, ClassVar, Literal, Self
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -82,6 +82,27 @@ class ChapterValidationEvidenceLink(BaseModel):
     quote_or_summary: str | None = Field(default=None, max_length=4_000)
 
 
+class ChapterValidationPoint(BaseModel):
+    """Model-safe canonical state; database identities and versions stay private."""
+
+    model_config = ConfigDict(extra="forbid")
+    key: str
+    label: str
+    description: str = ""
+    chapter_refs: list[str] = Field(default_factory=list)
+    required: bool = True
+    answer_type: str = "text"
+    choices: list[str] = Field(default_factory=list)
+    minimum: float | None = None
+    maximum: float | None = None
+    unit: str | None = None
+    allow_assumption: bool = False
+    allow_not_applicable: bool = False
+    status: Literal["answered", "assumption", "not_applicable", "missing"]
+    value: Any = None
+    reason: str | None = None
+
+
 class ChapterValidationRequest(BaseModel):
     """Repository-facing immutable inputs for one explicit validation attempt."""
 
@@ -93,6 +114,7 @@ class ChapterValidationRequest(BaseModel):
     template: ChapterValidationTemplate | None = None
     open_gaps: list[ChapterValidationGap] = Field(default_factory=list)
     evidence_links: list[ChapterValidationEvidenceLink] = Field(default_factory=list)
+    canonical_points: list[ChapterValidationPoint] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_chapter_identity(self) -> Self:

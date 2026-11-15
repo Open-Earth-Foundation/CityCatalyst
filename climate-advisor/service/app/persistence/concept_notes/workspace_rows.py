@@ -32,6 +32,10 @@ from app.models.db.document_workspace import (
     DocumentUpdateJob,
     DocumentWorkspaceState,
 )
+from app.persistence.concept_notes.source_provenance import (
+    PROVENANCE_KEY,
+    revision_provenance,
+)
 
 
 async def _run_gaps(
@@ -113,7 +117,10 @@ async def _copy_chapters(
                 author_type="system",
                 change_type="draft",
                 body_markdown=latest.body_markdown,
-                patch_summary={"duplicated_from_revision_id": str(latest.revision_id)},
+                patch_summary={
+                    "duplicated_from_revision_id": str(latest.revision_id),
+                    PROVENANCE_KEY: revision_provenance(latest),
+                },
             )
             session.add(destination_revision)
             await session.flush()

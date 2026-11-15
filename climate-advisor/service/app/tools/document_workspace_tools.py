@@ -151,6 +151,7 @@ def _point_context(point: DocumentWorkspacePoint) -> dict[str, Any]:
         "required": point.required,
         "status": point.status,
         "value": point.value,
+        "accepted_reason": point.accepted_reason,
         "freshness": point.freshness,
         "candidates": [
             {

@@ -7,6 +7,11 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy import DefaultClause, event, select, text, update
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
+
 from app.db.cnb import CnbBase
 from app.models.db.cnb_reference import CnbFundedProject, CnbFunder  # noqa: F401
 from app.models.db.cnb_workspace import (
@@ -17,18 +22,140 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
-from app.persistence.concept_notes.edits import append_revision
+from app.models.db.document_workspace import (
+    DocumentPoint,
+    DocumentPointRevision,
+    DocumentWorkspaceState,
+)
 from app.persistence.concept_notes import workspace_queries
+from app.persistence.concept_notes.edits import append_revision
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationInputChangedError,
 )
-from sqlalchemy import DefaultClause, event, select, text, update
-from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
 
 TEMPLATE_FINGERPRINT = "template-v1"
+
+
+@pytest.mark.parametrize("change", ["value", "reason", "policy", "retire"])
+async def test_point_change_invalidates_validation_without_changing_prose(
+    change,
+) -> None:
+    """Snapshot, post-provider fencing and chapter projection share canonical state."""
+    run_id, point_id = uuid4(), uuid4()
+    definition = {
+        "key": "award_date",
+        "label": "Award date",
+        "answer_type": "date",
+        "chapter_refs": ["summary"],
+        "required": True,
+        "allow_assumption": True,
+    }
+    accepted = {
+        "value": "2027-04-05",
+        "disposition": "assumption",
+        "task": {"note": "Board planning assumption"},
+    }
+    async with _validation_repository() as (repository, sessions):
+        target_id, _ = await _seed_document(sessions, run_id=run_id)
+        async with sessions() as session, session.begin():
+            session.add(DocumentWorkspaceState(run_id=run_id))
+            await session.flush()
+            session.add(
+                DocumentPoint(
+                    point_id=point_id,
+                    run_id=run_id,
+                    semantic_key="award_date",
+                    definition=definition,
+                    version=3,
+                    accepted_version=2,
+                    disposition="assumption",
+                    value="2027-04-05",
+                    task={"note": "Later workflow note"},
+                )
+            )
+            await session.flush()
+            session.add(
+                DocumentPointRevision(
+                    point_id=point_id,
+                    version=2,
+                    actor_user_id="owner",
+                    operation="assume",
+                    snapshot=accepted,
+                )
+            )
+        original = await repository.load_validation_context(
+            run_id=run_id,
+            chapter_id=target_id,
+            template_fingerprint=TEMPLATE_FINGERPRINT,
+        )
+        assert original.canonical_points[0]["reason"] == "Board planning assumption"
+        assert original.canonical_points[0]["value"] == "2027-04-05"
+        await repository.upsert_validation(
+            run_id=run_id,
+            chapter_id=target_id,
+            template_fingerprint=TEMPLATE_FINGERPRINT,
+            expected_fingerprint=original.fingerprint,
+            status="ready",
+            findings=[],
+        )
+        before = next(
+            chapter
+            for chapter in await repository.list_chapters(
+                run_id=run_id, template_fingerprint=TEMPLATE_FINGERPRINT
+            )
+            if chapter.chapter_id == target_id
+        )
+        assert before.validation and not before.validation.is_stale
+        async with sessions() as session, session.begin():
+            point = await session.get(DocumentPoint, point_id)
+            point.version += 1
+            if change in {"value", "reason"}:
+                point.accepted_version = point.version
+                replacement = (
+                    {**accepted, "value": "2028-05-06"}
+                    if change == "value"
+                    else {**accepted, "task": {"note": "Revised planning basis"}}
+                )
+                point.value = replacement["value"]
+                session.add(
+                    DocumentPointRevision(
+                        point_id=point_id,
+                        version=point.version,
+                        actor_user_id="owner",
+                        operation="assume",
+                        snapshot=replacement,
+                    )
+                )
+            elif change == "policy":
+                point.definition = {**definition, "allow_assumption": False}
+            else:
+                point.active = False
+        current = await repository.load_validation_context(
+            run_id=run_id,
+            chapter_id=target_id,
+            template_fingerprint=TEMPLATE_FINGERPRINT,
+        )
+        assert current.target.revision_id == original.target.revision_id
+        assert current.fingerprint != original.fingerprint
+        with pytest.raises(WorkspaceValidationInputChangedError):
+            await repository.upsert_validation(
+                run_id=run_id,
+                chapter_id=target_id,
+                template_fingerprint=TEMPLATE_FINGERPRINT,
+                expected_fingerprint=original.fingerprint,
+                status="ready",
+                findings=[],
+            )
+        after = next(
+            chapter
+            for chapter in await repository.list_chapters(
+                run_id=run_id, template_fingerprint=TEMPLATE_FINGERPRINT
+            )
+            if chapter.chapter_id == target_id
+        )
+        assert after.validation and after.validation.is_stale
+        assert after.status == "needs_review"
 
 
 @pytest.mark.asyncio

@@ -9,6 +9,10 @@ from typing import Any, Literal, cast
 from uuid import UUID
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
+from openai import AsyncOpenAI
+from pydantic import BaseModel, TypeAdapter, ValidationError
+
+from app.config import Settings, get_settings
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
@@ -19,6 +23,7 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationFinding,
     ChapterValidationFindingDraft,
     ChapterValidationGap,
+    ChapterValidationPoint,
     ChapterValidationProfile,
     ChapterValidationRequest,
     ChapterValidationTemplate,
@@ -30,10 +35,6 @@ from app.persistence.concept_notes.workspace_validation import (
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.cnb_information_markers import information_needed_markers
 from app.utils.prompt_budget import count_prompt_tokens
-from openai import AsyncOpenAI
-from pydantic import BaseModel, TypeAdapter, ValidationError
-
-from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -116,19 +117,30 @@ def select_chapter_validation_profile(
 
     selected: ChapterValidationProfile | None = None
     assigned_fields: set[str] = set()
-    field_list = TypeAdapter(list[str])
+    field_list = TypeAdapter(list[str | dict[str, Any]])
     for chapter, schema in zip(chapters, template.chapter_schema, strict=True):
         try:
-            fields = field_list.validate_python(
+            declarations = field_list.validate_python(
                 schema.get("required_fields", []), strict=True
             )
         except ValidationError as exc:
             raise ChapterValidationTemplateError(
                 "Invalid chapter required_fields"
             ) from exc
-        if any(not field.strip() for field in fields):
-            raise ChapterValidationTemplateError("Empty chapter required field")
-        assigned_fields.update(fields)
+        fields = []
+        for declaration in declarations:
+            field = (
+                declaration if isinstance(declaration, dict) else {"label": declaration}
+            )
+            label = field.get("label") or field.get("name") or field.get("key")
+            if not isinstance(label, str) or not label.strip():
+                raise ChapterValidationTemplateError("Empty chapter required field")
+            assigned_fields.add(label.strip())
+            for key in ("key", "semantic_key"):
+                if isinstance(field.get(key), str):
+                    assigned_fields.add(field[key])
+            if field.get("required", True):
+                fields.append(label.strip())
         if chapter.chapter_ref == target.template_section_id:
             selected = ChapterValidationProfile(
                 name=template.name,
@@ -207,6 +219,16 @@ def build_chapter_validation_request(
             )
             for evidence in context.evidence_links
         ],
+        canonical_points=[
+            ChapterValidationPoint.model_validate(
+                {
+                    key: value
+                    for key, value in point.items()
+                    if key in ChapterValidationPoint.model_fields
+                }
+            )
+            for point in context.canonical_points
+        ],
     )
 
 
@@ -245,12 +267,16 @@ class ConceptNoteChapterValidationService:
             {"position": position, **evidence.model_dump(mode="json")}
             for position, evidence in enumerate(request.evidence_links, start=1)
         ]
+        canonical_payload = [
+            point.model_dump(mode="json") for point in request.canonical_points
+        ]
         completeness_payload = {
             "document": {
                 "validation_profile": profile.model_dump(mode="json")
                 if profile
                 else None,
                 "evidence_links": evidence_payload,
+                "canonical_points": canonical_payload,
             },
             "output": target_payload,
             "open_gaps": [gap.model_dump(mode="json") for gap in request.open_gaps],
@@ -286,6 +312,7 @@ class ConceptNoteChapterValidationService:
             target_payload=target_payload,
             completeness_payload=completeness_payload,
             evidence_payload=evidence_payload,
+            canonical_payload=canonical_payload,
             consistency_prompt=prompts.get_prompt("cnb_chapter_validation_consistency"),
             answered_gaps_prompt=prompts.get_prompt(
                 "cnb_chapter_validation_answered_gaps"
@@ -325,6 +352,7 @@ class ConceptNoteChapterValidationService:
         target_payload: dict[str, Any],
         completeness_payload: dict[str, Any],
         evidence_payload: list[dict[str, Any]],
+        canonical_payload: list[dict[str, Any]],
         consistency_prompt: str,
         answered_gaps_prompt: str,
         model_name: str,
@@ -394,6 +422,7 @@ class ConceptNoteChapterValidationService:
                     "document": {
                         "chapters": chapters,
                         "evidence_links": evidence_payload,
+                        "canonical_points": canonical_payload,
                     },
                     "output": target_payload,
                     "completeness_result": completeness_result,
@@ -403,7 +432,10 @@ class ConceptNoteChapterValidationService:
 
             def answered_gaps_payload(chapters: list[dict[str, Any]]) -> dict[str, Any]:
                 return {
-                    "document": {"chapters": chapters},
+                    "document": {
+                        "chapters": chapters,
+                        "canonical_points": canonical_payload,
+                    },
                     "output": target_payload,
                     "open_gaps": open_gaps,
                 }
@@ -411,8 +443,12 @@ class ConceptNoteChapterValidationService:
             passes: list[tuple[ValidationPass, str, Callable[..., dict[str, Any]]]] = [
                 ("consistency", consistency_prompt, consistency_payload)
             ]
-            if open_gaps or information_needed_markers(target_payload.get("body_markdown") or ""):
-                passes.append(("answered_gaps", answered_gaps_prompt, answered_gaps_payload))
+            if open_gaps or information_needed_markers(
+                target_payload.get("body_markdown") or ""
+            ):
+                passes.append(
+                    ("answered_gaps", answered_gaps_prompt, answered_gaps_payload)
+                )
 
             outputs: list[ChapterConsistencyValidationOutput] = []
             batch_count = 0
@@ -489,7 +525,9 @@ class ConceptNoteChapterValidationService:
         result = await self._runner.run(
             agent,
             json.dumps(payload, ensure_ascii=False),
-            run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+            run_config=RunConfig(
+                tracing_disabled=True, trace_include_sensitive_data=False
+            ),
         )
         return cast(
             ValidationPassOutput,

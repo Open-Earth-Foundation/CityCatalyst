@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.db import Base
 from app.models.cnb.context_bundle import SelectedSource
 from app.models.db.concept_note import (
@@ -33,7 +35,6 @@ from app.services.cnb.context_bundle import (
 )
 from app.services.cnb.source_analysis import SourcePage
 from app.services.cnb.source_impact_review import RevalidationSource
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 DIGEST = "d" * 64
 
@@ -95,7 +96,7 @@ async def add_ready_upload(session_factory: async_sessionmaker, run_id: UUID) ->
                 markdown_sha256=DIGEST,
                 page_count=1,
                 ingest_status="ready",
-                received_at=datetime.now(timezone.utc),
+                received_at=datetime.now(UTC),
             )
         )
     return upload_id
@@ -182,6 +183,7 @@ async def test_failed_attempts_stay_retryable_until_the_budget_runs_out(
             session_factory=session_factory,
             run_id=run_id,
             upload_ids=claim.upload_ids,
+            claim_token=claim.claim_token,
             succeeded=False,
         )
         job = await load_job(session_factory, run_id)
@@ -232,6 +234,7 @@ async def test_success_keeps_uploads_queued_while_the_job_ran(
         session_factory=session_factory,
         run_id=run_id,
         upload_ids=claim.upload_ids,
+        claim_token=claim.claim_token,
         succeeded=True,
     )
     assert await load_job(session_factory, run_id) == {
@@ -248,6 +251,92 @@ async def test_success_keeps_uploads_queued_while_the_job_ran(
         session_factory=session_factory,
         run_id=run_id,
         upload_ids=claim.upload_ids,
+        claim_token=claim.claim_token,
+        succeeded=True,
+    )
+    assert await load_job(session_factory, run_id) is None
+
+
+async def test_same_source_requeued_for_new_template_gets_a_second_worker_pass(
+    session_factory,
+) -> None:
+    """A template change during extraction cannot consume the new source request."""
+    run_id, upload_id = await queue_bundle_with_pending_job(session_factory)
+    reading_started = asyncio.Event()
+    finish_reading = asyncio.Event()
+    template_revision = 1
+    read_revisions = []
+
+    async def extract(**_: object) -> bool:
+        read_revisions.append(template_revision)
+        reading_started.set()
+        await finish_reading.wait()
+        return True
+
+    service = ContextBundleService(session_factory, revalidate_fn=extract)
+    preloaded = {
+        upload_id: RevalidationSource(source=selected(upload_id), units=verified_page())
+    }
+    first_pass = asyncio.create_task(
+        service.run_source_revalidation(run_id=run_id, preloaded=preloaded)
+    )
+    await asyncio.wait_for(reading_started.wait(), timeout=3)
+    try:
+        template_revision = 2
+        async with session_factory() as session, session.begin():
+            run = await session.get(ConceptNoteRun, run_id)
+            run.context_summary = queue_source_revalidation(
+                run.context_summary, [upload_id]
+            )
+    finally:
+        finish_reading.set()
+    assert await first_pass is True
+    assert await load_job(session_factory, run_id) == {
+        "status": "pending",
+        "upload_ids": [str(upload_id)],
+        "attempts": 0,
+    }
+    assert await service.run_source_revalidation(run_id=run_id, preloaded=preloaded)
+    assert read_revisions == [1, 2]
+    assert await load_job(session_factory, run_id) is None
+
+
+async def test_expired_worker_cannot_finish_a_new_claim(session_factory) -> None:
+    """Lease recovery must prevent the old worker from clearing newer work."""
+    upload_id = uuid4()
+    run_id = await add_run(
+        session_factory,
+        context_summary=queue_source_revalidation({}, [upload_id]),
+    )
+    old = await claim_source_revalidation(
+        session_factory=session_factory, run_id=run_id
+    )
+    assert old is not None
+    assert (
+        await recover_stale_source_revalidations(
+            session_factory=session_factory,
+            stale_before=datetime.now(UTC) + timedelta(seconds=1),
+        )
+        == 1
+    )
+    current = await claim_source_revalidation(
+        session_factory=session_factory, run_id=run_id
+    )
+    assert current is not None and current.claim_token != old.claim_token
+    await finish_source_revalidation(
+        session_factory=session_factory,
+        run_id=run_id,
+        upload_ids=old.upload_ids,
+        claim_token=old.claim_token,
+        succeeded=True,
+    )
+    job = await load_job(session_factory, run_id)
+    assert job["status"] == "running" and job["claim_token"] == current.claim_token
+    await finish_source_revalidation(
+        session_factory=session_factory,
+        run_id=run_id,
+        upload_ids=current.upload_ids,
+        claim_token=current.claim_token,
         succeeded=True,
     )
     assert await load_job(session_factory, run_id) is None
@@ -255,7 +344,7 @@ async def test_success_keeps_uploads_queued_while_the_job_ran(
 
 async def test_stale_running_jobs_become_pending_again(session_factory) -> None:
     """A lease abandoned by a crashed worker is released after its cutoff."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def running(started_at: datetime) -> dict:
         return {
@@ -402,7 +491,7 @@ async def test_reconciler_schedules_every_pending_job(
 
     scheduled = await resume_source_revalidations(
         session_factory=session_factory,
-        stale_before=datetime.now(timezone.utc) - timedelta(hours=1),
+        stale_before=datetime.now(UTC) - timedelta(hours=1),
     )
     for _ in range(20):
         if await load_job(session_factory, run_id) is None:

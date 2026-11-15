@@ -398,6 +398,10 @@ template/chapter scoped. Candidates retain verified quotes and immutable source
 identities and require human confirmation. Conflicting new evidence preserves an
 accepted value while reopening the confirmation work. Structured extraction uses
 the configured source reader and restores evidence positions in code.
+Candidate values use an explicit string/integer/number model schema, matching
+the supported point types and the provider's strict structured-output contract.
+The scoped Clima UI guide describes the same five tabs and distinguishes point
+acceptance, prose review, working export and server-gated final export.
 
 The isolated CNB database stores setup snapshots, points, candidates, immutable
 point revisions, evidence needs, chapter dependencies, idempotent operations,
@@ -407,6 +411,29 @@ point vectors and chapter revisions fence the result. Free text gets a revision;
 manual/Ready text gets an existing edit proposal. Proposal acceptance marks the
 dependent version current through the reconciler. Failures retain the accepted
 answer and expose retryable freshness separately.
+Point vectors include the requirements of the target chapters. A different point
+changing a shared target requeues the original chapter set, while unrelated
+chapter work keeps its valid result or review proposal. Canonical gap keys use the
+same bounded character contract as point keys and are retained without renaming.
+
+`persistence/concept_notes/source_provenance.py` owns the versioned source vector
+stored inside each revision's existing `patch_summary`. Generation freezes source
+identities before stripping IDs from model input and before awaiting the model.
+The vector conservatively inherits every current/previous body supplied to that
+call; edit planning additionally inherits confirmed bodies and prior proposals.
+Proposal provenance stays in server-owned scope JSON and is excluded from the
+public `EditScope`. Manual edits, proposal application, structure renames and
+working-copy duplication retain base authority. Old assistant messages are excluded
+from edit model inputs instead of being treated as fresh source evidence.
+
+Export validates the union of exact latest-revision vectors and current accepted
+point-candidate sources. Unknown legacy metadata cannot become a source-free
+complete vector through editing or copying. It blocks final output with a new-note
+recovery message; working export retains caveats. Final source-backed output also
+requires a bound current-source validator, even for internal service callers.
+Ready confirmation and final eligibility share a current-validation check against
+the full template, canonical answer/policy and chapter fingerprint. A changed point
+cannot reuse an older Ready validation merely because prose is unchanged.
 
 `routes/document_workspace.py` obtains the existing canonical owner-authorized
 run before each operation. Screen and scoped chat tools use the same point
@@ -416,6 +443,20 @@ fingerprint detects chapter/review changes between viewed and exported workspace
 revisions. Empty/unrecognized template requirements cannot authorize final output.
 The generic core prompt remains unchanged. Legacy resolved gaps are readable and
 never automatically become accepted point values.
+Accepted basis is projected as nullable `accepted_reason` from the immutable
+accepted point revision, using the same helper for draft and validation inputs.
+Mutable waiting-task notes remain workflow data and cannot rewrite that authority.
+
+Chapter validation captures canonical point policy and current accepted state
+on the server, including the immutable accepted reason for assumptions and
+not-applicable answers. Completeness, consistency and answered-gap passes receive
+only the model-safe values, labels and policy; point database identifiers and
+versions remain in the internal freshness fingerprint. Rich chapter requirement
+objects use their declared labels and keys, preserving optional/required policy.
+Changing accepted values, reasons or point policy invalidates an earlier result
+even when chapter prose has not yet changed. Accepted human facts need no
+duplicate PDF citation; exceptions remain explicit and do not approve text or
+clear persisted gaps automatically.
 
 The CC adapter reuses IngestDocumentPool/NativeInputCatalog through target-run
 associations. `document_workspace/source_access.py` binds the authenticated
@@ -427,7 +468,15 @@ from retaining authority after the shared source is withdrawn or superseded.
 
 For point-backed runs, the existing durable source-revalidation job extracts
 candidates instead of silently incorporating unconfirmed values into prose.
+Explicit setup sync also retries current ready, matching-digest sources when the
+template is unchanged. `document_workspace/source_sync.py` queues this work after
+the CNB setup commit and starts the existing retained worker. Replaying the setup
+operation can repair a subsequent CA queue failure; completed reading checkpoints
+and accepted facts are retained.
 Explicit template selection also queues existing sources for the new requirements.
+If selection occurs during source reading, requeued IDs survive completion of the
+current pass, including when the same upload is requested again. Each worker claim
+has a token so an expired worker cannot finish a replacement worker's lease.
 For legacy runs without point setup, a review-only LLM call selects the chapters
 it affects, and each of their open gaps is asked of the verified source text.
 Only those chapters are redrafted with the cited answers, editing the current

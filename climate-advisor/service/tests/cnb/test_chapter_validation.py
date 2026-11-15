@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 from uuid import UUID
 
 import pytest
+
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import ChapterValidationGap
 from app.persistence.concept_notes.workspace_validation import (
@@ -113,6 +114,172 @@ async def test_runs_completeness_before_document_consistency() -> None:
     assert decision.status == "ready"
 
 
+async def test_canonical_user_date_and_reasoned_assumption_reach_every_validation_pass() -> (
+    None
+):
+    """Accepted inputs absent from PDFs retain their authority and explicit policy."""
+    import json
+
+    target = WorkspaceValidationChapter(
+        chapter_id=TARGET_ID,
+        chapter_ref="chapter-1",
+        title="Application",
+        position=0,
+        status="draft",
+        required=True,
+        body_markdown="Award date: 2027-04-05. Assumption: budget EUR 250000, based on the board's planning ceiling.",
+        revision_id=UUID("55555555-5555-4555-8555-555555555555"),
+        revision_number=1,
+    )
+    points = [
+        {
+            "key": "award_date",
+            "label": "Award date",
+            "chapter_refs": ["chapter-1"],
+            "answer_type": "date",
+            "required": True,
+            "status": "answered",
+            "value": "2027-04-05",
+            "reason": None,
+            "point_id": "private-point-id",
+            "version": 12,
+            "accepted_version": 11,
+        },
+        {
+            "key": "budget",
+            "label": "Budget",
+            "chapter_refs": ["chapter-1"],
+            "answer_type": "number",
+            "required": True,
+            "allow_assumption": True,
+            "minimum": 1,
+            "unit": "EUR",
+            "status": "assumption",
+            "value": 250000,
+            "reason": "Board planning ceiling",
+            "point_id": "another-private-point",
+            "version": 8,
+            "accepted_version": 8,
+        },
+        {
+            "key": "optional_annex",
+            "label": "Optional annex",
+            "chapter_refs": ["chapter-1"],
+            "required": False,
+            "allow_not_applicable": False,
+            "status": "not_applicable",
+            "value": None,
+            "reason": "This application does not request an annex.",
+        },
+    ]
+    context = WorkspaceValidationContext(
+        target=target,
+        chapters=[target],
+        open_gaps=[
+            WorkspaceValidationGap(
+                gap_id=UUID("66666666-6666-4666-8666-666666666666"),
+                field_key="legacy",
+                severity="warning",
+                reason="Confirm legacy detail",
+            )
+        ],
+        evidence_links=[],
+        fingerprint="b" * 64,
+        canonical_points=points,
+    )
+    template = ApplicationContextTemplate(
+        id=UUID("88888888-8888-4888-8888-888888888888"),
+        name="Typed template",
+        chapter_schema=[
+            {
+                "chapter_ref": "chapter-1",
+                "required_fields": [
+                    {
+                        "semantic_key": "award_date",
+                        "label": "Award date",
+                        "answer_type": "date",
+                    },
+                    {
+                        "key": "budget",
+                        "name": "Budget",
+                        "answer_type": "number",
+                        "allow_assumption": True,
+                    },
+                    {
+                        "key": "optional_annex",
+                        "label": "Optional annex",
+                        "required": False,
+                    },
+                ],
+            },
+        ],
+        required_fields=["award_date", "Budget"],
+    )
+    built = build_chapter_validation_request(context, template=template)
+    calls = []
+
+    async def run_pass(phase, payload):
+        calls.append(phase)
+        canonical = payload["document"]["canonical_points"]
+        assert canonical[0]["value"] == "2027-04-05"
+        assert canonical[0]["answer_type"] == "date"
+        assert canonical[1]["value"] == 250000
+        assert canonical[1]["status"] == "assumption"
+        assert canonical[1]["reason"] == "Board planning ceiling"
+        assert canonical[1]["required"] and canonical[1]["allow_assumption"]
+        assert (
+            canonical[2]["status"] == "not_applicable" and not canonical[2]["required"]
+        )
+        encoded = json.dumps(canonical)
+        assert "private-point" not in encoded
+        assert "accepted_version" not in encoded and '"version"' not in encoded
+        if phase == "completeness":
+            assert payload["document"]["validation_profile"]["required_fields"] == [
+                "Award date",
+                "Budget",
+            ]
+            return completeness()
+        return consistency()
+
+    decision = await service(run_pass).validate(built)
+    assert calls == ["completeness", "consistency", "answered_gaps"]
+    # An existing open gap remains a review item; canonical inputs never auto-approve it.
+    assert decision.status == "needs_review"
+
+
+async def test_canonical_acceptance_does_not_suppress_real_validation_findings() -> (
+    None
+):
+    from app.models.cnb.concept_note_chapter_validation import ChapterValidationPoint
+
+    validation_request = request(evidence=False)
+    validation_request.canonical_points = [
+        ChapterValidationPoint(
+            key="budget",
+            label="Budget",
+            chapter_refs=["chapter-1"],
+            required=True,
+            status="assumption",
+            value=250000,
+            allow_assumption=False,
+            reason=None,
+        )
+    ]
+    result = completeness(
+        findings=[
+            finding(
+                "template_constraint",
+                "Required assumption lacks permission and a reason",
+                "Provide a confirmed answer or permitted reasoned exception",
+            )
+        ]
+    )
+    decision = await service(static_passes(completeness_result=result)).validate(
+        validation_request
+    )
+    assert decision.status == "incomplete"
+
+
 @pytest.mark.parametrize("asks", ["open_gap", "marker"])
 async def test_open_questions_are_checked_against_the_other_chapters(asks: str) -> None:
     calls: list[tuple[str, dict[str, Any]]] = []
@@ -136,7 +303,9 @@ async def test_open_questions_are_checked_against_the_other_chapters(asks: str) 
         request(
             chapters=[
                 chapter(TARGET_ID, position=0, body=body),
-                chapter(OTHER_ID, position=1, body="The project runs from 2026 to 2028."),
+                chapter(
+                    OTHER_ID, position=1, body="The project runs from 2026 to 2028."
+                ),
             ],
             gaps=(
                 [ChapterValidationGap(severity="critical", reason=question)]
@@ -146,7 +315,11 @@ async def test_open_questions_are_checked_against_the_other_chapters(asks: str) 
         )
     )
 
-    assert [phase for phase, _ in calls] == ["completeness", "consistency", "answered_gaps"]
+    assert [phase for phase, _ in calls] == [
+        "completeness",
+        "consistency",
+        "answered_gaps",
+    ]
     payload = calls[2][1]
     assert set(payload) == {"document", "output", "open_gaps"}
     assert [c["chapter_id"] for c in payload["document"]["chapters"]] == [str(OTHER_ID)]

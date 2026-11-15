@@ -3,6 +3,9 @@ from __future__ import annotations
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy import DefaultClause, delete, select, text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
@@ -18,6 +21,11 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.models.db.document_workspace import (
+    DocumentPoint,
+    DocumentPointRevision,
+    DocumentWorkspaceState,
+)
 from app.persistence.concept_notes.edits import (
     append_revision,
     resolve_filled_information_gaps,
@@ -26,8 +34,6 @@ from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
 )
-from sqlalchemy import DefaultClause, delete, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RUN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 CHAPTER_ID = UUID("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
@@ -42,6 +48,9 @@ async def workspace(tmp_path):
     )
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     tables = [
+        DocumentWorkspaceState.__table__,
+        DocumentPoint.__table__,
+        DocumentPointRevision.__table__,
         ConceptNoteChapter.__table__,
         ConceptNoteChapterRevision.__table__,
         ConceptNoteGap.__table__,

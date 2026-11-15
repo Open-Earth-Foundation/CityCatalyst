@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 from agents.tool import ToolContext
+
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_ui_labels import (
     UI_LABEL_KEYS,
@@ -140,6 +141,10 @@ def test_labels_match_frontend_translations(ui_locale):
     if not path.exists():
         pytest.skip("Frontend locales are not available in this checkout")
     translations = json.loads(path.read_text(encoding="utf-8"))
+    fallback = json.loads(
+        (FRONTEND_LOCALES / "en" / "concept-notes.json").read_text(encoding="utf-8")
+    )
+    translations = {**fallback, **translations}
     expected = {
         name: (
             translations[key].replace("{{format}}", value)
@@ -149,6 +154,16 @@ def test_labels_match_frontend_translations(ui_locale):
         for name, (key, value) in UI_LABEL_KEYS.items()
     }
     assert UI_LABELS[ui_locale] == expected
+
+
+async def test_help_describes_information_first_and_distinct_export_gates():
+    guide = (await invoke_ready("en"))["guide"]
+    assert '"Overview"' in guide and '"To do"' in guide
+    assert '"Export working draft"' in guide
+    assert '"Export final document"' in guide
+    assert "document_workspace_points" in guide
+    assert "server enforces" in guide
+    assert "local preview changes; not saved" not in guide
 
 
 async def test_help_lists_uploaded_files_with_the_newest_flagged():

@@ -12,6 +12,11 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
+from openai import AsyncOpenAI
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -40,6 +45,7 @@ from app.persistence.concept_notes.context_bundle import (
     source_text_status,
 )
 from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
+from app.persistence.concept_notes.source_provenance import generation_provenance
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
@@ -74,11 +80,6 @@ from app.utils.conversation_observability import (
     finish_workflow_trace,
 )
 from app.utils.prompt_budget import count_prompt_tokens
-from openai import AsyncOpenAI
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
@@ -269,6 +270,7 @@ class ConceptNoteChapterDraftService:
                     run_context["document_workspace_points"] = await point_context(
                         DocumentWorkspaceService(self._cnb_session_factory), run_id
                     )
+                    source_provenance = generation_provenance(run_context, chapters, current=current)
                     generated = await self._generate_chapter(
                         build_chapter_input(
                             application_context=application_context,
@@ -293,6 +295,7 @@ class ConceptNoteChapterDraftService:
                             point["key"]: point["version"]
                             for point in run_context["document_workspace_points"]
                         },
+                        source_provenance=source_provenance,
                     )
                     refreshed = await self._workspace.list_chapters(
                         run_id=run_id,
@@ -322,12 +325,16 @@ class ConceptNoteChapterDraftService:
     ) -> ConceptNoteDraftResponse:
         """Mark one exact, gap-free chapter revision Ready after user review."""
         try:
+            template_fingerprint = await self._application_context.load_template_fingerprint_for_run(run)
+            if template_fingerprint is None:
+                raise WorkspaceConflictError("The selected application template is unavailable.")
             await self._workspace.confirm_chapter(
                 run_id=run.run_id,
                 chapter_id=chapter_id,
                 expected_revision=payload.expected_revision,
                 idempotency_key=payload.idempotency_key,
                 user_id=run.user_id,
+                template_fingerprint=template_fingerprint,
             )
         except WorkspaceConflictError as exc:
             raise ChapterDraftingError(str(exc)) from exc
@@ -394,6 +401,7 @@ class ConceptNoteChapterDraftService:
             # Each proposal appends a revision and leaves confirmed text immutable.
             for current in impacted:
                 answered = [gap for gap in current.gaps if gap.gap_id in evidence]
+                source_provenance = generation_provenance(run_context, chapters, current=current, extra_sources=[{"upload_id": str(item.source.upload_id), "sha256": item.source.sha256} for item in new_sources])
                 generated = await self._generate_chapter(
                     build_chapter_input(
                         application_context=application_context,
@@ -414,6 +422,7 @@ class ConceptNoteChapterDraftService:
                         generated=generated,
                         source_refs=source_refs,
                         answered_gap_ids={gap.gap_id for gap in answered},
+                        source_provenance=source_provenance,
                     )
                 except WorkspaceConflictError as exc:
                     logger.warning(
@@ -1052,7 +1061,7 @@ def build_chapter_input(
             ],
             "new_source_evidence": new_source_evidence or [],
             "canonical_points": [
-                {key: value for key, value in point.items() if key not in {"version", "chapter_refs"}}
+                {key: value for key, value in point.items() if key not in {"version", "chapter_refs", "source_provenance"}}
                 for point in run_context.get("document_workspace_points", [])
                 if current.chapter_ref in point.get("chapter_refs", [])
             ],

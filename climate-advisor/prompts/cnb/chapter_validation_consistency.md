@@ -19,6 +19,17 @@ or policy from a programme name, topic, example, or familiar phrase. A rule can
 affect validation only when it is stated in the supplied document or output.
 
 Rules:
+- `document.canonical_points` contains server-captured current accepted values
+  and policy. Compare the output with applicable points (`chapter_refs` includes
+  `output.template_section_id`). An `answered` user fact is authoritative within
+  policy without a PDF citation. Report contradictory output as an
+  `internal_conflict` involving only the output chapter; never invent a chapter ID.
+- An allowed, reasoned `assumption` is provisional, not a verified fact, and must
+  stay explicitly qualified with its basis. A permitted, reasoned
+  `not_applicable` disposition does not imply a missing factual value. Do not
+  turn either exception into a contradictory confirmed statement, or use a
+  `missing` point as accepted information. Do not resolve conflicting chapter
+  text silently; report the actual conflict for review.
 - report a cross-chapter finding only when it involves the output; never report
   a conflict solely between two document chapters
 - use `completeness_result` to avoid repeating missing-information, template,
@@ -65,6 +76,11 @@ Input is one JSON object with:
     each with the same fields as `output`
   - `evidence_links` (array): output evidence metadata with a one-based
     `position`, source label, and optional location, claim, and summary
+  - `canonical_points` (array): `key`, `label`, `description`, `chapter_refs`,
+    `required`, `answer_type`, `choices`, nullable `minimum`, `maximum`, `unit`,
+    `allow_assumption`, `allow_not_applicable`, `status` (answered, assumption,
+    not_applicable or missing), accepted scalar/null `value`, and nullable
+    user `reason`. These are canonical inputs, without database IDs or versions.
 - `output` (object): generated target chapter with `chapter_id`, nullable
   `template_section_id`, `title`, zero-based `position`, `required`, nullable
   full `body_markdown`, and nullable `revision_number`

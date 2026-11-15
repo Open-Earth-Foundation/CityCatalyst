@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from app.models.db.concept_note import ConceptNoteRun
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.models.db.concept_note import ConceptNoteRun
 
 logger = logging.getLogger(__name__)
 
@@ -31,18 +32,25 @@ class SourceRevalidationClaim:
     run_id: UUID
     user_id: str
     upload_ids: list[UUID]
+    claim_token: str
 
 
 def queue_source_revalidation(summary: Any, upload_ids: list[UUID]) -> dict[str, Any]:
     """Return a run summary whose revalidation job also covers ``upload_ids``.
 
-    A running job keeps its lease and picks up the added uploads when it
-    finishes; any other job becomes pending with a fresh attempt budget.
+    A running job keeps its lease. Requeued IDs, including the same ID after a
+    template change, receive a fresh pass after the current claim finishes.
     """
     job = _revalidation_job(summary)
     queued = _merge_upload_ids(job.get("upload_ids"), upload_ids)
     if job.get("status") == "running":
-        next_job = {**job, "upload_ids": queued}
+        next_job = {
+            **job,
+            "upload_ids": queued,
+            "requeued_upload_ids": _merge_upload_ids(
+                job.get("requeued_upload_ids"), upload_ids
+            ),
+        }
     else:
         next_job = {"status": "pending", "upload_ids": queued, "attempts": 0}
     return _replace_revalidation_job(summary, next_job)
@@ -61,19 +69,23 @@ async def claim_source_revalidation(
         job = _revalidation_job(run.context_summary)
         if job.get("status") != "pending" or not job.get("upload_ids"):
             return None
+        claim_token = str(uuid4())
         run.context_summary = _replace_revalidation_job(
             run.context_summary,
             {
                 **job,
                 "status": "running",
                 "attempts": int(job.get("attempts") or 0) + 1,
-                "started_at": datetime.now(timezone.utc).isoformat(),
+                "started_at": datetime.now(UTC).isoformat(),
+                "claim_token": claim_token,
+                "requeued_upload_ids": [],
             },
         )
         return SourceRevalidationClaim(
             run_id=run_id,
             user_id=run.user_id,
             upload_ids=[UUID(value) for value in job["upload_ids"]],
+            claim_token=claim_token,
         )
 
 
@@ -82,23 +94,27 @@ async def finish_source_revalidation(
     session_factory: async_sessionmaker[AsyncSession],
     run_id: UUID,
     upload_ids: list[UUID],
+    claim_token: str,
     succeeded: bool,
 ) -> None:
-    """Release a lease: clear finished uploads, or keep the job retryable."""
+    """Release only this claim, retaining source IDs requeued during its work."""
     async with session_factory() as session, session.begin():
         run = await session.get(ConceptNoteRun, run_id, with_for_update=True)
         if run is None:
             return
         job = _revalidation_job(run.context_summary)
-        if job.get("status") != "running":
+        if job.get("status") != "running" or job.get("claim_token") != claim_token:
             return
         attempts = int(job.get("attempts") or 0)
 
-        # Success removes the processed uploads; uploads queued meanwhile stay.
+        requeued = set(job.get("requeued_upload_ids", []))
+        # A newer template request for the same source must survive this pass.
         if succeeded:
             processed = {str(value) for value in upload_ids}
             remaining = [
-                value for value in job.get("upload_ids", []) if value not in processed
+                value
+                for value in job.get("upload_ids", [])
+                if value not in processed or value in requeued
             ]
             next_job = (
                 {"status": "pending", "upload_ids": remaining, "attempts": 0}
@@ -107,11 +123,11 @@ async def finish_source_revalidation(
             )
         # Failure keeps every upload and retries until attempts run out.
         else:
-            exhausted = attempts >= SOURCE_REVALIDATION_MAX_ATTEMPTS
+            exhausted = not requeued and attempts >= SOURCE_REVALIDATION_MAX_ATTEMPTS
             next_job = {
                 "status": "failed" if exhausted else "pending",
                 "upload_ids": job.get("upload_ids", []),
-                "attempts": attempts,
+                "attempts": 0 if requeued else attempts,
             }
             if exhausted:
                 logger.warning(
@@ -217,4 +233,4 @@ def _parse_timestamp(value: Any) -> datetime | None:
         parsed = datetime.fromisoformat(value)
     except ValueError:
         return None
-    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)

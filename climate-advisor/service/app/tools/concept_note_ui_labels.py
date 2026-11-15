@@ -17,6 +17,11 @@ UI_LABEL_KEYS: dict[str, tuple[str, str | None]] = {
     "draft_sections": ("draft-sections", None),
     "structure_tab": ("structure-tab", None),
     "context_tab": ("context-tab", None),
+    "overview_tab": ("workspace-overview-tab", None),
+    "todo_tab": ("workspace-todo-tab", None),
+    "working_export": ("workspace-export-working", None),
+    "final_export": ("workspace-export-final", None),
+    "existing_source": ("workspace-use-existing-source", None),
     "funder_profile": ("funder-profile", None),
     "funding_change": ("funding-view-change", None),
     "funding_browse": ("funding-browse", None),
@@ -173,6 +178,18 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "export_pdf": "Exportar PDF",
         "export_docx": "Exportar DOCX",
     },
+}
+
+_WORKSPACE_LABELS = {
+    "overview_tab": "Overview",
+    "todo_tab": "To do",
+    "working_export": "Export working draft",
+    "final_export": "Export final document",
+    "existing_source": "Use an existing city document",
+}
+# Mirror the frontend's English fallback for controls awaiting translation.
+UI_LABELS = {
+    locale: {**_WORKSPACE_LABELS, **labels} for locale, labels in UI_LABELS.items()
 }
 
 GUIDE_TEMPLATE_PATH = Path(__file__).with_name("concept_note_ui_guide.txt")

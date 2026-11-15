@@ -3,17 +3,26 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from hashlib import sha256
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
+    ConceptNoteChapterValidation,
     ConceptNoteEvidenceLink,
     ConceptNoteGap,
+)
+from app.models.db.document_workspace import (
+    DocumentPoint,
+    DocumentPointRevision,
+    DocumentWorkspaceState,
 )
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
@@ -21,7 +30,7 @@ from app.persistence.concept_notes.workspace_queries import (
     _gaps_by_chapter,
     _latest_revisions,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.utils.document_point_values import accepted_point_reason
 
 
 @dataclass(frozen=True)
@@ -84,10 +93,81 @@ class WorkspaceValidationContext:
     open_gaps: list[WorkspaceValidationGap]
     evidence_links: list[WorkspaceValidationEvidence]
     fingerprint: str
+    canonical_points: list[dict[str, Any]] = field(default_factory=list)
 
 
 class WorkspaceValidationInputChangedError(Exception):
     """The persisted validation input changed after LLM evaluation started."""
+
+
+async def has_current_ready_validation(
+    session: AsyncSession,
+    *,
+    run_id: UUID,
+    chapter_id: UUID,
+    template_fingerprint: str,
+    lock: bool = False,
+) -> bool:
+    """Require validation of the exact current prose, canonical answers and policy."""
+    context = await _load_validation_context(
+        session,
+        run_id=run_id,
+        chapter_id=chapter_id,
+        template_fingerprint=template_fingerprint,
+        lock=lock,
+    )
+    stored = await session.scalar(
+        select(ConceptNoteChapterValidation).where(
+            ConceptNoteChapterValidation.chapter_id == chapter_id
+        )
+    )
+    return bool(
+        stored is not None
+        and stored.status == "ready"
+        and stored.validated_revision_id == context.target.revision_id
+        and stored.validation_input_fingerprint == context.fingerprint
+    )
+
+
+async def _load_validation_points(
+    session: AsyncSession, run_id: UUID
+) -> list[dict[str, Any]]:
+    """Capture current policy and immutable accepted reasons for freshness checks."""
+    rows = (
+        await session.execute(
+            select(DocumentPoint, DocumentPointRevision.snapshot)
+            .outerjoin(
+                DocumentPointRevision,
+                and_(
+                    DocumentPointRevision.point_id == DocumentPoint.point_id,
+                    DocumentPointRevision.version == DocumentPoint.accepted_version,
+                ),
+            )
+            .where(DocumentPoint.run_id == run_id, DocumentPoint.active.is_(True))
+            .order_by(DocumentPoint.semantic_key)
+        )
+    ).all()
+    result = []
+    for point, accepted in rows:
+        snapshot = accepted or {}
+        accepted_state = point.accepted_version > 0 and point.disposition in {
+            "answered",
+            "assumption",
+            "not_applicable",
+        }
+        result.append(
+            {
+                **point.definition,
+                "key": point.semantic_key,
+                "point_id": str(point.point_id),
+                "version": point.version,
+                "accepted_version": point.accepted_version,
+                "status": point.disposition if accepted_state else "missing",
+                "value": snapshot.get("value", point.value) if accepted_state else None,
+                "reason": accepted_point_reason(snapshot) if accepted_state else None,
+            }
+        )
+    return result
 
 
 def _validation_chapters(
@@ -155,6 +235,7 @@ def calculate_validation_input_fingerprint(
     open_gaps: list[WorkspaceValidationGap],
     evidence_links: list[WorkspaceValidationEvidence],
     template_fingerprint: str | None,
+    canonical_points: list[dict[str, Any]] | None = None,
 ) -> str:
     """Hash all document, target, and template inputs supplied to validation."""
     payload = {
@@ -198,6 +279,9 @@ def calculate_validation_input_fingerprint(
         },
         "template_fingerprint": template_fingerprint,
     }
+    # Legacy runs without point setup keep their existing validation identity.
+    if canonical_points:
+        payload["canonical_points"] = canonical_points
     canonical = json.dumps(
         payload,
         ensure_ascii=False,
@@ -216,6 +300,16 @@ async def _load_validation_context(
     lock: bool = False,
 ) -> WorkspaceValidationContext:
     """Build one validation input snapshot from the managed CNB database."""
+    # Match point writers' state-before-chapters order for the final race check.
+    if lock:
+        await session.scalar(
+            select(DocumentWorkspaceState)
+            .where(
+                DocumentWorkspaceState.run_id == run_id,
+            )
+            .with_for_update()
+        )
+    canonical_points = await _load_validation_points(session, run_id)
     # Load and optionally lock the whole active document for the final race check.
     chapters = await _active_chapters(session, run_id, lock=lock)
     target = next(
@@ -242,6 +336,7 @@ async def _load_validation_context(
         open_gaps=open_gaps,
         evidence_links=evidence_links,
         template_fingerprint=template_fingerprint,
+        canonical_points=canonical_points,
     )
     return WorkspaceValidationContext(
         target=target_snapshot,
@@ -249,4 +344,5 @@ async def _load_validation_context(
         open_gaps=open_gaps,
         evidence_links=evidence_links,
         fingerprint=fingerprint,
+        canonical_points=canonical_points,
     )

@@ -10,6 +10,18 @@ missing required information, application-template violations, unresolved
 content gaps, and evidence quality.
 
 Rules:
+- `document.canonical_points` is server-captured current user-accepted state,
+  not source-document text or model suggestions. Use points whose `chapter_refs`
+  include `output.template_section_id`. An `answered` value is authoritative
+  within its declared type, choices, bounds and required/exception policy; do
+  not demand that a user-entered date or decision also appear in a PDF.
+- An `assumption` is permitted only when `allow_assumption` is true or the point
+  is optional, and requires a nonempty `reason`. The output must identify it as
+  an assumption and retain its basis. Do not turn it into a verified fact.
+  `not_applicable` similarly requires permission (or an optional point) and a
+  reason; it does not require an invented value. Report policy violations or
+  omitted applicable accepted information as blocking; do not automatically
+  approve a chapter merely because its points are accepted. `missing` is not an answer.
 - evaluate the output against `document.validation_profile.chapter_schema`,
   `document.validation_profile.required_fields`, and its output format
 - the backend has already selected the exact chapter and its required fields;
@@ -61,6 +73,13 @@ Input is one JSON object with:
   - `evidence_links` (array): output evidence metadata with a one-based
     `position`, `selected_source_label`, and nullable `source_location`,
     `claim_ref`, and `quote_or_summary`
+  - `canonical_points` (array): current point inputs with `key`, `label`,
+    `description`, `chapter_refs` (string array), `required` (boolean),
+    `answer_type` (text, multiline, date, number or choice), `choices` (string
+    array), nullable `minimum`, `maximum`, and `unit`, `allow_assumption` and
+    `allow_not_applicable` (booleans), `status` (answered, assumption,
+    not_applicable or missing), `value` (accepted scalar or null), and nullable
+    `reason` (user's explicit basis). No database identifiers or versions are supplied.
 - `output` (object): generated chapter with `chapter_id`, nullable
   `template_section_id`, `title`, zero-based `position`, `required`, nullable
   full `body_markdown`, and nullable `revision_number`

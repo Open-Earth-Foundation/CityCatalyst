@@ -203,7 +203,13 @@ async def add_chapters(factory, *, protected=False):
                 author_type="user" if protected else "agent",
                 change_type="edit_text" if protected else "draft",
                 body_markdown=f"## {ref.title()}\n\nOld amount.",
-                patch_summary={},
+                patch_summary={
+                    "source_provenance": {
+                        "version": 1,
+                        "complete": True,
+                        "identities": [],
+                    }
+                },
             )
             session.add_all([chapter, revision])
             if protected:
@@ -238,6 +244,48 @@ def fake_draft_service(factory, *, fail=False, during_generation=None):
         _load_run_context=load_context,
         _generate_chapter=generate,
     )
+
+
+async def validate_and_confirm_chapters(factory, run_id):
+    """Persist controlled validation outcomes through the real fingerprint boundary."""
+    from app.services.cnb.application_context import (
+        calculate_application_template_fingerprint,
+    )
+
+    repository = ConceptNoteWorkspaceRepository(factory)
+    async with factory() as session:
+        state = await session.get(DocumentWorkspaceState, run_id)
+        snapshot = await session.scalar(
+            select(DocumentSetupSnapshot).where(
+                DocumentSetupSnapshot.run_id == run_id,
+                DocumentSetupSnapshot.version == state.setup_version,
+            )
+        )
+    template_fingerprint = calculate_application_template_fingerprint(
+        ApplicationContextTemplate.model_validate(snapshot.snapshot)
+    )
+    for chapter in await repository.list_chapters(run_id=run_id):
+        context = await repository.load_validation_context(
+            run_id=run_id,
+            chapter_id=chapter.chapter_id,
+            template_fingerprint=template_fingerprint,
+        )
+        await repository.upsert_validation(
+            run_id=run_id,
+            chapter_id=chapter.chapter_id,
+            template_fingerprint=template_fingerprint,
+            expected_fingerprint=context.fingerprint,
+            status="ready",
+            findings=[],
+        )
+        await repository.confirm_chapter(
+            run_id=run_id,
+            chapter_id=chapter.chapter_id,
+            expected_revision=chapter.revision_number,
+            idempotency_key=uuid4(),
+            user_id="owner",
+            template_fingerprint=template_fingerprint,
+        )
 
 
 async def test_requirements_materialize_before_prose_and_shared_keys_are_unique(
@@ -650,6 +698,61 @@ async def test_empty_requirements_never_report_ready_or_allow_final_export(works
     assert error.value.status_code == 409
 
 
+async def test_canonical_change_without_prose_rejects_old_validation_for_confirm_and_final(
+    workspace,
+):
+    from app.persistence.concept_notes.workspace import WorkspaceConflictError
+
+    service, run, factory = workspace
+    await add_chapters(factory)
+    await answer(service, run)
+    claim = await claim_job(service)
+    await run_update_job(
+        service,
+        *claim,
+        ca_session_factory=factory,
+        draft_service=fake_draft_service(factory),
+    )
+    await validate_and_confirm_chapters(factory, run.run_id)
+    assert (await service.load(run)).export_eligibility.final
+    await answer(service, run, 180000)
+    async with factory() as session, session.begin():
+        point = await session.scalar(
+            select(DocumentPoint).where(DocumentPoint.active.is_(True))
+        )
+        # Model output can be unchanged. Even when dependencies report applied,
+        # the old validation cannot authorize changed canonical facts or policy.
+        for dependency in await session.scalars(select(DocumentDependency)):
+            dependency.applied_version = point.accepted_version
+        chapter = await session.scalar(select(ConceptNoteChapter).limit(1))
+        latest = await session.scalar(
+            select(ConceptNoteChapterRevision)
+            .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
+            .order_by(ConceptNoteChapterRevision.revision_number.desc())
+            .limit(1)
+        )
+    with pytest.raises(WorkspaceConflictError, match="validation is missing or stale"):
+        await ConceptNoteWorkspaceRepository(factory).confirm_chapter(
+            run_id=run.run_id,
+            chapter_id=chapter.chapter_id,
+            expected_revision=latest.revision_number,
+            idempotency_key=uuid4(),
+            user_id="owner",
+        )
+    view = await service.load(run)
+    assert view.points[0].freshness == "current"
+    assert not view.export_eligibility.final
+    assert any(
+        "validation is missing or stale" in blocker
+        for blocker in view.export_eligibility.blockers
+    )
+    with pytest.raises(HTTPException) as error:
+        await service.export(
+            run, DocumentExportRequest(mode="final", expected_revision=view.revision)
+        )
+    assert error.value.status_code == 409
+
+
 async def test_final_export_uses_current_locked_revisions_and_detects_unseen_manual_edit(
     workspace,
 ):
@@ -663,16 +766,7 @@ async def test_final_export_uses_current_locked_revisions_and_detects_unseen_man
         ca_session_factory=factory,
         draft_service=fake_draft_service(factory),
     )
-    async with factory() as session, session.begin():
-        for chapter in await session.scalars(select(ConceptNoteChapter)):
-            latest = await session.scalar(
-                select(ConceptNoteChapterRevision)
-                .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
-                .order_by(ConceptNoteChapterRevision.revision_number.desc())
-                .limit(1)
-            )
-            chapter.status = "ready"
-            chapter.confirmed_revision_id = latest.revision_id
+    await validate_and_confirm_chapters(factory, run.run_id)
     view = await service.load(run)
     assert view.export_eligibility.final
     exported = await service.export(
@@ -894,3 +988,240 @@ async def test_reconciler_does_not_open_storage_when_cnb_is_unconfigured(monkeyp
     )
     await run_document_workspace_reconciler()
     factory.assert_not_called()
+
+
+@pytest.mark.parametrize("shared_finance_target", [False, True])
+async def test_answer_during_another_update_never_loses_other_chapter_targets(
+    workspace, shared_finance_target
+):
+    service, run, factory = workspace
+    await add_chapters(factory)
+    configured = ApplicationContextTemplate(
+        id=uuid4(),
+        name="Independent and shared targets",
+        chapter_schema=[
+            {
+                "chapter_ref": "summary",
+                "title": "Summary",
+                "required": True,
+                "required_fields": [
+                    {"key": "summary_amount", "label": "Summary amount"}
+                ],
+            },
+            {
+                "chapter_ref": "finance",
+                "title": "Finance",
+                "required": True,
+                "required_fields": [{"key": "finance_owner", "label": "Finance owner"}]
+                + (
+                    [{"key": "summary_amount", "label": "Summary amount"}]
+                    if shared_finance_target
+                    else []
+                ),
+            },
+        ],
+    )
+    await service.reconcile_template(run, configured)
+
+    async def accept(key, value):
+        point = next(
+            item for item in (await service.load(run)).points if item.key == key
+        )
+        await service.command(
+            run,
+            key,
+            DocumentPointCommand(
+                command="answer",
+                value=value,
+                expected_version=point.version,
+                idempotency_key=str(uuid4()),
+            ),
+            user_id="owner",
+        )
+
+    await accept("summary_amount", "125000")
+    first_claim = await claim_job(service)
+    changed = False
+
+    async def generate(payload):
+        nonlocal changed
+        if not changed:
+            changed = True
+            await accept("finance_owner", "Treasury")
+        values = {point["key"]: point["value"] for point in payload["canonical_points"]}
+        return ConceptNoteChapterDraftOutput(
+            body_markdown=f"## {payload['chapter']['title']}\n\n{json.dumps(values)}"
+        )
+
+    draft_service = fake_draft_service(factory)
+    draft_service._generate_chapter = generate
+    await run_update_job(
+        service, *first_claim, ca_session_factory=factory, draft_service=draft_service
+    )
+    async with factory() as session:
+        job = await session.get(DocumentUpdateJob, first_claim[0])
+        assert job.status == ("queued" if shared_finance_target else "complete")
+        if shared_finance_target:
+            # Neither stale result from the original two-chapter job was saved.
+            assert (
+                len(list(await session.scalars(select(ConceptNoteChapterRevision))))
+                == 2
+            )
+    for _ in range(3):
+        claim = await claim_job(service)
+        if claim is None:
+            break
+        await run_update_job(
+            service, *claim, ca_session_factory=factory, draft_service=draft_service
+        )
+    view = await service.load(run)
+    assert all(point.freshness == "current" for point in view.points)
+    assert await claim_job(service) is None
+    chapters = await draft_service._workspace.list_chapters(run_id=run.run_id)
+    assert (
+        "125000"
+        in next(
+            chapter for chapter in chapters if chapter.chapter_ref == "summary"
+        ).body_markdown
+    )
+    assert (
+        "Treasury"
+        in next(
+            chapter for chapter in chapters if chapter.chapter_ref == "finance"
+        ).body_markdown
+    )
+
+
+async def test_accepting_a_point_in_another_chapter_keeps_review_proposal_valid(
+    workspace, monkeypatch
+):
+    from app.models.cnb.concept_note_edits import EditApplyRequest
+    from app.persistence.concept_notes.edits import ConceptNoteEditRepository
+
+    service, run, factory = workspace
+    await add_chapters(factory, protected=True)
+    configured = ApplicationContextTemplate(
+        id=uuid4(),
+        name="Independent reviews",
+        chapter_schema=[
+            {
+                "chapter_ref": ref,
+                "title": ref.title(),
+                "required_fields": [{"key": f"{ref}_value", "label": f"{ref} value"}],
+            }
+            for ref in ("summary", "finance")
+        ],
+    )
+    await service.reconcile_template(run, configured)
+    for key in ("summary_value", "finance_value"):
+        point = next(
+            item for item in (await service.load(run)).points if item.key == key
+        )
+        await service.command(
+            run,
+            key,
+            DocumentPointCommand(
+                command="answer",
+                expected_version=point.version,
+                idempotency_key=str(uuid4()),
+                value="Confirmed",
+            ),
+            user_id="owner",
+        )
+        if key == "summary_value":
+            claim = await claim_job(service)
+            draft_service = fake_draft_service(factory)
+            await run_update_job(
+                service, *claim, ca_session_factory=factory, draft_service=draft_service
+            )
+    async with factory() as session:
+        [proposal] = list(await session.scalars(select(ConceptNoteEditProposal)))
+        assert proposal.status == "proposed"
+    monkeypatch.setattr("app.persistence.concept_notes.edits.lock_run", AsyncMock())
+    await ConceptNoteEditRepository(factory).apply(
+        run_id=run.run_id,
+        user_id="owner",
+        proposal_id=proposal.proposal_id,
+        request=EditApplyRequest(
+            idempotency_key=uuid4(),
+            expected_revisions={
+                UUID(key): value for key, value in proposal.base_revisions.items()
+            },
+        ),
+    )
+    await refresh_reviews(service)
+    summary = next(
+        point
+        for point in (await service.load(run)).points
+        if point.key == "summary_value"
+    )
+    assert summary.freshness == "current"
+
+
+async def test_fallback_canonical_key_survives_initial_draft_and_resolves_matching_gap(
+    workspace,
+):
+    from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
+    from app.persistence.concept_notes.workspace import normalize_template_chapters
+
+    service, run, factory = workspace
+    configured = ApplicationContextTemplate(
+        id=uuid4(),
+        name="Legacy string fields",
+        chapter_schema=[
+            {
+                "chapter_ref": "summary",
+                "title": "Summary",
+                "required": True,
+                "required_fields": ["Requested budget"],
+            }
+        ],
+    )
+    await service.reconcile_template(run, configured)
+    point = (await service.load(run)).points[0]
+    assert "." in point.key and str(configured.id) not in point.key
+    repository = ConceptNoteWorkspaceRepository(factory)
+    await repository.ensure_template_chapters(
+        run_id=run.run_id,
+        chapters=normalize_template_chapters(configured.chapter_schema),
+    )
+    [chapter] = await repository.list_chapters(run_id=run.run_id)
+    question = "What is the requested budget?"
+    gap = ConceptNoteDraftGapOutput(
+        field_key=point.key,
+        question=question,
+        why_asking="The funding section needs the budget.",
+        severity="critical",
+    )
+    assert await repository.save_generated_chapter(
+        chapter_id=chapter.chapter_id,
+        body_markdown=f"[Information needed: {question}]",
+        missing_information=[gap],
+        point_versions={point.key: 0},
+    )
+    await service.command(
+        run,
+        point.key,
+        DocumentPointCommand(
+            command="answer",
+            expected_version=point.version,
+            idempotency_key=str(uuid4()),
+            value="125000",
+        ),
+        user_id="owner",
+    )
+    claim = await claim_job(service)
+    await run_update_job(
+        service,
+        *claim,
+        ca_session_factory=factory,
+        draft_service=fake_draft_service(factory),
+    )
+    [updated] = await repository.list_chapters(run_id=run.run_id)
+    assert (
+        "125000" in updated.body_markdown
+        and "Information needed" not in updated.body_markdown
+    )
+    assert (
+        updated.gaps[0].field_key == point.key and updated.gaps[0].state == "resolved"
+    )

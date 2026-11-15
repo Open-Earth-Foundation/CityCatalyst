@@ -212,8 +212,11 @@ Return only one `ConceptNoteChapterDraftOutput` JSON object:
   headings for subsections. Do not emit a level-1 heading.
 - `missing_information` (array of objects): one item for every marker and no
   items without a marker. Every object has exactly:
-  - `field_key` (string): stable lowercase snake_case key for the missing fact;
-    reuse an `existing_open_gaps.field_key` when it represents the same fact
+  - `field_key` (string): reuse the exact `canonical_points.key` when the missing
+    fact belongs to a canonical point, including its dots or other separators.
+    Otherwise reuse an `existing_open_gaps.field_key` for the same fact, or create
+    a stable lowercase snake_case key. Keys are at most 255 characters and use
+    only letters, digits, underscores, dots, colons and hyphens; no URLs or IDs
   - `question` (string): the exact self-contained text inside the matching
     `[Information needed: ...]` marker
   - `why_asking` (string): concise, fact-specific explanation of the downstream

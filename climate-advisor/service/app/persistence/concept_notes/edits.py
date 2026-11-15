@@ -9,6 +9,11 @@ from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
+from pydantic import BaseModel
+from sqlalchemy import func, or_, select, text, update
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.models.cnb.concept_note_edits import (
     EditApplicationResult,
     EditApplyRequest,
@@ -31,16 +36,17 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.persistence.concept_notes.source_provenance import (
+    PROVENANCE_KEY,
+    merge_provenance,
+    revision_provenance,
+)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
     marker_replacement_text,
     removed_information_markers,
 )
-from pydantic import BaseModel
-from sqlalchemy import func, or_, select, text, update
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -126,6 +132,8 @@ class ConceptNoteEditRepository:
         error_code: str | None = None,
         notices: list[EditNotice] | None = None,
         structure: StructureProposal | None = None,
+        source_provenance: dict | None = None,
+        refines_proposal_id: UUID | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -137,6 +145,15 @@ class ConceptNoteEditRepository:
             row.base_revisions = {
                 str(key): value for key, value in base_revisions.items()
             }
+            provenance = merge_provenance(source_provenance)
+            if refines_proposal_id is not None:
+                prior = await require_proposal(
+                    session, run_id, user_id, refines_proposal_id, lock=False
+                )
+                provenance = merge_provenance(
+                    provenance, prior.scope.get(PROVENANCE_KEY)
+                )
+            row.scope = {**row.scope, PROVENANCE_KEY: provenance}
             row.changes = [change.model_dump(mode="json") for change in changes]
             row.notices = [notice.model_dump(mode="json") for notice in (notices or [])]
             row.structure = structure.model_dump(mode="json") if structure else None
@@ -326,6 +343,7 @@ class ConceptNoteEditRepository:
                         chapters=proposal.structure.after,
                     ),
                     proposal_id=proposal_id,
+                    source_provenance=merge_provenance(row.scope.get(PROVENANCE_KEY)),
                 )
                 row.status = "applied"
                 row.apply_key = request.idempotency_key
@@ -373,6 +391,9 @@ class ConceptNoteEditRepository:
                         and all(change.kind == "wording" for change in changes),
                         patch_summary={
                             "proposal_id": str(proposal_id),
+                            PROVENANCE_KEY: merge_provenance(
+                                row.scope.get(PROVENANCE_KEY)
+                            ),
                             "changes": [
                                 change.model_dump(mode="json") for change in changes
                             ],
@@ -576,7 +597,15 @@ async def append_revision(
         author_type="user",
         change_type="edit_text",
         body_markdown=body,
-        patch_summary=patch_summary,
+        patch_summary={
+            **patch_summary,
+            PROVENANCE_KEY: merge_provenance(
+                revision_provenance(latest),
+                patch_summary.get(
+                    PROVENANCE_KEY, {"version": 1, "complete": True, "identities": []}
+                ),
+            ),
+        },
     )
     session.add(revision)
     await session.flush()
@@ -744,7 +773,9 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "proposal_id": row.proposal_id,
             "run_id": row.run_id,
             "instruction": row.instruction,
-            "scope": row.scope,
+            "scope": {
+                key: value for key, value in row.scope.items() if key != PROVENANCE_KEY
+            },
             "status": row.status,
             "base_revisions": row.base_revisions,
             "changes": row.changes,

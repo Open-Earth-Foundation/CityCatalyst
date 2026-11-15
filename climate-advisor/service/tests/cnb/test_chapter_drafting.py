@@ -10,6 +10,9 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID, uuid4
 
 import pytest
+from fastapi import HTTPException, Response
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from app.db import Base
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextFunder,
@@ -32,8 +35,6 @@ from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace import WorkspaceConflictError
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.routes.concept_note_runs import start_concept_note_drafting
-from app.services.cnb.source_analysis import SourceAnalysisError
-from app.services.cnb.source_impact_review import RevalidationSource
 from app.services.cnb.chapter_drafting import (
     ChapterDraftingError,
     ChapterDraftingRunUnavailableError,
@@ -43,8 +44,8 @@ from app.services.cnb.chapter_drafting import (
     recover_stale_drafts,
     run_chapter_drafting_reconciler,
 )
-from fastapi import HTTPException, Response
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from app.services.cnb.source_analysis import SourceAnalysisError
+from app.services.cnb.source_impact_review import RevalidationSource
 
 RUN_ID = UUID("10000000-0000-4000-8000-000000000001")
 BUILD_ID = UUID("20000000-0000-4000-8000-000000000001")
@@ -73,6 +74,7 @@ class FakeWorkspace:
         body_markdown: str,
         missing_information: list[str],
         point_versions: dict[str, int] | None = None,
+        source_provenance: dict[str, Any] | None = None,
     ) -> bool:
         assert missing_information == []
         index = next(

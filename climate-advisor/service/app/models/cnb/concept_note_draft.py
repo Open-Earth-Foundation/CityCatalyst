@@ -6,10 +6,11 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationEvidenceLink,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 ConceptNoteDraftStatus = Literal["not_started", "running", "failed", "complete"]
 ConceptNoteChapterStatus = Literal[
@@ -52,7 +53,7 @@ class ConceptNoteDraftGapOutput(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    field_key: str = Field(pattern=r"^[a-z0-9]+(?:_[a-z0-9]+)*$", max_length=255)
+    field_key: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.:-]*$", max_length=255)
     question: str = Field(min_length=1, max_length=2_000)
     why_asking: str = Field(min_length=1, max_length=2_000)
     severity: ConceptNoteGapSeverity

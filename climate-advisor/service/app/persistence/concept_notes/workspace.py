@@ -8,6 +8,10 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
+from pydantic import ValidationError
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
@@ -25,6 +29,11 @@ from app.persistence.concept_notes.gaps import (
     _has_blocking_gaps,
     _reconcile_evidence_gaps,
     _restore_dropped_gaps,
+)
+from app.persistence.concept_notes.source_provenance import (
+    PROVENANCE_KEY,
+    merge_provenance,
+    revision_provenance,
 )
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
@@ -49,14 +58,12 @@ from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationInputChangedError,
     WorkspaceValidationSnapshot,
     _load_validation_context,
+    has_current_ready_validation,
 )
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
 )
-from pydantic import ValidationError
-from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 class WorkspaceConflictError(Exception):
@@ -142,6 +149,7 @@ class ConceptNoteWorkspaceRepository:
         body_markdown: str,
         missing_information: list[ConceptNoteDraftGapOutput],
         point_versions: dict[str, int] | None = None,
+        source_provenance: dict[str, Any] | None = None,
     ) -> bool:
         """Persist the first agent revision unless the chapter is already drafted."""
         async with self._session_factory() as session, session.begin():
@@ -191,9 +199,10 @@ class ConceptNoteWorkspaceRepository:
                     change_type="draft",
                     body_markdown=body_markdown,
                     patch_summary={
+                        PROVENANCE_KEY: merge_provenance(source_provenance),
                         "gap_field_keys": [
                             item.field_key for item in missing_information
-                        ]
+                        ],
                     },
                 )
             )
@@ -371,9 +380,58 @@ class ConceptNoteWorkspaceRepository:
         expected_revision: int,
         idempotency_key: UUID,
         user_id: str,
+        template_fingerprint: str | None = None,
     ) -> None:
         """Confirm one exact gap-free revision and append its review record."""
         async with self._session_factory() as session, session.begin():
+            from app.models.db.document_workspace import (
+                DocumentSetupSnapshot,
+                DocumentWorkspaceState,
+            )
+
+            state = await session.scalar(
+                select(DocumentWorkspaceState)
+                .where(DocumentWorkspaceState.run_id == run_id)
+                .with_for_update()
+            )
+            if (
+                template_fingerprint is None
+                and state is not None
+                and state.setup is not None
+            ):
+                snapshot = await session.scalar(
+                    select(DocumentSetupSnapshot).where(
+                        DocumentSetupSnapshot.run_id == run_id,
+                        DocumentSetupSnapshot.version == state.setup_version,
+                    )
+                )
+                if snapshot is None:
+                    raise WorkspaceConflictError(
+                        "Document setup is unavailable. Reload before review."
+                    )
+                from app.models.cnb.concept_note_application_context import (
+                    ApplicationContextTemplate,
+                )
+                from app.services.cnb.application_context import (
+                    calculate_application_template_fingerprint,
+                )
+
+                template_fingerprint = calculate_application_template_fingerprint(
+                    ApplicationContextTemplate.model_validate(snapshot.snapshot)
+                )
+            if (
+                template_fingerprint is not None
+                and not await has_current_ready_validation(
+                    session,
+                    run_id=run_id,
+                    chapter_id=chapter_id,
+                    template_fingerprint=template_fingerprint,
+                    lock=True,
+                )
+            ):
+                raise WorkspaceConflictError(
+                    "Chapter validation is missing or stale. Run Review & export again before confirming."
+                )
             chapter = await _require_chapter(session, chapter_id, lock=True)
             if chapter.run_id != run_id:
                 raise WorkspaceConflictError("Concept Note chapter is unavailable")
@@ -429,6 +487,7 @@ class ConceptNoteWorkspaceRepository:
         generated: ConceptNoteChapterDraftOutput,
         source_refs: list[str],
         answered_gap_ids: set[UUID],
+        source_provenance: dict[str, Any] | None = None,
     ) -> bool:
         """Persist a source-driven proposal while preserving confirmed content.
 
@@ -491,6 +550,9 @@ class ConceptNoteWorkspaceRepository:
                     body_markdown=generated.body_markdown,
                     patch_summary={
                         "source_revalidation": True,
+                        PROVENANCE_KEY: merge_provenance(
+                            revision_provenance(latest), source_provenance
+                        ),
                         "source_refs": source_refs,
                         "confirmed_revision_id": (
                             str(chapter.confirmed_revision_id)

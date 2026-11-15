@@ -75,15 +75,18 @@ def _add_definition(
     if not label:
         raise HTTPException(422, "Template requirement has no label")
     explicit_key = field.get("semantic_key") or field.get("key")
-    slug = re.sub(r"[^\w-]+", "_", label.casefold()).strip("_")[:100]
+    slug = re.sub(r"[^a-z0-9_-]+", "_", label.casefold()).strip("_")[:100] or "field"
     # Fallback keys remain deterministic without putting database UUIDs in
     # semantic keys that are sent to model prompts.
     template_scope = fingerprint(str(template.id))[:12]
+    key_scope = re.sub(r"[^A-Za-z0-9_.:-]+", "_", scope)
+    if key_scope != scope:
+        key_scope = f"{key_scope[:64]}_{fingerprint(scope)[:8]}"
     key = str(
         explicit_key
-        or f"template_{template_scope}.{scope}.{slug}_{fingerprint(label)[:8]}"
+        or f"template_{template_scope}.{key_scope}.{slug}_{fingerprint(label)[:8]}"
     )
-    if len(key) > 255 or "/" in key:
+    if len(key) > 255 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]*", key):
         raise HTTPException(422, "Template point key is invalid")
     answer_type = field.get("answer_type", "text")
     if answer_type not in {"text", "number", "date", "choice", "multiline"}:

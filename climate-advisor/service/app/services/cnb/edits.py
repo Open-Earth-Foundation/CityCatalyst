@@ -10,6 +10,9 @@ from time import perf_counter
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.config.settings import get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
@@ -23,6 +26,7 @@ from app.persistence.concept_notes.edits import (
     ConceptNoteEditRepository,
     EditOperationError,
 )
+from app.persistence.concept_notes.source_provenance import generation_provenance
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
@@ -34,8 +38,6 @@ from app.utils.conversation_observability import (
     finish_workflow_trace,
 )
 from app.utils.mlflow_logging import run_mlflow_io
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +175,9 @@ class ConceptNoteEditService:
         # Preserve the real base vector; proposals remain separate from the draft.
         base_revisions = {}
         prior = None
+        # Old assistant prose has no independent source authority. Preserve
+        # literal human history; ambiguous references must be clarified.
+        recent_messages = [message for message in (recent_messages or []) if message.get("role") == "user"]
         try:
             if request.refines_proposal_id:
                 prior = await self.repository.get(
@@ -193,6 +198,7 @@ class ConceptNoteEditService:
                     "This draft exceeds the automatic edit revision-vector limit.",
                     status_code=422,
                 )
+            source_provenance = generation_provenance(run_context or {}, chapters)
             plan = await self.planner.plan(
                 request,
                 chapters,
@@ -236,6 +242,8 @@ class ConceptNoteEditService:
                 changes=changes,
                 notices=plan.notices,
                 structure=plan.structure,
+                source_provenance=source_provenance,
+                refines_proposal_id=request.refines_proposal_id,
             )
             if (
                 prior is not None

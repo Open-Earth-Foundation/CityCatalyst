@@ -121,6 +121,8 @@ numeric bounds, `unit`, `required`, exception permissions and `evidence_need`.
 Only explicit equal keys share answers across chapters. String fields retain
 deterministic template/chapter scope. Templates without recognized requirements
 remain incomplete and cannot authorize a final export.
+Draft gaps retain the exact bounded canonical key, including its separators, so
+accepting that point can resolve the corresponding marker without a second answer.
 The aggregate string-field list on legacy/custom templates does not create a
 second point for an identical chapter requirement. Separate chapter requirements
 still stay separate unless they explicitly share a semantic key.
@@ -132,8 +134,20 @@ Current source lifecycle and Markdown identity are rechecked through Core when
 accepting source-backed candidates or exporting. Withdrawn or changed support
 blocks final export; working exports include a caveat. Reused-source artifact
 reads also recheck the original shared document rather than trusting its copy.
+Each chapter revision records server-owned `patch_summary.source_provenance`
+with contract version, completeness and immutable upload/digest identities from
+the actual generation inputs. Current/previous chapter bodies, confirmed text
+used for edits, accepted source-backed points and prior proposals retain their
+source authority through revisions, manual edits, structure changes and copies.
+Final export verifies the union for the exact exported revisions and accepted
+point sources, and fails closed when source verification is unavailable. Working
+export keeps explicit caveats. Legacy text without this metadata requires a new
+concept note drafted from current inputs before final export; history is not wiped.
 Required assumptions and not-applicable answers require setup permission and a
 reason. Parking records waiting work without satisfying a requirement.
+`accepted_reason` exposes the basis from the immutable accepted revision. Parking
+and resuming may change a task's workflow note, but cannot replace that basis in
+the point card, Clima guidance, drafting, validation or exception export caveats.
 
 Accepted values and leased update jobs commit together. The startup reconciler
 retries failed or interrupted jobs, updates free chapters, and creates normal
@@ -141,11 +155,24 @@ edit proposals for manual/Ready text. Before first prose exists, updates wait
 without spending retries or marking the accepted answer as failed. Initial
 drafting uses the accepted values directly. Final export checks coverage,
 conflicts, dependent freshness and required reviews against locked revisions.
+Confirmation and final export also require current Ready validation of the exact
+canonical answers, exception policy, template and chapter revision vector.
 Working exports include caveats; persisted exports retain exact chapter revision
 identities. Questions use `prompts.document_point_question`; extraction uses
 `prompts.document_point_extraction` and the configured `cnb_source_reader` model.
 The background worker stays inactive when CA or CNB storage is unconfigured;
 storage outages use the existing CNB reconcilers' retry backoff.
+**Sync document points** also requeues matching ready source uploads through the
+existing durable extraction job, including after its retry limit was exhausted.
+It works when setup is unchanged, preserves accepted answers and candidates, and
+keeps successful reading checkpoints. The normal worker starts immediately;
+the reconciler retains recovery if the process stops after queueing.
+Update version checks cover points sharing the target chapters. A changed shared
+input requeues all original targets; an unrelated chapter update does not discard
+work or invalidate its pending review proposal.
+Edit planning retains literal user history and server-provenanced prior proposals;
+old assistant messages are omitted as factual inputs. Ambiguous references to an
+omitted option require clarification.
 
 Run the focused offline suite with
 `uv run --directory service pytest tests/cnb/test_document_workspace.py`.

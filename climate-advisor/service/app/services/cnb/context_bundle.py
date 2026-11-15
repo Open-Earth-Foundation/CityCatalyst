@@ -11,6 +11,9 @@ from functools import partial
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.context_bundle import (
@@ -79,9 +82,6 @@ from app.utils.conversation_observability import (
     finish_workflow_trace,
 )
 from app.utils.prompt_budget import count_prompt_tokens
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
@@ -494,6 +494,7 @@ class ContextBundleService:
                     session_factory=self.session_factory,
                     run_id=run_id,
                     upload_ids=claim.upload_ids,
+                    claim_token=claim.claim_token,
                     succeeded=succeeded,
                 )
             except Exception:

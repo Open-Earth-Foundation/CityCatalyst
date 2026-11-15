@@ -33,7 +33,7 @@ import { requireClimateAdvisorIntegrationEnabled } from "@/backend/agentic/ghgi/
 import { requireClimateAdvisorServiceRequest } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
 
-export const NATIVE_INPUT_DISCOVERY_CAPABILITY = "native_input.discover";
+const NATIVE_INPUT_DISCOVERY_CAPABILITY = "native_input.discover";
 
 const discoveryRequestSchema = z
   .object({

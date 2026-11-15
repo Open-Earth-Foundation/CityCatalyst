@@ -55,12 +55,42 @@ let reviewProposal: { proposal_id: string } | null = null;
 let finishRefetch: (success: boolean) => void;
 let setApplicationContext: (value: ConceptNoteApplicationContext) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
+const refetchWorkspace = jest.fn(async () => ({}));
+const saveSetup = jest.fn();
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.unstable_mockModule("@/services/api", () => ({
   api: { useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}] },
+}));
+jest.unstable_mockModule("@/services/document-workspace-api", () => ({
+  documentWorkspaceApi: {
+    useGetDocumentWorkspaceQuery: () => ({
+      data: {
+        revision: 0,
+        setup: null,
+        points: [],
+        needs: [],
+        overview: {
+          required_total: 0,
+          required_covered: 0,
+          optional_total: 0,
+          optional_covered: 0,
+          waiting_count: 0,
+          next_steps: [],
+        },
+        export_eligibility: {
+          working: true,
+          final: false,
+          blockers: ["Document setup is required"],
+          workspace_revision: 0,
+        },
+      },
+      refetch: refetchWorkspace,
+    }),
+    useSaveDocumentSetupMutation: () => [saveSetup, {}],
+  },
 }));
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data",
@@ -108,6 +138,7 @@ jest.unstable_mockModule(
           progress_summary: {},
         },
         files: [],
+        uploads: [],
         bundle: { availableContext: { uploadedDocuments: false } },
         contextStatus: {
           state: workspaceState.contextState,
@@ -171,11 +202,18 @@ for (const [path, name] of [
   ["context-tab", "ContextTab"],
   ["structure-tab", "StructureTab"],
   ["export-dialog", "ExportDialog"],
+  ["document-point-card", "DocumentPointCard"],
+  ["workspace-source-picker", "WorkspaceSources"],
+  ["workspace-export", "WorkspaceExport"],
 ]) {
   jest.unstable_mockModule(`@/components/ConceptNoteWorkspace/${path}`, () => ({
     [name]: () => null,
   }));
 }
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/document-workspace-panels",
+  () => ({ WorkspaceOverview: () => null, WorkspaceTodos: () => null }),
+);
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/funding-selection-dialog",
   () => ({
@@ -214,6 +252,7 @@ beforeEach(() => {
   initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
   reviewProposal = null;
   refetch.mockReset();
+  refetchWorkspace.mockClear();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -231,10 +270,17 @@ async function clickSetup() {
     );
   });
   const button = [...container.querySelectorAll("button")].find(
-    (item) => item.getAttribute("aria-label") === "open-funding-setup",
+    (item) => item.textContent === "drafting-setup-choose-funding",
   );
   expect(button).toBeDefined();
   await act(async () => button!.click());
+}
+async function showDraft() {
+  const tab = [
+    ...container.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+  ].find((item) => item.textContent === "draft-tab");
+  expect(tab).toBeDefined();
+  await act(async () => tab!.click());
 }
 
 it("opens funding after a successful context retry without a second click", async () => {
@@ -281,6 +327,7 @@ it("shows one ready-to-draft banner without its own start button until funding i
   await clickSetup();
   const save = container.querySelector('[aria-label="save-funding"]');
   await act(async () => (save as HTMLButtonElement).click());
+  await showDraft();
 
   const banner = () =>
     container.querySelector('[data-testid="concept-note-next-step"]');
@@ -300,6 +347,7 @@ it("clears completion guidance when a chapter is added and drafting resumes", as
     hasContent: true,
   };
   await clickSetup();
+  await showDraft();
   await act(async () =>
     setWorkspaceState({ ...initialWorkspaceState, draftStatus: "complete" }),
   );
@@ -320,6 +368,7 @@ it("uses funding that loads after sources become ready", async () => {
     contextState: "processing",
   };
   await clickSetup();
+  await showDraft();
   await act(async () =>
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
@@ -337,6 +386,7 @@ it("keeps dismissed source guidance closed when funding arrives", async () => {
     contextState: "processing",
   };
   await clickSetup();
+  await showDraft();
   await act(async () =>
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
@@ -355,6 +405,7 @@ it("shows source guidance when the draft loads after ready sources", async () =>
   initialContext = fundedContext;
   initialWorkspaceState = { draftStatus: undefined, contextState: "ready" };
   await clickSetup();
+  await showDraft();
   await act(async () =>
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
@@ -372,6 +423,7 @@ it("waits for sources before showing ready-to-draft guidance after saving fundin
     '[aria-label="save-funding"]',
   );
   await act(async () => save!.click());
+  await showDraft();
   expect(
     container.querySelector('[data-testid="concept-note-next-step"]'),
   ).toBeNull();

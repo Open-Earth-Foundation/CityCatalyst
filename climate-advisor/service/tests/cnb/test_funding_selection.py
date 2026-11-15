@@ -466,6 +466,7 @@ async def test_drafting_reloads_current_funding_before_seeding_chapters():
         service._ca_session_factory = async_sessionmaker(
             session.bind, expire_on_commit=False
         )
+        service._cnb_session_factory = factory
         service._application_context = ConceptNoteApplicationContextService(
             session_factory=factory
         )

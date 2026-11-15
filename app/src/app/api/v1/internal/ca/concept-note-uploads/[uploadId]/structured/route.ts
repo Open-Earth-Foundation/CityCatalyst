@@ -57,6 +57,7 @@ import createHttpError from "http-errors";
 import { z } from "zod";
 
 import { requireClimateAdvisorServiceRequest } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { assertReusedDocumentSourceAvailable } from "@/backend/document-workspace-sources";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
 import {
@@ -73,6 +74,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.Unauthorized("Authentication required");
   }
   const { uploadId } = paramsSchema.parse(params);
+  await assertReusedDocumentSourceAvailable(uploadId, session);
   const job = await getConceptNotePdfOcrJob(uploadId);
   const structuredSize = Number(job?.structuredSizeBytes);
   if (

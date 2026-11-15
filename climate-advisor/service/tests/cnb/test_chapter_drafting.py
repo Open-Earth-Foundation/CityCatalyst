@@ -72,6 +72,7 @@ class FakeWorkspace:
         chapter_id: UUID,
         body_markdown: str,
         missing_information: list[str],
+        point_versions: dict[str, int] | None = None,
     ) -> bool:
         assert missing_information == []
         index = next(
@@ -118,7 +119,10 @@ async def test_load_state_uses_lightweight_template_fingerprint_lookup() -> None
     )
 
 
-async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
+async def test_drafts_in_order_and_passes_every_previous_chapter(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.services.document_workspace.jobs.point_context", AsyncMock(return_value=[])
+    )
     chapter_ids = [
         UUID("30000000-0000-4000-8000-000000000001"),
         UUID("30000000-0000-4000-8000-000000000002"),
@@ -174,6 +178,7 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         object.__new__(ConceptNoteChapterDraftService),
     )
     service._workspace = workspace
+    service._cnb_session_factory = MagicMock()
     service._application_context = SimpleNamespace(
         load_for_run=AsyncMock(return_value=application_context)
     )

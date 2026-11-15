@@ -26,6 +26,7 @@ from app.routes.concept_note_edits import (
 from app.persistence.concept_notes.edits import EditOperationError
 from app.routes.dev_inventory import router as dev_inventory_router
 from app.routes.health import router as health_router
+from app.routes.document_workspace import router as document_workspace_router
 from app.routes.messages import router as messages_router
 from app.routes.stationary_energy_drafts import (
     router as stationary_energy_drafts_router,
@@ -33,6 +34,7 @@ from app.routes.stationary_energy_drafts import (
 from app.routes.threads import router as threads_router
 from app.services.cnb.chapter_drafting import run_chapter_drafting_reconciler
 from app.services.cnb.context_bundle import run_context_bundle_reconciler
+from app.services.document_workspace.jobs import run_document_workspace_reconciler
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -101,12 +103,16 @@ def get_app() -> FastAPI:
         app.state.chapter_drafting_reconciler = asyncio.create_task(
             run_chapter_drafting_reconciler()
         )
+        app.state.document_workspace_reconciler = asyncio.create_task(
+            run_document_workspace_reconciler()
+        )
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
         reconcilers = [
             getattr(app.state, "context_bundle_reconciler", None),
             getattr(app.state, "chapter_drafting_reconciler", None),
+            getattr(app.state, "document_workspace_reconciler", None),
         ]
         for reconciler in reconcilers:
             if reconciler is not None:
@@ -133,6 +139,7 @@ def get_app() -> FastAPI:
     app.include_router(concept_note_runs_router, prefix="/v1")
     app.include_router(concept_note_funders_router, prefix="/v1")
     app.include_router(concept_note_edits_router, prefix="/v1")
+    app.include_router(document_workspace_router, prefix="/v1")
     app.add_exception_handler(EditOperationError, edit_exception_handler)
 
     # Static playground for manual testing

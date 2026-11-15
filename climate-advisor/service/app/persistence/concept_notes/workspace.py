@@ -141,9 +141,39 @@ class ConceptNoteWorkspaceRepository:
         chapter_id: UUID,
         body_markdown: str,
         missing_information: list[ConceptNoteDraftGapOutput],
+        point_versions: dict[str, int] | None = None,
     ) -> bool:
         """Persist the first agent revision unless the chapter is already drafted."""
         async with self._session_factory() as session, session.begin():
+            # Lock canonical state before chapters, using the same lock order as
+            # accepted-answer propagation, and reject stale model results.
+            if point_versions is not None:
+                from app.models.db.document_workspace import (
+                    DocumentDependency,
+                    DocumentPoint,
+                    DocumentWorkspaceState,
+                )
+
+                candidate_chapter = await session.get(ConceptNoteChapter, chapter_id)
+                if candidate_chapter is None:
+                    return False
+                await session.scalar(
+                    select(DocumentWorkspaceState)
+                    .where(DocumentWorkspaceState.run_id == candidate_chapter.run_id)
+                    .with_for_update()
+                )
+                points = list(
+                    await session.scalars(
+                        select(DocumentPoint).where(
+                            DocumentPoint.run_id == candidate_chapter.run_id,
+                            DocumentPoint.active.is_(True),
+                        )
+                    )
+                )
+                if {
+                    point.semantic_key: point.accepted_version for point in points
+                } != point_versions:
+                    return False
             chapter = await _require_chapter(session, chapter_id, lock=True)
             latest = await _latest_revision(session, chapter.chapter_id)
             if latest is not None:
@@ -171,6 +201,21 @@ class ConceptNoteWorkspaceRepository:
                 session.add(_gap_from_output(chapter, item))
             chapter.status = "needs_review" if missing_information else "draft"
             chapter.updated_at = datetime.now(UTC)
+            if point_versions is not None:
+                for dependency in await session.scalars(
+                    select(DocumentDependency)
+                    .join(DocumentPoint)
+                    .where(
+                        DocumentPoint.run_id == chapter.run_id,
+                        DocumentDependency.chapter_ref == chapter.template_section_id,
+                    )
+                ):
+                    point = next(
+                        point
+                        for point in points
+                        if point.point_id == dependency.point_id
+                    )
+                    dependency.applied_version = point.accepted_version
             return True
 
     async def list_chapters(

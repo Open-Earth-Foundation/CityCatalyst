@@ -13,6 +13,11 @@ const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
 const isLegacyMarkdownOnlyPdfJob = jest.fn<() => boolean>();
 const getFileBuffer = jest.fn<() => Promise<Buffer>>();
+const assertSourceAvailable = jest.fn<() => Promise<void>>();
+
+jest.unstable_mockModule("@/backend/document-workspace-sources", () => ({
+  assertReusedDocumentSourceAvailable: assertSourceAvailable,
+}));
 
 jest.unstable_mockModule(
   "@/backend/agentic/ghgi/stationary-energy/auth",
@@ -44,6 +49,7 @@ beforeAll(async () => {
 describe("authenticated Concept Note Markdown read", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    assertSourceAvailable.mockResolvedValue(undefined);
     getJob.mockResolvedValue({
       status: "succeeded",
       resultS3Key: "result.md",
@@ -132,5 +138,21 @@ describe("authenticated Concept Note Markdown read", () => {
         params: { uploadId },
       }),
     ).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it("rejects an unavailable reused source before reading the OCR job or artifact", async () => {
+    const session = { user: { id: "owner-user" } };
+    assertSourceAvailable.mockRejectedValueOnce(
+      Object.assign(new Error("Shared source withdrawn"), { statusCode: 409 }),
+    );
+    await expect(
+      readHandler(new Request("http://localhost"), {
+        session,
+        params: { uploadId },
+      }),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect(assertSourceAvailable).toHaveBeenCalledWith(uploadId, session);
+    expect(getJob).not.toHaveBeenCalled();
+    expect(getFileBuffer).not.toHaveBeenCalled();
   });
 });

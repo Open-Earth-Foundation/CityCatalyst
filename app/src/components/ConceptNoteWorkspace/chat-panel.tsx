@@ -1,6 +1,6 @@
 "use client";
 
-import type { FormEvent } from "react";
+import type { ReactNode, FormEvent } from "react";
 import {
   Fragment,
   useCallback,
@@ -76,6 +76,8 @@ interface ConceptNoteChatPanelProps {
   contextChanges?: ConceptNoteContextChange[];
   composerRequest: { content: string; id: string } | null;
   gapAnswer: GapAnswerRequest | null;
+  pointCard?: ReactNode;
+  pointWorkspaceReady?: boolean;
   onCloseGap: () => void;
   onAddGapSource: () => void;
   draftOverviewPending: boolean;
@@ -236,6 +238,8 @@ export function ConceptNoteChatPanel({
   contextChanges = [],
   composerRequest,
   gapAnswer,
+  pointCard,
+  pointWorkspaceReady = false,
   onCloseGap,
   onAddGapSource,
   draftOverviewPending,
@@ -289,7 +293,7 @@ export function ConceptNoteChatPanel({
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
-  const contextBlocked = contextStatus.blocked;
+  const contextBlocked = contextStatus.blocked && !pointWorkspaceReady;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
   // Switching chats mid-turn or mid-drafting would strand the reply.
@@ -519,6 +523,16 @@ export function ConceptNoteChatPanel({
         bg="base.light"
         p={4}
       >
+        {pointCard && (
+          <Box
+            p={3}
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+          >
+            {pointCard}
+          </Box>
+        )}
         {gapAnswer ? (
           <GapAnswerForm
             key={`${runId}:${lng}:${gapAnswer.chapterId}:${gapAnswer.row.id}:${gapAnswer.row.question}:${gapAnswer.row.gap?.version}`}

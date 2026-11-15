@@ -47,6 +47,7 @@ from app.tools.concept_note_question import concept_note_ask_question
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.concept_note_visual_tools import concept_note_render_visual
+from app.tools.document_workspace_tools import build_document_workspace_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
 from app.tools.stationary_energy_review_tools import (
@@ -452,6 +453,16 @@ class AgentService:
             assert self.session_factory is not None
             assert self.concept_note_run_id is not None
             assert self.cc_user_id is not None
+            tools.extend(
+                build_document_workspace_tools(
+                    session_factory=self.session_factory,
+                    run_id=self.concept_note_run_id,
+                    user_id=str(self.cc_user_id),
+                    token_ref=self._token_ref,
+                    ui_locale=self.concept_note_ui_locale or "en",
+                    request_token_refresh_context=self.request_token_refresh_context,
+                )
+            )
             try:
                 concept_note_context = await load_agent_context(
                     session_factory=self.session_factory,

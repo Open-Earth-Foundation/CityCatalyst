@@ -5,6 +5,9 @@ from __future__ import annotations
 from copy import deepcopy
 from uuid import UUID
 
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -16,8 +19,19 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGapResolution,
     ConceptNoteMatchedProject,
 )
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.models.db.document_workspace import (
+    DocumentCandidate,
+    DocumentDependency,
+    DocumentExport,
+    DocumentNeed,
+    DocumentOperation,
+    DocumentPoint,
+    DocumentPointRevision,
+    DocumentSetupSnapshot,
+    DocumentSourceReading,
+    DocumentUpdateJob,
+    DocumentWorkspaceState,
+)
 
 
 async def _run_gaps(
@@ -196,6 +210,26 @@ def _copy_matches(
 
 async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:
     """Delete one run's workspace in explicit dependency order."""
+    # Canonical history contains accepted facts and source quotes too; it must
+    # follow the same owned-run deletion boundary as chapter text.
+    point_ids = select(DocumentPoint.point_id).where(DocumentPoint.run_id == run_id)
+    for model in (
+        DocumentCandidate,
+        DocumentPointRevision,
+        DocumentDependency,
+        DocumentSourceReading,
+    ):
+        await session.execute(delete(model).where(model.point_id.in_(point_ids)))
+    for model in (
+        DocumentExport,
+        DocumentUpdateJob,
+        DocumentOperation,
+        DocumentNeed,
+        DocumentSetupSnapshot,
+        DocumentPoint,
+        DocumentWorkspaceState,
+    ):
+        await session.execute(delete(model).where(model.run_id == run_id))
     # Applications reference proposals; both retain document text after chapter deletion.
     await session.execute(
         delete(ConceptNoteEditApplication).where(

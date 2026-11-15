@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -17,6 +17,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
 import {
   LuArrowLeft,
+  LuLayoutDashboard,
+  LuListTodo,
   LuFileText,
   LuLandmark,
   LuLayers3,
@@ -25,6 +27,13 @@ import {
   LuShieldCheck,
 } from "react-icons/lu";
 
+import { Button } from "@/components/ui/button";
+
+import { documentWorkspaceApi } from "@/services/document-workspace-api";
+import { DocumentPointCard } from "./document-point-card";
+import { WorkspaceOverview, WorkspaceTodos } from "./document-workspace-panels";
+import { WorkspaceSources } from "./workspace-source-picker";
+import { WorkspaceExport } from "./workspace-export";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
@@ -62,7 +71,7 @@ import {
   WorkspaceUnavailableState,
 } from "@/components/ConceptNoteWorkspace/workspace-states";
 
-type WorkspaceTab = "draft" | "structure" | "context";
+type WorkspaceTab = "overview" | "todo" | "draft" | "structure" | "context";
 
 interface ConceptNoteWorkspaceProps {
   cityId: string;
@@ -78,9 +87,15 @@ const workspaceTabs: Array<{
   key: WorkspaceTab;
   translationKey: string;
 }> = [
-  { key: "draft", translationKey: "draft-tab", icon: LuFileText },
-  { key: "structure", translationKey: "structure-tab", icon: LuLayers3 },
+  {
+    key: "overview",
+    translationKey: "workspace-overview-tab",
+    icon: LuLayoutDashboard,
+  },
   { key: "context", translationKey: "context-tab", icon: LuRefreshCw },
+  { key: "todo", translationKey: "workspace-todo-tab", icon: LuListTodo },
+  { key: "structure", translationKey: "structure-tab", icon: LuLayers3 },
+  { key: "draft", translationKey: "draft-tab", icon: LuFileText },
 ];
 
 export function ConceptNoteWorkspace({
@@ -93,7 +108,53 @@ export function ConceptNoteWorkspace({
 }: ConceptNoteWorkspaceProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
-  const [tab, setTab] = useState<WorkspaceTab>("draft");
+  const [tab, setTab] = useState<WorkspaceTab>("overview");
+  const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
+  const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
+  const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
+  const [workspaceInitialized, setWorkspaceInitialized] = useState(false);
+  const workspaceQuery = documentWorkspaceApi.useGetDocumentWorkspaceQuery(
+    runId,
+    {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+      pollingInterval: workspaceInitialized ? 5000 : 0,
+      skipPollingIfUnfocused: true,
+    },
+  );
+  const workspace = workspaceQuery.data;
+  const setupReady = Boolean(workspace?.setup?.ready);
+  if (workspaceInitialized !== setupReady) setWorkspaceInitialized(setupReady);
+  const refetchWorkspace = workspaceQuery.refetch;
+  const [saveSetup, setupState] =
+    documentWorkspaceApi.useSaveDocumentSetupMutation();
+  const openPoint = useCallback((key: string) => {
+    setSelectedPointKey(key);
+    setGapAnswer(null);
+    setTab("todo");
+  }, []);
+  function addPointSource() {
+    setTab("context");
+    setUploadPickerRequest((value) => value + 1);
+  }
+  useEffect(() => {
+    function open(event: Event) {
+      const detail = (event as CustomEvent<{ runId: string; pointKey: string }>)
+        .detail;
+      if (detail?.runId === runId && detail.pointKey)
+        openPoint(detail.pointKey);
+    }
+    function changed(event: Event) {
+      if ((event as CustomEvent<{ runId: string }>).detail?.runId === runId)
+        void refetchWorkspace();
+    }
+    window.addEventListener("document-workspace:open-point", open);
+    window.addEventListener("document-workspace:changed", changed);
+    return () => {
+      window.removeEventListener("document-workspace:open-point", open);
+      window.removeEventListener("document-workspace:changed", changed);
+    };
+  }, [runId, refetchWorkspace, openPoint]);
   const [fundingOpen, setFundingOpen] = useState(false);
   const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
   const [editScope, setEditScope] = useState<EditScope>({
@@ -117,12 +178,12 @@ export function ConceptNoteWorkspace({
   >(null);
   const [highlightStartDrafting, setHighlightStartDrafting] = useState(false);
   // Bumped when chat's "Add recommended source" should open the file picker.
-  const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
+
   const [composerRequest, setComposerRequest] = useState<{
     content: string;
     id: string;
   } | null>(null);
-  const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
+
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(
     initialReviewChapterId ?? null,
   );
@@ -180,6 +241,22 @@ export function ConceptNoteWorkspace({
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  const sourceStates = uploads
+    .map((upload) => `${upload.uploadId}:${upload.status}`)
+    .join("|");
+  useEffect(() => {
+    void refetchWorkspace();
+  }, [sourceStates, refetchWorkspace]);
+  const updatingPoints = workspace?.points.some(
+    (point) => point.freshness === "updating",
+  );
+  useEffect(() => {
+    if (!updatingPoints) return;
+    const timer = window.setInterval(() => {
+      void refetchDraft();
+    }, 2500);
+    return () => window.clearInterval(timer);
+  }, [updatingPoints, refetchDraft]);
   // Kept here so a funder document keeps converting after the dialog closes.
   const funderImport = useFunderImport({ cityId, runId });
   const templateImport = useFunderImport({ cityId, runId, kind: "template" });
@@ -213,7 +290,6 @@ export function ConceptNoteWorkspace({
   if (seenSourcesReady !== sourcesReadyForDrafting) {
     setSeenSourcesReady(sourcesReadyForDrafting);
     if (sourcesReadyForDrafting) {
-      setTab("draft");
       setNextStep(canStartDrafting ? "start-drafting" : "choose-funding");
     }
   }
@@ -501,6 +577,26 @@ export function ConceptNoteWorkspace({
               contextBuildId={bundle.buildId}
               contextChanges={bundle.contextChanges}
               composerRequest={composerRequest}
+              pointWorkspaceReady={workspace?.setup?.ready ?? false}
+              pointCard={
+                workspace?.points.find(
+                  (point) => point.key === selectedPointKey,
+                ) ? (
+                  <DocumentPointCard
+                    key={selectedPointKey}
+                    point={workspace.points.find(
+                      (point) => point.key === selectedPointKey,
+                    )!}
+                    runId={runId}
+                    lng={lng}
+                    compact
+                    onAddSource={addPointSource}
+                    onOpenPoint={() =>
+                      selectedPointKey && openPoint(selectedPointKey)
+                    }
+                  />
+                ) : undefined
+              }
               gapAnswer={gapAnswer}
               onCloseGap={() => setGapAnswer(null)}
               onAddGapSource={() => {
@@ -680,6 +776,9 @@ export function ConceptNoteWorkspace({
               <Tabs.List
                 flexShrink={0}
                 gap={0}
+                overflowX="auto"
+                flexWrap="nowrap"
+                aria-label={t("workspace-tabs-label")}
                 borderBottom="1px solid"
                 borderColor="border.neutral"
                 bg="base.light"
@@ -690,6 +789,8 @@ export function ConceptNoteWorkspace({
                     key={item.key}
                     value={item.key}
                     display="flex"
+                    flexShrink={0}
+                    type="button"
                     alignItems="center"
                     gap={2}
                     borderBottom="2px solid"
@@ -713,6 +814,144 @@ export function ConceptNoteWorkspace({
               </Tabs.List>
 
               <Tabs.Content
+                value="overview"
+                flex={1}
+                minH={0}
+                overflowY="auto"
+                p={0}
+              >
+                {workspaceQuery.isLoading && (
+                  <Text role="status" p={6}>
+                    {t("workspace-loading")}
+                  </Text>
+                )}
+                {workspaceQuery.isError && (
+                  <Box role="alert" p={6}>
+                    <Text color="sentiment.negativeDefault">
+                      {t("workspace-load-error")}
+                    </Text>
+                    <Button
+                      mt={3}
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void refetchWorkspace()}
+                    >
+                      {t("retry")}
+                    </Button>
+                  </Box>
+                )}
+                {workspace && (
+                  <>
+                    <VStack
+                      align="stretch"
+                      gap={3}
+                      p={4}
+                      borderBottom="1px solid"
+                      borderColor="border.neutral"
+                    >
+                      <Text fontWeight="semibold">
+                        {workspace.setup?.name ?? t("workspace-setup-needed")}
+                      </Text>
+                      <Text fontSize="body.sm" color="content.secondary">
+                        {t(
+                          workspace.setup?.ready
+                            ? "workspace-setup-sync-help"
+                            : "workspace-setup-help",
+                        )}
+                      </Text>
+                      <HStack flexWrap="wrap">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void openFundingSetup()}
+                        >
+                          {t("drafting-setup-choose-funding")}
+                        </Button>
+                        <Text fontSize="label.sm" color="content.secondary">
+                          {t("workspace-document-type")}:{" "}
+                          {t("workspace-type-concept-note")}
+                        </Text>
+                        <Button
+                          size="sm"
+                          loading={setupState.isLoading}
+                          disabled={!hasApplicationTemplate}
+                          onClick={() =>
+                            void saveSetup({
+                              runId,
+                              document_type: "concept_note",
+                              expected_revision: workspace.revision,
+                              idempotency_key: crypto.randomUUID(),
+                            })
+                          }
+                        >
+                          {t(
+                            workspace.setup?.ready
+                              ? "workspace-sync-setup"
+                              : "workspace-initialize",
+                          )}
+                        </Button>
+                      </HStack>
+                      {setupState.isError && (
+                        <Text role="alert" color="sentiment.negativeDefault">
+                          {t("workspace-setup-error")}
+                        </Text>
+                      )}
+                    </VStack>
+                    <WorkspaceExport
+                      workspace={workspace}
+                      runId={runId}
+                      noteName={run.name}
+                      lng={lng}
+                    />
+                    <WorkspaceOverview
+                      workspace={workspace}
+                      lng={lng}
+                      chapters={draft?.chapters ?? []}
+                      onSelectPoint={openPoint}
+                      onOpenDraft={() => setTab("draft")}
+                    />
+                  </>
+                )}
+              </Tabs.Content>
+              <Tabs.Content
+                value="todo"
+                flex={1}
+                minH={0}
+                overflowY="auto"
+                p={0}
+              >
+                {workspace ? (
+                  <WorkspaceTodos
+                    workspace={workspace}
+                    lng={lng}
+                    runId={runId}
+                    selectedKey={selectedPointKey}
+                    onSelectPoint={openPoint}
+                    onAddSource={addPointSource}
+                  />
+                ) : (
+                  <Box p={6}>
+                    <Text role="status">
+                      {t(
+                        workspaceQuery.isError
+                          ? "workspace-load-error"
+                          : "workspace-loading",
+                      )}
+                    </Text>
+                    {workspaceQuery.isError && (
+                      <Button
+                        mt={3}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void refetchWorkspace()}
+                      >
+                        {t("retry")}
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </Tabs.Content>
+              <Tabs.Content
                 value="draft"
                 flex={1}
                 minH={0}
@@ -735,13 +974,18 @@ export function ConceptNoteWorkspace({
                   focusFindingKey={reviewFindingKey}
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
-                  onAnswerGap={(chapter, row) =>
-                    setGapAnswer({
-                      chapterId: chapter.chapter_id,
-                      chapterTitle: chapter.title,
-                      row,
-                    })
-                  }
+                  onAnswerGap={(chapter, row) => {
+                    const point = workspace?.points.find(
+                      (item) => item.key === row.gap?.field_key,
+                    );
+                    if (point) openPoint(point.key);
+                    else
+                      setGapAnswer({
+                        chapterId: chapter.chapter_id,
+                        chapterTitle: chapter.title,
+                        row,
+                      });
+                  }}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -813,6 +1057,17 @@ export function ConceptNoteWorkspace({
                 overflowY="auto"
                 p={0}
               >
+                <WorkspaceSources
+                  workspace={workspace}
+                  runId={runId}
+                  lng={lng}
+                  onSelectPoint={openPoint}
+                  onAddSource={addPointSource}
+                  onAttached={() => {
+                    void refetchRun();
+                    void refetchWorkspace();
+                  }}
+                />
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   onSelectFunding={() => setFundingOpen(true)}
@@ -846,7 +1101,10 @@ export function ConceptNoteWorkspace({
                   lng={lng}
                   onRetryBundle={() => void retryContextBundle()}
                   onRetryUpload={(uploadId) => void retrySourceUpload(uploadId)}
-                  onUploadFile={uploadSource}
+                  onUploadFile={async (file, role) => {
+                    await uploadSource(file, role);
+                    void refetchWorkspace();
+                  }}
                   manualPopulation={manualPopulation}
                   manualPopulationSaving={manualPopulationSaving}
                   onSaveManualPopulation={saveManualPopulation}
@@ -895,7 +1153,8 @@ export function ConceptNoteWorkspace({
           templateImport={templateImport}
           onClose={() => setFundingOpen(false)}
           onSaved={() => {
-            setTab("draft");
+            setTab("overview");
+            void refetchWorkspace();
             setNextStep("start-drafting");
             setHighlightStartDrafting(true);
           }}

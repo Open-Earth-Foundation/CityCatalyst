@@ -40,6 +40,8 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
     prompts = _load_llm_config().prompts
     prompt_entries = {
         "cnb_chat_suggestions": prompts.cnb_chat_suggestions,
+        "document_point_extraction": prompts.document_point_extraction,
+        "document_point_question": prompts.document_point_question,
         "core": prompts.core,
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
@@ -102,6 +104,15 @@ def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -
     assert "downstream" in prompt_text
     assert "`critical` or `noncritical`" in prompt_text
     assert "`source_refs`" in prompt_text
+
+
+def test_canonical_point_acceptance_can_update_text_without_new_source_evidence() -> None:
+    """Accepted point updates must not contradict older source-only edit rules."""
+    prompt = " ".join(_load_llm_config().prompts.get_prompt("cnb_chapter_drafting").split())
+    assert "value may correct an older fact for the same semantic key" in prompt
+    assert "This canonical-point acceptance works when `new_source_evidence` is empty" in prompt
+    assert "Keep unrelated gaps and markers unchanged" in prompt
+    assert "never overwrite a fact" in prompt and "with unconfirmed new-source text" in prompt
 
 
 def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:

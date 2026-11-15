@@ -169,6 +169,11 @@ class ConceptNoteChapterDraftService:
                 included_sources=included_sources_from_bundle(bundle),
             )
             template, template_chapters = _require_template(application_context)
+            from app.services.document_workspace.service import DocumentWorkspaceService
+
+            await DocumentWorkspaceService(
+                self._cnb_session_factory
+            ).reconcile_template(current_run, template)
             template_fingerprint = calculate_application_template_fingerprint(template)
             await self._workspace.ensure_template_chapters(
                 run_id=run.run_id,
@@ -254,6 +259,16 @@ class ConceptNoteChapterDraftService:
                     ):
                         return
 
+                    # Canonical answers are snapshotted immediately before each
+                    # chapter. Earlier chapters may take minutes to generate.
+                    from app.services.document_workspace.jobs import point_context
+                    from app.services.document_workspace.service import (
+                        DocumentWorkspaceService,
+                    )
+
+                    run_context["document_workspace_points"] = await point_context(
+                        DocumentWorkspaceService(self._cnb_session_factory), run_id
+                    )
                     generated = await self._generate_chapter(
                         build_chapter_input(
                             application_context=application_context,
@@ -274,6 +289,10 @@ class ConceptNoteChapterDraftService:
                         chapter_id=current.chapter_id,
                         body_markdown=generated.body_markdown,
                         missing_information=generated.missing_information,
+                        point_versions={
+                            point["key"]: point["version"]
+                            for point in run_context["document_workspace_points"]
+                        },
                     )
                     refreshed = await self._workspace.list_chapters(
                         run_id=run_id,
@@ -541,7 +560,14 @@ class ConceptNoteChapterDraftService:
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            return build_run_context(run, bundle), included_sources_from_bundle(bundle)
+            context = build_run_context(run, bundle)
+        from app.services.document_workspace.jobs import point_context
+        from app.services.document_workspace.service import DocumentWorkspaceService
+
+        context["document_workspace_points"] = await point_context(
+            DocumentWorkspaceService(self._cnb_session_factory), run_id
+        )
+        return context, included_sources_from_bundle(bundle)
 
     async def _lease_is_active(
         self,
@@ -965,7 +991,12 @@ def build_chapter_input(
     semantic_run_context = {
         key: value
         for key, value in run_context.items()
-        if key not in {"context_bundle_status", "source_documents"}
+        if key
+        not in {
+            "context_bundle_status",
+            "source_documents",
+            "document_workspace_points",
+        }
     }
     bundle = semantic_run_context.get("context_bundle")
     if isinstance(bundle, dict):
@@ -1020,6 +1051,11 @@ def build_chapter_input(
                 if gap.state == "open"
             ],
             "new_source_evidence": new_source_evidence or [],
+            "canonical_points": [
+                {key: value for key, value in point.items() if key not in {"version", "chapter_refs"}}
+                for point in run_context.get("document_workspace_points", [])
+                if current.chapter_ref in point.get("chapter_refs", [])
+            ],
             "previous_chapters": [
                 {
                     "chapter_ref": chapter.chapter_ref,

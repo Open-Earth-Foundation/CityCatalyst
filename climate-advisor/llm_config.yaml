@@ -100,6 +100,8 @@ generation:
 prompts:
   cnb_chat_suggestions: "prompts/cnb/chat_suggestions.md"
   cnb_gap_question: "prompts/cnb/gap_question.md"
+  document_point_extraction: "prompts/cnb/document_point_extraction.md"
+  document_point_question: "prompts/cnb/document_point_question.md"
   # Shared core prompt composed into every workflow
   core: "prompts/core.md"
 

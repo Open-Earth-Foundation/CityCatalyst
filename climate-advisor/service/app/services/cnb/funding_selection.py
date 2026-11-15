@@ -9,6 +9,11 @@ from __future__ import annotations
 import logging
 from copy import deepcopy
 from datetime import UTC, datetime
+from uuid import UUID
+
+from fastapi import HTTPException
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -23,6 +28,7 @@ from app.models.db.cnb_workspace import (
     ConceptNoteMatchedProject,
 )
 from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
+from app.persistence.concept_notes.source_revalidation import queue_source_revalidation
 from app.persistence.concept_notes.workspace import normalize_template_chapters
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
@@ -31,9 +37,6 @@ from app.services.cnb.application_context import (
 )
 from app.services.cnb.funder_creation import build_custom_template, clear_import
 from app.services.cnb.funding_catalogue import load_funding_catalogue
-from fastapi import HTTPException
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +175,9 @@ async def save_funding_selection(
             previous_context = await context_service.load_for_run(run)
             try:
                 previous_template = (
-                    normalize_template_chapters(previous_context.template.chapter_schema)
+                    normalize_template_chapters(
+                        previous_context.template.chapter_schema
+                    )
                     if previous_context.template is not None
                     else []
                 )
@@ -193,9 +198,7 @@ async def save_funding_selection(
                 chapter_ids = [chapter.chapter_id for chapter in chapters]
                 revision_id = await reference.scalar(
                     select(ConceptNoteChapterRevision.revision_id)
-                    .where(
-                        ConceptNoteChapterRevision.chapter_id.in_(chapter_ids)
-                    )
+                    .where(ConceptNoteChapterRevision.chapter_id.in_(chapter_ids))
                     .limit(1)
                 )
                 if revision_id is None:
@@ -285,7 +288,9 @@ async def save_funding_selection(
             "opportunity": opportunity.model_dump(mode="json", exclude={"template"})
             if opportunity
             else None,
-            "template": next_template.model_dump(mode="json") if next_template else None,
+            "template": next_template.model_dump(mode="json")
+            if next_template
+            else None,
         }
     elif next_template:
         # An own template gives drafting its chapters without a funder.
@@ -299,10 +304,28 @@ async def save_funding_selection(
     bundle_payload["funder_context"] = funder_context
     bundle_payload["similar_projects"] = []
     bundle.context_bundle = bundle_payload
+    if next_template is not None:
+        # Re-read existing uploads for the new requirements as well as uploads
+        # arriving after selection. This uses the established durable source job.
+        selected_upload_ids = [
+            UUID(source["upload_id"])
+            for source in bundle_payload.get("selected_sources", [])
+        ]
+        if selected_upload_ids:
+            run.context_summary = queue_source_revalidation(
+                run.context_summary, selected_upload_ids
+            )
     # The reviewed template import is now on the run, so clear it.
     if payload.custom_template is not None and payload.custom_template.import_id:
         clear_import(bundle, payload.custom_template.import_id)
     response = await context_service.load_for_run(run)
     await session.commit()
+    # An explicit funding/template change also reconciles canonical points;
+    # compatible values survive and removed requirements remain in history.
+    from app.services.document_workspace.service import DocumentWorkspaceService
+    if next_template is not None:
+        await DocumentWorkspaceService(factory).reconcile_template(run, next_template)
+    else:
+        await DocumentWorkspaceService(factory).clear_setup(run)
     logger.info("Updated funding selection for CNB run %s", run.run_id)
     return response

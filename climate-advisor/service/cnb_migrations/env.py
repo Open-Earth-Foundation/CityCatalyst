@@ -8,6 +8,19 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.db.cnb import CnbBase
+from app.models.db.document_workspace import (  # noqa: F401
+    DocumentCandidate,
+    DocumentDependency,
+    DocumentExport,
+    DocumentNeed,
+    DocumentOperation,
+    DocumentPoint,
+    DocumentPointRevision,
+    DocumentSetupSnapshot,
+    DocumentSourceReading,
+    DocumentUpdateJob,
+    DocumentWorkspaceState,
+)
 from app.models.db.cnb_edit import (
     ConceptNoteEditApplication,
     ConceptNoteEditProposal,

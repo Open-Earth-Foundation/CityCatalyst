@@ -46,6 +46,22 @@ const api = {
 
 jest.unstable_mockModule("@/services/api", () => ({ api }));
 
+jest.unstable_mockModule("@/services/document-workspace-api", () => ({
+  documentWorkspaceApi: {
+    useLazyGetDocumentWorkspaceQuery: () => [
+      () => ({ unwrap: async () => ({ revision: 3 }) }),
+    ],
+    useExportDocumentWorkspaceMutation: () => [
+      () => ({
+        unwrap: async () => ({
+          body_markdown: "# Authorized snapshot",
+          caveats: [],
+        }),
+      }),
+    ],
+  },
+}));
+
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
     t: (key: string, values: Record<string, string | number> = {}) => {

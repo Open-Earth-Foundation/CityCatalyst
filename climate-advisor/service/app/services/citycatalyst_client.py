@@ -552,6 +552,38 @@ class CityCatalystClient:
             )
         return user_id
 
+    async def verify_concept_note_source(
+        self, *, upload_id: str, token: str, expected_sha256: str
+    ) -> None:
+        """Check source lifecycle and digest without transferring artifact bytes."""
+        if not self.base_url:
+            raise CityCatalystClientError(
+                "CC source verification unavailable", status_code=503
+            )
+        token = await self._request_token(token)
+        client = await self._get_client()
+        try:
+            response = await client.get(
+                f"{self.base_url}/api/v1/internal/ca/concept-note-uploads/{upload_id}/availability",
+                headers=self._internal_headers(token),
+                timeout=self.datasource_timeout,
+            )
+            if not response.is_success:
+                raise CityCatalystClientError(
+                    "Source verification failed", status_code=response.status_code
+                )
+            body = response.json()
+            if (
+                not isinstance(body, dict)
+                or body.get("available") is not True
+                or body.get("markdown_sha256") != expected_sha256
+            ):
+                raise CityCatalystClientError("Source artifact changed", status_code=409)
+        except (ValueError, httpx.RequestError) as exc:
+            raise CityCatalystClientError(
+                "Source verification unavailable", status_code=503
+            ) from exc
+
     async def get_concept_note_markdown(
         self,
         *,

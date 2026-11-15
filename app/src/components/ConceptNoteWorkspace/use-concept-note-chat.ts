@@ -154,6 +154,20 @@ export function useConceptNoteChat({
         );
       }
       const data = result.data;
+      if (
+        result.action === "document_workspace.open_point" &&
+        result.success === true &&
+        typeof data === "object" &&
+        data !== null &&
+        "point_key" in data &&
+        typeof data.point_key === "string"
+      ) {
+        window.dispatchEvent(
+          new CustomEvent("document-workspace:open-point", {
+            detail: { runId, pointKey: data.point_key },
+          }),
+        );
+      }
       const visual = readConceptNoteToolVisual(result);
       // The done event runs tool results before onComplete, so the turn's id is still set.
       const visualMessageId = assistantMessageIdRef.current;

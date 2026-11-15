@@ -236,6 +236,8 @@ class PromptsConfig(BaseModel):
 
     cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
     cnb_gap_question: str = "prompts/cnb/gap_question.md"
+    document_point_extraction: str = "prompts/cnb/document_point_extraction.md"
+    document_point_question: str = "prompts/cnb/document_point_question.md"
 
     core: str
     chat: str

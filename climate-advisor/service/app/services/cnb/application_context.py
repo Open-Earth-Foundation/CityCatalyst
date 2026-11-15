@@ -250,7 +250,8 @@ def template_chapter_requirements(
 ) -> list[dict[str, Any]]:
     """Each template chapter's reference, title, description, and required fields."""
     required_fields = {
-        str(chapter.get("chapter_ref") or "").strip(): chapter.get("required_fields") or []
+        str(chapter.get("chapter_ref") or "").strip(): chapter.get("required_fields")
+        or []
         for chapter in template.chapter_schema
         if isinstance(chapter, dict)
     }
@@ -259,7 +260,7 @@ def template_chapter_requirements(
             "chapter_ref": chapter.chapter_ref,
             "title": chapter.title,
             "description": chapter.description,
-            "required_fields": [str(field) for field in required_fields.get(chapter.chapter_ref, [])],
+            "required_fields": required_fields.get(chapter.chapter_ref, []),
         }
         for chapter in normalize_template_chapters(template.chapter_schema)
     ]

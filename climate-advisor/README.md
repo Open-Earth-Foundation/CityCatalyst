@@ -106,6 +106,49 @@ Apply CNB migration `20260921_120000` before using the
 structure API. See [structure rules and persistence](../docs/ConceptNoteBuilderArchitecture.md#run-owned-chapter-structure-cc-864)
 for concurrency, review invalidation, and regression tests.
 
+### Canonical document point workspace
+
+Apply CNB migration `20261115_120000` before using the point workspace. It uses
+`CNB_DATABASE_URL`; run ownership, uploads and context bundles continue to use
+the existing CA database. No additional environment variable is required.
+
+The owner-authorized `/v1/concept-notes/{run_id}` API exposes `GET workspace`,
+`PUT setup`, `POST points/{point_key}/commands`, `POST points/{point_key}/question`
+and `POST exports`. Shared contracts live in `app/models/document_workspace`.
+Setup snapshots materialize template `required_fields` before prose. Rich chapter
+fields can declare `key`, `label`, `description`, `kind`, `answer_type`, `choices`,
+numeric bounds, `unit`, `required`, exception permissions and `evidence_need`.
+Only explicit equal keys share answers across chapters. String fields retain
+deterministic template/chapter scope. Templates without recognized requirements
+remain incomplete and cannot authorize a final export.
+
+Commands require `expected_version` and `idempotency_key`; exact replay returns
+the original response, changed payload/key reuse and stale writes return 409.
+Document extraction proposes typed, cited candidates; confirmation is separate.
+Current source lifecycle and Markdown identity are rechecked through Core when
+accepting source-backed candidates or exporting. Withdrawn or changed support
+blocks final export; working exports include a caveat. Reused-source artifact
+reads also recheck the original shared document rather than trusting its copy.
+Required assumptions and not-applicable answers require setup permission and a
+reason. Parking records waiting work without satisfying a requirement.
+
+Accepted values and leased update jobs commit together. The startup reconciler
+retries failed or interrupted jobs, updates free chapters, and creates normal
+edit proposals for manual/Ready text. Final export checks coverage, conflicts,
+dependent freshness and required reviews against locked chapter revisions.
+Working exports include caveats; persisted exports retain exact chapter revision
+identities. Questions use `prompts.document_point_question`; extraction uses
+`prompts.document_point_extraction` and the configured `cnb_source_reader` model.
+The background worker stays inactive when CA or CNB storage is unconfigured;
+storage outages use the existing CNB reconcilers' retry backoff.
+
+Run the focused offline suite with
+`uv run --directory service pytest tests/cnb/test_document_workspace.py`.
+Run `tests/test_document_workspace_sources.py` and
+`tests/test_document_workspace_tools.py` for source/auth and scoped-chat checks.
+Source/prompt changes should also be evaluated with the existing CNB benchmark
+before a PR; live provider runs consume usage and are not part of these tests.
+
 ### Concept Note chapter validation
 
 Chapter validation is triggered from CityCatalyst's **Review & export** button,

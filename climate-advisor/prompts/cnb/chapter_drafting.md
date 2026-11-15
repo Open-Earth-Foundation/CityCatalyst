@@ -10,19 +10,31 @@ Draft only the supplied `chapter` using `application_context`, `run_context`,
 `new_source_evidence`, and the complete `previous_chapters`.
 
 Rules:
+- `canonical_points`, when present, is the authoritative accepted-value contract
+  for this chapter. Use only answered values as facts; label assumptions and
+  not_applicable dispositions with their explicit reason. Missing points remain
+  visible unknowns with their semantic key in missing_information. Unconfirmed
+  source values cannot resolve a canonical point. Canonical accepted revisions
+  supersede older wording and legacy resolved_information for the same key.
 - preserve terminology, claims, scope, and narrative continuity from every
   entry in `previous_chapters`
 - use facts only when they appear in `application_context`, `run_context`,
   `current_body_markdown`, `resolved_information`, `new_source_evidence`,
   `previous_chapters`, or the CONCEPT_NOTE_SOURCE_DOCUMENTS message
 - when `current_body_markdown` is not null, it is the chapter's current text,
-  including edits the user accepted: use it as the base, replace only the
-  `[Information needed: ...]` markers that `new_source_evidence` answers, and
-  keep every other heading, sentence, and fact word for word
+  including edits the user accepted: use it as the base. A current accepted
+  `canonical_points` value may correct an older fact for the same semantic key
+  and remove that key's `[Information needed: ...]` marker, even when
+  `new_source_evidence` is empty. New-source evidence may replace only the
+  markers it answers; keep every other heading, sentence, and fact word for word
+  outside those accepted canonical corrections
 - never overwrite a fact in `current_body_markdown` or `resolved_information`
-  with new-source text; when new evidence contradicts one, keep the existing
-  fact and add an `[Information needed: ...]` marker next to it asking the user
-  which value is correct, reusing the matching `field_key` when one exists
+  with unconfirmed new-source text. A current accepted canonical point supersedes
+  an older fact for that key; this explicit acceptance is the exception to
+  preserving the old fact. When unconfirmed evidence contradicts a fact, keep
+  the accepted value and surface the conflict rather than choosing a source.
+  For a legacy fact without a canonical point, add an `[Information needed: ...]`
+  marker asking which value is correct, reusing its `field_key` when one exists
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present; each source's `chapter_excerpts` are exact quotations chosen
   for this chapter's requirements, so use them first when no complete source
@@ -60,8 +72,11 @@ Rules:
   `correction`, omit a `not_a_gap` item, and retain a `defer_as_caveat` item as
   visible limitation prose without an `[Information needed: ...]` marker
 - preserve every item in `existing_open_gaps` with its marker and `field_key`;
-  remove it only when a `new_source_evidence` item for that `field_key`
-  answers it
+  remove it only when a current accepted canonical point with the same semantic
+  key answers it (or explicitly permits a reasoned assumption/not-applicable
+  disposition), or a `new_source_evidence` item for that `field_key` answers it.
+  This canonical-point acceptance works when `new_source_evidence` is empty.
+  Keep unrelated gaps and markers unchanged
 - for every item in `new_source_evidence`, use its `excerpts` to state the
   requested fact in the chapter and remove that gap's marker and
   `missing_information` item; keep the gap only for the part the excerpts do
@@ -144,6 +159,9 @@ Each example shows what the inputs say, a wrong draft, and the right draft.
 </examples>
 
 <input>
+`canonical_points` is a list of semantic key, label, description, required,
+status, accepted value and exception reason.
+It contains no candidate values or database identities.
 Input is one JSON user message, optionally followed by a second user message.
 
 The JSON object has:

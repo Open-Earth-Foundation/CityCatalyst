@@ -389,7 +389,46 @@ document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
 
-When a new source finishes analysis, a review-only LLM call selects the chapters
+### Canonical document points
+
+`services/document_workspace` owns semantic requirements independently of legacy
+chapter gaps. Versioned template snapshots materialize points before drafting.
+Explicit semantic keys share values across declared chapters; fallback keys are
+template/chapter scoped. Candidates retain verified quotes and immutable source
+identities and require human confirmation. Conflicting new evidence preserves an
+accepted value while reopening the confirmation work. Structured extraction uses
+the configured source reader and restores evidence positions in code.
+
+The isolated CNB database stores setup snapshots, points, candidates, immutable
+point revisions, evidence needs, chapter dependencies, idempotent operations,
+leased update jobs and exports. An accepted point revision and its update job
+commit together. Generation occurs outside transactions; lease tokens, canonical
+point vectors and chapter revisions fence the result. Free text gets a revision;
+manual/Ready text gets an existing edit proposal. Proposal acceptance marks the
+dependent version current through the reconciler. Failures retain the accepted
+answer and expose retryable freshness separately.
+
+`routes/document_workspace.py` obtains the existing canonical owner-authorized
+run before each operation. Screen and scoped chat tools use the same point
+service. Final export locks chapters before eligibility/rendering and persists
+the exact revision identities; working exports retain caveats. A draft-content
+fingerprint detects chapter/review changes between viewed and exported workspace
+revisions. Empty/unrecognized template requirements cannot authorize final output.
+The generic core prompt remains unchanged. Legacy resolved gaps are readable and
+never automatically become accepted point values.
+
+The CC adapter reuses IngestDocumentPool/NativeInputCatalog through target-run
+associations. `document_workspace/source_access.py` binds the authenticated
+caller to a Core source-availability check when accepting candidates or exporting.
+Core verifies the original shared source lifecycle, visibility, scope and digest
+before serving copied Markdown/structured artifacts; the lightweight availability
+response returns the immutable Markdown digest. This prevents an old run copy
+from retaining authority after the shared source is withdrawn or superseded.
+
+For point-backed runs, the existing durable source-revalidation job extracts
+candidates instead of silently incorporating unconfirmed values into prose.
+Explicit template selection also queues existing sources for the new requirements.
+For legacy runs without point setup, a review-only LLM call selects the chapters
 it affects, and each of their open gaps is asked of the verified source text.
 Only those chapters are redrafted with the cited answers, editing the current
 chapter text in place so accepted user edits survive. Each redraft appends a

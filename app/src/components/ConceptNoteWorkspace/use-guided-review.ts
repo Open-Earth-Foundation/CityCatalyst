@@ -1,4 +1,5 @@
 "use client";
+import { documentWorkspaceApi } from "@/services/document-workspace-api";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -20,7 +21,7 @@ import {
   canExportConceptNote,
   hasCriticalExportBlocker,
   countUnresolvedExportItems,
-  exportConceptNote,
+  exportConceptNoteMarkdown,
   type ConceptNoteExportFormat,
 } from "./concept-note-export";
 
@@ -55,6 +56,10 @@ export function useGuidedReview({
   open,
   runId,
 }: GuidedReviewOptions) {
+  const [getWorkspace] =
+    documentWorkspaceApi.useLazyGetDocumentWorkspaceQuery();
+  const [exportSnapshot] =
+    documentWorkspaceApi.useExportDocumentWorkspaceMutation();
   const [validateChapter] = api.useValidateConceptNoteChapterMutation();
   const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
   const chapterTitles = useMemo(
@@ -309,7 +314,18 @@ export function useGuidedReview({
     setExportError(false);
     setExportingFormat(format);
     try {
-      await exportConceptNote(format, noteName, chapters, lng);
+      const workspace = await getWorkspace(runId).unwrap();
+      const snapshot = await exportSnapshot({
+        runId,
+        mode: "working",
+        expected_revision: workspace.revision,
+      }).unwrap();
+      await exportConceptNoteMarkdown(
+        format,
+        noteName,
+        snapshot.body_markdown,
+        lng,
+      );
     } catch {
       setExportError(true);
     } finally {

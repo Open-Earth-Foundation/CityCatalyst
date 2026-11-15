@@ -327,6 +327,16 @@ export async function exportConceptNote(
   language = "en",
 ): Promise<void> {
   const markdown = buildConceptNoteExportMarkdown(noteName, chapters);
+  return exportConceptNoteMarkdown(format, noteName, markdown, language);
+}
+
+/** Export only the server-authorized snapshot for workspace downloads. */
+export async function exportConceptNoteMarkdown(
+  format: ConceptNoteExportFormat,
+  noteName: string,
+  markdown: string,
+  language = "en",
+): Promise<void> {
   const filename = conceptNoteExportFilename(noteName);
 
   if (format === "docx") {

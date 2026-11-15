@@ -351,3 +351,39 @@ it("starts the drafting overview once and attaches its choices", async () => {
     choices: ["Budget", "Scope"],
   });
 });
+
+it("opens the canonical point from a successful scoped question tool result", async () => {
+  const received = jest.fn<(event: Event) => void>();
+  window.addEventListener("document-workspace:open-point", received);
+  try {
+    await act(async () =>
+      streamOptions.onToolResult?.({
+        action: "document_workspace.open_point",
+        success: true,
+        data: {
+          point_key: "project.cost",
+          question: {
+            pattern: "short_form",
+            why_asking: "Budget",
+            questions: [],
+          },
+        },
+      }),
+    );
+    expect(received).toHaveBeenCalledTimes(1);
+    expect((received.mock.calls[0][0] as CustomEvent).detail).toEqual({
+      runId: "run",
+      pointKey: "project.cost",
+    });
+    await act(async () =>
+      streamOptions.onToolResult?.({
+        action: "document_workspace.open_point",
+        success: false,
+        data: { point_key: "project.cost" },
+      }),
+    );
+    expect(received).toHaveBeenCalledTimes(1);
+  } finally {
+    window.removeEventListener("document-workspace:open-point", received);
+  }
+});

@@ -1260,6 +1260,19 @@ async def _revalidate_with_chapter_service(
     new_sources: list[RevalidationSource],
 ) -> bool:
     """Run source-impact revalidation with production database dependencies."""
+    from app.services.document_workspace.extraction import extract_source_candidates
+    from app.services.document_workspace.service import DocumentWorkspaceService
+    async with get_session_factory()() as session:
+        run = await session.get(ConceptNoteRun, run_id)
+    if run is None or run.user_id != user_id:
+        return False
+    point_service = DocumentWorkspaceService()
+    workspace = await point_service.load(run)
+    if workspace.setup is not None:
+        # New evidence proposes candidates. It cannot silently become accepted
+        # prose; accepted point commands own dependent drafting updates.
+        await extract_source_candidates(run, new_sources, service=point_service)
+        return True
     return await ConceptNoteChapterDraftService(
         get_session_factory()
     ).revalidate_after_new_sources(

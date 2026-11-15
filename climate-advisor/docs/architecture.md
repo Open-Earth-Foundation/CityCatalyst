@@ -417,6 +417,12 @@ present in each accepted chapter body inside the normal edit transaction. Remove
 answered gaps close through the existing edit path; rejected or unselected changes
 cannot create gaps, and absent resolved history is not reopened. This metadata is
 excluded from public `EditScope` alongside source provenance.
+Explicit setup Sync also calls `persistence/concept_notes/orphan_gaps.py` after
+locking workspace state and chapters. It restores lost question metadata from
+latest visible markers using conservative critical gaps and local recovery keys,
+without changing text, accepted points or source provenance. Active normalized
+questions deduplicate recovery; closed rows retain their original identity and
+history. Ordinary reads do not perform this repair.
 Before loading generation context, deferred jobs compare every active target
 dependency against the current accepted vector under the workspace/job locks.
 Jobs already incorporated by initial drafting complete without regenerating

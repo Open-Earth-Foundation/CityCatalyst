@@ -39,6 +39,7 @@ from app.models.document_workspace.contracts import (
     DocumentWorkspace,
     DocumentWorkspacePoint,
 )
+from app.persistence.concept_notes.orphan_gaps import recover_orphan_information_gaps
 from app.persistence.concept_notes.source_provenance import (
     UNKNOWN_PROVENANCE_MESSAGE,
     merge_provenance,
@@ -148,6 +149,8 @@ class DocumentWorkspaceService:
                         409, "Workspace changed. Reload before changing setup."
                     )
                 await self._materialize(session, state, template, user_id=run.user_id)
+                if await recover_orphan_information_gaps(session, run.run_id):
+                    state.revision += 1
                 result = await self._project(session, state)
                 session.add(
                     DocumentOperation(

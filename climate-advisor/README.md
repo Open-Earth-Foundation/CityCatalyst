@@ -172,6 +172,11 @@ The background worker stays inactive when CA or CNB storage is unconfigured;
 storage outages use the existing CNB reconcilers' retry backoff.
 **Sync document points** also requeues matching ready source uploads through the
 existing durable extraction job, including after its retry limit was exhausted.
+Explicit Sync restores missing structured questions for information-needed
+markers already present in chapter text. Recovered questions use local keys with
+unknown canonical mapping, critical severity and no inferred facts or sources.
+Repeated Sync does not duplicate active questions or reopen resolved history;
+the normal answer/proposal acceptance flow can fill the recovered questions.
 It works when setup is unchanged, preserves accepted answers and candidates, and
 keeps successful reading checkpoints. The normal worker starts immediately;
 the reconciler retains recovery if the process stops after queueing.

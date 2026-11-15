@@ -10,10 +10,12 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy import select
 
+from app.db.base import Base
 from app.models.cnb.concept_note_edits import EditApplyRequest, EditProposalRequest
 from app.models.cnb.concept_note_structure import StructureSaveRequest
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_workspace import ConceptNoteChapter, ConceptNoteChapterRevision
+from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteUpload
 from app.models.document_workspace.contracts import DocumentExportRequest
 from app.persistence.concept_notes.edits import (
     ConceptNoteEditRepository,
@@ -28,6 +30,9 @@ from app.persistence.concept_notes.source_provenance import (
     sources_provenance,
 )
 from app.persistence.concept_notes.structure import save_structure, structure_snapshot
+from app.persistence.concept_notes.validation_sources import (
+    load_validation_source_snapshot,
+)
 from app.services.cnb.edit_planner import build_planner_input
 from app.services.document_workspace.jobs import claim_job, run_update_job
 from tests.cnb.test_document_workspace import (
@@ -45,11 +50,72 @@ SOURCE = {"upload_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee", "sha256": "a" * 6
 async def mark_latest_ready(factory):
     async with factory() as session:
         chapter = await session.scalar(select(ConceptNoteChapter).limit(1))
-    await validate_and_confirm_chapters(factory, chapter.run_id)
+    await validate_and_confirm_chapters(
+        factory, chapter.run_id, workflow_factory=factory
+    )
 
 
 async def prepare_export(fixture, *, sources=None, protected=False):
     service, run, factory = fixture
+    if sources:
+        # Real owned CA authority is required even when a test controls the writer.
+        async with factory.kw["bind"].begin() as connection:
+            await connection.run_sync(
+                lambda sync: Base.metadata.create_all(
+                    sync,
+                    tables=[
+                        ConceptNoteUpload.__table__,
+                        ConceptNoteContextBundle.__table__,
+                    ],
+                )
+            )
+        selected, documents = [], []
+        async with factory() as session, session.begin():
+            for source in sources:
+                metadata = {
+                    "upload_id": source["upload_id"],
+                    "filename": "source.md",
+                    "source_label": "Source",
+                    "source_format": "markdown",
+                }
+                selected.append(
+                    {
+                        **metadata,
+                        "sha256": source["sha256"],
+                        "summary": "Verified source",
+                        "topics": [],
+                        "key_excerpts": [],
+                        "block_count": 1,
+                    }
+                )
+                documents.append(
+                    {**metadata, "text": "Verified original source facts."}
+                )
+                session.add(
+                    ConceptNoteUpload(
+                        upload_id=UUID(source["upload_id"]),
+                        run_id=run.run_id,
+                        uploaded_by_user_id=run.user_id,
+                        filename="source.md",
+                        ingest_status="ready",
+                        markdown_sha256=source["sha256"],
+                    )
+                )
+            session.add(
+                ConceptNoteContextBundle(
+                    run_id=run.run_id,
+                    context_bundle={
+                        "selected_sources": selected,
+                        "source_text": {
+                            "mode": "full_text",
+                            "documents": documents,
+                            "token_count": 20,
+                            "max_tokens": 10000,
+                        },
+                    },
+                )
+            )
+        service.workflow_session_factory = factory
     await add_chapters(factory, protected=protected)
     await answer(service, run)
     draft_service = fake_draft_service(factory)
@@ -118,6 +184,39 @@ async def test_narrative_sources_are_checked_even_when_all_points_are_human_answ
             .limit(1)
         )
         assert revision_provenance(latest)["identities"] == [SOURCE]
+
+
+async def test_final_projection_batches_authority_and_rejects_changed_source_text(
+    workspace, monkeypatch
+):
+    service, run, factory, _ = await prepare_export(workspace, sources=[SOURCE])
+    read = AsyncMock(wraps=load_validation_source_snapshot)
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.load_validation_source_snapshot", read
+    )
+    assert (await service.load(run)).export_eligibility.final
+    read.assert_awaited_once_with(factory, run.run_id)
+    async with factory() as session, session.begin():
+        row = await session.get(ConceptNoteContextBundle, run.run_id)
+        bundle = row.context_bundle
+        row.context_bundle = {
+            **bundle,
+            "source_text": {
+                **bundle["source_text"],
+                "documents": [
+                    {
+                        **bundle["source_text"]["documents"][0],
+                        "text": "Changed current verified source text.",
+                    }
+                ],
+            },
+        }
+    view = await service.load(run)
+    assert not view.export_eligibility.final
+    assert any(
+        "validation is missing or stale" in reason
+        for reason in view.export_eligibility.blockers
+    )
 
 
 async def test_unknown_legacy_text_blocks_final_but_fresh_source_free_text_does_not(

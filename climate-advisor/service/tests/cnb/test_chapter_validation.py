@@ -114,6 +114,58 @@ async def test_runs_completeness_before_document_consistency() -> None:
     assert decision.status == "ready"
 
 
+async def test_template_required_policy_overrides_stale_chapter_flag_in_every_model_payload() -> (
+    None
+):
+    validation_request = request(
+        chapters=[
+            chapter(TARGET_ID, position=0, required=False),
+            chapter(OTHER_ID, position=1, required=False),
+        ]
+    )
+    assert validation_request.template is not None
+    validation_request.template.chapter_schema = [
+        {
+            "chapter_ref": "chapter-1",
+            "required": True,
+            "required_fields": ["Implementation timetable"],
+        },
+        {"chapter_ref": "chapter-2", "required": True, "required_fields": []},
+    ]
+    observed = []
+
+    async def run_pass(phase, payload):
+        observed.append(phase)
+        assert payload["output"]["required"] is True
+        if phase == "completeness":
+            assert (
+                payload["document"]["validation_profile"]["chapter_schema"]["required"]
+                is True
+            )
+            return completeness()
+        assert payload["document"]["chapters"][0]["required"] is True
+        return consistency()
+
+    assert (await service(run_pass).validate(validation_request)).status == "ready"
+    assert observed == ["completeness", "consistency"]
+    assert validation_request.chapters[0].required is False
+
+
+async def test_empty_template_required_chapter_is_blocking_even_before_row_metadata_sync() -> (
+    None
+):
+    validation_request = request(
+        chapters=[chapter(TARGET_ID, position=0, body=None, required=False)]
+    )
+    assert validation_request.template is not None
+    validation_request.template.chapter_schema[0]["required"] = True
+    run_pass = AsyncMock()
+    result = await service(run_pass).validate(validation_request)
+    assert result.status == "incomplete"
+    assert result.findings[0].severity == "blocking"
+    run_pass.assert_not_awaited()
+
+
 async def test_canonical_user_date_and_reasoned_assumption_reach_every_validation_pass() -> (
     None
 ):
@@ -321,7 +373,7 @@ async def test_open_questions_are_checked_against_the_other_chapters(asks: str) 
         "answered_gaps",
     ]
     payload = calls[2][1]
-    assert set(payload) == {"document", "output", "open_gaps"}
+    assert set(payload) == {"document", "output", "open_gaps", "source_grounding"}
     assert [c["chapter_id"] for c in payload["document"]["chapters"]] == [str(OTHER_ID)]
     assert "evidence_links" not in payload["document"]
     stale = [f for f in decision.findings if f.category == "cross_chapter_conflict"]

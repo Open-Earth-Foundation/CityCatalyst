@@ -422,7 +422,9 @@ def get_edit_service() -> ConceptNoteEditService | None:
     sessions = get_cnb_reference_session_factory()
     return ConceptNoteEditService(
         ConceptNoteEditRepository(sessions),
-        ConceptNoteWorkspaceRepository(sessions),
+        ConceptNoteWorkspaceRepository(
+            sessions, workflow_session_factory=get_session_factory()
+        ),
         ConceptNoteEditPlanner(settings),
         workflow_sessions=get_session_factory(),
     )

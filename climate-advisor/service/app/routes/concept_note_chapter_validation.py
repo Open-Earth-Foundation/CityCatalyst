@@ -5,12 +5,18 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, Header, Query
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.session import get_session
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterValidationActionResponse,
 )
 from app.services.cnb.chapter_validation import (
     ChapterValidationError,
+    ChapterValidationInputTooLargeError,
+    ChapterValidationSourceContextError,
     ChapterValidationTemplateError,
 )
 from app.services.cnb.chapter_validation_workflow import (
@@ -18,9 +24,6 @@ from app.services.cnb.chapter_validation_workflow import (
     ConceptNoteChapterValidationWorkflowService,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
-from fastapi import APIRouter, Depends, Header, Query
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -73,8 +76,15 @@ async def validate_concept_note_chapter(
         return _problem(
             exc.status_code,
             exc.code,
-            ChapterValidationTemplateError.public_message
-            if isinstance(exc, ChapterValidationTemplateError)
+            exc.public_message
+            if isinstance(
+                exc,
+                (
+                    ChapterValidationTemplateError,
+                    ChapterValidationSourceContextError,
+                    ChapterValidationInputTooLargeError,
+                ),
+            )
             else "Unable to validate the requested chapter",
         )
 

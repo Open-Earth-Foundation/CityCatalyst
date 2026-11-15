@@ -94,8 +94,11 @@ class ConceptNoteWorkspaceRepository:
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
+        *,
+        workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
     ) -> None:
         self._session_factory = session_factory
+        self._workflow_session_factory = workflow_session_factory
 
     async def ensure_template_chapters(
         self,
@@ -239,6 +242,7 @@ class ConceptNoteWorkspaceRepository:
                 session,
                 run_id,
                 template_fingerprint=template_fingerprint,
+                workflow_session_factory=self._workflow_session_factory,
             )
 
     async def load_validation_context(
@@ -255,6 +259,7 @@ class ConceptNoteWorkspaceRepository:
                 run_id=run_id,
                 chapter_id=chapter_id,
                 template_fingerprint=template_fingerprint,
+                workflow_session_factory=self._workflow_session_factory,
             )
 
     async def upsert_validation(
@@ -284,8 +289,13 @@ class ConceptNoteWorkspaceRepository:
                 chapter_id=chapter_id,
                 template_fingerprint=template_fingerprint,
                 lock=True,
+                workflow_session_factory=self._workflow_session_factory,
             )
-            if context.fingerprint != expected_fingerprint:
+            if (
+                context.fingerprint != expected_fingerprint
+                or context.source_authority is None
+                or not context.source_authority.ready
+            ):
                 raise WorkspaceValidationInputChangedError(
                     "Concept Note validation input changed during evaluation"
                 )
@@ -427,6 +437,7 @@ class ConceptNoteWorkspaceRepository:
                     chapter_id=chapter_id,
                     template_fingerprint=template_fingerprint,
                     lock=True,
+                    workflow_session_factory=self._workflow_session_factory,
                 )
             ):
                 raise WorkspaceConflictError(

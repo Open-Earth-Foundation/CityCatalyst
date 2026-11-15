@@ -36,6 +36,10 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.persistence.concept_notes.proposal_gaps import (
+    GENERATED_GAPS_KEY,
+    apply_generated_gaps,
+)
 from app.persistence.concept_notes.source_provenance import (
     PROVENANCE_KEY,
     merge_provenance,
@@ -379,6 +383,15 @@ class ConceptNoteEditRepository:
                         user_id=user_id,
                         idempotency_key=request.idempotency_key,
                     )
+                    try:
+                        await apply_generated_gaps(
+                            session, scope=row.scope, chapter=chapter, body=body
+                        )
+                    except ValueError as exc:
+                        raise EditOperationError(
+                            "stale_gap",
+                            "The generated information gaps changed. Generate a fresh proposal.",
+                        ) from exc
                     revision = await append_revision(
                         session,
                         chapter,
@@ -774,7 +787,9 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "run_id": row.run_id,
             "instruction": row.instruction,
             "scope": {
-                key: value for key, value in row.scope.items() if key != PROVENANCE_KEY
+                key: value
+                for key, value in row.scope.items()
+                if key not in {PROVENANCE_KEY, GENERATED_GAPS_KEY}
             },
             "status": row.status,
             "base_revisions": row.base_revisions,

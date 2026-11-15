@@ -6,6 +6,9 @@ import logging
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
@@ -35,8 +38,6 @@ from app.utils.conversation_observability import (
     async_workflow_trace,
     finish_workflow_trace,
 )
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,10 @@ class ConceptNoteChapterValidationWorkflowService:
     ) -> None:
         """Store workflow and independently managed CNB persistence dependencies."""
         self._workspace = workspace or ConceptNoteWorkspaceRepository(
-            get_cnb_reference_session_factory()
+            get_cnb_reference_session_factory(),
+            workflow_session_factory=async_sessionmaker(
+                workflow_session.bind, expire_on_commit=False
+            ),
         )
         self._validator = validator or ConceptNoteChapterValidationService()
         self._application_context = application_context or (
@@ -163,6 +167,16 @@ class ConceptNoteChapterValidationWorkflowService:
                     "chapter_revision_changed",
                     409,
                     REVISION_CHANGED_MESSAGE,
+                )
+
+            current_context = await self._load_validation_context(
+                run=run,
+                chapter_id=chapter_id,
+                template_fingerprint=template_fingerprint,
+            )
+            if current_context.fingerprint != context.fingerprint:
+                raise ChapterValidationWorkflowError(
+                    "chapter_revision_changed", 409, REVISION_CHANGED_MESSAGE
                 )
 
             # Step 5: recheck workspace inputs and publish result/status together.

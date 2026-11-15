@@ -246,13 +246,15 @@ def fake_draft_service(factory, *, fail=False, during_generation=None):
     )
 
 
-async def validate_and_confirm_chapters(factory, run_id):
+async def validate_and_confirm_chapters(factory, run_id, *, workflow_factory=None):
     """Persist controlled validation outcomes through the real fingerprint boundary."""
     from app.services.cnb.application_context import (
         calculate_application_template_fingerprint,
     )
 
-    repository = ConceptNoteWorkspaceRepository(factory)
+    repository = ConceptNoteWorkspaceRepository(
+        factory, workflow_session_factory=workflow_factory
+    )
     async with factory() as session:
         state = await session.get(DocumentWorkspaceState, run_id)
         snapshot = await session.scalar(
@@ -301,6 +303,83 @@ async def test_requirements_materialize_before_prose_and_shared_keys_are_unique(
         assert len(list(await session.scalars(select(DocumentDependency)))) == 2
         assert len(list(await session.scalars(select(DocumentSetupSnapshot)))) == 1
     assert (await service.load(run)).revision == view.revision
+
+
+async def test_current_accepted_candidate_identity_changes_and_manual_correction_clears_it(
+    workspace,
+):
+    service, run, factory = workspace
+    point = (await service.load(run)).points[0]
+    first_id, second_id = uuid4(), uuid4()
+    async with factory() as session, session.begin():
+        session.add(
+            DocumentCandidate(
+                candidate_id=first_id,
+                point_id=UUID(point.point_id),
+                fingerprint="first",
+                value=400,
+                citations=[],
+                source_identity={"upload_id": str(uuid4()), "sha256": "a" * 64},
+                status="pending",
+            )
+        )
+    first = await service.command(
+        run,
+        point.key,
+        DocumentPointCommand(
+            command="confirm_candidate",
+            expected_version=point.version,
+            idempotency_key="first-current-source",
+            candidate_id=str(first_id),
+        ),
+        user_id="owner",
+    )
+    assert first.point.accepted_candidate_id == str(first_id)
+    async with factory() as session, session.begin():
+        session.add(
+            DocumentCandidate(
+                candidate_id=second_id,
+                point_id=UUID(point.point_id),
+                fingerprint="second",
+                value=420,
+                citations=[],
+                source_identity={"upload_id": str(uuid4()), "sha256": "b" * 64},
+                status="pending",
+            )
+        )
+    current = (await service.load(run)).points[0]
+    second = await service.command(
+        run,
+        point.key,
+        DocumentPointCommand(
+            command="confirm_candidate",
+            expected_version=current.version,
+            idempotency_key="second-current-source",
+            candidate_id=str(second_id),
+        ),
+        user_id="owner",
+    )
+    assert second.point.value == 420 and second.point.accepted_candidate_id == str(
+        second_id
+    )
+    assert {
+        candidate.candidate_id
+        for candidate in second.point.candidates
+        if candidate.status == "accepted"
+    } == {str(first_id), str(second_id)}
+    manual = await service.command(
+        run,
+        point.key,
+        DocumentPointCommand(
+            command="correct",
+            expected_version=second.point.version,
+            idempotency_key="manual-current-source",
+            value=420,
+        ),
+        user_id="owner",
+    )
+    assert manual.point.accepted_candidate_id is None
+    assert len(manual.point.candidates) == 2
 
 
 async def test_ambiguous_labels_are_not_fuzzy_merged_and_conflicting_shared_schema_rejected(
@@ -696,6 +775,40 @@ async def test_empty_requirements_never_report_ready_or_allow_final_export(works
             run, DocumentExportRequest(mode="final", expected_revision=view.revision)
         )
     assert error.value.status_code == 409
+
+
+async def test_orphan_information_marker_blocks_final_without_persisted_gap(workspace):
+    service, run, factory = workspace
+    await add_chapters(factory)
+    await answer(service, run)
+    claim = await claim_job(service)
+    await run_update_job(
+        service,
+        *claim,
+        ca_session_factory=factory,
+        draft_service=fake_draft_service(factory),
+    )
+    await validate_and_confirm_chapters(factory, run.run_id)
+    assert (await service.load(run)).export_eligibility.final
+    async with factory() as session, session.begin():
+        assert not list(await session.scalars(select(ConceptNoteGap)))
+        latest = await session.scalar(
+            select(ConceptNoteChapterRevision)
+            .order_by(ConceptNoteChapterRevision.revision_number.desc())
+            .limit(1)
+        )
+        latest.body_markdown += "\n[Information needed: Confirm operating costs]"
+    view = await service.load(run)
+    assert not view.export_eligibility.final
+    assert any(
+        "Unresolved information markers" in blocker
+        for blocker in view.export_eligibility.blockers
+    )
+    with pytest.raises(HTTPException) as failure:
+        await service.export(
+            run, DocumentExportRequest(mode="final", expected_revision=view.revision)
+        )
+    assert failure.value.status_code == 409
 
 
 async def test_canonical_change_without_prose_rejects_old_validation_for_confirm_and_final(

@@ -44,6 +44,9 @@ from app.persistence.concept_notes.source_provenance import (
     merge_provenance,
     revision_provenance,
 )
+from app.persistence.concept_notes.validation_sources import (
+    load_validation_source_snapshot,
+)
 from app.persistence.concept_notes.workspace_validation import (
     has_current_ready_validation,
 )
@@ -60,6 +63,7 @@ from app.services.document_workspace.source_sync import (
     queue_ready_source_sync,
     schedule_source_sync,
 )
+from app.utils.cnb_information_markers import information_needed_markers
 from app.utils.document_point_values import accepted_point_reason
 
 logger = logging.getLogger(__name__)
@@ -82,7 +86,9 @@ class DocumentWorkspaceService:
     ) -> None:
         """Allow isolated persistence fixtures while defaulting to CNB storage."""
         self.session_factory = session_factory or get_cnb_reference_session_factory()
-        self.workflow_session_factory = workflow_session_factory
+        self.workflow_session_factory = workflow_session_factory or (
+            get_session_factory() if session_factory is None else None
+        )
 
     async def load(self, run: ConceptNoteRun) -> DocumentWorkspace:
         """Read the persisted projection; materialize a selected setup once."""
@@ -720,6 +726,13 @@ class DocumentWorkspaceService:
             )
         )
         active_chapter_refs = {chapter.template_section_id for chapter in chapters}
+        validation_sources = (
+            await load_validation_source_snapshot(
+                self.workflow_session_factory, state.run_id
+            )
+            if chapters
+            else None
+        )
         points: list[DocumentWorkspacePoint] = []
         blockers = []
         if state.setup is None:
@@ -832,6 +845,9 @@ class DocumentWorkspaceService:
                 accepted_reason=accepted_point_reason(
                     accepted.snapshot if accepted else None
                 ),
+                accepted_candidate_id=str(accepted.snapshot["candidate_id"])
+                if accepted and accepted.snapshot.get("candidate_id")
+                else None,
                 candidates=[
                     {
                         "candidate_id": str(candidate.candidate_id),
@@ -870,6 +886,8 @@ class DocumentWorkspaceService:
             )
             if latest is None or not latest.body_markdown.strip():
                 blockers.append(f"Chapter has no text: {chapter.title}")
+            elif information_needed_markers(latest.body_markdown):
+                blockers.append(f"Unresolved information markers: {chapter.title}")
             elif not revision_provenance(latest)["complete"]:
                 blockers.append(f"{chapter.title}: {UNKNOWN_PROVENANCE_MESSAGE}")
             elif (
@@ -895,6 +913,8 @@ class DocumentWorkspaceService:
                     run_id=state.run_id,
                     chapter_id=chapter.chapter_id,
                     template_fingerprint=template_fingerprint,
+                    workflow_session_factory=self.workflow_session_factory,
+                    source_snapshot=validation_sources,
                 ):
                     blockers.append(
                         f"Required chapter validation is missing or stale: {chapter.title}"

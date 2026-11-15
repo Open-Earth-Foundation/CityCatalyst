@@ -26,6 +26,7 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationPoint,
     ChapterValidationProfile,
     ChapterValidationRequest,
+    ChapterValidationSourceDocument,
     ChapterValidationTemplate,
 )
 from app.persistence.concept_notes.workspace import normalize_template_chapters
@@ -34,6 +35,7 @@ from app.persistence.concept_notes.workspace_validation import (
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.cnb_information_markers import information_needed_markers
+from app.utils.concept_note_context import render_source_documents_message
 from app.utils.prompt_budget import count_prompt_tokens
 
 logger = logging.getLogger(__name__)
@@ -63,6 +65,11 @@ class ChapterValidationInputTooLargeError(ChapterValidationError):
 
     code = "chapter_validation_input_too_large"
     status_code = 422
+    public_message = (
+        "Complete chapter and source text exceeds the validation context budget. "
+        "Use smaller source documents or shorter chapters, then retry. "
+        "The document has not been classified as unsupported."
+    )
 
 
 class ChapterValidationModelOutputError(ChapterValidationError):
@@ -81,6 +88,29 @@ class ChapterValidationTemplateError(ChapterValidationError):
         "The application template needs review: ensure unique chapter references "
         "and assign every required field to its applicable chapters."
     )
+
+
+class ChapterValidationSourceContextError(ChapterValidationError):
+    """Complete exact verified grounding must be available before evaluating claims."""
+
+    code = "chapter_validation_source_context_unavailable"
+    public_message = (
+        "Complete verified source text is unavailable for this revision. "
+        "Refresh source processing and retry validation; if sources exceed the "
+        "context budget, use smaller source documents. Existing text has not "
+        "been classified as unsupported."
+    )
+
+    def __init__(self, status: str) -> None:
+        self.status_code = (
+            503 if status == "unavailable" else 422 if status == "summary" else 409
+        )
+        super().__init__(
+            "Complete verified source text is unavailable for this revision "
+            f"({status}). Refresh source processing and retry validation; if sources "
+            "exceed the context budget, use smaller source documents. Existing text "
+            "has not been classified as unsupported."
+        )
 
 
 def select_chapter_validation_profile(
@@ -102,7 +132,7 @@ def select_chapter_validation_profile(
             chapter_schema={
                 "title": target.title,
                 "description": target.description,
-                "required": False,
+                "required": target.required,
             },
             required_fields=[],
         )
@@ -155,7 +185,7 @@ def select_chapter_validation_profile(
                     "description": chapter.description
                     if target.description is None
                     else target.description,
-                    "required": chapter.required,
+                    "required": chapter.required or target.required,
                 },
                 required_fields=fields,
             )
@@ -174,8 +204,13 @@ def build_chapter_validation_request(
     context: WorkspaceValidationContext,
     *,
     template: ApplicationContextTemplate | None,
+    source_documents: list[dict[str, Any]] | None = None,
 ) -> ChapterValidationRequest:
     """Adapt one repository snapshot and application template to core inputs."""
+    if context.source_authority is not None:
+        if not context.source_authority.ready:
+            raise ChapterValidationSourceContextError(context.source_authority.status)
+        source_documents = context.source_authority.documents
     template_context = None
     if template is not None:
         template_context = ChapterValidationTemplate(
@@ -229,6 +264,10 @@ def build_chapter_validation_request(
             )
             for point in context.canonical_points
         ],
+        source_documents=[
+            ChapterValidationSourceDocument.model_validate(document)
+            for document in source_documents or []
+        ],
     )
 
 
@@ -257,18 +296,36 @@ class ConceptNoteChapterValidationService:
             if chapter.chapter_id == request.target_chapter_id
         )
         profile = select_chapter_validation_profile(request.template, target)
+        required_refs = (
+            {
+                chapter.chapter_ref
+                for chapter in normalize_template_chapters(
+                    request.template.chapter_schema
+                )
+                if chapter.required
+            }
+            if request.template is not None
+            else set()
+        )
+        effective_required = (
+            target.required or target.template_section_id in required_refs
+        )
         if not (target.body_markdown or "").strip():
-            return _empty_chapter_decision(request)
+            return _empty_chapter_decision(request, required=effective_required)
 
         # Attach one-based positions so model output can cite existing evidence
         # without copying or inventing source metadata.
         target_payload = target.model_dump(mode="json")
+        target_payload["required"] = effective_required
         evidence_payload = [
             {"position": position, **evidence.model_dump(mode="json")}
             for position, evidence in enumerate(request.evidence_links, start=1)
         ]
         canonical_payload = [
             point.model_dump(mode="json") for point in request.canonical_points
+        ]
+        sources_payload = [
+            document.model_dump(mode="json") for document in request.source_documents
         ]
         completeness_payload = {
             "document": {
@@ -279,7 +336,12 @@ class ConceptNoteChapterValidationService:
                 "canonical_points": canonical_payload,
             },
             "output": target_payload,
+            "source_grounding": {
+                "mode": "full_text" if sources_payload else "source_free",
+                "source_count": len(sources_payload),
+            },
             "open_gaps": [gap.model_dump(mode="json") for gap in request.open_gaps],
+            **({"source_documents": sources_payload} if sources_payload else {}),
         }
         prompts = self._settings.llm.prompts
         budget = self._settings.llm.generation.prompt_budget.cnb_validation
@@ -294,7 +356,7 @@ class ConceptNoteChapterValidationService:
             model=model_name,
             fallback_encoding=fallback_encoding,
             max_prompt_tokens=budget.max_prompt_tokens,
-            description="output completeness input",
+            description="complete chapter and verified source text",
         )
 
         logger.info(
@@ -313,6 +375,8 @@ class ConceptNoteChapterValidationService:
             completeness_payload=completeness_payload,
             evidence_payload=evidence_payload,
             canonical_payload=canonical_payload,
+            required_refs=required_refs,
+            sources_payload=sources_payload,
             consistency_prompt=prompts.get_prompt("cnb_chapter_validation_consistency"),
             answered_gaps_prompt=prompts.get_prompt(
                 "cnb_chapter_validation_answered_gaps"
@@ -353,6 +417,8 @@ class ConceptNoteChapterValidationService:
         completeness_payload: dict[str, Any],
         evidence_payload: list[dict[str, Any]],
         canonical_payload: list[dict[str, Any]],
+        required_refs: set[str],
+        sources_payload: list[dict[str, Any]],
         consistency_prompt: str,
         answered_gaps_prompt: str,
         model_name: str,
@@ -405,7 +471,11 @@ class ConceptNoteChapterValidationService:
                 evidence_link_count=len(request.evidence_links),
             )
             document_chapters = [
-                chapter.model_dump(mode="json")
+                {
+                    **chapter.model_dump(mode="json"),
+                    "required": chapter.required
+                    or chapter.template_section_id in required_refs,
+                }
                 for chapter in sorted(
                     (
                         chapter
@@ -425,7 +495,14 @@ class ConceptNoteChapterValidationService:
                         "canonical_points": canonical_payload,
                     },
                     "output": target_payload,
+                    "source_grounding": {
+                        "mode": "full_text" if sources_payload else "source_free",
+                        "source_count": len(sources_payload),
+                    },
                     "completeness_result": completeness_result,
+                    **(
+                        {"source_documents": sources_payload} if sources_payload else {}
+                    ),
                 }
 
             open_gaps = [gap.model_dump(mode="json") for gap in request.open_gaps]
@@ -437,7 +514,14 @@ class ConceptNoteChapterValidationService:
                         "canonical_points": canonical_payload,
                     },
                     "output": target_payload,
+                    "source_grounding": {
+                        "mode": "full_text" if sources_payload else "source_free",
+                        "source_count": len(sources_payload),
+                    },
                     "open_gaps": open_gaps,
+                    **(
+                        {"source_documents": sources_payload} if sources_payload else {}
+                    ),
                 }
 
             passes: list[tuple[ValidationPass, str, Callable[..., dict[str, Any]]]] = [
@@ -522,9 +606,13 @@ class ConceptNoteChapterValidationService:
             output_type=output_type,
             tools=[],
         )
+        body, source_text = _validation_model_parts(payload)
+        messages = [{"role": "user", "content": json.dumps(body, ensure_ascii=False)}]
+        if source_text:
+            messages.append({"role": "user", "content": source_text})
         result = await self._runner.run(
             agent,
-            json.dumps(payload, ensure_ascii=False),
+            messages,
             run_config=RunConfig(
                 tracing_disabled=True, trace_include_sensitive_data=False
             ),
@@ -533,6 +621,17 @@ class ConceptNoteChapterValidationService:
             ValidationPassOutput,
             output_type.model_validate(result.final_output),
         )
+
+
+def _validation_model_parts(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any], str | None]:
+    """Keep complete verified source text outside the JSON model-input envelope."""
+    documents = payload.get("source_documents") or []
+    return (
+        {key: value for key, value in payload.items() if key != "source_documents"},
+        render_source_documents_message(documents) if documents else None,
+    )
 
 
 async def _invoke_pass(
@@ -567,10 +666,12 @@ def _build_chapter_batches(
     """Batch complete chapters greedily while never truncating document text."""
 
     def fits(chapters: list[dict[str, Any]]) -> bool:
+        body, source_text = _validation_model_parts(payload_for(chapters))
         token_count = count_prompt_tokens(
             [
                 prompt,
-                payload_for(chapters),
+                body,
+                source_text or "",
                 ChapterConsistencyValidationOutput.model_json_schema(),
             ],
             model=model,
@@ -619,8 +720,9 @@ def _require_prompt_fit(
     description: str,
 ) -> None:
     """Reject an indivisible prompt instead of silently dropping content."""
+    body, source_text = _validation_model_parts(payload)
     token_count = count_prompt_tokens(
-        [prompt, payload, output_schema],
+        [prompt, body, source_text or "", output_schema],
         model=model,
         fallback_encoding=fallback_encoding,
     )
@@ -839,6 +941,8 @@ def _aggregate_status(
 
 def _empty_chapter_decision(
     request: ChapterValidationRequest,
+    *,
+    required: bool,
 ) -> ChapterValidationDecision:
     """Return a deterministic missing-information result without model spend."""
     target = next(
@@ -846,7 +950,7 @@ def _empty_chapter_decision(
         for chapter in request.chapters
         if chapter.chapter_id == request.target_chapter_id
     )
-    is_required = target.required
+    is_required = required
     empty_finding = ChapterValidationFinding(
         phase="completeness",
         category="missing_information",

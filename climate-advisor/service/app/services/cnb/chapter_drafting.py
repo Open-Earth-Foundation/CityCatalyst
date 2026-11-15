@@ -127,7 +127,9 @@ class ConceptNoteChapterDraftService:
         self._cnb_session_factory = (
             cnb_session_factory or get_cnb_reference_session_factory()
         )
-        self._workspace = ConceptNoteWorkspaceRepository(self._cnb_session_factory)
+        self._workspace = ConceptNoteWorkspaceRepository(
+            self._cnb_session_factory, workflow_session_factory=self._ca_session_factory
+        )
         self._application_context = ConceptNoteApplicationContextService(
             session_factory=self._cnb_session_factory
         )
@@ -270,7 +272,9 @@ class ConceptNoteChapterDraftService:
                     run_context["document_workspace_points"] = await point_context(
                         DocumentWorkspaceService(self._cnb_session_factory), run_id
                     )
-                    source_provenance = generation_provenance(run_context, chapters, current=current)
+                    source_provenance = generation_provenance(
+                        run_context, chapters, current=current
+                    )
                     generated = await self._generate_chapter(
                         build_chapter_input(
                             application_context=application_context,
@@ -325,9 +329,13 @@ class ConceptNoteChapterDraftService:
     ) -> ConceptNoteDraftResponse:
         """Mark one exact, gap-free chapter revision Ready after user review."""
         try:
-            template_fingerprint = await self._application_context.load_template_fingerprint_for_run(run)
+            template_fingerprint = (
+                await self._application_context.load_template_fingerprint_for_run(run)
+            )
             if template_fingerprint is None:
-                raise WorkspaceConflictError("The selected application template is unavailable.")
+                raise WorkspaceConflictError(
+                    "The selected application template is unavailable."
+                )
             await self._workspace.confirm_chapter(
                 run_id=run.run_id,
                 chapter_id=chapter_id,
@@ -401,7 +409,18 @@ class ConceptNoteChapterDraftService:
             # Each proposal appends a revision and leaves confirmed text immutable.
             for current in impacted:
                 answered = [gap for gap in current.gaps if gap.gap_id in evidence]
-                source_provenance = generation_provenance(run_context, chapters, current=current, extra_sources=[{"upload_id": str(item.source.upload_id), "sha256": item.source.sha256} for item in new_sources])
+                source_provenance = generation_provenance(
+                    run_context,
+                    chapters,
+                    current=current,
+                    extra_sources=[
+                        {
+                            "upload_id": str(item.source.upload_id),
+                            "sha256": item.source.sha256,
+                        }
+                        for item in new_sources
+                    ],
+                )
                 generated = await self._generate_chapter(
                     build_chapter_input(
                         application_context=application_context,
@@ -902,7 +921,9 @@ async def generate_chapter_draft(
             result = await runner.run(
                 agent,
                 _chapter_input_messages(payload),
-                run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
+                run_config=RunConfig(
+                    tracing_disabled=True, trace_include_sensitive_data=False
+                ),
             )
             return ConceptNoteChapterDraftOutput.model_validate(result.final_output)
         finally:
@@ -942,7 +963,10 @@ def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str,
     if not payload.get("source_documents"):
         return payload
     budget = settings.llm.generation.prompt_budget
-    model = settings.llm.models.cnb_chapter_drafter or settings.llm.models.cnb_source_synthesizer
+    model = (
+        settings.llm.models.cnb_chapter_drafter
+        or settings.llm.models.cnb_source_synthesizer
+    )
     tokens = count_prompt_tokens(
         [
             settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
@@ -1015,7 +1039,9 @@ def build_chapter_input(
             "selected_sources": [
                 {
                     **source,
-                    "chapter_excerpts": chapter_excerpts_for(source, current.chapter_ref),
+                    "chapter_excerpts": chapter_excerpts_for(
+                        source, current.chapter_ref
+                    ),
                 }
                 for source in bundle.get("selected_sources", [])
             ],
@@ -1061,7 +1087,11 @@ def build_chapter_input(
             ],
             "new_source_evidence": new_source_evidence or [],
             "canonical_points": [
-                {key: value for key, value in point.items() if key not in {"version", "chapter_refs", "source_provenance"}}
+                {
+                    key: value
+                    for key, value in point.items()
+                    if key not in {"version", "chapter_refs", "source_provenance"}
+                }
                 for point in run_context.get("document_workspace_points", [])
                 if current.chapter_ref in point.get("chapter_refs", [])
             ],

@@ -411,6 +411,12 @@ point vectors and chapter revisions fence the result. Free text gets a revision;
 manual/Ready text gets an existing edit proposal. Proposal acceptance marks the
 dependent version current through the reconciler. Failures retain the accepted
 answer and expose retryable freshness separately.
+Protected-update proposals retain generated gap definitions in private per-chapter
+scope JSON. `persistence/concept_notes/proposal_gaps.py` reconciles only markers
+present in each accepted chapter body inside the normal edit transaction. Removed
+answered gaps close through the existing edit path; rejected or unselected changes
+cannot create gaps, and absent resolved history is not reopened. This metadata is
+excluded from public `EditScope` alongside source provenance.
 Point vectors include the requirements of the target chapters. A different point
 changing a shared target requeues the original chapter set, while unrelated
 chapter work keeps its valid result or review proposal. Canonical gap keys use the
@@ -457,6 +463,27 @@ Changing accepted values, reasons or point policy invalidates an earlier result
 even when chapter prose has not yet changed. Accepted human facts need no
 duplicate PDF citation; exceptions remain explicit and do not approve text or
 clear persisted gaps automatically.
+
+Validation also resolves the exact source vector captured by every current
+chapter and accepted point supplied to consistency checks. An explicitly composed
+CA session factory reads the owned run, ready uploads, selected-source digests and
+full source-text bundle; the separate CNB factory reads immutable revisions and
+point state. Identity, owner, filename, format and digest must match before private
+identifiers are removed. All three passes receive the same complete source text
+through the existing source-document renderer. Explicit source-free provenance
+remains distinct from unknown, missing, mismatched or summary-only authority.
+Unavailable authority fails actionably before model evaluation. Complete source
+messages count against the existing prompt budget and are never truncated.
+
+A versioned authority fingerprint covers only the captured source identities,
+grounding status and exact model-visible text/metadata. Unrelated newly uploaded
+sources cannot stale a review. Validation checks this contract before and after
+model execution and again before persistence; snapshots, final eligibility and
+confirmation use the same live authority check. Workspace projections batch one
+CA snapshot across chapters. These checks are optimistic across the two stores;
+the final CC source lifecycle validator still runs at export. Effective chapter
+required policy is the template requirement or existing chapter policy, so models
+never ask users to edit stale internal required flags.
 
 The CC adapter reuses IngestDocumentPool/NativeInputCatalog through target-run
 associations. `document_workspace/source_access.py` binds the authenticated

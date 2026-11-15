@@ -259,6 +259,13 @@ async def _seed_document(
                     author_type="agent",
                     change_type="draft",
                     body_markdown="Target body",
+                    patch_summary={
+                        "source_provenance": {
+                            "version": 1,
+                            "complete": True,
+                            "identities": [],
+                        }
+                    },
                 ),
                 ConceptNoteChapterRevision(
                     chapter_id=related_id,
@@ -266,6 +273,13 @@ async def _seed_document(
                     author_type="agent",
                     change_type="draft",
                     body_markdown="Related body",
+                    patch_summary={
+                        "source_provenance": {
+                            "version": 1,
+                            "complete": True,
+                            "identities": [],
+                        }
+                    },
                 ),
                 ConceptNoteGap(
                     run_id=run_id,

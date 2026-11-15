@@ -10,7 +10,7 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import and_, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -20,9 +20,21 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
 )
 from app.models.db.document_workspace import (
+    DocumentCandidate,
     DocumentPoint,
     DocumentPointRevision,
     DocumentWorkspaceState,
+)
+from app.persistence.concept_notes.source_provenance import (
+    merge_provenance,
+    revision_provenance,
+    sources_provenance,
+)
+from app.persistence.concept_notes.validation_sources import (
+    ValidationSourceAuthority,
+    ValidationSourceSnapshot,
+    load_validation_source_snapshot,
+    resolve_validation_source_authority,
 )
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
@@ -61,6 +73,7 @@ class WorkspaceValidationChapter:
     revision_id: UUID | None
     revision_number: int | None
     description: str | None = None
+    source_provenance: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -94,6 +107,7 @@ class WorkspaceValidationContext:
     evidence_links: list[WorkspaceValidationEvidence]
     fingerprint: str
     canonical_points: list[dict[str, Any]] = field(default_factory=list)
+    source_authority: ValidationSourceAuthority | None = None
 
 
 class WorkspaceValidationInputChangedError(Exception):
@@ -107,6 +121,8 @@ async def has_current_ready_validation(
     chapter_id: UUID,
     template_fingerprint: str,
     lock: bool = False,
+    workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
+    source_snapshot: ValidationSourceSnapshot | None = None,
 ) -> bool:
     """Require validation of the exact current prose, canonical answers and policy."""
     context = await _load_validation_context(
@@ -115,6 +131,8 @@ async def has_current_ready_validation(
         chapter_id=chapter_id,
         template_fingerprint=template_fingerprint,
         lock=lock,
+        workflow_session_factory=workflow_session_factory,
+        source_snapshot=source_snapshot,
     )
     stored = await session.scalar(
         select(ConceptNoteChapterValidation).where(
@@ -123,6 +141,8 @@ async def has_current_ready_validation(
     )
     return bool(
         stored is not None
+        and context.source_authority is not None
+        and context.source_authority.ready
         and stored.status == "ready"
         and stored.validated_revision_id == context.target.revision_id
         and stored.validation_input_fingerprint == context.fingerprint
@@ -148,6 +168,25 @@ async def _load_validation_points(
         )
     ).all()
     result = []
+    candidate_ids = []
+    for _, accepted in rows:
+        if accepted and accepted.get("candidate_id"):
+            try:
+                candidate_ids.append(UUID(accepted["candidate_id"]))
+            except (ValueError, TypeError):
+                pass
+    candidates = (
+        {
+            str(candidate.candidate_id): candidate
+            for candidate in await session.scalars(
+                select(DocumentCandidate).where(
+                    DocumentCandidate.candidate_id.in_(candidate_ids)
+                )
+            )
+        }
+        if candidate_ids
+        else {}
+    )
     for point, accepted in rows:
         snapshot = accepted or {}
         accepted_state = point.accepted_version > 0 and point.disposition in {
@@ -155,6 +194,15 @@ async def _load_validation_points(
             "assumption",
             "not_applicable",
         }
+        candidate_id = snapshot.get("candidate_id")
+        candidate = candidates.get(str(candidate_id)) if candidate_id else None
+        provenance = (
+            sources_provenance([candidate.source_identity])
+            if candidate is not None
+            else merge_provenance(None)
+            if accepted_state and (not accepted or candidate_id)
+            else sources_provenance([])
+        )
         result.append(
             {
                 **point.definition,
@@ -165,6 +213,7 @@ async def _load_validation_points(
                 "status": point.disposition if accepted_state else "missing",
                 "value": snapshot.get("value", point.value) if accepted_state else None,
                 "reason": accepted_point_reason(snapshot) if accepted_state else None,
+                "source_provenance": provenance,
             }
         )
     return result
@@ -194,6 +243,7 @@ def _validation_chapters(
                 revision_number=(
                     revision.revision_number if revision is not None else None
                 ),
+                source_provenance=revision_provenance(revision),
             )
         )
     return detached
@@ -236,6 +286,7 @@ def calculate_validation_input_fingerprint(
     evidence_links: list[WorkspaceValidationEvidence],
     template_fingerprint: str | None,
     canonical_points: list[dict[str, Any]] | None = None,
+    source_authority: ValidationSourceAuthority | None = None,
 ) -> str:
     """Hash all document, target, and template inputs supplied to validation."""
     payload = {
@@ -282,6 +333,8 @@ def calculate_validation_input_fingerprint(
     # Legacy runs without point setup keep their existing validation identity.
     if canonical_points:
         payload["canonical_points"] = canonical_points
+    if source_authority is not None:
+        payload["source_authority"] = source_authority.fingerprint_input()
     canonical = json.dumps(
         payload,
         ensure_ascii=False,
@@ -298,6 +351,8 @@ async def _load_validation_context(
     chapter_id: UUID,
     template_fingerprint: str,
     lock: bool = False,
+    workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
+    source_snapshot: ValidationSourceSnapshot | None = None,
 ) -> WorkspaceValidationContext:
     """Build one validation input snapshot from the managed CNB database."""
     # Match point writers' state-before-chapters order for the final race check.
@@ -327,6 +382,13 @@ async def _load_validation_context(
     validation_chapters = _validation_chapters(chapters, revisions)
     open_gaps = _validation_gaps(gap_rows[chapter_id])
     evidence_links = _validation_evidence(evidence_rows[chapter_id])
+    source_authority = await _validation_source_authority(
+        validation_chapters,
+        canonical_points,
+        run_id,
+        workflow_session_factory=workflow_session_factory,
+        source_snapshot=source_snapshot,
+    )
     target_snapshot = next(
         chapter for chapter in validation_chapters if chapter.chapter_id == chapter_id
     )
@@ -337,6 +399,7 @@ async def _load_validation_context(
         evidence_links=evidence_links,
         template_fingerprint=template_fingerprint,
         canonical_points=canonical_points,
+        source_authority=source_authority,
     )
     return WorkspaceValidationContext(
         target=target_snapshot,
@@ -345,4 +408,40 @@ async def _load_validation_context(
         evidence_links=evidence_links,
         fingerprint=fingerprint,
         canonical_points=canonical_points,
+        source_authority=source_authority,
     )
+
+
+async def _validation_source_authority(
+    chapters: list[WorkspaceValidationChapter],
+    points: list[dict[str, Any]],
+    run_id: UUID,
+    *,
+    workflow_session_factory: async_sessionmaker[AsyncSession] | None,
+    source_snapshot: ValidationSourceSnapshot | None = None,
+) -> ValidationSourceAuthority:
+    """Resolve every body and applicable accepted point supplied to consistency."""
+    refs = {chapter.chapter_ref for chapter in chapters}
+    provenance = merge_provenance(
+        sources_provenance([]),
+        *(
+            chapter.source_provenance
+            for chapter in chapters
+            if chapter.body_markdown is not None
+        ),
+        *(
+            point.get("source_provenance")
+            for point in points
+            if point.get("status") in {"answered", "assumption", "not_applicable"}
+            and (
+                not point.get("chapter_refs")
+                or refs.intersection(point["chapter_refs"])
+            )
+        ),
+    )
+    snapshot = source_snapshot
+    if snapshot is None:
+        snapshot = await load_validation_source_snapshot(
+            workflow_session_factory, run_id
+        )
+    return resolve_validation_source_authority(provenance, snapshot)

@@ -31,6 +31,7 @@ from app.persistence.concept_notes.gaps import (
     _reconcile_evidence_gaps,
     _restore_dropped_gaps,
 )
+from app.persistence.concept_notes.proposal_gaps import GENERATED_GAPS_KEY
 from app.persistence.concept_notes.source_provenance import (
     PROVENANCE_KEY,
     generation_provenance,
@@ -457,6 +458,12 @@ async def run_update_job(
                         instruction="Update this chapter to the accepted canonical document point values.",
                         scope={
                             PROVENANCE_KEY: source_provenance,
+                            GENERATED_GAPS_KEY: {
+                                str(chapter.chapter_id): [
+                                    gap.model_dump(mode="json")
+                                    for gap in generated.missing_information
+                                ]
+                            },
                             "kind": "auto",
                             "focused_chapter_id": str(chapter.chapter_id),
                         },

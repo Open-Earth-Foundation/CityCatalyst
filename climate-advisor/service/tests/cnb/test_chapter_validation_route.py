@@ -7,16 +7,22 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
+import pytest
+from fastapi.testclient import TestClient
+
 from app.main import get_app
 from app.models.cnb.concept_note_draft import ConceptNoteChapterValidationResponse
 from app.routes.concept_note_chapter_validation import (
     get_chapter_validation_workflow_service,
 )
-from app.services.cnb.chapter_validation import ChapterValidationTemplateError
+from app.services.cnb.chapter_validation import (
+    ChapterValidationInputTooLargeError,
+    ChapterValidationSourceContextError,
+    ChapterValidationTemplateError,
+)
 from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
 )
-from fastapi.testclient import TestClient
 
 
 def _post_validation(service: object) -> tuple[object, object, object]:
@@ -115,3 +121,21 @@ def test_invalid_template_returns_actionable_safe_error() -> None:
         "detail": ChapterValidationTemplateError.public_message,
         "status": 409,
     }
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        ChapterValidationSourceContextError("summary"),
+        ChapterValidationSourceContextError("unavailable"),
+        ChapterValidationInputTooLargeError("private source data"),
+    ],
+)
+def test_missing_complete_context_returns_actionable_safe_error(error):
+    response, _, _ = _post_validation(
+        SimpleNamespace(validate=AsyncMock(side_effect=error))
+    )
+    assert response.status_code == error.status_code
+    assert response.json()["detail"] == error.public_message
+    assert "private source data" not in response.text
+    assert "unsupported" in response.json()["detail"]

@@ -103,6 +103,16 @@ class ChapterValidationPoint(BaseModel):
     reason: str | None = None
 
 
+class ChapterValidationSourceDocument(BaseModel):
+    """Complete verified source text with no storage or upload identities."""
+
+    model_config = ConfigDict(extra="forbid")
+    source_label: str
+    filename: str
+    source_format: Literal["pdf", "markdown"]
+    text: str
+
+
 class ChapterValidationRequest(BaseModel):
     """Repository-facing immutable inputs for one explicit validation attempt."""
 
@@ -115,6 +125,9 @@ class ChapterValidationRequest(BaseModel):
     open_gaps: list[ChapterValidationGap] = Field(default_factory=list)
     evidence_links: list[ChapterValidationEvidenceLink] = Field(default_factory=list)
     canonical_points: list[ChapterValidationPoint] = Field(default_factory=list)
+    source_documents: list[ChapterValidationSourceDocument] = Field(
+        default_factory=list
+    )
 
     @model_validator(mode="after")
     def validate_chapter_identity(self) -> Self:

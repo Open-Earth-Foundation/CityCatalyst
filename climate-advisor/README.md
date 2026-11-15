@@ -153,8 +153,12 @@ the point card, Clima guidance, drafting, validation or exception export caveats
 
 Accepted values and leased update jobs commit together. The startup reconciler
 retries failed or interrupted jobs, updates free chapters, and creates normal
-edit proposals for manual/Ready text. Before first prose exists, updates wait
-without spending retries or marking the accepted answer as failed. Initial
+edit proposals for manual/Ready text. Generated gap definitions remain private
+proposal metadata until that chapter's change is accepted. Acceptance writes its
+visible markers and structured gaps together; rejection or accepting another
+chapter creates no gaps. Previously unanswered gaps remain open, and absent
+resolved gaps remain resolved. Before first prose exists, updates wait without
+spending retries or marking the accepted answer as failed. Initial
 drafting uses the accepted values directly. Final export checks coverage,
 conflicts, dependent freshness and required reviews against locked revisions.
 Confirmation and final export also require current Ready validation of the exact

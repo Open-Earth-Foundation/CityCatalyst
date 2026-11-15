@@ -8,7 +8,7 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
@@ -24,6 +24,7 @@ from app.persistence.concept_notes.gaps import (
     _snapshot_gap,
 )
 from app.persistence.concept_notes.source_provenance import revision_provenance
+from app.persistence.concept_notes.validation_sources import ValidationSourceAuthority
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
     _evidence_by_chapter,
@@ -37,6 +38,7 @@ from app.persistence.concept_notes.workspace_validation import (
     _validation_chapters,
     _validation_evidence,
     _validation_gaps,
+    _validation_source_authority,
     calculate_validation_input_fingerprint,
 )
 
@@ -72,6 +74,7 @@ async def _snapshot_chapters(
     run_id: UUID,
     *,
     template_fingerprint: str | None = None,
+    workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
 ) -> list[WorkspaceChapterSnapshot]:
     """Project active chapters with latest validations and derived staleness."""
     # Fetch all current inputs once because draft state is polled frequently.
@@ -97,6 +100,12 @@ async def _snapshot_chapters(
     }
     validation_chapters = _validation_chapters(chapters, revisions)
     canonical_points = await _load_validation_points(session, run_id)
+    source_authority = await _validation_source_authority(
+        validation_chapters,
+        canonical_points,
+        run_id,
+        workflow_session_factory=workflow_session_factory,
+    )
     revision_history = await _snapshot_revision_history(
         session,
         chapters,
@@ -123,6 +132,7 @@ async def _snapshot_chapters(
             template_fingerprint=template_fingerprint,
             source_provenance=revision_provenance(revisions.get(chapter.chapter_id)),
             canonical_points=canonical_points,
+            source_authority=source_authority,
         )
         for chapter, detached in zip(chapters, validation_chapters, strict=True)
     ]
@@ -178,6 +188,7 @@ def _chapter_snapshot(
     template_fingerprint: str | None,
     source_provenance: dict[str, Any],
     canonical_points: list[dict[str, Any]],
+    source_authority: ValidationSourceAuthority,
 ) -> WorkspaceChapterSnapshot:
     """Project one chapter and derive validation freshness and display status."""
     # Compare the stored validation with the chapter's complete current input.
@@ -190,6 +201,7 @@ def _chapter_snapshot(
         evidence_links=_validation_evidence(evidence),
         template_fingerprint=template_fingerprint,
         canonical_points=canonical_points,
+        source_authority=source_authority,
     )
     validation_snapshot = None
     if stored_validation is not None:
@@ -197,7 +209,8 @@ def _chapter_snapshot(
             validation_id=stored_validation.validation_id,
             status=stored_validation.status,
             is_stale=(
-                stored_validation.validation_input_fingerprint != current_fingerprint
+                not source_authority.ready
+                or stored_validation.validation_input_fingerprint != current_fingerprint
             ),
             validated_revision_id=stored_validation.validated_revision_id,
             validated_revision_number=validated_revision_numbers.get(
@@ -241,5 +254,7 @@ def _chapter_snapshot(
         revision_id=detached.revision_id,
         validation=validation_snapshot,
         source_provenance=source_provenance,
-        confirmed_source_provenance=revision_provenance(confirmed) if confirmed else None,
+        confirmed_source_provenance=revision_provenance(confirmed)
+        if confirmed
+        else None,
     )

@@ -1,4 +1,5 @@
 import { env } from "@/lib/runtime-env";
+import { conceptNoteDraftVersion } from "@/util/concept-note-draft-version";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -219,6 +220,7 @@ export const api = createApi({
     "ConceptNoteChatThreads",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
+    "DocumentWorkspace",
     "ConceptNoteEdits",
     "BulkInventoryImport",
     "ConceptNoteApplicationContext",
@@ -2708,6 +2710,23 @@ export const api = createApi({
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
         query: (runId) => `concept-notes/${runId}/draft/`,
+        async onQueryStarted(
+          runId,
+          { dispatch, queryFulfilled, getCacheEntry },
+        ) {
+          const previous = conceptNoteDraftVersion(getCacheEntry().data);
+          try {
+            const { data } = await queryFulfilled;
+            if (conceptNoteDraftVersion(data) !== previous)
+              dispatch(
+                api.util.invalidateTags([
+                  { type: "DocumentWorkspace", id: runId },
+                ]),
+              );
+          } catch {
+            // A failed draft read cannot establish a newer workspace snapshot.
+          }
+        },
         providesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
         ],
@@ -2958,6 +2977,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, runId) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "DocumentWorkspace", id: runId },
           { type: "ConceptNoteRuns", id: runId },
         ],
       }),
@@ -2975,6 +2995,7 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { runId }) => [
           { type: "ConceptNoteDraft", id: runId },
+          { type: "DocumentWorkspace", id: runId },
           { type: "ConceptNoteEdits", id: runId },
         ],
       }),
@@ -2986,6 +3007,8 @@ export const api = createApi({
           url: `concept-notes/${runId}/chapters/${chapterId}/validation/`,
           method: "POST",
         }),
+        invalidatesTags: (_result, error, { runId }) =>
+          error ? [] : [{ type: "DocumentWorkspace", id: runId }],
       }),
     };
   },

@@ -11,6 +11,12 @@ with suggested choices (possible answers, not source facts), free text, or
 chapter edit proposal: accepting it closes the gap only when every part was
 answered. **Answer later** leaves the gap open.
 
+Accepted or rejected edits, chapter confirmation/validation, and changed draft
+snapshots refresh that run's canonical workspace cache. Sync and export wait while
+local edits or workspace refreshes are pending. Commands retain the displayed
+expected revision; a genuine concurrent change still requires reload and review,
+without automatically retrying against a newer setup.
+
 ### Connection errors
 
 Concept Note chat keeps request rejections separate from connection failures:

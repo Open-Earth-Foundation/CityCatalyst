@@ -35,6 +35,7 @@ export const editApi = api.injectEndpoints({
       invalidatesTags: (_r, _e, args) => [
         ...tags(_r, _e, args),
         { type: "ConceptNoteDraft" as const, id: args.runId },
+        { type: "DocumentWorkspace" as const, id: args.runId },
       ],
     }),
     rejectEditProposal: builder.mutation<EditProposal, Target>({
@@ -46,6 +47,7 @@ export const editApi = api.injectEndpoints({
       invalidatesTags: (_r, _e, args) => [
         ...tags(_r, _e, args),
         { type: "ConceptNoteDraft" as const, id: args.runId },
+        { type: "DocumentWorkspace" as const, id: args.runId },
       ],
     }),
     refineEditProposal: builder.mutation<

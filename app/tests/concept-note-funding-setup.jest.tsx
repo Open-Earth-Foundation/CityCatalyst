@@ -63,6 +63,9 @@ let draftActions: {
   onAnswerGap: (chapter: unknown, row: unknown) => void;
 };
 let pointKeys: { key: string }[] = [];
+let workspaceFetching = false;
+let workspaceRevision = 0;
+let syncSetup: (() => void) | undefined;
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -75,8 +78,9 @@ jest.unstable_mockModule("@/services/api", () => ({
 jest.unstable_mockModule("@/services/document-workspace-api", () => ({
   documentWorkspaceApi: {
     useGetDocumentWorkspaceQuery: () => ({
+      isFetching: workspaceFetching,
       data: {
-        revision: 0,
+        revision: workspaceRevision,
         setup: null,
         points: pointKeys,
         needs: [],
@@ -225,9 +229,27 @@ for (const [path, name] of [
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/document-workspace-panels",
   () => ({
-    WorkspaceOverview: ({ onOpenSetup }: { onOpenSetup: () => void }) => (
-      <button onClick={onOpenSetup}>{"workspace-choose-template"}</button>
-    ),
+    WorkspaceOverview: ({
+      onOpenSetup,
+      onSyncSetup,
+      setupSaving,
+    }: {
+      onOpenSetup: () => void;
+      onSyncSetup: () => void;
+      setupSaving: boolean;
+    }) => {
+      syncSetup = onSyncSetup;
+      return (
+        <>
+          <button onClick={onOpenSetup}>{"workspace-choose-template"}</button>
+          <button
+            aria-label="sync-setup"
+            disabled={setupSaving}
+            onClick={onSyncSetup}
+          />
+        </>
+      );
+    },
     WorkspaceTodos: ({ selectedKey }: { selectedKey: string }) => (
       <div data-testid="selected-point">{selectedKey}</div>
     ),
@@ -279,6 +301,10 @@ beforeEach(() => {
   initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
   reviewProposal = null;
   pointKeys = [];
+  workspaceFetching = false;
+  workspaceRevision = 0;
+  syncSetup = undefined;
+  saveSetup.mockReset();
   confirmChapterMutation.mockReset();
   refetch.mockReset();
   refetchWorkspace.mockClear();
@@ -491,6 +517,34 @@ it("opens an existing review deep link directly in Draft instead of Overview", a
       .find((tab) => tab.textContent === "workspace-overview-tab")
       ?.getAttribute("aria-selected"),
   ).toBe("false");
+});
+
+it("waits for workspace reconciliation before explicit Sync uses the displayed revision", async () => {
+  workspaceFetching = true;
+  await clickSetup();
+  expect(
+    (container.querySelector('[aria-label="sync-setup"]') as HTMLButtonElement)
+      .disabled,
+  ).toBe(true);
+  await act(async () => syncSetup?.());
+  expect(saveSetup).not.toHaveBeenCalled();
+  workspaceFetching = false;
+  workspaceRevision = 9;
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />
+      </ChakraProvider>,
+    ),
+  );
+  await act(async () =>
+    (
+      container.querySelector('[aria-label="sync-setup"]') as HTMLButtonElement
+    ).click(),
+  );
+  expect(saveSetup).toHaveBeenCalledWith(
+    expect.objectContaining({ runId: "run", expected_revision: 9 }),
+  );
 });
 
 it("opens review instead of sending a confirmation when chapter validation is missing or stale", async () => {

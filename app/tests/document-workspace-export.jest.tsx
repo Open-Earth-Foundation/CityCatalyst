@@ -80,7 +80,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
 });
-async function render(final = false) {
+async function render(final = false, refreshing = false) {
   const workspace = {
     revision: 12,
     export_eligibility: {
@@ -99,6 +99,7 @@ async function render(final = false) {
           noteName="City proposal"
           lng="en"
           onReload={reloadWorkspace}
+          refreshing={refreshing}
         />
       </ChakraProvider>,
     ),
@@ -108,6 +109,15 @@ const button = (text: string) =>
   [...container.querySelectorAll("button")].find(
     (element) => element.textContent === text,
   )!;
+it("waits for workspace reconciliation before exporting its cached revision", async () => {
+  await render(true, true);
+  expect(button("workspace-export-working").disabled).toBe(true);
+  expect(button("workspace-export-final").disabled).toBe(true);
+  await act(async () => button("workspace-export-final").click());
+  expect(request).not.toHaveBeenCalled();
+  await render(true, false);
+  expect(button("workspace-export-final").disabled).toBe(false);
+});
 it("keeps final export disabled while unresolved points remain", async () => {
   await render();
   expect(button("workspace-export-final").disabled).toBe(true);

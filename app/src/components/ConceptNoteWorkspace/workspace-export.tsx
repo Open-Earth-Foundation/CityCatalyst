@@ -22,6 +22,7 @@ export function WorkspaceExport({
   lng,
   onReload,
   onReviewEvidence,
+  refreshing = false,
 }: {
   workspace: DocumentWorkspace;
   runId: string;
@@ -29,6 +30,7 @@ export function WorkspaceExport({
   lng: string;
   onReload: () => Promise<unknown>;
   onReviewEvidence?: () => void;
+  refreshing?: boolean;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [format, setFormat] = useState<ConceptNoteExportFormat>("docx");
@@ -64,6 +66,7 @@ export function WorkspaceExport({
     return message;
   }
   async function download(mode: "working" | "final") {
+    if (refreshing) return;
     setBuildFailed(false);
     try {
       const snapshot = await exportSnapshot({
@@ -107,7 +110,7 @@ export function WorkspaceExport({
           size="sm"
           variant={workspace.export_eligibility.final ? "outline" : "solid"}
           loading={state.isLoading || building}
-          disabled={!workspace.export_eligibility.working}
+          disabled={refreshing || !workspace.export_eligibility.working}
           onClick={() => void download("working")}
         >
           {t("workspace-export-working")}
@@ -115,7 +118,7 @@ export function WorkspaceExport({
         <Button
           size="sm"
           loading={state.isLoading || building}
-          disabled={!workspace.export_eligibility.final}
+          disabled={refreshing || !workspace.export_eligibility.final}
           aria-describedby={
             !workspace.export_eligibility.final
               ? "workspace-export-blockers"

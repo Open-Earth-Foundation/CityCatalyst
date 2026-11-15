@@ -228,7 +228,10 @@ describe("useConceptNoteWorkspaceEvents", () => {
     expect(invalidateTags).toHaveBeenCalledWith([
       { type: "ConceptNoteRuns", id: "run-1" },
     ]);
-    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(invalidateTags).toHaveBeenCalledWith([
+      { type: "DocumentWorkspace", id: "run-1" },
+    ]);
+    expect(dispatch).toHaveBeenCalledTimes(3);
     expect(releaseLock).toHaveBeenCalledTimes(1);
   });
 });

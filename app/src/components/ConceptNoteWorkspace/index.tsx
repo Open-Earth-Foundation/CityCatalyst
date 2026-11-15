@@ -294,6 +294,14 @@ export function ConceptNoteWorkspace({
       if (chapterIds[0]) navigateEdit(chapterIds[0]);
     },
   });
+  const workspaceRefreshing = Boolean(
+    workspaceQuery.isFetching ||
+    workspaceQuery.isError ||
+    edits.busy ||
+    confirmChapterState.isLoading ||
+    startDraftState.isLoading ||
+    isDraftRunning,
+  );
   const openFundingSetup = async () => {
     if (applicationContext) {
       setFundingOpen(true);
@@ -909,20 +917,21 @@ export function ConceptNoteWorkspace({
                       }}
                       onOpenSetup={() => void openFundingSetup()}
                       hasTemplate={hasApplicationTemplate}
-                      setupSaving={setupState.isLoading}
+                      setupSaving={setupState.isLoading || workspaceRefreshing}
                       setupError={setupState.isError}
                       onOpenGap={openDraftGap}
                       reviewPending={Boolean(reviewProposal)}
                       onViewChanges={viewChanges}
                       onOpenExport={() => setExportOpen(true)}
-                      onSyncSetup={() =>
+                      onSyncSetup={() => {
+                        if (workspaceRefreshing || setupState.isLoading) return;
                         void saveSetup({
                           runId,
                           document_type: "concept_note",
                           expected_revision: workspace.revision,
                           idempotency_key: crypto.randomUUID(),
-                        })
-                      }
+                        });
+                      }}
                     />
                   )}
                 </Tabs.Content>
@@ -1173,6 +1182,7 @@ export function ConceptNoteWorkspace({
             <DialogBody minH={0} overflowY="auto" pb={6}>
               <WorkspaceExport
                 workspace={workspace}
+                refreshing={workspaceRefreshing || setupState.isLoading}
                 runId={runId}
                 noteName={run.name}
                 lng={lng}

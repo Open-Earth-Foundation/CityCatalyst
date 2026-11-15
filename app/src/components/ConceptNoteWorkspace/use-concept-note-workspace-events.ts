@@ -9,6 +9,7 @@ import { getConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
 import { editApi } from "@/services/concept-note-edit-api";
 import { logger } from "@/services/logger";
 import type { ConceptNoteWorkspaceSnapshot } from "@/util/types";
+import { conceptNoteDraftVersion } from "@/util/concept-note-draft-version";
 
 const INITIAL_RETRY_MS = 5_000;
 const MAX_RETRY_MS = 30_000;
@@ -155,6 +156,7 @@ export function useConceptNoteWorkspaceEvents({
 
     let reconciledUpload = false;
     let reconciledDraft = false;
+    let draftVersion: string | undefined;
     let reconciledBundle: string | null = null;
     function updateCaches(snapshot: ConceptNoteWorkspaceSnapshot): void {
       if (
@@ -201,6 +203,13 @@ export function useConceptNoteWorkspaceEvents({
         );
       }
       if (snapshot.draft?.run_id === runId) {
+        const nextVersion = conceptNoteDraftVersion(snapshot.draft);
+        if (nextVersion !== draftVersion) {
+          draftVersion = nextVersion;
+          dispatch(
+            api.util.invalidateTags([{ type: "DocumentWorkspace", id: runId }]),
+          );
+        }
         dispatch(
           api.util.upsertQueryEntries([
             {

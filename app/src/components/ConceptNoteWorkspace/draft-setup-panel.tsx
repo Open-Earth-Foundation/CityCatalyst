@@ -8,7 +8,7 @@ import {
 } from "react-icons/lu";
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,

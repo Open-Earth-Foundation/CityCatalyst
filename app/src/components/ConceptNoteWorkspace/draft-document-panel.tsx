@@ -23,7 +23,11 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
+import {
+  NativeSelectRoot,
+  NativeSelectField,
+} from "@/components/ui/native-select";
 import {
   PopoverArrow,
   PopoverBody,
@@ -51,6 +55,7 @@ import {
 } from "./chapter-gaps-panel";
 import {
   getChapterDisplayStatus,
+  isChapterValidationCurrent,
   type ChapterDisplayStatus,
 } from "./chapter-validation";
 import type { DraftFocusController } from "./use-draft-focus";
@@ -204,6 +209,7 @@ const ChapterGapContext = createContext<{
   chapter: ConceptNoteDraftChapter;
   lng: string;
   rows: ChapterGapRow[];
+  canonicalPointKeys?: string[];
   onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
 } | null>(null);
 
@@ -225,6 +231,9 @@ const previewMarkdownComponents = {
         row={row}
         number={gaps.rows.indexOf(row) + 1}
         onAnswerGap={gaps.onAnswerGap}
+        directAnswer={Boolean(
+          row.gap && gaps.canonicalPointKeys?.includes(row.gap.field_key),
+        )}
       />
     ) : null;
   },
@@ -277,6 +286,7 @@ export interface DraftInlineReviewProps {
   onAcceptReviewChange?: (changeIds: string[]) => void;
   onRejectReviewChange?: (changeIds: string[]) => void;
   onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
+  canonicalPointKeys?: string[];
 }
 
 interface DraftDocumentPanelProps extends DraftInlineReviewProps {
@@ -304,6 +314,7 @@ export function DraftDocumentPanel({
   isConfirmingChapter,
   onConfirmChapter,
   onAnswerGap,
+  canonicalPointKeys,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
@@ -360,223 +371,258 @@ export function DraftDocumentPanel({
     <VStack
       align="stretch"
       flex={1}
-      minH={{ base: 0, lg: DOCUMENT_MIN_HEIGHT }}
+      minH={focus.usesSharedScroll ? 0 : { base: 0, lg: DOCUMENT_MIN_HEIGHT }}
       gap={2}
     >
       <Flex
-        direction={{ base: "column", lg: "row" }}
+        direction={
+          focus.usesSharedScroll ? "column" : { base: "column", lg: "row" }
+        }
         flex={1}
         minH={0}
         gap={focus.isChapterPanelOpen ? 5 : 0}
       >
-        <VStack
-          id="concept-note-chapter-panel"
-          role="region"
-          aria-label={t("draft-sections")}
-          align="stretch"
-          flexShrink={0}
-          position="relative"
-          gap={focus.isChapterPanelOpen ? 2 : 0}
-          w={
-            focus.isChapterPanelOpen
-              ? { base: "full", lg: "160px", xl: "180px" }
-              : { base: "full", lg: "0px" }
-          }
-          maxH={
-            focus.isChapterPanelOpen
-              ? { base: "190px", lg: "full" }
-              : { base: "0px", lg: "full" }
-          }
-          minH={0}
-          borderWidth={focus.isChapterPanelOpen ? "1px" : "0"}
-          borderStyle="solid"
-          borderColor="border.neutral"
-          borderRadius="rounded"
-          bg={focus.isChapterPanelOpen ? "base.light" : "transparent"}
-          overflow="visible"
-          p={focus.isChapterPanelOpen ? 3 : 0}
-          transition="width 160ms ease, max-height 160ms ease, padding 160ms ease, border-width 160ms ease"
-        >
-          {focus.isChapterPanelOpen && (
-            <Text
-              flexShrink={0}
-              fontFamily="heading"
-              fontSize="10px"
-              fontWeight="semibold"
-              color="content.tertiary"
-              letterSpacing="1.5px"
-              textTransform="uppercase"
-            >
+        {focus.usesSharedScroll ? (
+          <HStack gap={3} flexWrap="wrap">
+            <Text fontSize="body.sm" color="content.secondary">
               {t("draft-sections")}
             </Text>
-          )}
-          <Tooltip
-            content={t(
-              focus.isChapterPanelOpen
-                ? "hide-chapter-panel"
-                : "show-chapter-panel",
-            )}
-          >
-            <Button
-              type="button"
-              variant="outline"
-              aria-controls="concept-note-chapter-panel"
-              aria-expanded={focus.isChapterPanelOpen}
-              aria-label={t(
+            <NativeSelectRoot flex="1" maxW="360px">
+              <NativeSelectField
+                aria-label={t("draft-sections")}
+                value={focus.selectedChapterId}
+                onChange={(event) => selectChapter(event.target.value)}
+              >
+                {chapters.map((chapter) => (
+                  <option key={chapter.chapter_id} value={chapter.chapter_id}>
+                    {chapter.position + 1}. {chapter.title}
+                  </option>
+                ))}
+              </NativeSelectField>
+            </NativeSelectRoot>
+          </HStack>
+        ) : (
+          <>
+            <VStack
+              id="concept-note-chapter-panel"
+              role="region"
+              aria-label={t("draft-sections")}
+              align="stretch"
+              flexShrink={0}
+              position="relative"
+              gap={focus.isChapterPanelOpen ? 2 : 0}
+              w={
                 focus.isChapterPanelOpen
-                  ? "hide-chapter-panel"
-                  : "show-chapter-panel",
-              )}
-              position="absolute"
-              zIndex={2}
-              insetEnd={{ base: "50%", lg: "-18px" }}
-              bottom={{ base: "-18px", lg: "auto" }}
-              top={{ base: "auto", lg: "50%" }}
-              transform={{ base: "translateX(50%)", lg: "translateY(-50%)" }}
-              minW="36px"
-              h="36px"
+                  ? { base: "full", lg: "160px", xl: "180px" }
+                  : { base: "full", lg: "0px" }
+              }
+              maxH={
+                focus.isChapterPanelOpen
+                  ? { base: "190px", lg: "full" }
+                  : { base: "0px", lg: "full" }
+              }
+              minH={0}
+              borderWidth={focus.isChapterPanelOpen ? "1px" : "0"}
+              borderStyle="solid"
               borderColor="border.neutral"
-              borderRadius="full"
-              bg="base.light"
-              color="content.link"
-              p={0}
-              boxShadow="1dp"
-              transitionDuration="150ms"
-              transitionProperty="background, border-color, box-shadow"
-              _hover={{
-                borderColor: "content.link",
-                bg: "background.neutral",
-                boxShadow: "2dp",
-              }}
-              onClick={focus.toggleChapterPanel}
+              borderRadius="rounded"
+              bg={focus.isChapterPanelOpen ? "base.light" : "transparent"}
+              overflow="visible"
+              p={focus.isChapterPanelOpen ? 3 : 0}
+              transition="width 160ms ease, max-height 160ms ease, padding 160ms ease, border-width 160ms ease"
             >
-              <Icon
-                as={focus.isChapterPanelOpen ? LuChevronUp : LuChevronDown}
-                display={{ base: "block", lg: "none" }}
-                boxSize="18px"
-              />
-              <Icon
-                as={focus.isChapterPanelOpen ? LuChevronLeft : LuChevronRight}
-                display={{ base: "none", lg: "block" }}
-                boxSize="18px"
-              />
-            </Button>
-          </Tooltip>
-          <VStack
-            id="concept-note-chapter-list"
-            hidden={!focus.isChapterPanelOpen}
-            align="stretch"
-            flex={1}
-            minH={0}
-            gap={1}
-            overflowY="auto"
-            pr={1}
-          >
-            {chapters.map((chapter) => {
-              const isSelected = focus.selectedChapterId === chapter.chapter_id;
-              const gapCount = gapRows.get(chapter.chapter_id)!.length;
-              return (
-                <Button
-                  key={chapter.chapter_id}
-                  type="button"
-                  variant="ghost"
-                  aria-current={isSelected ? "location" : undefined}
-                  aria-label={t("jump-to-chapter", { chapter: chapter.title })}
-                  title={`${chapter.position + 1} ${chapter.title}`}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="flex-start"
-                  gap={2}
-                  w="full"
-                  borderRadius="6px"
-                  bg={isSelected ? "background.neutral" : "transparent"}
-                  px={2}
-                  py={1.5}
-                  fontFamily="body"
-                  fontWeight="normal"
-                  letterSpacing="normal"
-                  textAlign="left"
-                  textTransform="none"
-                  _hover={{ bg: "background.neutral" }}
-                  _focusVisible={{
-                    outline: "2px solid",
-                    outlineColor: "content.link",
-                    outlineOffset: "1px",
-                  }}
-                  onClick={() => {
-                    focus.selectChapter(chapter.chapter_id);
-                    onFocusedChapterChange?.(chapter.chapter_id);
-                  }}
+              {focus.isChapterPanelOpen && (
+                <Text
+                  flexShrink={0}
+                  fontFamily="heading"
+                  fontSize="10px"
+                  fontWeight="semibold"
+                  color="content.tertiary"
+                  letterSpacing="1.5px"
+                  textTransform="uppercase"
                 >
-                  <Box
-                    flexShrink={0}
-                    boxSize="6px"
-                    borderRadius="full"
-                    bg={chapterTone(getChapterDisplayStatus(chapter))}
+                  {t("draft-sections")}
+                </Text>
+              )}
+              <Tooltip
+                content={t(
+                  focus.isChapterPanelOpen
+                    ? "hide-chapter-panel"
+                    : "show-chapter-panel",
+                )}
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-controls="concept-note-chapter-panel"
+                  aria-expanded={focus.isChapterPanelOpen}
+                  aria-label={t(
+                    focus.isChapterPanelOpen
+                      ? "hide-chapter-panel"
+                      : "show-chapter-panel",
+                  )}
+                  position="absolute"
+                  zIndex={2}
+                  insetEnd={{ base: "50%", lg: "-18px" }}
+                  bottom={{ base: "-18px", lg: "auto" }}
+                  top={{ base: "auto", lg: "50%" }}
+                  transform={{
+                    base: "translateX(50%)",
+                    lg: "translateY(-50%)",
+                  }}
+                  minW="36px"
+                  h="36px"
+                  borderColor="border.neutral"
+                  borderRadius="full"
+                  bg="base.light"
+                  color="content.link"
+                  p={0}
+                  boxShadow="1dp"
+                  transitionDuration="150ms"
+                  transitionProperty="background, border-color, box-shadow"
+                  _hover={{
+                    borderColor: "content.link",
+                    bg: "background.neutral",
+                    boxShadow: "2dp",
+                  }}
+                  onClick={focus.toggleChapterPanel}
+                >
+                  <Icon
+                    as={focus.isChapterPanelOpen ? LuChevronUp : LuChevronDown}
+                    display={{ base: "block", lg: "none" }}
+                    boxSize="18px"
                   />
-                  <Text
-                    flex={1}
-                    minW={0}
-                    overflow="hidden"
-                    fontSize="11px"
-                    lineHeight="16px"
-                    color="content.secondary"
-                    letterSpacing="normal"
-                    textOverflow="ellipsis"
-                    textTransform="none"
-                    whiteSpace="nowrap"
-                  >
-                    {chapter.position + 1} {chapter.title}
-                  </Text>
-                  {gapCount > 0 && (
-                    <Text
-                      as="span"
-                      flexShrink={0}
-                      fontSize="10px"
-                      color="content.tertiary"
-                      aria-label={t("chapter-open-gaps", { count: gapCount })}
-                      data-testid="concept-note-section-gap-count"
-                    >
-                      {gapCount}
-                    </Text>
-                  )}
-                  {reviewChanges.some(
-                    (change) => change.chapter_id === chapter.chapter_id,
-                  ) && (
-                    <Box
-                      data-testid="concept-note-section-has-changes"
-                      role="img"
-                      aria-label={t("edit-section-has-changes")}
-                      flexShrink={0}
-                      boxSize="7px"
-                      borderRadius="full"
-                      bg="content.link"
-                    />
-                  )}
+                  <Icon
+                    as={
+                      focus.isChapterPanelOpen ? LuChevronLeft : LuChevronRight
+                    }
+                    display={{ base: "none", lg: "block" }}
+                    boxSize="18px"
+                  />
                 </Button>
-              );
-            })}
-          </VStack>
-        </VStack>
+              </Tooltip>
+              <VStack
+                id="concept-note-chapter-list"
+                hidden={!focus.isChapterPanelOpen}
+                align="stretch"
+                flex={1}
+                minH={0}
+                gap={1}
+                overflowY="auto"
+                pr={1}
+              >
+                {chapters.map((chapter) => {
+                  const isSelected =
+                    focus.selectedChapterId === chapter.chapter_id;
+                  const gapCount = gapRows.get(chapter.chapter_id)!.length;
+                  return (
+                    <Button
+                      key={chapter.chapter_id}
+                      type="button"
+                      variant="ghost"
+                      aria-current={isSelected ? "location" : undefined}
+                      aria-label={t("jump-to-chapter", {
+                        chapter: chapter.title,
+                      })}
+                      title={`${chapter.position + 1} ${chapter.title}`}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="flex-start"
+                      gap={2}
+                      w="full"
+                      borderRadius="6px"
+                      bg={isSelected ? "background.neutral" : "transparent"}
+                      px={2}
+                      py={1.5}
+                      fontFamily="body"
+                      fontWeight="normal"
+                      letterSpacing="normal"
+                      textAlign="left"
+                      textTransform="none"
+                      _hover={{ bg: "background.neutral" }}
+                      _focusVisible={{
+                        outline: "2px solid",
+                        outlineColor: "content.link",
+                        outlineOffset: "1px",
+                      }}
+                      onClick={() => {
+                        focus.selectChapter(chapter.chapter_id);
+                        onFocusedChapterChange?.(chapter.chapter_id);
+                      }}
+                    >
+                      <Box
+                        flexShrink={0}
+                        boxSize="6px"
+                        borderRadius="full"
+                        bg={chapterTone(getChapterDisplayStatus(chapter))}
+                      />
+                      <Text
+                        flex={1}
+                        minW={0}
+                        overflow="hidden"
+                        fontSize="11px"
+                        lineHeight="16px"
+                        color="content.secondary"
+                        letterSpacing="normal"
+                        textOverflow="ellipsis"
+                        textTransform="none"
+                        whiteSpace="nowrap"
+                      >
+                        {chapter.position + 1} {chapter.title}
+                      </Text>
+                      {gapCount > 0 && (
+                        <Text
+                          as="span"
+                          flexShrink={0}
+                          fontSize="10px"
+                          color="content.tertiary"
+                          aria-label={t("chapter-open-gaps", {
+                            count: gapCount,
+                          })}
+                          data-testid="concept-note-section-gap-count"
+                        >
+                          {gapCount}
+                        </Text>
+                      )}
+                      {reviewChanges.some(
+                        (change) => change.chapter_id === chapter.chapter_id,
+                      ) && (
+                        <Box
+                          data-testid="concept-note-section-has-changes"
+                          role="img"
+                          aria-label={t("edit-section-has-changes")}
+                          flexShrink={0}
+                          boxSize="7px"
+                          borderRadius="full"
+                          bg="content.link"
+                        />
+                      )}
+                    </Button>
+                  );
+                })}
+              </VStack>
+            </VStack>{" "}
+          </>
+        )}
 
         <Box
-          ref={previewElement}
+          ref={focus.usesSharedScroll ? undefined : previewElement}
           data-testid="concept-note-draft-preview"
           tabIndex={-1}
           flex={1}
           minW={0}
-          minH={DOCUMENT_MIN_HEIGHT}
-          overflowY="auto"
+          minH={focus.usesSharedScroll ? 0 : DOCUMENT_MIN_HEIGHT}
+          overflowY={focus.usesSharedScroll ? "visible" : "auto"}
           scrollBehavior="smooth"
-          border="1px solid"
+          border={focus.usesSharedScroll ? "0" : "1px solid"}
           borderColor="border.neutral"
           borderRadius="rounded"
           bg="base.light"
-          px={{ base: 4, md: 5 }}
+          px={focus.usesSharedScroll ? 0 : { base: 4, md: 5 }}
           pb={{ base: 4, md: 5 }}
         >
           <Box
-            position="sticky"
+            position={focus.usesSharedScroll ? "static" : "sticky"}
             zIndex={1}
             top={-1}
             bg="base.light"
@@ -593,13 +639,19 @@ export function DraftDocumentPanel({
             </Text>
           </Box>
 
-          <VStack align="stretch" mt={4} gap={5}>
+          <VStack
+            align="stretch"
+            mt={4}
+            gap={5}
+            maxW="76ch"
+            css={{ "& p, & li, & blockquote": { lineHeight: 1.65 } }}
+          >
             {chapters.map((chapter) => (
               <Box
                 key={chapter.chapter_id}
                 data-chapter-id={chapter.chapter_id}
                 ref={(element: HTMLDivElement | null) => {
-                  chapterElements.current[chapter.chapter_id] = element;
+                  focus.registerChapter(chapter.chapter_id, element);
                 }}
                 scrollMarginTop={4}
               >
@@ -653,7 +705,8 @@ export function DraftDocumentPanel({
                     rows={gapRows.get(chapter.chapter_id)!}
                     onAnswerGap={onAnswerGap}
                   />
-                  {chapter.status === "draft" &&
+                  {chapter.status !== "ready" &&
+                    Boolean(chapter.body_markdown) &&
                     chapter.open_gap_count === 0 && (
                       <Button
                         size="xs"
@@ -662,7 +715,12 @@ export function DraftDocumentPanel({
                         onClick={() => void onConfirmChapter(chapter)}
                       >
                         <Icon as={LuCheck} />
-                        {t("review-and-confirm")}
+                        {t(
+                          isChapterValidationCurrent(chapter) &&
+                            chapter.validation?.status === "ready"
+                            ? "review-and-confirm"
+                            : "workspace-review-chapter-first",
+                        )}
                       </Button>
                     )}
                 </Flex>
@@ -780,6 +838,7 @@ export function DraftDocumentPanel({
                               lng,
                               rows: gapRows.get(chapter.chapter_id)!,
                               onAnswerGap,
+                              canonicalPointKeys,
                             }}
                           >
                             <ReactMarkdown

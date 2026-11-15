@@ -134,3 +134,25 @@ TypeScript files passed ESLint; the new Python modules passed Ruff/Black checks
 (Ruff excludes `__init__.py` from the repository's package-name rule). The local
 validation report preserves the PostgreSQL run's original tested hashes and the
 later browser rerun separately.
+
+
+### Workspace presentation (local UI pass, November 15)
+
+The document pane has a fixed compact header and a single tab row, with one
+vertical scrolling content region shared by Overview, Context, To do, Structure
+and Draft. Export stays in a reachable header dialog. Setup emptiness is an
+actionable template choice rather than zero-point completion. Ready workspaces
+show coverage, the next point and compact current facts; evidence and export
+checks expand on demand. On narrow screens a Document/Clima switch preserves
+both panes while giving each the available width. Component container queries
+adapt the To do list and Overview columns to the document pane's actual width.
+
+Canonical gap markers open the matching point in To do directly. Chapters with
+missing or stale validation open document review before a confirm command is
+allowed. Source-unavailable conflicts direct the user to evidence; revision
+conflicts offer refresh. Current accepted answers and their basis remain visible
+while a conflicting source is awaiting a decision. Current citations use the
+server-authoritative accepted_candidate_id; explicit null denotes a human answer
+without candidate attribution, and earlier accepted candidates remain history. This pass keeps all command,
+review and export authority on the existing backend; deployed screenshots and
+visual critique follow the local component checks.

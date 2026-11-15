@@ -4,7 +4,7 @@ import { chakra, Icon } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuChevronDown, LuExternalLink } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 
 export interface ContextSourceAction {
   label: string;

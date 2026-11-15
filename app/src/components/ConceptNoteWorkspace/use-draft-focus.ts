@@ -16,9 +16,11 @@ export interface DraftFocusController {
   chapterElements: React.MutableRefObject<
     Record<string, HTMLDivElement | null>
   >;
+  registerChapter: (chapterId: string, element: HTMLDivElement | null) => void;
   focusedFinding: FocusedDraftFinding | null;
   focusedFindingElement: React.MutableRefObject<HTMLDivElement | null>;
   isChapterPanelOpen: boolean;
+  usesSharedScroll: boolean;
   previewElement: React.MutableRefObject<HTMLDivElement | null>;
   selectedChapterId: string | undefined;
   selectChapter: (chapterId: string) => void;
@@ -30,10 +32,12 @@ export function useDraftFocus(
   currentChapterId: string | null | undefined,
   focusChapterId: string | null,
   focusFindingKey: string | null,
+  scrollContainerRef?: React.MutableRefObject<HTMLDivElement | null>,
 ): DraftFocusController {
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
   const focusedFindingElement = useRef<HTMLDivElement | null>(null);
-  const previewElement = useRef<HTMLDivElement | null>(null);
+  const ownPreviewElement = useRef<HTMLDivElement | null>(null);
+  const previewElement = scrollContainerRef ?? ownPreviewElement;
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
   const [isChapterPanelOpen, setIsChapterPanelOpen] = useState(true);
   const focusedFinding = useMemo(() => {
@@ -66,7 +70,7 @@ export function useDraftFocus(
         48;
       preview.scrollTo({ behavior: "smooth", top: Math.max(0, targetTop) });
     },
-    [],
+    [previewElement],
   );
 
   const selectChapter = useCallback(
@@ -107,9 +111,13 @@ export function useDraftFocus(
 
   return {
     chapterElements,
+    registerChapter: (chapterId, element) => {
+      chapterElements.current[chapterId] = element;
+    },
     focusedFinding,
     focusedFindingElement,
     isChapterPanelOpen,
+    usesSharedScroll: Boolean(scrollContainerRef),
     previewElement,
     selectedChapterId:
       focusedChapterId ?? currentChapterId ?? chapters[0]?.chapter_id,

@@ -22,7 +22,7 @@ const addSource = jest.fn();
 let questionData:
   | { why_asking: string; questions: { question: string; options: string[] }[] }
   | undefined;
-let commandError: { status: number } | undefined;
+let commandError: { status: number; data?: { title: string } } | undefined;
 const reload = jest.fn<() => Promise<void>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -365,7 +365,7 @@ it("shows an accepted waiting point in Overview without claiming nothing is wait
     revision: 1,
     points: [acceptedWaiting],
     needs: [],
-    setup: null,
+    setup: { ready: true, name: "City template" },
     overview: {
       required_total: 1,
       required_covered: 1,
@@ -496,4 +496,137 @@ it("does not promote a mutable park note to an accepted reason when the server e
   )!;
   expect(accepted.textContent).not.toContain("workspace-accepted-basis");
   expect(accepted.textContent).not.toContain("A later task note");
+});
+
+it("keeps the accepted answer and basis visible while comparing a new conflict", async () => {
+  await render({
+    ...point,
+    status: "conflict",
+    value: 80,
+    accepted_reason: "Approved budget",
+    candidates: [
+      {
+        ...point.candidates[0],
+        candidate_id: "old",
+        status: "accepted",
+        value: 80,
+        citations: [
+          {
+            ...point.candidates[0].citations[0],
+            quote: "Approved total: EUR 80",
+          },
+        ],
+      },
+      point.candidates[0],
+    ],
+  });
+  const current = container.querySelector(
+    '[data-testid="document-point-accepted-answer"]',
+  );
+  expect(current?.textContent).toContain("workspace-current-answer");
+  expect(current?.textContent).toContain("80");
+  expect(current?.textContent).toContain("Approved budget");
+  expect(current?.textContent).toContain("Approved total: EUR 80");
+  expect(container.textContent).toContain("workspace-new-source-answer");
+  expect(container.textContent).toContain("Total project cost: EUR 100");
+  expect(save).not.toHaveBeenCalled();
+});
+
+it("offers evidence review rather than revision reload when a supporting source is unavailable", async () => {
+  commandError = {
+    status: 409,
+    data: {
+      title:
+        "A supporting source is unavailable or changed. Review the source-backed answer.",
+    },
+  };
+  await render();
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+    "workspace-source-unavailable-error",
+  );
+  expect(button("workspace-reload")).toBeUndefined();
+  await act(async () => button("workspace-review-evidence").click());
+  expect(addSource).toHaveBeenCalledTimes(1);
+});
+
+it("Overview uses current candidate attribution and presents actionable setup emptiness", async () => {
+  const old = {
+    ...point.candidates[0],
+    candidate_id: "old",
+    status: "accepted" as const,
+    value: 400000,
+    citations: [
+      { ...point.candidates[0].citations[0], quote: "OLD QUOTE 400000" },
+    ],
+  };
+  const latest = {
+    ...old,
+    candidate_id: "latest",
+    value: 420000,
+    citations: [{ ...old.citations[0], quote: "CURRENT QUOTE 420000" }],
+  };
+  const accepted = {
+    ...point,
+    status: "answered" as const,
+    value: 420000,
+    accepted_candidate_id: "latest",
+    candidates: [old, latest],
+  };
+  const workspace = {
+    revision: 1,
+    setup: { ready: true, name: "City template" },
+    points: [accepted],
+    needs: [],
+    overview: {
+      required_total: 1,
+      required_covered: 1,
+      optional_total: 0,
+      optional_covered: 0,
+      waiting_count: 0,
+      next_steps: [],
+    },
+    export_eligibility: {
+      working: true,
+      final: false,
+      blockers: [],
+      workspace_revision: 1,
+    },
+  } as DocumentWorkspace;
+  const choose = jest.fn();
+  async function overview(value: DocumentWorkspace) {
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={defaultSystem}>
+          <WorkspaceOverview
+            workspace={value}
+            lng="en"
+            chapters={[]}
+            onSelectPoint={() => {}}
+            onOpenDraft={() => {}}
+            onOpenSetup={choose}
+          />
+        </ChakraProvider>,
+      ),
+    );
+  }
+  await overview(workspace);
+  expect(container.textContent).toContain("CURRENT QUOTE 420000");
+  expect(container.textContent).not.toContain("OLD QUOTE 400000");
+  await overview({
+    ...workspace,
+    points: [{ ...accepted, accepted_candidate_id: null }],
+  });
+  expect(container.textContent).not.toContain("CURRENT QUOTE");
+  await overview({
+    ...workspace,
+    setup: null,
+    points: [],
+    overview: { ...workspace.overview, required_total: 0, required_covered: 0 },
+  });
+  expect(
+    container.querySelector('[data-testid="document-workspace-setup-empty"]'),
+  ).not.toBeNull();
+  expect(container.querySelector("progress")).toBeNull();
+  await act(async () => button("workspace-choose-template").click());
+  expect(choose).toHaveBeenCalledTimes(1);
 });

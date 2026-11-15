@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { useTranslation } from "@/i18n/client";

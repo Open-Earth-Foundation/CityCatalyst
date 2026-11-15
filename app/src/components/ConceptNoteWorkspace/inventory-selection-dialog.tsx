@@ -4,7 +4,7 @@ import { Text, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   DialogBody,
   DialogCloseTrigger,

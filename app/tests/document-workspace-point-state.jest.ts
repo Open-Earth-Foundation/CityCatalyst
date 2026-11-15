@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import {
+  currentPointCandidate,
   parsePointAnswer,
   pointGroup,
   pointValueText,
@@ -89,4 +90,45 @@ it("keeps waiting work visible even when an accepted value remains covered", () 
       },
     }),
   ).toBe("waiting");
+});
+
+it("attributes only the current immutable candidate and never a manual same-value correction", () => {
+  const old = {
+    candidate_id: "old",
+    value: 400000,
+    status: "accepted" as const,
+    citations: [
+      {
+        source_label: "Old.pdf",
+        quote: "400000",
+        page_number: 1,
+        source_anchor: null,
+      },
+    ],
+  };
+  const latest = {
+    ...old,
+    candidate_id: "latest",
+    value: 420000,
+    citations: [
+      { ...old.citations[0], source_label: "New.md", quote: "420000" },
+    ],
+  };
+  const accepted = {
+    ...point,
+    value: 420000,
+    status: "answered" as const,
+    accepted_candidate_id: "latest",
+    candidates: [old, latest],
+  };
+  expect(currentPointCandidate(accepted)).toEqual(latest);
+  expect(
+    currentPointCandidate({ ...accepted, accepted_candidate_id: null }),
+  ).toBeUndefined();
+  expect(
+    currentPointCandidate({ ...accepted, accepted_candidate_id: undefined }),
+  ).toEqual(latest);
+  expect(
+    currentPointCandidate({ ...accepted, accepted_candidate_id: "missing" }),
+  ).toBeUndefined();
 });

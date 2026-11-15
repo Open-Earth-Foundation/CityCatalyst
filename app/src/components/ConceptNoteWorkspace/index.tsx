@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Flex,
-  Grid,
   Heading,
   HStack,
   Icon,
@@ -27,7 +26,16 @@ import {
   LuShieldCheck,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
+import {
+  DialogRoot,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogCloseTrigger,
+  DialogBody,
+} from "@/components/ui/dialog";
+import styles from "./workspace.module.css";
 
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import { DocumentPointCard } from "./document-point-card";
@@ -40,6 +48,7 @@ import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
 import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import { isChapterValidationCurrent } from "./chapter-validation";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 
 import {
@@ -109,6 +118,11 @@ export function ConceptNoteWorkspace({
 }: ConceptNoteWorkspaceProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
+  const workspaceScrollRef = useRef<HTMLDivElement | null>(null);
+  const [mobilePane, setMobilePane] = useState<"workspace" | "chat">(
+    "workspace",
+  );
+  const [exportOpen, setExportOpen] = useState(false);
   const [tab, setTab] = useState<WorkspaceTab>(
     initialReviewChapterId || initialReviewFindingKey ? "draft" : "overview",
   );
@@ -132,11 +146,13 @@ export function ConceptNoteWorkspace({
   const [saveSetup, setupState] =
     documentWorkspaceApi.useSaveDocumentSetupMutation();
   const openPoint = useCallback((key: string) => {
+    setMobilePane("workspace");
     setSelectedPointKey(key);
     setGapAnswer(null);
     setTab("todo");
   }, []);
   function addPointSource() {
+    setMobilePane("workspace");
     setTab("context");
     setUploadPickerRequest((value) => value + 1);
   }
@@ -455,6 +471,14 @@ export function ConceptNoteWorkspace({
   async function confirmChapter(
     chapter: ConceptNoteDraftChapter,
   ): Promise<void> {
+    if (
+      !isChapterValidationCurrent(chapter) ||
+      chapter.validation?.status !== "ready"
+    ) {
+      setReviewChapterId(chapter.chapter_id);
+      setReviewOpen(true);
+      return;
+    }
     if (!chapter.revision_number) {
       return;
     }
@@ -466,7 +490,20 @@ export function ConceptNoteWorkspace({
         expectedRevision: chapter.revision_number,
         idempotencyKey: crypto.randomUUID(),
       }).unwrap();
-    } catch {
+    } catch (error) {
+      const payload =
+        error && typeof error === "object" && "data" in error
+          ? error.data
+          : null;
+      const title =
+        payload && typeof payload === "object" && "title" in payload
+          ? String(payload.title)
+          : "";
+      if (/validation is missing or stale/i.test(title)) {
+        setReviewChapterId(chapter.chapter_id);
+        setReviewOpen(true);
+        return;
+      }
       setWorkspaceMutationError(t("chapter-confirm-error"));
     }
   }
@@ -488,9 +525,6 @@ export function ConceptNoteWorkspace({
 
   const status = getConceptNoteStatusPresentation(run.status, draft);
   const incompleteUploads = hasIncompleteInitialUploads(run);
-  const statusHelp = incompleteUploads
-    ? ""
-    : t(`${status.translationKey}-help`, { defaultValue: "" });
   const statusLabel = t(
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
@@ -501,7 +535,7 @@ export function ConceptNoteWorkspace({
       data-testid="concept-note-workspace"
       h="calc(100dvh - 80px)"
       minH={0}
-      overflowY="auto"
+      overflow="clip"
       bg="background.alternativeLight"
     >
       <motion.main
@@ -512,16 +546,20 @@ export function ConceptNoteWorkspace({
       >
         <VStack
           align="stretch"
-          gap={4}
-          h={{ base: "auto", md: "full" }}
-          // Keep the panels usable when zoom or a short window reduces height.
-          minH={{ base: "full", md: "640px" }}
+          gap={3}
+          h="full"
+          minH={0}
           maxW="1800px"
           mx="auto"
           px={{ base: 2, md: 5 }}
-          py={6}
+          py={{ base: 3, md: 4 }}
         >
-          <HStack flexShrink={0} gap={2} color="content.tertiary">
+          <HStack
+            flexShrink={0}
+            gap={2}
+            color="content.tertiary"
+            justify="start"
+          >
             <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
               <HStack gap={1.5} _hover={{ color: "content.link" }}>
                 <Icon as={LuArrowLeft} />
@@ -539,6 +577,28 @@ export function ConceptNoteWorkspace({
             </Text>
           </HStack>
 
+          <HStack
+            className={styles.mobileSwitch}
+            gap={2}
+            aria-label={t("workspace-area-label")}
+          >
+            <Button
+              size="sm"
+              variant={mobilePane === "workspace" ? "solid" : "outline"}
+              aria-pressed={mobilePane === "workspace"}
+              onClick={() => setMobilePane("workspace")}
+            >
+              {t("workspace-document-area")}
+            </Button>
+            <Button
+              size="sm"
+              variant={mobilePane === "chat" ? "solid" : "outline"}
+              aria-pressed={mobilePane === "chat"}
+              onClick={() => setMobilePane("chat")}
+            >
+              {t("clima")}
+            </Button>
+          </HStack>
           {incompleteUploads && (
             <NextStepBanner
               tone="warning"
@@ -564,96 +624,100 @@ export function ConceptNoteWorkspace({
               onOpenChange={setRetryInitialUploadOpen}
             />
           )}
-          <Grid
-            flex={1}
+          <Box
+            className={styles.panes}
             data-testid="concept-note-workspace-panels"
-            minH={{ base: "auto", md: 0 }}
-            overflow="hidden"
-            gap={2.5}
-            alignItems="stretch"
-            gridTemplateColumns={{
-              base: "minmax(0, 1fr)",
-              md: "minmax(280px, 31%) minmax(0, 1fr)",
-            }}
-            gridTemplateRows={{
-              // Stacked panes must not compete for half of a phone viewport.
-              base: "minmax(420px, 60dvh) minmax(640px, 85dvh)",
-              md: "minmax(0, 1fr)",
-            }}
           >
-            <ConceptNoteChatPanel
-              cityId={cityId}
-              contextStatus={contextStatus}
-              contextBuildId={bundle.buildId}
-              contextChanges={bundle.contextChanges}
-              composerRequest={composerRequest}
-              pointWorkspaceReady={workspace?.setup?.ready ?? false}
-              pointCard={
-                workspace?.points.find(
-                  (point) => point.key === selectedPointKey,
-                ) ? (
-                  <DocumentPointCard
-                    key={selectedPointKey}
-                    point={workspace.points.find(
-                      (point) => point.key === selectedPointKey,
-                    )!}
-                    runId={runId}
-                    lng={lng}
-                    compact
-                    onAddSource={addPointSource}
-                    onOpenPoint={() =>
-                      selectedPointKey && openPoint(selectedPointKey)
-                    }
-                    sourceBusy={uploadState.isLoading}
-                  />
-                ) : undefined
+            <Box
+              minH={0}
+              minW={0}
+              className={
+                mobilePane === "workspace" ? styles.mobileHidden : undefined
               }
-              gapAnswer={gapAnswer}
-              onCloseGap={() => setGapAnswer(null)}
-              onAddGapSource={() => {
-                setTab("context");
-                setUploadPickerRequest((value) => value + 1);
-              }}
-              draftOverviewPending={Boolean(draft?.overview_pending)}
-              onDraftOverviewComplete={() => void refetchDraft()}
-              lng={lng}
-              onOpenContext={() => {
-                setTab("context");
-                if (contextStatus.state === "none") {
-                  setUploadPickerRequest((value) => value + 1);
+            >
+              <ConceptNoteChatPanel
+                cityId={cityId}
+                contextStatus={contextStatus}
+                contextBuildId={bundle.buildId}
+                contextChanges={bundle.contextChanges}
+                composerRequest={composerRequest}
+                pointWorkspaceReady={workspace?.setup?.ready ?? false}
+                pointCard={
+                  workspace?.points.find(
+                    (point) => point.key === selectedPointKey,
+                  ) ? (
+                    <DocumentPointCard
+                      key={selectedPointKey}
+                      point={workspace.points.find(
+                        (point) => point.key === selectedPointKey,
+                      )!}
+                      runId={runId}
+                      lng={lng}
+                      compact
+                      onAddSource={addPointSource}
+                      onOpenPoint={() =>
+                        selectedPointKey && openPoint(selectedPointKey)
+                      }
+                      sourceBusy={uploadState.isLoading}
+                      onOpenContext={() => {
+                        setMobilePane("workspace");
+                        setTab("context");
+                      }}
+                    />
+                  ) : undefined
                 }
-              }}
-              runId={run.run_id}
-              threadId={run.thread_id}
-              editScope={editScope}
-              edits={edits}
-              draft={draft ?? null}
-              draftStartedAt={draftProgress?.startedAt ?? null}
-              draftCompletedAt={draftProgress?.completedAt ?? null}
-              welcomeStage={getChatWelcomeStage({
-                draftHasContent,
-                canStartDrafting,
-                workspace,
-              })}
-              onOpenDraft={() => setTab("draft")}
-              onOpenTodos={() => setTab("todo")}
-              onOpenFundingSetup={() => void openFundingSetup()}
-            />
+                gapAnswer={gapAnswer}
+                onCloseGap={() => setGapAnswer(null)}
+                onAddGapSource={() => {
+                  setMobilePane("workspace");
+                  setTab("context");
+                  setUploadPickerRequest((value) => value + 1);
+                }}
+                draftOverviewPending={Boolean(draft?.overview_pending)}
+                onDraftOverviewComplete={() => void refetchDraft()}
+                lng={lng}
+                onOpenContext={() => {
+                  setMobilePane("workspace");
+                  setTab("context");
+                  if (contextStatus.state === "none") {
+                    setUploadPickerRequest((value) => value + 1);
+                  }
+                }}
+                runId={run.run_id}
+                threadId={run.thread_id}
+                editScope={editScope}
+                edits={edits}
+                draft={draft ?? null}
+                draftStartedAt={draftProgress?.startedAt ?? null}
+                draftCompletedAt={draftProgress?.completedAt ?? null}
+                welcomeStage={getChatWelcomeStage({
+                  draftHasContent,
+                  canStartDrafting,
+                  workspace,
+                })}
+                onOpenDraft={() => {
+                  setMobilePane("workspace");
+                  setTab("draft");
+                }}
+                onOpenTodos={() => {
+                  setMobilePane("workspace");
+                  setTab("todo");
+                }}
+                onOpenFundingSetup={() => void openFundingSetup()}
+              />
+            </Box>
 
             <Tabs.Root
               value={tab}
               onValueChange={(details) => setTab(details.value as WorkspaceTab)}
-              display="flex"
-              flexDirection="column"
+              className={`${styles.document} ${mobilePane === "chat" ? styles.mobileHidden : ""}`}
               h="full"
               minH={0}
               minW={0}
-              overflow="hidden"
               border="1px solid"
               borderColor="border.neutral"
               borderRadius="rounded"
               bg="base.light"
-              boxShadow="1dp"
             >
               <Flex
                 data-testid="concept-note-document-header"
@@ -686,7 +750,7 @@ export function ConceptNoteWorkspace({
                     </Heading>
                     <HStack gap={2} flexWrap="wrap">
                       <Text
-                        fontSize="label.sm"
+                        fontSize="body.sm"
                         color="content.secondary"
                         title={`${cityName} · ${workflowLabel}`}
                       >
@@ -694,95 +758,35 @@ export function ConceptNoteWorkspace({
                       </Text>
                       <StatusBadge label={statusLabel} tone={status.tone} />
                     </HStack>
-                    {statusHelp && (
-                      <Text
-                        mt={1}
-                        fontSize="label.sm"
-                        lineHeight="18px"
-                        color="content.secondary"
-                        data-testid="concept-note-status-help"
-                      >
-                        {statusHelp}
-                      </Text>
-                    )}
                   </Box>
                 </HStack>
-                <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
+                <HStack gap={2} flexWrap="wrap">
+                  {canReview && (
+                    <ReviewButton
+                      size="sm"
+                      variant="outline"
+                      data-testid="concept-note-review"
+                      onClick={() => {
+                        setReviewChapterId(null);
+                        setReviewFindingKey(null);
+                        setReviewOpen(true);
+                      }}
+                    >
+                      <Icon as={LuShieldCheck} />
+                      {t("workspace-review-document")}
+                    </ReviewButton>
+                  )}
                   <ReviewButton
                     size="sm"
-                    minH="44px"
                     variant="outline"
-                    color="content.link"
-                    borderColor="content.link"
                     data-testid="concept-note-export"
-                    disabled={!canReview}
-                    aria-describedby={
-                      reviewAvailabilityDescription
-                        ? "review-availability-reason"
-                        : undefined
-                    }
-                    onClick={() => {
-                      setReviewChapterId(null);
-                      setReviewFindingKey(null);
-                      setReviewOpen(true);
-                    }}
+                    disabled={!workspace}
+                    onClick={() => setExportOpen(true)}
                   >
-                    <Icon as={LuShieldCheck} />
-                    {t("review-and-export")}
+                    {t("workspace-export-menu")}
                   </ReviewButton>
-                  {reviewAvailabilityDescription && (
-                    <Text
-                      id="review-availability-reason"
-                      fontSize="label.sm"
-                      lineHeight="18px"
-                      color="content.tertiary"
-                      maxW="280px"
-                      data-testid="concept-note-review-reason"
-                    >
-                      {reviewAvailabilityDescription}
-                    </Text>
-                  )}
-                </Flex>
+                </HStack>
               </Flex>
-              {(reviewProposal || editFeedbackKey(edits)) && (
-                // Proposal review gets its own row so it never squeezes the title.
-                <Flex
-                  data-testid="concept-note-review-bar"
-                  flexShrink={0}
-                  align="center"
-                  gap={3}
-                  flexWrap="wrap"
-                  px={4}
-                  py={2}
-                  bg="background.neutral"
-                  borderBottom="1px solid"
-                  borderColor="border.neutral"
-                >
-                  {reviewProposal && (
-                    <DocumentReviewToolbar
-                      proposal={reviewProposal}
-                      chapters={draft?.chapters ?? []}
-                      edits={edits}
-                      changes={reviewChanges}
-                      activeChangeId={activeChangeId}
-                      lng={lng}
-                      onNavigate={navigateEdit}
-                      onOpenSources={() => setTab("context")}
-                      isDocumentVisible={tab === "draft"}
-                      hasDecisions={
-                        Object.keys(activeReviewDecisions).length > 0
-                      }
-                      onAcceptRemaining={(proposal) =>
-                        decideRemaining(proposal, "accepted")
-                      }
-                      onRejectRemaining={(proposal) =>
-                        decideRemaining(proposal, "rejected")
-                      }
-                    />
-                  )}
-                  <DocumentReviewFeedback edits={edits} lng={lng} />
-                </Flex>
-              )}
               <Tabs.List
                 flexShrink={0}
                 gap={0}
@@ -807,9 +811,9 @@ export function ConceptNoteWorkspace({
                     borderColor="transparent"
                     color="content.tertiary"
                     px={{ base: 2, md: 4 }}
-                    py={3.5}
+                    py={2.5}
                     fontFamily="heading"
-                    fontSize="label.sm"
+                    fontSize="body.sm"
                     fontWeight="semibold"
                     _selected={{
                       borderColor: "content.link",
@@ -823,323 +827,334 @@ export function ConceptNoteWorkspace({
                 ))}
               </Tabs.List>
 
-              <Tabs.Content
-                value="overview"
-                flex={1}
-                minH={0}
-                overflowY="auto"
-                p={0}
+              <Box
+                ref={workspaceScrollRef}
+                className={styles.content}
+                data-testid="concept-note-workspace-scroll"
               >
-                {workspaceQuery.isLoading && (
-                  <Text role="status" p={6}>
-                    {t("workspace-loading")}
-                  </Text>
-                )}
-                {workspaceQuery.isError && (
-                  <Box role="alert" p={6}>
-                    <Text color="sentiment.negativeDefault">
-                      {t("workspace-load-error")}
+                <Tabs.Content value="overview" p={0}>
+                  {workspaceQuery.isLoading && (
+                    <Text role="status" p={6}>
+                      {t("workspace-loading")}
                     </Text>
-                    <Button
-                      mt={3}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void refetchWorkspace()}
-                    >
-                      {t("retry")}
-                    </Button>
-                  </Box>
-                )}
-                {workspace && (
-                  <>
-                    <VStack
-                      align="stretch"
-                      gap={3}
-                      p={4}
-                      borderBottom="1px solid"
-                      borderColor="border.neutral"
-                    >
-                      <Text fontWeight="semibold">
-                        {workspace.setup?.name ?? t("workspace-setup-needed")}
+                  )}
+                  {workspaceQuery.isError && (
+                    <Box role="alert" p={6}>
+                      <Text color="sentiment.negativeDefault">
+                        {t("workspace-load-error")}
                       </Text>
-                      <Text fontSize="body.sm" color="content.secondary">
-                        {t(
-                          workspace.setup?.ready
-                            ? "workspace-setup-sync-help"
-                            : "workspace-setup-help",
-                        )}
-                      </Text>
-                      <HStack flexWrap="wrap">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => void openFundingSetup()}
-                        >
-                          {t("drafting-setup-choose-funding")}
-                        </Button>
-                        <Text fontSize="label.sm" color="content.secondary">
-                          {t("workspace-document-type")}:{" "}
-                          {t("workspace-type-concept-note")}
-                        </Text>
-                        <Button
-                          size="sm"
-                          loading={setupState.isLoading}
-                          disabled={!hasApplicationTemplate}
-                          onClick={() =>
-                            void saveSetup({
-                              runId,
-                              document_type: "concept_note",
-                              expected_revision: workspace.revision,
-                              idempotency_key: crypto.randomUUID(),
-                            })
-                          }
-                        >
-                          {t(
-                            workspace.setup?.ready
-                              ? "workspace-sync-setup"
-                              : "workspace-initialize",
-                          )}
-                        </Button>
-                      </HStack>
-                      {setupState.isError && (
-                        <Text role="alert" color="sentiment.negativeDefault">
-                          {t("workspace-setup-error")}
-                        </Text>
-                      )}
-                    </VStack>
-                    <WorkspaceExport
-                      workspace={workspace}
-                      runId={runId}
-                      noteName={run.name}
-                      lng={lng}
-                      onReload={async () => {
-                        await Promise.all([
-                          refetchWorkspace().unwrap(),
-                          refetchDraft().unwrap(),
-                        ]);
-                      }}
-                    />
+                      <Button
+                        mt={3}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void refetchWorkspace()}
+                      >
+                        {t("retry")}
+                      </Button>
+                    </Box>
+                  )}
+                  {workspace && (
                     <WorkspaceOverview
                       workspace={workspace}
                       lng={lng}
                       chapters={draft?.chapters ?? []}
                       onSelectPoint={openPoint}
-                      onOpenDraft={() => setTab("draft")}
+                      onOpenDraft={() => {
+                        setMobilePane("workspace");
+                        setTab("draft");
+                      }}
+                      onOpenSetup={() => void openFundingSetup()}
+                      hasTemplate={hasApplicationTemplate}
+                      setupSaving={setupState.isLoading}
+                      setupError={setupState.isError}
+                      onOpenExport={() => setExportOpen(true)}
+                      onSyncSetup={() =>
+                        void saveSetup({
+                          runId,
+                          document_type: "concept_note",
+                          expected_revision: workspace.revision,
+                          idempotency_key: crypto.randomUUID(),
+                        })
+                      }
                     />
-                  </>
-                )}
-              </Tabs.Content>
-              <Tabs.Content
-                value="todo"
-                flex={1}
-                minH={0}
-                overflowY="auto"
-                p={0}
-              >
-                {workspace ? (
-                  <WorkspaceTodos
-                    workspace={workspace}
+                  )}
+                </Tabs.Content>
+                <Tabs.Content value="todo" p={0}>
+                  {workspace ? (
+                    <WorkspaceTodos
+                      workspace={workspace}
+                      lng={lng}
+                      runId={runId}
+                      selectedKey={selectedPointKey}
+                      onSelectPoint={openPoint}
+                      onAddSource={addPointSource}
+                      onOpenContext={() => setTab("context")}
+                      sourceBusy={uploadState.isLoading}
+                    />
+                  ) : (
+                    <Box p={6}>
+                      <Text role="status">
+                        {t(
+                          workspaceQuery.isError
+                            ? "workspace-load-error"
+                            : "workspace-loading",
+                        )}
+                      </Text>
+                      {workspaceQuery.isError && (
+                        <Button
+                          mt={3}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => void refetchWorkspace()}
+                        >
+                          {t("retry")}
+                        </Button>
+                      )}
+                    </Box>
+                  )}
+                </Tabs.Content>
+                <Tabs.Content value="draft" p={0}>
+                  {(reviewProposal || editFeedbackKey(edits)) && (
+                    // Proposal review gets its own row so it never squeezes the title.
+                    <Flex
+                      data-testid="concept-note-review-bar"
+                      flexShrink={0}
+                      align="center"
+                      gap={3}
+                      flexWrap="wrap"
+                      px={4}
+                      py={2}
+                      bg="background.neutral"
+                      borderBottom="1px solid"
+                      borderColor="border.neutral"
+                    >
+                      {reviewProposal && (
+                        <DocumentReviewToolbar
+                          proposal={reviewProposal}
+                          chapters={draft?.chapters ?? []}
+                          edits={edits}
+                          changes={reviewChanges}
+                          activeChangeId={activeChangeId}
+                          lng={lng}
+                          onNavigate={navigateEdit}
+                          onOpenSources={() => setTab("context")}
+                          isDocumentVisible={tab === "draft"}
+                          hasDecisions={
+                            Object.keys(activeReviewDecisions).length > 0
+                          }
+                          onAcceptRemaining={(proposal) =>
+                            decideRemaining(proposal, "accepted")
+                          }
+                          onRejectRemaining={(proposal) =>
+                            decideRemaining(proposal, "rejected")
+                          }
+                        />
+                      )}
+                      <DocumentReviewFeedback edits={edits} lng={lng} />
+                    </Flex>
+                  )}
+                  <DraftTab
+                    applicationContext={applicationContext ?? null}
+                    bundle={bundle}
+                    contextStatus={contextStatus}
+                    canStartDrafting={canStartDrafting}
+                    draft={draft ?? null}
+                    draftError={
+                      draftStartError ??
+                      (draftFailed && !draftLoading
+                        ? t("review-draft-load-error")
+                        : null)
+                    }
+                    focusChapterId={reviewChapterId}
+                    focusFindingKey={reviewFindingKey}
+                    highlightStartDrafting={highlightStartDrafting}
+                    nextStep={nextStepBanner}
+                    onAnswerGap={(chapter, row) => {
+                      const point = workspace?.points.find(
+                        (item) => item.key === row.gap?.field_key,
+                      );
+                      if (point) openPoint(point.key);
+                      else
+                        setGapAnswer({
+                          chapterId: chapter.chapter_id,
+                          chapterTitle: chapter.title,
+                          row,
+                        });
+                    }}
+                    applicationContextFailed={applicationContextFailed}
+                    applicationContextLoading={applicationContextLoading}
+                    isDraftRunning={isDraftRunning}
+                    isConfirmingChapter={confirmChapterState.isLoading}
+                    isRetrying={retryBundleState.isLoading}
+                    isStartingDraft={startDraftState.isLoading}
                     lng={lng}
+                    noteName={run.name}
+                    scrollContainerRef={workspaceScrollRef}
+                    canonicalPointKeys={workspace?.points.map(
+                      (point) => point.key,
+                    )}
+                    editFocus={editFocus}
+                    reviewChanges={reviewChanges}
+                    activeChangeId={activeChangeId}
+                    reviewDecisions={activeReviewDecisions}
+                    reviewDecisionBusy={
+                      Boolean(edits.busy) || edits.needsDraftReload
+                    }
+                    onAcceptReviewChange={
+                      reviewProposal
+                        ? (changeIds) =>
+                            void decideInlineChange(
+                              reviewProposal,
+                              changeIds,
+                              "accepted",
+                            )
+                        : undefined
+                    }
+                    onRejectReviewChange={
+                      reviewProposal
+                        ? (changeIds) =>
+                            void decideInlineChange(
+                              reviewProposal,
+                              changeIds,
+                              "rejected",
+                            )
+                        : undefined
+                    }
+                    onFocusedChapterChange={(focusedChapterId) =>
+                      setEditScope({
+                        kind: "auto",
+                        focused_chapter_id: focusedChapterId,
+                      })
+                    }
+                    onConfirmChapter={confirmChapter}
+                    mutationError={workspaceMutationError}
+                    onOpenContext={() => {
+                      setMobilePane("workspace");
+                      setTab("context");
+                    }}
+                    onOpenFundingSetup={() => void openFundingSetup()}
+                    onRetry={() => void retryContextBundle()}
+                    onStartDrafting={() => void startDrafting()}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="structure" p={0}>
+                  <StructureTab
+                    key={runId}
                     runId={runId}
-                    selectedKey={selectedPointKey}
+                    applicationContext={applicationContext ?? null}
+                    draft={draft ?? null}
+                    lng={lng}
+                  />
+                </Tabs.Content>
+                <Tabs.Content value="context" p={0}>
+                  <WorkspaceSources
+                    workspace={workspace}
+                    runId={runId}
+                    lng={lng}
                     onSelectPoint={openPoint}
                     onAddSource={addPointSource}
                     sourceBusy={uploadState.isLoading}
+                    onAttached={() => {
+                      void refetchRun();
+                      void refetchWorkspace();
+                    }}
                   />
-                ) : (
-                  <Box p={6}>
-                    <Text role="status">
-                      {t(
-                        workspaceQuery.isError
-                          ? "workspace-load-error"
-                          : "workspace-loading",
-                      )}
-                    </Text>
-                    {workspaceQuery.isError && (
-                      <Button
-                        mt={3}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => void refetchWorkspace()}
-                      >
-                        {t("retry")}
-                      </Button>
-                    )}
-                  </Box>
-                )}
-              </Tabs.Content>
-              <Tabs.Content
-                value="draft"
-                flex={1}
-                minH={0}
-                overflowY="auto"
-                p={0}
-              >
-                <DraftTab
-                  applicationContext={applicationContext ?? null}
-                  bundle={bundle}
-                  contextStatus={contextStatus}
-                  canStartDrafting={canStartDrafting}
-                  draft={draft ?? null}
-                  draftError={
-                    draftStartError ??
-                    (draftFailed && !draftLoading
-                      ? t("review-draft-load-error")
-                      : null)
-                  }
-                  focusChapterId={reviewChapterId}
-                  focusFindingKey={reviewFindingKey}
-                  highlightStartDrafting={highlightStartDrafting}
-                  nextStep={nextStepBanner}
-                  onAnswerGap={(chapter, row) => {
-                    const point = workspace?.points.find(
-                      (item) => item.key === row.gap?.field_key,
-                    );
-                    if (point) openPoint(point.key);
-                    else
-                      setGapAnswer({
-                        chapterId: chapter.chapter_id,
-                        chapterTitle: chapter.title,
-                        row,
-                      });
-                  }}
-                  applicationContextFailed={applicationContextFailed}
-                  applicationContextLoading={applicationContextLoading}
-                  isDraftRunning={isDraftRunning}
-                  isConfirmingChapter={confirmChapterState.isLoading}
-                  isRetrying={retryBundleState.isLoading}
-                  isStartingDraft={startDraftState.isLoading}
-                  lng={lng}
-                  noteName={run.name}
-                  editFocus={editFocus}
-                  reviewChanges={reviewChanges}
-                  activeChangeId={activeChangeId}
-                  reviewDecisions={activeReviewDecisions}
-                  reviewDecisionBusy={
-                    Boolean(edits.busy) || edits.needsDraftReload
-                  }
-                  onAcceptReviewChange={
-                    reviewProposal
-                      ? (changeIds) =>
-                          void decideInlineChange(
-                            reviewProposal,
-                            changeIds,
-                            "accepted",
-                          )
-                      : undefined
-                  }
-                  onRejectReviewChange={
-                    reviewProposal
-                      ? (changeIds) =>
-                          void decideInlineChange(
-                            reviewProposal,
-                            changeIds,
-                            "rejected",
-                          )
-                      : undefined
-                  }
-                  onFocusedChapterChange={(focusedChapterId) =>
-                    setEditScope({
-                      kind: "auto",
-                      focused_chapter_id: focusedChapterId,
-                    })
-                  }
-                  onConfirmChapter={confirmChapter}
-                  mutationError={workspaceMutationError}
-                  onOpenContext={() => setTab("context")}
-                  onOpenFundingSetup={() => void openFundingSetup()}
-                  onRetry={() => void retryContextBundle()}
-                  onStartDrafting={() => void startDrafting()}
-                />
-              </Tabs.Content>
-              <Tabs.Content
-                value="structure"
-                flex={1}
-                minH={0}
-                overflowY="auto"
-                p={0}
-              >
-                <StructureTab
-                  key={runId}
-                  runId={runId}
-                  applicationContext={applicationContext ?? null}
-                  draft={draft ?? null}
-                  lng={lng}
-                />
-              </Tabs.Content>
-              <Tabs.Content
-                value="context"
-                flex={1}
-                minH={0}
-                overflowY="auto"
-                p={0}
-              >
-                <WorkspaceSources
-                  workspace={workspace}
-                  runId={runId}
-                  lng={lng}
-                  onSelectPoint={openPoint}
-                  onAddSource={addPointSource}
-                  sourceBusy={uploadState.isLoading}
-                  onAttached={() => {
-                    void refetchRun();
-                    void refetchWorkspace();
-                  }}
-                />
-                <ContextTab
-                  applicationContext={applicationContext ?? null}
-                  onSelectFunding={() => setFundingOpen(true)}
-                  fundingLoading={applicationContextLoading}
-                  fundingError={applicationContextFailed}
-                  onRetryFunding={() => void refetchApplicationContext()}
-                  bundle={bundle}
-                  contextStatus={contextStatus}
-                  cityFilesCount={files.length}
-                  cityId={cityId}
-                  cityName={cityName}
-                  cityDashboard={cityDashboard ?? null}
-                  cityDashboardFailed={cityDashboardFailed}
-                  cityDashboardLoading={cityDashboardLoading}
-                  country={city?.country ?? null}
-                  firstCityFile={files[0]?.fileName ?? null}
-                  inventoryAvailable={Boolean(inventory)}
-                  inventoryFailed={inventoryFailed}
-                  inventoryHasData={inventory?.totalEmissions != null}
-                  inventoryId={inventory?.inventoryId ?? null}
-                  inventoryLoading={inventoryLoading}
-                  inventoryOptions={inventoryOptions}
-                  inventorySelectionSaving={inventorySelectionSaving}
-                  inventoryYear={inventory?.year ?? null}
-                  onSelectInventory={selectInventory}
-                  isDraftRunning={isDraftRunning}
-                  isRetryingBundle={retryBundleState.isLoading}
-                  retryingUploadId={retryingUploadId}
-                  isUploading={uploadState.isLoading}
-                  livePopulation={populationData}
-                  lng={lng}
-                  onRetryBundle={() => void retryContextBundle()}
-                  onRetryUpload={(uploadId) => void retrySourceUpload(uploadId)}
-                  onUploadFile={async (file, role) => {
-                    await uploadSource(file, role);
-                    void refetchWorkspace();
-                  }}
-                  manualPopulation={manualPopulation}
-                  manualPopulationSaving={manualPopulationSaving}
-                  onSaveManualPopulation={saveManualPopulation}
-                  populationFailed={populationFailed}
-                  populationLabel={populationLabel}
-                  populationLoading={populationLoading}
-                  runId={runId}
-                  uploads={uploads}
-                  uploadError={effectiveUploadError}
-                  uploadPickerRequest={uploadPickerRequest}
-                />
-              </Tabs.Content>
+                  <ContextTab
+                    applicationContext={applicationContext ?? null}
+                    onSelectFunding={() => setFundingOpen(true)}
+                    fundingLoading={applicationContextLoading}
+                    fundingError={applicationContextFailed}
+                    onRetryFunding={() => void refetchApplicationContext()}
+                    bundle={bundle}
+                    contextStatus={contextStatus}
+                    cityFilesCount={files.length}
+                    cityId={cityId}
+                    cityName={cityName}
+                    cityDashboard={cityDashboard ?? null}
+                    cityDashboardFailed={cityDashboardFailed}
+                    cityDashboardLoading={cityDashboardLoading}
+                    country={city?.country ?? null}
+                    firstCityFile={files[0]?.fileName ?? null}
+                    inventoryAvailable={Boolean(inventory)}
+                    inventoryFailed={inventoryFailed}
+                    inventoryHasData={inventory?.totalEmissions != null}
+                    inventoryId={inventory?.inventoryId ?? null}
+                    inventoryLoading={inventoryLoading}
+                    inventoryOptions={inventoryOptions}
+                    inventorySelectionSaving={inventorySelectionSaving}
+                    inventoryYear={inventory?.year ?? null}
+                    onSelectInventory={selectInventory}
+                    isDraftRunning={isDraftRunning}
+                    isRetryingBundle={retryBundleState.isLoading}
+                    retryingUploadId={retryingUploadId}
+                    isUploading={uploadState.isLoading}
+                    livePopulation={populationData}
+                    lng={lng}
+                    onRetryBundle={() => void retryContextBundle()}
+                    onRetryUpload={(uploadId) =>
+                      void retrySourceUpload(uploadId)
+                    }
+                    onUploadFile={async (file, role) => {
+                      await uploadSource(file, role);
+                      void refetchWorkspace();
+                    }}
+                    manualPopulation={manualPopulation}
+                    manualPopulationSaving={manualPopulationSaving}
+                    onSaveManualPopulation={saveManualPopulation}
+                    populationFailed={populationFailed}
+                    populationLabel={populationLabel}
+                    populationLoading={populationLoading}
+                    runId={runId}
+                    uploads={uploads}
+                    uploadError={effectiveUploadError}
+                    uploadPickerRequest={uploadPickerRequest}
+                  />
+                </Tabs.Content>
+              </Box>
             </Tabs.Root>
-          </Grid>
+          </Box>
         </VStack>
       </motion.main>
 
+      {workspace && (
+        <DialogRoot
+          open={exportOpen}
+          onOpenChange={({ open }) => setExportOpen(open)}
+          size="lg"
+        >
+          <DialogContent
+            maxH="calc(100dvh - 32px)"
+            display="flex"
+            flexDirection="column"
+            bg="base.light"
+          >
+            <DialogHeader>
+              <DialogTitle fontFamily="heading" fontSize="title.md">
+                {t("workspace-export-menu")}
+              </DialogTitle>
+            </DialogHeader>
+            <DialogCloseTrigger aria-label={t("close")} />
+            <DialogBody minH={0} overflowY="auto" pb={6}>
+              <WorkspaceExport
+                workspace={workspace}
+                runId={runId}
+                noteName={run.name}
+                lng={lng}
+                onReviewEvidence={() => {
+                  setExportOpen(false);
+                  setTab("context");
+                }}
+                onReload={async () => {
+                  await Promise.all([
+                    refetchWorkspace().unwrap(),
+                    refetchDraft().unwrap(),
+                  ]);
+                }}
+              />
+            </DialogBody>
+          </DialogContent>
+        </DialogRoot>
+      )}
       <ExportDialog
         draft={draft ?? null}
         draftError={draftFailed}

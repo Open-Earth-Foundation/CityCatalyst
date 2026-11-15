@@ -14,7 +14,7 @@ import {
   LuX,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -341,7 +341,7 @@ export function NewConceptNoteDialog({
           >
             <DialogTitle
               fontFamily="heading"
-              fontSize="title.lg"
+              fontSize="title.md"
               color="content.primary"
             >
               {t(retryRun ? "retry-upload" : "create-dialog-title")}
@@ -352,8 +352,8 @@ export function NewConceptNoteDialog({
           </DialogHeader>
           <DialogCloseTrigger disabled={isBusy} aria-label={t("close")} />
 
-          <DialogBody minH={0} overflowY="auto" px={6} py={5}>
-            <VStack align="stretch" gap={5}>
+          <DialogBody minH={0} overflowY="auto" px={{ base: 4, md: 6 }} py={4}>
+            <VStack align="stretch" gap={4}>
               {retryRun && (
                 <Text>
                   {t("upload-select-originals")}{" "}

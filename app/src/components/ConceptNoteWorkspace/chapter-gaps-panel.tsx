@@ -3,7 +3,7 @@
 import { Box, Flex, Icon, Text, chakra } from "@chakra-ui/react";
 import { useRef, useState, type ReactNode } from "react";
 import { LuArrowLeft, LuChevronRight, LuMessageSquare } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   PopoverArrow,
   PopoverBody,
@@ -234,11 +234,53 @@ export function ChapterGapMarker({
   row,
   number,
   onAnswerGap,
-}: GapDetailProps) {
+  directAnswer = false,
+}: GapDetailProps & { directAnswer?: boolean }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
   const answering = useRef(false);
   const critical = row.severity === "critical";
+  const trigger = (
+    <chakra.button
+      type="button"
+      onClick={directAnswer ? () => onAnswerGap?.(chapter, row) : undefined}
+      data-testid="concept-note-gap-marker"
+      data-gap-id={row.id}
+      data-severity={row.severity}
+      aria-label={t("gap-marker-label", {
+        number,
+        severity: t(severityKey(row)),
+        question: row.question,
+      })}
+      display="inline-flex"
+      alignItems="center"
+      justifyContent="center"
+      flexShrink={0}
+      w="30px"
+      h="30px"
+      borderRadius="full"
+      border="1px solid"
+      borderColor={critical ? "sentiment.warningDefault" : "border.neutral"}
+      bg={critical ? "sentiment.warningOverlay" : "gray.medium/20"}
+      color={severityColor(row)}
+      fontSize="label.sm"
+      fontWeight="semibold"
+      cursor="pointer"
+      _hover={{ borderColor: "content.link" }}
+      _open={{
+        outline: "2px solid",
+        outlineColor: severityBorder(row),
+        outlineOffset: "3px",
+      }}
+      _focusVisible={{
+        outline: "2px solid",
+        outlineColor: "content.link",
+        outlineOffset: "2px",
+      }}
+    >
+      {number}
+    </chakra.button>
+  );
   return (
     <chakra.span
       float="right"
@@ -247,80 +289,43 @@ export function ChapterGapMarker({
       mr={{ base: 0, md: "-40px" }}
       mb={1}
     >
-      <PopoverRoot
-        lazyMount
-        open={open}
-        onOpenChange={(details) => setOpen(details.open)}
-        finalFocusEl={answerFormFocus(answering)}
-        positioning={{
-          placement: "left-start",
-          flip: true,
-          offset: { mainAxis: 12 },
-        }}
-      >
-        <PopoverTrigger asChild>
-          <chakra.button
-            type="button"
-            data-testid="concept-note-gap-marker"
-            data-gap-id={row.id}
-            data-severity={row.severity}
-            aria-label={t("gap-marker-label", {
-              number,
-              severity: t(severityKey(row)),
-              question: row.question,
-            })}
-            display="inline-flex"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
-            w="30px"
-            h="30px"
-            borderRadius="full"
-            border="1px solid"
-            borderColor={
-              critical ? "sentiment.warningDefault" : "border.neutral"
-            }
-            bg={critical ? "sentiment.warningOverlay" : "gray.medium/20"}
-            color={severityColor(row)}
-            fontSize="label.sm"
-            fontWeight="semibold"
-            cursor="pointer"
-            _hover={{ borderColor: "content.link" }}
-            _open={{
-              outline: "2px solid",
-              outlineColor: severityBorder(row),
-              outlineOffset: "3px",
-            }}
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "2px",
-            }}
-          >
-            {number}
-          </chakra.button>
-        </PopoverTrigger>
-        <GapPopoverContent
-          lng={lng}
-          borderWidth="2px"
-          borderColor={severityBorder(row)}
-          arrow
+      {directAnswer ? (
+        trigger
+      ) : (
+        <PopoverRoot
+          lazyMount
+          open={open}
+          onOpenChange={(details) => setOpen(details.open)}
+          finalFocusEl={() => answerFormFocus(answering)()}
+          positioning={{
+            placement: "left-start",
+            flip: true,
+            offset: { mainAxis: 12 },
+          }}
         >
-          <GapDetails
+          <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+          <GapPopoverContent
             lng={lng}
-            row={row}
-            number={number}
-            onAnswer={
-              onAnswerGap &&
-              (() => {
-                answering.current = true;
-                setOpen(false);
-                onAnswerGap(chapter, row);
-              })
-            }
-          />
-        </GapPopoverContent>
-      </PopoverRoot>
+            borderWidth="2px"
+            borderColor={severityBorder(row)}
+            arrow
+          >
+            <GapDetails
+              lng={lng}
+              row={row}
+              number={number}
+              onAnswer={
+                onAnswerGap &&
+                (() => {
+                  answering.current = true;
+                  setOpen(false);
+                  onAnswerGap(chapter, row);
+                })
+              }
+            />
+          </GapPopoverContent>
+        </PopoverRoot>
+      )}
     </chakra.span>
   );
 }
@@ -366,7 +371,7 @@ export function ChapterGapsPanel({
           }
         }}
         positioning={{ placement: "bottom-end" }}
-        finalFocusEl={answerFormFocus(answering)}
+        finalFocusEl={() => answerFormFocus(answering)()}
       >
         <PopoverTrigger asChild>
           <Button

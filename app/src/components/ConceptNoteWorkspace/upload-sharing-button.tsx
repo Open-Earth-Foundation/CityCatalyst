@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Text } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";

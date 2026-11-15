@@ -18,7 +18,7 @@ import {
   LuPlus,
   LuTrash2,
 } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useAppDispatch } from "@/lib/hooks";
 import { useTranslation } from "@/i18n/client";
 import { structureApi } from "@/services/concept-note-structure-api";
@@ -204,10 +204,9 @@ export function StructureTab({
             data-chapter-id={chapter.chapter_id}
             align="start"
             gap={3}
-            border="1px solid"
+            borderTop="1px solid"
             borderColor="border.neutral"
-            borderRadius="rounded"
-            p={3}
+            py={3}
             onDragOver={(event) => {
               if (!disabled) event.preventDefault();
             }}

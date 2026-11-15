@@ -20,7 +20,7 @@ import {
   LuSearchCheck,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/i18n/client";
 
@@ -87,7 +87,7 @@ export function GuidedReviewRunningPanel({
           : "guided-review-failed-description";
 
   return (
-    <Flex h="full" minH="440px" align="center" justify="center">
+    <Flex h="full" minH="240px" align="center" justify="center">
       <VStack maxW="420px" gap={5} textAlign="center">
         {hasError ? (
           <>

@@ -1,0 +1,55 @@
+.panes {
+  display: grid;
+  grid-template-columns: minmax(280px, 30%) minmax(0, 1fr);
+  gap: 0.75rem;
+  flex: 1;
+  min-block-size: 0;
+}
+.document {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+.content {
+  container: workspace / inline-size;
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scroll-padding-block: 1rem;
+}
+.todo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+}
+.overviewColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+@container workspace (min-width: 760px) {
+  .todo {
+    grid-template-columns: minmax(170px, 28%) minmax(0, 1fr);
+  }
+  .overviewColumns {
+    grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
+  }
+}
+.mobileSwitch {
+  display: none;
+}
+@media (max-width: 47.99rem) {
+  .panes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mobileSwitch {
+    display: flex;
+  }
+  .mobileHidden {
+    display: none !important;
+  }
+}

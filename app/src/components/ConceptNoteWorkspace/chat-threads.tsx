@@ -11,7 +11,7 @@ import {
   LuPlus,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   MenuContent,
   MenuItem,

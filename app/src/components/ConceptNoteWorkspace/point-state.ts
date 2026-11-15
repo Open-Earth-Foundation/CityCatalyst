@@ -37,3 +37,21 @@ export function parsePointAnswer(
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
+
+/** Explicit server attribution wins; older servers can only match an accepted value. */
+export function currentPointCandidate(point: DocumentWorkspacePoint) {
+  if (point.accepted_candidate_id !== undefined) {
+    return point.accepted_candidate_id === null
+      ? undefined
+      : point.candidates.find(
+          (candidate) => candidate.candidate_id === point.accepted_candidate_id,
+        );
+  }
+  return [...point.candidates]
+    .reverse()
+    .find(
+      (candidate) =>
+        candidate.status === "accepted" &&
+        pointValueText(candidate.value) === pointValueText(point.value),
+    );
+}

@@ -19,7 +19,7 @@ import {
   LuPlus,
   LuSearch,
 } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DialogBody,
@@ -316,7 +316,7 @@ export function FundingSelectionDialog({
     >
       <DialogContent
         maxW="1100px"
-        w="calc(100vw - 32px)"
+        w="min(1100px, calc(100% - 32px))"
         maxH="calc(100dvh - 48px)"
         display="flex"
         flexDirection="column"
@@ -376,11 +376,7 @@ export function FundingSelectionDialog({
               )}
             </VStack>
           ) : (
-            <Flex
-              direction={{ base: "column", md: "row" }}
-              minH="440px"
-              h={{ md: "min(62dvh, 620px)" }}
-            >
+            <Flex direction={{ base: "column", md: "row" }} minH={0}>
               <VStack
                 align="stretch"
                 gap={0}
@@ -435,7 +431,7 @@ export function FundingSelectionDialog({
                   gap={0}
                   flex={1}
                   minH={0}
-                  overflowY="auto"
+                  overflowY="visible"
                   maxH={{ base: "240px", md: "none" }}
                   px={2}
                   pb={3}
@@ -604,7 +600,7 @@ export function FundingSelectionDialog({
                 minW={0}
                 gap={6}
                 p={{ base: 4, md: 6 }}
-                overflowY={{ md: "auto" }}
+                overflowY="visible"
                 aria-label={t("funding-details-label")}
               >
                 {add.mode ? (

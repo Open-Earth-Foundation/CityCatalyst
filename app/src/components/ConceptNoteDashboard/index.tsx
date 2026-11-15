@@ -27,7 +27,7 @@ import {
   LuListChecks,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -68,11 +68,7 @@ interface ConceptNoteDashboardProps {
   lng: string;
 }
 
-const runGridColumns = {
-  base: "1fr",
-  md: "repeat(2, minmax(0, 1fr))",
-  xl: "repeat(3, minmax(0, 1fr))",
-};
+const runGridColumns = { base: "1fr", lg: "repeat(2, minmax(0, 1fr))" };
 
 export function ConceptNoteDashboard({
   cityId,
@@ -231,7 +227,7 @@ export function ConceptNoteDashboard({
   }
 
   return (
-    <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
+    <Box minH="calc(100dvh - 80px)" bg="background.alternativeLight">
       <motion.main
         initial={reducedMotion ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -333,64 +329,74 @@ export function ConceptNoteDashboard({
               </Button>
             </Flex>
 
-            <Grid
-              gap={4}
-              gridTemplateColumns={{
-                base: "1fr",
-                sm: "repeat(2, minmax(0, 1fr))",
-                lg: "repeat(4, minmax(0, 1fr))",
-              }}
-            >
-              <ContextTile
-                icon={LuBuilding2}
-                label={t("city-context")}
-                {...sourceTile(populationState, populationLoading)}
-                value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
-                detail={
-                  populationLoading ? <Skeleton h="16px" /> : populationLabel
-                }
-              />
-              <ContextTile
-                icon={LuLandmark}
-                label={t("ghg-inventory")}
-                action={inventoryAction}
-                {...sourceTile(inventoryState, inventoryLoading)}
-                value={
-                  inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
-                }
-                detail={inventory ? t("inventory-detail") : ""}
-              />
-              <ContextTile
-                icon={LuListChecks}
-                label={t("hiap-context")}
-                {...sourceTile(actionPlanState, modulesLoading)}
-                value={
-                  modulesLoading ? (
-                    <Skeleton h="20px" />
-                  ) : hiapAvailable ? (
-                    t("context-ready")
-                  ) : (
-                    t("hiap-no-actions")
-                  )
-                }
-                detail={
-                  modulesLoading
-                    ? ""
-                    : t(
-                        hiapAvailable
-                          ? "hiap-detail"
-                          : "hiap-impact-missing-summary",
-                      )
-                }
-              />
-              <ContextTile
-                icon={LuFolderOpen}
-                label={t("city-files")}
-                {...sourceTile(filesState, filesLoading)}
-                value={filesLoading ? <Skeleton h="20px" /> : fileName}
-                detail={t("file-count", { count: cityFiles.length })}
-              />
-            </Grid>
+            <Box as="details">
+              <Text
+                as="summary"
+                cursor="pointer"
+                fontSize="body.sm"
+                color="content.link"
+              >
+                {t("workspace-city-context-details")}
+              </Text>
+              <Grid
+                gap={4}
+                gridTemplateColumns={{
+                  base: "1fr",
+                  sm: "repeat(2, minmax(0, 1fr))",
+                  lg: "repeat(4, minmax(0, 1fr))",
+                }}
+              >
+                <ContextTile
+                  icon={LuBuilding2}
+                  label={t("city-context")}
+                  {...sourceTile(populationState, populationLoading)}
+                  value={cityLoading ? <Skeleton h="20px" /> : cityLocation}
+                  detail={
+                    populationLoading ? <Skeleton h="16px" /> : populationLabel
+                  }
+                />
+                <ContextTile
+                  icon={LuLandmark}
+                  label={t("ghg-inventory")}
+                  action={inventoryAction}
+                  {...sourceTile(inventoryState, inventoryLoading)}
+                  value={
+                    inventoryLoading ? <Skeleton h="20px" /> : inventoryLabel
+                  }
+                  detail={inventory ? t("inventory-detail") : ""}
+                />
+                <ContextTile
+                  icon={LuListChecks}
+                  label={t("hiap-context")}
+                  {...sourceTile(actionPlanState, modulesLoading)}
+                  value={
+                    modulesLoading ? (
+                      <Skeleton h="20px" />
+                    ) : hiapAvailable ? (
+                      t("context-ready")
+                    ) : (
+                      t("hiap-no-actions")
+                    )
+                  }
+                  detail={
+                    modulesLoading
+                      ? ""
+                      : t(
+                          hiapAvailable
+                            ? "hiap-detail"
+                            : "hiap-impact-missing-summary",
+                        )
+                  }
+                />
+                <ContextTile
+                  icon={LuFolderOpen}
+                  label={t("city-files")}
+                  {...sourceTile(filesState, filesLoading)}
+                  value={filesLoading ? <Skeleton h="20px" /> : fileName}
+                  detail={t("file-count", { count: cityFiles.length })}
+                />
+              </Grid>
+            </Box>
           </VStack>
 
           {runsFailed ? null : runsLoading ? (

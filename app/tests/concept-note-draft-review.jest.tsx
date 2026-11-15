@@ -73,6 +73,9 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   const onFocusedChapterChange = jest.fn();
   const onAcceptReviewChange = jest.fn();
   const onConfirmChapter = jest.fn();
+  const chapterElements: { current: Record<string, HTMLDivElement | null> } = {
+    current: {},
+  };
   const props: ComponentProps<typeof DraftDocumentPanel> = {
     chapters: [chapter],
     lng: "en",
@@ -83,10 +86,14 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     onFocusedChapterChange,
     onAcceptReviewChange,
     focus: {
-      chapterElements: { current: {} },
+      chapterElements,
+      registerChapter: (id, element) => {
+        chapterElements.current[id] = element;
+      },
       previewElement: { current: null },
       focusedFindingElement: { current: null },
       isChapterPanelOpen: true,
+      usesSharedScroll: false,
       selectedChapterId: chapter.chapter_id,
       selectChapter,
       toggleChapterPanel: jest.fn(),
@@ -163,7 +170,7 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   expect(onAcceptReviewChange).toHaveBeenCalledWith([change.change_id]);
   await act(async () => {
     const confirm = [...container.querySelectorAll("button")].find((button) =>
-      button.textContent?.includes("Review & confirm"),
+      button.textContent?.includes("Run chapter review"),
     );
     confirm?.click();
     (
@@ -171,5 +178,41 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     ).click();
   });
   expect(onConfirmChapter).toHaveBeenCalledWith(chapter);
+
+  const dated = {
+    ...chapter,
+    body_markdown: "Award [Information needed: Confirm award date]",
+    open_gap_count: 1,
+    gaps: [
+      {
+        gap_id: "date-gap",
+        field_key: "award_date",
+        question: "Confirm award date",
+        why_asking: "Required by the template",
+        severity: "critical" as const,
+        state: "open" as const,
+        suggestions: [],
+        source_refs: [],
+        version: 1,
+        resolution: null,
+        created_at: "2026-11-15",
+        updated_at: "2026-11-15",
+      },
+    ],
+  };
+  const onAnswerGap = jest.fn();
+  await render({
+    chapters: [dated],
+    canonicalPointKeys: ["award_date"],
+    onAnswerGap,
+  });
+  await act(async () => marker().click());
+  expect(onAnswerGap).toHaveBeenCalledWith(
+    dated,
+    expect.objectContaining({
+      gap: expect.objectContaining({ field_key: "award_date" }),
+    }),
+  );
+  expect(marker().getAttribute("aria-expanded")).not.toBe("true");
   expect(onFocusedChapterChange).toHaveBeenCalledWith(chapter.chapter_id);
 });

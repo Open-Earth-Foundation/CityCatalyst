@@ -57,12 +57,20 @@ let setApplicationContext: (value: ConceptNoteApplicationContext) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 const refetchWorkspace = jest.fn(async () => ({}));
 const saveSetup = jest.fn();
+const confirmChapterMutation = jest.fn();
+let draftActions: {
+  onConfirmChapter: (chapter: unknown) => Promise<void>;
+  onAnswerGap: (chapter: unknown, row: unknown) => void;
+};
+let pointKeys: { key: string }[] = [];
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.unstable_mockModule("@/services/api", () => ({
-  api: { useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}] },
+  api: {
+    useConfirmConceptNoteChapterMutation: () => [confirmChapterMutation, {}],
+  },
 }));
 jest.unstable_mockModule("@/services/document-workspace-api", () => ({
   documentWorkspaceApi: {
@@ -70,7 +78,7 @@ jest.unstable_mockModule("@/services/document-workspace-api", () => ({
       data: {
         revision: 0,
         setup: null,
-        points: [],
+        points: pointKeys,
         needs: [],
         overview: {
           required_total: 0,
@@ -183,25 +191,29 @@ jest.unstable_mockModule(
 );
 // The draft tab's setup button calls the workspace handler under test.
 jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
-  DraftTab: ({
-    nextStep,
-    onOpenFundingSetup,
-  }: {
+  DraftTab: (props: {
     nextStep?: ReactNode;
     onOpenFundingSetup: () => void;
-  }) => (
-    <>
-      {nextStep}
-      <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
-    </>
-  ),
+    onConfirmChapter: (chapter: unknown) => Promise<void>;
+    onAnswerGap: (chapter: unknown, row: unknown) => void;
+  }) => {
+    draftActions = props;
+    return (
+      <>
+        {props.nextStep}
+        <button
+          aria-label="open-funding-setup"
+          onClick={props.onOpenFundingSetup}
+        />
+      </>
+    );
+  },
 }));
 // Keep workspace state; unrelated panels are outside this test.
 for (const [path, name] of [
   ["chat-panel", "ConceptNoteChatPanel"],
   ["context-tab", "ContextTab"],
   ["structure-tab", "StructureTab"],
-  ["export-dialog", "ExportDialog"],
   ["document-point-card", "DocumentPointCard"],
   ["workspace-source-picker", "WorkspaceSources"],
   ["workspace-export", "WorkspaceExport"],
@@ -212,7 +224,14 @@ for (const [path, name] of [
 }
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/document-workspace-panels",
-  () => ({ WorkspaceOverview: () => null, WorkspaceTodos: () => null }),
+  () => ({
+    WorkspaceOverview: ({ onOpenSetup }: { onOpenSetup: () => void }) => (
+      <button onClick={onOpenSetup}>{"workspace-choose-template"}</button>
+    ),
+    WorkspaceTodos: ({ selectedKey }: { selectedKey: string }) => (
+      <div data-testid="selected-point">{selectedKey}</div>
+    ),
+  }),
 );
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/funding-selection-dialog",
@@ -222,6 +241,14 @@ jest.unstable_mockModule(
         <button aria-label="save-funding" onClick={onSaved} />
       </div>
     ),
+  }),
+);
+
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/export-dialog",
+  () => ({
+    ExportDialog: ({ open }: { open: boolean }) =>
+      open ? <div data-testid="document-review-open" /> : null,
   }),
 );
 
@@ -251,6 +278,8 @@ beforeEach(() => {
   initialContext = undefined;
   initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
   reviewProposal = null;
+  pointKeys = [];
+  confirmChapterMutation.mockReset();
   refetch.mockReset();
   refetchWorkspace.mockClear();
   container = document.createElement("div");
@@ -270,7 +299,7 @@ async function clickSetup() {
     );
   });
   const button = [...container.querySelectorAll("button")].find(
-    (item) => item.textContent === "drafting-setup-choose-funding",
+    (item) => item.textContent === "workspace-choose-template",
   );
   expect(button).toBeDefined();
   await act(async () => button!.click());
@@ -462,4 +491,45 @@ it("opens an existing review deep link directly in Draft instead of Overview", a
       .find((tab) => tab.textContent === "workspace-overview-tab")
       ?.getAttribute("aria-selected"),
   ).toBe("false");
+});
+
+it("opens review instead of sending a confirmation when chapter validation is missing or stale", async () => {
+  await clickSetup();
+  await showDraft();
+  for (const validation of [
+    null,
+    { status: "ready", validated_revision_number: 1, is_stale: true },
+  ]) {
+    await act(async () =>
+      draftActions.onConfirmChapter({
+        chapter_id: "chapter",
+        revision_number: 2,
+        validation,
+      }),
+    );
+    expect(confirmChapterMutation).not.toHaveBeenCalled();
+    expect(
+      container.querySelector('[data-testid="document-review-open"]'),
+    ).not.toBeNull();
+  }
+});
+
+it("canonical gap navigation selects the same point in To do", async () => {
+  pointKeys = [{ key: "award_date" }];
+  await clickSetup();
+  await showDraft();
+  await act(async () =>
+    draftActions.onAnswerGap(
+      { chapter_id: "chapter", title: "Funding" },
+      { gap: { field_key: "award_date" } },
+    ),
+  );
+  expect(
+    container.querySelector('[data-testid="selected-point"]')?.textContent,
+  ).toBe("award_date");
+  expect(
+    [...container.querySelectorAll('[role="tab"]')]
+      .find((tab) => tab.textContent === "workspace-todo-tab")
+      ?.getAttribute("aria-selected"),
+  ).toBe("true");
 });

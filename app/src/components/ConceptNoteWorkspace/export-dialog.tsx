@@ -106,9 +106,11 @@ export function ExportDialog({
       size="cover"
     >
       <DialogContent
-        w="calc(100vw - 32px)"
+        w="calc(100% - 32px)"
         maxW="980px"
-        h="min(820px, calc(100dvh - 32px))"
+        maxH="calc(100dvh - 32px)"
+        display="flex"
+        flexDirection="column"
         my={4}
         overflow="hidden"
         borderRadius="rounded"
@@ -121,12 +123,12 @@ export function ExportDialog({
           borderBottom="1px solid"
           borderColor="border.neutral"
           px={{ base: 5, md: 7 }}
-          py={5}
+          py={4}
           pe={14}
         >
           <DialogTitle
             fontFamily="heading"
-            fontSize="title.lg"
+            fontSize="title.md"
             color="content.primary"
           >
             {t("guided-review-title")}
@@ -137,7 +139,13 @@ export function ExportDialog({
         </DialogHeader>
         <DialogCloseTrigger aria-label={t("close")} />
 
-        <DialogBody display="flex" minH={0} overflow="hidden" p={0}>
+        <DialogBody
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          minH={0}
+          overflowY="auto"
+          p={0}
+        >
           <GuidedReviewStepper
             currentStepIndex={stageIndex(controller.stage)}
             lng={lng}
@@ -145,9 +153,9 @@ export function ExportDialog({
           <Box
             flex={1}
             minW={0}
-            overflowY="auto"
+            overflowY="visible"
             px={{ base: 5, md: 8 }}
-            py={6}
+            py={4}
           >
             {controller.stage !== "running" && (
               <SavedReviewSummary

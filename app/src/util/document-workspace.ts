@@ -51,6 +51,8 @@ export interface DocumentWorkspacePoint {
   value: DocumentPointValue;
   /** Basis from the current accepted revision; null means no accepted reason. */
   accepted_reason?: string | null;
+  /** Candidate bound to the current accepted revision; null denotes a human answer. */
+  accepted_candidate_id?: string | null;
   chapter_refs: string[];
   candidates: DocumentPointCandidate[];
   task: DocumentPointTask | null;

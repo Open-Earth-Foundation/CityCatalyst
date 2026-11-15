@@ -13,7 +13,7 @@ import type { TFunction } from "i18next";
 import NextLink from "next/link";
 import { LuPencil } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
 import type { ConceptNoteRun } from "@/util/types";
@@ -82,7 +82,6 @@ export function RunCard({
     <motion.div
       initial={reducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={reducedMotion ? undefined : { y: -3 }}
       transition={{ duration: 0.22, ease: "easeOut" }}
       style={{ height: "100%" }}
     >
@@ -92,15 +91,13 @@ export function RunCard({
         align="stretch"
         gap={2.5}
         h="full"
-        minH="178px"
         border="1px solid"
         borderColor="border.neutral"
         borderRadius="rounded"
         bg="base.light"
         p={4}
-        boxShadow="1dp"
         transition="border-color 160ms ease, box-shadow 160ms ease"
-        _hover={{ borderColor: "background.overlay", boxShadow: "2dp" }}
+        _hover={{ borderColor: "content.link" }}
         _motionReduce={{ transition: "none" }}
       >
         <Flex align="start" justify="space-between" gap={3}>
@@ -218,7 +215,8 @@ export function RunCard({
               asChild
               size="sm"
               variant="solid"
-              h="32px"
+              minH="32px"
+              h="auto"
               px="14px"
               py="8px"
             >
@@ -235,7 +233,8 @@ export function RunCard({
               <Button
                 size="sm"
                 variant="outline"
-                h="32px"
+                minH="32px"
+                h="auto"
                 px="14px"
                 py="8px"
                 onClick={onDuplicate}
@@ -248,7 +247,8 @@ export function RunCard({
               <Button
                 size="sm"
                 variant="solid"
-                h="32px"
+                minH="32px"
+                h="auto"
                 px="14px"
                 py="8px"
                 bg="sentiment.positiveDefault"
@@ -264,7 +264,8 @@ export function RunCard({
           <Button
             size="sm"
             variant="outline"
-            h="32px"
+            minH="32px"
+            h="auto"
             px="14px"
             py="8px"
             onClick={onDelete}

@@ -1,12 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import { Box, HStack, Text, VStack } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
+import { Field } from "@/components/ui/field";
 import { useTranslation } from "@/i18n/client";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type { DocumentWorkspace } from "@/util/document-workspace";
@@ -14,19 +14,21 @@ import {
   exportConceptNoteMarkdown,
   type ConceptNoteExportFormat,
 } from "./concept-note-export";
-
+import { documentWorkspaceErrorKind } from "./workspace-errors";
 export function WorkspaceExport({
   workspace,
   runId,
   noteName,
   lng,
   onReload,
+  onReviewEvidence,
 }: {
   workspace: DocumentWorkspace;
   runId: string;
   noteName: string;
   lng: string;
   onReload: () => Promise<unknown>;
+  onReviewEvidence?: () => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [format, setFormat] = useState<ConceptNoteExportFormat>("docx");
@@ -35,9 +37,32 @@ export function WorkspaceExport({
   const [building, setBuilding] = useState(false);
   const [buildFailed, setBuildFailed] = useState(false);
   const [reloading, setReloading] = useState(false);
-  const stale = Boolean(
-    state.error && "status" in state.error && state.error.status === 409,
-  );
+  const errorKind = documentWorkspaceErrorKind(state.error);
+  function readiness(message: string) {
+    const patterns: [RegExp, string][] = [
+      [/^Required point unresolved: (.+)$/, "workspace-export-answer-needed"],
+      [/^Conflicting evidence: (.+)$/, "workspace-export-conflict-needed"],
+      [
+        /^Required chapter review pending: (.+)$/,
+        "workspace-export-review-needed",
+      ],
+      [/^Chapter has no text: (.+)$/, "workspace-export-text-needed"],
+    ];
+    for (const [pattern, key] of patterns) {
+      const match = message.match(pattern);
+      if (match) return t(key, { label: match[1] });
+    }
+    const update = message.match(/^Dependent text is [^:]+: (.+)$/);
+    if (update)
+      return t("workspace-export-update-needed", { label: update[1] });
+    if (message.startsWith("Select and confirm"))
+      return t("workspace-setup-needed");
+    if (message.startsWith("Generate the document text"))
+      return t("workspace-export-create-draft");
+    if (message.includes("no recognized point requirements"))
+      return t("workspace-template-needs-requirements");
+    return message;
+  }
   async function download(mode: "working" | "final") {
     setBuildFailed(false);
     try {
@@ -60,18 +85,13 @@ export function WorkspaceExport({
     }
   }
   return (
-    <VStack
-      align="stretch"
-      gap={3}
-      p={4}
-      borderBottom="1px solid"
-      borderColor="border.neutral"
-      bg="background.alternativeLight"
-    >
-      <HStack flexWrap="wrap">
-        <NativeSelectRoot w="auto">
+    <VStack align="stretch" gap={4}>
+      <Text fontSize="body.md" lineHeight={1.6} color="content.secondary">
+        {t("workspace-export-help")}
+      </Text>
+      <Field label={t("workspace-export-format")}>
+        <NativeSelectRoot maxW="260px">
           <NativeSelectField
-            aria-label={t("workspace-export-format")}
             value={format}
             onChange={(event) =>
               setFormat(event.target.value as ConceptNoteExportFormat)
@@ -81,9 +101,11 @@ export function WorkspaceExport({
             <option value="pdf">{t("export-format-pdf")}</option>
           </NativeSelectField>
         </NativeSelectRoot>
+      </Field>
+      <HStack flexWrap="wrap" gap={2}>
         <Button
           size="sm"
-          variant="outline"
+          variant={workspace.export_eligibility.final ? "outline" : "solid"}
           loading={state.isLoading || building}
           disabled={!workspace.export_eligibility.working}
           onClick={() => void download("working")}
@@ -104,36 +126,94 @@ export function WorkspaceExport({
           {t("workspace-export-final")}
         </Button>
       </HStack>
-      <Text fontSize="label.sm" color="content.secondary">
+      <Text fontSize="body.sm" lineHeight={1.5} color="content.secondary">
         {t("workspace-working-caveat")}
       </Text>
       {!workspace.export_eligibility.final && (
-        <Box id="workspace-export-blockers">
-          <Text fontSize="label.sm" fontWeight="medium">
-            {t("workspace-final-blocked")}
+        <Box
+          as="details"
+          id="workspace-export-blockers"
+          borderTop="1px solid"
+          borderColor="border.neutral"
+          pt={3}
+        >
+          <Text
+            as="summary"
+            cursor="pointer"
+            fontSize="body.md"
+            fontWeight="medium"
+          >
+            {t("workspace-final-checks-count", {
+              count: workspace.export_eligibility.blockers.length,
+            })}
           </Text>
-          {workspace.export_eligibility.blockers.map((blocker, index) => (
-            <Text key={index} fontSize="label.sm" color="content.secondary">
-              {blocker}
+          <VStack as="ul" align="stretch" gap={2} ps={5} mt={3}>
+            {workspace.export_eligibility.blockers.map((blocker, index) => (
+              <Text
+                as="li"
+                key={index}
+                fontSize="body.sm"
+                lineHeight={1.6}
+                color="content.secondary"
+              >
+                {readiness(blocker)}
+              </Text>
+            ))}
+          </VStack>
+        </Box>
+      )}
+      {state.data && (
+        <Text role="status" fontSize="body.sm" color="content.secondary">
+          {t("workspace-export-prepared")}
+        </Text>
+      )}
+      {Boolean(state.data?.caveats.length) && (
+        <Box as="details">
+          <Text
+            as="summary"
+            cursor="pointer"
+            fontSize="body.sm"
+            color="content.link"
+          >
+            {t("workspace-export-included-notes", {
+              count: state.data!.caveats.length,
+            })}
+          </Text>
+          {state.data!.caveats.map((caveat, index) => (
+            <Text
+              key={index}
+              mt={2}
+              fontSize="body.sm"
+              lineHeight={1.6}
+              color="content.secondary"
+            >
+              {readiness(caveat)}
             </Text>
           ))}
         </Box>
       )}
-      {state.data?.caveats.map((caveat, index) => (
-        <Text key={index} role="status" fontSize="label.sm">
-          {caveat}
-        </Text>
-      ))}
       {(state.isError || buildFailed) && (
-        <Text role="alert" color="sentiment.negativeDefault">
+        <Text role="alert" fontSize="body.md" color="sentiment.negativeDefault">
           {t(
-            state.error && "status" in state.error && state.error.status === 409
-              ? "workspace-stale-error"
-              : "workspace-export-error",
+            errorKind === "source_unavailable"
+              ? "workspace-source-unavailable-error"
+              : errorKind === "stale"
+                ? "workspace-stale-error"
+                : "workspace-export-error",
           )}
         </Text>
       )}
-      {stale && (
+      {errorKind === "source_unavailable" && onReviewEvidence && (
+        <Button
+          size="sm"
+          variant="outline"
+          alignSelf="start"
+          onClick={onReviewEvidence}
+        >
+          {t("workspace-review-evidence")}
+        </Button>
+      )}
+      {errorKind === "stale" && (
         <Button
           size="sm"
           variant="outline"

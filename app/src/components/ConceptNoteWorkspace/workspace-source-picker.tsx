@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -52,13 +52,15 @@ export function WorkspaceSources({
   return (
     <VStack
       align="stretch"
-      gap={4}
-      p={{ base: 4, md: 6 }}
+      gap={3}
+      p={{ base: 4, md: 5 }}
       borderBottom="1px solid"
       borderColor="border.neutral"
     >
       <HStack justify="space-between" flexWrap="wrap">
-        <Heading size="sm">{t("workspace-evidence-needs")}</Heading>
+        <Heading as="h2" fontSize="title.md">
+          {t("workspace-evidence-needs")}
+        </Heading>
         <Button
           size="sm"
           variant="outline"
@@ -73,13 +75,14 @@ export function WorkspaceSources({
       {workspace?.needs.map((need) => (
         <Box
           key={need.need_id}
-          p={4}
-          border="1px solid"
+          py={3}
+          borderTop="1px solid"
           borderColor="border.neutral"
-          borderRadius="rounded"
         >
           <HStack justify="space-between">
-            <Text fontWeight="semibold">{need.label}</Text>
+            <Text fontSize="body.md" fontWeight="semibold">
+              {need.label}
+            </Text>
             <Text fontSize="label.sm" color="content.tertiary">
               {t(need.required ? "workspace-required" : "workspace-optional")}
             </Text>
@@ -91,9 +94,19 @@ export function WorkspaceSources({
             {t(`workspace-need-${need.status}`)}
           </Text>
           {need.guidance && (
-            <Text mt={2} fontSize="body.sm">
-              {need.guidance}
-            </Text>
+            <Box as="details" mt={2}>
+              <Text
+                as="summary"
+                cursor="pointer"
+                fontSize="body.sm"
+                color="content.link"
+              >
+                {t("workspace-evidence-guidance")}
+              </Text>
+              <Text mt={2} fontSize="body.sm" lineHeight={1.6}>
+                {need.guidance}
+              </Text>
+            </Box>
           )}
           {need.documents.map((document) => (
             <Text key={document.upload_id} mt={2} fontSize="body.sm">
@@ -105,7 +118,7 @@ export function WorkspaceSources({
               )}
             </Text>
           ))}
-          <HStack mt={3} flexWrap="wrap">
+          <HStack mt={2} flexWrap="wrap">
             <Button
               size="sm"
               variant="outline"
@@ -138,12 +151,16 @@ export function WorkspaceSources({
         </Text>
       )}
       <DialogRoot open={open} onOpenChange={({ open: next }) => setOpen(next)}>
-        <DialogContent>
+        <DialogContent
+          maxH="calc(100dvh - 32px)"
+          display="flex"
+          flexDirection="column"
+        >
           <DialogHeader>
             <DialogTitle>{t("workspace-use-existing-source")}</DialogTitle>
           </DialogHeader>
           <DialogCloseTrigger aria-label={t("close")} />
-          <DialogBody pb={6}>
+          <DialogBody pb={6} minH={0} overflowY="auto">
             <Text mb={4} color="content.secondary">
               {t("workspace-source-picker-help")}
             </Text>

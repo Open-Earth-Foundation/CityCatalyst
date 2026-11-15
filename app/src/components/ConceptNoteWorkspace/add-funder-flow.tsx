@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Text } from "@chakra-ui/react";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";

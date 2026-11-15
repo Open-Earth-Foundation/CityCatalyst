@@ -10,7 +10,8 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
+import { documentWorkspaceErrorKind } from "./workspace-errors";
 import { Field } from "@/components/ui/field";
 import {
   NativeSelectField,
@@ -22,7 +23,11 @@ import type {
   DocumentPointCommand,
   DocumentWorkspacePoint,
 } from "@/util/document-workspace";
-import { parsePointAnswer, pointValueText } from "./point-state";
+import {
+  currentPointCandidate,
+  parsePointAnswer,
+  pointValueText,
+} from "./point-state";
 
 export function DocumentPointCard({
   point,
@@ -32,6 +37,7 @@ export function DocumentPointCard({
   compact = false,
   onOpenPoint,
   sourceBusy = false,
+  onOpenContext,
 }: {
   point: DocumentWorkspacePoint;
   runId: string;
@@ -40,6 +46,7 @@ export function DocumentPointCard({
   compact?: boolean;
   onOpenPoint?: () => void;
   sourceBusy?: boolean;
+  onOpenContext?: () => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [command, commandState] =
@@ -61,10 +68,8 @@ export function DocumentPointCard({
   const [parkOpen, setParkOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const options = [...new Set(point.choices ?? [])];
-  const stale =
-    commandState.error &&
-    "status" in commandState.error &&
-    commandState.error.status === 409;
+  const errorKind = documentWorkspaceErrorKind(commandState.error);
+  const stale = errorKind === "stale";
   const [refresh, refreshState] =
     documentWorkspaceApi.useLazyGetDocumentWorkspaceQuery();
   async function send(
@@ -95,8 +100,20 @@ export function DocumentPointCard({
     point.accepted_reason === undefined
       ? point.task?.note
       : point.accepted_reason;
+  const currentAnswer =
+    accepted ||
+    (point.status === "conflict" &&
+      (point.value !== null ||
+        point.candidates.some((candidate) => candidate.status === "accepted")));
+  const currentCandidate = currentPointCandidate(point);
+  const acceptedCitations = currentCandidate?.citations ?? [];
+  const earlierCandidates = point.candidates.filter(
+    (candidate) =>
+      candidate.status === "accepted" &&
+      candidate.candidate_id !== currentCandidate?.candidate_id,
+  );
   const pending = point.candidates.filter(
-    (candidate) => candidate.status !== "dismissed",
+    (candidate) => candidate.status === "pending",
   );
   const value =
     point.answer_type === "choice"
@@ -107,20 +124,25 @@ export function DocumentPointCard({
   return (
     <VStack
       align="stretch"
-      gap={4}
+      gap={3}
       data-testid="document-point-card"
       aria-busy={commandState.isLoading}
     >
       <Box>
         <HStack justify="space-between" flexWrap="wrap">
-          <Heading size="sm" color="content.primary">
+          <Heading as="h2" fontSize="title.md" color="content.primary">
             {point.label}
           </Heading>
           <Text fontSize="label.sm" color="content.tertiary">
             {t(point.required ? "workspace-required" : "workspace-optional")}
           </Text>
         </HStack>
-        <Text mt={1} fontSize="body.sm" color="content.secondary">
+        <Text
+          mt={1}
+          fontSize="body.md"
+          lineHeight={1.6}
+          color="content.secondary"
+        >
           {point.description}
         </Text>
         <HStack gap={3} mt={2} flexWrap="wrap">
@@ -132,18 +154,46 @@ export function DocumentPointCard({
           </Text>
         </HStack>
       </Box>
-      {accepted && (
+      {currentAnswer && (
         <Box
           bg="background.alternativeLight"
           p={3}
           borderRadius="rounded"
           data-testid="document-point-accepted-answer"
         >
+          <Text
+            fontSize="body.sm"
+            fontWeight="semibold"
+            color="content.secondary"
+            mb={1}
+          >
+            {t("workspace-current-answer")}
+          </Text>
           <Text whiteSpace="pre-wrap">
             {point.status === "not_applicable"
               ? t("workspace-not-applicable")
               : pointValueText(point.value) || t("workspace-no-value")}
           </Text>
+          {acceptedCitations.map((citation, index) => (
+            <Box
+              key={index}
+              as="blockquote"
+              mt={2}
+              borderLeft="2px solid"
+              borderColor="border.neutral"
+              pl={3}
+            >
+              <Text fontSize="body.sm" lineHeight={1.6}>
+                {citation.quote}
+              </Text>
+              <Text fontSize="body.sm" mt={1} color="content.tertiary">
+                {citation.source_label}
+                {citation.page_number !== null
+                  ? ` · ${t("workspace-page", { page: citation.page_number })}`
+                  : ""}
+              </Text>
+            </Box>
+          ))}
           {acceptedBasis?.trim() && (
             <Box mt={3}>
               <Text
@@ -165,16 +215,54 @@ export function DocumentPointCard({
           )}
         </Box>
       )}
+      {earlierCandidates.length > 0 && (
+        <Box as="details">
+          <Text
+            as="summary"
+            cursor="pointer"
+            fontSize="body.sm"
+            color="content.secondary"
+          >
+            {t("workspace-earlier-accepted", {
+              count: earlierCandidates.length,
+            })}
+          </Text>
+          {earlierCandidates.map((candidate) => (
+            <Box
+              key={candidate.candidate_id}
+              mt={2}
+              pl={3}
+              borderLeft="2px solid"
+              borderColor="border.neutral"
+            >
+              <Text fontSize="body.sm">{pointValueText(candidate.value)}</Text>
+              {candidate.citations.map((citation, index) => (
+                <Box key={index} mt={1}>
+                  <Text fontSize="body.sm">{citation.quote}</Text>
+                  <Text fontSize="body.sm" color="content.tertiary">
+                    {citation.source_label}
+                  </Text>
+                </Box>
+              ))}
+            </Box>
+          ))}
+        </Box>
+      )}
       {pending.slice(0, compact ? 1 : undefined).map((candidate) => (
         <VStack
           key={candidate.candidate_id}
           align="stretch"
           gap={3}
-          p={4}
+          p={3}
           border="1px solid"
           borderColor="border.neutral"
           borderRadius="rounded"
         >
+          {point.status === "conflict" && (
+            <Text fontSize="body.sm" color="content.secondary">
+              {t("workspace-new-source-answer")}
+            </Text>
+          )}
           <Text fontWeight="semibold" whiteSpace="pre-wrap">
             {pointValueText(candidate.value)}
           </Text>
@@ -201,6 +289,7 @@ export function DocumentPointCard({
             <HStack flexWrap="wrap">
               <Button
                 size="sm"
+                variant="outline"
                 disabled={commandState.isLoading}
                 onClick={() =>
                   void send({
@@ -495,7 +584,13 @@ export function DocumentPointCard({
       {commandState.isError && (
         <Box role="alert">
           <Text color="sentiment.negativeDefault">
-            {t(stale ? "workspace-stale-error" : "workspace-command-error")}
+            {t(
+              errorKind === "source_unavailable"
+                ? "workspace-source-unavailable-error"
+                : stale
+                  ? "workspace-stale-error"
+                  : "workspace-command-error",
+            )}
           </Text>
           {stale && (
             <Button
@@ -509,6 +604,16 @@ export function DocumentPointCard({
               }}
             >
               {t("workspace-reload")}
+            </Button>
+          )}
+          {errorKind === "source_unavailable" && (
+            <Button
+              mt={2}
+              size="sm"
+              variant="outline"
+              onClick={onOpenContext ?? onAddSource}
+            >
+              {t("workspace-review-evidence")}
             </Button>
           )}
         </Box>

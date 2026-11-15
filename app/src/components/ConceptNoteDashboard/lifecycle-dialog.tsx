@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { Box, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import { LuTrash2 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "../ConceptNoteWorkspace/review-button";
 import {
   DialogBody,
   DialogCloseTrigger,

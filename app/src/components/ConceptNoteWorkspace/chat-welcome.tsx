@@ -3,7 +3,7 @@
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { LuFileText, LuLandmark, LuListTodo } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import type { DocumentWorkspace } from "@/util/document-workspace";
 

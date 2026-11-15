@@ -16,7 +16,7 @@ import type { DocumentWorkspace } from "@/util/document-workspace";
 const request = jest.fn<(body: unknown) => void>();
 const renderSnapshot = jest.fn<(...args: unknown[]) => Promise<void>>();
 let rejectSnapshot = false;
-let exportError: { status: number } | undefined;
+let exportError: { status: number; data?: { title: string } } | undefined;
 const reloadWorkspace = jest.fn<() => Promise<void>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -149,4 +149,20 @@ it("provides explicit reload after a stale export and permits a reviewed retry",
   expect(container.querySelector('[role="alert"]')).toBeNull();
   await act(async () => button("workspace-export-final").click());
   expect(renderSnapshot).toHaveBeenCalledTimes(1);
+});
+
+it("explains unavailable evidence instead of suggesting that revision reload fixes it", async () => {
+  exportError = {
+    status: 409,
+    data: {
+      title:
+        "A supporting source is unavailable or changed. Review the source-backed answer.",
+    },
+  };
+  await render(true);
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+    "workspace-source-unavailable-error",
+  );
+  expect(button("workspace-reload")).toBeUndefined();
+  expect(reloadWorkspace).not.toHaveBeenCalled();
 });

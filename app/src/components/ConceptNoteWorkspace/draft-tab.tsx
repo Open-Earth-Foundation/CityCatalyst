@@ -44,6 +44,7 @@ interface DraftTabProps extends DraftInlineReviewProps {
   onStartDrafting: () => void;
   highlightStartDrafting?: boolean;
   nextStep?: ReactNode;
+  scrollContainerRef?: React.MutableRefObject<HTMLDivElement | null>;
 }
 
 export function DraftTab(props: DraftTabProps) {
@@ -57,6 +58,7 @@ export function DraftTab(props: DraftTabProps) {
     props.draft?.current_chapter_id,
     props.focusChapterId,
     props.focusFindingKey,
+    props.scrollContainerRef,
   );
   const draftStarted = Boolean(
     props.draft &&
@@ -65,13 +67,7 @@ export function DraftTab(props: DraftTabProps) {
   );
 
   return (
-    <VStack
-      align="stretch"
-      gap={4}
-      h={draftStarted ? "full" : "auto"}
-      minH={0}
-      p={{ base: 4, md: 6 }}
-    >
+    <VStack align="stretch" gap={4} h="auto" minH={0} p={{ base: 4, md: 5 }}>
       {!draftStarted && (
         <Box>
           <Text

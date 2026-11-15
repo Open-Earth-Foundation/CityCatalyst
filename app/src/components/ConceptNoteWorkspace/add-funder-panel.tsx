@@ -5,7 +5,7 @@ import type { FileUploadFileChangeDetails } from "@chakra-ui/react";
 import { Box, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import { LuCircleAlert, LuFile, LuRefreshCw, LuUpload } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import {
   FileUploadDropzone,
   FileUploadRoot,

@@ -6,7 +6,7 @@ import {
   LuSearchCheck,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteChapterValidationStatus } from "@/util/types";
 

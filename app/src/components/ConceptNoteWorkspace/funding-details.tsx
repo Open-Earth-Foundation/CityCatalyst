@@ -3,7 +3,7 @@
 import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "@/i18n/client";
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteFunder,

@@ -4,7 +4,7 @@ import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
 import { LuArrowRight, LuCircleAlert, LuX } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 
 export interface NextStepAction {
   label: string;

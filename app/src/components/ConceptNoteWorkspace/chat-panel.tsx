@@ -137,6 +137,16 @@ function ContextStatusNotice({
     return null;
   }
 
+  if (autoDismissAfterMs)
+    return (
+      <HStack gap={2} fontSize="body.sm" color="content.secondary">
+        <Icon as={status.icon} color={status.color} />
+        <Text flex={1}>{status.title}</Text>
+        <Button size="xs" variant="plain" onClick={onOpenContext}>
+          {status.actionLabel}
+        </Button>
+      </HStack>
+    );
   return (
     <Flex
       align="start"
@@ -181,8 +191,8 @@ function ContextStatusNotice({
 
 const assistantMarkdownComponents = createChatMarkdownComponents({
   paragraph: {
-    fontSize: "body.sm",
-    lineHeight: "22px",
+    fontSize: "body.md",
+    lineHeight: "1.6",
     color: "content.primary",
   },
   h1: {
@@ -192,16 +202,16 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
   },
   h2: {
     fontSize: "body.md",
-    lineHeight: "22px",
+    lineHeight: "1.6",
     color: "content.primary",
   },
   h3: {
-    fontSize: "body.sm",
-    lineHeight: "22px",
+    fontSize: "body.md",
+    lineHeight: "1.6",
     color: "content.primary",
   },
   list: {
-    lineHeight: "22px",
+    lineHeight: "1.6",
     color: "content.primary",
   },
   inlineColor: "content.primary",
@@ -454,19 +464,19 @@ export function ConceptNoteChatPanel({
         py={3}
       >
         <Flex
-          boxSize="44px"
+          boxSize="28px"
           align="center"
           justify="center"
           borderRadius="full"
           bg="sentiment.positiveDefault"
           color="base.light"
         >
-          <Icon as={BsStars} boxSize={6} />
+          <Icon as={BsStars} boxSize={4} />
         </Flex>
         <Box flex={1} minW={0}>
           <Text
             fontFamily="heading"
-            fontSize="18px"
+            fontSize="body.lg"
             fontWeight="semibold"
             color="content.primary"
           >
@@ -518,19 +528,19 @@ export function ConceptNoteChatPanel({
         }}
         data-testid="concept-note-chat-scroll"
         align="stretch"
-        gap={4}
+        gap={3}
         flex={1}
         minH={0}
         overflowY="auto"
         bg="base.light"
-        p={4}
+        p={3}
       >
         {pointCard && (
           <Box
             p={3}
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
+            borderLeft="2px solid"
+            borderColor="content.link"
+            bg="background.alternativeLight"
           >
             {pointCard}
           </Box>

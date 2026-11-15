@@ -13,7 +13,7 @@ import {
 import NextLink from "next/link";
 import { LuArrowLeft, LuRefreshCw } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 
 export function WorkspaceLoadingState() {

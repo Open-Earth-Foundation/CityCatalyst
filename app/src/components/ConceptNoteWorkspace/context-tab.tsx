@@ -27,7 +27,7 @@ import {
   LuUpload,
 } from "react-icons/lu";
 
-import { Button } from "@/components/ui/button";
+import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
@@ -145,11 +145,11 @@ function ContextSectionLabel({ children }: { children: string }) {
   return (
     <Text
       fontFamily="heading"
-      fontSize="10px"
+      fontSize="body.sm"
       fontWeight="semibold"
-      letterSpacing="1.5px"
+      letterSpacing="normal"
       color="content.tertiary"
-      textTransform="uppercase"
+      textTransform="none"
     >
       {children}
     </Text>
@@ -176,14 +176,11 @@ function ContextCard({
     <Box
       minW={0}
       textAlign="start"
-      minH="128px"
-      border="1px solid"
+      borderTop="1px solid"
       borderColor="border.neutral"
-      borderRadius="rounded"
-      bg="base.light"
-      p={3}
+      py={3}
     >
-      <VStack align="stretch" gap={2} h="full">
+      <VStack align="stretch" gap={2}>
         <HStack justify="space-between" align="start" gap={2}>
           <ContextSectionLabel>{label}</ContextSectionLabel>
           {headerAction ? (
@@ -221,8 +218,8 @@ function ContextCard({
           {details.filter(Boolean).map((detail) => (
             <Text
               key={detail}
-              fontSize="10px"
-              lineHeight="16px"
+              fontSize="body.sm"
+              lineHeight={1.5}
               color="content.tertiary"
             >
               {detail}
@@ -898,7 +895,7 @@ export function ContextTab({
         </ContextSectionLabel>
         <Grid
           gap={2}
-          gridTemplateColumns={{ base: "1fr", lg: "repeat(3, minmax(0, 1fr))" }}
+          gridTemplateColumns={{ base: "1fr", xl: "repeat(2, minmax(0, 1fr))" }}
         >
           <ContextCard
             label={t("funder-profile")}
@@ -1020,7 +1017,7 @@ export function ContextTab({
           <HStack gap={2} minW={0}>
             <ContextSectionLabel>{t("your-files")}</ContextSectionLabel>
             <Text
-              fontSize="10px"
+              fontSize="body.sm"
               color="content.tertiary"
               data-testid="concept-note-upload-count"
             >

@@ -29,6 +29,7 @@ const config: JestConfigWithTsJest = {
   extensionsToTreatAsEsm: [".ts", ".tsx"],
 
   moduleNameMapper: {
+    "\\.module\\.css$": "<rootDir>/tests/style-module.cjs",
     "^@/(.*)$": "<rootDir>/src/$1",
   },
 

@@ -409,7 +409,11 @@ leased update jobs and exports. An accepted point revision and its update job
 commit together. Generation occurs outside transactions; lease tokens, canonical
 point vectors and chapter revisions fence the result. Free text gets a revision;
 manual/Ready text gets an existing edit proposal. Proposal acceptance marks the
-dependent version current through the reconciler. Failures retain the accepted
+dependent versions current atomically with the accepted revision through
+`persistence/concept_notes/point_reviews.py`; rejection and partial acceptance
+settle failed freshness without accepting dependencies. The reconciler uses the
+same proposal and exact point-vector checks for interrupted legacy work.
+Failures retain the accepted
 answer and expose retryable freshness separately.
 Protected-update proposals retain generated gap definitions in private per-chapter
 scope JSON. `persistence/concept_notes/proposal_gaps.py` reconciles only markers
@@ -426,7 +430,9 @@ history. Ordinary reads do not perform this repair.
 Before loading generation context, deferred jobs compare every active target
 dependency against the current accepted vector under the workspace/job locks.
 Jobs already incorporated by initial drafting complete without regenerating
-later user edits; missing or outdated dependencies still require propagation.
+later user edits or advancing an already-current workspace revision; missing or
+outdated dependencies still require propagation. Draft fingerprints sort chapters
+by position and identity so database row order cannot create a spurious revision.
 Point vectors include the requirements of the target chapters. A different point
 changing a shared target requeues the original chapter set, while unrelated
 chapter work keeps its valid result or review proposal. Canonical gap keys use the

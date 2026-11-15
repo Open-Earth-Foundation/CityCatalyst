@@ -779,10 +779,12 @@ class DocumentWorkspaceService:
         )
         chapters = list(
             await session.scalars(
-                select(ConceptNoteChapter).where(
+                select(ConceptNoteChapter)
+                .where(
                     ConceptNoteChapter.run_id == state.run_id,
                     ConceptNoteChapter.status != "deleted",
                 )
+                .order_by(ConceptNoteChapter.position, ConceptNoteChapter.chapter_id)
             )
         )
         active_chapter_refs = {chapter.template_section_id for chapter in chapters}

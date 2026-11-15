@@ -36,6 +36,8 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.models.db.document_workspace import DocumentWorkspaceState
+from app.persistence.concept_notes.point_reviews import settle_point_reviews
 from app.persistence.concept_notes.proposal_gaps import (
     GENERATED_GAPS_KEY,
     apply_generated_gaps,
@@ -261,6 +263,9 @@ class ConceptNoteEditRepository:
     ) -> EditProposalResponse:
         """Reject or cancel a proposal without writing any chapter revision."""
         async with self._sessions() as session, session.begin():
+            point_state = await session.get(
+                DocumentWorkspaceState, run_id, with_for_update=True
+            )
             row = await require_proposal(
                 session, run_id, user_id, proposal_id, lock=True
             )
@@ -272,6 +277,9 @@ class ConceptNoteEditRepository:
             if row.status != "rejected":
                 row.status = "rejected"
                 row.updated_at = datetime.now(UTC)
+                if point_state is not None:
+                    await session.flush()
+                    await settle_point_reviews(session, point_state)
             return to_response(row)
 
     async def apply(
@@ -287,6 +295,11 @@ class ConceptNoteEditRepository:
         async with self._sessions() as session, session.begin():
             # Serialize run history, then lock all chapter rows in stable UUID order.
             await lock_run(session, run_id)
+            # Remote source checks finish before entering this repository write.
+            # Match point commands/workers: workspace first, then proposals/chapters.
+            point_state = await session.get(
+                DocumentWorkspaceState, run_id, with_for_update=True
+            )
             row = await require_proposal(
                 session, run_id, user_id, proposal_id, lock=True
             )
@@ -440,6 +453,9 @@ class ConceptNoteEditRepository:
                     accepted_change_ids=[change.change_id for change in selected],
                     revisions=after,
                 ).model_dump(mode="json")
+                if point_state is not None:
+                    await session.flush()
+                    await settle_point_reviews(session, point_state)
             response = to_response(row)
         if response.status == "stale":
             raise EditOperationError(

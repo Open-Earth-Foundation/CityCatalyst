@@ -157,8 +157,11 @@ edit proposals for manual/Ready text. Generated gap definitions remain private
 proposal metadata until that chapter's change is accepted. Acceptance writes its
 visible markers and structured gaps together; rejection or accepting another
 chapter creates no gaps. Previously unanswered gaps remain open, and absent
-resolved gaps remain resolved. Before first prose exists, updates wait without
-spending retries or marking the accepted answer as failed. Initial
+resolved gaps remain resolved. Final acceptance makes dependent point versions
+current in the same transaction; rejection or partial acceptance records failed
+freshness without accepting those versions. Background recovery does not advance
+the workspace again after an already settled decision. Before first prose exists,
+updates wait without spending retries or marking the accepted answer as failed. Initial
 drafting uses the accepted values directly. Deferred jobs finish without another
 generation when all target dependencies already contain the current accepted
 versions, preserving subsequent manual edits. Final export checks coverage,

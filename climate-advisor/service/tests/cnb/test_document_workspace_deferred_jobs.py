@@ -83,6 +83,7 @@ async def test_deferred_job_skips_only_fully_applied_current_inputs(workspace, c
                 await session.delete(dependency)
     draft._load_run_context = AsyncMock(wraps=draft._load_run_context)
     draft._generate_chapter = AsyncMock(wraps=draft._generate_chapter)
+    displayed_revision = (await service.load(run)).revision
     claim = await claim_job(service)
     assert claim is not None
     await run_update_job(
@@ -100,6 +101,8 @@ async def test_deferred_job_skips_only_fully_applied_current_inputs(workspace, c
             service, *claim, ca_session_factory=factory, draft_service=draft
         )
     assert draft._generate_chapter.await_count == (0 if case == "current" else 2)
+    if case == "current":
+        assert (await service.load(run)).revision == displayed_revision
     assert (
         draft._load_run_context.await_count
         == {

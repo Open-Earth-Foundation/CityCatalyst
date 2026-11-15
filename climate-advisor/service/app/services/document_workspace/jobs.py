@@ -31,6 +31,7 @@ from app.persistence.concept_notes.gaps import (
     _reconcile_evidence_gaps,
     _restore_dropped_gaps,
 )
+from app.persistence.concept_notes.point_reviews import settle_point_review
 from app.persistence.concept_notes.proposal_gaps import GENERATED_GAPS_KEY
 from app.persistence.concept_notes.source_provenance import (
     PROVENANCE_KEY,
@@ -172,56 +173,7 @@ async def refresh_reviews(service: DocumentWorkspaceService) -> None:
             )
             if job is None:
                 continue
-            proposal_ids = [
-                UUID(value) for value in job.payload.get("proposal_ids", [])
-            ]
-            proposals = [
-                await session.get(ConceptNoteEditProposal, proposal_id)
-                for proposal_id in proposal_ids
-            ]
-            if not proposals or any(
-                proposal is None
-                or proposal.status
-                in {"rejected", "failed", "stale", "partially_applied"}
-                for proposal in proposals
-            ):
-                job.status, job.error_code = "failed", "point_update_review_unavailable"
-                state.revision += 1
-                continue
-            if not all(proposal.status == "applied" for proposal in proposals):
-                continue
-            points = list(
-                await session.scalars(
-                    select(DocumentPoint).where(
-                        DocumentPoint.run_id == job.run_id,
-                        DocumentPoint.active.is_(True),
-                    )
-                )
-            )
-            vector = job.payload.get("point_versions", {})
-            if {
-                point.semantic_key: point.accepted_version
-                for point in points
-                if set(point.definition["chapter_refs"]).intersection(
-                    job.payload["chapter_refs"]
-                )
-            } != vector:
-                job.status = "superseded"
-                continue
-            for dependency in await session.scalars(
-                select(DocumentDependency)
-                .join(DocumentPoint)
-                .where(
-                    DocumentPoint.run_id == job.run_id,
-                    DocumentDependency.chapter_ref.in_(job.payload["chapter_refs"]),
-                )
-            ):
-                point = next(
-                    point for point in points if point.point_id == dependency.point_id
-                )
-                dependency.applied_version = point.accepted_version
-            job.status = "complete"
-            state.revision += 1
+            await settle_point_review(session, state, job)
 
 
 async def run_update_job(
@@ -572,7 +524,7 @@ async def _finish_already_applied(
     still generate; current dependencies must not redraft subsequent user edits.
     """
     async with service.session_factory() as session, session.begin():
-        state = await service._state(session, claimed.run_id)
+        await service._state(session, claimed.run_id)
         job = await session.get(DocumentUpdateJob, claimed.job_id, with_for_update=True)
         if job is None or job.status != "running" or job.lease_token != token:
             return True
@@ -613,7 +565,6 @@ async def _finish_already_applied(
             return False
         job.status, job.error_code = "complete", None
         job.lease_token, job.lease_until = None, None
-        state.revision += 1
         return True
 
 

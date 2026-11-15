@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import type { EditChange } from "@/util/concept-note-edit-types";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 import type { InlineReviewDecision } from "./inline-review";
 import { InlineDocumentDiff } from "./edit-diff";
 import {
@@ -60,6 +61,12 @@ import {
 } from "./chapter-validation";
 import type { DraftFocusController } from "./use-draft-focus";
 import { ValidationEvidence } from "./validation-evidence";
+import {
+  remarkDocumentFonts,
+  remarkSelectionSource,
+} from "./selection-markdown";
+import { DocumentFontSpan } from "./document-font-span";
+import { SelectableChapter } from "./selection-toolbar";
 
 const baseMarkdownComponents = createChatMarkdownComponents({
   paragraph: {
@@ -98,6 +105,7 @@ const baseMarkdownComponents = createChatMarkdownComponents({
 
 const markdownComponents = {
   ...baseMarkdownComponents,
+  span: DocumentFontSpan,
   a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
     const message =
       href === MISSING_INFORMATION_LINK
@@ -259,16 +267,6 @@ export function chapterTone(status: ChapterDisplayStatus): string {
   }
 }
 
-function chapterPreviewMarkdown(markdown: string, title: string): string {
-  const lines = markdown.trimStart().split(/\r?\n/);
-  const firstLineTitle = lines[0]?.replace(/^#{1,6}\s+/, "").trim();
-  const body =
-    firstLineTitle?.toLocaleLowerCase() === title.trim().toLocaleLowerCase()
-      ? lines.slice(1).join("\n").trimStart()
-      : markdown;
-  return body;
-}
-
 export interface DraftInlineReviewProps {
   isConfirmingChapter: boolean;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => void;
@@ -287,6 +285,12 @@ export interface DraftInlineReviewProps {
   onRejectReviewChange?: (changeIds: string[]) => void;
   onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
   canonicalPointKeys?: string[];
+  selectionRunId?: string;
+  selectionDisabled?: boolean;
+  onSelectionProposed?: (
+    proposal: EditProposal,
+    manualFormatting?: boolean,
+  ) => Promise<void>;
 }
 
 interface DraftDocumentPanelProps extends DraftInlineReviewProps {
@@ -315,6 +319,9 @@ export function DraftDocumentPanel({
   onConfirmChapter,
   onAnswerGap,
   canonicalPointKeys,
+  selectionRunId,
+  selectionDisabled = false,
+  onSelectionProposed,
 }: DraftDocumentPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
@@ -641,6 +648,11 @@ export function DraftDocumentPanel({
             >
               {t("draft-preview-document-title", { name: noteName })}
             </Text>
+            {selectionRunId && (
+              <Text mt={1} fontSize="label.sm" color="content.tertiary">
+                {t("selection-keyboard-hint")}
+              </Text>
+            )}
           </Box>
 
           <VStack
@@ -850,19 +862,38 @@ export function DraftDocumentPanel({
                               canonicalPointKeys,
                             }}
                           >
-                            <ReactMarkdown
-                              components={previewMarkdownComponents}
-                              remarkPlugins={[
-                                remarkGfm,
-                                remarkMissingInformation,
-                                remarkGapPassages,
-                              ]}
+                            <SelectableChapter
+                              runId={selectionRunId ?? ""}
+                              chapterId={chapter.chapter_id}
+                              revision={chapter.revision_number ?? 0}
+                              markdown={chapter.body_markdown!}
+                              lng={lng}
+                              disabled={
+                                !selectionRunId ||
+                                !onSelectionProposed ||
+                                selectionDisabled ||
+                                !chapter.revision_number
+                              }
+                              onProposed={
+                                onSelectionProposed ?? (async () => {})
+                              }
                             >
-                              {chapterPreviewMarkdown(
-                                chapter.body_markdown!,
-                                chapter.title,
-                              )}
-                            </ReactMarkdown>
+                              <ReactMarkdown
+                                components={previewMarkdownComponents}
+                                remarkPlugins={[
+                                  remarkGfm,
+                                  remarkDocumentFonts,
+                                  remarkMissingInformation,
+                                  remarkGapPassages,
+                                  [
+                                    remarkSelectionSource,
+                                    { title: chapter.title },
+                                  ],
+                                ]}
+                              >
+                                {chapter.body_markdown!}
+                              </ReactMarkdown>
+                            </SelectableChapter>
                           </ChapterGapContext.Provider>
                         </Box>
                       </Box>

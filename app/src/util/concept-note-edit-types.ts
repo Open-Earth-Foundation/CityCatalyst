@@ -1,12 +1,55 @@
 import { z } from "zod";
 import type { StructureProposal } from "@/util/concept-note-structure";
 
-export const editScopeSchema = z
+const automaticEditScopeSchema = z
   .object({
     kind: z.literal("auto").default("auto"),
     focused_chapter_id: z.string().uuid().nullable().optional(),
+    chapter_id: z.null().optional(),
+    base_revision: z.null().optional(),
+    start: z.null().optional(),
+    end: z.null().optional(),
+    selected_markdown: z.null().optional(),
   })
   .strict();
+
+export const selectionEditScopeSchema = z
+  .object({
+    kind: z.literal("selection"),
+    focused_chapter_id: z.string().uuid().nullable().optional(),
+    chapter_id: z.string().uuid(),
+    base_revision: z.number().int().positive(),
+    start: z.number().int().min(0).max(50_000),
+    end: z.number().int().min(1).max(50_000),
+    selected_markdown: z.string().min(1).max(24_000),
+  })
+  .strict()
+  .refine(
+    (scope) =>
+      scope.end > scope.start &&
+      scope.end - scope.start === Array.from(scope.selected_markdown).length &&
+      Array.from(scope.selected_markdown).length <= 12_000 &&
+      scope.selected_markdown.trim().length > 0,
+    "Selection offsets must match the exact Unicode codepoint interval",
+  );
+
+export const editScopeSchema = z.union([
+  automaticEditScopeSchema,
+  selectionEditScopeSchema,
+]);
+export const selectionFormattingSchema = z
+  .object({
+    bold: z.boolean().optional(),
+    italic: z.boolean().optional(),
+    font: z.enum(["default", "serif", "mono"]).optional(),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      value.bold !== undefined ||
+      value.italic !== undefined ||
+      value.font !== undefined,
+  );
 
 /** Climate Advisor rejects longer edit instructions; chat messages are instructions. */
 export const EDIT_INSTRUCTION_MAX_CHARS = 8_000;
@@ -21,8 +64,13 @@ export const editProposalRequestSchema = z
     scope: editScopeSchema,
     idempotency_key: z.string().uuid(),
     refines_proposal_id: z.string().uuid().nullable().optional(),
+    formatting: selectionFormattingSchema.optional(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (request) => !request.formatting || request.scope.kind === "selection",
+    "Formatting requires selection scope",
+  );
 
 export const editApplyRequestSchema = z
   .object({
@@ -41,6 +89,7 @@ export const editApplyRequestSchema = z
   .strict();
 
 export type EditScope = z.infer<typeof editScopeSchema>;
+export type SelectionFormatting = z.infer<typeof selectionFormattingSchema>;
 export type EditProposalRequest = z.infer<typeof editProposalRequestSchema>;
 export type EditApplyRequest = z.infer<typeof editApplyRequestSchema>;
 export type EditStatus =
@@ -93,6 +142,7 @@ export interface EditProposal {
   run_id: string;
   instruction: string;
   scope: EditScope;
+  selection_window?: { start: number; end: number } | null;
   status: EditStatus;
   base_revisions: Record<string, number>;
   changes: EditChange[];

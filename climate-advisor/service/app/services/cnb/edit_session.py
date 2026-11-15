@@ -13,17 +13,22 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     PlannedTextChange,
 )
-from app.persistence.concept_notes.edits import EditOperationError
+from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import (
     is_information_gap_fill,
     validate_document_integrity,
     validate_provenance,
 )
+from app.utils.cnb_formatting import (
+    require_preserved_formatting,
+    require_style_run_edit,
+)
 from app.utils.cnb_information_markers import (
     INFORMATION_NEEDED_PATTERN,
     removed_information_markers,
 )
+from app.utils.cnb_selection import require_selection_change, selection_window
 
 
 @dataclass(frozen=True)
@@ -56,6 +61,27 @@ class DraftEditSession:
         self.max_searches = max_searches
         self.searches: dict[str, list[DraftMatch]] = {}
         self.plan: EditPlanOutput | None = None
+        self.selection_window = None
+        if request.scope.kind == "selection":
+            self.chapters = {
+                position: chapter
+                for position, chapter in self.chapters.items()
+                if chapter.chapter_id == request.scope.chapter_id
+            }
+            if not self.chapters:
+                raise EditOperationError(
+                    "stale_selection", "The selected chapter is unavailable."
+                )
+            chapter = next(iter(self.chapters.values()))
+            try:
+                self.selection_window = selection_window(
+                    request.scope,
+                    chapter.chapter_id,
+                    chapter.revision_number,
+                    chapter.body_markdown or "",
+                )
+            except ValueError as exc:
+                raise EditOperationError("stale_selection", str(exc)) from exc
 
     def search_draft(
         self, text: str, chapter_positions: list[int] | None = None
@@ -93,9 +119,15 @@ class DraftEditSession:
             body = chapter.body_markdown or ""
             start = body.find(text)
             while start >= 0:
-                matches.append(
-                    DraftMatch(f"{search_id}-{len(matches) + 1}", chapter, start, text)
-                )
+                if self.selection_window is None or (
+                    self.selection_window.start <= start
+                    and start + len(text) <= self.selection_window.end
+                ):
+                    matches.append(
+                        DraftMatch(
+                            f"{search_id}-{len(matches) + 1}", chapter, start, text
+                        )
+                    )
                 start = body.find(text, start + len(text))
         self.searches[search_id] = matches
         return {
@@ -115,7 +147,13 @@ class DraftEditSession:
             "chapter_title": match.chapter.title,
             "revision": match.chapter.revision_number,
             "context": body[
-                max(0, match.start - 100) : match.start + len(match.text) + 100
+                max(
+                    self.selection_window.start if self.selection_window else 0,
+                    match.start - 100,
+                ) : min(
+                    self.selection_window.end if self.selection_window else len(body),
+                    match.start + len(match.text) + 100,
+                )
             ],
             "protected": protected_reason(match.chapter, match.start, match.text),
         }
@@ -137,6 +175,26 @@ class DraftEditSession:
                 matches = self.select_matches(replacement)
                 for match in matches:
                     change = resolve_change(match, replacement)
+                    if self.request.scope.kind == "selection":
+                        try:
+                            require_selection_change(
+                                self.request.scope,
+                                match.chapter.chapter_id,
+                                match.chapter.revision_number,
+                                match.chapter.body_markdown,
+                                change.start,
+                                change.before,
+                            )
+                            require_style_run_edit(
+                                match.chapter.body_markdown,
+                                change.start,
+                                change.before,
+                                change.after,
+                            )
+                        except ValueError as exc:
+                            raise EditOperationError(
+                                "selection_scope", str(exc), status_code=422
+                            ) from exc
                     reason = protected_reason(
                         match.chapter, change.start, change.before
                     )
@@ -196,6 +254,17 @@ class DraftEditSession:
                 changes,
                 {change.chapter_id for change in changes},
             )
+            if self.request.scope.kind == "selection":
+                try:
+                    for chapter in self.chapters.values():
+                        require_preserved_formatting(
+                            chapter.body_markdown,
+                            replace_anchors(chapter.body_markdown, changes),
+                        )
+                except ValueError as exc:
+                    raise EditOperationError(
+                        "selection_scope", str(exc), status_code=422
+                    ) from exc
         except EditOperationError as error:
             return {
                 "ok": False,

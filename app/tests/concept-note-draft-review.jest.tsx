@@ -15,6 +15,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
     t: (key: string) => translations[key as keyof typeof translations] ?? key,
   }),
 }));
+jest.unstable_mockModule("@/lib/runtime-env", () => ({ env: () => undefined }));
 
 let DraftDocumentPanel: typeof import("@/components/ConceptNoteWorkspace/draft-document-panel").DraftDocumentPanel;
 let root: Root;

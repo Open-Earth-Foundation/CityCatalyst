@@ -21,12 +21,18 @@ from app.models.cnb.concept_note_edits import (
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.utils.cnb_formatting import (
+    formatting_tokens,
+    require_preserved_formatting,
+    require_style_run_edit,
+)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
     marker_replacement_text,
     removed_information_markers,
 )
+from app.utils.cnb_selection import require_selection_change
 
 
 def validate_edit_plan(
@@ -78,6 +84,22 @@ def validate_edit_plan(
         for change in plan.changes
     ]
     validate_document_integrity(current, changes, affected)
+    if request.scope.kind == "selection":
+        try:
+            for chapter_id in affected:
+                body = current[chapter_id].body_markdown
+                after = replace_anchors(
+                    body,
+                    [change for change in changes if change.chapter_id == chapter_id],
+                )
+                if request.formatting is not None:
+                    formatting_tokens(after)
+                else:
+                    require_preserved_formatting(body, after)
+        except ValueError as exc:
+            raise EditOperationError(
+                "selection_scope", str(exc), status_code=422
+            ) from exc
     return sorted(
         changes,
         key=lambda change: (current[change.chapter_id].position, change.start),
@@ -107,6 +129,28 @@ def validated_change(
         )
 
     anchored = anchor_change(change, chapter.body_markdown)
+    if request.scope.kind == "selection":
+        try:
+            require_selection_change(
+                request.scope,
+                chapter.chapter_id,
+                chapter.revision_number,
+                chapter.body_markdown,
+                anchored.start,
+                anchored.before,
+                formatting=request.formatting is not None,
+            )
+            if request.formatting is None:
+                require_style_run_edit(
+                    chapter.body_markdown,
+                    anchored.start,
+                    anchored.before,
+                    anchored.after,
+                )
+        except ValueError as exc:
+            raise EditOperationError(
+                "selection_scope", str(exc), status_code=422
+            ) from exc
     fills_information_gap = is_information_gap_fill(anchored, chapter)
     if (
         removed_information_markers(anchored.before, anchored.after)

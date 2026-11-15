@@ -186,3 +186,47 @@ human confirmation. Final export shows its outstanding checks immediately. The
 guided review downloads explicitly say working draft; final documents use the
 header Export action and its server eligibility check. Persisted completed-chapter
 progress permits dashboard working export while the detailed summary loads.
+
+### Selection toolbar and persisted formatting
+
+Selecting current Draft prose opens a compact CC toolbar: Ask for changes, Font,
+Bold and Italic. There is no link action. Alt+F10 moves keyboard focus into the
+toolbar; native focusgroup is used where supported, with a conditional roving
+tabindex fallback elsewhere. Escape closes it without losing or immediately
+recapturing the selected range. Toolbar focus and the instruction field retain a
+captured selection; unchanged background query refreshes do not clear an edit.
+
+The preview's text spans carry parser source positions from the **complete stored
+Markdown**. The displayed duplicate chapter heading is removed from the AST, not
+from the source string. DOM ranges map back through escape/entity decoding and
+UTF-16 boundaries, then become Unicode codepoint offsets for the API. This selects
+the correct occurrence of repeated text and does not search for the first matching
+sentence. Complete formatting wrappers are included when their entire contents
+are selected. Cross-chapter selections, links, code and gap/review controls are
+excluded. Revision/content changes invalidate the selection. The toolbar is not
+offered while another proposal is being reviewed/processed or drafting is busy.
+
+Both AI requests and formatting use the existing edit-proposal POST/apply flow.
+A direct Bold/Italic/Font click is the human formatting command: its deterministic
+proposal is applied immediately with the server revision vector. AI prose changes
+remain pending until explicit human acceptance. Selection scope contains chapter_id, base_revision, start, end
+and exact selected_markdown. The server owns the allowed AI window: selected text
+plus the immediately preceding and following sentences, with bounded context.
+Formatting is deterministic and restricted to the exact selection. Formatting saves only after the explicit toolbar command; AI never applies itself.
+A stale response is not automatically retried.
+The instruction remains available after a failed request.
+
+Persisted formatting uses only strict span attributes data-cc-font (default,
+serif, mono), data-cc-bold and data-cc-italic (true/false). Only this allowlist is
+converted by the remark renderer; arbitrary HTML, styles, links or events are not
+enabled. Existing Markdown inside the wrapper stays parsed, with explicit off
+overrides applying to inherited strong/emphasis. Current prose and inline/block
+proposal previews share this renderer. Saved markup is part of the authoritative
+Markdown supplied to AI; export and server selection-fence checks use the same
+stored body, rather than DOM-only formatting.
+
+Focused UI regression coverage includes repeated occurrences, title offsets,
+Unicode/escapes/entities, strict formatting and proposal rendering, keyboard
+selection, focus retention, Escape, authoritative scope payloads and a stale 409
+without automatic retry. Deployed-provider validation and recording are tracked
+separately from these controlled local tests.

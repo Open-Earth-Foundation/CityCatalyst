@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 
 const mockPdfOptions: Array<Record<string, unknown>> = [];
 const mockPdfStructureTypes: string[] = [];
+const mockPdfRuns: Array<{ text: string; font: string }> = [];
 
 jest.unstable_mockModule("@react-pdf/pdfkit", () => ({
   __esModule: true,
@@ -9,6 +10,7 @@ jest.unstable_mockModule("@react-pdf/pdfkit", () => ({
     private handlers: Record<string, (value?: Uint8Array) => void> = {};
     page = { height: 842, margins: { bottom: 57 } };
     y = 57;
+    currentFont = "Helvetica";
 
     constructor(options: Record<string, unknown>) {
       mockPdfOptions.push(options);
@@ -25,7 +27,8 @@ jest.unstable_mockModule("@react-pdf/pdfkit", () => ({
       this.handlers.end?.();
     }
 
-    font() {
+    font(value: string) {
+      this.currentFont = value;
       return this;
     }
 
@@ -50,7 +53,8 @@ jest.unstable_mockModule("@react-pdf/pdfkit", () => ({
       return { type };
     }
 
-    text() {
+    text(value: string) {
+      mockPdfRuns.push({ text: value, font: this.currentFont });
       return this;
     }
   },
@@ -251,6 +255,40 @@ describe("concept note export preparation", () => {
     });
     expect(mockPdfStructureTypes).toEqual(
       expect.arrayContaining(["Document", "H1", "H2"]),
+    );
+  });
+
+  test("DOCX and PDF retain allowlisted fonts, bold/italic and explicit inherited-style overrides", async () => {
+    const markdown =
+      '# Styled export\n\n<span data-cc-font="serif" data-cc-bold="true" data-cc-italic="true">Serif both</span> and **bold <span data-cc-bold="false">plain override</span>** and <span data-cc-font="mono">Mono</span>.';
+    const blob = await buildConceptNoteDocxBlob(markdown, "Styled export");
+    const { default: JSZip } = await import("jszip");
+    const zip = await JSZip.loadAsync(await blob.arrayBuffer());
+    const xml = await zip.file("word/document.xml")!.async("string");
+    const runs = [...xml.matchAll(/<w:r(?: [^>]*)?>[\s\S]*?<\/w:r>/g)].map(
+      (match) => match[0],
+    );
+    const serif = runs.find((run) => run.includes("Serif both"))!;
+    expect(serif).toContain('w:ascii="Georgia"');
+    expect(serif).toContain("<w:b/>");
+    expect(serif).toContain("<w:i/>");
+    expect(runs.find((run) => run.includes("plain override"))).toContain(
+      '<w:b w:val="false"/>',
+    );
+    expect(runs.find((run) => run.includes(">Mono<"))).toContain(
+      'w:ascii="Courier New"',
+    );
+    expect(xml).not.toContain("data-cc-");
+    await buildConceptNotePdfBlob(markdown, "Styled export");
+    expect(mockPdfRuns).toEqual(
+      expect.arrayContaining([
+        { text: "Serif both", font: "Times-BoldItalic" },
+        { text: expect.stringContaining("plain override"), font: "Helvetica" },
+        { text: "Mono", font: "Courier" },
+      ]),
+    );
+    expect(mockPdfRuns.some((run) => run.text.includes("data-cc-"))).toBe(
+      false,
     );
   });
 });

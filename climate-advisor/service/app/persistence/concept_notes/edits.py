@@ -22,6 +22,8 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
     PlannedTextChange,
+    SelectionFormatting,
+    SelectionWindow,
 )
 from app.models.cnb.concept_note_structure import (
     StructureProposal,
@@ -47,11 +49,22 @@ from app.persistence.concept_notes.source_provenance import (
     merge_provenance,
     revision_provenance,
 )
+from app.utils.cnb_formatting import (
+    format_selection,
+    formatting_tokens,
+    require_preserved_formatting,
+    require_style_run_edit,
+)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
     marker_replacement_text,
     removed_information_markers,
+)
+from app.utils.cnb_selection import (
+    SELECTION_FORMATTING_KEY,
+    SELECTION_WINDOW_KEY,
+    require_selection_change,
 )
 
 logger = logging.getLogger(__name__)
@@ -73,6 +86,27 @@ class ConceptNoteEditRepository:
     def __init__(self, sessions: async_sessionmaker[AsyncSession]) -> None:
         """Use the existing managed CNB session factory."""
         self._sessions = sessions
+
+    async def replay(
+        self, *, run_id: UUID, user_id: str, request: EditProposalRequest
+    ) -> EditProposalResponse | None:
+        """Read an exact authorized replay before validating a new selection snapshot."""
+        async with self._sessions() as session:
+            row = await session.scalar(
+                select(ConceptNoteEditProposal).where(
+                    ConceptNoteEditProposal.run_id == run_id,
+                    ConceptNoteEditProposal.actor_user_id == user_id,
+                    ConceptNoteEditProposal.idempotency_key == request.idempotency_key,
+                )
+            )
+            if row is None:
+                return None
+            if row.request_fingerprint != request_fingerprint(request):
+                raise EditOperationError(
+                    "idempotency_key_reused",
+                    "This request key was already used for different edit instructions.",
+                )
+            return to_response(row)
 
     async def save_structure(
         self, run_id: UUID, request: StructureSaveRequest
@@ -140,6 +174,8 @@ class ConceptNoteEditRepository:
         structure: StructureProposal | None = None,
         source_provenance: dict | None = None,
         refines_proposal_id: UUID | None = None,
+        selection_window: SelectionWindow | None = None,
+        formatting: SelectionFormatting | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -160,6 +196,16 @@ class ConceptNoteEditRepository:
                     provenance, prior.scope.get(PROVENANCE_KEY)
                 )
             row.scope = {**row.scope, PROVENANCE_KEY: provenance}
+            if selection_window is not None:
+                row.scope = {
+                    **row.scope,
+                    SELECTION_WINDOW_KEY: selection_window.model_dump(),
+                }
+            if formatting is not None:
+                row.scope = {
+                    **row.scope,
+                    SELECTION_FORMATTING_KEY: formatting.model_dump(exclude_none=True),
+                }
             row.changes = [change.model_dump(mode="json") for change in changes]
             row.notices = [notice.model_dump(mode="json") for notice in (notices or [])]
             row.structure = structure.model_dump(mode="json") if structure else None
@@ -339,6 +385,12 @@ class ConceptNoteEditRepository:
                 proposal_id,
             )
             proposal = to_response(row)
+            if proposal.scope.kind == "selection" and proposal.structure is not None:
+                raise EditOperationError(
+                    "selection_scope",
+                    "Selected-text edits cannot change document structure.",
+                    status_code=422,
+                )
             if request.expected_revisions != proposal.base_revisions:
                 raise EditOperationError(
                     "revision_vector_mismatch",
@@ -387,6 +439,46 @@ class ConceptNoteEditRepository:
                     if not changes:
                         continue
                     body = replace_anchors(latest.body_markdown, changes)
+                    if proposal.scope.kind == "selection":
+                        try:
+                            for change in changes:
+                                require_selection_change(
+                                    proposal.scope,
+                                    chapter.chapter_id,
+                                    latest.revision_number,
+                                    latest.body_markdown,
+                                    change.start,
+                                    change.before,
+                                    formatting=SELECTION_FORMATTING_KEY in row.scope,
+                                )
+                                if SELECTION_FORMATTING_KEY not in row.scope:
+                                    require_style_run_edit(
+                                        latest.body_markdown,
+                                        change.start,
+                                        change.before,
+                                        change.after,
+                                    )
+                            if SELECTION_FORMATTING_KEY in row.scope:
+                                style = SelectionFormatting.model_validate(
+                                    row.scope[SELECTION_FORMATTING_KEY]
+                                )
+                                scope = proposal.scope
+                                expected = (
+                                    latest.body_markdown[: scope.start]
+                                    + format_selection(scope.selected_markdown, style)
+                                    + latest.body_markdown[scope.end :]
+                                )
+                                if body != expected:
+                                    raise ValueError(
+                                        "Formatting must change only the exact selected text"
+                                    )
+                                formatting_tokens(body)
+                            else:
+                                require_preserved_formatting(latest.body_markdown, body)
+                        except ValueError as exc:
+                            raise EditOperationError(
+                                "selection_scope", str(exc), status_code=422
+                            ) from exc
                     await resolve_filled_information_gaps(
                         session,
                         chapter=chapter,
@@ -805,8 +897,15 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "scope": {
                 key: value
                 for key, value in row.scope.items()
-                if key not in {PROVENANCE_KEY, GENERATED_GAPS_KEY}
+                if key
+                not in {
+                    PROVENANCE_KEY,
+                    GENERATED_GAPS_KEY,
+                    SELECTION_WINDOW_KEY,
+                    SELECTION_FORMATTING_KEY,
+                }
             },
+            "selection_window": row.scope.get(SELECTION_WINDOW_KEY),
             "status": row.status,
             "base_revisions": row.base_revisions,
             "changes": row.changes,

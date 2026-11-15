@@ -16,6 +16,7 @@ import type {
   ConceptNoteApplicationContext,
   ConceptNoteDraftRunStatus,
 } from "@/util/types";
+import type { EditProposal } from "@/util/concept-note-edit-types";
 
 const context: ConceptNoteApplicationContext = {
   run_id: "run",
@@ -58,9 +59,15 @@ const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 const refetchWorkspace = jest.fn(async () => ({}));
 const saveSetup = jest.fn();
 const confirmChapterMutation = jest.fn();
+const loadSelectionProposal = jest.fn(async () => {});
+const applySelectionProposal = jest.fn(async (_proposal: EditProposal) => true);
 let draftActions: {
   onConfirmChapter: (chapter: unknown) => Promise<void>;
   onAnswerGap: (chapter: unknown, row: unknown) => void;
+  onSelectionProposed: (
+    proposal: EditProposal,
+    manualFormatting?: boolean,
+  ) => Promise<void>;
 };
 let pointKeys: { key: string }[] = [];
 let workspaceFetching = false;
@@ -168,7 +175,11 @@ jest.unstable_mockModule(
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-edits",
   () => ({
-    useConceptNoteEdits: () => ({ proposals: [] }),
+    useConceptNoteEdits: () => ({
+      proposals: [],
+      loadProposal: loadSelectionProposal,
+      apply: applySelectionProposal,
+    }),
   }),
 );
 jest.unstable_mockModule(
@@ -200,6 +211,10 @@ jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
     onOpenFundingSetup: () => void;
     onConfirmChapter: (chapter: unknown) => Promise<void>;
     onAnswerGap: (chapter: unknown, row: unknown) => void;
+    onSelectionProposed: (
+      proposal: EditProposal,
+      manualFormatting?: boolean,
+    ) => Promise<void>;
   }) => {
     draftActions = props;
     return (
@@ -306,6 +321,8 @@ beforeEach(() => {
   syncSetup = undefined;
   saveSetup.mockReset();
   confirmChapterMutation.mockReset();
+  loadSelectionProposal.mockClear();
+  applySelectionProposal.mockClear();
   refetch.mockReset();
   refetchWorkspace.mockClear();
   container = document.createElement("div");
@@ -337,6 +354,56 @@ async function showDraft() {
   expect(tab).toBeDefined();
   await act(async () => tab!.click());
 }
+
+it.each([false, true])(
+  "applies selection formatting only for an explicit manual command (%s)",
+  async (manualFormatting) => {
+    initialContext = fundedContext;
+    initialWorkspaceState = {
+      draftStatus: "complete",
+      contextState: "ready",
+      hasContent: true,
+    };
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={defaultSystem}>
+          <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />
+        </ChakraProvider>,
+      ),
+    );
+    await showDraft();
+    const proposal: EditProposal = {
+      proposal_id: "selection-proposal",
+      run_id: "run",
+      instruction: "Change selected text",
+      scope: {
+        kind: "selection",
+        chapter_id: "chapter",
+        base_revision: 1,
+        start: 0,
+        end: 4,
+        selected_markdown: "Text",
+      },
+      status: "proposed",
+      base_revisions: { chapter: 1 },
+      changes: [],
+      clarification: null,
+      error_code: null,
+      result: null,
+      created_at: "2026-11-15",
+      updated_at: "2026-11-15",
+    };
+    await act(async () =>
+      draftActions.onSelectionProposed(proposal, manualFormatting),
+    );
+    expect(loadSelectionProposal).toHaveBeenCalledWith(proposal.proposal_id);
+    expect(applySelectionProposal).toHaveBeenCalledTimes(
+      manualFormatting ? 1 : 0,
+    );
+    if (manualFormatting)
+      expect(applySelectionProposal).toHaveBeenCalledWith(proposal);
+  },
+);
 
 it("opens funding after a successful context retry without a second click", async () => {
   await clickSetup();

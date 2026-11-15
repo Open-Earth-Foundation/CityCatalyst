@@ -438,6 +438,16 @@ changing a shared target requeues the original chapter set, while unrelated
 chapter work keeps its valid result or review proposal. Canonical gap keys use the
 same bounded character contract as point keys and are retained without renaming.
 
+Selection edits extend the same proposal JSON rather than adding another editor
+store. `utils/cnb_selection.py` validates immutable codepoint anchors and computes
+the bounded sentence window; tools, final plan validation and apply each enforce
+it. The model receives only that chapter window plus inherited presentation
+metadata. `utils/cnb_formatting.py` owns strict font/bold/italic span parsing,
+deterministic formatting, and AI style-run guards. Server-owned window/formatting
+metadata lives privately in proposal scope JSON; only the computed window is
+projected read-only. Existing revision, provenance and human-decision controls
+are shared by formatting and AI edits.
+
 `persistence/concept_notes/source_provenance.py` owns the versioned source vector
 stored inside each revision's existing `patch_summary`. Generation freezes source
 identities before stripping IDs from model input and before awaiting the model.

@@ -216,6 +216,38 @@ beforeEach(() => {
   );
 });
 
+test("forwards exact Unicode selection and deterministic false style overrides", async () => {
+  const body = {
+    ...proposalBody,
+    scope: {
+      kind: "selection",
+      chapter_id: targetId,
+      base_revision: 2,
+      start: 10,
+      end: 15,
+      selected_markdown: "😀text",
+    },
+    formatting: { font: "serif", bold: false, italic: true },
+  };
+  const route = routes.find((route) => route.name === "propose")!;
+  expect((await request(route, { body })).status).toBe(200);
+  expect(upstream).toHaveBeenLastCalledWith(
+    expect.objectContaining({ method: "POST", body }),
+  );
+  const invalid = [
+    { ...body, scope: { ...body.scope, end: 16 } },
+    { ...body, formatting: { font: "Comic Sans" } },
+    { ...body, selection_window: { start: 0, end: 50_000 } },
+  ];
+  for (const rejected of invalid) {
+    upstream.mockClear();
+    expect((await request(route, { body: rejected })).status).toBe(400);
+    expect(upstream.mock.calls.some(([args]) => args.method === "POST")).toBe(
+      false,
+    );
+  }
+});
+
 describe.each(routes)("$name route boundary", (route) => {
   test("returns 401 before any upstream call for an unauthenticated request", async () => {
     getSession.mockResolvedValue(null);

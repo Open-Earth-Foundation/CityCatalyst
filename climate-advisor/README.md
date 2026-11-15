@@ -192,6 +192,20 @@ omitted option require clarification.
 
 Run the focused offline suite with
 `uv run --directory service pytest tests/cnb/test_document_workspace.py`.
+Selected-text edit proposals use a binding `selection` scope: exact chapter and
+revision, Unicode-codepoint start/end offsets and the exact selected Markdown.
+The server permits only that selection and one adjacent sentence per side (up to
+2,000 context codepoints per side; selection limit 12,000), checking again at
+apply. Stale selections fail before any model call. AI changes must remain inside
+existing styled/plain-text runs and cannot consume, insert or move font/emphasis
+markers, escapes or code delimiters; styled prose cannot be split into blocks.
+The same proposal endpoint accepts deterministic selection-only `formatting`
+overrides for bold, italic and default/serif/mono fonts. It preserves text and
+source provenance without calling a model; normal explicit apply/version locks
+remain authoritative. Strict allowlisted `span` attributes persist in Markdown
+and are included in model context. Multi-paragraph formatting creates balanced
+wrappers per paragraph; a partial existing wrapper requires selecting its complete
+run or inner text. `tests/cnb/test_selection_edits.py` covers the full contract.
 Run `tests/test_document_workspace_sources.py` and
 `tests/test_document_workspace_tools.py` for source/auth and scoped-chat checks.
 Source/prompt changes should also be evaluated with the existing CNB benchmark

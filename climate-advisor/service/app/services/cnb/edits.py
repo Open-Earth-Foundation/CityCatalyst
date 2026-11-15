@@ -18,8 +18,10 @@ from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
+    EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
+    PlannedTextChange,
 )
 from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.persistence.concept_notes.edits import (
@@ -30,8 +32,10 @@ from app.persistence.concept_notes.source_provenance import generation_provenanc
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
+from app.utils.cnb_formatting import format_selection, formatting_tokens
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
+from app.utils.cnb_selection import selection_window
 from app.utils.concept_note_context import manual_population_context
 from app.utils.conversation_observability import (
     async_workflow_trace,
@@ -43,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConceptNoteEditService:
-    """Coordinate durable proposals and deterministic automatic-target validation."""
+    """Coordinate durable automatic/selection proposals and deterministic formatting."""
 
     def __init__(
         self,
@@ -162,7 +166,57 @@ class ConceptNoteEditService:
     ) -> EditProposalResponse:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
+        selected_chapters = None
+        selected_window = None
         async with self.locked_context(run) as (_, run_context):
+            if request.scope.kind == "selection":
+                replay = await self.repository.replay(
+                    run_id=run.run_id, user_id=run.user_id, request=request
+                )
+                if replay is not None:
+                    return replay
+                available = await self.workspace.list_chapters(run_id=run.run_id)
+                selected_chapters = [
+                    chapter
+                    for chapter in available
+                    if chapter.chapter_id == request.scope.chapter_id
+                ]
+                try:
+                    if not selected_chapters or selected_chapters[0].user_locked:
+                        raise ValueError(
+                            "The selected chapter is unavailable or locked"
+                        )
+                    target = selected_chapters[0]
+                    selected_window = selection_window(
+                        request.scope,
+                        target.chapter_id,
+                        target.revision_number,
+                        target.body_markdown or "",
+                    )
+                except ValueError as exc:
+                    raise EditOperationError(
+                        "stale_selection", str(exc), status_code=409
+                    ) from exc
+                try:
+                    formatting_tokens(target.body_markdown or "")
+                except ValueError as exc:
+                    raise EditOperationError(
+                        "invalid_formatting", str(exc), status_code=422
+                    ) from exc
+                if request.formatting is not None:
+                    try:
+                        formatted = format_selection(
+                            request.scope.selected_markdown, request.formatting
+                        )
+                        formatting_tokens(
+                            target.body_markdown[: request.scope.start]
+                            + formatted
+                            + target.body_markdown[request.scope.end :]
+                        )
+                    except ValueError as exc:
+                        raise EditOperationError(
+                            "invalid_formatting", str(exc), status_code=422
+                        ) from exc
             proposal, created = await self.repository.start(
                 run_id=run.run_id, user_id=run.user_id, request=request
             )
@@ -190,7 +244,11 @@ class ConceptNoteEditService:
                     user_id=run.user_id,
                     proposal_id=request.refines_proposal_id,
                 )
-            chapters = await self.workspace.list_chapters(run_id=run.run_id)
+            chapters = (
+                selected_chapters
+                if selected_chapters is not None
+                else await self.workspace.list_chapters(run_id=run.run_id)
+            )
             if not chapters:
                 raise EditOperationError(
                     "draft_unavailable",
@@ -204,13 +262,35 @@ class ConceptNoteEditService:
                     status_code=422,
                 )
             source_provenance = generation_provenance(run_context or {}, chapters)
-            plan = await self.planner.plan(
-                request,
-                chapters,
-                run_context or {},
-                prior_proposal=prior,
-                recent_messages=recent_messages,
-            )
+            if request.formatting is not None:
+                plan = EditPlanOutput(
+                    intent="edit",
+                    changes=[
+                        PlannedTextChange(
+                            chapter_id=request.scope.chapter_id,
+                            start=request.scope.start,
+                            before=request.scope.selected_markdown,
+                            after=formatted,
+                            kind="wording",
+                            group_id="selection_formatting",
+                            semantic_support="preserved",
+                        )
+                    ],
+                )
+            else:
+                plan = await self.planner.plan(
+                    request,
+                    chapters,
+                    run_context or {},
+                    prior_proposal=prior,
+                    recent_messages=recent_messages,
+                )
+            if request.scope.kind == "selection" and plan.structure is not None:
+                raise EditOperationError(
+                    "selection_scope",
+                    "Selected-text edits cannot change document structure.",
+                    status_code=422,
+                )
             if plan.intent == "question":
                 return await self.repository.reject(**identity)
             if plan.intent == "clarification":
@@ -249,6 +329,8 @@ class ConceptNoteEditService:
                 structure=plan.structure,
                 source_provenance=source_provenance,
                 refines_proposal_id=request.refines_proposal_id,
+                selection_window=selected_window,
+                formatting=request.formatting,
             )
             if (
                 prior is not None

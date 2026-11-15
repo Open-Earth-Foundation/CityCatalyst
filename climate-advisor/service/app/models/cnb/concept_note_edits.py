@@ -6,8 +6,9 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
+
+from app.models.cnb.concept_note_structure import StructureProposal
 
 EditStatus = Literal[
     "processing",
@@ -35,11 +36,67 @@ EditContextSection = Literal[
 
 
 class EditScope(BaseModel):
-    """Automatic model-selected scope with an optional non-binding UI focus hint."""
+    """Automatic scope or a binding exact selection in one immutable chapter."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
-    kind: Literal["auto"] = "auto"
+    kind: Literal["auto", "selection"] = "auto"
     focused_chapter_id: UUID | None = None
+    chapter_id: UUID | None = None
+    base_revision: PositiveInt | None = None
+    start: int | None = Field(default=None, ge=0, le=50_000)
+    end: int | None = Field(default=None, ge=1, le=50_000)
+    selected_markdown: str | None = Field(default=None, min_length=1, max_length=12_000)
+
+    @model_validator(mode="after")
+    def validate_selection(self) -> EditScope:
+        """Never accept a partial selection or treat binding anchors as a focus hint."""
+        fields = (
+            self.chapter_id,
+            self.base_revision,
+            self.start,
+            self.end,
+            self.selected_markdown,
+        )
+        if self.kind == "selection":
+            if any(value is None for value in fields):
+                raise ValueError(
+                    "Selection scope requires chapter, revision and exact anchors"
+                )
+            if self.end <= self.start or self.end - self.start != len(
+                self.selected_markdown
+            ):
+                raise ValueError(
+                    "Selection offsets must match Unicode codepoint length"
+                )
+            if not self.selected_markdown.strip():
+                raise ValueError("Select substantive chapter text")
+        elif any(value is not None for value in fields):
+            raise ValueError("Selection anchors require selection scope")
+        return self
+
+
+class SelectionFormatting(BaseModel):
+    """Deterministic inline style overrides; arbitrary HTML/styles/links are forbidden."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    bold: bool | None = None
+    italic: bool | None = None
+    font: Literal["default", "serif", "mono"] | None = None
+
+    @model_validator(mode="after")
+    def validate_operation(self) -> SelectionFormatting:
+        """Require at least one explicit style, retaining false as a real override."""
+        if self.bold is None and self.italic is None and self.font is None:
+            raise ValueError("Choose at least one formatting property")
+        return self
+
+
+class SelectionWindow(BaseModel):
+    """Server-computed allowed codepoint interval, never accepted from a caller."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    start: int = Field(ge=0)
+    end: int = Field(ge=1)
 
 
 class EditProposalRequest(BaseModel):
@@ -50,12 +107,15 @@ class EditProposalRequest(BaseModel):
     scope: EditScope = Field(default_factory=EditScope)
     idempotency_key: UUID
     refines_proposal_id: UUID | None = None
+    formatting: SelectionFormatting | None = None
 
     @model_validator(mode="after")
     def validate_instruction(self) -> EditProposalRequest:
         """Require substantive instructions without altering exact user text."""
         if not self.instruction.strip():
             raise ValueError("instruction must not be blank")
+        if self.formatting is not None and self.scope.kind != "selection":
+            raise ValueError("Formatting requires an exact selection scope")
         return self
 
 
@@ -247,6 +307,7 @@ class EditProposalResponse(BaseModel):
     run_id: UUID
     instruction: str
     scope: EditScope
+    selection_window: SelectionWindow | None = None
     status: EditStatus
     base_revisions: dict[UUID, PositiveInt] = Field(default_factory=dict)
     structure: StructureProposal | None = None

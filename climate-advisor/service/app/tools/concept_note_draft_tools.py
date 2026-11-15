@@ -4,6 +4,7 @@ from typing import Any
 from uuid import uuid4
 
 from agents import FunctionTool, function_tool
+
 from app.models.cnb.concept_note_edits import DraftReplacement, EditPlanOutput
 from app.models.cnb.concept_note_structure import (
     StructureChapter,
@@ -62,6 +63,12 @@ def build_draft_tools(
         """Preview complete chapter order/titles/descriptions; null positions insert custom chapters."""
         # Resolve positions against the immutable server snapshot.
         session.plan = None
+        if session.request.scope.kind == "selection":
+            return {
+                "ok": False,
+                "code": "selection_scope",
+                "message": "Selected-text edits cannot change document structure.",
+            }
         before = structure_snapshot(list(session.chapters.values()))
         after = []
         try:

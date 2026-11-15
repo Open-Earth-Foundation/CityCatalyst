@@ -1010,6 +1010,36 @@ export function ConceptNoteWorkspace({
                     </Flex>
                   )}
                   <DraftTab
+                    selectionRunId={runId}
+                    selectionDisabled={
+                      Boolean(reviewProposal) ||
+                      edits.isLoading ||
+                      Boolean(edits.error) ||
+                      isDraftRunning ||
+                      startDraftState.isLoading ||
+                      confirmChapterState.isLoading ||
+                      Boolean(edits.busy) ||
+                      edits.needsDraftReload ||
+                      edits.proposals.some(
+                        (proposal) => proposal.status === "processing",
+                      )
+                    }
+                    onSelectionProposed={async (proposal, manualFormatting) => {
+                      await edits.loadProposal(proposal.proposal_id);
+                      if (
+                        manualFormatting &&
+                        (proposal.status !== "proposed" ||
+                          !(await edits.apply(proposal)))
+                      ) {
+                        throw new Error("Selection formatting was not applied");
+                      }
+                      if (manualFormatting) return;
+                      const chapterId =
+                        proposal.scope.kind === "selection"
+                          ? proposal.scope.chapter_id
+                          : Object.keys(proposal.base_revisions)[0];
+                      if (chapterId) navigateEdit(chapterId);
+                    }}
                     applicationContext={applicationContext ?? null}
                     bundle={bundle}
                     contextStatus={contextStatus}

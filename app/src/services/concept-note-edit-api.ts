@@ -16,6 +16,19 @@ const tags = (_result: unknown, _error: unknown, { runId }: Target) => [
 
 export const editApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    createEditProposal: builder.mutation<
+      EditProposal,
+      { runId: string; body: EditProposalRequest }
+    >({
+      query: ({ runId, body }) => ({
+        url: collection(runId),
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_r, _e, { runId }) => [
+        { type: "ConceptNoteEdits", id: runId },
+      ],
+    }),
     listEditProposals: builder.query<EditProposal[], string>({
       query: collection,
       providesTags: (_result, _error, runId) => [

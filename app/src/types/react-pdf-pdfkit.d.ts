@@ -14,6 +14,7 @@ declare module "@react-pdf/pdfkit" {
   }
 
   interface PdfTextOptions {
+    continued?: boolean;
     indent?: number;
     lineGap?: number;
     paragraphGap?: number;

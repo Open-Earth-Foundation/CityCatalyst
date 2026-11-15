@@ -16,6 +16,12 @@ snapshots refresh that run's canonical workspace cache. Sync and export wait whi
 local edits or workspace refreshes are pending. Commands retain the displayed
 expected revision; a genuine concurrent change still requires reload and review,
 without automatically retrying against a newer setup.
+The selected-text toolbar stores allowlisted default/serif/mono font and explicit
+bold/italic overrides in safe inline spans. AI wording preserves those markers;
+direct formatting remains deterministic through the existing proposal/apply
+pipeline. DOCX exports retain Open Sans/Georgia/Courier New run fonts and emphasis;
+PDF exports use the portable Helvetica/Times/Courier equivalents, including
+bold/italic faces. No arbitrary HTML, CSS or toolbar links are enabled.
 
 ### Connection errors
 

@@ -1,4 +1,9 @@
 import type { ConceptNoteDraftChapter } from "@/util/types";
+import {
+  exportInlineRuns,
+  exportPdfFont,
+  type ExportTextRun,
+} from "./export-inline-formatting";
 
 import {
   countMissingInformationMarkers,
@@ -9,8 +14,12 @@ export type ConceptNoteExportFormat = "docx" | "pdf";
 
 type ExportBlock =
   | { kind: "blank" }
-  | { kind: "bullet" | "ordered" | "paragraph"; text: string }
-  | { kind: "heading"; level: number; text: string };
+  | {
+      kind: "bullet" | "ordered" | "paragraph";
+      text: string;
+      runs: ExportTextRun[];
+    }
+  | { kind: "heading"; level: number; text: string; runs: ExportTextRun[] };
 
 function cleanInlineMarkdown(value: string): string {
   return value
@@ -150,31 +159,36 @@ function markdownLines(markdown: string): string[] {
 }
 
 function exportBlocks(markdown: string): ExportBlock[] {
+  const spans: Record<string, string>[] = [];
   return markdownLines(markdown).map((line) => {
+    const styled = (value: string, heading = false) => {
+      const runs = exportInlineRuns(value, spans, heading);
+      return { text: runs.map((run) => run.text).join(""), runs };
+    };
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       return {
         kind: "heading",
         level: heading[1].length,
-        text: cleanInlineMarkdown(heading[2]),
+        ...styled(heading[2], true),
       };
     }
 
     const bullet = line.match(/^\s*[-*+]\s+(.+)$/);
     if (bullet) {
-      return { kind: "bullet", text: cleanInlineMarkdown(bullet[1]) };
+      return { kind: "bullet", ...styled(bullet[1]) };
     }
 
     const ordered = line.match(/^\s*(\d+[.)])\s+(.+)$/);
     if (ordered) {
       return {
         kind: "ordered",
-        text: `${ordered[1]} ${cleanInlineMarkdown(ordered[2])}`,
+        ...styled(`${ordered[1]} ${ordered[2]}`),
       };
     }
 
-    const text = cleanInlineMarkdown(line);
-    return text ? { kind: "paragraph", text } : { kind: "blank" };
+    const content = styled(line);
+    return content.text ? { kind: "paragraph", ...content } : { kind: "blank" };
   });
 }
 
@@ -183,8 +197,25 @@ export async function buildConceptNoteDocxBlob(
   noteName: string,
   language = "en",
 ): Promise<Blob> {
-  const { Document, HeadingLevel, Packer, Paragraph } = await import("docx");
+  const { Document, HeadingLevel, Packer, Paragraph, TextRun } =
+    await import("docx");
   const paragraphs = exportBlocks(markdown).map((block) => {
+    const children =
+      block.kind === "blank"
+        ? []
+        : block.runs.map(
+            (run) =>
+              new TextRun({
+                text: run.text,
+                bold: run.bold,
+                italics: run.italic,
+                font: {
+                  default: "Open Sans",
+                  serif: "Georgia",
+                  mono: "Courier New",
+                }[run.font],
+              }),
+          );
     if (block.kind === "heading") {
       const levels = [
         HeadingLevel.TITLE,
@@ -196,19 +227,19 @@ export async function buildConceptNoteDocxBlob(
       ];
       return new Paragraph({
         heading: levels[Math.min(block.level - 1, levels.length - 1)],
-        text: block.text,
+        children,
       });
     }
 
     if (block.kind === "bullet") {
       return new Paragraph({
         bullet: { level: 0 },
-        text: block.text,
+        children,
       });
     }
 
     return new Paragraph({
-      text: block.kind === "blank" ? "" : block.text,
+      children,
     });
   });
   const document = new Document({
@@ -242,19 +273,31 @@ function writePdfBlock(
     ) {
       document.addPage();
     }
-    document.text(block.text, options);
+    block.runs.forEach((run, index) =>
+      document.font(exportPdfFont(run)).text(run.text, {
+        ...options,
+        continued: index < block.runs.length - 1,
+      }),
+    );
     return;
   }
 
   const prefix = block.kind === "bullet" ? "• " : "";
-  document
-    .font("Helvetica")
-    .fontSize(10.5)
-    .text(`${prefix}${block.text}`, {
+  document.fontSize(10.5);
+  const runs = prefix
+    ? [
+        { text: prefix, font: "default" as const, bold: false, italic: false },
+        ...block.runs,
+      ]
+    : block.runs;
+  runs.forEach((run, index) =>
+    document.font(exportPdfFont(run)).text(run.text, {
       indent: block.kind === "bullet" || block.kind === "ordered" ? 12 : 0,
       lineGap: 2,
       paragraphGap: 6,
-    });
+      continued: index < runs.length - 1,
+    }),
+  );
 }
 
 export async function buildConceptNotePdfBlob(

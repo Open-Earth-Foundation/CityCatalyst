@@ -21,8 +21,32 @@ import {
 import { ReviewButton as Button } from "./review-button";
 
 import { paragraphDiff } from "./paragraph-diff";
+import { remarkDocumentFonts } from "./selection-markdown";
+import { DocumentFontSpan } from "./document-font-span";
 
 const noInlineDecisions: Record<string, InlineReviewDecision> = {};
+
+function InlineDiffText({
+  text,
+  components,
+}: {
+  text: string;
+  components: Components;
+}) {
+  return text.includes("<span data-cc-") ? (
+    <ReactMarkdown
+      components={{
+        ...components,
+        p: ({ children }) => <span>{children}</span>,
+      }}
+      remarkPlugins={[remarkGfm, remarkDocumentFonts, remarkMissingInformation]}
+    >
+      {text}
+    </ReactMarkdown>
+  ) : (
+    <MissingInformationText text={text} />
+  );
+}
 
 function InlineDecisionControl({
   action,
@@ -113,7 +137,8 @@ export function EditDiff({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const markerComponents = useMemo(
-    () => missingInformationComponents(components ?? {}),
+    () =>
+      missingInformationComponents({ ...components, span: DocumentFontSpan }),
     [components],
   );
   const paragraphs = useMemo(
@@ -129,11 +154,11 @@ export function EditDiff({
     return (
       <Box as={inline ? "span" : "div"} data-testid="concept-note-edit-append">
         {inline ? (
-          <MissingInformationText text={change.before} />
+          <InlineDiffText text={change.before} components={markerComponents} />
         ) : (
           <ReactMarkdown
             components={markerComponents}
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={[remarkGfm, remarkDocumentFonts]}
           >
             {change.before}
           </ReactMarkdown>
@@ -175,7 +200,11 @@ export function EditDiff({
             >
               <ReactMarkdown
                 components={markerComponents}
-                remarkPlugins={[remarkGfm, remarkMissingInformation]}
+                remarkPlugins={[
+                  remarkGfm,
+                  remarkDocumentFonts,
+                  remarkMissingInformation,
+                ]}
               >
                 {part.text}
               </ReactMarkdown>
@@ -237,7 +266,10 @@ export function EditDiff({
                 data-testid="concept-note-edit-previous-text"
                 aria-label={t("edit-previous")}
               >
-                <MissingInformationText text={change.before} />
+                <InlineDiffText
+                  text={change.before}
+                  components={markerComponents}
+                />
               </Box>
               <InlineDecisionControl
                 action="reject"
@@ -282,7 +314,10 @@ export function EditDiff({
                 data-testid="concept-note-edit-proposed-text"
                 aria-label={t("edit-proposed")}
               >
-                <MissingInformationText text={change.after} />
+                <InlineDiffText
+                  text={change.after}
+                  components={markerComponents}
+                />
               </Box>
               {!change.before && (
                 <InlineDecisionControl
@@ -338,7 +373,11 @@ export function EditDiff({
           >
             <ReactMarkdown
               components={markerComponents}
-              remarkPlugins={[remarkGfm, remarkMissingInformation]}
+              remarkPlugins={[
+                remarkGfm,
+                remarkDocumentFonts,
+                remarkMissingInformation,
+              ]}
             >
               {change.before}
             </ReactMarkdown>
@@ -358,7 +397,11 @@ export function EditDiff({
           >
             <ReactMarkdown
               components={markerComponents}
-              remarkPlugins={[remarkGfm, remarkMissingInformation]}
+              remarkPlugins={[
+                remarkGfm,
+                remarkDocumentFonts,
+                remarkMissingInformation,
+              ]}
             >
               {change.after || t("edit-deleted")}
             </ReactMarkdown>
@@ -403,7 +446,10 @@ export function InlineDocumentDiff({
   const reviewComponents = useMemo(
     () =>
       ({
-        ...missingInformationComponents(components),
+        ...missingInformationComponents({
+          ...components,
+          span: DocumentFontSpan,
+        }),
         "cnb-edit": ({
           changeIds,
           before,
@@ -478,7 +524,12 @@ export function InlineDocumentDiff({
       {!located && <Text role="alert">{t("edit-inline-stale")}</Text>}
       <ReactMarkdown
         components={reviewComponents}
-        remarkPlugins={[remarkGfm, plugin, remarkMissingInformation]}
+        remarkPlugins={[
+          remarkGfm,
+          plugin,
+          remarkDocumentFonts,
+          remarkMissingInformation,
+        ]}
       >
         {markdown}
       </ReactMarkdown>

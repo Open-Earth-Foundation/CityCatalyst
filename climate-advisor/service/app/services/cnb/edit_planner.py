@@ -26,8 +26,10 @@ from app.services.cnb.edit_session import DraftEditSession
 from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_draft_tools import build_draft_tools
+from app.utils.cnb_formatting import enclosing_formatting
 from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
+from app.utils.cnb_selection import selection_window
 from app.utils.concept_note_context import (
     chapter_excerpts_for,
     omit_context_identifiers,
@@ -94,6 +96,12 @@ class ConceptNoteEditPlanner:
             chapters,
             key=lambda c: c.position,
         )
+        if request.scope.kind == "selection":
+            chapters = [
+                chapter
+                for chapter in chapters
+                if chapter.chapter_id == request.scope.chapter_id
+            ]
         if not chapters:
             return EditPlanOutput(
                 intent="clarification",
@@ -116,6 +124,8 @@ class ConceptNoteEditPlanner:
             "instruction": request.instruction,
             "recent_messages": first["recent_messages"],
             "run_context": first["run_context"],
+            "selection": first["selection"],
+            "formatting": first["formatting"],
             "chapters": [
                 {
                     "position": chapter.position,
@@ -438,9 +448,34 @@ def build_planner_input(
         ]
         context["selected_sources"].append(projected)
 
+    # Keep selected-text model context inside the server-computed sentence window.
+    selected = None
+    body = chapter.body_markdown
+    confirmed_body = chapter.confirmed_body_markdown
+    if request.scope.kind == "selection":
+        window = selection_window(
+            request.scope, chapter.chapter_id, chapter.revision_number, body or ""
+        )
+        selected = {
+            "chapter_position": chapter.position,
+            "selected_markdown": request.scope.selected_markdown,
+            "editable_markdown": body[window.start : window.end],
+            "inherited_styles": enclosing_formatting(body, window.start),
+        }
+        body = selected["editable_markdown"]
+        confirmed_body = None
     # Project proposal metadata separately so model reference fields are retained.
     return {
         "instruction": request.instruction,
+        "selection": selected,
+        "formatting": {
+            "span_attributes": {
+                "data-cc-font": ["default", "serif", "mono"],
+                "data-cc-bold": ["true", "false"],
+                "data-cc-italic": ["true", "false"],
+            },
+            "preserve_existing": True,
+        },
         "recent_messages": [
             {"role": message["role"], "content": message["content"]}
             for message in (recent_messages or [])
@@ -454,8 +489,8 @@ def build_planner_input(
             "title": chapter.title,
             "position": chapter.position,
             "revision": chapter.revision_number,
-            "body_markdown": chapter.body_markdown,
-            "confirmed_body_markdown": chapter.confirmed_body_markdown,
+            "body_markdown": body,
+            "confirmed_body_markdown": confirmed_body,
             "gaps": [
                 {"question": gap.question, "state": gap.state} for gap in chapter.gaps
             ],

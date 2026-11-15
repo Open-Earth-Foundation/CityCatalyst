@@ -49,13 +49,34 @@
  *       properties:
  *         kind:
  *           type: "string"
- *           enum: ["auto"]
+ *           enum: ["auto", "selection"]
  *           default: "auto"
  *         focused_chapter_id:
  *           type: "string"
  *           format: "uuid"
  *           nullable: true
- *       description: "Scope is always selected automatically from the instruction and complete draft. focused_chapter_id is a non-binding navigation hint, never a restriction."
+ *         chapter_id:
+ *           type: "string"
+ *           format: "uuid"
+ *           nullable: true
+ *         base_revision:
+ *           type: "integer"
+ *           minimum: 1
+ *           nullable: true
+ *         start:
+ *           type: "integer"
+ *           minimum: 0
+ *           maximum: 50000
+ *           nullable: true
+ *         end:
+ *           type: "integer"
+ *           minimum: 1
+ *           maximum: 50000
+ *           nullable: true
+ *         selected_markdown:
+ *           type: "string"
+ *           nullable: true
+ *       description: "Auto scope uses a non-binding focus hint. Selection requires chapter_id, base_revision, start, end and exact selected_markdown (maximum 12000 Unicode codepoints). Offsets are Unicode codepoints; the server enforces a selection plus adjacent-sentence window and never guesses another occurrence."
  *     CnbEditProposalRequest:
  *       type: "object"
  *       additionalProperties: false
@@ -76,6 +97,18 @@
  *           format: "uuid"
  *           nullable: true
  *           description: "Optional prior proposal in this run. On the refine endpoint it must match proposalId."
+ *         formatting:
+ *           type: "object"
+ *           additionalProperties: false
+ *           description: "Selection-only deterministic formatting. Requires at least one explicit property; false overrides inherited emphasis. Uses the normal explicit proposal/apply transaction."
+ *           properties:
+ *             font:
+ *               type: "string"
+ *               enum: ["default", "serif", "mono"]
+ *             bold:
+ *               type: "boolean"
+ *             italic:
+ *               type: "boolean"
  *     CnbEditApplyRequest:
  *       type: "object"
  *       additionalProperties: false
@@ -218,6 +251,18 @@
  *           type: "string"
  *         scope:
  *           $ref: "#/components/schemas/CnbEditScope"
+ *         selection_window:
+ *           type: "object"
+ *           nullable: true
+ *           readOnly: true
+ *           description: "Server-computed Unicode-codepoint interval; never accepted from the caller."
+ *           properties:
+ *             start:
+ *               type: "integer"
+ *               minimum: 0
+ *             end:
+ *               type: "integer"
+ *               minimum: 1
  *         status:
  *           type: "string"
  *           enum: ["processing","clarification_required","proposed","applied","partially_applied","rejected","failed","stale"]

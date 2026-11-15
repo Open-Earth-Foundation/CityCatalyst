@@ -60,6 +60,7 @@ async def validate_concept_note_chapter(
         requested_user_id=user_id,
         authorization=authorization,
     )
+    await session.close()
     if validation_service is None:
         return _problem(
             503,

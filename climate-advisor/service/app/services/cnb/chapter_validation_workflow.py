@@ -95,7 +95,9 @@ class ConceptNoteChapterValidationWorkflowService:
         )
         self._validator = validator or ConceptNoteChapterValidationService()
         self._application_context = application_context or (
-            ConceptNoteApplicationContextService(workflow_session=workflow_session)
+            # Validation only needs the template, not included-source navigation.
+            # Its exact source authority has its own short, explicit CA lease.
+            ConceptNoteApplicationContextService()
         )
 
     async def validate(

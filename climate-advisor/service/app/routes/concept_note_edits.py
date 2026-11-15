@@ -6,6 +6,12 @@ from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_session
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_edits import (
     EditApplyRequest,
@@ -23,11 +29,20 @@ from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
 )
-from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
+
+
+async def authorized_edit_run(
+    run: AuthorizedRun,
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ConceptNoteRun:
+    """Release read-only authorization before edit services acquire workflow locks."""
+    await session.close()
+    return run
+
+
+AuthorizedEditRun = Annotated[ConceptNoteRun, Depends(authorized_edit_run)]
 
 
 async def edit_service() -> AsyncIterator[ConceptNoteEditService]:
@@ -74,7 +89,7 @@ def require_active_run(run: ConceptNoteRun) -> None:
     "/concept-notes/{run_id}/edit-proposals", response_model=list[EditProposalResponse]
 )
 async def list_edit_proposals(
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> list[EditProposalResponse]:
     """Restore durable pending and completed proposals for the authorized run."""
@@ -88,7 +103,7 @@ async def list_edit_proposals(
 )
 async def propose_edit(
     payload: EditProposalRequest,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Create or replay a proposal without mutating the current draft."""
@@ -102,7 +117,7 @@ async def propose_edit(
 )
 async def get_edit_proposal(
     proposal_id: UUID,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Read a complete diff only after verifying its run and owner binding."""
@@ -118,7 +133,7 @@ async def get_edit_proposal(
 async def apply_edit_proposal(
     proposal_id: UUID,
     payload: EditApplyRequest,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Apply only explicit user acceptance of a complete expected revision vector."""
@@ -132,7 +147,7 @@ async def apply_edit_proposal(
 )
 async def reject_edit_proposal(
     proposal_id: UUID,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Idempotently reject or cancel a proposal; no chapter revision is written."""
@@ -148,7 +163,7 @@ async def reject_edit_proposal(
 async def refine_edit_proposal(
     proposal_id: UUID,
     payload: EditProposalRequest,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Create a separately reviewable replacement for an owned prior proposal."""
@@ -168,7 +183,7 @@ async def refine_edit_proposal(
 
 @router.get("/concept-notes/{run_id}/structure", response_model=StructureState)
 async def get_structure(
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> StructureState:
     """Initialize run-owned template chapters once and restore the saved structure."""
@@ -188,7 +203,7 @@ async def get_structure(
 @router.put("/concept-notes/{run_id}/structure", response_model=StructureState)
 async def put_structure(
     payload: StructureSaveRequest,
-    run: AuthorizedRun,
+    run: AuthorizedEditRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> StructureState:
     """Save explicit direct edits after ownership and optimistic concurrency checks."""

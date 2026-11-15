@@ -417,6 +417,10 @@ present in each accepted chapter body inside the normal edit transaction. Remove
 answered gaps close through the existing edit path; rejected or unselected changes
 cannot create gaps, and absent resolved history is not reopened. This metadata is
 excluded from public `EditScope` alongside source provenance.
+Before loading generation context, deferred jobs compare every active target
+dependency against the current accepted vector under the workspace/job locks.
+Jobs already incorporated by initial drafting complete without regenerating
+later user edits; missing or outdated dependencies still require propagation.
 Point vectors include the requirements of the target chapters. A different point
 changing a shared target requeues the original chapter set, while unrelated
 chapter work keeps its valid result or review proposal. Canonical gap keys use the
@@ -484,6 +488,24 @@ CA snapshot across chapters. These checks are optimistic across the two stores;
 the final CC source lifecycle validator still runs at export. Effective chapter
 required policy is the template requirement or existing chapter policy, so models
 never ask users to edit stale internal required flags.
+
+Source authority acquires its owned CA connection before opening a CNB
+transaction, then reuses that connection for the locked freshness check. Nested
+draft-start and edit/structure workflow transactions explicitly lend their CA
+session through a task-local scope; borrowing never commits, rolls back or
+closes the caller's transaction. Column reads bypass borrowed ORM identity caches.
+Read-only HTTP/tool authorization sessions are detached and released before these
+operations begin. Validation template loading does not open unused CA navigation
+reads or retain connections across model execution.
+
+Candidate acceptance and export perform the existing remote CC lifecycle check
+with local database connections released, because CC may call CA again to
+authorize a reused upload. The subsequent locked operation rechecks the exact
+verified candidate/source vector, point/revision versions and current authority;
+a changed vector aborts rather than accepting a different source. This preserves
+the optimistic lifecycle gate without a CA-pool/CNB-lock callback cycle. Real
+PostgreSQL regression tests use distinct CA/CNB schemas with two CA connections
+and no overflow, concurrent apply/confirm/polling, and reentrant source checks.
 
 The CC adapter reuses IngestDocumentPool/NativeInputCatalog through target-run
 associations. `document_workspace/source_access.py` binds the authenticated

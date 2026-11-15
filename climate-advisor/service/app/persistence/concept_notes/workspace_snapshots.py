@@ -75,6 +75,7 @@ async def _snapshot_chapters(
     *,
     template_fingerprint: str | None = None,
     workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
+    workflow_session: AsyncSession | None = None,
 ) -> list[WorkspaceChapterSnapshot]:
     """Project active chapters with latest validations and derived staleness."""
     # Fetch all current inputs once because draft state is polled frequently.
@@ -105,6 +106,7 @@ async def _snapshot_chapters(
         canonical_points,
         run_id,
         workflow_session_factory=workflow_session_factory,
+        workflow_session=workflow_session,
     )
     revision_history = await _snapshot_revision_history(
         session,

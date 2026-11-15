@@ -64,6 +64,7 @@ class DocumentWorkspacePoint(Contract):
     ]
     value: JsonValue = None
     accepted_reason: str | None = None
+    unit: str | None = None
     accepted_candidate_id: str | None = None
     chapter_refs: list[str]
     candidates: list[DocumentPointCandidate]

@@ -41,9 +41,13 @@ async def _authorized_run(
     """Recheck run scope and release the per-request Core client."""
     run_service = ConceptNoteRunService(session)
     try:
-        return await run_service.get_authorized_run(
+        run = await run_service.get_authorized_run(
             run_id=run_id, requested_user_id=user_id, authorization=authorization
         )
+        # Authorization is read-only. Detach its loaded run and return the CA
+        # connection before any separate CNB lock or owned CA lease is acquired.
+        await session.close()
+        return run
     finally:
         await run_service.cc_client.close()
 

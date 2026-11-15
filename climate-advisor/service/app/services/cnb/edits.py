@@ -94,15 +94,16 @@ class ConceptNoteEditService:
                     "Wait for drafting to finish before changing the structure.",
                 )
             bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-            yield (
-                current,
-                {
-                    **(bundle.context_bundle if bundle else {}),
-                    "manual_population": manual_population_context(
-                        current.context_summary
-                    ),
-                },
-            )
+            async with self.workspace.using_workflow_session(session):
+                yield (
+                    current,
+                    {
+                        **(bundle.context_bundle if bundle else {}),
+                        "manual_population": manual_population_context(
+                            current.context_summary
+                        ),
+                    },
+                )
 
     async def propose(
         self,
@@ -177,7 +178,11 @@ class ConceptNoteEditService:
         prior = None
         # Old assistant prose has no independent source authority. Preserve
         # literal human history; ambiguous references must be clarified.
-        recent_messages = [message for message in (recent_messages or []) if message.get("role") == "user"]
+        recent_messages = [
+            message
+            for message in (recent_messages or [])
+            if message.get("role") == "user"
+        ]
         try:
             if request.refines_proposal_id:
                 prior = await self.repository.get(

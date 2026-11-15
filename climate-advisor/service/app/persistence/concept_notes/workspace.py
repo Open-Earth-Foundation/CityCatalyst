@@ -35,6 +35,7 @@ from app.persistence.concept_notes.source_provenance import (
     merge_provenance,
     revision_provenance,
 )
+from app.persistence.concept_notes.validation_sources import ValidationSourceSessions
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
     _evidence_by_chapter,
@@ -99,6 +100,11 @@ class ConceptNoteWorkspaceRepository:
     ) -> None:
         self._session_factory = session_factory
         self._workflow_session_factory = workflow_session_factory
+        self._validation_sources = ValidationSourceSessions(workflow_session_factory)
+
+    def using_workflow_session(self, session: AsyncSession):
+        """Borrow an existing workflow transaction without opening another CA connection."""
+        return self._validation_sources.borrow(session)
 
     async def ensure_template_chapters(
         self,
@@ -237,12 +243,16 @@ class ConceptNoteWorkspaceRepository:
         template_fingerprint: str | None = None,
     ) -> list[WorkspaceChapterSnapshot]:
         """Return active chapters in document order with latest Markdown."""
-        async with self._session_factory() as session:
+        async with (
+            self._validation_sources.connection(),
+            self._session_factory() as session,
+        ):
             return await _snapshot_chapters(
                 session,
                 run_id,
                 template_fingerprint=template_fingerprint,
                 workflow_session_factory=self._workflow_session_factory,
+                workflow_session=self._validation_sources.current,
             )
 
     async def load_validation_context(
@@ -253,13 +263,17 @@ class ConceptNoteWorkspaceRepository:
         template_fingerprint: str,
     ) -> WorkspaceValidationContext:
         """Load the target, full document, gaps, evidence, and input fingerprint."""
-        async with self._session_factory() as session:
+        async with (
+            self._validation_sources.connection(),
+            self._session_factory() as session,
+        ):
             return await _load_validation_context(
                 session,
                 run_id=run_id,
                 chapter_id=chapter_id,
                 template_fingerprint=template_fingerprint,
                 workflow_session_factory=self._workflow_session_factory,
+                workflow_session=self._validation_sources.current,
             )
 
     async def upsert_validation(
@@ -281,7 +295,11 @@ class ConceptNoteWorkspaceRepository:
         if status not in {"ready", "needs_review", "incomplete"}:
             raise ValueError(f"Unsupported chapter validation status: {status}")
 
-        async with self._session_factory() as session, session.begin():
+        async with (
+            self._validation_sources.connection(),
+            self._session_factory() as session,
+            session.begin(),
+        ):
             # Lock the active document before checking the post-LLM fingerprint.
             context = await _load_validation_context(
                 session,
@@ -290,6 +308,7 @@ class ConceptNoteWorkspaceRepository:
                 template_fingerprint=template_fingerprint,
                 lock=True,
                 workflow_session_factory=self._workflow_session_factory,
+                workflow_session=self._validation_sources.current,
             )
             if (
                 context.fingerprint != expected_fingerprint
@@ -393,7 +412,11 @@ class ConceptNoteWorkspaceRepository:
         template_fingerprint: str | None = None,
     ) -> None:
         """Confirm one exact gap-free revision and append its review record."""
-        async with self._session_factory() as session, session.begin():
+        async with (
+            self._validation_sources.connection(),
+            self._session_factory() as session,
+            session.begin(),
+        ):
             from app.models.db.document_workspace import (
                 DocumentSetupSnapshot,
                 DocumentWorkspaceState,
@@ -438,6 +461,7 @@ class ConceptNoteWorkspaceRepository:
                     template_fingerprint=template_fingerprint,
                     lock=True,
                     workflow_session_factory=self._workflow_session_factory,
+                    workflow_session=self._validation_sources.current,
                 )
             ):
                 raise WorkspaceConflictError(

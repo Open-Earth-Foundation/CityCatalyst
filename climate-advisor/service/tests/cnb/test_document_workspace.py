@@ -305,6 +305,18 @@ async def test_requirements_materialize_before_prose_and_shared_keys_are_unique(
     assert (await service.load(run)).revision == view.revision
 
 
+async def test_declared_unit_is_projected_without_changing_raw_numeric_value(workspace):
+    service, run, _ = workspace
+    assert (await service.load(run)).points[0].unit is None
+    configured = template()
+    for chapter in configured.chapter_schema:
+        chapter["required_fields"][0]["unit"] = "PLN"
+    await service.reconcile_template(run, configured)
+    result = await answer(service, run, 375000.25)
+    assert result.point.unit == "PLN" and result.point.value == 375000.25
+    assert (await service.load(run)).points[0].value == 375000.25
+
+
 async def test_current_accepted_candidate_identity_changes_and_manual_correction_clears_it(
     workspace,
 ):
@@ -907,8 +919,10 @@ async def test_final_export_uses_current_locked_revisions_and_detects_unseen_man
     assert error.value.status_code == 409
 
 
+@pytest.mark.parametrize("failure", ["unavailable", "changed_during_verification"])
 async def test_source_validator_blocks_confirmation_without_mutating_the_point(
     workspace,
+    failure,
 ):
     service, run, factory = workspace
     point = (await service.load(run)).points[0]
@@ -935,7 +949,14 @@ async def test_source_validator_blocks_confirmation_without_mutating_the_point(
 
     async def unavailable(identities):
         assert len(identities) == 1
-        raise HTTPException(409, "Source unavailable")
+        if failure == "unavailable":
+            raise HTTPException(409, "Source unavailable")
+        async with factory() as session, session.begin():
+            candidate = await session.get(DocumentCandidate, candidate_id)
+            candidate.source_identity = {
+                **candidate.source_identity,
+                "sha256": "2" * 64,
+            }
 
     with pytest.raises(HTTPException) as error:
         await service.command(

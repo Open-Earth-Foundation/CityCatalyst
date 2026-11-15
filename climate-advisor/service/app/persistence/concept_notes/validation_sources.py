@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any
 from uuid import UUID
@@ -20,6 +23,45 @@ from app.models.db.concept_note import (
 )
 from app.persistence.concept_notes.context_bundle import normalize_bundle
 from app.persistence.concept_notes.source_provenance import merge_provenance
+
+
+class ValidationSourceSessions:
+    """Acquire owned CA connections before CNB; never close a borrowed session."""
+
+    def __init__(self, factory: async_sessionmaker[AsyncSession] | None) -> None:
+        self.factory = factory
+        self._current: ContextVar[AsyncSession | None] = ContextVar(
+            "validation_source_session", default=None
+        )
+
+    @property
+    def current(self) -> AsyncSession | None:
+        return self._current.get()
+
+    @asynccontextmanager
+    async def borrow(self, session: AsyncSession) -> AsyncIterator[None]:
+        """Bind a caller-owned session only within this task and lexical scope."""
+        token = self._current.set(session)
+        try:
+            yield
+        finally:
+            self._current.reset(token)
+
+    @asynccontextmanager
+    async def connection(self) -> AsyncIterator[None]:
+        if self.current is not None:
+            await self.current.connection()
+            yield
+            return
+        if self.factory is None:
+            yield
+            return
+        async with self.factory() as session:
+            # Eager checkout establishes CA -> CNB resource order even before
+            # the source query. No CNB connection or lock is held while waiting.
+            await session.connection()
+            async with self.borrow(session):
+                yield
 
 
 @dataclass(frozen=True)
@@ -61,47 +103,72 @@ class ValidationSourceAuthority:
 async def load_validation_source_snapshot(
     workflow_session_factory: async_sessionmaker[AsyncSession] | None,
     run_id: UUID,
+    *,
+    workflow_session: AsyncSession | None = None,
 ) -> ValidationSourceSnapshot:
     """Read the explicitly composed CA store; unavailable never means source-free."""
+    if workflow_session is not None:
+        try:
+            return await _read_validation_source_snapshot(workflow_session, run_id)
+        except (OSError, SQLAlchemyError, ValueError):
+            return ValidationSourceSnapshot(status="unavailable")
     if workflow_session_factory is None:
         return ValidationSourceSnapshot(status="unavailable")
     try:
         async with workflow_session_factory() as session:
-            run = await session.get(ConceptNoteRun, run_id)
-            if run is None:
-                return ValidationSourceSnapshot(status="missing_run")
-            row = await session.get(ConceptNoteContextBundle, run_id)
-            bundle = normalize_bundle(row.context_bundle if row else None)
-            uploads = list(
-                await session.scalars(
-                    select(ConceptNoteUpload).where(ConceptNoteUpload.run_id == run_id)
-                )
-            )
-            return ValidationSourceSnapshot(
-                status="loaded",
-                owner_id=run.user_id,
-                mode=bundle.source_text.mode if bundle.source_text else None,
-                selected={
-                    str(source.upload_id): source for source in bundle.selected_sources
-                },
-                documents={
-                    str(document.upload_id): document
-                    for document in bundle.source_text.documents
-                }
-                if bundle.source_text
-                else {},
-                uploads={
-                    str(upload.upload_id): {
-                        "owner_id": upload.uploaded_by_user_id,
-                        "status": upload.ingest_status,
-                        "sha256": upload.markdown_sha256,
-                        "filename": upload.filename,
-                    }
-                    for upload in uploads
-                },
-            )
+            return await _read_validation_source_snapshot(session, run_id)
     except (OSError, SQLAlchemyError, ValueError):
         return ValidationSourceSnapshot(status="unavailable")
+
+
+async def _read_validation_source_snapshot(
+    session: AsyncSession, run_id: UUID
+) -> ValidationSourceSnapshot:
+    # Column reads bypass an existing borrowed session's ORM identity
+    # cache, so each pre/post/locked check sees live READ COMMITTED data.
+    owner_id = await session.scalar(
+        select(ConceptNoteRun.user_id).where(ConceptNoteRun.run_id == run_id)
+    )
+    if owner_id is None:
+        return ValidationSourceSnapshot(status="missing_run")
+    payload = await session.scalar(
+        select(ConceptNoteContextBundle.context_bundle).where(
+            ConceptNoteContextBundle.run_id == run_id
+        )
+    )
+    bundle = normalize_bundle(payload)
+    uploads = (
+        await session.execute(
+            select(
+                ConceptNoteUpload.upload_id,
+                ConceptNoteUpload.uploaded_by_user_id,
+                ConceptNoteUpload.ingest_status,
+                ConceptNoteUpload.markdown_sha256,
+                ConceptNoteUpload.filename,
+            ).where(ConceptNoteUpload.run_id == run_id)
+        )
+    ).all()
+    return ValidationSourceSnapshot(
+        status="loaded",
+        owner_id=owner_id,
+        mode=bundle.source_text.mode if bundle.source_text else None,
+        selected={str(source.upload_id): source for source in bundle.selected_sources},
+        documents={
+            str(document.upload_id): document
+            for document in bundle.source_text.documents
+        }
+        if bundle.source_text
+        else {},
+        uploads={
+            str(upload.upload_id): {
+                "owner_id": upload.uploaded_by_user_id,
+                "status": upload.ingest_status,
+                "sha256": upload.markdown_sha256,
+                "filename": upload.filename,
+            }
+            for upload in uploads
+        },
+    )
 
 
 def resolve_validation_source_authority(

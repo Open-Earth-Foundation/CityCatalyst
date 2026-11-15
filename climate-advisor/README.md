@@ -159,7 +159,9 @@ visible markers and structured gaps together; rejection or accepting another
 chapter creates no gaps. Previously unanswered gaps remain open, and absent
 resolved gaps remain resolved. Before first prose exists, updates wait without
 spending retries or marking the accepted answer as failed. Initial
-drafting uses the accepted values directly. Final export checks coverage,
+drafting uses the accepted values directly. Deferred jobs finish without another
+generation when all target dependencies already contain the current accepted
+versions, preserving subsequent manual edits. Final export checks coverage,
 conflicts, dependent freshness and required reviews against locked revisions.
 Confirmation and final export also require current Ready validation of the exact
 canonical answers, exception policy, template and chapter revision vector.

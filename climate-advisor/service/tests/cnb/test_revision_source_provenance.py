@@ -115,7 +115,9 @@ async def prepare_export(fixture, *, sources=None, protected=False):
                     },
                 )
             )
-        service.workflow_session_factory = factory
+        from app.services.document_workspace.service import DocumentWorkspaceService
+
+        service = DocumentWorkspaceService(factory, workflow_session_factory=factory)
     await add_chapters(factory, protected=protected)
     await answer(service, run)
     draft_service = fake_draft_service(factory)
@@ -195,7 +197,9 @@ async def test_final_projection_batches_authority_and_rejects_changed_source_tex
         "app.services.document_workspace.service.load_validation_source_snapshot", read
     )
     assert (await service.load(run)).export_eligibility.final
-    read.assert_awaited_once_with(factory, run.run_id)
+    read.assert_awaited_once()
+    assert read.await_args.args == (factory, run.run_id)
+    assert read.await_args.kwargs["workflow_session"].bind is factory.kw["bind"]
     async with factory() as session, session.begin():
         row = await session.get(ConceptNoteContextBundle, run.run_id)
         bundle = row.context_bundle
@@ -217,6 +221,46 @@ async def test_final_projection_batches_authority_and_rejects_changed_source_tex
         "validation is missing or stale" in reason
         for reason in view.export_eligibility.blockers
     )
+
+
+async def test_export_rechecks_exact_source_vector_after_external_verification(
+    workspace,
+):
+    service, run, factory, _ = await prepare_export(workspace, sources=[SOURCE])
+    view = await service.load(run)
+
+    async def verify(identities):
+        assert SOURCE in identities
+        assert service._validation_sources.current is None
+        async with factory() as session, session.begin():
+            previous = await session.scalar(
+                select(ConceptNoteChapterRevision)
+                .order_by(ConceptNoteChapterRevision.revision_number.desc())
+                .limit(1)
+            )
+            session.add(
+                ConceptNoteChapterRevision(
+                    chapter_id=previous.chapter_id,
+                    revision_number=previous.revision_number + 1,
+                    author_type="user",
+                    change_type="rewrite",
+                    body_markdown=previous.body_markdown,
+                    patch_summary={
+                        PROVENANCE_KEY: sources_provenance(
+                            [{"upload_id": str(uuid4()), "sha256": "b" * 64}]
+                        )
+                    },
+                )
+            )
+
+    with pytest.raises(HTTPException) as failure:
+        await service.export(
+            run,
+            DocumentExportRequest(mode="final", expected_revision=view.revision),
+            source_validator=verify,
+        )
+    assert failure.value.status_code == 409
+    assert "sources changed during verification" in str(failure.value.detail)
 
 
 async def test_unknown_legacy_text_blocks_final_but_fresh_source_free_text_does_not(

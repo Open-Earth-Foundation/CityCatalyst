@@ -122,6 +122,7 @@ async def has_current_ready_validation(
     template_fingerprint: str,
     lock: bool = False,
     workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
+    workflow_session: AsyncSession | None = None,
     source_snapshot: ValidationSourceSnapshot | None = None,
 ) -> bool:
     """Require validation of the exact current prose, canonical answers and policy."""
@@ -132,6 +133,7 @@ async def has_current_ready_validation(
         template_fingerprint=template_fingerprint,
         lock=lock,
         workflow_session_factory=workflow_session_factory,
+        workflow_session=workflow_session,
         source_snapshot=source_snapshot,
     )
     stored = await session.scalar(
@@ -352,6 +354,7 @@ async def _load_validation_context(
     template_fingerprint: str,
     lock: bool = False,
     workflow_session_factory: async_sessionmaker[AsyncSession] | None = None,
+    workflow_session: AsyncSession | None = None,
     source_snapshot: ValidationSourceSnapshot | None = None,
 ) -> WorkspaceValidationContext:
     """Build one validation input snapshot from the managed CNB database."""
@@ -387,6 +390,7 @@ async def _load_validation_context(
         canonical_points,
         run_id,
         workflow_session_factory=workflow_session_factory,
+        workflow_session=workflow_session,
         source_snapshot=source_snapshot,
     )
     target_snapshot = next(
@@ -418,6 +422,7 @@ async def _validation_source_authority(
     run_id: UUID,
     *,
     workflow_session_factory: async_sessionmaker[AsyncSession] | None,
+    workflow_session: AsyncSession | None = None,
     source_snapshot: ValidationSourceSnapshot | None = None,
 ) -> ValidationSourceAuthority:
     """Resolve every body and applicable accepted point supplied to consistency."""
@@ -442,6 +447,6 @@ async def _validation_source_authority(
     snapshot = source_snapshot
     if snapshot is None:
         snapshot = await load_validation_source_snapshot(
-            workflow_session_factory, run_id
+            workflow_session_factory, run_id, workflow_session=workflow_session
         )
     return resolve_validation_source_authority(provenance, snapshot)

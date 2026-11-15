@@ -45,6 +45,7 @@ from app.persistence.concept_notes.source_provenance import (
     revision_provenance,
 )
 from app.persistence.concept_notes.validation_sources import (
+    ValidationSourceSessions,
     load_validation_source_snapshot,
 )
 from app.persistence.concept_notes.workspace_validation import (
@@ -89,13 +90,24 @@ class DocumentWorkspaceService:
         self.workflow_session_factory = workflow_session_factory or (
             get_session_factory() if session_factory is None else None
         )
+        self._validation_sources = ValidationSourceSessions(
+            self.workflow_session_factory
+        )
+
+    def using_workflow_session(self, session: AsyncSession):
+        """Borrow a caller-owned CA transaction for nested workspace operations."""
+        return self._validation_sources.borrow(session)
 
     async def load(self, run: ConceptNoteRun) -> DocumentWorkspace:
         """Read the persisted projection; materialize a selected setup once."""
         template = await ConceptNoteApplicationContextService(
             session_factory=self.session_factory
         ).load_template_for_run(run)
-        async with self.session_factory() as session, session.begin():
+        async with (
+            self._validation_sources.connection(),
+            self.session_factory() as session,
+            session.begin(),
+        ):
             state = await self._state(session, run.run_id)
             if state.setup is None and template is not None:
                 await self._materialize(session, state, template, user_id=run.user_id)
@@ -119,7 +131,11 @@ class DocumentWorkspaceService:
                 "template": template.model_dump(mode="json"),
             }
         )
-        async with self.session_factory() as session, session.begin():
+        async with (
+            self._validation_sources.connection(),
+            self.session_factory() as session,
+            session.begin(),
+        ):
             state = await self._state(session, run.run_id)
             replay = await self._replay(
                 session, run.run_id, payload.idempotency_key, request_hash
@@ -439,7 +455,43 @@ class DocumentWorkspaceService:
                 "payload": payload.model_dump(mode="json"),
             }
         )
-        async with self.session_factory() as session, session.begin():
+        checked_candidate_source = None
+        if payload.command == "confirm_candidate" and source_validator is not None:
+            async with self.session_factory() as preflight:
+                replay = await self._replay(
+                    preflight, run.run_id, payload.idempotency_key, request_hash
+                )
+                if replay is not None:
+                    return DocumentPointCommandResult.model_validate(replay)
+                try:
+                    candidate_id = UUID(payload.candidate_id or "")
+                except ValueError as exc:
+                    raise HTTPException(
+                        422, "A valid candidate_id is required"
+                    ) from exc
+                source = await preflight.scalar(
+                    select(DocumentCandidate.source_identity)
+                    .join(
+                        DocumentPoint,
+                        DocumentCandidate.point_id == DocumentPoint.point_id,
+                    )
+                    .where(
+                        DocumentCandidate.candidate_id == candidate_id,
+                        DocumentPoint.run_id == run.run_id,
+                        DocumentPoint.semantic_key == point_key,
+                        DocumentPoint.active.is_(True),
+                        DocumentCandidate.status == "pending",
+                    )
+                )
+                if source is None:
+                    raise HTTPException(409, "Candidate is no longer pending")
+                checked_candidate_source = fingerprint(source)
+            await source_validator([source])
+        async with (
+            self._validation_sources.connection(),
+            self.session_factory() as session,
+            session.begin(),
+        ):
             state = await self._state(session, run.run_id)
             replay = await self._replay(
                 session, run.run_id, payload.idempotency_key, request_hash
@@ -475,8 +527,13 @@ class DocumentWorkspaceService:
                 if (
                     payload.command == "confirm_candidate"
                     and source_validator is not None
+                    and fingerprint(candidate.source_identity)
+                    != checked_candidate_source
                 ):
-                    await source_validator([candidate.source_identity])
+                    raise HTTPException(
+                        409,
+                        "Candidate source changed during verification. Reload before answering.",
+                    )
             accepted = payload.command in {
                 "answer",
                 "correct",
@@ -728,7 +785,9 @@ class DocumentWorkspaceService:
         active_chapter_refs = {chapter.template_section_id for chapter in chapters}
         validation_sources = (
             await load_validation_source_snapshot(
-                self.workflow_session_factory, state.run_id
+                self.workflow_session_factory,
+                state.run_id,
+                workflow_session=self._validation_sources.current,
             )
             if chapters
             else None
@@ -842,6 +901,7 @@ class DocumentWorkspaceService:
                 choices=row.definition.get("choices", []),
                 status=status,
                 value=row.value,
+                unit=row.definition.get("unit"),
                 accepted_reason=accepted_point_reason(
                     accepted.snapshot if accepted else None
                 ),
@@ -914,6 +974,7 @@ class DocumentWorkspaceService:
                     chapter_id=chapter.chapter_id,
                     template_fingerprint=template_fingerprint,
                     workflow_session_factory=self.workflow_session_factory,
+                    workflow_session=self._validation_sources.current,
                     source_snapshot=validation_sources,
                 ):
                     blockers.append(
@@ -1059,7 +1120,23 @@ class DocumentWorkspaceService:
         source_validator: SourceValidator | None = None,
     ) -> DocumentExportResponse:
         """Enforce final eligibility and persist content at the reviewed revision."""
-        async with self.session_factory() as session, session.begin():
+        checked_vector, source_error = None, None
+        if source_validator is not None:
+            # CC can call CA again to authorize reused uploads. Release every
+            # local DB connection before that network check, then fence its
+            # exact source vector again under the export's CNB locks.
+            async with self.session_factory() as preflight:
+                _, identities = await _export_source_snapshot(preflight, run.run_id)
+                checked_vector = fingerprint(identities)
+            try:
+                await source_validator(identities)
+            except HTTPException as exc:
+                source_error = exc
+        async with (
+            self._validation_sources.connection(),
+            self.session_factory() as session,
+            session.begin(),
+        ):
             state = await self._state(session, run.run_id)
             # Editing/review operations lock chapter rows too. Lock them before
             # computing eligibility so a reviewed body cannot change mid-export.
@@ -1076,44 +1153,9 @@ class DocumentWorkspaceService:
             )
             view = await self._project(session, state)
             source_caveats = []
-            exported_revisions = {}
-            for chapter in chapters:
-                exported_revisions[chapter.chapter_id] = await session.scalar(
-                    select(ConceptNoteChapterRevision)
-                    .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
-                    .order_by(ConceptNoteChapterRevision.revision_number.desc())
-                    .limit(1)
-                )
-            provenance = merge_provenance(
-                *(
-                    revision_provenance(revision)
-                    for revision in exported_revisions.values()
-                    if revision is not None
-                )
+            exported_revisions, identities = await _export_source_snapshot(
+                session, run.run_id, chapters
             )
-            identities = list(provenance["identities"])
-            for point in await session.scalars(
-                select(DocumentPoint).where(
-                    DocumentPoint.run_id == run.run_id,
-                    DocumentPoint.active.is_(True),
-                    DocumentPoint.accepted_version > 0,
-                )
-            ):
-                accepted = await session.scalar(
-                    select(DocumentPointRevision).where(
-                        DocumentPointRevision.point_id == point.point_id,
-                        DocumentPointRevision.version == point.accepted_version,
-                    )
-                )
-                candidate_id = (
-                    accepted.snapshot.get("candidate_id")
-                    if accepted is not None
-                    else None
-                )
-                if candidate_id:
-                    candidate = await session.get(DocumentCandidate, UUID(candidate_id))
-                    if candidate is not None:
-                        identities.append(candidate.source_identity)
             if identities and source_validator is None:
                 if payload.mode == "final":
                     raise HTTPException(
@@ -1123,11 +1165,14 @@ class DocumentWorkspaceService:
                     "Supporting sources could not be verified. Verify them before final export."
                 )
             elif source_validator is not None:
-                try:
-                    await source_validator(identities)
-                except HTTPException:
+                if fingerprint(identities) != checked_vector:
+                    raise HTTPException(
+                        409,
+                        "Document sources changed during verification. Review and export again.",
+                    )
+                if source_error is not None:
                     if payload.mode == "final":
-                        raise
+                        raise source_error
                     source_caveats.append(
                         "A supporting source is unavailable. Verify the affected text and values before final export."
                     )
@@ -1192,6 +1237,64 @@ class DocumentWorkspaceService:
                 )
             )
             return result
+
+
+async def _export_source_snapshot(
+    session: AsyncSession,
+    run_id: UUID,
+    chapters: list[ConceptNoteChapter] | None = None,
+) -> tuple[dict[UUID, ConceptNoteChapterRevision | None], list[dict[str, Any]]]:
+    """Read exact exported revision and accepted-candidate identities without CA I/O."""
+    if chapters is None:
+        chapters = list(
+            await session.scalars(
+                select(ConceptNoteChapter)
+                .where(
+                    ConceptNoteChapter.run_id == run_id,
+                    ConceptNoteChapter.status != "deleted",
+                )
+                .order_by(ConceptNoteChapter.position)
+            )
+        )
+    exported_revisions = {}
+    for chapter in chapters:
+        exported_revisions[chapter.chapter_id] = await session.scalar(
+            select(ConceptNoteChapterRevision)
+            .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
+            .order_by(ConceptNoteChapterRevision.revision_number.desc())
+            .limit(1)
+        )
+    provenance = merge_provenance(
+        *(
+            revision_provenance(revision)
+            for revision in exported_revisions.values()
+            if revision is not None
+        )
+    )
+    identities = list(provenance["identities"])
+    for point in await session.scalars(
+        select(DocumentPoint)
+        .where(
+            DocumentPoint.run_id == run_id,
+            DocumentPoint.active.is_(True),
+            DocumentPoint.accepted_version > 0,
+        )
+        .order_by(DocumentPoint.point_id)
+    ):
+        accepted = await session.scalar(
+            select(DocumentPointRevision).where(
+                DocumentPointRevision.point_id == point.point_id,
+                DocumentPointRevision.version == point.accepted_version,
+            )
+        )
+        candidate_id = (
+            accepted.snapshot.get("candidate_id") if accepted is not None else None
+        )
+        if candidate_id:
+            candidate = await session.get(DocumentCandidate, UUID(candidate_id))
+            if candidate is not None:
+                identities.append(candidate.source_identity)
+    return exported_revisions, identities
 
 
 def get_document_workspace_service() -> DocumentWorkspaceService:

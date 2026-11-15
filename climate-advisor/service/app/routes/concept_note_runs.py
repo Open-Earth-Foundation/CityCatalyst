@@ -9,6 +9,20 @@ from contextlib import suppress
 from typing import Annotated, TypeVar
 from uuid import UUID
 
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config.settings import get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session
@@ -74,19 +88,6 @@ from app.utils.mlflow_logging import (
     start_trace_span,
     update_current_trace_context,
 )
-from fastapi import (
-    APIRouter,
-    Depends,
-    Header,
-    HTTPException,
-    Query,
-    Request,
-    Response,
-    status,
-)
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -586,6 +587,7 @@ async def get_concept_note_draft_state(
         requested_user_id=user_id,
         authorization=authorization,
     )
+    await session.close()
     if draft_service is None:
         raise HTTPException(
             status_code=503,
@@ -617,6 +619,7 @@ async def start_concept_note_drafting(
         requested_user_id=user_id,
         authorization=authorization,
     )
+    await session.close()
     if draft_service is None:
         raise HTTPException(
             status_code=503,
@@ -661,6 +664,7 @@ async def confirm_concept_note_chapter(
         requested_user_id=user_id,
         authorization=authorization,
     )
+    await session.close()
     if draft_service is None:
         raise HTTPException(
             status_code=503,

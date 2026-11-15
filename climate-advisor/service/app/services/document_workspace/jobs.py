@@ -249,6 +249,8 @@ async def run_update_job(
             job = await session.get(DocumentUpdateJob, job_id)
         if job is None or job.lease_token != lease_token:
             return
+        if await _finish_already_applied(service, job, lease_token):
+            return
         async with ca_session_factory() as session:
             run = await session.get(ConceptNoteRun, job.run_id)
         if run is None or run.user_id != job.payload["user_id"]:
@@ -558,6 +560,61 @@ async def run_update_job(
                 job.available_at = datetime.now(UTC) + timedelta(
                     seconds=min(300, 10 * 2**job.attempts)
                 )
+
+
+async def _finish_already_applied(
+    service: DocumentWorkspaceService, claimed: DocumentUpdateJob, token: UUID
+) -> bool:
+    """Finish deferred work already incorporated by first drafting or another job.
+
+    Check the entire target dependency vector while holding the command lock.
+    A new accepted version, missing dependency, or partial chapter update must
+    still generate; current dependencies must not redraft subsequent user edits.
+    """
+    async with service.session_factory() as session, session.begin():
+        state = await service._state(session, claimed.run_id)
+        job = await session.get(DocumentUpdateJob, claimed.job_id, with_for_update=True)
+        if job is None or job.status != "running" or job.lease_token != token:
+            return True
+        points = list(
+            await session.scalars(
+                select(DocumentPoint).where(
+                    DocumentPoint.run_id == job.run_id, DocumentPoint.active.is_(True)
+                )
+            )
+        )
+        if not any(
+            point.semantic_key == job.payload["point_key"]
+            and point.accepted_version == job.payload["point_version"]
+            for point in points
+        ):
+            return False
+        targets = set(job.payload["chapter_refs"])
+        expected = {
+            (point.point_id, ref): point.accepted_version
+            for point in points
+            for ref in targets.intersection(point.definition["chapter_refs"])
+        }
+        dependencies = list(
+            await session.scalars(
+                select(DocumentDependency).where(
+                    DocumentDependency.point_id.in_(
+                        [point.point_id for point in points]
+                    ),
+                    DocumentDependency.chapter_ref.in_(targets),
+                )
+            )
+        )
+        applied = {
+            (dependency.point_id, dependency.chapter_ref): dependency.applied_version
+            for dependency in dependencies
+        }
+        if not expected or applied != expected:
+            return False
+        job.status, job.error_code = "complete", None
+        job.lease_token, job.lease_until = None, None
+        state.revision += 1
+        return True
 
 
 async def _finish_superseded(

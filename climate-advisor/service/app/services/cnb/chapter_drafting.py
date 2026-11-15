@@ -161,7 +161,11 @@ class ConceptNoteChapterDraftService:
         """Materialize chapters and acquire a new resumable drafting lease."""
         # Hold the workflow lock from template lookup through lease creation so
         # a funding switch cannot seed chapters from one template and draft another.
-        async with self._ca_session_factory() as session, session.begin():
+        async with (
+            self._ca_session_factory() as session,
+            session.begin(),
+            self._workspace.using_workflow_session(session),
+        ):
             current_run = await _require_owned_run(
                 session, run.run_id, run.user_id, lock=True
             )

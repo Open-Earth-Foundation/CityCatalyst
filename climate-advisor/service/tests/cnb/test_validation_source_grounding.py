@@ -481,7 +481,9 @@ async def test_chapter_projection_batches_one_real_ca_snapshot(grounded, monkeyp
         run_id=data.run.run_id, template_fingerprint=data.fingerprint
     )
     assert len(chapters) == 2
-    read.assert_awaited_once_with(data.ca, data.run.run_id)
+    read.assert_awaited_once()
+    assert read.await_args.args == (data.ca, data.run.run_id)
+    assert read.await_args.kwargs["workflow_session"].bind is data.ca.kw["bind"]
 
 
 async def test_current_accepted_candidate_adds_authority_and_human_revision_retires_it(

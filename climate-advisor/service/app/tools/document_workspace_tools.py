@@ -60,6 +60,7 @@ def build_document_workspace_tools(
                         requested_user_id=user_id,
                         authorization=f"Bearer {token}",
                     )
+                    await session.close()
                     workspace = await service.load(run)
                     if point_key is not None:
                         if not any(

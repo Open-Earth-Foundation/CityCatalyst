@@ -187,10 +187,15 @@ class DocumentWorkspaceService:
         user_id: str,
     ) -> None:
         """Reconcile only exact compatible keys; retain retired records/history."""
-        setup_hash = calculate_application_template_fingerprint(template)
+        definitions = template_definitions(template)
+        setup_hash = fingerprint(
+            {
+                "template": calculate_application_template_fingerprint(template),
+                "requirements": definitions,
+            }
+        )
         if state.setup_fingerprint == setup_hash:
             return
-        definitions = template_definitions(template)
         points = {
             point.semantic_key: point
             for point in await session.scalars(
@@ -682,6 +687,7 @@ class DocumentWorkspaceService:
                 )
             )
         )
+        active_chapter_refs = {chapter.template_section_id for chapter in chapters}
         points: list[DocumentWorkspacePoint] = []
         blockers = []
         if state.setup is None:
@@ -743,6 +749,7 @@ class DocumentWorkspaceService:
                 dependency.applied_version < row.accepted_version
                 for dependency in dependencies
                 if dependency.point_id == row.point_id
+                and dependency.chapter_ref in active_chapter_refs
             )
             latest_job = next(
                 (

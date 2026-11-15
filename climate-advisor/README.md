@@ -121,6 +121,9 @@ numeric bounds, `unit`, `required`, exception permissions and `evidence_need`.
 Only explicit equal keys share answers across chapters. String fields retain
 deterministic template/chapter scope. Templates without recognized requirements
 remain incomplete and cannot authorize a final export.
+The aggregate string-field list on legacy/custom templates does not create a
+second point for an identical chapter requirement. Separate chapter requirements
+still stay separate unless they explicitly share a semantic key.
 
 Commands require `expected_version` and `idempotency_key`; exact replay returns
 the original response, changed payload/key reuse and stale writes return 409.
@@ -134,8 +137,10 @@ reason. Parking records waiting work without satisfying a requirement.
 
 Accepted values and leased update jobs commit together. The startup reconciler
 retries failed or interrupted jobs, updates free chapters, and creates normal
-edit proposals for manual/Ready text. Final export checks coverage, conflicts,
-dependent freshness and required reviews against locked chapter revisions.
+edit proposals for manual/Ready text. Before first prose exists, updates wait
+without spending retries or marking the accepted answer as failed. Initial
+drafting uses the accepted values directly. Final export checks coverage,
+conflicts, dependent freshness and required reviews against locked revisions.
 Working exports include caveats; persisted exports retain exact chapter revision
 identities. Questions use `prompts.document_point_question`; extraction uses
 `prompts.document_point_extraction` and the configured `cnb_source_reader` model.

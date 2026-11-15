@@ -235,8 +235,18 @@ async def run_update_job(
         ]
         # If prose has not been generated, keep acceptance durable and wait for
         # the first-draft workflow to mark its canonical inputs current.
-        if not targets:
-            raise ValueError("Dependent chapters have not been materialized")
+        if not targets or any(not chapter.body_markdown for chapter in targets):
+            async with service.session_factory() as session, session.begin():
+                current_job = await session.get(
+                    DocumentUpdateJob, job_id, with_for_update=True
+                )
+                if current_job is not None and current_job.lease_token == lease_token:
+                    current_job.status = "queued"
+                    current_job.attempts = max(0, current_job.attempts - 1)
+                    current_job.available_at = datetime.now(UTC) + timedelta(seconds=60)
+                    current_job.lease_token, current_job.lease_until = None, None
+                    current_job.error_code = None
+            return
         outputs = []
         for chapter in targets:
             async with service.session_factory() as session, session.begin():

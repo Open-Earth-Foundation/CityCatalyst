@@ -278,6 +278,54 @@ async def test_ambiguous_labels_are_not_fuzzy_merged_and_conflicting_shared_sche
     assert error.value.status_code == 422
 
 
+async def test_legacy_aggregate_fields_do_not_duplicate_chapter_requirements(workspace):
+    service, run, _ = workspace
+    configured = template()
+    configured.chapter_schema = [
+        {
+            "chapter_ref": "summary",
+            "title": "Summary",
+            "required": True,
+            "required_fields": ["Project name", "Requested grant amount"],
+        }
+    ]
+    configured.required_fields = [
+        "Project name",
+        "Requested grant amount",
+        "Global policy",
+    ]
+    await service.reconcile_template(run, configured)
+    view = await service.load(run)
+    assert view.overview.required_total == 3
+    assert sorted(point.label for point in view.points) == [
+        "Global policy",
+        "Project name",
+        "Requested grant amount",
+    ]
+    assert next(
+        point for point in view.points if point.label == "Project name"
+    ).chapter_refs == ["summary"]
+
+
+async def test_accepted_points_wait_for_first_prose_without_failure_or_retry_spending(
+    workspace,
+):
+    service, run, factory = workspace
+    await answer(service, run)
+    claim = await claim_job(service)
+    draft_service = fake_draft_service(factory, fail=True)
+    await run_update_job(
+        service, *claim, ca_session_factory=factory, draft_service=draft_service
+    )
+    async with factory() as session:
+        job = await session.get(DocumentUpdateJob, claim[0])
+        assert job.status == "queued" and job.attempts == 0
+        assert job.lease_token is None and job.error_code is None
+        assert job.available_at.replace(tzinfo=UTC) > datetime.now(UTC)
+    assert (await service.load(run)).points[0].freshness == "current"
+    assert await claim_job(service) is None
+
+
 async def test_typed_acceptance_replay_stale_key_reuse_and_owner_boundary(workspace):
     service, run, factory = workspace
     [point] = (await service.load(run)).points
@@ -288,7 +336,7 @@ async def test_typed_acceptance_replay_stale_key_reuse_and_owner_boundary(worksp
         value=125000,
     )
     first = await service.command(run, point.key, request, user_id="owner")
-    assert first.point.status == "answered" and first.point.freshness == "updating"
+    assert first.point.status == "answered" and first.point.freshness == "current"
     assert await service.command(run, point.key, request, user_id="owner") == first
     for payload in [
         request.model_copy(update={"idempotency_key": "stale"}),

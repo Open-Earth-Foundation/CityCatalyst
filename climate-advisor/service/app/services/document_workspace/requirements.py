@@ -35,14 +35,21 @@ def template_definitions(template: ApplicationContextTemplate) -> list[dict[str,
     raw_by_ref = {
         str(item.get("chapter_ref", "")): item for item in template.chapter_schema
     }
+    chapter_string_fields: set[str] = set()
     for chapter in normalized:
         chapter_ref = chapter["chapter_ref"]
         fields = raw_by_ref.get(chapter_ref, {}).get("required_fields", [])
         for field in fields:
+            if isinstance(field, str):
+                chapter_string_fields.add(field)
             _add_definition(definitions, template, chapter_ref, field, [chapter_ref])
     # Template-wide requirements affect every chapter; ambiguous labels still
     # have their own deterministic template scope rather than a fuzzy merge.
     for field in template.required_fields:
+        # Reviewed legacy/custom templates also store an aggregate of chapter
+        # strings here. Count those once, without merging separate chapters.
+        if field in chapter_string_fields:
+            continue
         _add_definition(
             definitions,
             template,

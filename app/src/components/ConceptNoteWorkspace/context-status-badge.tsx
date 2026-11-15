@@ -23,6 +23,7 @@ export function ContextStatusBadge({
   return (
     <HStack
       alignSelf="flex-start"
+      w="fit-content"
       gap={1.5}
       border="1px solid"
       borderColor={color}

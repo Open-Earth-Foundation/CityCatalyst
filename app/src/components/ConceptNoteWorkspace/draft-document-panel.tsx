@@ -703,7 +703,10 @@ export function DraftDocumentPanel({
                       )}
                     </HStack>
                   </Box>
-                  {chapter.status !== "ready" &&
+                  {(chapter.status !== "ready" ||
+                    chapter.confirmed_revision_number !==
+                      chapter.revision_number ||
+                    !chapter.confirmed_body_markdown) &&
                     Boolean(chapter.body_markdown) &&
                     chapter.open_gap_count === 0 && (
                       <Button

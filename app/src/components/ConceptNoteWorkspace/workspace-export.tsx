@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Alert, Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Alert, Box, HStack, Text, VStack, chakra } from "@chakra-ui/react";
 import { ReviewButton as Button } from "./review-button";
 import {
   NativeSelectField,
@@ -130,8 +130,8 @@ export function WorkspaceExport({
         {t("workspace-working-caveat")}
       </Text>
       {!workspace.export_eligibility.final && (
-        <Box
-          as="details"
+        <chakra.details
+          open
           id="workspace-export-blockers"
           borderTop="1px solid"
           borderColor="border.neutral"
@@ -160,7 +160,7 @@ export function WorkspaceExport({
               </Text>
             ))}
           </VStack>
-        </Box>
+        </chakra.details>
       )}
       {state.data && (
         <Text role="status" fontSize="body.sm" color="content.secondary">

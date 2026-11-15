@@ -39,6 +39,111 @@ afterEach(async () => {
   container.remove();
 });
 
+it.each([
+  {
+    state: "Ready without human confirmation",
+    confirmedRevision: null,
+    confirmedBody: null,
+    visible: true,
+  },
+  {
+    state: "current human confirmation",
+    confirmedRevision: 2,
+    confirmedBody: "Current budget.",
+    visible: false,
+  },
+  {
+    state: "confirmation of an older revision",
+    confirmedRevision: 1,
+    confirmedBody: "Earlier budget.",
+    visible: true,
+  },
+  {
+    state: "missing confirmed snapshot",
+    confirmedRevision: 2,
+    confirmedBody: null,
+    visible: true,
+  },
+])(
+  "offers confirmation for $state",
+  async ({ confirmedRevision, confirmedBody, visible }) => {
+    const chapter: ConceptNoteDraftChapter = {
+      chapter_id: "chapter-confirmation",
+      title: "Budget",
+      template_section_id: "budget",
+      position: 0,
+      required: true,
+      user_locked: false,
+      status: "ready",
+      body_markdown: "Current budget.",
+      revision_number: 2,
+      confirmed_body_markdown: confirmedBody,
+      confirmed_revision_number: confirmedRevision,
+      gaps: [],
+      open_gap_count: 0,
+      caveat_count: 0,
+      validation: {
+        status: "ready",
+        is_stale: false,
+        validated_revision_number: 2,
+        validated_at: "2026-11-15T12:00:00Z",
+        checks: [],
+        findings: [],
+      },
+    };
+    const onConfirmChapter = jest.fn();
+    container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+    const props: ComponentProps<typeof DraftDocumentPanel> = {
+      chapters: [chapter],
+      lng: "en",
+      noteName: "Budget application",
+      focusFindingKey: null,
+      isConfirmingChapter: false,
+      onConfirmChapter,
+      focus: {
+        chapterElements: { current: {} },
+        registerChapter: jest.fn(),
+        focusedFinding: null,
+        focusedFindingElement: { current: null },
+        isChapterPanelOpen: true,
+        usesSharedScroll: false,
+        previewElement: { current: null },
+        selectedChapterId: chapter.chapter_id,
+        selectChapter: jest.fn(),
+        toggleChapterPanel: jest.fn(),
+      },
+    };
+    async function render(overrides: Partial<ConceptNoteDraftChapter> = {}) {
+      await act(async () =>
+        root.render(
+          <ChakraProvider value={appTheme}>
+            <DraftDocumentPanel
+              {...props}
+              chapters={[{ ...chapter, ...overrides }]}
+            />
+          </ChakraProvider>,
+        ),
+      );
+    }
+    const confirm = () =>
+      [...container.querySelectorAll("button")].find((button) =>
+        button.textContent?.includes(translations["review-and-confirm"]),
+      );
+    await render();
+    expect(Boolean(confirm())).toBe(visible);
+    if (visible) {
+      await act(async () => confirm()!.click());
+      expect(onConfirmChapter).toHaveBeenCalledWith(chapter);
+    }
+    await render({ open_gap_count: 1 });
+    expect(confirm()).toBeUndefined();
+    await render({ body_markdown: null });
+    expect(confirm()).toBeUndefined();
+  },
+);
+
 it("keeps validation findings, inline decisions, markers and chapter confirmation together", async () => {
   const chapter: ConceptNoteDraftChapter = {
     chapter_id: "chapter-1",
@@ -219,6 +324,33 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   );
   expect(onAcceptReviewChange).toHaveBeenLastCalledWith([whole.change_id]);
   expect(whole.before).toContain("Intro unchanged.");
+
+  const appended = {
+    ...whole,
+    start: 6,
+    before: ".",
+    after: ". Added sentence.",
+  };
+  await render({
+    chapters: [{ ...chapter, body_markdown: "Budget." }],
+    reviewChanges: [appended],
+    editFocus: undefined,
+  });
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-previous-text"]'),
+  ).toBeNull();
+  expect(
+    container.querySelector('[data-testid="concept-note-edit-proposed-text"]')
+      ?.textContent,
+  ).toBe(" Added sentence.");
+  await act(async () =>
+    (
+      container.querySelector(
+        '[data-testid="concept-note-inline-accept"]',
+      ) as HTMLButtonElement
+    ).click(),
+  );
+  expect(onAcceptReviewChange).toHaveBeenLastCalledWith([appended.change_id]);
 
   const dated = {
     ...chapter,

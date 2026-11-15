@@ -24,6 +24,7 @@ import {
 import { ContextStatusBadge } from "../ConceptNoteWorkspace/context-status-badge";
 import {
   getConceptNoteStatusPresentation,
+  hasConceptNoteDraftContent,
   shouldLoadConceptNoteReviewStatus,
 } from "./utils";
 
@@ -71,9 +72,7 @@ export function RunCard({
   const status = getConceptNoteStatusPresentation(run.status, draft);
   const planState = getRunClimateActionPlanState(run);
 
-  const hasDraft = Boolean(
-    draft?.chapters.some((chapter) => chapter.body_markdown),
-  );
+  const hasDraft = hasConceptNoteDraftContent(run.progress_summary, draft);
   const showStatus =
     uploading || incomplete || status.translationKey !== "status-in-progress";
   return (

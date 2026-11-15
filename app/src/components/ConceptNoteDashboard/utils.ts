@@ -166,6 +166,20 @@ export function shouldLoadConceptNoteReviewStatus(
   return draftProgress.status === "complete";
 }
 
+/** Saved progress permits working export while a summary is still loading. */
+export function hasConceptNoteDraftContent(
+  progressSummary: Record<string, unknown>,
+  draft: ConceptNoteDraftState | null | undefined,
+): boolean {
+  if (draft)
+    return draft.chapters.some((chapter) => Boolean(chapter.body_markdown));
+  const progress = recordValue(progressSummary.draft_document);
+  return (
+    typeof progress.completed_chapters === "number" &&
+    progress.completed_chapters > 0
+  );
+}
+
 export function getWorkflowStepTranslationKey(value: string): string {
   return (
     workflowStepTranslationKeys[normalizeLifecycleValue(value)] ??

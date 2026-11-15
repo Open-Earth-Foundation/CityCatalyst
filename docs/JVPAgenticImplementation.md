@@ -179,3 +179,10 @@ fixedCacheKey; source failures explain evidence recovery without blocking manual
 answers or unrelated candidates. Dashboard notes use compact rows, secondary
 content-gated export and a menu for lifecycle actions; illustrative workflow
 percentages are no longer presented as document readiness.
+
+Validation readiness and human chapter confirmation remain distinct: a current
+Ready validation still offers Review & confirm until that revision has a saved
+human confirmation. Final export shows its outstanding checks immediately. The
+guided review downloads explicitly say working draft; final documents use the
+header Export action and its server eligibility check. Persisted completed-chapter
+progress permits dashboard working export while the detailed summary loads.

@@ -318,6 +318,7 @@ export function FundingSelectionDialog({
         maxW="1100px"
         w="min(1100px, calc(100% - 32px))"
         maxH="calc(100dvh - 48px)"
+        my={6}
         display="flex"
         flexDirection="column"
         bg="base.light"

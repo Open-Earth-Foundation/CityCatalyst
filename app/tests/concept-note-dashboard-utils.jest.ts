@@ -11,12 +11,45 @@ import {
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  hasConceptNoteDraftContent,
   shouldLoadConceptNoteReviewStatus,
 } from "@/components/ConceptNoteDashboard/utils";
 import type {
   ConceptNoteChapterValidation,
   ConceptNoteDraftState,
 } from "@/util/types";
+
+it("allows working export from persisted partial progress while summaries load, but trusts loaded content", () => {
+  expect(hasConceptNoteDraftContent({}, undefined)).toBe(false);
+  expect(
+    hasConceptNoteDraftContent(
+      { draft_document: { status: "running", completed_chapters: 0 } },
+      undefined,
+    ),
+  ).toBe(false);
+  expect(
+    hasConceptNoteDraftContent(
+      { draft_document: { status: "running", completed_chapters: 1 } },
+      undefined,
+    ),
+  ).toBe(true);
+  expect(
+    hasConceptNoteDraftContent(
+      { draft_document: { status: "complete", completed_chapters: 2 } },
+      undefined,
+    ),
+  ).toBe(true);
+  expect(
+    hasConceptNoteDraftContent({ draft_document: { completed_chapters: 2 } }, {
+      chapters: [],
+    } as unknown as ConceptNoteDraftState),
+  ).toBe(false);
+  expect(
+    hasConceptNoteDraftContent({}, {
+      chapters: [{ body_markdown: "Saved text" }],
+    } as unknown as ConceptNoteDraftState),
+  ).toBe(true);
+});
 
 function reviewedDraft(
   validation: ConceptNoteChapterValidation | null,

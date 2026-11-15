@@ -121,6 +121,41 @@ export function EditDiff({
     [change.before, change.after],
   );
   if (
+    change.before &&
+    change.after.length > change.before.length &&
+    change.after.startsWith(change.before) &&
+    !change.before.includes("[Information needed:")
+  ) {
+    return (
+      <Box as={inline ? "span" : "div"} data-testid="concept-note-edit-append">
+        {inline ? (
+          <MissingInformationText text={change.before} />
+        ) : (
+          <ReactMarkdown
+            components={markerComponents}
+            remarkPlugins={[remarkGfm]}
+          >
+            {change.before}
+          </ReactMarkdown>
+        )}
+        <EditDiff
+          change={{
+            ...change,
+            before: "",
+            after: change.after.slice(change.before.length),
+          }}
+          lng={lng}
+          inline={inline}
+          components={components}
+          decision={decision}
+          disabled={disabled}
+          onAccept={onAccept}
+          onReject={onReject}
+        />
+      </Box>
+    );
+  }
+  if (
     paragraphs.some((part) => part.type === "common") &&
     paragraphs.some((part) => part.type === "change")
   ) {

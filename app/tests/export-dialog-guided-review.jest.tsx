@@ -289,7 +289,7 @@ describe("guided review before export", () => {
     );
     const downloads = () =>
       [...document.body.querySelectorAll("button")].filter((button) =>
-        /Export (DOCX|PDF)/.test(button.textContent ?? ""),
+        /Working draft · (DOCX|PDF)/.test(button.textContent ?? ""),
       );
     expect(downloads()).toHaveLength(2);
     // Export warns, never blocks: disabled only until the user acknowledges.

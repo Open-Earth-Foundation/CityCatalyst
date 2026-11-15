@@ -20,6 +20,8 @@ async def test_source_check_sends_bound_credentials_and_verifies_digest() -> Non
 
     def respond(request: httpx.Request) -> httpx.Response:
         requests.append(request)
+        if not request.url.path.endswith("/"):
+            return httpx.Response(308, headers={"Location": str(request.url) + "/"})
         return httpx.Response(
             200, json={"available": True, "markdown_sha256": "a" * 64}
         )
@@ -35,10 +37,43 @@ async def test_source_check_sends_bound_credentials_and_verifies_digest() -> Non
     finally:
         await client.close()
     assert len(requests) == 1
-    assert requests[0].url.path.endswith("/concept-note-uploads/upload/availability")
+    assert (
+        requests[0].url.path
+        == "/api/v1/internal/ca/concept-note-uploads/upload/availability/"
+    )
     assert requests[0].headers["Authorization"] == "Bearer test-user-token"
     assert requests[0].headers["X-Service-Key"] == "test-service-key"
     assert requests[0].headers["X-Service-Name"] == "climate-advisor"
+
+
+@pytest.mark.asyncio
+async def test_source_availability_never_forwards_credentials_to_a_redirect_origin() -> (
+    None
+):
+    """Even a redirect-enabled shared client cannot forward the internal headers."""
+    requests = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            308, headers={"Location": "https://other.example/collect/"}
+        )
+
+    client = CityCatalystClient(
+        base_url="https://cc.example", api_key="test-service-key"
+    )
+    client._client = httpx.AsyncClient(
+        transport=httpx.MockTransport(respond), follow_redirects=True
+    )
+    try:
+        with pytest.raises(CityCatalystClientError) as error:
+            await client.verify_concept_note_source(
+                upload_id="upload", token="test-user-token", expected_sha256="a" * 64
+            )
+        assert error.value.status_code == 308
+    finally:
+        await client.close()
+    assert len(requests) == 1 and requests[0].url.host == "cc.example"
 
 
 @pytest.mark.asyncio

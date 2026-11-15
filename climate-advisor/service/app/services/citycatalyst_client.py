@@ -564,9 +564,12 @@ class CityCatalystClient:
         client = await self._get_client()
         try:
             response = await client.get(
-                f"{self.base_url}/api/v1/internal/ca/concept-note-uploads/{upload_id}/availability",
+                # Core uses trailingSlash routes; request the canonical URL so
+                # authenticated checks need no redirect or credential forwarding.
+                f"{self.base_url}/api/v1/internal/ca/concept-note-uploads/{upload_id}/availability/",
                 headers=self._internal_headers(token),
                 timeout=self.datasource_timeout,
+                follow_redirects=False,
             )
             if not response.is_success:
                 raise CityCatalystClientError(

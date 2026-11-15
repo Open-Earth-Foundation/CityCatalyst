@@ -134,6 +134,8 @@ Current source lifecycle and Markdown identity are rechecked through Core when
 accepting source-backed candidates or exporting. Withdrawn or changed support
 blocks final export; working exports include a caveat. Reused-source artifact
 reads also recheck the original shared document rather than trusting its copy.
+Source-availability checks use Core's canonical trailing-slash URL and do not
+follow redirects with the bound user and service credentials.
 Each chapter revision records server-owned `patch_summary.source_provenance`
 with contract version, completeness and immutable upload/digest identities from
 the actual generation inputs. Current/previous chapter bodies, confirmed text

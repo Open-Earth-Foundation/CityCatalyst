@@ -163,8 +163,11 @@ function ChapterSelection({
   useEffect(() => {
     if (!selection || !floating.current) return;
     const place = () => {
+      // A queued scroll can arrive during portal teardown, before effect cleanup.
+      const element = floating.current;
+      if (!element) return;
       const rect = selection.range.getBoundingClientRect();
-      const size = floating.current!.getBoundingClientRect();
+      const size = element.getBoundingClientRect();
       setPosition({
         left: Math.max(
           8,

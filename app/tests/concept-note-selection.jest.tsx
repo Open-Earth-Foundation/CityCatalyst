@@ -257,6 +257,49 @@ it("renders formatting in both inline and block proposal previews without changi
   }
 });
 
+it("ignores a queued position callback after the floating toolbar has unmounted", async () => {
+  const store = configureStore({
+    reducer: { [api.reducerPath]: api.reducer },
+    middleware: (defaults) => defaults().concat(api.middleware),
+  });
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
+  const listener = jest.spyOn(window, "addEventListener");
+  const markdown = "A selected sentence.";
+  await act(async () =>
+    root!.render(
+      <Provider store={store}>
+        <ChakraProvider value={defaultSystem}>
+          <SelectableChapter
+            runId={runId}
+            chapterId={chapterId}
+            revision={1}
+            markdown={markdown}
+            lng="en"
+            disabled={false}
+            onProposed={async () => {}}
+          >
+            {content(markdown)}
+          </SelectableChapter>
+        </ChakraProvider>
+      </Provider>,
+    ),
+  );
+  await act(async () => {
+    select(container.querySelector("[data-cc-source-start]")!);
+    document.dispatchEvent(new Event("selectionchange"));
+  });
+  const queued = listener.mock.calls
+    .filter(([type]) => type === "scroll")
+    .at(-1)?.[1] as EventListener;
+  expect(queued).toBeDefined();
+  await act(async () => root!.unmount());
+  root = undefined;
+  expect(() => queued(new Event("scroll"))).not.toThrow();
+  listener.mockRestore();
+});
+
 it.each(["bold", "font", "italic", "stale"] as const)(
   "keeps a keyboard selection through toolbar focus and sends the authoritative scope (%s)",
   async (mode) => {

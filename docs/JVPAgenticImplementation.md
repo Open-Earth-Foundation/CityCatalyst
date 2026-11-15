@@ -195,6 +195,8 @@ toolbar; native focusgroup is used where supported, with a conditional roving
 tabindex fallback elsewhere. Escape closes it without losing or immediately
 recapturing the selected range. Toolbar focus and the instruction field retain a
 captured selection; unchanged background query refreshes do not clear an edit.
+Queued scroll/resize positioning callbacks ignore a toolbar portal that has
+already unmounted during an accepted formatting update.
 
 The preview's text spans carry parser source positions from the **complete stored
 Markdown**. The displayed duplicate chapter heading is removed from the AST, not

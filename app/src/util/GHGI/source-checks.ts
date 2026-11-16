@@ -108,6 +108,11 @@ export type UnitGroup = {
   status: CheckStatus;
   /** The answered reading; null until answered (rows on their base readings). */
   reading: UnitReading | null;
+  /**
+   * True when the page names only kg, which no option reads: such rows keep
+   * their row-level keep-or-skip review. Absent otherwise.
+   */
+  kgOnly?: true;
 };
 
 /** A document total the user confirmed, or a total the user typed. */

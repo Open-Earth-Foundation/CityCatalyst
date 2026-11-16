@@ -369,5 +369,16 @@
   "replace-inventory-confirm-title": "¿Reemplazar los datos de inventario existentes?",
   "replace-inventory-confirm-message": "El inventario para {{year}} ya tiene datos. Importar este archivo reemplaza todos, incluyendo los datos ingresados manualmente, los datos de terceros conectados y las claves de notación NE/NO.",
   "replace-inventory-confirm-history": "Los datos actuales se guardan como una versión en el historial de versiones del inventario, donde puedes restaurarlos.",
-  "replace-inventory-confirm": "Reemplazar e importar"
+  "replace-inventory-confirm": "Reemplazar e importar",
+  "import-unit-option-kt": "Kilotoneladas de CO₂e (miles de t)",
+  "import-unit-answer-kt": "kilotoneladas",
+  "import-unit-group-hint": "Se aplica a las filas sin unidad impresa",
+  "import-unit-group-heading_one": "Página {{page}}: {{count}} fila sin unidad impresa",
+  "import-unit-group-heading_other": "Página {{page}}: {{count}} filas sin unidad impresa",
+  "import-unit-group-heading-no-page_one": "{{count}} fila sin unidad impresa",
+  "import-unit-group-heading-no-page_other": "{{count}} filas sin unidad impresa",
+  "import-unit-group-answer": "p. {{page}} en {{unit}}",
+  "import-unit-group-answer-no-page": "filas sin página en {{unit}}",
+  "import-unit-group-option-per-person": "{{value}} t por persona",
+  "import-unit-group-kg-only": "Esta página indica kg. Si estas filas están en kg, omítalas en la revisión de abajo."
 }

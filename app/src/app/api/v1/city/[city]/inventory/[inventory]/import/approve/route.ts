@@ -58,6 +58,7 @@
  *           The inventory already has data and replaceExisting was not set (error code inventory-has-data),
  *           rows held for review have no decision yet (import-rows-pending), or a source check is still
  *           pending (source-checks-pending). A value-unconfirmed or unit-unconfirmed row accepts only keep or skip.
+ *           A row whose unit a source-check unit group answers is not held for a unit decision.
  *       401:
  *         description: Unauthorized.
  */

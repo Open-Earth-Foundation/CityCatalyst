@@ -366,5 +366,16 @@
   "replace-inventory-confirm-title": "Remplacer les données d'inventaire existantes ?",
   "replace-inventory-confirm-message": "L'inventaire pour {{year}} a déjà des données. L'importation de ce fichier remplace tout, y compris les données saisies manuellement, les données de tiers connectés et les clés de notation NE/NO.",
   "replace-inventory-confirm-history": "Les données actuelles sont enregistrées en tant que version dans l'historique des versions de l'inventaire, où vous pouvez les restaurer.",
-  "replace-inventory-confirm": "Remplacer et importer"
+  "replace-inventory-confirm": "Remplacer et importer",
+  "import-unit-option-kt": "Kilotonnes de CO₂e (milliers de t)",
+  "import-unit-answer-kt": "kilotonnes",
+  "import-unit-group-hint": "S'applique aux lignes sans unité imprimée",
+  "import-unit-group-heading_one": "Page {{page}} : {{count}} ligne sans unité imprimée",
+  "import-unit-group-heading_other": "Page {{page}} : {{count}} lignes sans unité imprimée",
+  "import-unit-group-heading-no-page_one": "{{count}} ligne sans unité imprimée",
+  "import-unit-group-heading-no-page_other": "{{count}} lignes sans unité imprimée",
+  "import-unit-group-answer": "p. {{page}} en {{unit}}",
+  "import-unit-group-answer-no-page": "lignes sans page en {{unit}}",
+  "import-unit-group-option-per-person": "{{value}} t par personne",
+  "import-unit-group-kg-only": "Cette page indique des kg. Si ces lignes sont en kg, ignorez-les dans la révision ci-dessous."
 }

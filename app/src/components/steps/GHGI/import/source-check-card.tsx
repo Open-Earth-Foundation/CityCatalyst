@@ -2,8 +2,9 @@
 
 /**
  * Review-step cards for the source checks of a PDF extraction
- * (`ExtractionSummary.sourceChecks`): the unit of an ambiguous "MT", the
- * separator of a number such as "6.600", and the document total. Each card
+ * (`ExtractionSummary.sourceChecks`): the unit of an ambiguous "MT", the unit
+ * of each page group of rows printed without one (t, kt or Mt), the separator
+ * of a number such as "6.600", and the document total. Each card
  * shows the imported total under every reading with `optionTotals`, the same
  * function the endpoint uses, so the totals shown are the totals stored.
  * Presentational: the caller sends the answer to the source-checks endpoint,
@@ -32,11 +33,13 @@ import {
   perPerson,
   PER_PERSON_RANGE,
   readingsOf,
+  sumImported,
   totalPlausibility,
   DOC_UNIT_GROUP,
   type NumberReading,
   type Readings,
   type SourceChecks,
+  type UnitGroup,
   type UnitGroupKey,
   type UnitReading,
 } from "@/util/GHGI/source-checks";
@@ -550,6 +553,161 @@ export function UnitCheckCard({
   );
 }
 
+const UNIT_OPTION_KEY: Record<UnitReading, string> = {
+  t: "import-unit-option-t",
+  kt: "import-unit-option-kt",
+  Mt: "import-unit-option-mt",
+};
+const UNIT_ANSWER_KEY: Record<UnitReading, string> = {
+  t: "import-unit-answer-t",
+  kt: "import-unit-answer-kt",
+  Mt: "import-unit-answer-mt",
+};
+
+/**
+ * "Check units" for rows printed without a unit: one radio group per page
+ * group (t, kt or Mt), first selecting the group's answer, else its
+ * `preselected` reading. One Confirm answers every group. Each option's total
+ * is the import total with that option and the other groups as selected.
+ */
+export function UnitGroupsCheckCard({
+  t,
+  groups,
+  readings,
+  rows,
+  population,
+  onConfirm,
+}: {
+  t: TFunction;
+  groups: UnitGroup[];
+  readings: Readings;
+  rows: ExtractedRow[];
+  population: number | null;
+  onConfirm: CardConfirm;
+}) {
+  const locale = useContext(LocaleContext);
+  const [selected, setSelected] = useState<Record<UnitGroupKey, UnitReading>>(
+    () =>
+      Object.fromEntries(
+        groups.map((group) => [group.key, group.reading ?? group.preselected]),
+      ),
+  );
+  /** Readings with every group but `except` at its selection. */
+  const selectedReadings = (except?: UnitGroupKey): Readings => {
+    const units = { ...readings.units };
+    for (const [key, reading] of Object.entries(selected)) {
+      if (key !== except) units[key] = reading;
+    }
+    return { ...readings, units };
+  };
+  const selectedTotal = sumImported(
+    applyReadings(rows, readings, selectedReadings()),
+  );
+  // The other groups' selections apply first; with one group the stored rows
+  // pass unchanged, so the totals are `optionTotals` of the stored rows.
+  const totalsOf = (key: UnitGroupKey) => {
+    const others = selectedReadings(key);
+    return optionTotals(applyReadings(rows, readings, others), others, {
+      unitGroup: key,
+    });
+  };
+  const detail = (total: number, reading: UnitReading) => {
+    const value = perPerson(total, population);
+    if (value != null) {
+      return t("import-unit-group-option-per-person", {
+        value: value.toLocaleString(locale, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+      });
+    }
+    const verdict = totalPlausibility(total, population);
+    return verdict === "high"
+      ? t("import-unit-option-high-detail")
+      : verdict === "low"
+        ? t("import-unit-option-low-detail")
+        : t("import-unit-option-neutral-detail", {
+            unit: t(UNIT_ANSWER_KEY[reading]),
+          });
+  };
+  const answerOf = (group: UnitGroup) =>
+    t(
+      group.page != null
+        ? "import-unit-group-answer"
+        : "import-unit-group-answer-no-page",
+      {
+        page: group.page,
+        unit: t(UNIT_ANSWER_KEY[group.reading ?? group.preselected]),
+      },
+    );
+
+  return (
+    <SourceCheckCard
+      t={t}
+      title={t("import-unit-check-title")}
+      hint={t("import-unit-group-hint")}
+      confirmed={groups.every((group) => group.status === "confirmed")}
+      confirmedLine={t("import-check-confirmed", {
+        check: t("import-unit-check-label"),
+        answer: groups.map(answerOf).join(", "),
+      })}
+      onConfirm={() => onConfirm({ units: { ...selected } })}
+    >
+      {groups.map((group) => {
+        const totals = totalsOf(group.key);
+        const totalOf = (reading: UnitReading) =>
+          totals.find((o) => o.reading === reading)?.total ?? 0;
+        return (
+          <VStack
+            key={group.key}
+            data-testid={`unit-group-${group.key}`}
+            alignItems="stretch"
+            gap={2}
+          >
+            <Text fontWeight="semibold" fontSize="body.md">
+              {group.page != null
+                ? t("import-unit-group-heading", {
+                    page: group.page,
+                    count: group.rowCount,
+                  })
+                : t("import-unit-group-heading-no-page", {
+                    count: group.rowCount,
+                  })}
+            </Text>
+            {group.kgOnly && (
+              <Text fontSize="body.sm" color="content.secondary">
+                {t("import-unit-group-kg-only")}
+              </Text>
+            )}
+            <OptionList
+              selected={selected[group.key]}
+              onSelect={(value) =>
+                setSelected((current) => ({
+                  ...current,
+                  [group.key]: value as UnitReading,
+                }))
+              }
+              options={group.options.map((reading) => ({
+                value: reading,
+                title: t(UNIT_OPTION_KEY[reading]),
+                detail: detail(totalOf(reading), reading),
+                total: formatTonnes(t, totalOf(reading), locale),
+              }))}
+            />
+          </VStack>
+        );
+      })}
+      <PerPersonBoxes
+        t={t}
+        total={selectedTotal}
+        population={population}
+        highHint={t("import-check-per-person-high-unit")}
+        implausible={t("import-check-implausible-generic")}
+      />
+    </SourceCheckCard>
+  );
+}
+
 export function NumberFormatCheckCard({
   t,
   check,
@@ -793,8 +951,8 @@ export function TotalCheckCard({
 }
 
 /**
- * The check cards in order (unit, number format, total). Renders nothing when
- * the summary has no checks (imports stored before them).
+ * The check cards in order ("MT" unit, unit groups, number format, total).
+ * Renders nothing when the summary has no checks (imports stored before them).
  */
 export function SourceCheckCards({
   t,
@@ -813,7 +971,14 @@ export function SourceCheckCards({
   locale?: string;
 }) {
   const saveState = useSaveState();
-  if (!checks || (!checks.unit && !checks.numberFormat && !checks.total)) {
+  const unitGroups = checks?.unitGroups ?? [];
+  if (
+    !checks ||
+    (!checks.unit &&
+      unitGroups.length === 0 &&
+      !checks.numberFormat &&
+      !checks.total)
+  ) {
     return null;
   }
   const readings = readingsOf(checks);
@@ -829,6 +994,19 @@ export function SourceCheckCards({
               key={`unit-${checks.unit.reading}-${checks.unit.status}`}
               t={t}
               check={checks.unit}
+              readings={readings}
+              rows={rows}
+              population={population}
+              onConfirm={confirm}
+            />
+          )}
+          {unitGroups.length > 0 && (
+            <UnitGroupsCheckCard
+              key={`unit-groups-${unitGroups
+                .map((g) => `${g.key}:${g.status}:${g.reading ?? ""}`)
+                .join(",")}`}
+              t={t}
+              groups={unitGroups}
               readings={readings}
               rows={rows}
               population={population}

@@ -334,10 +334,11 @@ export type ExtractedRow = {
   unitCheck?: "MT" | "missing" | null;
   /**
    * On `unitCheck: "missing"` rows: the reading the page's captions suggest
-   * ("kt" or "Mt" when the page names only that unit, else "t"). Kept on the
-   * row because the checks are rebuilt later without the page text.
+   * ("kt" or "Mt" when the page names only that unit, "kg" when only kg, else
+   * "t"). Kept on the row because the checks are rebuilt later without the
+   * page text.
    */
-  unitHint?: UnitReading | null;
+  unitHint?: UnitReading | "kg" | null;
   /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
   numberCheck?: boolean | null;
   /**
@@ -2330,6 +2331,7 @@ function buildSourceChecks(
  * Page groups of the rows printed without a unit, by page. A group preselects
  * kt or Mt when every row's printed value was scaled by that factor (the model
  * read the page's unit); else the caption hint its rows share, else tonnes.
+ * A group whose rows share the hint "kg" preselects tonnes and is `kgOnly`.
  * Rows keep their extracted values until the group is answered.
  */
 function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
@@ -2350,11 +2352,14 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
       const bases = new Set(group.rows.map(baseUnitReading));
       const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));
       const [base] = bases;
+      const [hint] = hints;
+      // kg is no option: a kg page preselects tonnes and says so.
+      const kgOnly = hints.size === 1 && hint === "kg";
       const preselected: UnitReading =
         bases.size === 1 && base !== "t"
           ? base
-          : hints.size === 1
-            ? [...hints][0]
+          : hints.size === 1 && hint !== "kg"
+            ? hint
             : "t";
       return {
         key,
@@ -2363,23 +2368,25 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
         rowCount: group.rows.length,
         preselected,
         options: [...UNIT_GROUP_OPTIONS],
-        status: "pending",
+        status: "pending" as const,
         reading: null,
+        ...(kgOnly ? { kgOnly: true as const } : {}),
       };
     });
 }
 
 /**
- * Reading to preselect for rows without a unit on this page: "kt" when its
- * captions name only kt (or Gg), "Mt" when only Mt, else tonnes (mixed units,
- * or kg, which is no option).
+ * Unit the captions of this page suggest for rows without a unit: "kt" when
+ * they name only kt (or Gg), "Mt" when only Mt, "kg" when only kg (no option
+ * reads it; the group is flagged `kgOnly`), else tonnes (mixed units).
  */
-function unitHintForPage(text: string): UnitReading {
+function unitHintForPage(text: string): UnitReading | "kg" {
   if (namesTonneUnit(text)) return "t";
   const scales = pageScaleEvidence(text);
   if (scales.length !== 1) return "t";
   if (scales[0] === 1000) return "kt";
   if (scales[0] === 1_000_000) return "Mt";
+  if (scales[0] === 0.001) return "kg";
   return "t";
 }
 

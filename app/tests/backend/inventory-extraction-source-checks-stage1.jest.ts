@@ -633,7 +633,28 @@ describe("CC-1163 #3420: unit groups for rows without a printed unit", () => {
       key: "p5",
       preselected: "t",
       options: ["t", "kt", "Mt"],
+      kgOnly: true,
     });
+  });
+
+  it.each([
+    ["kg only", "Tabla 4: Emisiones (kg CO2e)\n| Road | 1,234 |", true],
+    [
+      "kg and kt",
+      "Tabla 4: Emisiones (kg CO2e)\n| Road | 1,234 |\n" +
+        "Tabla 5: Emisiones (kt CO2e)\n| Rail | 7 |",
+      false,
+    ],
+    ["kt only", "Table 4: Emissions (kt CO2e)\n| Road | 1,234 |", false],
+  ])("flags kgOnly on a page naming %s", (_name, text, kgOnly) => {
+    const result = finalizeExtractedRows([unitless(1234, 5)], 2021, page(text));
+    const [group] = result.summary.sourceChecks?.unitGroups ?? [];
+    expect(group.kgOnly ?? false).toBe(kgOnly);
+    // Rebuilt from the stored rows without the page text, the flag stays.
+    const again = finalizeExtractedRows(result.rows, 2021);
+    expect(again.summary.sourceChecks?.unitGroups?.[0].kgOnly ?? false).toBe(
+      kgOnly,
+    );
   });
 
   it("keeps the preselection when the checks are rebuilt without the page text", () => {

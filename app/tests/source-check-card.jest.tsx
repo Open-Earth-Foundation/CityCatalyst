@@ -33,7 +33,12 @@ afterAll(() => {
 });
 
 const t = ((key: string, opts?: Record<string, unknown>) => {
-  const template = (en as Record<string, string>)[key] ?? key;
+  const strings = en as Record<string, string>;
+  const plural =
+    typeof opts?.count === "number"
+      ? strings[`${key}_${opts.count === 1 ? "one" : "other"}`]
+      : undefined;
+  const template = plural ?? strings[key] ?? key;
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => String(opts?.[k] ?? ""));
 }) as never;
 
@@ -502,6 +507,163 @@ describe("SourceCheckCards", () => {
   it("no checks no cards", async () => {
     const c = await render({ checks: undefined });
     expect(c.textContent).toBe("");
+  });
+});
+
+describe("unit group card (rows without a printed unit)", () => {
+  // p12: 6.75 t as stored; p14: 10 t; plus 100 t printed with a unit.
+  const GROUP_ROWS = [
+    row({ gpcRefNo: "I.1.1", totalCO2e: 1.5, unitCheck: "missing", page: 12 }),
+    row({ gpcRefNo: "I.2.1", totalCO2e: 2, unitCheck: "missing", page: 12 }),
+    row({ gpcRefNo: "I.3.1", totalCO2e: 3.25, unitCheck: "missing", page: 12 }),
+    row({ gpcRefNo: "II.1.1", totalCO2e: 10, unitCheck: "missing", page: 14 }),
+    row({ gpcRefNo: "II.2.1", totalCO2e: 100, page: 12 }),
+  ];
+  const group = (
+    key: string,
+    page: number,
+    rowCount: number,
+    extra: Record<string, unknown> = {},
+  ) => ({
+    key,
+    page,
+    tableId: null,
+    rowCount,
+    preselected: "t" as const,
+    options: ["t" as const, "kt" as const, "Mt" as const],
+    status: "pending" as const,
+    reading: null,
+    ...extra,
+  });
+  const GROUP_CHECKS: SourceChecks = {
+    unitGroups: [
+      group("p12", 12, 3, { preselected: "kt" }),
+      group("p14", 14, 1),
+    ],
+  };
+  const groupEl = (c: HTMLElement, key: string) =>
+    byTestId(c, `unit-group-${key}`) as HTMLElement;
+
+  it("renders one radio group per unit group, kt preselected on a kt-only page", async () => {
+    const c = await render({ checks: GROUP_CHECKS, rows: GROUP_ROWS });
+    expect(c.textContent).toContain("Page 12: 3 rows without a printed unit");
+    expect(c.textContent).toContain("Page 14: 1 row without a printed unit");
+    expect(c.querySelectorAll("[role=radiogroup]")).toHaveLength(2);
+    expect(radio(groupEl(c, "p12"), "kt").checked).toBe(true);
+    expect(radio(groupEl(c, "p14"), "t").checked).toBe(true);
+    expect(groupEl(c, "p12").textContent).toContain(
+      "Kilotonnes of CO₂e (thousand t)",
+    );
+  });
+
+  it("each option shows its total and t per person", async () => {
+    const c = await render({
+      checks: GROUP_CHECKS,
+      rows: GROUP_ROWS,
+      population: 1000,
+    });
+    const p12 = groupEl(c, "p12").textContent;
+    // t: 6.75 + 10 + 100; kt: 6,750 + 110; Mt: 6,750,000 + 110.
+    expect(p12).toContain("117 t");
+    expect(p12).toContain("0.1 t per person");
+    expect(p12).toContain("6,860 t");
+    expect(p12).toContain("6.9 t per person");
+    expect(p12).toContain("6,750,110 t");
+    expect(p12).toContain("6,750.1 t per person");
+    // Another group's options use this group's current selection (kt).
+    expect(groupEl(c, "p14").textContent).toContain("16,850 t");
+    expect(byTestId(c, "check-per-person")?.textContent).toContain(
+      "6.9 t per person",
+    );
+    expect(byTestId(c, "check-implausible")).toBeNull();
+    await act(async () => radio(groupEl(c, "p12"), "Mt").click());
+    expect(byTestId(c, "check-implausible")).not.toBeNull();
+  });
+
+  it("Confirm sends units for every group, without unanswered groups in expected", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: GROUP_CHECKS,
+      rows: GROUP_ROWS,
+      onConfirm,
+    });
+    await act(async () => radio(groupEl(c, "p14"), "kt").click());
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      units: { p12: "kt", p14: "kt" },
+      expected: { units: {}, numberFormat: null },
+    });
+  });
+
+  it("an answered group starts from its reading and is in expected", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        unitGroups: [
+          group("p12", 12, 3, {
+            preselected: "kt",
+            status: "confirmed",
+            reading: "Mt",
+          }),
+          group("p14", 14, 1),
+        ],
+      },
+      rows: GROUP_ROWS,
+      onConfirm,
+    });
+    expect(radio(groupEl(c, "p12"), "Mt").checked).toBe(true);
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      units: { p12: "Mt", p14: "t" },
+      expected: { units: { p12: "Mt" }, numberFormat: null },
+    });
+  });
+
+  it("shows one confirmed line once every group is answered", async () => {
+    const c = await render({
+      checks: {
+        unitGroups: [
+          group("p12", 12, 3, { status: "confirmed", reading: "kt" }),
+          group("p14", 14, 1, { status: "confirmed", reading: "t" }),
+        ],
+      },
+      rows: GROUP_ROWS,
+    });
+    expect(c.textContent).toContain(
+      "Units: p. 12 in kilotonnes, p. 14 in metric tonnes — confirmed",
+    );
+    expect(c.querySelectorAll("[role=radiogroup]")).toHaveLength(0);
+  });
+
+  it("notes kg only on a group whose page names kg only", async () => {
+    const note =
+      "This page names kg. If these rows are in kg, skip them in the review below.";
+    const c = await render({
+      checks: {
+        unitGroups: [group("p5", 5, 1, { kgOnly: true }), group("p14", 14, 1)],
+      },
+      rows: [
+        row({ totalCO2e: 1234, unitCheck: "missing", page: 5 }),
+        row({ totalCO2e: 10, unitCheck: "missing", page: 14 }),
+      ],
+    });
+    expect(groupEl(c, "p5").textContent).toContain(note);
+    expect(groupEl(c, "p14").textContent).not.toContain(note);
+  });
+
+  it("is pending until every group is answered", () => {
+    const summary = (sourceChecks: SourceChecks) =>
+      ({ sourceChecks }) as unknown as ExtractionSummary;
+    expect(hasPendingSourceChecks(summary(GROUP_CHECKS))).toBe(true);
+    expect(
+      hasPendingSourceChecks(
+        summary({
+          unitGroups: [
+            group("p12", 12, 3, { status: "confirmed", reading: "kt" }),
+          ],
+        }),
+      ),
+    ).toBe(false);
   });
 });
 

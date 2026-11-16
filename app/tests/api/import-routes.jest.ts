@@ -1580,6 +1580,79 @@ describe("Import Routes API", () => {
         expect(stored.extractionSummary.importedSum).toBe(1_239_000);
       });
 
+      const rowPreview = async (importedFileId: string) => {
+        const res = await previewImportRows(mockRequest({}), {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventory.inventoryId,
+            importedFileId,
+          }),
+        });
+        await expectStatusCode(res, 200);
+        return (await res.json()).data as {
+          pendingRows: number;
+          reviewRows: { rowIndex: number; issue: string }[];
+        };
+      };
+
+      it("rows of a unit group ask no row-level unit decision, pending or answered", async () => {
+        const file = await createGrouped();
+        const before = await rowPreview(file.id);
+        expect(before.reviewRows).toEqual([]);
+        expect(before.pendingRows).toBe(0);
+
+        await expectStatusCode(
+          await patch(file.id, { units: { p12: "kt", p14: "t" } }, T_GROUPS),
+          200,
+        );
+        const after = await rowPreview(file.id);
+        expect(after.reviewRows).toEqual([]);
+        expect(after.pendingRows).toBe(0);
+      });
+
+      it("an unconfirmed value in a unit group stays a row-level decision", async () => {
+        const rows = groupRows.map((r, i) =>
+          i === 0 ? { ...r, valueCheck: "not_found" as const } : r,
+        );
+        const file = await createChecked({ rows, checks: groupChecks() });
+        const preview = await rowPreview(file.id);
+        expect(preview.reviewRows).toMatchObject([
+          { rowIndex: 0, issue: "value-unconfirmed" },
+        ]);
+      });
+
+      it("keeps the row-level unit decision without a group, or on a kg-only page", async () => {
+        // A summary stored before unit groups: rows ask keep or skip.
+        const legacy = await createChecked({
+          rows: groupRows,
+          checks: { total: groupChecks().total } as SourceChecks,
+        });
+        const legacyPreview = await rowPreview(legacy.id);
+        expect(legacyPreview.reviewRows.map((r) => r.issue)).toEqual([
+          "unit-unconfirmed",
+          "unit-unconfirmed",
+          "unit-unconfirmed",
+          "unit-unconfirmed",
+        ]);
+
+        // No reading fits kg, so those rows keep keep/skip.
+        const kg = await createChecked({
+          rows: groupRows,
+          checks: {
+            unitGroups: [
+              { ...group("p12", 12, 3), kgOnly: true },
+              group("p14", 14, 1),
+            ],
+          } as SourceChecks,
+        });
+        const kgPreview = await rowPreview(kg.id);
+        expect(kgPreview.reviewRows.map((r) => [r.rowIndex, r.issue])).toEqual([
+          [0, "unit-unconfirmed"],
+          [1, "unit-unconfirmed"],
+          [2, "unit-unconfirmed"],
+        ]);
+      });
+
       it("rejects an unknown group key with 400", async () => {
         const file = await createGrouped();
         await expectStatusCode(

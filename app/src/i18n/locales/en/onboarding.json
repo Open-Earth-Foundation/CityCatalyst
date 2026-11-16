@@ -474,5 +474,16 @@
   "import-unit-option-neutral-detail": "Reads the values as written in {{unit}}.",
   "import-source-checks-cleared_one": "{{count}} row decision was cleared because the values of that row changed.",
   "import-source-checks-cleared_other": "{{count}} row decisions were cleared because the values of those rows changed.",
-  "import-reconciliation-other-total": "The imported rows add up to {{matched}} t, another total printed in the document, not the {{confirmed}} t you confirmed."
+  "import-reconciliation-other-total": "The imported rows add up to {{matched}} t, another total printed in the document, not the {{confirmed}} t you confirmed.",
+  "import-unit-option-kt": "Kilotonnes of CO₂e (thousand t)",
+  "import-unit-answer-kt": "kilotonnes",
+  "import-unit-group-hint": "Applies to rows printed without a unit",
+  "import-unit-group-heading_one": "Page {{page}}: {{count}} row without a printed unit",
+  "import-unit-group-heading_other": "Page {{page}}: {{count}} rows without a printed unit",
+  "import-unit-group-heading-no-page_one": "{{count}} row without a printed unit",
+  "import-unit-group-heading-no-page_other": "{{count}} rows without a printed unit",
+  "import-unit-group-answer": "p. {{page}} in {{unit}}",
+  "import-unit-group-answer-no-page": "rows without a page in {{unit}}",
+  "import-unit-group-option-per-person": "{{value}} t per person",
+  "import-unit-group-kg-only": "This page names kg. If these rows are in kg, skip them in the review below."
 }

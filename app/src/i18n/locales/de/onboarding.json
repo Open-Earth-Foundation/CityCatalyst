@@ -368,5 +368,16 @@
   "replace-inventory-confirm-title": "Die vorhandenen Inventardaten ersetzen?",
   "replace-inventory-confirm-message": "Das Inventar für {{year}} enthält bereits Daten. Der Import dieser Datei ersetzt alles, einschließlich manuell eingegebener Daten, verbundener Daten von Drittanbietern und NE/NO-Notationsschlüssel.",
   "replace-inventory-confirm-history": "Die aktuellen Daten werden als Version im Versionsverlauf des Inventars gespeichert, wo Sie diese wiederherstellen können.",
-  "replace-inventory-confirm": "Ersetzen und importieren"
+  "replace-inventory-confirm": "Ersetzen und importieren",
+  "import-unit-option-kt": "Kilotonnen CO₂e (tausend t)",
+  "import-unit-answer-kt": "Kilotonnen",
+  "import-unit-group-hint": "Gilt für Zeilen ohne gedruckte Einheit",
+  "import-unit-group-heading_one": "Seite {{page}}: {{count}} Zeile ohne gedruckte Einheit",
+  "import-unit-group-heading_other": "Seite {{page}}: {{count}} Zeilen ohne gedruckte Einheit",
+  "import-unit-group-heading-no-page_one": "{{count}} Zeile ohne gedruckte Einheit",
+  "import-unit-group-heading-no-page_other": "{{count}} Zeilen ohne gedruckte Einheit",
+  "import-unit-group-answer": "S. {{page}} in {{unit}}",
+  "import-unit-group-answer-no-page": "Zeilen ohne Seite in {{unit}}",
+  "import-unit-group-option-per-person": "{{value}} t pro Person",
+  "import-unit-group-kg-only": "Diese Seite nennt kg. Wenn diese Zeilen in kg angegeben sind, überspringen Sie sie in der Prüfung unten."
 }

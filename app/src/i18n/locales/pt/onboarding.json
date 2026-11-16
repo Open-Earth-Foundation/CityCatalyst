@@ -423,5 +423,16 @@
   "import-unit-option-neutral-detail": "Lê os valores como escritos, em {{unit}}.",
   "import-source-checks-cleared_one": "{{count}} decisão de linha foi removida porque os valores dessa linha mudaram.",
   "import-source-checks-cleared_other": "{{count}} decisões de linha foram removidas porque os valores dessas linhas mudaram.",
-  "import-reconciliation-other-total": "As linhas importadas somam {{matched}} t, outro total impresso no documento, e não as {{confirmed}} t que você confirmou."
+  "import-reconciliation-other-total": "As linhas importadas somam {{matched}} t, outro total impresso no documento, e não as {{confirmed}} t que você confirmou.",
+  "import-unit-option-kt": "Quilotoneladas de CO₂e (milhares de t)",
+  "import-unit-answer-kt": "quilotoneladas",
+  "import-unit-group-hint": "Vale para as linhas sem unidade impressa",
+  "import-unit-group-heading_one": "Página {{page}}: {{count}} linha sem unidade impressa",
+  "import-unit-group-heading_other": "Página {{page}}: {{count}} linhas sem unidade impressa",
+  "import-unit-group-heading-no-page_one": "{{count}} linha sem unidade impressa",
+  "import-unit-group-heading-no-page_other": "{{count}} linhas sem unidade impressa",
+  "import-unit-group-answer": "p. {{page}} em {{unit}}",
+  "import-unit-group-answer-no-page": "linhas sem página em {{unit}}",
+  "import-unit-group-option-per-person": "{{value}} t por pessoa",
+  "import-unit-group-kg-only": "Esta página indica kg. Se essas linhas estiverem em kg, pule-as na revisão abaixo."
 }

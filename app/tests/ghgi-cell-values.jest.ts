@@ -173,6 +173,110 @@ describe("readCell", () => {
     expect(read.unit && CELL_UNIT_FACTOR[read.unit]).toBe(1000);
   });
 
+  describe("a unit named by header cells is a table level (R19)", () => {
+    it("reads kt from the first header cell for the year columns (Phoenix)", () => {
+      const b = bundle(
+        "t1",
+        "| Scope 2 GHG Emissions (thousand MT CO2e) | 2012 | 2022 |\n| --- | --- | --- |\n| Electricity | 3,120 | 2,858 |",
+        { unitNotes: ["Scope 2 GHG Emissions (thousand MT CO2e)"] },
+      );
+      expect(
+        okRead(readCell([b], "t1:r1:c2", "2,858", "english")),
+      ).toMatchObject({
+        unit: "kt",
+        unitSource: "table",
+        unitConflict: false,
+        tonnes: 2858000,
+        columnYear: 2022,
+      });
+    });
+
+    it("comes after the row label and before the caption", () => {
+      const b = bundle(
+        "t1",
+        "| Sector (kt CO2e) | 2022 |\n| --- | --- |\n| Energy | 5 |\n| Waste (t CO2e) | 7 |",
+        { caption: "Table 2: Emissions (Mt CO2e)" },
+      );
+      expect(okRead(readCell([b], "t1:r1:c1", "5", "english"))).toMatchObject({
+        unit: "kt",
+        unitSource: "table",
+        tonnes: 5000,
+      });
+      expect(okRead(readCell([b], "t1:r2:c1", "7", "english"))).toMatchObject({
+        unit: "t",
+        unitSource: "row",
+        tonnes: 7,
+      });
+    });
+
+    it("reads kg from a unit sub-header below the separator (R30, Santiago)", () => {
+      const b = bundle(
+        "t1",
+        [
+          "| Sector / subsector | Alcance 1 | Alcance 2 | TOTAL (KgCO2e) |",
+          "| --- | --- | --- | --- |",
+          "| Item / Unidad | Valor | Emisiones totales (KgCO2eq) | Emisiones totales (KgCO2eq) |",
+          "| Residencial | 1.234 | 357.198.425 | 358.432.659 |",
+        ].join("\n"),
+      );
+      expect(
+        okRead(readCell([b], "t1:r2:c2", "357.198.425", "european")),
+      ).toMatchObject({ unit: "kg", unitSource: "column", tonnes: 357198.425 });
+    });
+
+    it("is read up the continuation chain", () => {
+      const source = bundle(
+        "t1",
+        "| Emissions (KgCO2e) | 2022 |\n| --- | --- |\n| Energy | 5,000 |",
+      );
+      const continuation = bundle("t2", "| Waste | 2,000 |", {
+        page: 2,
+        continuationOf: "t1",
+      });
+      expect(
+        okRead(
+          readCell([source, continuation], "t2:r0:c1", "2,000", "english"),
+        ),
+      ).toMatchObject({ unit: "kg", unitSource: "table", tonnes: 2 });
+    });
+
+    it("leaves header cells that disagree to the caption (t CO2e | kt CO2e | Share)", () => {
+      const b = bundle(
+        "t1",
+        "| Sector | t CO2e | kt CO2e | Share |\n| --- | --- | --- | --- |\n| Energy | 1,200 | 1.2 | 12 |",
+        {
+          caption: "Table 1 (kt)",
+          unitNotes: ["Table 1 (kt)", "t CO2e", "kt CO2e"],
+        },
+      );
+      expect(okRead(readCell([b], "t1:r1:c3", "12", "english"))).toMatchObject({
+        unit: "kt",
+        unitSource: "caption",
+        unitConflict: false,
+      });
+    });
+
+    it("ignores an ambiguous MT header cell and a per-person header cell", () => {
+      const mt = bundle(
+        "t1",
+        "| Sector (MT CO2e) | 2022 |\n| --- | --- |\n| Energy | 5 |",
+      );
+      expect(okRead(readCell([mt], "t1:r1:c1", "5", "english"))).toMatchObject({
+        unit: null,
+        unitSource: null,
+        unitConflict: false,
+        tonnes: 5,
+      });
+      const perCapita = bundle(
+        "t1",
+        "| Sector | 2022 | kg CO2e per capita |\n| --- | --- | --- |\n| Energy | 5 | 1.1 |",
+      );
+      expect(
+        okRead(readCell([perCapita], "t1:r1:c1", "5", "english")),
+      ).toMatchObject({ unit: null, unitSource: null, tonnes: 5 });
+    });
+  });
+
   describe("a continuation reads its source column header (R16)", () => {
     const sourceHeader =
       "| Sector | t CO2e (2021) | kt CO2e | t CO2e / capita | Share % |";

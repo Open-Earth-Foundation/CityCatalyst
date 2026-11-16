@@ -686,13 +686,26 @@ function withCountryNumberFormat(
   return { numberFormat, numberFormatSource: "country_default" };
 }
 
+/**
+ * True when `GHGI_STRUCTURED_EXTRACTION` turns the structured extraction path
+ * (stage 2) on: `1` or `true`, any case, surrounding spaces ignored. Unset or
+ * any other value leaves it off (the default), so inventory PDFs are extracted
+ * from the Markdown (stage 1). Read on every job, so a deploy can flip it.
+ */
+export function isStructuredExtractionEnabled(): boolean {
+  const flag = process.env.GHGI_STRUCTURED_EXTRACTION?.trim().toLowerCase();
+  return flag === "1" || flag === "true";
+}
+
 /** Why a job's extraction ran on the Markdown instead of the structured document. */
 type MarkdownReason =
+  | "structured_disabled"
   | "no_structured_artifact"
   | "unsupported_schema_version"
   | "artifact_unreadable"
   | "artifact_invalid"
-  | "structured_empty";
+  | "structured_empty"
+  | "structured_unreconciled";
 
 /**
  * The job's stored structured document, or why it cannot be used: the job has
@@ -756,11 +769,17 @@ function monotonicProgress(
 }
 
 /**
- * Extracts from the structured document when the job has a usable one
- * (stage 2), otherwise from the Markdown (stage 1). A structured run that
+ * Extracts from the structured document when `GHGI_STRUCTURED_EXTRACTION` is
+ * on (`isStructuredExtractionEnabled`) and the job has a usable one (stage 2),
+ * otherwise from the Markdown (stage 1). With the flag off (the default) the
+ * artifact is not read and the reason is `structured_disabled`. A structured run that
  * keeps no line item (no table bundles, no row read, or every row dropped by
  * the year filter) falls back to the Markdown too (`structured_empty`); the
- * Markdown path then raises its own error if it also finds nothing. The
+ * Markdown path then raises its own error if it also finds nothing. A
+ * structured run whose page selection does not reconcile (`fallback`) is
+ * followed by a Markdown run, whose result is used only when it reconciles
+ * (`structured_unreconciled`, logged with the path whose result is kept; a
+ * failed Markdown run keeps the structured result). The
  * progress bar never moves back across the two phases. Logs the path once per
  * job, also when extraction throws, with the reason for the Markdown path;
  * never the document content.
@@ -777,7 +796,10 @@ async function extractInventoryForJob(
   let extractionPath: "structured" | "markdown" = "markdown";
   let reason: MarkdownReason | null = null;
   try {
-    const loaded = await loadStructuredDocument(job);
+    const loaded: Awaited<ReturnType<typeof loadStructuredDocument>> =
+      isStructuredExtractionEnabled()
+        ? await loadStructuredDocument(job)
+        : { reason: "structured_disabled" };
     if ("doc" in loaded) {
       extractionPath = "structured";
       let result: ExtractionResult | null = null;
@@ -796,7 +818,27 @@ async function extractInventoryForJob(
           throw error;
         }
       }
-      if (result && result.rows.length > 0) return result;
+      if (result && result.rows.length > 0) {
+        if (result.summary.pageSelection !== "fallback") return result;
+        // No page run of the structured rows reconciles: the Markdown path may
+        // (R22). Its result is used only when it reconciles.
+        reason = "structured_unreconciled";
+        const fromMarkdown = await extractInventoryFromDocument(
+          markdown,
+          phased,
+        ).catch((error) => {
+          logger.warn(
+            { sourceId: job.sourceId, err: error },
+            "Markdown extraction after an unreconciled structured run failed",
+          );
+          return null;
+        });
+        if (fromMarkdown?.summary.pageSelection === "reconciled") {
+          extractionPath = "markdown";
+          return fromMarkdown;
+        }
+        return result;
+      }
       reason = "structured_empty";
     } else {
       reason = loaded.reason;
@@ -814,7 +856,8 @@ async function extractInventoryForJob(
 /**
  * Runs inventory extraction for a succeeded OCR job and stores the rows on its
  * imported file. Reads the job's structured document (`structuredS3Key`,
- * `document.structured.json`) when it is usable and falls back to the stored
+ * `document.structured.json`) when `GHGI_STRUCTURED_EXTRACTION` is on and the
+ * document is usable, and falls back to the stored
  * Markdown otherwise; see `extractInventoryForJob`. Releases the extraction
  * lease when the job or file is no longer in a state to extract.
  */

@@ -46,6 +46,25 @@ export type TableBundle = {
 
 const MAX_HEADINGS = 2;
 
+/**
+ * The bundle, then the table it continues, and so on back to the first
+ * table of the chain (a table met twice, or a missing source, ends it).
+ */
+export function continuationChain(
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): TableBundle[] {
+  const chain = [bundle];
+  let current = bundle;
+  while (current.continuationOf) {
+    const source = bundles.find((b) => b.tableId === current.continuationOf);
+    if (!source || chain.includes(source)) break;
+    chain.push(source);
+    current = source;
+  }
+  return chain;
+}
+
 function cellRef(tableId: string, row: number, col: number): CellRef {
   return `${tableId}:r${row}:c${col}`;
 }
@@ -77,10 +96,23 @@ function splitRow(line: string): string[] {
 }
 
 /**
+ * True when a row is a unit sub-header: a cell other than the first names an
+ * emissions unit, and no cell other than the first holds a number (a bare
+ * year is not one).
+ */
+function isUnitSubHeader(cells: string[] | undefined): boolean {
+  if (!cells) return false;
+  const rest = cells.slice(1);
+  return rest.some(namesEmissionsUnit) && !rest.some(isDataCell);
+}
+
+/**
  * Reads a Markdown table into a grid of cells. Lines without `|` are skipped
  * and the first `| --- |` separator line is not a row; a later line of
  * `---` cells is a body row. Every row above the first separator is a
- * header row (OCR prints multi-row headers that way); a table
+ * header row (OCR prints multi-row headers that way), and so is the row
+ * right below it when it is a unit sub-header: a cell other than the first
+ * names an emissions unit and none of them holds a number (R30). A table
  * without a separator has no header rows.
  */
 export function parseMarkdownTable(
@@ -99,7 +131,10 @@ export function parseMarkdownTable(
     }
     rows.push(splitRow(line));
   }
-  const headers = headerRowCount ?? 0;
+  let headers = headerRowCount ?? 0;
+  // A unit row OCR put right below the separator (Santiago: `Item / Unidad |
+  // Valor | Emisiones totales (KgCO2eq)`) belongs to the header (R30).
+  if (headerRowCount != null && isUnitSubHeader(rows[headers])) headers += 1;
   const grid = rows.map((cells, row) =>
     cells.map((text, col) => ({
       ref: cellRef(tableId, row, col),

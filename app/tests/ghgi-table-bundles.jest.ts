@@ -4,7 +4,9 @@ import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
 import {
   buildTableBundles,
   bundleText,
+  continuationChain,
   parseMarkdownTable,
+  type TableBundle,
 } from "@/util/GHGI/table-bundles";
 
 /**
@@ -105,6 +107,44 @@ describe("parseMarkdownTable", () => {
   it("reads a row without outer pipes", () => {
     const { grid } = parseMarkdownTable("t6", "A | 1");
     expect(grid[0].map((cell) => cell.text)).toEqual(["A", "1"]);
+  });
+
+  it("reads a unit row right below the separator as a header row (R30, Santiago)", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t7",
+      [
+        "| Sector / subsector | Alcance 1 | Alcance 2 | TOTAL (KgCO2e) |",
+        "| --- | --- | --- | --- |",
+        "| Item / Unidad | Valor | Emisiones totales (KgCO2eq) | Emisiones totales (KgCO2eq) |",
+        "| Residencial | 1.234 | 357.198.425 | 358.432.659 |",
+      ].join("\n"),
+    );
+    expect(headerRowCount).toBe(2);
+    expect(grid[1][2]).toEqual({
+      ref: "t7:r1:c2",
+      text: "Emisiones totales (KgCO2eq)",
+      header: true,
+    });
+    expect(grid[2][2].header).toBe(false);
+  });
+
+  it("keeps a row below the separator in the body when it has a number or no unit", () => {
+    const withNumber = parseMarkdownTable(
+      "t8",
+      "| Sector | Total |\n| --- | --- |\n| Energy (kt CO2e) | 1,200 |",
+    );
+    expect(withNumber.headerRowCount).toBe(1);
+    const noUnit = parseMarkdownTable(
+      "t9",
+      "| Sector | A | B |\n| --- | --- | --- |\n| Item | Valor | Nota |\n| Energy | 1 | 2 |",
+    );
+    expect(noUnit.headerRowCount).toBe(1);
+    // A first cell alone does not count: the row label names the unit.
+    const labelOnly = parseMarkdownTable(
+      "t10",
+      "| Sector | A |\n| --- | --- |\n| Waste (t CO2e) | n/a |",
+    );
+    expect(labelOnly.headerRowCount).toBe(1);
   });
 
   it("has no header rows without a separator", () => {
@@ -314,5 +354,32 @@ describe("bundleText", () => {
       continuationOf: null,
     });
     expect(text).toContain("[t2:r1:c0] Fuel \\| diesel | [t2:r1:c1] 3");
+  });
+});
+
+describe("continuationChain", () => {
+  const bundle = (tableId: string, continuationOf: string | null) =>
+    ({ tableId, continuationOf }) as TableBundle;
+
+  it("walks back to the first table, and stops at a loop or a missing source", () => {
+    const a = bundle("a", null);
+    const b = bundle("b", "a");
+    const c = bundle("c", "b");
+    expect(continuationChain([a, b, c], c).map((x) => x.tableId)).toEqual([
+      "c",
+      "b",
+      "a",
+    ]);
+    const x = bundle("x", "y");
+    const y = bundle("y", "x");
+    expect(continuationChain([x, y], x).map((t) => t.tableId)).toEqual([
+      "x",
+      "y",
+    ]);
+    expect(
+      continuationChain([bundle("d", "gone")], bundle("d", "gone")).map(
+        (t) => t.tableId,
+      ),
+    ).toEqual(["d"]);
   });
 });

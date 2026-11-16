@@ -16,6 +16,7 @@ import {
   definesMtAsMetricTons,
   namesMtSymbol,
   inheritedMtSymbol,
+  namesPerPerson,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -439,6 +440,26 @@ describe("scales from unit evidence", () => {
     ]) {
       expect(pageScaleEvidence(header)).toEqual([]);
     }
+  });
+
+  it("reads plural and por forms as per person", () => {
+    for (const line of [
+      "Table 5: Emissions (kg CO2e per inhabitants)",
+      "Table 5: Emissions (kg/inhabitants)",
+      "Tabla 5: Emisiones (kg/habitantes)",
+      "Tabla 5: Emisiones (kg CO2e por habitante)",
+      "Tabla 5: Emisiones (kg CO2e por habitantes)",
+      "Tabla 5: Emisiones (kg por cápita)",
+      "Tabla 5: Emisiones (kg por persona)",
+      "Table 5: Emissions (kg per persons)",
+    ]) {
+      expect(pageScaleEvidence(line)).toEqual([]);
+    }
+    expect(namesPerPerson("t CO2e por habitante")).toBe(true);
+    expect(namesPerPerson("t CO2e/inhabitants")).toBe(true);
+    // A word that only starts with the same letters is not per person.
+    expect(namesPerPerson("t CO2e por habitación")).toBe(false);
+    expect(namesPerPerson("Emisiones por sector")).toBe(false);
   });
 });
 

@@ -1,4 +1,5 @@
 import {
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -693,6 +694,14 @@ describe("PdfOcrJob queue", () => {
   });
 
   describe("structured or Markdown extraction path (CC-1163 stage 2)", () => {
+    // The structured path is behind GHGI_STRUCTURED_EXTRACTION (default off).
+    beforeEach(() => {
+      process.env.GHGI_STRUCTURED_EXTRACTION = "1";
+    });
+    afterEach(() => {
+      delete process.env.GHGI_STRUCTURED_EXTRACTION;
+    });
+
     const markdown =
       "<!-- page: 1 -->\n| Sector | tCO2e |\n|---|---:|\n| Energy | 12 |";
     const structured = {
@@ -780,6 +789,95 @@ describe("PdfOcrJob queue", () => {
         expect.objectContaining({ extractionPath, reason }),
       );
     };
+
+    it.each([undefined, "", "0", "false", "yes"])(
+      "with GHGI_STRUCTURED_EXTRACTION=%p the Markdown path runs (structured_disabled)",
+      async (flag) => {
+        if (flag === undefined) delete process.env.GHGI_STRUCTURED_EXTRACTION;
+        else process.env.GHGI_STRUCTURED_EXTRACTION = flag;
+        const importedFile = await runWithArtifact({});
+        expect(extractStructured).not.toHaveBeenCalled();
+        expect(getTextFile).not.toHaveBeenCalledWith(
+          "document.structured.json",
+        );
+        expect(extractRows).toHaveBeenCalledWith(
+          markdown,
+          expect.objectContaining({ targetYear: 2024 }),
+        );
+        expect(importedFile.importStatus).toBe("waiting_for_approval");
+        await expectPath("markdown", "structured_disabled");
+      },
+    );
+
+    it.each(["1", "true", "TRUE", " true "])(
+      "with GHGI_STRUCTURED_EXTRACTION=%p the structured path runs",
+      async (flag) => {
+        process.env.GHGI_STRUCTURED_EXTRACTION = flag;
+        await runWithArtifact({});
+        expect(extractStructured).toHaveBeenCalled();
+        expect(extractRows).not.toHaveBeenCalled();
+        await expectPath("structured", null);
+      },
+    );
+
+    describe("an unreconciled structured run (R22)", () => {
+      const withSelection = (
+        pageSelection: "reconciled" | "fallback",
+        importedSum: number,
+      ) => ({
+        rows: [{ sector: "Energy", totalCO2e: importedSum }],
+        summary: { ...extraction.summary, importedSum, pageSelection },
+      });
+
+      it("uses the Markdown result when it reconciles", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockResolvedValueOnce(withSelection("reconciled", 12));
+        const importedFile = await runWithArtifact({});
+        expect(extractStructured).toHaveBeenCalledTimes(1);
+        expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 12 }],
+          }),
+        );
+        await expectPath("markdown", "structured_unreconciled");
+      });
+
+      it("keeps the structured result when the Markdown run does not reconcile", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockResolvedValueOnce(withSelection("fallback", 12));
+        const importedFile = await runWithArtifact({});
+        expect(extractRows).toHaveBeenCalledTimes(1);
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 99 }],
+          }),
+        );
+        await expectPath("structured", "structured_unreconciled");
+      });
+
+      it("keeps the structured result when the Markdown run fails", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockRejectedValueOnce(new Error("provider down"));
+        const importedFile = await runWithArtifact({});
+        expect(importedFile.importStatus).toBe("waiting_for_approval");
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 99 }],
+          }),
+        );
+        await expectPath("structured", "structured_unreconciled");
+      });
+
+      it("does not run the Markdown path for a reconciled structured run", async () => {
+        extractStructured.mockResolvedValueOnce(
+          withSelection("reconciled", 99),
+        );
+        await runWithArtifact({});
+        expect(extractRows).not.toHaveBeenCalled();
+        await expectPath("structured", null);
+      });
+    });
 
     it("uses the structured path when the job has a supported artifact", async () => {
       const importedFile = await runWithArtifact({});

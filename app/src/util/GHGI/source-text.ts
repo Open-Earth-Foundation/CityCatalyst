@@ -333,7 +333,8 @@ function matchesPrinted(
 }
 
 /** Markdown separator line under a table header: `| --- | :---: |`. */
-const TABLE_SEPARATOR = /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/;
+export const TABLE_SEPARATOR =
+  /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/;
 
 /** A short line made of a parenthesized phrase: `(kt CO2e)`, `Total (tonnes CO2e)`. */
 function isUnitLine(line: string): boolean {
@@ -405,7 +406,7 @@ export type YearEvidence = {
   leadText: string;
 };
 
-const MIN_YEAR = 1990;
+export const MIN_YEAR = 1990;
 const MAX_YEAR = 2100;
 const PROJECTION_WORDS =
   /target|projection|goal|forecast|scenario|pathway|\bby\s+20\d\d/i;
@@ -471,7 +472,7 @@ function blankGovernedYears(line: string): string {
 }
 
 /** Years named on one caption line, fiscal forms counting for both years. */
-function yearsInLine(line: string): number[] {
+export function yearsInLine(line: string): number[] {
   const years: number[] = [];
   let rest = line;
   // A range with a 4-digit second year is a trend, not the table year.
@@ -543,7 +544,7 @@ export function yearEvidence(
 /** "thousand MT", "thousand mt", "thousand MTCO2e": kt, not an MT or Mt unit. */
 const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
 
-const KILOTONNE_PATTERNS: RegExp[] = [
+export const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
@@ -578,7 +579,7 @@ const KILOGRAM_PATTERNS: RegExp[] = [
 ];
 
 /** A tonne unit: t, tCO2e, tCO2-e, tonnes, tons, metric tonnes (not kt or Mt). */
-const TONNE_UNIT_PATTERNS: RegExp[] = [
+export const TONNE_UNIT_PATTERNS: RegExp[] = [
   /(?<![\w.])t(?:\s*CO(?:2|₂)(?:-?e)?)?\b/,
   /\b(?:metric\s+)?(?:tonnes?|tons?)\b/i,
 ];
@@ -591,12 +592,12 @@ const TONNE_UNIT_PATTERNS: RegExp[] = [
 const PER_PERSON_KG =
   /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?![\p{L}])/giu;
 
-function namesUnit(line: string, patterns: RegExp[]): boolean {
+export function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
 }
 
 /** namesUnit for Mt; "thousand Mt CO2e" names kt, so it is left out. */
-function namesMegatonne(line: string): boolean {
+export function namesMegatonne(line: string): boolean {
   return namesUnit(
     line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
     MEGATONNE_PATTERNS,
@@ -604,7 +605,7 @@ function namesMegatonne(line: string): boolean {
 }
 
 /** namesUnit for kg, with per-person kg mentions left out. */
-function namesKilogram(line: string): boolean {
+export function namesKilogram(line: string): boolean {
   return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
 }
 

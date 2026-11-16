@@ -1,0 +1,230 @@
+{
+  "schema_version": "citycatalyst.structured-document.1",
+  "annotation_mode": "none",
+  "provider": {
+    "name": "mistral",
+    "requested_model": "mistral-ocr-latest",
+    "returned_model": "mistral-ocr-latest",
+    "payload": {}
+  },
+  "document": {
+    "page_count": 5,
+    "pages": [
+      {
+        "page_index": 0,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "# City GHG Inventory 2021",
+        "blocks": [],
+        "tables": [],
+        "images": []
+      },
+      {
+        "page_index": 1,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "",
+        "blocks": [],
+        "tables": [],
+        "images": []
+      },
+      {
+        "page_index": 2,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "",
+        "blocks": [],
+        "tables": [],
+        "images": []
+      },
+      {
+        "page_index": 3,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "Table 5: Stationary energy emissions 2021 (kt CO2e)\n\n[tbl-4.md](tbl-4.md)",
+        "blocks": [
+          {
+            "block_id": "p3-b0",
+            "page_index": 3,
+            "reading_order_index": 0,
+            "provider_type": "caption",
+            "normalized_type": "caption",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "Table 5: Stationary energy emissions 2021 (kt CO2e)",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 1000,
+              "bottom_right_x": 900,
+              "bottom_right_y": 1030
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.7142857142857143,
+              "x1": 0.9,
+              "y1": 0.7357142857142858
+            },
+            "related_image_id": null,
+            "related_table_id": null
+          },
+          {
+            "block_id": "p3-b1",
+            "page_index": 3,
+            "reading_order_index": 1,
+            "provider_type": "table",
+            "normalized_type": "table",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "[tbl-4.md](tbl-4.md)",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 1040,
+              "bottom_right_x": 900,
+              "bottom_right_y": 1380
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.7428571428571429,
+              "x1": 0.9,
+              "y1": 0.9857142857142858
+            },
+            "related_image_id": null,
+            "related_table_id": "tbl-4.md"
+          }
+        ],
+        "tables": [
+          {
+            "table_id": "tbl-4.md",
+            "page_index": 3,
+            "content": "| Sector | CO2 | CH4 |\n| --- | --- | --- |\n| Residential | 512.3 | 1.2 |\n| Commercial | 401.8 | 0.9 |",
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 1040,
+              "bottom_right_x": 900,
+              "bottom_right_y": 1380
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.7428571428571429,
+              "x1": 0.9,
+              "y1": 0.9857142857142858
+            }
+          }
+        ],
+        "images": []
+      },
+      {
+        "page_index": 4,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "[tbl-5.md](tbl-5.md)\n\nSource: city energy records.",
+        "blocks": [
+          {
+            "block_id": "p4-b0",
+            "page_index": 4,
+            "reading_order_index": 0,
+            "provider_type": "table",
+            "normalized_type": "table",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "[tbl-5.md](tbl-5.md)",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 60,
+              "bottom_right_x": 900,
+              "bottom_right_y": 300
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.04285714285714286,
+              "x1": 0.9,
+              "y1": 0.21428571428571427
+            },
+            "related_image_id": null,
+            "related_table_id": "tbl-5.md"
+          },
+          {
+            "block_id": "p4-b1",
+            "page_index": 4,
+            "reading_order_index": 1,
+            "provider_type": "text",
+            "normalized_type": "text",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "Source: city energy records.",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 320,
+              "bottom_right_x": 900,
+              "bottom_right_y": 350
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.22857142857142856,
+              "x1": 0.9,
+              "y1": 0.25
+            },
+            "related_image_id": null,
+            "related_table_id": null
+          }
+        ],
+        "tables": [
+          {
+            "table_id": "tbl-5.md",
+            "page_index": 4,
+            "content": "| Industrial | 830.4 | 2.5 |\n| Total | 1,744.5 | 4.6 |",
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 60,
+              "bottom_right_x": 900,
+              "bottom_right_y": 300
+            },
+            "bbox_norm": {
+              "x0": 0.08,
+              "y0": 0.04285714285714286,
+              "x1": 0.9,
+              "y1": 0.21428571428571427
+            }
+          }
+        ],
+        "images": []
+      }
+    ],
+    "relationships": [
+      {
+        "id": "rel-p3-p3-b1-p3-b0",
+        "type": "caption_of_table",
+        "from_block_id": "p3-b0",
+        "to_block_id": "p3-b1",
+        "page_index": 3,
+        "provenance": "derived",
+        "rule": "nearest_caption_same_page"
+      }
+    ]
+  }
+}

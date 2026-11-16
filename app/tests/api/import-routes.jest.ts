@@ -11,6 +11,7 @@ import {
 import { POST as uploadImportFile } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/route";
 import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/route";
 import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
+import { POST as previewImportRows } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/row-preview/route";
 import { db } from "@/models";
 import assert from "node:assert";
 import { AppSession, Auth } from "@/lib/auth";
@@ -946,6 +947,122 @@ describe("Import Routes API", () => {
             where: { inventoryId: filledInventory.inventoryId },
           }),
         ).toBe(0);
+      });
+    });
+
+    describe("when a PDF row's value is not confirmed on its page", () => {
+      let pdfInventory: Inventory;
+
+      beforeEach(async () => {
+        pdfInventory = await db.models.Inventory.create({
+          inventoryId: randomUUID(),
+          cityId: city.cityId,
+          inventoryName: testInventoryName,
+          year: 2022,
+          totalEmissions: 0,
+          inventoryType: InventoryTypeEnum.GPC_BASIC,
+          globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+        });
+      });
+
+      afterEach(async () => {
+        const where = { inventoryId: pdfInventory.inventoryId };
+        await db.models.ImportedInventoryFile.destroy({ where, force: true });
+        await db.models.InventoryValue.destroy({ where });
+        await db.models.Version.destroy({ where });
+        await db.models.Inventory.destroy({ where });
+      });
+
+      const params = () => ({
+        params: Promise.resolve({
+          city: city.cityId,
+          inventory: pdfInventory.inventoryId,
+        }),
+      });
+
+      it("holds approval until the row is kept", async () => {
+        const importedFile = await db.models.ImportedInventoryFile.create({
+          id: randomUUID(),
+          userId: testUserID,
+          cityId: city.cityId,
+          inventoryId: pdfInventory.inventoryId,
+          fileName: "report.pdf",
+          fileType: "pdf",
+          fileSize: 1,
+          originalFileName: "report.pdf",
+          importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+          data: Buffer.from("%PDF"),
+          validationResults: { errors: [], warnings: [] },
+          mappingConfiguration: {
+            rows: [
+              {
+                year: 2022,
+                sector: "Stationary Energy",
+                subsector: "Residential buildings",
+                category: null,
+                scope: "1",
+                totalCO2e: 436.329,
+                gpcRefNo: "I.1.1",
+                refSource: "document",
+                page: 3,
+                valueCheck: "not_found",
+              },
+            ],
+          },
+        });
+
+        const held = await approveImport(
+          mockRequest({ importedFileId: importedFile.id }),
+          params(),
+        );
+        await expectStatusCode(held, 409);
+        expect((await held.json()).error.code).toBe("import-rows-pending");
+
+        const previewRes = await previewImportRows(mockRequest({}), {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: pdfInventory.inventoryId,
+            importedFileId: importedFile.id,
+          }),
+        });
+        await expectStatusCode(previewRes, 200);
+        const [row] = (await previewRes.json()).data.reviewRows;
+        expect(row).toMatchObject({
+          issue: "value-unconfirmed",
+          page: 3,
+          value: 436.329,
+        });
+
+        const kept = await approveImport(
+          mockRequest({
+            importedFileId: importedFile.id,
+            mappingOverrides: {
+              rowDecisions: {
+                [row.rowIndex]: {
+                  decisionFileId: importedFile.id,
+                  decisionToken: row.decisionToken,
+                  decisionRef: row.suggestedRefNo,
+                  decisionScope: row.scope,
+                  decisionValue: row.value,
+                  reviewDecision: "keep",
+                },
+              },
+            },
+          }),
+          params(),
+        );
+        await expectStatusCode(kept, 202);
+
+        // Let the background import settle before cleanup.
+        for (let attempt = 0; attempt < 50; attempt++) {
+          await importedFile.reload();
+          if (
+            importedFile.importStatus === ImportStatusEnum.COMPLETED ||
+            importedFile.importStatus === ImportStatusEnum.FAILED
+          )
+            break;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
       });
     });
   });

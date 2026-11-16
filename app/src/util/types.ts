@@ -1043,6 +1043,8 @@ export type ImportRowIssue =
   | "direction-unconfirmed"
   | "excluded-reference-unconfirmed"
   | "reference-conflict"
+  | "value-unconfirmed"
+  | "unit-unconfirmed"
   | "skipped-in-review";
 
 export interface ImportRowOutcome {

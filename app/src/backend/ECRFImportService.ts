@@ -101,6 +101,10 @@ export interface ECRFRowReviewData {
   activityClass?: ActivityClass | null;
   scopeSource?: "document" | "inferred" | null;
   originalScope?: string | null;
+  /** `not_found`: the value is not printed on its page. Unset on older imports. */
+  valueCheck?: "not_found" | null;
+  /** `missing`: no unit on a page that names kt, Mt, Gg or kg. Unset on older imports. */
+  unitCheck?: "missing" | null;
 }
 
 export interface ECRFImportResult {
@@ -968,6 +972,8 @@ export default class ECRFImportService {
           directionEvidence: row.directionEvidence ?? null,
           directionEvidenceFound: row.directionEvidenceFound ?? null,
           page: row.page ?? null,
+          valueCheck: row.valueCheck ?? null,
+          unitCheck: row.unitCheck ?? null,
           source: row.source ?? null,
           decision: row.reviewDecision ?? null,
           suggestedRefNo: row.suggestedRefNo ?? null,

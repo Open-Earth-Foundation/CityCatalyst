@@ -328,14 +328,48 @@ describe("CC-1163 stage 1: a reported total is a target only next to its rows", 
           item("Commercial Buildings", "I.2.1", 200),
         ],
       },
-      8: { text: "| Total | 300 |", rows: [totalOf(300)] },
+      // Not a table line: only the previous-page check ties it to its rows.
+      8: { text: "Total 300", rows: [totalOf(300)] },
     });
     const { summary } = await extractInventoryFromDocument(text, {
       targetYear: 2021,
     });
     expect(summary.pageSelection).toBe("reconciled");
     expect(summary.reportedTotals).toEqual([
-      expect.objectContaining({ value: 300, page: 8, rowsNearby: true }),
+      expect.objectContaining({
+        value: 300,
+        page: 8,
+        onTableLine: false,
+        rowsNearby: true,
+      }),
+    ]);
+    expect(targetValues(summary.reportedTotals)).toContain(300);
+  });
+
+  it("total in prose on the page of its rows is a target", async () => {
+    const text = documentOf({
+      7: {
+        // Not a table line: only the same-page check ties it to its rows.
+        text: "| Road | 100 |\n| Rail | 200 |\nTotal 300",
+        rows: [
+          item("Residential Buildings", "I.1.1", 100),
+          item("Commercial Buildings", "I.2.1", 200),
+          totalOf(300),
+        ],
+      },
+      12: { text: "Annex", rows: [] },
+    });
+    const { summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(summary.reportedTotals).toEqual([
+      expect.objectContaining({
+        value: 300,
+        page: 7,
+        onTableLine: false,
+        rowsNearby: true,
+      }),
     ]);
     expect(targetValues(summary.reportedTotals)).toContain(300);
   });

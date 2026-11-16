@@ -77,8 +77,9 @@ function splitRow(line: string): string[] {
 
 /**
  * Reads a Markdown table into a grid of cells. Lines without `|` are skipped
- * and the `| --- |` separator line is not a row. Every row above the first
- * separator is a header row (OCR prints multi-row headers that way); a table
+ * and the first `| --- |` separator line is not a row; a later line of
+ * `---` cells is a body row. Every row above the first separator is a
+ * header row (OCR prints multi-row headers that way); a table
  * without a separator has no header rows.
  */
 export function parseMarkdownTable(
@@ -89,8 +90,10 @@ export function parseMarkdownTable(
   let headerRowCount: number | null = null;
   for (const line of content.split(/\r?\n/)) {
     if (!line.includes("|")) continue;
-    if (TABLE_SEPARATOR.test(line)) {
-      headerRowCount ??= rows.length;
+    // Only the first separator is structural: a later `| --- |` line is a
+    // body row ("n/a" cells), so it keeps its place and later refs stay put.
+    if (headerRowCount == null && TABLE_SEPARATOR.test(line)) {
+      headerRowCount = rows.length;
       continue;
     }
     rows.push(splitRow(line));
@@ -132,7 +135,8 @@ function columnCount(grid: TableCell[][]): number {
  *   `to_block_id` is the table's block (the block whose `related_table_id`
  *   is the table). A table with no such block has no caption or headings.
  * - Headings are up to 2 `heading`/`title` blocks before the table block in
- *   reading order on the same page, nearest last.
+ *   reading order on the same page, after the previous table's block (a
+ *   heading of an earlier table does not attach to later ones), nearest last.
  * - `unitNotes` are the caption, headings and header cells that name a unit
  *   (the unit patterns of `source-text`); `yearNotes` are the years in them,
  *   from 1990 to `currentYear`.
@@ -173,12 +177,25 @@ export function buildTableBundles(
       const ownCaption = tableBlock
         ? (captionByTableBlock.get(tableBlock.block_id) ?? null)
         : null;
+      const sectionStart = tableBlock
+        ? Math.max(
+            -1,
+            ...page.blocks
+              .filter(
+                (block) =>
+                  block.related_table_id != null &&
+                  block.reading_order_index < tableBlock.reading_order_index,
+              )
+              .map((block) => block.reading_order_index),
+          )
+        : -1;
       const headings = tableBlock
         ? page.blocks
             .filter(
               (block) =>
                 (block.normalized_type === "heading" ||
                   block.normalized_type === "title") &&
+                block.reading_order_index > sectionStart &&
                 block.reading_order_index < tableBlock.reading_order_index &&
                 block.content.trim() !== "",
             )

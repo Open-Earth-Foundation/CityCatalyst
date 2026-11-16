@@ -76,6 +76,37 @@ describe("parseMarkdownTable", () => {
     expect(grid[1][1]).toEqual({ ref: "t2:r1:c1", text: "3", header: false });
   });
 
+  it("reads a later separator-like line as a body row", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t4",
+      [
+        "| Sector | CO2 |",
+        "| --- | --- |",
+        "| Energy | 12 |",
+        "| --- | --- |",
+        "| Waste | 3 |",
+      ].join("\n"),
+    );
+    expect(headerRowCount).toBe(1);
+    expect(grid).toHaveLength(4);
+    expect(grid[2].map((cell) => cell.text)).toEqual(["---", "---"]);
+    expect(grid[3][1]).toEqual({ ref: "t4:r3:c1", text: "3", header: false });
+  });
+
+  it("keeps a ragged row short", () => {
+    const { grid } = parseMarkdownTable(
+      "t5",
+      "| Sector | CO2 | CH4 |\n| --- | --- | --- |\n| A | 1 |",
+    );
+    expect(grid[1]).toHaveLength(2);
+    expect(grid[1][1]).toEqual({ ref: "t5:r1:c1", text: "1", header: false });
+  });
+
+  it("reads a row without outer pipes", () => {
+    const { grid } = parseMarkdownTable("t6", "A | 1");
+    expect(grid[0].map((cell) => cell.text)).toEqual(["A", "1"]);
+  });
+
   it("has no header rows without a separator", () => {
     const { grid, headerRowCount } = parseMarkdownTable(
       "t3",
@@ -115,12 +146,24 @@ describe("buildTableBundles", () => {
       tableId: "tbl-3b.md",
       page: 4,
       caption: "Table 4: Waste emissions (t CO2e)",
-      headings: ["## 4. Sector results 2021", "### Waste"],
+      headings: ["### Waste"],
       unitNotes: ["Table 4: Waste emissions (t CO2e)", "tCO2e"],
-      yearNotes: [2021],
+      yearNotes: [],
       continuationOf: null,
     });
     expect(waste.unitNotes.some((note) => /\bkt\b/i.test(note))).toBe(false);
+  });
+
+  it("attaches a heading only to the tables after it, up to the next table", () => {
+    const doc = loadFixture("two-tables-one-page.json");
+    doc.document.pages[3].blocks[3].content = "### Waste 2019 (kt CO2e)";
+    const [energy, waste] = buildTableBundles(doc, CURRENT_YEAR);
+    expect(energy.headings).toEqual(["## 4. Sector results 2021"]);
+    expect(energy.yearNotes).toEqual([2021]);
+    expect(energy.unitNotes).not.toContain("### Waste 2019 (kt CO2e)");
+    expect(waste.headings).toEqual(["### Waste 2019 (kt CO2e)"]);
+    expect(waste.yearNotes).toEqual([2019]);
+    expect(waste.unitNotes).not.toContain("## 4. Sector results 2021");
   });
 
   it("carries the caption and units of a table continued on the next page", () => {

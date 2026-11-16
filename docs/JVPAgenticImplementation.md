@@ -189,9 +189,12 @@ progress permits dashboard working export while the detailed summary loads.
 
 ### Selection toolbar and persisted formatting
 
-Selecting current Draft prose opens a compact CC toolbar: Ask for changes, Font,
-Bold and Italic. There is no link action. Alt+F10 moves keyboard focus into the
-toolbar; native focusgroup is used where supported, with a conditional roving
+Selecting current Draft prose opens a compact CC toolbar: Ask for changes, Bold,
+Italic and Font. There is no link action. Alt+F10 moves keyboard focus into the
+toolbar. Instructions open as a single-row field with an icon submit button;
+scope and keyboard guidance remain available to assistive technology without
+permanent helper text. Escape or an outside click dismisses the toolbar.
+Native focusgroup is used where supported, with a conditional roving
 tabindex fallback elsewhere. Escape closes it without losing or immediately
 recapturing the selected range. Toolbar focus and the instruction field retain a
 captured selection; unchanged background query refreshes do not clear an edit.

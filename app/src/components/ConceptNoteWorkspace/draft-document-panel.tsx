@@ -649,9 +649,7 @@ export function DraftDocumentPanel({
               {t("draft-preview-document-title", { name: noteName })}
             </Text>
             {selectionRunId && (
-              <Text mt={1} fontSize="label.sm" color="content.tertiary">
-                {t("selection-keyboard-hint")}
-              </Text>
+              <Text hidden>{t("selection-keyboard-hint")}</Text>
             )}
           </Box>
 

@@ -8,10 +8,9 @@ import {
   Text,
   Textarea,
   VStack,
-  chakra,
 } from "@chakra-ui/react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { LuBold, LuItalic, LuSparkles, LuX } from "react-icons/lu";
+import { LuArrowUp, LuBold, LuItalic } from "react-icons/lu";
 import {
   NativeSelectField,
   NativeSelectRoot,
@@ -304,9 +303,9 @@ function ChapterSelection({
             bg="base.light"
             border="1px solid"
             borderColor="border.neutral"
-            borderRadius="8px"
+            borderRadius="12px"
             boxShadow="3dp"
-            p={1.5}
+            p={1}
           >
             <HStack
               ref={bar}
@@ -319,7 +318,6 @@ function ChapterSelection({
               flexWrap="nowrap"
               overflowX="auto"
               maxW="100%"
-              py={1}
               css={{
                 scrollbarWidth: "none",
                 "& button, & select": { minWidth: "32px", minHeight: "32px" },
@@ -340,7 +338,6 @@ function ChapterSelection({
                   if (!busy) setAsking((open) => !open);
                 }}
               >
-                <Icon as={LuSparkles} aria-hidden="true" />
                 {t("selection-ask")}
               </Button>
               <Box
@@ -357,26 +354,6 @@ function ChapterSelection({
                 gap={1}
                 flexShrink={0}
               >
-                <NativeSelectRoot size="sm" w="96px">
-                  <NativeSelectField
-                    aria-label={t("selection-font")}
-                    aria-disabled={busy}
-                    value={selection.font}
-                    onChange={(event) => {
-                      if (!busy)
-                        void propose({
-                          font: event.target.value as
-                            "default" | "serif" | "mono",
-                        });
-                    }}
-                  >
-                    <option value="default">
-                      {t("selection-font-default")}
-                    </option>
-                    <option value="serif">{t("selection-font-serif")}</option>
-                    <option value="mono">{t("selection-font-mono")}</option>
-                  </NativeSelectField>
-                </NativeSelectRoot>
                 <Button
                   size="sm"
                   w="32px"
@@ -417,58 +394,53 @@ function ChapterSelection({
                 >
                   <Icon as={LuItalic} aria-hidden="true" />
                 </Button>
+                <NativeSelectRoot size="sm" w="96px">
+                  <NativeSelectField
+                    aria-label={t("selection-font")}
+                    aria-disabled={busy}
+                    value={selection.font}
+                    onChange={(event) => {
+                      if (!busy)
+                        void propose({
+                          font: event.target.value as
+                            "default" | "serif" | "mono",
+                        });
+                    }}
+                  >
+                    <option value="default">
+                      {t("selection-font-default")}
+                    </option>
+                    <option value="serif">{t("selection-font-serif")}</option>
+                    <option value="mono">{t("selection-font-mono")}</option>
+                  </NativeSelectField>
+                </NativeSelectRoot>
               </HStack>
-              <Button
-                variant="ghost"
-                size="sm"
-                w="32px"
-                px={0}
-                flexShrink={0}
-                aria-label={t("close")}
-                title={t("close")}
-                aria-disabled={busy}
-                onClick={() => {
-                  if (!busy) {
-                    suppressCapture.current = true;
-                    setSelection(null);
-                    setAsking(false);
-                  }
-                }}
-              >
-                <Icon as={LuX} aria-hidden="true" />
-              </Button>
             </HStack>
             {asking && (
-              <Box
+              <HStack
                 as="form"
-                p={2}
-                w="360px"
+                p={1}
+                gap={1}
+                w="320px"
                 maxW="100%"
                 onSubmit={(event) => {
                   event.preventDefault();
                   void propose();
                 }}
               >
-                <Text
-                  id={`${id}-hint`}
-                  fontSize="label.sm"
-                  color="content.secondary"
-                  mb={2}
-                >
+                <Text id={`${id}-hint`} hidden>
                   {t("selection-scope-hint")}
                 </Text>
-                <chakra.label
-                  htmlFor={`${id}-instruction`}
-                  fontSize="label.sm"
-                  fontWeight="medium"
-                >
-                  {t("selection-instruction")}
-                </chakra.label>
                 <Textarea
                   id={`${id}-instruction`}
+                  aria-label={t("selection-instruction")}
+                  placeholder={t("selection-instruction")}
                   aria-describedby={`${id}-hint`}
-                  mt={1}
-                  rows={3}
+                  rows={1}
+                  minH="36px"
+                  maxH="120px"
+                  fontSize="13px"
+                  resize="vertical"
                   required
                   maxLength={EDIT_INSTRUCTION_MAX_CHARS}
                   value={instruction}
@@ -476,14 +448,18 @@ function ChapterSelection({
                 />
                 <Button
                   type="submit"
-                  mt={2}
                   size="sm"
+                  w="32px"
+                  px={0}
+                  flexShrink={0}
+                  aria-label={t("selection-propose")}
+                  title={t("selection-propose")}
                   loading={request.isLoading}
                   disabled={busy || !instruction.trim()}
                 >
-                  {t("selection-propose")}
+                  <Icon as={LuArrowUp} aria-hidden="true" />
                 </Button>
-              </Box>
+              </HStack>
             )}
             {error && (
               <Text

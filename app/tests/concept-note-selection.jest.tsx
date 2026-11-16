@@ -386,7 +386,7 @@ it.each(["bold", "font", "italic", "stale"] as const)(
           new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
         ),
       );
-      expect(document.activeElement?.getAttribute("aria-label")).toBe("Font");
+      expect(document.activeElement?.getAttribute("aria-label")).toBe("Bold");
     }
     await act(async () => {
       document.dispatchEvent(

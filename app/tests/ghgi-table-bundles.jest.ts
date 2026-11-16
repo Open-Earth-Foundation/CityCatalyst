@@ -157,6 +157,29 @@ describe("buildTableBundles", () => {
     });
   });
 
+  it("does not continue a table under a heading of its own", () => {
+    const doc = loadFixture("continued-table.json");
+    const page = doc.document.pages[4];
+    for (const block of page.blocks) block.reading_order_index += 1;
+    page.blocks.unshift({
+      ...page.blocks[1],
+      block_id: "p4-bh",
+      reading_order_index: 0,
+      provider_type: "heading",
+      normalized_type: "heading",
+      content: "## Annex B",
+    });
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued).toMatchObject({
+      tableId: "tbl-5.md",
+      headings: ["## Annex B"],
+      continuationOf: null,
+      caption: null,
+      unitNotes: [],
+      yearNotes: [],
+    });
+  });
+
   it("does not continue a table that has its own caption", () => {
     const doc = loadFixture("continued-table.json");
     const page = doc.document.pages[4];

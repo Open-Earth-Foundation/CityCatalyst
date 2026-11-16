@@ -137,7 +137,9 @@ function columnCount(grid: TableCell[][]): number {
  *   (the unit patterns of `source-text`); `yearNotes` are the years in them,
  *   from 1990 to `currentYear`.
  * - The first table on page p+1 continues the last table on page p when it
- *   has no caption and the same column count. It then inherits the caption,
+ *   has no caption, no heading or title block before it on its page (a
+ *   heading starts a new table, as in stage 1) and the same column count.
+ *   It then inherits the caption,
  *   and the previous table's unit and year notes come before its own.
  */
 export function buildTableBundles(
@@ -196,6 +198,7 @@ export function buildTableBundles(
       const continued =
         candidate &&
         ownCaption == null &&
+        headings.length === 0 &&
         grid.length > 0 &&
         columnCount(grid) === columnCount(candidate.grid)
           ? candidate

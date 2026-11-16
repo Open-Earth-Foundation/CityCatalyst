@@ -1574,9 +1574,7 @@ function withTableTargets(
       summary: {
         ...p.result.summary,
         reportedTotals: p.result.summary.reportedTotals.map((total) =>
-          total.sourceCell == null
-            ? total
-            : { ...total, rowsNearby: anyRows },
+          total.sourceCell == null ? total : { ...total, rowsNearby: anyRows },
         ),
       },
     },
@@ -1708,43 +1706,42 @@ export async function extractInventoryFromStructured(
   // get the Markdown page prompt, so totals printed only in prose exist
   // (R31, Masterton).
   const pages: StructuredPage[] = [
-    ...[...tablePages].map(
-      (page): StructuredPage => ({
-        page,
-        kind: "tables",
-        prompt: structuredPagePrompt(doc, bundles, page),
-      }),
-    ),
+    ...[...tablePages].map((page): StructuredPage => ({
+      page,
+      kind: "tables",
+      prompt: structuredPagePrompt(doc, bundles, page),
+    })),
     ...markdownPages
       .filter((p) => !tablePages.has(p.page) && isCandidatePage(p.text))
-      .map((p): StructuredPage => ({ page: p.page, kind: "prose", text: p.text })),
+      .map((p): StructuredPage => ({
+        page: p.page,
+        kind: "prose",
+        text: p.text,
+      })),
   ].sort((a, b) => a.page - b.page);
-  // Defense in depth: the Markdown check above reads only the start of the
-  // document. Each page's text and each table's cells (one per line) are
-  // checked too, before any call.
+  // Defense in depth: the Markdown check above reads only the first 400
+  // characters of the document, and each check reads only the start of its
+  // text. So every piece that goes into a prompt is checked on its own,
+  // before any call: each text block outside the tables of a table page, the
+  // Markdown of each prose page, and each table's caption, headings, unit
+  // notes and cells (I4).
   for (const page of pages) {
-    rejectPromptInjection(
-      page.kind === "tables"
-        ? pageTextOutsideTables(doc, page.page)
-        : page.text,
-    );
+    if (page.kind === "prose") rejectPromptInjection(page.text);
   }
+  const tablePageBlocks = doc.document.pages
+    .filter((p) => tablePages.has(p.page_index + 1))
+    .flatMap((p) => p.blocks)
+    .filter((block) => block.related_table_id == null);
+  for (const block of tablePageBlocks) rejectPromptInjection(block.content);
   for (const bundle of bundles) {
-    // Caption, headings and unit notes go into the prompt too (`bundleText`);
-    // each is checked on its own so a prefix at its start is caught.
-    for (const note of [
+    for (const text of [
       ...(bundle.caption ? [bundle.caption] : []),
       ...bundle.headings,
       ...bundle.unitNotes,
+      ...bundle.grid.flat().map((cell) => cell.text),
     ]) {
-      rejectPromptInjection(note);
+      rejectPromptInjection(text);
     }
-    rejectPromptInjection(
-      bundle.grid
-        .flat()
-        .map((cell) => cell.text)
-        .join("\n"),
-    );
   }
   logger.info(
     {
@@ -1778,7 +1775,12 @@ export async function extractInventoryFromStructured(
         // As the Markdown path reads a page, with its stage 1 checks (R21).
         return finalizeRows(
           normalizeExtractedRows(
-            await extractSegment(item.text, yearInstruction, false, schemaState),
+            await extractSegment(
+              item.text,
+              yearInstruction,
+              false,
+              schemaState,
+            ),
           ).map((row) => ({ ...row, page })),
           year,
           {

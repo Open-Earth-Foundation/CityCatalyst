@@ -735,7 +735,9 @@ describe("PdfOcrJob queue", () => {
         else process.env.GHGI_STRUCTURED_EXTRACTION = flag;
         const importedFile = await runWithArtifact({});
         expect(extractStructured).not.toHaveBeenCalled();
-        expect(getTextFile).not.toHaveBeenCalledWith("document.structured.json");
+        expect(getTextFile).not.toHaveBeenCalledWith(
+          "document.structured.json",
+        );
         expect(extractRows).toHaveBeenCalledWith(
           markdown,
           expect.objectContaining({ targetYear: 2024 }),
@@ -806,7 +808,9 @@ describe("PdfOcrJob queue", () => {
       });
 
       it("does not run the Markdown path for a reconciled structured run", async () => {
-        extractStructured.mockResolvedValueOnce(withSelection("reconciled", 99));
+        extractStructured.mockResolvedValueOnce(
+          withSelection("reconciled", 99),
+        );
         await runWithArtifact({});
         expect(extractRows).not.toHaveBeenCalled();
         await expectPath("structured", null);

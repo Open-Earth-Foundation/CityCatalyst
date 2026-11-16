@@ -4,7 +4,17 @@ import { env } from "@/lib/runtime-env";
 // Only import and initialize Highlight if not in test environment
 let H: typeof HighlightNextServer.H | null = null;
 
-if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
+// HIGHLIGHT_DISABLED=true turns Highlight off for local runs only. It is ignored
+// in production, so a stray variable cannot disable monitoring on a deployment.
+const highlightDisabled =
+  process.env.HIGHLIGHT_DISABLED === "true" &&
+  process.env.NODE_ENV !== "production";
+
+if (
+  process.env.NODE_ENV !== "test" &&
+  !highlightDisabled &&
+  typeof window === "undefined"
+) {
   try {
     const HighlightNext = await import("@highlight-run/next/server");
     H = HighlightNext.H;

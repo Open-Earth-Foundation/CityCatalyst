@@ -27,6 +27,7 @@
     "reconciliation:apply-rollback": "tsx validation/native-input-catalog-reconciliation/run-apply-and-rollback.ts",
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "db:gen-seed": "sequelize-cli seed:generate --name",
+    "benchmark:pdf": "tsx scripts/pdf-benchmark.ts",
     "sync-catalogue": "tsx scripts/catalogue-sync.ts",
     "hiap-catalog-backfill": "tsx scripts/hiap-catalog-backfill.ts",
     "native-input-catalog-scope-backfill": "tsx scripts/native-input-catalog-scope-backfill.ts",

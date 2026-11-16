@@ -1171,6 +1171,7 @@ export default function GhgiImportWizard({
                 >
                   <InventoryMappingStep
                     t={t}
+                    lng={lng}
                     cityId={cityId}
                     cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
@@ -1215,6 +1216,7 @@ export default function GhgiImportWizard({
                         <>
                           <ImportReviewRows
                             t={t}
+                            lng={lng}
                             fileId={importedFileId}
                             rows={rowPreview?.reviewRows ?? []}
                             onDecide={handleRowDecision}

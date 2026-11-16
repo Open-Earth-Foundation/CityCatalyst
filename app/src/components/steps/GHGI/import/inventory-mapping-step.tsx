@@ -34,6 +34,7 @@ const EMISSION_FACTOR_KEYS = new Set([
 
 interface InventoryMappingStepProps {
   t: TFunction;
+  lng: string;
   cityId: string;
   cityName?: string;
   inventoryId: string;
@@ -48,6 +49,7 @@ interface InventoryMappingStepProps {
 
 export default function InventoryMappingStep({
   t,
+  lng,
   cityId,
   cityName,
   inventoryId,
@@ -246,6 +248,7 @@ export default function InventoryMappingStep({
       {canContinue && (
         <ImportRowIssues
           t={t}
+          lng={lng}
           cityId={cityId}
           inventoryId={inventoryId}
           importedFileId={importedFileId}

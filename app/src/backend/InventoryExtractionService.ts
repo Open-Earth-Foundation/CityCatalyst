@@ -24,9 +24,11 @@ import {
   detectNumberStyle,
   isValueInNumbers,
   numbersInText,
+  numbersOnTableLines,
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  namesSmallUnit,
   pageScaleEvidence,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
@@ -260,6 +262,17 @@ export type ExtractedRow = {
   directionEvidenceFound?: boolean | null;
   /** Page of the extracted text, when extraction ran page by page. */
   page?: number | null;
+  /**
+   * `not_found`: the model's raw totalCO2e (before the unit multiplier) is not
+   * printed in the row's source text, exactly or with a scale the page's unit
+   * captions allow. The row is kept and goes to review.
+   */
+  valueCheck?: "not_found" | null;
+  /**
+   * `missing`: the row has no unit on a page whose captions name kt, Mt, Gg or
+   * kg. It is kept as tonnes, not rescaled, and goes to review.
+   */
+  unitCheck?: "missing" | null;
   /** User decision on a row held for review (`mappingConfiguration.overrides`). */
   reviewDecision?: "keep" | "reclassify" | "skip" | null;
   /** Reference the model suggested, kept when the user chose another one. */
@@ -2063,7 +2076,11 @@ function repeatKey(row: ExtractedRow): string {
   ].join("\t");
 }
 
-/** The text the model read: one page, or the whole document on the chunk path. */
+/**
+ * The text the model read: one page, or the whole document on the chunk path.
+ * A page allows the scales its unit captions justify (`pageScaleEvidence`) in
+ * the in-text checks; a document allows exact matches only.
+ */
 export type FinalizeSource = { text: string; kind: "page" | "document" };
 
 export type FinalizeOptions = {
@@ -2074,7 +2091,9 @@ export type FinalizeOptions = {
   deferYearAssumption?: boolean;
   /**
    * Source text of the rows. When set, each reported total records whether its
-   * value is printed there (`inText`).
+   * value is printed there (`inText`; on a page also `page` and `onTableLine`),
+   * and a line item whose raw value is not printed there gets
+   * `valueCheck: "not_found"`.
    */
   source?: FinalizeSource;
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
@@ -2085,6 +2104,10 @@ export type FinalizeOptions = {
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped;
+ *   unit-less rows on a kt/Mt/kg page are kept and marked (`unitCheck`), and
+ *   unit-less totals there are dropped;
+ * - with a source, line items whose value is not printed there are kept and
+ *   marked (`valueCheck`);
  * - with a target year, rows of another year or without a year are dropped when
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
@@ -2099,8 +2122,8 @@ export function finalizeExtractedRows(
 
 /**
  * finalizeExtractedRows, plus `evidenceDropped`: true when page evidence removed
- * rows, either a caption year relabeled at least one row or total, or a row
- * without a unit was dropped on a kt or Mt page. The chunk path cannot see that
+ * or marked rows: a caption year relabeled at least one row or total, or a row
+ * without a unit was found on a kt, Mt or kg page. The chunk path cannot see that
  * evidence, so such a page must not be re-extracted by chunks.
  */
 function finalizeRows(
@@ -2155,9 +2178,13 @@ function finalizeRows(
   const converted: ExtractedRow[] = [];
   const source = options?.source;
   // Every number printed in the source, read once for all the in-text checks.
-  const sourceNumbers = source
-    ? numbersInText(source.text, detectNumberStyle(source.text))
-    : [];
+  const sourceStyle = source ? detectNumberStyle(source.text) : "unknown";
+  const sourceNumbers = source ? numbersInText(source.text, sourceStyle) : [];
+  // Numbers printed on Markdown table lines of a page, for `onTableLine`.
+  const tableNumbers =
+    source?.kind === "page"
+      ? numbersOnTableLines(source.text, sourceStyle)
+      : [];
   // Scales the page's captions justify; a chunk has no page and allows none.
   const sourceScales =
     source?.kind === "page" ? pageScaleEvidence(source.text) : [];
@@ -2169,7 +2196,7 @@ function finalizeRows(
     label: string,
     value: number,
     page: number | null | undefined,
-  ): { inText?: boolean } => {
+  ): Pick<ReportedTotal, "inText" | "page" | "onTableLine"> => {
     if (!source || raw == null) return {};
     const found = isValueInNumbers(raw, sourceNumbers, sourceScales);
     if (!found) {
@@ -2178,23 +2205,29 @@ function finalizeRows(
         "Reported total not found in source text",
       );
     }
-    return { inText: found };
+    if (source.kind !== "page") return { inText: found };
+    return {
+      inText: found,
+      page: page ?? null,
+      onTableLine: isValueInNumbers(raw, tableNumbers, sourceScales),
+    };
   };
 
-  // On a page whose captions name kt or Mt, a row without a unit is unknown,
-  // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
-  const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
+  // On a page whose captions name kt, Mt, Gg or kg, a row without a unit may
+  // be in that unit, not tonnes. Line items are kept as tonnes and marked
+  // `unitCheck: "missing"` for review; totals are dropped, since a total in an
+  // unknown unit confirms nothing.
+  const unitUnclear =
+    source?.kind === "page" &&
+    (namesLargeUnit(source.text) || namesSmallUnit(source.text));
 
   for (const row of rows) {
     // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
       (v) => v != null,
     );
-    if (unitRequired && row.unit == null && hasAmount) {
-      evidenceDropped = true;
-      drop("unsupported_unit");
-      continue;
-    }
+    const unitMissing = unitUnclear && row.unit == null && hasAmount;
+    if (unitMissing) evidenceDropped = true;
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
@@ -2226,6 +2259,10 @@ function finalizeRows(
         : row.rowType;
 
     if (rowType === "subtotal" || rowType === "total") {
+      if (unitMissing) {
+        drop("unsupported_unit");
+        continue;
+      }
       drop("subtotal_or_total");
       if (
         scaled.totalCO2e != null &&
@@ -2248,6 +2285,16 @@ function finalizeRows(
         });
       }
       continue;
+    }
+    if (unitMissing) scaled.unitCheck = "missing";
+    // Each line item's raw value must be printed in its source text, with the
+    // scales the page's captions allow; otherwise it is kept for review.
+    if (
+      source &&
+      row.totalCO2e != null &&
+      !isValueInNumbers(row.totalCO2e, sourceNumbers, sourceScales)
+    ) {
+      scaled.valueCheck = "not_found";
     }
     rawValues.set(scaled, row.totalCO2e ?? null);
     converted.push(scaled);
@@ -2281,6 +2328,9 @@ function finalizeRows(
   const hiddenTotals = findHiddenRowTotals(yearFiltered);
   for (const row of hiddenTotals) {
     drop("subtotal_or_total");
+    // Like a printed total without a unit, a sum of unit-less rows on such a
+    // page confirms nothing: it is no target.
+    if (row.unitCheck === "missing") continue;
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
       const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
       const value = row.totalCO2e as number;

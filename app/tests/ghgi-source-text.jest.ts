@@ -3,6 +3,7 @@ import {
   isValueInText,
   isValueInNumbers,
   numbersInText,
+  numbersOnTableLines,
   parseNumberString,
   captionLines,
   tableCaptionLines,
@@ -406,6 +407,30 @@ describe("scales from unit evidence", () => {
     const text = "2.145.243.596";
     expect(isValueInText(2145243.596, text, "european", [0.001])).toBe(true);
     expect(isValueInText(2145243.596, text, "european")).toBe(false);
+  });
+
+  it("does not read a per-person kg header as kg evidence", () => {
+    for (const header of [
+      "| Sector | t CO2e | kg/capita |\n| --- | --- | --- |",
+      "Table 5: Emissions per capita (kg CO2e/capita)",
+      "Table 5: Emissions (kg per capita)",
+      "Table 5: Emissions (kg per person)",
+      "Tabla 5: Emisiones (kg per cápita)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+    expect(
+      pageScaleEvidence("Table 5: Emissions (kg CO2e) and kg/capita"),
+    ).toEqual([0.001]);
+  });
+});
+
+describe("numbersOnTableLines", () => {
+  it("reads numbers only on lines containing |", () => {
+    const text = "Total emissions were 300 t.\n| Total | 1,200 |\n";
+    expect(numbersOnTableLines(text, "english").map((n) => n.value)).toEqual([
+      1200,
+    ]);
   });
 });
 

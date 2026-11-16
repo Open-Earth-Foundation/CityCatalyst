@@ -381,13 +381,16 @@ describe("CC-1163 check 3: missing unit", () => {
   const body =
     "Residential buildings 3,000,000\nOn-road 2,000,000\nTOTAL 5,000,000\n";
 
-  it("drops unitless rows on a kt page", () => {
+  it("keeps and marks unitless rows on a kt page, drops the unitless total", () => {
     const rows = noUnitRows();
     const result = finalizeExtractedRows(rows, 2021, {
       source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "page" },
     });
-    expect(result.rows).toHaveLength(0);
-    expect(result.summary.droppedRows.unsupported_unit).toBe(rows.length);
+    expect(result.rows.map((r) => [r.totalCO2e, r.unitCheck])).toEqual([
+      [3000000, "missing"],
+      [2000000, "missing"],
+    ]);
+    expect(result.summary.droppedRows.unsupported_unit).toBe(1);
     expect(result.summary.reportedTotals).toHaveLength(0);
     expect(extractionReviewNotes(result.summary).droppedReasons).toContain(
       "unsupported_unit",
@@ -468,7 +471,7 @@ describe("CC-1163 page evidence survives the chunk fallback", () => {
     "<!-- page: 2 -->\nNotes only.\n";
 
   it.each(["kt CO2e", "ktCO₂e"])(
-    "kt page (%s) with unitless rows: nothing imported as tonnes",
+    "kt page (%s) with unitless rows: rows held for review, not trusted as tonnes",
     async (unit) => {
       mockRows(ktRows(null));
       const text =
@@ -478,7 +481,10 @@ describe("CC-1163 page evidence survives the chunk fallback", () => {
       const { rows, summary } = await extractInventoryFromDocument(text, {
         targetYear: 2021,
       });
-      expect(rows).toEqual([]);
+      expect(rows.map((r) => [r.totalCO2e, r.unitCheck])).toEqual([
+        [6000.2, "missing"],
+        [3559, "missing"],
+      ]);
       expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
       expect(extractionReviewNotes(summary).droppedReasons).toContain(
         "unsupported_unit",

@@ -191,6 +191,21 @@ export function numbersInText(
 }
 
 /**
+ * numbersInText restricted to lines containing `|`: the numbers printed in
+ * Markdown tables, not in prose.
+ */
+export function numbersOnTableLines(
+  text: string,
+  style: NumberStyle,
+): { value: number; step: number }[] {
+  const tableText = text
+    .split(/\r?\n/)
+    .filter((line) => line.includes("|"))
+    .join("\n");
+  return numbersInText(tableText, style);
+}
+
+/**
  * A factor the model may apply to a printed figure to get tonnes: ×1000 for kt
  * or Gg, ×1,000,000 for Mt, ×0.001 for kg (Santiago 2022 prints kg). A scale
  * applies only when the page names its unit: see `pageScaleEvidence`.
@@ -492,22 +507,37 @@ const TONNE_UNIT_PATTERNS: RegExp[] = [
   /\b(?:metric\s+)?(?:tonnes?|tons?)\b/i,
 ];
 
+/**
+ * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`):
+ * a column of an emissions-per-capita table, not the unit of the emissions.
+ */
+const PER_PERSON_KG =
+  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant)(?![\p{L}])/giu;
+
 function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
 }
 
+/** namesUnit for kg, with per-person kg mentions left out. */
+function namesKilogram(line: string): boolean {
+  return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
+}
+
 /**
- * True when a caption line names a unit matching `patterns`. A Table caption,
+ * True when `names` finds the unit on a caption line. A Table caption,
  * heading or table header row counts on its own. A Figure caption or a short unit
  * line counts only when no Table caption, heading or header row names a tonne
  * unit: a figure in kt beside a table in tonnes leaves the table in tonnes.
  * Prose is ignored, so "about 3 kt of waste" does not count.
  */
-function captionsNameUnit(text: string, patterns: RegExp[]): boolean {
+function captionsNameUnit(
+  text: string,
+  names: (line: string) => boolean,
+): boolean {
   const lines = classifyCaptionLines(text);
   const tableLines = lines.filter((l) => l.table).map((l) => l.text);
-  if (tableLines.some((line) => namesUnit(line, patterns))) return true;
-  const other = lines.some((l) => !l.table && namesUnit(l.text, patterns));
+  if (tableLines.some(names)) return true;
+  const other = lines.some((l) => !l.table && names(l.text));
   return (
     other && !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
   );
@@ -518,12 +548,15 @@ function captionsNameUnit(text: string, patterns: RegExp[]): boolean {
  * line (see `captionsNameUnit` for the line rules).
  */
 export function namesLargeUnit(text: string): boolean {
-  return captionsNameUnit(text, LARGE_UNIT_PATTERNS);
+  return captionsNameUnit(text, (line) => namesUnit(line, LARGE_UNIT_PATTERNS));
 }
 
-/** True when the page names kg on a caption line, with the rules of `namesLargeUnit`. */
+/**
+ * True when the page names kg on a caption line, with the rules of
+ * `namesLargeUnit`. A per-person kg (`kg/capita`, `kg per person`) does not count.
+ */
 export function namesSmallUnit(text: string): boolean {
-  return captionsNameUnit(text, KILOGRAM_PATTERNS);
+  return captionsNameUnit(text, namesKilogram);
 }
 
 /**
@@ -533,8 +566,12 @@ export function namesSmallUnit(text: string): boolean {
  */
 export function pageScaleEvidence(text: string): Scale[] {
   const scales: Scale[] = [];
-  if (captionsNameUnit(text, KILOTONNE_PATTERNS)) scales.push(1000);
-  if (captionsNameUnit(text, MEGATONNE_PATTERNS)) scales.push(1000000);
+  if (captionsNameUnit(text, (line) => namesUnit(line, KILOTONNE_PATTERNS))) {
+    scales.push(1000);
+  }
+  if (captionsNameUnit(text, (line) => namesUnit(line, MEGATONNE_PATTERNS))) {
+    scales.push(1000000);
+  }
   if (namesSmallUnit(text)) scales.push(0.001);
   return scales;
 }

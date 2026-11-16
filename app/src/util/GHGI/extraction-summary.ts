@@ -19,6 +19,19 @@ export type ReportedTotal = {
    * summaries stored before this check and when no source text was given.
    */
   inText?: boolean;
+  /** Page the total was read from, when extraction ran page by page. */
+  page?: number | null;
+  /**
+   * True when the value is printed on a Markdown table line (a line with `|`) of
+   * its source text. Missing when no page source was given.
+   */
+  onTableLine?: boolean;
+  /**
+   * False when no kept line item of the target year is near the total (on its
+   * page, on the page before, or, for a total on a table line, on any page): it
+   * is no target. Set only on the page path.
+   */
+  rowsNearby?: boolean;
 };
 
 export type DroppedRowReason =

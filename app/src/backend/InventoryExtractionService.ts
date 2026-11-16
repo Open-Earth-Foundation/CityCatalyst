@@ -2709,11 +2709,22 @@ function finalizeRows(
     if (unitMissing) scaled.unitCheck = "missing";
     // Each line item's raw value (as printed, see rawTotal) must be printed in
     // its source text, with the scales the page's captions allow; otherwise it
-    // is kept for review.
+    // is kept for review. A number that reads two ways (`numberCheck`) is found
+    // under either reading, or as the model read it: the number card, not this
+    // check, decides the reading, and the page may be parsed in the other one.
+    const candidates = [rawTotal];
+    if (scaled.numberCheck && scaled.totalCO2eText != null) {
+      candidates.push(
+        row.totalCO2e,
+        parseNumberString(scaled.totalCO2eText, "english"),
+        parseNumberString(scaled.totalCO2eText, "european"),
+      );
+    }
+    const printed = candidates.filter((v): v is number => v != null);
     if (
       source &&
-      rawTotal != null &&
-      !isValueInNumbers(rawTotal, sourceNumbers, sourceScales)
+      printed.length > 0 &&
+      !printed.some((v) => isValueInNumbers(v, sourceNumbers, sourceScales))
     ) {
       scaled.valueCheck = "not_found";
     }

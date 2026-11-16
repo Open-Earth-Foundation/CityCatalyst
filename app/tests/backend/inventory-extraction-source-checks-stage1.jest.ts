@@ -24,7 +24,8 @@ const {
   finalizeExtractedRows,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
-const { reconciliationTargets } = await import("@/util/GHGI/extraction-summary");
+const { reconciliationTargets } =
+  await import("@/util/GHGI/extraction-summary");
 
 beforeEach(() => {
   complete.mockReset();
@@ -251,7 +252,9 @@ function documentOf(
     return { content: JSON.stringify({ rows }) };
   });
   return entries
-    .map(([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`)
+    .map(
+      ([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`,
+    )
     .join("");
 }
 
@@ -451,5 +454,43 @@ describe("CC-1163 stage 1: a reported total is a target only next to its rows", 
       9559215,
     );
     expect(selected.summary.pageSelection).toBe("fallback");
+  });
+});
+
+describe("CC-1163 stage 1 with source checks: ambiguous numbers and MT", () => {
+  // The document style is undetected; this page alone reads european.
+  const europeanPage = {
+    ...page("| Other | 1.234,5 |\n| Natural gas | 6.600 |"),
+    documentStyle: "unknown" as const,
+  };
+
+  it.each([6.6, 6600])(
+    "a value printed as 6.600 is found under either reading (model value %s)",
+    (value) => {
+      const result = finalizeExtractedRows(
+        [lineItem(value, { category: "Natural gas", totalCO2eText: "6.600" })],
+        2021,
+        europeanPage,
+      );
+      expect(result.rows).toHaveLength(1);
+      expect(result.rows[0].numberCheck).toBe(true);
+      expect(result.rows[0].valueCheck).toBeUndefined();
+    },
+  );
+
+  it("an MT row on a kt page is an MT check, not a missing unit", async () => {
+    const result = finalizeExtractedRows(
+      [lineItem(1234, { unit: "MT" })],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].unitCheck).toBe("MT");
+    const { reviewIssue } = await import("@/backend/ImportRowPreviewService");
+    const row = {
+      gpcRefNo: "II.1.1",
+      review: { refSource: "document", unitCheck: result.rows[0].unitCheck },
+    } as unknown as Parameters<typeof reviewIssue>[0];
+    expect(reviewIssue(row)).not.toBe("unit-unconfirmed");
   });
 });

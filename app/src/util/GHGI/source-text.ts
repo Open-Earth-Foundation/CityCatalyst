@@ -252,11 +252,36 @@ export function isValueInNumbers(
   numbers: { value: number; step: number }[],
   scales: readonly Scale[] = [],
 ): boolean {
+  return matchesPrinted(raw, numbers, scales, MIN_SCALED_DIGITS);
+}
+
+/**
+ * isValueInNumbers for a line item: a scaled match needs no minimum of
+ * significant digits, since `scales` come from the page's own unit evidence
+ * (`pageScaleEvidence`, or a previous page's through `inheritedPageScales`).
+ * `80.3` under a "thousand MT CO2e" caption matches 80,300 t. Without scales
+ * only an unscaled match counts, as before. Reported totals keep
+ * isValueInNumbers and its 4-digit guard.
+ */
+export function isLineItemValueInNumbers(
+  raw: number,
+  numbers: { value: number; step: number }[],
+  scales: readonly Scale[] = [],
+): boolean {
+  return matchesPrinted(raw, numbers, scales, 0);
+}
+
+function matchesPrinted(
+  raw: number,
+  numbers: { value: number; step: number }[],
+  scales: readonly Scale[],
+  minScaledDigits: number,
+): boolean {
   return numbers.some(
     ({ value, step }) =>
       Math.sign(raw) * Math.sign(value) >= 0 &&
       (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
-        (significantDigits(Math.abs(value), step) >= MIN_SCALED_DIGITS &&
+        (significantDigits(Math.abs(value), step) >= minScaledDigits &&
           scales.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
 }
@@ -469,12 +494,17 @@ export function yearEvidence(
   return { kind: "none", years, leadText: "" };
 }
 
+/** "thousand MT", "thousand mt", "thousand MTCO2e": kt, not an MT or Mt unit. */
+const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
+
 const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  // "thousand MT CO2e" (Phoenix 2022): MT is metric tonnes, so this is kt.
+  THOUSAND_MT,
   /\bGg\b/,
   /\bgigagrams?\b/i,
 ];
@@ -519,6 +549,14 @@ function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
 }
 
+/** namesUnit for Mt; "thousand Mt CO2e" names kt, so it is left out. */
+function namesMegatonne(line: string): boolean {
+  return namesUnit(
+    line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
+    MEGATONNE_PATTERNS,
+  );
+}
+
 /** namesUnit for kg, with per-person kg mentions left out. */
 function namesKilogram(line: string): boolean {
   return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
@@ -561,18 +599,64 @@ export function namesSmallUnit(text: string): boolean {
 }
 
 /**
- * The scales the page's captions justify: 1000 for kt or Gg, 1,000,000 for Mt,
- * 0.001 for kg. Empty when no caption names a non-tonne unit; the caller passes
- * no scales for text without a page (the chunk path).
+ * The scales the page's captions justify: 1000 for kt or Gg (also "thousand
+ * tonnes" and "thousand MT", in any case), 1,000,000 for Mt, 0.001 for kg.
+ * "thousand Mt CO2e" is kt only. Empty when no caption names a non-tonne unit;
+ * the caller passes no scales for text without a page (the chunk path). For a
+ * page continuing a table, see `inheritedPageScales`.
  */
 export function pageScaleEvidence(text: string): Scale[] {
   const scales: Scale[] = [];
   if (captionsNameUnit(text, (line) => namesUnit(line, KILOTONNE_PATTERNS))) {
     scales.push(1000);
   }
-  if (captionsNameUnit(text, (line) => namesUnit(line, MEGATONNE_PATTERNS))) {
+  if (captionsNameUnit(text, namesMegatonne)) {
     scales.push(1000000);
   }
   if (namesSmallUnit(text)) scales.push(0.001);
   return scales;
+}
+
+/**
+ * True when a caption line of the page names any emissions unit: tonnes, kt,
+ * Mt, Gg or kg (a per-person kg does not count). Such a page has unit evidence
+ * of its own and inherits none.
+ */
+function hasOwnUnitCaption(text: string): boolean {
+  return classifyCaptionLines(text).some(
+    ({ text: line }) =>
+      namesUnit(line, LARGE_UNIT_PATTERNS) ||
+      namesKilogram(line) ||
+      namesUnit(line, TONNE_UNIT_PATTERNS),
+  );
+}
+
+/**
+ * Scales each page inherits from a table continued from earlier pages, keyed
+ * by page number. A page with no unit caption of its own gets the evidence of
+ * page p-1: that page's `pageScaleEvidence`, or, when p-1 has no unit caption
+ * either, what p-1 inherited. The chain runs only across consecutive page
+ * numbers with no unit caption; it stops at a missing page and at any page
+ * naming a unit, a tonne caption included. A page with its own unit caption
+ * inherits nothing (`[]`). Santiago 2022: the `TOTAL (KgCO2e)` header on p20
+ * covers p21 and p22. Pass every page of the document in order, not only the
+ * candidate pages, so a continuation page in between is not skipped.
+ */
+export function inheritedPageScales(
+  pages: readonly { page: number; text: string }[],
+): Map<number, Scale[]> {
+  const inherited = new Map<number, Scale[]>();
+  // Evidence each page passes on to the next: its own, or what it inherited.
+  const passedOn = new Map<number, Scale[]>();
+  for (const { page, text } of pages) {
+    if (hasOwnUnitCaption(text)) {
+      inherited.set(page, []);
+      passedOn.set(page, pageScaleEvidence(text));
+    } else {
+      const fromPrevious = passedOn.get(page - 1) ?? [];
+      inherited.set(page, fromPrevious);
+      passedOn.set(page, fromPrevious);
+    }
+  }
+  return inherited;
 }

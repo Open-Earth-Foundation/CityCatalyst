@@ -22,6 +22,8 @@ import {
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
+  inheritedPageScales,
+  isLineItemValueInNumbers,
   isValueInNumbers,
   numbersInText,
   numbersOnTableLines,
@@ -31,6 +33,7 @@ import {
   namesSmallUnit,
   pageScaleEvidence,
   type NumberStyle,
+  type Scale,
 } from "@/util/GHGI/source-text";
 import {
   RECONCILIATION_TOLERANCE,
@@ -1058,9 +1061,11 @@ async function extractRowsFromDocument(
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
-  const pages = splitDocumentPages(documentContent).filter((p) =>
-    isCandidatePage(p.text),
-  );
+  const allPages = splitDocumentPages(documentContent);
+  const pages = allPages.filter((p) => isCandidatePage(p.text));
+  // Unit evidence of a table continued from previous pages, read from the page
+  // text of every page before the concurrent page calls.
+  const inheritedScales = inheritedPageScales(allPages);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1091,6 +1096,7 @@ async function extractRowsFromDocument(
             {
               deferYearAssumption: true,
               source: { text: page.text, kind: "page" },
+              inheritedScales: inheritedScales.get(page.page) ?? [],
             },
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
@@ -2102,8 +2108,9 @@ function repeatKey(row: ExtractedRow): string {
 
 /**
  * The text the model read: one page, or the whole document on the chunk path.
- * A page allows the scales its unit captions justify (`pageScaleEvidence`) in
- * the in-text checks; a document allows exact matches only.
+ * A page allows the scales its unit captions justify (`pageScaleEvidence`),
+ * plus `FinalizeOptions.inheritedScales`, in the in-text checks; a document
+ * allows exact matches only.
  */
 export type FinalizeSource = { text: string; kind: "page" | "document" };
 
@@ -2122,6 +2129,12 @@ export type FinalizeOptions = {
   source?: FinalizeSource;
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
   currentYear?: number;
+  /**
+   * Scales a page inherits from a table continued from previous pages
+   * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
+   * in-text checks. Ignored without a page source.
+   */
+  inheritedScales?: readonly Scale[];
 };
 
 /**
@@ -2142,6 +2155,15 @@ export function finalizeExtractedRows(
   options?: FinalizeOptions,
 ): ExtractionResult {
   return finalizeRows(inputRows, targetYear, options).result;
+}
+
+/** A page's own scale evidence plus the scales it inherits (`inheritedScales`). */
+function pageScales(text: string, options?: FinalizeOptions): Scale[] {
+  const scales = pageScaleEvidence(text);
+  for (const scale of options?.inheritedScales ?? []) {
+    if (!scales.includes(scale)) scales.push(scale);
+  }
+  return scales;
 }
 
 /**
@@ -2173,7 +2195,7 @@ function finalizeRows(
       const relabel = evidence.years[0];
       // A table continued from the previous page sits above the other year's
       // caption: a row whose value is printed there keeps its year.
-      const leadScales = pageScaleEvidence(options.source.text);
+      const leadScales = pageScales(options.source.text, options);
       const leadNumbers = numbersInText(
         evidence.leadText,
         detectNumberStyle(options.source.text),
@@ -2209,9 +2231,10 @@ function finalizeRows(
     source?.kind === "page"
       ? numbersOnTableLines(source.text, sourceStyle)
       : [];
-  // Scales the page's captions justify; a chunk has no page and allows none.
+  // Scales the page's captions justify, or a previous page's for a continued
+  // table; a chunk has no page and allows none.
   const sourceScales =
-    source?.kind === "page" ? pageScaleEvidence(source.text) : [];
+    source?.kind === "page" ? pageScales(source.text, options) : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2313,11 +2336,12 @@ function finalizeRows(
     }
     if (unitMissing) scaled.unitCheck = "missing";
     // Each line item's raw value must be printed in its source text, with the
-    // scales the page's captions allow; otherwise it is kept for review.
+    // scales the page's captions allow; otherwise it is kept for review. With
+    // that evidence a short figure counts too (`80.3` kt is 80,300 t).
     if (
       source &&
       row.totalCO2e != null &&
-      !isValueInNumbers(row.totalCO2e, sourceNumbers, sourceScales)
+      !isLineItemValueInNumbers(row.totalCO2e, sourceNumbers, sourceScales)
     ) {
       scaled.valueCheck = "not_found";
     }

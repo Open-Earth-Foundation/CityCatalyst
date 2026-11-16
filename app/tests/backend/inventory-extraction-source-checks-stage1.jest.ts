@@ -24,7 +24,8 @@ const {
   finalizeExtractedRows,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
-const { reconciliationTargets } = await import("@/util/GHGI/extraction-summary");
+const { reconciliationTargets } =
+  await import("@/util/GHGI/extraction-summary");
 
 beforeEach(() => {
   complete.mockReset();
@@ -251,7 +252,9 @@ function documentOf(
     return { content: JSON.stringify({ rows }) };
   });
   return entries
-    .map(([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`)
+    .map(
+      ([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`,
+    )
     .join("");
 }
 
@@ -451,5 +454,94 @@ describe("CC-1163 stage 1: a reported total is a target only next to its rows", 
       9559215,
     );
     expect(selected.summary.pageSelection).toBe("fallback");
+  });
+});
+
+describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => {
+  const phoenixPage =
+    "Table ES-2. Stationary Energy GHG Emissions (thousand MT CO₂e)\n" +
+    "| Sector | 2021 |\n| --- | --- |\n" +
+    "| Residential Buildings | 3,190 |\n" +
+    "| Manufacturing Industries & Construction | 80.3 |";
+
+  it("finds kt line items under a thousand MT caption, short figures included", () => {
+    const result = finalizeExtractedRows(
+      [
+        lineItem(3190000, { gpcRefNo: "I.1.1" }),
+        lineItem(80300, { gpcRefNo: "I.3.1" }),
+      ],
+      2021,
+      page(phoenixPage),
+    );
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.map((r) => r.valueCheck)).toEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it("keeps the 4-digit guard for reported totals", () => {
+    const result = finalizeExtractedRows(
+      [total(3190000), total(80300, { category: "Manufacturing" })],
+      2021,
+      page(phoenixPage),
+    );
+    expect(
+      result.summary.reportedTotals.map((t) => [t.value, t.inText]),
+    ).toEqual([
+      [3190000, true],
+      [80300, false],
+    ]);
+  });
+
+  it("checks a continued page with the inherited kg scale", () => {
+    const p22 =
+      "| Uso de Productos | KgCO2e/año | 85.668.155 | 85.668.155 |\n" +
+      "| Disposición de residuos sólidos | KgCO2e/año | 77.495.011 | 77.495.011 |";
+    const rows = [
+      lineItem(85668.155, { gpcRefNo: "IV.2" }),
+      lineItem(77495.011, { gpcRefNo: "III.1.1" }),
+    ];
+    const without = finalizeExtractedRows(rows, 2021, page(p22));
+    expect(without.rows.map((r) => r.valueCheck)).toEqual([
+      "not_found",
+      "not_found",
+    ]);
+    const inherited = finalizeExtractedRows(rows, 2021, {
+      ...page(p22),
+      inheritedScales: [0.001],
+    });
+    expect(inherited.rows).toHaveLength(2);
+    expect(inherited.rows.map((r) => r.valueCheck)).toEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it("carries the p20 kg header through p21 to a p22 line item in the page loop", async () => {
+    const p22Item = {
+      ...item("Uso de Productos", "IV.2", 85668.155),
+      sector: "IPPU",
+    };
+    const text = documentOf({
+      20: {
+        text:
+          "| Sector | TOTAL (KgCO2e) |\n| --- | --- |\n" +
+          "| Energía | 104.801.192 |",
+        rows: [],
+      },
+      21: { text: "| Residuos | 1.234.567 |", rows: [] },
+      22: {
+        text: "| Uso de Productos | KgCO2e/año | 85.668.155 | 85.668.155 |",
+        // The table total, so the page reconciles and is selected.
+        rows: [p22Item, totalOf(85668.155)],
+      },
+    });
+    const { rows } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const found = rows.find((r) => r.gpcRefNo === "IV.2");
+    expect(found).toBeDefined();
+    expect(found?.valueCheck).toBeUndefined();
   });
 });

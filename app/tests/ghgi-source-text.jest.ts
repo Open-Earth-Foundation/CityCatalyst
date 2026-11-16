@@ -10,6 +10,8 @@ import {
   yearEvidence,
   namesLargeUnit,
   pageScaleEvidence,
+  isLineItemValueInNumbers,
+  inheritedPageScales,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -491,5 +493,114 @@ describe("parseNumberString ambiguous group callback", () => {
     parseNumberString("1.5", "unknown", (s) => seen.push(s));
     parseNumberString("1,234,567", "unknown", (s) => seen.push(s));
     expect(seen).toEqual([]);
+  });
+});
+
+describe("thousand MT as kt evidence (Phoenix 2022)", () => {
+  it.each([
+    "Table 2 (thousand MT CO₂e)",
+    "Table ES-2. Stationary Energy GHG Emissions (thousand MT CO₂e)",
+    "Table ES-3. Transportation GHG Emissions (thousand MT CO$_{2}$e)",
+    "Table 2 (Thousand MT)",
+    "Table 2 (THOUSAND MT CO2e)",
+    "Table 2 (thousand mt CO2e)",
+    "Table 2 (thousand MTCO2e)",
+    "Table 2 (thousand metric tons CO2e)",
+    "Table 2 (Thousand Metric Tonnes CO₂e)",
+    "Table 2 (thousand Mt CO2e)",
+  ])("reads %j as kt only", (caption) => {
+    expect(pageScaleEvidence(caption)).toEqual([1000]);
+  });
+
+  it("still reads Mt and MT alone as before", () => {
+    expect(pageScaleEvidence("Table 3 (Mt CO2e)")).toEqual([1000000]);
+    expect(pageScaleEvidence("Table 3 (MT CO2e)")).toEqual([]);
+  });
+});
+
+describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
+  const phoenix = numbersInText(
+    "| Manufacturing Industries & Construction | 80.3 |",
+    "english",
+  );
+
+  it("finds 80,300 printed as 80.3 when kt is allowed", () => {
+    expect(isLineItemValueInNumbers(80300, phoenix, [1000])).toBe(true);
+  });
+
+  it("needs the scale evidence", () => {
+    expect(isLineItemValueInNumbers(80300, phoenix, [])).toBe(false);
+  });
+
+  it("leaves the totals check guarded", () => {
+    expect(isValueInNumbers(80300, phoenix, [1000])).toBe(false);
+  });
+
+  it("still matches unscaled values and respects the sign", () => {
+    expect(isLineItemValueInNumbers(80.3, phoenix, [])).toBe(true);
+    expect(isLineItemValueInNumbers(-80300, phoenix, [1000])).toBe(false);
+  });
+
+  it("gives no scale for population 5.000 without a unit caption", () => {
+    const text = "Population 5.000";
+    expect(pageScaleEvidence(text)).toEqual([]);
+    expect(
+      isLineItemValueInNumbers(
+        5000000,
+        numbersInText(text, "european"),
+        pageScaleEvidence(text),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("inheritedPageScales: tables continued from the previous page", () => {
+  const santiago = [
+    {
+      page: 20,
+      text: "| Sector | TOTAL (KgCO2e) |\n| --- | --- |\n| Energía | 1 |",
+    },
+    { page: 21, text: "| Residuos | 2 |" },
+    { page: 22, text: "| Uso de Productos | KgCO2e/año | 85.668.155 |" },
+  ];
+
+  it("carries kg evidence from p20 through p21 onto p22", () => {
+    const inherited = inheritedPageScales(santiago);
+    expect(inherited.get(21)).toEqual([0.001]);
+    expect(inherited.get(22)).toEqual([0.001]);
+  });
+
+  it("gives a page with its own unit caption nothing to inherit", () => {
+    const inherited = inheritedPageScales(santiago);
+    expect(inherited.get(20)).toEqual([]);
+  });
+
+  it("lets a page without captions after a kt page allow x1000", () => {
+    const inherited = inheritedPageScales([
+      {
+        page: 9,
+        text: "Table ES-2 (thousand MT CO₂e)\n| Residential | 3,190 |",
+      },
+      { page: 10, text: "| On-road | 6,504 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([1000]);
+  });
+
+  it("does not inherit onto a page with its own tonne caption", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "Table 2 (tonnes CO2e)\n| On-road | 6,504 |" },
+      { page: 11, text: "| Rail | 12 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+  });
+
+  it("does not inherit across a missing page", () => {
+    const inherited = inheritedPageScales([
+      { page: 20, text: "Tabla 2 (kg CO2e)" },
+      { page: 22, text: "| Residuos | 2 |" },
+    ]);
+    expect(inherited.get(22)).toEqual([]);
   });
 });

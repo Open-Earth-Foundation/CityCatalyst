@@ -251,8 +251,8 @@ describe("number format check", () => {
     });
     const [european] = applyReadings(
       rows,
-      { unit: null, numberFormat: "english" },
-      { unit: null, numberFormat: "european" },
+      { units: {}, numberFormat: "english" },
+      { units: {}, numberFormat: "european" },
     );
     expect(european.totalCO2e).toBe(6600);
   });
@@ -271,8 +271,8 @@ describe("number format check", () => {
     });
     const [european] = applyReadings(
       rows,
-      { unit: null, numberFormat: "english" },
-      { unit: null, numberFormat: "european" },
+      { units: {}, numberFormat: "english" },
+      { units: {}, numberFormat: "european" },
     );
     expect(european.totalCO2e).toBe(6_600_000);
   });
@@ -352,8 +352,8 @@ describe("number format check", () => {
     });
     const [english] = applyReadings(
       rows,
-      { unit: null, numberFormat: "european" },
-      { unit: null, numberFormat: "english" },
+      { units: {}, numberFormat: "european" },
+      { units: {}, numberFormat: "english" },
     );
     expect(english).toMatchObject({ totalCO2e: 6.6, co2: 6, ch4: 0.6 });
   });

@@ -22,9 +22,13 @@ import {
   applyReadings,
   selectLevelTotal,
   sumImported,
+  unitGroupKey,
+  UNIT_GROUP_OPTIONS,
   type ExtractedGases,
   type NumberReading,
   type SourceChecks,
+  type UnitGroup,
+  type UnitReading,
 } from "@/util/GHGI/source-checks";
 import { toCanonical } from "@/util/notation-keys";
 import {
@@ -37,6 +41,7 @@ import {
   yearEvidence,
   namesLargeUnit,
   namesSmallUnit,
+  namesTonneUnit,
   pageScaleEvidence,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
@@ -326,6 +331,12 @@ export type ExtractedRow = {
    * kt, Mt, Gg or kg. It is kept as tonnes, not rescaled, and goes to review.
    */
   unitCheck?: "MT" | "missing" | null;
+  /**
+   * On `unitCheck: "missing"` rows: the reading the page's captions suggest
+   * ("kt" or "Mt" when the page names only that unit, else "t"). Kept on the
+   * row because the checks are rebuilt later without the page text.
+   */
+  unitHint?: UnitReading | null;
   /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
   numberCheck?: boolean | null;
   /**
@@ -2147,8 +2158,8 @@ function withPrintedText(
       if (reading === context.reading) return checked;
       const [converted] = applyReadings(
         [checked],
-        { unit: null, numberFormat: reading },
-        { unit: null, numberFormat: context.reading },
+        { units: {}, numberFormat: reading },
+        { units: {}, numberFormat: context.reading },
       );
       return converted;
     }
@@ -2190,6 +2201,8 @@ function itemLabel(row: ExtractedRow): string {
 /**
  * The checks the review asks before approval, or undefined without rows:
  * - `unit` when a row or total was written "MT" (read as tonnes);
+ * - `unitGroups`: one per page with rows printed without a unit
+ *   (`unitCheck: "missing"`), preselected from the rows' `unitHint`;
  * - `numberFormat` when a printed number reads two ways in a document of
  *   undetected style;
  * - `total` always: the printed, year-matched grand totals (at most 5) and the
@@ -2249,6 +2262,9 @@ function buildSourceChecks(
     };
   }
 
+  const unitGroups = buildUnitGroups(rows);
+  if (unitGroups.length > 0) checks.unitGroups = unitGroups;
+
   const examples = [
     ...rows
       .filter((row) => row.numberCheck && row.totalCO2eText)
@@ -2307,6 +2323,53 @@ function buildSourceChecks(
     suggested,
   };
   return checks;
+}
+
+/**
+ * Page groups of the rows printed without a unit, by page. A group preselects
+ * the hint its rows share, else tonnes. The rows are stored in tonnes.
+ */
+function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
+  const groups = new Map<
+    string,
+    { page: number | null; rows: ExtractedRow[] }
+  >();
+  for (const row of rows) {
+    if (row.unitCheck !== "missing") continue;
+    const key = unitGroupKey(row)!;
+    const group = groups.get(key) ?? { page: row.page ?? null, rows: [] };
+    group.rows.push(row);
+    groups.set(key, group);
+  }
+  return [...groups.entries()]
+    .sort(([, a], [, b]) => (a.page ?? Infinity) - (b.page ?? Infinity))
+    .map(([key, group]) => {
+      const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));
+      return {
+        key,
+        page: group.page,
+        tableId: null,
+        rowCount: group.rows.length,
+        preselected: hints.size === 1 ? [...hints][0] : "t",
+        options: [...UNIT_GROUP_OPTIONS],
+        status: "pending",
+        reading: "t",
+      };
+    });
+}
+
+/**
+ * Reading to preselect for rows without a unit on this page: "kt" when its
+ * captions name only kt (or Gg), "Mt" when only Mt, else tonnes (mixed units,
+ * or kg, which is no option).
+ */
+function unitHintForPage(text: string): UnitReading {
+  if (namesTonneUnit(text)) return "t";
+  const scales = pageScaleEvidence(text);
+  if (scales.length !== 1) return "t";
+  if (scales[0] === 1000) return "kt";
+  if (scales[0] === 1_000_000) return "Mt";
+  return "t";
 }
 
 /**
@@ -2493,8 +2556,8 @@ export type FinalizeOptions = {
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
  *   rows are kept as tonnes with `unitCheck: "MT"`; unit-less rows on a
- *   kt/Mt/kg page are kept and marked (`unitCheck: "missing"`), and unit-less
- *   totals there are dropped;
+ *   kt/Mt/kg page are kept and marked (`unitCheck: "missing"`, with the
+ *   page's `unitHint`), and unit-less totals there are dropped;
  * - printed text (`totalCO2eText`) is checked against the value and sets
  *   `printedFactor` and `numberCheck`;
  * - with a source, line items whose value is not printed there are kept and
@@ -2706,7 +2769,11 @@ function finalizeRows(
       }
       continue;
     }
-    if (unitMissing) scaled.unitCheck = "missing";
+    if (unitMissing) {
+      scaled.unitCheck = "missing";
+      // unitMissing implies a page source.
+      scaled.unitHint = unitHintForPage(source!.text);
+    }
     // Each line item's raw value (as printed, see rawTotal) must be printed in
     // its source text, with the scales the page's captions allow; otherwise it
     // is kept for review. A number that reads two ways (`numberCheck`) is found

@@ -1,5 +1,9 @@
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
-import type { NumberReading, UnitReading } from "@/util/GHGI/source-checks";
+import type {
+  NumberReading,
+  UnitGroupKey,
+  UnitReading,
+} from "@/util/GHGI/source-checks";
 import { env } from "@/lib/runtime-env";
 import {
   type CityAttributes,
@@ -2325,10 +2329,11 @@ export const api = createApi({
           importedFileId: string;
           /** Readings the answered card computed its totals under. */
           expected: {
-            unit: UnitReading | null;
+            units: Record<UnitGroupKey, UnitReading>;
             numberFormat: NumberReading | null;
           };
-          unit?: UnitReading;
+          /** Unit reading per group key (`doc`, `p12`, ...). */
+          units?: Record<UnitGroupKey, UnitReading>;
           numberFormat?: NumberReading;
           total?: { candidate: number } | { value: number } | { skip: true };
         }

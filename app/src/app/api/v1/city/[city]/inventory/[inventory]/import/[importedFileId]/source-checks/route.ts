@@ -9,12 +9,15 @@
  *     operationId: updateImportSourceChecks
  *     summary: Answer the source checks of an extracted PDF import.
  *     description: |
- *       Applies the user's reading of the unit and of the number format to the
+ *       Applies the user's unit readings and number format reading to the
  *       rows already stored, without re-running extraction, recomputes
  *       importedSum, and marks the answered checks confirmed. Row decisions on
  *       rows whose values changed are cleared. A total answer confirms a printed
  *       candidate, a typed total (origin user), or no total (skip, only when the
  *       document printed none). Only valid while the import waits for approval.
+ *       Unit readings are keyed by group: `doc` for the rows written "MT"
+ *       (t or Mt), and each `sourceChecks.unitGroups[].key` (for example `p12`)
+ *       for rows printed without a unit on that page (t, kt or Mt).
  *       `expected` names the readings the client computed its totals under; when
  *       the stored readings differ the answer is refused with 409.
  *     parameters:
@@ -49,20 +52,28 @@
  *             properties:
  *               expected:
  *                 type: object
- *                 required: [unit, numberFormat]
- *                 description: Current readings the client showed (null without that check).
+ *                 required: [units, numberFormat]
+ *                 description: |
+ *                   Current readings the client showed: every unit group's
+ *                   reading, and the number format (null without that check).
  *                 properties:
- *                   unit:
- *                     type: string
- *                     enum: [t, Mt]
- *                     nullable: true
+ *                   units:
+ *                     type: object
+ *                     additionalProperties:
+ *                       type: string
+ *                       enum: [t, kt, Mt]
  *                   numberFormat:
  *                     type: string
  *                     enum: [english, european]
  *                     nullable: true
- *               unit:
- *                 type: string
- *                 enum: [t, Mt]
+ *               units:
+ *                 type: object
+ *                 description: |
+ *                   Unit reading per group key the import has (`doc` takes t or
+ *                   Mt only). At least one key when sent.
+ *                 additionalProperties:
+ *                   type: string
+ *                   enum: [t, kt, Mt]
  *               numberFormat:
  *                 type: string
  *                 enum: [english, european]
@@ -107,8 +118,9 @@
  *                       description: Row decisions cleared because the row values changed.
  *       400:
  *         description: |
- *           Invalid body, an answer to a check the import does not have, a
- *           candidate out of range, or the file is not waiting for approval.
+ *           Invalid body, an answer to a check or unit group the import does
+ *           not have, a reading the group does not offer, a candidate out of
+ *           range, or the file is not waiting for approval.
  *       401:
  *         description: Unauthorized.
  *       404:
@@ -131,7 +143,10 @@ import type {
 } from "@/util/GHGI/extraction-summary";
 import {
   applyReadings,
+  DOC_UNIT_GROUP,
+  readingsOf,
   sumImported,
+  unitOptions,
   type ConfirmedTotal,
   type Readings,
   type SourceChecks,
@@ -140,16 +155,21 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const unitSchema = z.enum(["t", "Mt"]);
+const unitSchema = z.enum(["t", "kt", "Mt"]);
+const unitsSchema = z.record(z.string(), unitSchema);
 const numberFormatSchema = z.enum(["english", "european"]);
 
 const sourceChecksBodySchema = z
   .object({
     expected: z.object({
-      unit: unitSchema.nullable(),
+      units: unitsSchema,
       numberFormat: numberFormatSchema.nullable(),
     }),
-    unit: unitSchema.optional(),
+    units: unitsSchema
+      .refine((units) => Object.keys(units).length > 0, {
+        message: "Answer at least one unit group",
+      })
+      .optional(),
     numberFormat: numberFormatSchema.optional(),
     total: z
       .union([
@@ -164,7 +184,7 @@ const sourceChecksBodySchema = z
       ])
       .optional(),
   })
-  .refine((b) => b.unit || b.numberFormat || b.total, {
+  .refine((b) => b.units || b.numberFormat || b.total, {
     message: "Answer at least one check",
   });
 
@@ -218,6 +238,13 @@ function withoutDecisions(
         }
       : overrides;
   return { overrides: next, cleared };
+}
+
+function sameUnits(a: Readings["units"], b: Readings["units"]): boolean {
+  const keys = Object.keys(a);
+  return (
+    keys.length === Object.keys(b).length && keys.every((k) => a[k] === b[k])
+  );
 }
 
 function conflict(message: string) {
@@ -279,7 +306,7 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
   if (!summary || !checks) {
     throw new createHttpError.BadRequest("This import has no source checks");
   }
-  for (const key of ["unit", "numberFormat", "total"] as const) {
+  for (const key of ["numberFormat", "total"] as const) {
     if (body[key] !== undefined && !checks[key]) {
       throw new createHttpError.BadRequest(
         `This import has no ${key} check to answer`,
@@ -287,15 +314,25 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
     }
   }
 
-  // Always convert from the stored values with their current readings.
-  const from: Readings = {
-    unit: checks.unit?.reading ?? null,
-    numberFormat: checks.numberFormat?.reading ?? null,
-  };
+  // Always convert from the stored values with their current readings. A
+  // summary stored before unit groups reads as `{ doc: unit.reading }`.
+  const from = readingsOf(checks);
+  for (const [key, reading] of Object.entries(body.units ?? {})) {
+    if (!(key in from.units)) {
+      throw new createHttpError.BadRequest(
+        `This import has no unit group ${key} to answer`,
+      );
+    }
+    if (!unitOptions(key).includes(reading)) {
+      throw new createHttpError.BadRequest(
+        `Unit group ${key} cannot be read as ${reading}`,
+      );
+    }
+  }
   // The client computed its totals under `expected`; an answer applied on
   // other readings would store totals the person never saw.
   if (
-    body.expected.unit !== from.unit ||
+    !sameUnits(body.expected.units, from.units) ||
     body.expected.numberFormat !== from.numberFormat
   ) {
     throw conflict(
@@ -303,7 +340,7 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
     );
   }
   const to: Readings = {
-    unit: body.unit ?? from.unit,
+    units: { ...from.units, ...body.units },
     numberFormat: body.numberFormat ?? from.numberFormat,
   };
   const storedRows = (mappingConfiguration.rows ?? []) as ExtractedRow[];
@@ -311,12 +348,19 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
   const reportedTotals = applyReadings(summary.reportedTotals ?? [], from, to);
 
   const nextChecks: SourceChecks = { ...checks };
-  if (checks.unit && body.unit) {
+  const docReading = body.units?.[DOC_UNIT_GROUP];
+  if (checks.unit && docReading) {
     nextChecks.unit = {
       ...checks.unit,
       status: "confirmed",
-      reading: body.unit,
+      reading: docReading,
     };
+  }
+  if (checks.unitGroups) {
+    nextChecks.unitGroups = checks.unitGroups.map((group) => {
+      const reading = body.units?.[group.key];
+      return reading ? { ...group, status: "confirmed", reading } : group;
+    });
   }
   if (checks.numberFormat && body.numberFormat) {
     nextChecks.numberFormat = {

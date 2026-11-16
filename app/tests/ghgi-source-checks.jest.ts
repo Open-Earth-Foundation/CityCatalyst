@@ -1,19 +1,23 @@
 import {
   applyReadings,
   inPerPersonRange,
+  hasPendingSourceChecks,
   optionTotals,
   perPerson,
+  readingsOf,
   selectLevelTotal,
+  sumImported,
   totalPlausibility,
   type Readings,
+  type SourceChecks,
 } from "@/util/GHGI/source-checks";
 import { isAmbiguousNumberText } from "@/util/GHGI/source-text";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { ReportedTotal } from "@/util/GHGI/extraction-summary";
 
-const T_EN: Readings = { unit: "t", numberFormat: "english" };
-const MT_EN: Readings = { unit: "Mt", numberFormat: "english" };
-const T_EU: Readings = { unit: "t", numberFormat: "european" };
+const T_EN: Readings = { units: { doc: "t" }, numberFormat: "english" };
+const MT_EN: Readings = { units: { doc: "Mt" }, numberFormat: "english" };
+const T_EU: Readings = { units: { doc: "t" }, numberFormat: "european" };
 
 const row = (o: Record<string, unknown>) => o as unknown as ExtractedRow;
 const total = (label: string, value: number) =>
@@ -99,7 +103,7 @@ describe("applyReadings", () => {
         },
       },
     ];
-    const MT_EU: Readings = { unit: "Mt", numberFormat: "european" };
+    const MT_EU: Readings = { units: { doc: "Mt" }, numberFormat: "european" };
     // Separator first, then unit; then the separator back under Mt.
     const eu = applyReadings(rows, T_EN, T_EU);
     const mtEu = applyReadings(eu, T_EU, MT_EU);
@@ -156,7 +160,7 @@ describe("applyReadings", () => {
         },
       ],
       T_EN,
-      { unit: "Mt", numberFormat: "european" },
+      { units: { doc: "Mt" }, numberFormat: "european" },
     );
     expect(r.totalCO2e).toBe(6600 * 1_000_000);
   });
@@ -164,7 +168,7 @@ describe("applyReadings", () => {
   it("leaves rows without flags alone", () => {
     const rows = [{ totalCO2e: 5, co2: 2 }];
     const out = applyReadings(rows, T_EN, {
-      unit: "Mt",
+      units: { doc: "Mt" },
       numberFormat: "european",
     });
     expect(out).toEqual(rows);
@@ -187,10 +191,124 @@ describe("optionTotals", () => {
       row({ totalCO2e: 250886, unitCheck: "MT" }),
       row({ totalCO2e: 999, gpcRefNo: "I.4.4", unitCheck: "MT" }),
     ];
-    expect(optionTotals(rows, T_EN, "unit")).toEqual([
+    expect(optionTotals(rows, T_EN, { unitGroup: "doc" })).toEqual([
       { reading: "t", total: 3250886 },
       { reading: "Mt", total: 3250886e6 },
     ]);
+  });
+});
+
+describe("unit groups", () => {
+  // 3 unit-less rows on page 12 (kt only), 1 on page 14 (mixed), 1 in tonnes.
+  const groupRows = [
+    row({ totalCO2e: 1.5, unitCheck: "missing", page: 12, co2: 1 }),
+    row({ totalCO2e: 2, unitCheck: "missing", page: 12 }),
+    row({ totalCO2e: 3.25, unitCheck: "missing", page: 12 }),
+    row({ totalCO2e: 10, unitCheck: "missing", page: 14 }),
+    row({ totalCO2e: 100, page: 12 }),
+  ];
+  const current: Readings = {
+    units: { p12: "t", p14: "t" },
+    numberFormat: null,
+  };
+
+  it("option totals equal sumImported(applyReadings(...)) for each kt group option", () => {
+    const options = optionTotals(groupRows, current, { unitGroup: "p12" });
+    expect(options.map((o) => o.reading)).toEqual(["t", "kt", "Mt"]);
+    for (const option of options) {
+      const to: Readings = {
+        ...current,
+        units: { ...current.units, p12: option.reading as "t" | "kt" | "Mt" },
+      };
+      expect(option.total).toBe(
+        sumImported(applyReadings(groupRows, current, to)),
+      );
+    }
+    expect(options[1].total).toBe(6750 + 10 + 100);
+  });
+
+  it("converts only the rows of the answered group, gases included", () => {
+    const kt = applyReadings(groupRows, current, {
+      ...current,
+      units: { p12: "kt", p14: "t" },
+    });
+    expect(kt.map((r) => r.totalCO2e)).toEqual([1500, 2000, 3250, 10, 100]);
+    expect(kt[0].co2).toBe(1000);
+    // Back to tonnes is exact.
+    expect(
+      applyReadings(
+        kt,
+        { ...current, units: { p12: "kt", p14: "t" } },
+        current,
+      ),
+    ).toEqual(groupRows);
+    // kt to Mt from a converted state.
+    const mt = applyReadings(
+      kt,
+      { ...current, units: { p12: "kt", p14: "t" } },
+      { ...current, units: { p12: "Mt", p14: "t" } },
+    );
+    expect(mt[0].totalCO2e).toBe(1_500_000);
+  });
+
+  it("leaves MT rows to the doc reading and unit-less rows to their page", () => {
+    const rows = [
+      row({ totalCO2e: 2, unitCheck: "MT", page: 12 }),
+      row({ totalCO2e: 3, unitCheck: "missing", page: 12 }),
+    ];
+    const from: Readings = {
+      units: { doc: "t", p12: "t" },
+      numberFormat: null,
+    };
+    const out = applyReadings(rows, from, {
+      ...from,
+      units: { doc: "Mt", p12: "t" },
+    });
+    expect(out.map((r) => r.totalCO2e)).toEqual([2_000_000, 3]);
+  });
+
+  it("an old summary with a single unit reading still converts", () => {
+    // Stored before unit groups: only `sourceChecks.unit`, no `unitGroups`.
+    const legacy = {
+      unit: {
+        status: "confirmed",
+        reading: "Mt",
+        evidence: { unitText: "MT", sources: [], pages: [], example: null },
+      },
+    } as SourceChecks;
+    const from = readingsOf(legacy);
+    expect(from).toEqual({ units: { doc: "Mt" }, numberFormat: null });
+    const rows = [row({ totalCO2e: 2_000_000, unitCheck: "MT" })];
+    const [back] = applyReadings(rows, from, {
+      ...from,
+      units: { doc: "t" },
+    });
+    expect(back.totalCO2e).toBe(2);
+    expect(hasPendingSourceChecks({ sourceChecks: legacy })).toBe(false);
+  });
+
+  it("reads each group's reading and blocks approval while a group is pending", () => {
+    const checks = {
+      unitGroups: [
+        {
+          key: "p12",
+          page: 12,
+          tableId: null,
+          rowCount: 3,
+          preselected: "kt",
+          options: ["t", "kt", "Mt"],
+          status: "pending",
+          reading: "t",
+        },
+      ],
+    } as SourceChecks;
+    expect(readingsOf(checks)).toEqual({
+      units: { p12: "t" },
+      numberFormat: null,
+    });
+    expect(hasPendingSourceChecks({ sourceChecks: checks })).toBe(true);
+    checks.unitGroups![0].status = "confirmed";
+    expect(hasPendingSourceChecks({ sourceChecks: checks })).toBe(false);
   });
 });
 

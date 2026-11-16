@@ -1,6 +1,8 @@
 /**
- * Readings of the two source checks on an imported value: the unit of an
- * ambiguous `MT` and the separator of an ambiguous number such as `6.600`.
+ * Readings of the source checks on an imported value: the unit of an
+ * ambiguous `MT` (one document-wide group), the unit of rows printed without
+ * one on a page naming kt, Mt or kg (one group per page), and the separator of
+ * an ambiguous number such as `6.600`.
  * The review card and the PATCH endpoint both use this module, so the totals a
  * person sees equal the totals that are imported.
  *
@@ -16,16 +18,30 @@ import {
 import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import { parseNumberString } from "@/util/GHGI/source-text";
 
-export type UnitReading = "t" | "Mt";
+export type UnitReading = "t" | "kt" | "Mt";
 export type NumberReading = "european" | "english";
+/**
+ * Rows that share one unit reading: `"doc"` for the rows written "MT"; `"p12"`
+ * for the rows of page 12 printed without a unit (`"p12:t3"` once tables are
+ * known); `"unpaged"` for such rows without a page.
+ */
+export type UnitGroupKey = string;
+/** Group of the rows written "MT", read document-wide. */
+export const DOC_UNIT_GROUP: UnitGroupKey = "doc";
+/** Readings of "MT": metric tonnes or megatonnes. */
+export const DOC_UNIT_OPTIONS: UnitReading[] = ["t", "Mt"];
+/** Readings of a page group of rows printed without a unit. */
+export const UNIT_GROUP_OPTIONS: UnitReading[] = ["t", "kt", "Mt"];
 export type Readings = {
-  unit: UnitReading | null;
+  /** Unit reading of each group the import has (see `readingsOf`). */
+  units: Record<UnitGroupKey, UnitReading>;
   numberFormat: NumberReading | null;
 };
 
 /** Tonnes per unit. */
 export const UNIT_FACTOR: Record<UnitReading, number> = {
   t: 1,
+  kt: 1000,
   Mt: 1_000_000,
 };
 
@@ -52,7 +68,12 @@ export type CheckableValue = {
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;
-  /** "MT": the unit card applies. "missing" is a row review issue, not a card. */
+  /** Page of the item; groups rows with `unitCheck: "missing"`. */
+  page?: number | null;
+  /**
+   * "MT": the document-wide unit reading applies. "missing": the reading of
+   * the item's page group applies (see `unitGroupKey`).
+   */
   unitCheck?: "MT" | "missing" | null;
   numberCheck?: boolean | null;
   totalCO2eText?: string | null;
@@ -61,6 +82,27 @@ export type CheckableValue = {
 };
 
 export type CheckStatus = "pending" | "confirmed";
+
+/**
+ * Rows of one page (or table) printed without a unit on a page whose captions
+ * name kt, Mt or kg. They are stored in tonnes (`reading: "t"`) until the
+ * group is answered.
+ */
+export type UnitGroup = {
+  key: UnitGroupKey;
+  page: number | null;
+  tableId: string | null;
+  rowCount: number;
+  /**
+   * Reading the card selects first: "kt" when the page names only kt (or Gg),
+   * "Mt" when only Mt, else "t" (mixed units, or kg, which is not an option).
+   */
+  preselected: UnitReading;
+  options: UnitReading[];
+  status: CheckStatus;
+  /** Reading the stored rows are under now. */
+  reading: UnitReading;
+};
 
 /** A document total the user confirmed, or a total the user typed. */
 export type ConfirmedTotal = {
@@ -87,6 +129,8 @@ export type SourceChecks = {
       example: { label: string; text: string } | null;
     };
   };
+  /** Page groups of rows printed without a unit, by page. */
+  unitGroups?: UnitGroup[];
   /** Rows printed like `6.600` in a document whose style is undetected. */
   numberFormat?: {
     status: CheckStatus;
@@ -113,10 +157,45 @@ export function hasPendingSourceChecks(
 ): boolean {
   const checks = summary?.sourceChecks;
   if (!checks) return false;
-  return Object.values(checks).some((check) => check?.status === "pending");
+  const { unitGroups, ...single } = checks;
+  return (
+    Object.values(single).some((check) => check?.status === "pending") ||
+    (unitGroups ?? []).some((group) => group.status === "pending")
+  );
 }
 
-const DEFAULT_READINGS = { unit: "t", numberFormat: "english" } as const;
+/**
+ * Current readings of a summary's checks. A summary stored before unit groups
+ * has only the "MT" reading, read as `{ doc: reading }`.
+ */
+export function readingsOf(checks: SourceChecks | null | undefined): Readings {
+  const units: Record<UnitGroupKey, UnitReading> = {};
+  if (checks?.unit) units[DOC_UNIT_GROUP] = checks.unit.reading;
+  for (const group of checks?.unitGroups ?? []) {
+    units[group.key] = group.reading;
+  }
+  return { units, numberFormat: checks?.numberFormat?.reading ?? null };
+}
+
+/**
+ * Group whose unit reading applies to an item: `"doc"` for "MT", the page key
+ * for a missing unit, null when no unit reading applies.
+ */
+export function unitGroupKey(item: CheckableValue): UnitGroupKey | null {
+  if (item.unitCheck === "MT") return DOC_UNIT_GROUP;
+  if (item.unitCheck === "missing") {
+    return item.page != null ? `p${item.page}` : "unpaged";
+  }
+  return null;
+}
+
+/** Readings a unit group offers. */
+export function unitOptions(key: UnitGroupKey): UnitReading[] {
+  return key === DOC_UNIT_GROUP ? DOC_UNIT_OPTIONS : UNIT_GROUP_OPTIONS;
+}
+
+const DEFAULT_UNIT: UnitReading = "t";
+const DEFAULT_NUMBER_FORMAT: NumberReading = "english";
 
 /** Sum of imported values in tonnes, without rows left out of totals. */
 export function sumImported(rows: ExtractedRow[]): number {
@@ -140,11 +219,12 @@ function convert<R extends CheckableValue>(
   const current = item[key];
   if (current == null) return item;
 
-  const fromUnit = from.unit ?? DEFAULT_READINGS.unit;
-  const toUnit = to.unit ?? DEFAULT_READINGS.unit;
-  const fromFormat = from.numberFormat ?? DEFAULT_READINGS.numberFormat;
-  const toFormat = to.numberFormat ?? DEFAULT_READINGS.numberFormat;
-  const unitApplies = item.unitCheck === "MT";
+  const group = unitGroupKey(item);
+  const unitApplies = group != null;
+  const fromUnit = (group && from.units[group]) || DEFAULT_UNIT;
+  const toUnit = (group && to.units[group]) || DEFAULT_UNIT;
+  const fromFormat = from.numberFormat ?? DEFAULT_NUMBER_FORMAT;
+  const toFormat = to.numberFormat ?? DEFAULT_NUMBER_FORMAT;
   // Multiply first, then divide: Mt to t by a ratio of 1e-6 drifts on decimals.
   const scale = (n: number) =>
     unitApplies ? (n * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[fromUnit] : n;
@@ -185,6 +265,8 @@ function convert<R extends CheckableValue>(
 
 /**
  * Items (rows or reported totals) converted from one set of readings to another.
+ * An item's unit reading is that of its group (`unitGroupKey`); a group missing
+ * from `from` or `to` reads as tonnes.
  *
  * A separator change sets co2, ch4 and n2o to null: the text carries only the
  * total, so the gases cannot be rebuilt from it. They come back from
@@ -200,19 +282,28 @@ export function applyReadings<R extends CheckableValue>(
   return items.map((item) => convert(item, from, to));
 }
 
-/** Imported total under each reading of one check, the other check kept as is. */
+/**
+ * Imported total under each reading of one check (the number format, or one
+ * unit group), every other reading kept as is. The PATCH endpoint stores
+ * `sumImported(applyReadings(...))` too, so an option's total is the stored
+ * `importedSum` after that answer.
+ */
 export function optionTotals(
   rows: ExtractedRow[],
   current: Readings,
-  check: "unit" | "numberFormat",
+  check: "numberFormat" | { unitGroup: UnitGroupKey },
 ): { reading: UnitReading | NumberReading; total: number }[] {
-  const readings: (UnitReading | NumberReading)[] =
-    check === "unit" ? ["t", "Mt"] : ["english", "european"];
-  return readings.map((reading) => ({
+  const total = (to: Readings) => sumImported(applyReadings(rows, current, to));
+  if (check === "numberFormat") {
+    return (["english", "european"] as const).map((reading) => ({
+      reading,
+      total: total({ ...current, numberFormat: reading }),
+    }));
+  }
+  const key = check.unitGroup;
+  return unitOptions(key).map((reading) => ({
     reading,
-    total: sumImported(
-      applyReadings(rows, current, { ...current, [check]: reading }),
-    ),
+    total: total({ ...current, units: { ...current.units, [key]: reading } }),
   }));
 }
 

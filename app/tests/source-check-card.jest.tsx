@@ -191,8 +191,8 @@ describe("SourceCheckCards", () => {
     );
     await act(async () => button(c, "Confirm").click());
     expect(onConfirm).toHaveBeenCalledWith({
-      unit: "Mt",
-      expected: { unit: "t", numberFormat: null },
+      units: { doc: "Mt" },
+      expected: { units: { doc: "t" }, numberFormat: null },
     });
   });
 
@@ -261,7 +261,7 @@ describe("SourceCheckCards", () => {
     await act(async () => button(c, "Confirm").click());
     expect(onConfirm).toHaveBeenCalledWith({
       total: { candidate: 0 },
-      expected: { unit: null, numberFormat: null },
+      expected: { units: {}, numberFormat: null },
     });
   });
 
@@ -287,12 +287,12 @@ describe("SourceCheckCards", () => {
     await act(async () => button(c, "Confirm").click());
     expect(onConfirm).toHaveBeenCalledWith({
       total: { value: 412300 },
-      expected: { unit: null, numberFormat: null },
+      expected: { units: {}, numberFormat: null },
     });
     await act(async () => button(c, "Continue without a total").click());
     expect(onConfirm).toHaveBeenCalledWith({
       total: { skip: true },
-      expected: { unit: null, numberFormat: null },
+      expected: { units: {}, numberFormat: null },
     });
   });
 
@@ -313,7 +313,7 @@ describe("SourceCheckCards", () => {
     await act(async () => button(c, "Confirm").click());
     expect(onConfirm).toHaveBeenCalledWith({
       numberFormat: "european",
-      expected: { unit: "Mt", numberFormat: "european" },
+      expected: { units: { doc: "Mt" }, numberFormat: "european" },
     });
   });
 

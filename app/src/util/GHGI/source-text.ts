@@ -562,6 +562,25 @@ export function namesLargeUnit(text: string): boolean {
   return captionsNameUnit(text, (line) => namesUnit(line, LARGE_UNIT_PATTERNS));
 }
 
+/** `line` with its large-unit phrases blanked ("thousand tonnes", "Mt CO2"). */
+function withoutLargeUnits(line: string): string {
+  return LARGE_UNIT_PATTERNS.reduce(
+    (out, re) => out.replace(new RegExp(re.source, `${re.flags}g`), " "),
+    line,
+  );
+}
+
+/**
+ * True when the page names a tonne unit (t, tCO2e, tonnes) on a caption line,
+ * with the rules of `namesLargeUnit`. "thousand tonnes" and "million tonnes"
+ * are large units, not tonnes.
+ */
+export function namesTonneUnit(text: string): boolean {
+  return captionsNameUnit(text, (line) =>
+    namesUnit(withoutLargeUnits(line), TONNE_UNIT_PATTERNS),
+  );
+}
+
 /**
  * True when the page names kg on a caption line, with the rules of
  * `namesLargeUnit`. A per-person kg (`kg/capita`, `kg per person`) does not count.

@@ -31,17 +31,21 @@ import {
   optionTotals,
   perPerson,
   PER_PERSON_RANGE,
+  readingsOf,
   totalPlausibility,
+  DOC_UNIT_GROUP,
   type NumberReading,
   type Readings,
   type SourceChecks,
+  type UnitGroupKey,
   type UnitReading,
 } from "@/util/GHGI/source-checks";
 import { parseNumberString } from "@/util/GHGI/source-text";
 
 /** One card's answer. */
 export type CheckAnswer = {
-  unit?: UnitReading;
+  /** Unit reading per group key (`doc` for the "MT" card). */
+  units?: Record<UnitGroupKey, UnitReading>;
   numberFormat?: NumberReading;
   total?: { candidate: number } | { value: number } | { skip: true };
 };
@@ -448,13 +452,6 @@ export function SourceCheckCard({
   );
 }
 
-function currentReadings(checks: SourceChecks): Readings {
-  return {
-    unit: checks.unit?.reading ?? null,
-    numberFormat: checks.numberFormat?.reading ?? null,
-  };
-}
-
 export function UnitCheckCard({
   t,
   check,
@@ -472,7 +469,7 @@ export function UnitCheckCard({
 }) {
   const locale = useContext(LocaleContext);
   const [selected, setSelected] = useState<UnitReading>(check.reading);
-  const totals = optionTotals(rows, readings, "unit");
+  const totals = optionTotals(rows, readings, { unitGroup: DOC_UNIT_GROUP });
   const totalOf = (reading: UnitReading) =>
     totals.find((o) => o.reading === reading)?.total ?? 0;
   const { evidence } = check;
@@ -508,7 +505,7 @@ export function UnitCheckCard({
         check: t("import-unit-check-label"),
         answer: t(answerKey(check.reading)),
       })}
-      onConfirm={() => onConfirm({ unit: selected })}
+      onConfirm={() => onConfirm({ units: { [DOC_UNIT_GROUP]: selected } })}
       footnote={showFootnote ? t("import-unit-check-footnote") : undefined}
     >
       <EvidenceBox>
@@ -819,7 +816,7 @@ export function SourceCheckCards({
   if (!checks || (!checks.unit && !checks.numberFormat && !checks.total)) {
     return null;
   }
-  const readings = currentReadings(checks);
+  const readings = readingsOf(checks);
   // Every answer names the readings its card computed totals under.
   const confirm: CardConfirm = (answer) =>
     onConfirm({ ...answer, expected: readings });

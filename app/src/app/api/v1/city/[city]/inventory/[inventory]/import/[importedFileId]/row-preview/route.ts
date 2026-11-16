@@ -60,22 +60,79 @@
  *                       type: integer
  *                     skippedRows:
  *                       type: integer
- *                     inferredScopeRows:
+ *                     scopeWarnings:
  *                       type: array
  *                       description: |
- *                         Imported rows whose scope was set from the row's
- *                         activity type, not read from the document. Rows held
- *                         for a decision are not listed.
+ *                         Imported rows whose scope is unknown or invalid and could not
+ *                         be set from the document, the reference or the activity type.
  *                       items:
  *                         type: object
  *                         properties:
  *                           rowNumber:
  *                             type: integer
+ *                           page:
+ *                             type: integer
+ *                             nullable: true
+ *                           text:
+ *                             type: string
+ *                             nullable: true
+ *                           sector:
+ *                             type: string
+ *                             nullable: true
+ *                           subsector:
+ *                             type: string
+ *                             nullable: true
+ *                           value:
+ *                             type: number
+ *                             nullable: true
+ *                             description: Total tCO2e; null when the row has no numeric total.
  *                           gpcRefNo:
  *                             type: string
  *                           scope:
  *                             type: string
  *                             nullable: true
+ *                           scopeOrigin:
+ *                             type: string
+ *                             enum: [document, reference, activity-type, not-applicable, none]
+ *                           originalScope:
+ *                             type: string
+ *                             nullable: true
+ *                             description: The extraction's own scope, only when it differs from scope.
+ *                     inferredScopeRows:
+ *                       type: array
+ *                       description: |
+ *                         Imported rows whose scope was not read from the document:
+ *                         set from the GPC reference or the activity type, or not
+ *                         applicable. Rows held for a decision are not listed.
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           rowNumber:
+ *                             type: integer
+ *                           page:
+ *                             type: integer
+ *                             nullable: true
+ *                           text:
+ *                             type: string
+ *                             nullable: true
+ *                           sector:
+ *                             type: string
+ *                             nullable: true
+ *                           subsector:
+ *                             type: string
+ *                             nullable: true
+ *                           value:
+ *                             type: number
+ *                             nullable: true
+ *                             description: Total tCO2e; null when the row has no numeric total.
+ *                           gpcRefNo:
+ *                             type: string
+ *                           scope:
+ *                             type: string
+ *                             nullable: true
+ *                           scopeOrigin:
+ *                             type: string
+ *                             enum: [document, reference, activity-type, not-applicable, none]
  *                           originalScope:
  *                             type: string
  *                             nullable: true

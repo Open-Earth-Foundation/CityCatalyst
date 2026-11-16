@@ -12,6 +12,7 @@ import {
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import type { InventoryTypeEnum } from "@/util/enums";
 import {
+  isGpcReference,
   scopeFromLabel,
   siblingReferences,
   taxonomyScope,
@@ -21,7 +22,10 @@ import type {
   ImportRowOutcome,
   ImportRowPreview,
   ImportRowReview,
+  ImportScopeNoteRow,
+  ScopeOrigin,
 } from "@/util/types";
+import { hasSignedNumericValue } from "@/util/parse-numeric-cell";
 import { excelRowNumber } from "@/util/excel-row-number";
 
 type ImportRow = ECRFImportResult["rows"][number];
@@ -93,6 +97,61 @@ export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   return isImportedWasteRef(ref) ? "direction-unconfirmed" : null;
 }
 
+/**
+ * Where the row's scope comes from. The final scope counts as taken from the
+ * reference only when the reference's taxonomy scope is defined and equal to
+ * it. The scope is never derived from the reference's last digit.
+ */
+function classifyScopeOrigin(row: ImportRow): ScopeOrigin {
+  const review = row.review;
+  if (review?.scopeSource === "inferred") return "activity-type";
+  if (scopeFromLabel(review?.scope) != null) return "document";
+  const expected = taxonomyScope(row.gpcRefNo);
+  if (expected == null)
+    return isGpcReference(row.gpcRefNo) ? "not-applicable" : "none";
+  return scopeFromLabel(review?.finalScope) === expected ? "reference" : "none";
+}
+
+/** A preview note for a row whose scope the document did not give, or null. */
+function scopeNote(row: ImportRow): ImportScopeNoteRow | null {
+  const review = row.review;
+  if (!review) return null;
+  const scopeOrigin = classifyScopeOrigin(row);
+  if (scopeOrigin === "document") return null;
+  const stated = review.scope?.trim() || null;
+  let scope: string | null;
+  let original: string | null;
+  if (scopeOrigin === "activity-type") {
+    scope = review.scope ?? null;
+    original = review.originalScope?.trim() || null;
+  } else if (scopeOrigin === "reference") {
+    scope = review.finalScope ?? null;
+    original = stated;
+  } else if (scopeOrigin === "not-applicable") {
+    scope = null;
+    original = stated;
+  } else {
+    scope = stated;
+    original = null;
+  }
+  // "Scope 2" and "2" are the same scope, so compare normalized values.
+  const differs =
+    original != null && scopeFromLabel(original) !== scopeFromLabel(scope);
+  const total = resolveImportedTotalCO2e(row);
+  return {
+    rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
+    page: review.page,
+    text: review.category || review.activityType || null,
+    sector: review.sector,
+    subsector: review.subsector,
+    value: hasSignedNumericValue(total) ? total : null,
+    gpcRefNo: row.gpcRefNo,
+    scope,
+    scopeOrigin,
+    originalScope: differs ? original : null,
+  };
+}
+
 function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
   const review = row.review!;
   const suggestedRefNo = review.suggestedRefNo ?? row.gpcRefNo;
@@ -109,6 +168,8 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     sector: review.sector,
     subsector: review.subsector,
     category: review.category,
+    activityType: review.activityType ?? null,
+    scopeOrigin: classifyScopeOrigin(row),
     scope: review.scope,
     finalScope: review.finalScope ?? review.scope,
     decisionToken: review.decisionToken,
@@ -259,6 +320,11 @@ export async function previewImportRows(
     skippedByIssue[outcome.issue] = (skippedByIssue[outcome.issue] ?? 0) + 1;
   }
 
+  // Rows held for a decision are listed in reviewRows, not here.
+  const scopeNotes = importedRows.flatMap((row) =>
+    pending.has(row.rowIndex) ? [] : [scopeNote(row)].filter((n) => n != null),
+  );
+
   return {
     totalRows: importResult.rows.length,
     importedRows: importedRows.length,
@@ -266,33 +332,8 @@ export async function previewImportRows(
     skippedByIssue,
     pendingRows: pending.size,
     reviewRows,
-    scopeWarnings: importedRows
-      .filter((row) => row.review && scopeFromLabel(row.review.scope) == null)
-      .map((row) => ({
-        rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
-        gpcRefNo: row.gpcRefNo,
-        scope: row.review?.scope ?? null,
-      })),
-    // Rows held for a decision are listed in reviewRows, not here.
-    inferredScopeRows: importedRows
-      .filter(
-        (row) =>
-          row.review?.scopeSource === "inferred" && !pending.has(row.rowIndex),
-      )
-      .map((row) => {
-        const scope = row.review?.scope ?? null;
-        const original = row.review?.originalScope?.trim() || null;
-        // "Scope 2" and "2" are the same scope, so compare normalized values.
-        const differs =
-          original != null &&
-          scopeFromLabel(original) !== scopeFromLabel(scope);
-        return {
-          rowNumber: excelRowNumber(row.rowIndex, row.sourceRowNumber),
-          gpcRefNo: row.gpcRefNo,
-          scope,
-          originalScope: differs ? original : null,
-        };
-      }),
+    scopeWarnings: scopeNotes.filter((n) => n.scopeOrigin === "none"),
+    inferredScopeRows: scopeNotes.filter((n) => n.scopeOrigin !== "none"),
     omittedFromTotalTonnes,
     rows: outcomes,
   };

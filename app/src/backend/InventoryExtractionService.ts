@@ -1684,7 +1684,8 @@ function structuredPagePrompt(
  * target only when it is in the table, or continuation chain, of a kept line
  * item. Page selection, the provenance checks and the GPC references are
  * those of the Markdown path; `markdown`, the OCR Markdown of the same job,
- * feeds the provenance checks.
+ * feeds the provenance checks. PDF import jobs call it only when
+ * `GHGI_STRUCTURED_EXTRACTION` is on (see `PdfOcrService`).
  *
  * @throws LLMError with BAD_REQUEST if the Markdown, a page's text or a
  *   table's cells look like prompt-injection, and "Inventory not found for

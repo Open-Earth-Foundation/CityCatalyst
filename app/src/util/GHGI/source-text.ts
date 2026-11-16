@@ -592,10 +592,12 @@ export const TONNE_UNIT_PATTERNS: RegExp[] = [
 ];
 
 /**
- * The per-person part of a unit: `/capita`, `per capita`, `per person`,
- * `per cápita`, `/hab.`, `per head`, `pro Kopf`.
+ * The per-person part of a unit: `/capita`, `per capita`, `per person(s)`,
+ * `per cápita`, `per inhabitant(s)`, `/hab.`, `/habitantes`, `per head`,
+ * `pro Kopf`, and the Spanish `por` forms (`por habitante`, `por cápita`,
+ * `por persona`).
  */
-const PER_PERSON_TAIL = String.raw`(?:(?:\/\s*|(?<!\p{L})per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?!\p{L})|(?<!\p{L})pro\s+Kopf(?!\p{L}))`;
+const PER_PERSON_TAIL = String.raw`(?:(?:\/\s*|(?<!\p{L})(?:per|por)\s+)(?:capita|cápita|persons?|personas?|inhabitants?|hab(?:itantes?)?\.?|head)(?!\p{L})|(?<!\p{L})pro\s+Kopf(?!\p{L}))`;
 
 /**
  * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,

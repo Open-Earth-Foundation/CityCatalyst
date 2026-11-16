@@ -207,7 +207,7 @@ function namesColumnUnit(headers: string[]): boolean {
  *    no unit and the table continues another (`continuationOf`), the same
  *    column's headers in the first table up the chain that names one.
  *    `per_person`: those headers name a per-person unit (`/capita`,
- *    `per capita`, `per person`, `per cápita`, `pro Kopf`).
+ *    `per capita`, `per person`, `por habitante`, `pro Kopf`: `namesPerPerson`).
  * 4. The number is parsed from the cell with `style`: the whole cell, or else
  *    the printed text with the cell's sign (`(811,512)`, `−603,983 (a)`).
  *    `not_a_number` when neither parses (`NE`).

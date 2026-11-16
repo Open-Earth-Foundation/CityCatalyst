@@ -24,6 +24,7 @@ import {
   selectLevelTotal,
   sumImported,
   unitGroupKey,
+  UNIT_FACTOR,
   UNIT_GROUP_OPTIONS,
   type ExtractedGases,
   type NumberReading,
@@ -33,6 +34,7 @@ import {
 } from "@/util/GHGI/source-checks";
 import { toCanonical } from "@/util/notation-keys";
 import {
+  definesMtAsMetricTons,
   detectNumberStyle,
   inheritedPageScales,
   isAmbiguousNumberText,
@@ -1148,6 +1150,9 @@ async function extractRowsFromDocument(
   // Unit evidence of a table continued from previous pages, read from the page
   // text of every page before the concurrent page calls.
   const inheritedScales = inheritedPageScales(allPages);
+  // A glossary may define MT on another page than the table: read it once on
+  // the whole document, for every page and chunk (CC-1233).
+  const mtIsMetricTons = definesMtAsMetricTons(documentContent);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1182,6 +1187,7 @@ async function extractRowsFromDocument(
               sourceMetadata: metadata,
               documentStyle,
               inheritedScales: inheritedScales.get(page.page) ?? [],
+              mtIsMetricTons,
             },
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
@@ -1261,6 +1267,7 @@ async function extractRowsFromDocument(
         {
           source: { text: documentContent, kind: "document" },
           sourceMetadata: metadata,
+          mtIsMetricTons,
         },
       );
       return checkExtractionResult(
@@ -1306,6 +1313,7 @@ async function extractRowsFromDocument(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
       source: { text: documentContent, kind: "document" },
       sourceMetadata: metadata,
+      mtIsMetricTons,
     }),
     allRows.length,
     targetYear,
@@ -2084,7 +2092,11 @@ type PrintedTextContext = {
    * else the metadata format, else english.
    */
   reading: NumberReading;
-  /** The source text names kt or Mt on a caption: a printed number may be scaled. */
+  /**
+   * The source text names kt or Mt on a caption, or the page inherits a kt or
+   * Mt scale from a table continued from previous pages: a printed number may
+   * be scaled.
+   */
   largeUnit: boolean;
 };
 
@@ -2112,7 +2124,8 @@ function withoutPrintedText(row: ExtractedRow): ExtractedRow {
  * The factor comes from unit evidence, never from the ratio alone: for
  * `6.600`, english × 1000 equals european × 1. It is the unit multiplier when
  * the model left the number in kt or Mt; 1000, 1,000,000 or 1, in that order,
- * when the source names a large unit; else 1. At each factor the current
+ * when the source names a large unit or inherits a kt or Mt scale from a
+ * continued table (`context.largeUnit`); else 1. At each factor the current
  * reading is tried first, then, for an ambiguous number, the other one. When
  * only the other reading matches (the model read it the other way), the value
  * is stored under the current reading. With no match the text is dropped, the
@@ -2178,6 +2191,31 @@ function withPrintedText(
     "Printed text does not match the extracted value; text ignored",
   );
   return withoutPrintedText(row);
+}
+
+/**
+ * A row the model scaled by 1,000,000 (`printedFactor`) read back as printed,
+ * with `unitCheck: "MT"`: the total and gases divided by the factor, and
+ * `printedFactor` 1, since the "MT" factor is applied by the unit reading.
+ */
+function asPrintedMt(row: ExtractedRow): ExtractedRow {
+  const factor = UNIT_FACTOR.Mt;
+  const out: ExtractedRow = { ...row, printedFactor: 1, unitCheck: "MT" };
+  if (row.totalCO2e != null) out.totalCO2e = row.totalCO2e / factor;
+  for (const gas of ["co2", "ch4", "n2o"] as const) {
+    const value = row[gas];
+    if (value != null) out[gas] = value / factor;
+  }
+  const stored = row.extractedGases;
+  if (stored) {
+    const gases: ExtractedGases = { ...stored };
+    for (const gas of ["co2", "ch4", "n2o"] as const) {
+      const value = stored[gas];
+      if (value != null) gases[gas] = value / factor;
+    }
+    out.extractedGases = gases;
+  }
+  return out;
 }
 
 /** Fields of a row a reported total keeps for the review checks. */
@@ -2588,13 +2626,22 @@ export type FinalizeOptions = {
    * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
    */
   inheritedScales?: readonly Scale[];
+  /**
+   * The document defines MT as metric tons (`definesMtAsMetricTons` on the
+   * whole document). "Mt" then reads like "MT": kept as tonnes with
+   * `unitCheck: "MT"`, and a value the model scaled by 1,000,000 on a page
+   * whose captions (or a continued table) name Mt is restored to the printed
+   * value with the same mark.
+   */
+  mtIsMetricTons?: boolean;
 };
 
 /**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
- *   rows are kept as tonnes with `unitCheck: "MT"`; unit-less rows on a
+ *   rows are kept as tonnes with `unitCheck: "MT"`, and so are "Mt" rows when
+ *   the document defines MT as metric tons (`mtIsMetricTons`); unit-less rows on a
  *   kt/Mt/kg page (its own captions, or a table continued from the previous
  *   page) are kept and marked (`unitCheck: "missing"`, with the page's
  *   `unitHint`), and unit-less totals there are dropped;
@@ -2761,7 +2808,12 @@ function finalizeRows(
     const unitMissing = unitUnclear && !row.unit?.trim() && hasAmount;
     if (unitMissing) evidenceDropped = true;
     // "MT" stays as printed (tonnes by default) and the review asks which unit.
-    const ambiguousMt = isAmbiguousMtUnit(row.unit);
+    // So does "Mt" in a document that defines MT as metric tons (CC-1233).
+    const ambiguousMt =
+      isAmbiguousMtUnit(row.unit) ||
+      (!!options?.mtIsMetricTons &&
+        row.unit != null &&
+        cleanUnit(row.unit) === "Mt");
     const multiplier = ambiguousMt ? 1 : tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
@@ -2793,6 +2845,16 @@ function finalizeRows(
         ? checked.totalCO2e / multiplier
         : row.totalCO2e;
     scaled = checked;
+    // The model converted a "Mt" column by 1,000,000 in a document that
+    // defines MT as metric tons: back to the printed value, asked like "MT".
+    if (
+      options?.mtIsMetricTons &&
+      multiplier === 1 &&
+      scaled.printedFactor === UNIT_FACTOR.Mt &&
+      sourceScales.includes(1_000_000)
+    ) {
+      scaled = asPrintedMt(scaled);
+    }
     if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
 
     const labelLevel = sumLabelLevel(row);

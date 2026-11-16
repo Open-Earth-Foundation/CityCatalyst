@@ -13,6 +13,7 @@ import {
   isLineItemValueInNumbers,
   numbersInTableCells,
   inheritedPageScales,
+  definesMtAsMetricTons,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -663,5 +664,28 @@ describe("inheritedPageScales: tables continued from the previous page", () => {
       { page: 22, text: "| Residuos | 2 |" },
     ]);
     expect(inherited.get(22)).toEqual([]);
+  });
+});
+
+describe("definesMtAsMetricTons", () => {
+  it.each([
+    "MT: metric tons",
+    "Glossary\nMT = metric tonnes\nCO2e: carbon dioxide equivalent",
+    "MT – metric ton",
+    "all values in metric tons (MT) of CO2e",
+    "MT (metric tons)",
+    "MT: Metric Tons",
+  ])("true on %j", (text) => {
+    expect(definesMtAsMetricTons(text)).toBe(true);
+  });
+
+  it.each([
+    "Mt: million tonnes",
+    "mt: metric tons",
+    "Mt (metric tons)",
+    "| Sector | 2021 Emissions (Mt CO2e) |\n| Energy | 1,500,000 |",
+    "",
+  ])("false on %j", (text) => {
+    expect(definesMtAsMetricTons(text)).toBe(false);
   });
 });

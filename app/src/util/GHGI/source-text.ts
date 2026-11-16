@@ -654,6 +654,34 @@ function withoutLargeUnits(line: string): string {
   );
 }
 
+/** "metric ton", "metric tons", "metric tonne(s)", in any case. */
+const METRIC_TON = String.raw`metric\s+ton(?:ne)?s?\b`;
+
+/**
+ * A definition of `MT` as metric tons: `MT: metric tons`, `MT = metric
+ * tonnes`, `MT – metric ton`, `metric tons (MT)` or `MT (metric tons)`. The
+ * `MT` group is checked in capitals by `definesMtAsMetricTons`.
+ */
+const MT_DEFINITIONS: RegExp[] = [
+  new RegExp(String.raw`(?<![\w])(MT)\s*[:=–—-]\s*${METRIC_TON}`, "gi"),
+  new RegExp(String.raw`${METRIC_TON}\s*\(\s*(MT)\s*\)`, "gi"),
+  new RegExp(String.raw`(?<![\w])(MT)\s*\(\s*${METRIC_TON}\s*\)`, "gi"),
+];
+
+/**
+ * True when the document defines MT as metric tons (a glossary line
+ * `MT: metric tons`, `MT = metric tonnes`, `MT – metric ton`, or
+ * `metric tons (MT)`, `MT (metric tons)`). "metric ton(ne)s" matches in any
+ * case, `MT` only in capitals: `Mt: million tonnes` is no such definition.
+ * Read on the whole document: the glossary often sits on another page than
+ * the table.
+ */
+export function definesMtAsMetricTons(text: string): boolean {
+  return MT_DEFINITIONS.some((re) =>
+    [...text.matchAll(re)].some((match) => match[1] === "MT"),
+  );
+}
+
 /**
  * True when the page names a tonne unit (t, tCO2e, tonnes) on a caption line,
  * with the rules of `namesLargeUnit`. "thousand tonnes" and "million tonnes"

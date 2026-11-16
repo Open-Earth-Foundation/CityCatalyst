@@ -3,16 +3,32 @@
  * value or unit is not confirmed are kept and marked for review, never trusted
  * silently or dropped.
  */
-import { describe, expect, it, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+
+const complete = jest.fn<(args: unknown) => Promise<{ content: string }>>();
 
 jest.unstable_mockModule("@/backend/llm", () => ({
-  createLLMClient: () => ({ complete: jest.fn() }),
-  LLMError: class LLMError extends Error {},
+  createLLMClient: () => ({ complete }),
+  LLMError: class LLMError extends Error {
+    code: string;
+    constructor(message: string, code: string) {
+      super(message);
+      this.code = code;
+    }
+  },
   LLMErrorCode: { BAD_REQUEST: "BAD_REQUEST" },
 }));
 
-const { finalizeExtractedRows } =
-  await import("@/backend/InventoryExtractionService");
+const {
+  extractInventoryFromDocument,
+  finalizeExtractedRows,
+  selectReconciledPages,
+} = await import("@/backend/InventoryExtractionService");
+const { reconciliationTargets } = await import("@/util/GHGI/extraction-summary");
+
+beforeEach(() => {
+  complete.mockReset();
+});
 type ExtractedRow = Parameters<typeof finalizeExtractedRows>[0][number];
 
 const lineItem = (
@@ -209,5 +225,197 @@ describe("CC-1163 stage 1: rows without a unit on a page naming another unit", (
     expect(result.rows).toHaveLength(1);
     expect(result.summary.reportedTotals).toEqual([]);
     expect(result.summary.droppedRows.unsupported_unit).toBe(1);
+  });
+});
+
+/** Eight numbers of 3+ digits that are no row or total, so a page is sent to the model. */
+const FILLER =
+  "Notes 101,101 102,102 103,103 104,104 105,105 106,106 107,107 108,108\n";
+
+/**
+ * A document of the given pages. The mocked model answers each page call with
+ * the rows given for that page, and the whole-document call (it names more than
+ * one page marker) with `chunkRows`.
+ */
+function documentOf(
+  pages: Record<number, { text: string; rows?: Record<string, unknown>[] }>,
+  chunkRows: Record<string, unknown>[] = [],
+): string {
+  const entries = Object.entries(pages).map(
+    ([n, p]) => [Number(n), p] as const,
+  );
+  complete.mockImplementation(async (args) => {
+    const prompt = JSON.stringify(args);
+    const hits = entries.filter(([n]) => prompt.includes(`PAGE-${n}-MARK`));
+    const rows = hits.length === 1 ? (hits[0][1].rows ?? []) : chunkRows;
+    return { content: JSON.stringify({ rows }) };
+  });
+  return entries
+    .map(([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`)
+    .join("");
+}
+
+const item = (
+  subsector: string,
+  gpcRefNo: string,
+  totalCO2e: number,
+): Record<string, unknown> => ({
+  year: 2021,
+  sector: "Stationary Energy",
+  subsector,
+  scope: "1",
+  gpcRefNo,
+  totalCO2e,
+  unit: "t",
+  rowType: "line_item",
+});
+
+const totalOf = (
+  totalCO2e: number,
+  category = "Total",
+): Record<string, unknown> => ({
+  year: 2021,
+  sector: null,
+  subsector: null,
+  category,
+  totalCO2e,
+  unit: "t",
+  rowType: "total",
+});
+
+const targetValues = (
+  totals: Parameters<typeof reconciliationTargets>[0],
+): number[] => {
+  const targets = reconciliationTargets(totals, 2021);
+  return [...targets.grand, ...targets.net];
+};
+
+describe("CC-1163 stage 1: a reported total is a target only next to its rows", () => {
+  it("invented 5,000,000 total with population 5.000 elsewhere is no target", async () => {
+    // Page 3 has kt evidence, so 5.000 x 1000 reads as 5,000,000: the model's
+    // total there is found in the text, but no line item is near it.
+    const rows = [
+      item("Residential Buildings", "I.1.1", 3000000),
+      item("Commercial Buildings", "I.2.1", 2000000),
+    ];
+    const text = documentOf(
+      {
+        3: {
+          text:
+            "Table 1: City profile (kt CO2e)\n" +
+            "Population 5.000\n1.234.567 2.345.678 3.456.789 4.567.890\n",
+          rows: [totalOf(5000000)],
+        },
+        9: {
+          text: "Residential buildings 3,000,000\nCommercial buildings 2,000,000\n",
+          rows: [...rows, totalOf(5000000)],
+        },
+      },
+      [...rows, totalOf(5000000)],
+    );
+    const { summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(targetValues(summary.reportedTotals)).not.toContain(5000000);
+  });
+
+  it("total on the page after its rows is a target", async () => {
+    const text = documentOf({
+      7: {
+        text: "| Road | 100 |\n| Rail | 200 |",
+        rows: [
+          item("Residential Buildings", "I.1.1", 100),
+          item("Commercial Buildings", "I.2.1", 200),
+        ],
+      },
+      8: { text: "| Total | 300 |", rows: [totalOf(300)] },
+    });
+    const { summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(summary.reportedTotals).toEqual([
+      expect.objectContaining({ value: 300, page: 8, rowsNearby: true }),
+    ]);
+    expect(targetValues(summary.reportedTotals)).toContain(300);
+  });
+
+  it("headline summary-table total far from its rows is a target", async () => {
+    const text = documentOf({
+      3: {
+        text: "| Total emissions | 9,559,215 |",
+        rows: [totalOf(9559215, "Total emissions")],
+      },
+      20: {
+        text: "Residential buildings 5,000,000\n",
+        rows: [item("Residential Buildings", "I.1.1", 5000000)],
+      },
+      21: {
+        text: "Commercial buildings 4,559,215\n",
+        rows: [item("Commercial Buildings", "I.2.1", 4559215)],
+      },
+    });
+    const { summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(summary.pageSelection).toBe("reconciled");
+    expect(summary.selectedPages).toEqual([20, 21]);
+    expect(summary.reportedTotals).toEqual([
+      expect.objectContaining({
+        value: 9559215,
+        page: 3,
+        onTableLine: true,
+        rowsNearby: true,
+      }),
+    ]);
+    expect(targetValues(summary.reportedTotals)).toContain(9559215);
+  });
+
+  it("the same total in prose only is not a target", () => {
+    // Driven through the merge step: with no target the page path falls back to
+    // whole-document chunks, whose totals carry no page.
+    const at = (n: number, text: string, rows: ExtractedRow[]) => ({
+      page: n,
+      result: finalizeExtractedRows(
+        rows.map((row) => ({ ...row, page: n })),
+        2021,
+        { deferYearAssumption: true, ...page(text) },
+      ),
+    });
+    const selected = selectReconciledPages(
+      [
+        at(3, "Total emissions were 9,559,215 t.", [
+          total(9559215, { category: "Total emissions" }),
+        ]),
+        at(20, "Residential buildings 5,000,000", [
+          lineItem(5000000, {
+            sector: "Stationary Energy",
+            subsector: "Residential Buildings",
+            gpcRefNo: "I.1.1",
+          }),
+        ]),
+        at(21, "Commercial buildings 4,559,215", [
+          lineItem(4559215, {
+            sector: "Stationary Energy",
+            subsector: "Commercial Buildings",
+            gpcRefNo: "I.2.1",
+          }),
+        ]),
+      ],
+      2021,
+    );
+    expect(selected.summary.reportedTotals).toEqual([
+      expect.objectContaining({
+        value: 9559215,
+        page: 3,
+        inText: true,
+        onTableLine: false,
+        rowsNearby: false,
+      }),
+    ]);
+    expect(targetValues(selected.summary.reportedTotals)).not.toContain(
+      9559215,
+    );
+    expect(selected.summary.pageSelection).toBe("fallback");
   });
 });

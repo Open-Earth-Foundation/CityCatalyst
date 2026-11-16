@@ -207,6 +207,8 @@ function netAndRemovalsByValue(
  * against 785,873) and would raise the share every other total is held to. For the
  * same reason a negative total is a grand total only when the document has no
  * positive one.
+ *
+ * A total with no line item nearby (`rowsNearby === false`) is no target.
  */
 export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
@@ -218,6 +220,8 @@ export function reconciliationTargets(
       Number.isFinite(total.value) &&
       // A total not printed in the source text (model arithmetic) is no target.
       total.inText !== false &&
+      // A total far from any line item (prose or a profile figure) is no target.
+      total.rowsNearby !== false &&
       // A total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );

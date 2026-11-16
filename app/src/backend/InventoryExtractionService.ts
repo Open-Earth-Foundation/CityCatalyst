@@ -607,7 +607,31 @@ function selectPages(
         },
       };
     });
-  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
+  // A total is tied to its rows when a kept line item of the target year sits on
+  // its page or the page before, or, for a total on a table line (a summary table
+  // far from the detail), on any page. Otherwise it is no target. A total without
+  // page-path information (no page, or no page source) stays unknown.
+  const rowPages = new Set(
+    sorted
+      .filter((p) =>
+        p.result.rows.some(
+          (row) => targetYear == null || row.year === targetYear,
+        ),
+      )
+      .map((p) => p.page),
+  );
+  const reportedTotals = sorted.flatMap((p) =>
+    p.result.summary.reportedTotals.map((total): ReportedTotal => {
+      if (total.page == null || total.onTableLine === undefined) return total;
+      return {
+        ...total,
+        rowsNearby:
+          rowPages.has(total.page) ||
+          rowPages.has(total.page - 1) ||
+          (total.onTableLine && rowPages.size > 0),
+      };
+    }),
+  );
   // Without any year in the document a wrong table cannot be told apart by year:
   // accept only a run that reconciles within the review tolerance.
   const selectionTolerance = yearAssumed

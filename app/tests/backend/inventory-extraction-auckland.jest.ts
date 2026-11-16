@@ -614,7 +614,7 @@ describe("page-by-page extraction with reconciliation (CC-1008 amendment)", () =
   const page = (n: number, title: string, withNumbers = true) =>
     `<!-- page: ${n} -->
 ${title}
-${withNumbers ? `${numbers(10)}\nTOTAL 9,559,215` : "Prose only."}
+${withNumbers ? `${numbers(10)}\n| TOTAL | 9,559,215 |` : "Prose only."}
 `;
 
   const grandTotal = {

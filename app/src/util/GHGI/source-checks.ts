@@ -19,6 +19,8 @@ import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import { parseNumberString } from "@/util/GHGI/source-text";
 
 export type UnitReading = "t" | "kt" | "Mt";
+const DEFAULT_UNIT: UnitReading = "t";
+const DEFAULT_NUMBER_FORMAT: NumberReading = "english";
 export type NumberReading = "european" | "english";
 /**
  * Rows that share one unit reading: `"doc"` for the rows written "MT"; `"p12"`
@@ -85,8 +87,10 @@ export type CheckStatus = "pending" | "confirmed";
 
 /**
  * Rows of one page (or table) printed without a unit on a page whose captions
- * name kt, Mt or kg. They are stored in tonnes (`reading: "t"`) until the
- * group is answered.
+ * name kt, Mt or kg. An answer X means "the printed numbers of this group are
+ * in X": each row becomes its printed value times `UNIT_FACTOR[X]`. Until then
+ * each row keeps the value extracted under its own base reading
+ * (`baseUnitReading`).
  */
 export type UnitGroup = {
   key: UnitGroupKey;
@@ -94,14 +98,16 @@ export type UnitGroup = {
   tableId: string | null;
   rowCount: number;
   /**
-   * Reading the card selects first: "kt" when the page names only kt (or Gg),
-   * "Mt" when only Mt, else "t" (mixed units, or kg, which is not an option).
+   * Reading the card selects first: kt or Mt when every row's printed value
+   * was scaled by that factor (`printedFactor`); else "kt" when the page names
+   * only kt (or Gg), "Mt" when only Mt, else "t" (mixed units, or kg, which is
+   * not an option).
    */
   preselected: UnitReading;
   options: UnitReading[];
   status: CheckStatus;
-  /** Reading the stored rows are under now. */
-  reading: UnitReading;
+  /** The answered reading; null until answered (rows on their base readings). */
+  reading: UnitReading | null;
 };
 
 /** A document total the user confirmed, or a total the user typed. */
@@ -166,13 +172,14 @@ export function hasPendingSourceChecks(
 
 /**
  * Current readings of a summary's checks. A summary stored before unit groups
- * has only the "MT" reading, read as `{ doc: reading }`.
+ * has only the "MT" reading, read as `{ doc: reading }`. An unanswered unit
+ * group has no entry: its rows stay on their base readings.
  */
 export function readingsOf(checks: SourceChecks | null | undefined): Readings {
   const units: Record<UnitGroupKey, UnitReading> = {};
   if (checks?.unit) units[DOC_UNIT_GROUP] = checks.unit.reading;
   for (const group of checks?.unitGroups ?? []) {
-    units[group.key] = group.reading;
+    if (group.reading) units[group.key] = group.reading;
   }
   return { units, numberFormat: checks?.numberFormat?.reading ?? null };
 }
@@ -189,13 +196,23 @@ export function unitGroupKey(item: CheckableValue): UnitGroupKey | null {
   return null;
 }
 
+/**
+ * Reading an item's value is under before its group is answered. For a row
+ * without a printed unit it comes from `printedFactor` (1000: kt, 1,000,000:
+ * Mt, else t), since that factor is the unit the model already applied. "MT"
+ * items start in tonnes; their `printedFactor` excludes the MT factor.
+ */
+export function baseUnitReading(item: CheckableValue): UnitReading {
+  if (item.unitCheck !== "missing") return DEFAULT_UNIT;
+  if (item.printedFactor === UNIT_FACTOR.kt) return "kt";
+  if (item.printedFactor === UNIT_FACTOR.Mt) return "Mt";
+  return DEFAULT_UNIT;
+}
+
 /** Readings a unit group offers. */
 export function unitOptions(key: UnitGroupKey): UnitReading[] {
   return key === DOC_UNIT_GROUP ? DOC_UNIT_OPTIONS : UNIT_GROUP_OPTIONS;
 }
-
-const DEFAULT_UNIT: UnitReading = "t";
-const DEFAULT_NUMBER_FORMAT: NumberReading = "english";
 
 /** Sum of imported values in tonnes, without rows left out of totals. */
 export function sumImported(rows: ExtractedRow[]): number {
@@ -221,8 +238,13 @@ function convert<R extends CheckableValue>(
 
   const group = unitGroupKey(item);
   const unitApplies = group != null;
-  const fromUnit = (group && from.units[group]) || DEFAULT_UNIT;
-  const toUnit = (group && to.units[group]) || DEFAULT_UNIT;
+  const base = baseUnitReading(item);
+  const fromUnit = (group && from.units[group]) || base;
+  const toUnit = (group && to.units[group]) || base;
+  // A missing unit's printedFactor is its base unit factor, which the unit
+  // reading replaces; an MT item's printedFactor is apart from the MT factor.
+  const textFactor =
+    item.unitCheck === "missing" ? 1 : (item.printedFactor ?? 1);
   const fromFormat = from.numberFormat ?? DEFAULT_NUMBER_FORMAT;
   const toFormat = to.numberFormat ?? DEFAULT_NUMBER_FORMAT;
   // Multiply first, then divide: Mt to t by a ratio of 1e-6 drifts on decimals.
@@ -235,10 +257,7 @@ function convert<R extends CheckableValue>(
   if (item.numberCheck && fromFormat !== toFormat && item.totalCO2eText) {
     const parsed = parseNumberString(item.totalCO2eText, toFormat);
     if (parsed != null) {
-      value =
-        parsed *
-        (item.printedFactor ?? 1) *
-        (unitApplies ? UNIT_FACTOR[toUnit] : 1);
+      value = parsed * textFactor * (unitApplies ? UNIT_FACTOR[toUnit] : 1);
       separatorChanged = true;
     }
   }
@@ -248,11 +267,13 @@ function convert<R extends CheckableValue>(
   const next: CheckableValue = { ...item, [key]: value };
   const stored = item.extractedGases;
   const restore = separatorChanged && stored?.numberFormat === toFormat;
+  // Gases of a missing unit were extracted under the row's base reading.
+  const gasUnit = item.unitCheck === "missing" ? base : stored?.unit;
   for (const gas of GAS_KEYS) {
     if (restore && stored![gas] != null) {
       // Same convention as `scale`: multiply first, then divide.
       next[gas] = unitApplies
-        ? (stored![gas]! * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[stored!.unit]
+        ? (stored![gas]! * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[gasUnit!]
         : stored![gas];
       continue;
     }
@@ -266,7 +287,7 @@ function convert<R extends CheckableValue>(
 /**
  * Items (rows or reported totals) converted from one set of readings to another.
  * An item's unit reading is that of its group (`unitGroupKey`); a group missing
- * from `from` or `to` reads as tonnes.
+ * from `from` or `to` leaves the item on its base reading (`baseUnitReading`).
  *
  * A separator change sets co2, ch4 and n2o to null: the text carries only the
  * total, so the gases cannot be rebuilt from it. They come back from

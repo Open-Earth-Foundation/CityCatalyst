@@ -20,6 +20,7 @@ import {
 } from "@/util/GHGI/reported-totals";
 import {
   applyReadings,
+  baseUnitReading,
   selectLevelTotal,
   sumImported,
   unitGroupKey,
@@ -2327,7 +2328,9 @@ function buildSourceChecks(
 
 /**
  * Page groups of the rows printed without a unit, by page. A group preselects
- * the hint its rows share, else tonnes. The rows are stored in tonnes.
+ * kt or Mt when every row's printed value was scaled by that factor (the model
+ * read the page's unit); else the caption hint its rows share, else tonnes.
+ * Rows keep their extracted values until the group is answered.
  */
 function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
   const groups = new Map<
@@ -2344,16 +2347,24 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
   return [...groups.entries()]
     .sort(([, a], [, b]) => (a.page ?? Infinity) - (b.page ?? Infinity))
     .map(([key, group]) => {
+      const bases = new Set(group.rows.map(baseUnitReading));
       const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));
+      const [base] = bases;
+      const preselected: UnitReading =
+        bases.size === 1 && base !== "t"
+          ? base
+          : hints.size === 1
+            ? [...hints][0]
+            : "t";
       return {
         key,
         page: group.page,
         tableId: null,
         rowCount: group.rows.length,
-        preselected: hints.size === 1 ? [...hints][0] : "t",
+        preselected,
         options: [...UNIT_GROUP_OPTIONS],
         status: "pending",
-        reading: "t",
+        reading: null,
       };
     });
 }

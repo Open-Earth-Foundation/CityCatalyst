@@ -298,17 +298,94 @@ describe("unit groups", () => {
           preselected: "kt",
           options: ["t", "kt", "Mt"],
           status: "pending",
-          reading: "t",
+          reading: null,
         },
       ],
     } as SourceChecks;
-    expect(readingsOf(checks)).toEqual({
-      units: { p12: "t" },
-      numberFormat: null,
-    });
+    // An unanswered group has no reading: its rows stay as extracted.
+    expect(readingsOf(checks)).toEqual({ units: {}, numberFormat: null });
     expect(hasPendingSourceChecks({ sourceChecks: checks })).toBe(true);
     checks.unitGroups![0].status = "confirmed";
+    checks.unitGroups![0].reading = "kt";
+    expect(readingsOf(checks).units).toEqual({ p12: "kt" });
     expect(hasPendingSourceChecks({ sourceChecks: checks })).toBe(false);
+  });
+
+  describe("rows the model already scaled", () => {
+    const none: Readings = { units: {}, numberFormat: null };
+    const scaled = row({
+      totalCO2e: 1_234_000,
+      totalCO2eText: "1,234",
+      printedFactor: 1000,
+      unitCheck: "missing",
+      page: 12,
+    });
+
+    it("converts from the printed value: kt keeps 1,234,000, t gives 1,234", () => {
+      const options = optionTotals([scaled], none, { unitGroup: "p12" });
+      expect(options).toEqual([
+        { reading: "t", total: 1234 },
+        { reading: "kt", total: 1_234_000 },
+        { reading: "Mt", total: 1_234_000_000 },
+      ]);
+      for (const option of options) {
+        expect(option.total).toBe(
+          sumImported(
+            applyReadings([scaled], none, {
+              ...none,
+              units: { p12: option.reading as "t" | "kt" | "Mt" },
+            }),
+          ),
+        );
+      }
+    });
+
+    it("a mixed group answered kt puts each row at printed x 1000", () => {
+      const rows = [
+        scaled,
+        row({
+          totalCO2e: 5,
+          totalCO2eText: "5",
+          printedFactor: 1,
+          unitCheck: "missing",
+          page: 12,
+        }),
+      ];
+      const kt = applyReadings(rows, none, { ...none, units: { p12: "kt" } });
+      expect(kt.map((r) => r.totalCO2e)).toEqual([1_234_000, 5000]);
+      const t = applyReadings(
+        kt,
+        { ...none, units: { p12: "kt" } },
+        { ...none, units: { p12: "t" } },
+      );
+      expect(t.map((r) => r.totalCO2e)).toEqual([1234, 5]);
+    });
+
+    it("the separator path does not apply printedFactor and the unit together", () => {
+      const ambiguous = row({
+        // English 6.6 on a kt page, which the model scaled to 6600 t.
+        totalCO2e: 6600,
+        totalCO2eText: "6.600",
+        printedFactor: 1000,
+        numberCheck: true,
+        unitCheck: "missing",
+        page: 12,
+        co2: 6600,
+        extractedGases: { co2: 6600, numberFormat: "english", unit: "t" },
+      });
+      const en: Readings = { units: {}, numberFormat: "english" };
+      const euKt: Readings = { units: { p12: "kt" }, numberFormat: "european" };
+      const [r] = applyReadings([ambiguous], en, euKt);
+      expect(r.totalCO2e).toBe(6_600_000); // printed 6600 x 1000, not x 1000 x 1000
+      expect(r.co2).toBeNull();
+      // Back to english under kt: printed 6.6 x 1000, gases restored at kt.
+      const [back] = applyReadings([r], euKt, {
+        units: { p12: "kt" },
+        numberFormat: "english",
+      });
+      expect(back.totalCO2e).toBe(6600);
+      expect(back.co2).toBe(6600);
+    });
   });
 });
 

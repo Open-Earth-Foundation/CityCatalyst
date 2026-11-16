@@ -521,11 +521,52 @@ describe("CC-1163 #3420: unit groups for rows without a printed unit", () => {
         preselected: "kt",
         options: ["t", "kt", "Mt"],
         status: "pending",
-        reading: "t",
+        reading: null,
       },
     ]);
-    // Rows stay in tonnes until the group is answered.
+    // Rows keep their extracted values until the group is answered.
     expect(result.rows[0].totalCO2e).toBe(1234);
+  });
+
+  it("preselects kt for a row the model already scaled, with kt and t option totals", async () => {
+    const { optionTotals } = await import("@/util/GHGI/source-checks");
+    const result = finalizeExtractedRows(
+      [{ ...unitless(1_234_000, 12), totalCO2eText: "1,234" }],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.rows[0]).toMatchObject({
+      totalCO2e: 1_234_000,
+      printedFactor: 1000,
+      unitCheck: "missing",
+    });
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p12",
+      preselected: "kt",
+    });
+    const totals = optionTotals(
+      result.rows,
+      { units: {}, numberFormat: null },
+      { unitGroup: "p12" },
+    );
+    expect(totals.find((o) => o.reading === "kt")?.total).toBe(1_234_000);
+    expect(totals.find((o) => o.reading === "t")?.total).toBe(1234);
+  });
+
+  it("preselects kt from the rows' printed factor on a page that also names tonnes", () => {
+    const result = finalizeExtractedRows(
+      [{ ...unitless(1_234_000, 14), totalCO2eText: "1,234" }],
+      2021,
+      page(
+        "Table 4: Emissions (t CO2e)\n| Sector | Total |\n" +
+          "Table 5: Emissions (kt CO2e)\n| Road | 1,234 |",
+      ),
+    );
+    expect(result.rows[0].printedFactor).toBe(1000);
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p14",
+      preselected: "kt",
+    });
   });
 
   it("preselects Mt on an Mt-only page", () => {

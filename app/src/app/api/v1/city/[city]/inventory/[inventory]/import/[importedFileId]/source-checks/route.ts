@@ -17,7 +17,10 @@
  *       document printed none). Only valid while the import waits for approval.
  *       Unit readings are keyed by group: `doc` for the rows written "MT"
  *       (t or Mt), and each `sourceChecks.unitGroups[].key` (for example `p12`)
- *       for rows printed without a unit on that page (t, kt or Mt).
+ *       for rows printed without a unit on that page (t, kt or Mt). A group
+ *       answer X means its printed numbers are in X: each row becomes its
+ *       printed value times X. An unanswered group has no key in
+ *       `expected.units`.
  *       `expected` names the readings the client computed its totals under; when
  *       the stored readings differ the answer is refused with 409.
  *     parameters:
@@ -317,8 +320,12 @@ export const PATCH = apiHandler(async (req, { session, params }) => {
   // Always convert from the stored values with their current readings. A
   // summary stored before unit groups reads as `{ doc: unit.reading }`.
   const from = readingsOf(checks);
+  const groupKeys = new Set([
+    ...(checks.unit ? [DOC_UNIT_GROUP] : []),
+    ...(checks.unitGroups ?? []).map((group) => group.key),
+  ]);
   for (const [key, reading] of Object.entries(body.units ?? {})) {
-    if (!(key in from.units)) {
+    if (!groupKeys.has(key)) {
       throw new createHttpError.BadRequest(
         `This import has no unit group ${key} to answer`,
       );

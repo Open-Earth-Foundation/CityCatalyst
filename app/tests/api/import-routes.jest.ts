@@ -1489,7 +1489,7 @@ describe("Import Routes API", () => {
         preselected: key === "p12" ? ("kt" as const) : ("t" as const),
         options: ["t" as const, "kt" as const, "Mt" as const],
         status: "pending" as const,
-        reading: "t" as const,
+        reading: null,
       });
       const groupChecks = () =>
         ({
@@ -1501,10 +1501,8 @@ describe("Import Routes API", () => {
             suggested: 0,
           },
         }) as SourceChecks;
-      const T_GROUPS: Readings = {
-        units: { p12: "t", p14: "t" },
-        numberFormat: null,
-      };
+      // No group answered yet: no group key in the readings.
+      const T_GROUPS: Readings = { units: {}, numberFormat: null };
       const createGrouped = () =>
         createChecked({ rows: groupRows, checks: groupChecks() });
 
@@ -1535,7 +1533,7 @@ describe("Import Routes API", () => {
         const next = await patch(
           file.id,
           { units: { p12: "Mt" } },
-          { units: { p12: "kt", p14: "t" }, numberFormat: null },
+          { units: { p12: "kt" }, numberFormat: null },
         );
         await expectStatusCode(next, 200);
         const again = await storedSummary(file);
@@ -1545,6 +1543,41 @@ describe("Import Routes API", () => {
             (option) => option.reading === "Mt",
           )?.total,
         );
+      });
+
+      it("a kt answer leaves a row the model already scaled unchanged", async () => {
+        // Printed "1,234" on a kt page; the model returned 1,234,000 t.
+        const scaledRows = [
+          row("I.1.1", 1_234_000, {
+            unitCheck: "missing",
+            page: 12,
+            totalCO2eText: "1,234",
+            printedFactor: 1000,
+          }),
+          row("I.2.1", 5, {
+            unitCheck: "missing",
+            page: 12,
+            totalCO2eText: "5",
+            printedFactor: 1,
+          }),
+        ] as ExtractedRow[];
+        const file = await createChecked({
+          rows: scaledRows,
+          checks: {
+            unitGroups: [{ ...group("p12", 12, 2), preselected: "t" }],
+          } as SourceChecks,
+        });
+        await expectStatusCode(
+          await patch(file.id, { units: { p12: "kt" } }, T_GROUPS),
+          200,
+        );
+        const stored = await storedSummary(file);
+        expect(stored.rows.map((r) => r.totalCO2e)).toEqual([1_234_000, 5000]);
+        const ktTotal = optionTotals(scaledRows, T_GROUPS, {
+          unitGroup: "p12",
+        }).find((option) => option.reading === "kt")?.total;
+        expect(stored.extractionSummary.importedSum).toBe(ktTotal);
+        expect(stored.extractionSummary.importedSum).toBe(1_239_000);
       });
 
       it("rejects an unknown group key with 400", async () => {

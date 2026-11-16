@@ -114,6 +114,8 @@
  *                               - direction-unconfirmed
  *                               - excluded-reference-unconfirmed
  *                               - reference-conflict
+ *                               - value-unconfirmed
+ *                               - unit-unconfirmed
  *                               - skipped-in-review
  *       400:
  *         description: File is not waiting for approval.

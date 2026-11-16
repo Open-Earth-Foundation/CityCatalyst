@@ -424,8 +424,12 @@ describe("extractInventoryFromStructured", () => {
   it.each([
     ["kt", "missing"],
     ["Mt CO2e", "missing"],
-    ["MT", "missing"],
-    ["Tonnen CO₂", "missing"],
+    ["thousand tonnes", "missing"],
+    ["KgCO2e/año", "missing"],
+    // An ambiguous or unknown model unit is no evidence either way.
+    ["MT", undefined],
+    ["Tonnen CO₂", undefined],
+    ["tCO_{2}e", undefined],
     ["tCO2e", undefined],
     [null, undefined],
   ])(

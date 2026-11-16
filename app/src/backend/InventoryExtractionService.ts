@@ -1469,8 +1469,9 @@ function gasFromCell(
  * value is the cell's, in tonnes; `unit` is "t". A cell with no unit is
  * tonnes when its table has no kt, Mt, Gg or kg evidence (`hasScaleEvidence`,
  * as stage 1 reads a page without it) and the model's own unit is tonnes or
- * absent; otherwise (a model unit such as kt, Mt, `MT` or an unknown word:
- * R26), and for a unit conflict or `MT`, `unit` is null with
+ * absent or not a known unit; otherwise (a model unit of a known factor
+ * other than 1, such as kt, Mt or kg: R26), and for a unit conflict or `MT`,
+ * `unit` is null with
  * `unitCheck: "missing"` (kept as printed). The
  * year is the cell's column year, else the single year of its table's notes,
  * else the model's. A row whose cell does not read (no cell on its page, text
@@ -1505,12 +1506,16 @@ function readRowCells(
   out.n2o = gas(row.n2oCell);
   out.totalCO2e = read.tonnes;
   out.totalCO2eText = read.printed;
-  // No level names a unit, yet the model read one other than tonnes (kt,
-  // Mt, `MT`, an unknown word): code cannot tell which is right (R26).
+  // No level names a unit, yet the model read a known unit other than
+  // tonnes (kt, Mt, kg): code cannot tell which is right (R26). An unknown
+  // or ambiguous model unit (`MT`, `tCO_{2}e` OCR markup) is not evidence.
+  const modelFactor =
+    row.unit && namesKilogram(row.unit) ? 0.001 : tonnesMultiplier(row.unit);
   const modelUnitDiffers =
     read.unitSource == null &&
     !read.unitConflict &&
-    tonnesMultiplier(row.unit) !== 1;
+    modelFactor != null &&
+    modelFactor !== 1;
   const tonnes =
     !modelUnitDiffers && readsAsTonnes(read, found.bundle, hasScaleEvidence);
   out.unit = tonnes ? "t" : null;

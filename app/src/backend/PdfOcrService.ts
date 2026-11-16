@@ -27,9 +27,12 @@ import {
 import {
   extractInventoryFromDocument,
   extractInventoryFromStructured,
+  TARGET_YEAR_NOT_FOUND,
   type ExtractOptions,
   type ExtractionResult,
 } from "@/backend/InventoryExtractionService";
+// The types module only: the client entry point needs a configured logger.
+import { LLMError } from "@/backend/llm/types";
 import { ImportStatusEnum } from "@/util/enums";
 import { zeroRowReason } from "@/util/GHGI/extraction-summary";
 import { logger } from "@/services/logger";
@@ -132,8 +135,7 @@ class PdfSourceError extends Error {
 
 /** Extraction errors the import wizard can show in the user's language. */
 const EXTRACTION_ERROR_KEYS: Record<string, string> = {
-  "Inventory not found for the target year":
-    "i18n:inventory-not-found-for-target-year",
+  [TARGET_YEAR_NOT_FOUND]: "i18n:inventory-not-found-for-target-year",
 };
 
 function sanitizedMessage(error: unknown): string {
@@ -716,9 +718,6 @@ async function loadStructuredDocument(
   return { doc: doc as StructuredDocument };
 }
 
-/** Error message of an extraction whose year filter dropped every row. */
-const TARGET_YEAR_EMPTY = "Inventory not found for the target year";
-
 /**
  * Progress for two phases on one bar: a later phase never reports a lower
  * fraction than one already shown. Every call is still passed on (the
@@ -772,7 +771,9 @@ async function extractInventoryForJob(
       } catch (error) {
         // A whole table can land on a wrong year (a single note year such as
         // "change since 2019"): the Markdown path reads the year its own way.
-        if (!(error instanceof Error && error.message === TARGET_YEAR_EMPTY)) {
+        if (!(
+          error instanceof LLMError && error.message === TARGET_YEAR_NOT_FOUND
+        )) {
           throw error;
         }
       }

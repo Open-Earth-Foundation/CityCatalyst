@@ -536,6 +536,12 @@ const PROMPT_INJECTION_PREFIXES = [
   "### system",
 ];
 
+/**
+ * Message of the LLMError thrown when the year filter drops every row of an
+ * extraction (both paths). Callers match it to fall back or to translate it.
+ */
+export const TARGET_YEAR_NOT_FOUND = "Inventory not found for the target year";
+
 export type ExtractOptions = {
   /** When set, prompt and filter so only rows for this year are returned (inventory year). */
   targetYear?: number;
@@ -1718,6 +1724,15 @@ export async function extractInventoryFromStructured(
     rejectPromptInjection(pageTextOutsideTables(doc, page));
   }
   for (const bundle of bundles) {
+    // Caption, headings and unit notes go into the prompt too (`bundleText`);
+    // each is checked on its own so a prefix at its start is caught.
+    for (const note of [
+      ...(bundle.caption ? [bundle.caption] : []),
+      ...bundle.headings,
+      ...bundle.unitNotes,
+    ]) {
+      rejectPromptInjection(note);
+    }
     rejectPromptInjection(
       bundle.grid
         .flat()
@@ -1912,10 +1927,7 @@ function checkExtractionResult(
         (summary.droppedRows.missing_year ?? 0) >
       0
     ) {
-      throw new LLMError(
-        "Inventory not found for the target year",
-        LLMErrorCode.BAD_REQUEST,
-      );
+      throw new LLMError(TARGET_YEAR_NOT_FOUND, LLMErrorCode.BAD_REQUEST);
     }
   }
 

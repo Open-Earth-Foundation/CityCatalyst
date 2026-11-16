@@ -99,6 +99,7 @@ jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
 jest.unstable_mockModule("@/backend/InventoryExtractionService", () => ({
   extractInventoryFromDocument: extractRows,
   extractInventoryFromStructured: extractStructured,
+  TARGET_YEAR_NOT_FOUND: "Inventory not found for the target year",
 }));
 jest.unstable_mockModule("@/backend/GHGINativeInputCatalogService", () => ({
   syncGHGIImportedInventorySource,
@@ -864,6 +865,15 @@ describe("PdfOcrJob queue", () => {
       await expectPath("structured", null);
     });
 
+    it("a plain Error with the target-year message is not a fallback", async () => {
+      extractStructured.mockRejectedValueOnce(
+        new Error("Inventory not found for the target year"),
+      );
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("failed");
+    });
+
     it("logs the path once when the structured run throws", async () => {
       extractStructured.mockRejectedValueOnce(new Error("provider down"));
       const importedFile = await runWithArtifact({});
@@ -873,8 +883,12 @@ describe("PdfOcrJob queue", () => {
     });
 
     it("a structured run emptied by the year filter falls back to the Markdown path", async () => {
+      const { LLMError, LLMErrorCode } = await import("@/backend/llm/types");
       extractStructured.mockRejectedValueOnce(
-        new Error("Inventory not found for the target year"),
+        new LLMError(
+          "Inventory not found for the target year",
+          LLMErrorCode.BAD_REQUEST,
+        ),
       );
       const importedFile = await runWithArtifact({});
       expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());

@@ -2226,7 +2226,8 @@ function finalizeRows(
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
       (v) => v != null,
     );
-    const unitMissing = unitUnclear && row.unit == null && hasAmount;
+    // A blank unit converts like a missing one (multiplier 1), so mark it too.
+    const unitMissing = unitUnclear && !row.unit?.trim() && hasAmount;
     if (unitMissing) evidenceDropped = true;
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {

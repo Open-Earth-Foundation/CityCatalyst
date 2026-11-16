@@ -423,6 +423,17 @@ describe("scales from unit evidence", () => {
       pageScaleEvidence("Table 5: Emissions (kg CO2e) and kg/capita"),
     ).toEqual([0.001]);
   });
+
+  it("does not read a kg per inhabitant or per head header as kg evidence", () => {
+    expect(pageScaleEvidence("| Sector | kg CO2e/hab. |")).toEqual([]);
+    for (const header of [
+      "Tabla 5: Emisiones (kg/hab)",
+      "Tabla 5: Emisiones (kg/habitante)",
+      "Table 5: Emissions (kg per head)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+  });
 });
 
 describe("numbersOnTableLines", () => {

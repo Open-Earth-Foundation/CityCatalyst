@@ -508,11 +508,12 @@ const TONNE_UNIT_PATTERNS: RegExp[] = [
 ];
 
 /**
- * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`):
+ * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
+ * `kg CO2e/hab.`, `kg per head`):
  * a column of an emissions-per-capita table, not the unit of the emissions.
  */
 const PER_PERSON_KG =
-  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant)(?![\p{L}])/giu;
+  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?![\p{L}])/giu;
 
 function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));

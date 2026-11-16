@@ -155,6 +155,18 @@ describe("CC-1163 stage 1: rows without a unit on a page naming another unit", (
     expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
   });
 
+  it("marks a row with a blank unit on a kt page like a missing one", () => {
+    for (const unit of ["", "  "]) {
+      const result = finalizeExtractedRows(
+        [lineItem(1234, { unit })],
+        2021,
+        page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+      );
+      expect(result.rows).toHaveLength(1);
+      expect(result.rows[0].unitCheck).toBe("missing");
+    }
+  });
+
   it("marks a unit-less row on a mixed t and kt page", () => {
     const result = finalizeExtractedRows(
       [lineItem(1234, { unit: null })],

@@ -151,7 +151,11 @@ function lastDigitStep(token: string, value: number): number {
  * minus right before it, a `-` right before it that does not join two words or
  * numbers (`2019-2021`, `CO2-e`), or parentheses around it alone (`(811,512)`).
  */
-function isNegativeAt(text: string, start: number, end: number): boolean {
+export function isNegativeAt(
+  text: string,
+  start: number,
+  end: number,
+): boolean {
   const before = text.slice(0, start).replace(/[   ]+$/, "");
   const after = text.slice(end).replace(/^[   ]+/, "");
   if (before.endsWith("−")) return true;
@@ -542,8 +546,12 @@ export function yearEvidence(
 }
 
 /** "thousand MT", "thousand mt", "thousand MTCO2e": kt, not an MT or Mt unit. */
-const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
+export const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
 
+/** Gg and gigagrams: the scale of kt. */
+export const GIGAGRAM_PATTERNS: RegExp[] = [/\bGg\b/, /\bgigagrams?\b/i];
+
+/** kt and its equivalents, Gg included (`GIGAGRAM_PATTERNS`). */
 export const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
@@ -552,11 +560,10 @@ export const KILOTONNE_PATTERNS: RegExp[] = [
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   // "thousand MT CO2e" (Phoenix 2022): MT is metric tonnes, so this is kt.
   THOUSAND_MT,
-  /\bGg\b/,
-  /\bgigagrams?\b/i,
+  ...GIGAGRAM_PATTERNS,
 ];
 
-const MEGATONNE_PATTERNS: RegExp[] = [
+export const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
@@ -585,12 +592,28 @@ export const TONNE_UNIT_PATTERNS: RegExp[] = [
 ];
 
 /**
+ * The per-person part of a unit: `/capita`, `per capita`, `per person`,
+ * `per cápita`, `/hab.`, `per head`, `pro Kopf`.
+ */
+const PER_PERSON_TAIL = String.raw`(?:(?:\/\s*|(?<!\p{L})per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?!\p{L})|(?<!\p{L})pro\s+Kopf(?!\p{L}))`;
+
+/**
  * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
- * `kg CO2e/hab.`, `kg per head`):
+ * `kg CO2e/hab.`, `kg per head`, `kg pro Kopf`):
  * a column of an emissions-per-capita table, not the unit of the emissions.
  */
-const PER_PERSON_KG =
-  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?![\p{L}])/giu;
+const PER_PERSON_KG = new RegExp(
+  String.raw`\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*` +
+    PER_PERSON_TAIL,
+  "giu",
+);
+
+const PER_PERSON_UNIT = new RegExp(PER_PERSON_TAIL, "iu");
+
+/** True when a line names a per-person unit of any size (`t CO2e / capita`, `kg pro Kopf`). */
+export function namesPerPerson(line: string): boolean {
+  return PER_PERSON_UNIT.test(line);
+}
 
 export function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));

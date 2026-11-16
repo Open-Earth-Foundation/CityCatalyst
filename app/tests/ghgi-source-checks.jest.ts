@@ -8,6 +8,7 @@ import {
   selectLevelTotal,
   sumImported,
   totalPlausibility,
+  unitGroupKey,
   type Readings,
   type SourceChecks,
 } from "@/util/GHGI/source-checks";
@@ -22,6 +23,21 @@ const T_EU: Readings = { units: { doc: "t" }, numberFormat: "european" };
 const row = (o: Record<string, unknown>) => o as unknown as ExtractedRow;
 const total = (label: string, value: number) =>
   ({ label, value }) as unknown as ReportedTotal;
+
+describe("unitGroupKey", () => {
+  it("keys a unit-less row by page, and by page and table once its cell is known", () => {
+    expect(unitGroupKey({ unitCheck: "missing", page: 3 })).toBe("p3");
+    expect(
+      unitGroupKey({
+        unitCheck: "missing",
+        page: 3,
+        sourceCell: { tableId: "t7", page: 3, row: 1, col: 1 },
+      }),
+    ).toBe("p3:t7");
+    expect(unitGroupKey({ unitCheck: "missing" })).toBe("unpaged");
+    expect(unitGroupKey({ unitCheck: "MT", page: 3 })).toBe("doc");
+  });
+});
 
 describe("applyReadings", () => {
   it("scales an MT row t to Mt", () => {

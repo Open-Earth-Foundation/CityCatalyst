@@ -3134,7 +3134,8 @@ function buildSourceChecks(
 }
 
 /**
- * Page groups of the rows printed without a unit, by page. A group preselects
+ * Groups of the rows printed without a unit, by page, or by page and table
+ * for rows read from a table cell (`unitGroupKey`). A group preselects
  * kt or Mt when every row's printed value was scaled by that factor (the model
  * read the page's unit); else the caption hint its rows share, else tonnes.
  * A group whose rows share the hint "kg" and that preselects tonnes is
@@ -3144,12 +3145,16 @@ function buildSourceChecks(
 function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
   const groups = new Map<
     string,
-    { page: number | null; rows: ExtractedRow[] }
+    { page: number | null; tableId: string | null; rows: ExtractedRow[] }
   >();
   for (const row of rows) {
     if (row.unitCheck !== "missing") continue;
     const key = unitGroupKey(row)!;
-    const group = groups.get(key) ?? { page: row.page ?? null, rows: [] };
+    const group = groups.get(key) ?? {
+      page: row.page ?? null,
+      tableId: row.sourceCell?.tableId ?? null,
+      rows: [],
+    };
     group.rows.push(row);
     groups.set(key, group);
   }
@@ -3172,7 +3177,7 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
       return {
         key,
         page: group.page,
-        tableId: null,
+        tableId: group.tableId,
         rowCount: group.rows.length,
         preselected,
         options: [...UNIT_GROUP_OPTIONS],

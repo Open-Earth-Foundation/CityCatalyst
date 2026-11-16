@@ -421,6 +421,75 @@ describe("extractInventoryFromStructured", () => {
     ).toHaveLength(1);
   });
 
+  it("two unit-less tables on one page are two unit groups", async () => {
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        // The unit is page text, linked to neither table.
+        text: "Table 4: Emissions by sector 2021 (kt CO2e)",
+        tables: [
+          {
+            id: "t1",
+            content:
+              "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |",
+          },
+          {
+            id: "t2",
+            content:
+              "| Source | Emissions |\n| --- | --- |\n| Landfill | 700 |\n| Wastewater | 80 |",
+          },
+        ],
+      },
+    ];
+    complete.mockResolvedValue({
+      content: JSON.stringify({
+        rows: [
+          lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000" }),
+          lineItem({
+            sector: "Waste",
+            subsector: "Solid Waste Disposal",
+            category: "Landfill",
+            gpcRefNo: "III.1.1",
+            valueCell: "t2:r1:c1",
+            totalCO2eText: "700",
+          }),
+          lineItem({
+            sector: "Waste",
+            subsector: "Wastewater",
+            category: "Wastewater",
+            gpcRefNo: "III.4.1",
+            valueCell: "t2:r2:c1",
+            totalCO2eText: "80",
+          }),
+        ],
+      }),
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows.map((r) => r.unitCheck)).toEqual([
+      "missing",
+      "missing",
+      "missing",
+    ]);
+    expect(summary.sourceChecks?.unitGroups).toEqual([
+      expect.objectContaining({
+        key: "p2:t1",
+        page: 2,
+        tableId: "t1",
+        rowCount: 1,
+      }),
+      expect.objectContaining({
+        key: "p2:t2",
+        page: 2,
+        tableId: "t2",
+        rowCount: 2,
+      }),
+    ]);
+  });
+
   it("a page with a kt caption whose column has no unit marks the rows", async () => {
     const pages: PageSpec[] = [
       { tables: [] },

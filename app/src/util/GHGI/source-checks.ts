@@ -1,7 +1,8 @@
 /**
  * Readings of the source checks on an imported value: the unit of an
  * ambiguous `MT` (one document-wide group), the unit of rows printed without
- * one on a page naming kt, Mt or kg (one group per page), and the separator of
+ * one on a page naming kt, Mt or kg (one group per page, or per table when
+ * the rows were read from table cells), and the separator of
  * an ambiguous number such as `6.600`.
  * The review card and the PATCH endpoint both use this module, so the totals a
  * person sees equal the totals that are imported.
@@ -17,6 +18,7 @@ import {
 } from "@/util/GHGI/extraction-summary";
 import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import { parseNumberString } from "@/util/GHGI/source-text";
+import type { SourceCell } from "@/util/GHGI/cell-values";
 
 export type UnitReading = "t" | "kt" | "Mt";
 const DEFAULT_UNIT: UnitReading = "t";
@@ -24,8 +26,9 @@ const DEFAULT_NUMBER_FORMAT: NumberReading = "english";
 export type NumberReading = "european" | "english";
 /**
  * Rows that share one unit reading: `"doc"` for the rows written "MT"; `"p12"`
- * for the rows of page 12 printed without a unit (`"p12:t3"` once tables are
- * known); `"unpaged"` for such rows without a page.
+ * for the rows of page 12 printed without a unit, `"p12:t3"` for those of
+ * table t3 on page 12 when the row was read from a cell (`sourceCell`, the
+ * structured path); `"unpaged"` for such rows without a page.
  */
 export type UnitGroupKey = string;
 /** Group of the rows written "MT", read document-wide. */
@@ -72,6 +75,8 @@ export type CheckableValue = {
   n2o?: number | null;
   /** Page of the item; groups rows with `unitCheck: "missing"`. */
   page?: number | null;
+  /** Cell the value was read from (structured path): its table splits the page group. */
+  sourceCell?: SourceCell | null;
   /**
    * "MT": the document-wide unit reading applies. "missing": the reading of
    * the item's page group applies (see `unitGroupKey`).
@@ -100,6 +105,7 @@ export type CheckStatus = "pending" | "confirmed";
 export type UnitGroup = {
   key: UnitGroupKey;
   page: number | null;
+  /** Table of the group's rows when they were read from cells (structured path). */
   tableId: string | null;
   rowCount: number;
   /**
@@ -196,13 +202,18 @@ export function readingsOf(checks: SourceChecks | null | undefined): Readings {
 }
 
 /**
- * Group whose unit reading applies to an item: `"doc"` for "MT", the page key
- * for a missing unit, null when no unit reading applies.
+ * Group whose unit reading applies to an item: `"doc"` for "MT"; for a
+ * missing unit the page key, or the page and table key when the item was read
+ * from a table cell (two tables of one page can print different units); null
+ * when no unit reading applies.
  */
 export function unitGroupKey(item: CheckableValue): UnitGroupKey | null {
   if (item.unitCheck === "MT") return DOC_UNIT_GROUP;
   if (item.unitCheck === "missing") {
-    return item.page != null ? `p${item.page}` : "unpaged";
+    if (item.page == null) return "unpaged";
+    return item.sourceCell
+      ? `p${item.page}:${item.sourceCell.tableId}`
+      : `p${item.page}`;
   }
   return null;
 }

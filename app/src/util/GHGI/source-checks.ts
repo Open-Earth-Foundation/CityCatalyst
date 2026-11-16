@@ -202,6 +202,14 @@ export function readingsOf(checks: SourceChecks | null | undefined): Readings {
 }
 
 /**
+ * Table order of two table ids: their numeric parts compare as numbers
+ * (`tbl-2.md` before `tbl-10.md`), since OCR numbers tables in reading order.
+ */
+export function compareTableIds(a: string, b: string): number {
+  return a.localeCompare(b, "en", { numeric: true });
+}
+
+/**
  * Group whose unit reading applies to an item: `"doc"` for "MT"; for a
  * missing unit the page key, or the page and table key when the item was read
  * from a table cell (two tables of one page can print different units); null

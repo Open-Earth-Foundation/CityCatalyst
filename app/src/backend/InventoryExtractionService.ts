@@ -38,6 +38,7 @@ import {
 import {
   applyReadings,
   baseUnitReading,
+  compareTableIds,
   selectLevelTotal,
   sumImported,
   unitGroupKey,
@@ -363,14 +364,25 @@ export type ExtractedRow = {
   totalCO2eText?: string | null;
   /**
    * Stored totalCO2e divided by the printed number under the current number
-   * reading: 1, 1000 or 1,000,000. Excludes the "MT" unit factor, which
-   * `applyReadings` applies through `unitCheck`.
+   * reading: 1, 1000 or 1,000,000 (the model's unit, or the page's large
+   * unit); on the structured path the factor of the cell's resolved unit
+   * (`CELL_UNIT_FACTOR`, so 0.001 for kg), 1 without one. Excludes the "MT"
+   * unit factor, which `applyReadings` applies through `unitCheck`; a row
+   * restored from the model's Mt scaling (`asPrintedMt`) has 1.
    */
   printedFactor?: number | null;
   /**
-   * "MT" when the document wrote the unit so: read as tonnes until the review
-   * confirms it. `missing`: the row has no unit on a page whose captions name
-   * kt, Mt, Gg or kg. It is kept as tonnes, not rescaled, and goes to review.
+   * `MT`: the unit may be metric tonnes or megatonnes; the row is read as
+   * tonnes, as printed, until the unit card is answered. Set for a printed
+   * "MT", for "Mt" in a document that defines MT as metric tons, for a row
+   * the model scaled from such an "Mt" (read back, also on the chunk path,
+   * R28), for a unit-less row under such an "Mt" caption (R27), and on the
+   * structured path for a capital MT alone in the cell's header.
+   * `missing`: the unit is not confirmed. Markdown path: no unit on a page
+   * whose captions name kt, Mt, Gg or kg (or that continues such a table).
+   * Structured path: a unit conflict, no unit in a table with such evidence,
+   * or no unit where the model read kt, Mt or kg (R26). It is kept as
+   * printed, in tonnes, not rescaled, and goes to the unit group card.
    */
   unitCheck?: "MT" | "missing" | null;
   /**
@@ -1523,11 +1535,6 @@ function singleNoteYear(bundle: TableBundle): number | null {
 }
 
 /**
- * True when a successful read is in tonnes: its unit is known, or no level
- * named a unit (`unitSource` null: not a conflict, not `MT`) and its table has
- * no kt, Mt, Gg or kg evidence.
- */
-/**
  * `readCell` gives no unit and no conflict, at a level that names one, only
  * for a capital MT alone: metric tonnes or megatonnes.
  */
@@ -1535,6 +1542,11 @@ function isLoneMtRead(read: Extract<CellRead, { ok: true }>): boolean {
   return read.unit == null && read.unitSource != null && !read.unitConflict;
 }
 
+/**
+ * True when a successful read is in tonnes: its unit is known, or no level
+ * named a unit (`unitSource` null: not a conflict, not `MT`) and its table has
+ * no kt, Mt, Gg or kg evidence.
+ */
 function readsAsTonnes(
   read: Extract<CellRead, { ok: true }>,
   bundle: TableBundle,
@@ -1801,21 +1813,6 @@ function tableScaleEvidence(
   });
 }
 
-/** The table and the tables up its continuation chain, in that order. */
-function continuationBundles(
-  bundles: TableBundle[],
-  bundle: TableBundle,
-): TableBundle[] {
-  const chain: TableBundle[] = [];
-  let current: TableBundle | undefined = bundle;
-  while (current && !chain.includes(current)) {
-    chain.push(current);
-    const source: string | null = current.continuationOf;
-    current = source ? bundles.find((b) => b.tableId === source) : undefined;
-  }
-  return chain;
-}
-
 /** A table's caption, headings, unit notes and header cells. */
 function bundleNotes(b: TableBundle): string[] {
   return [
@@ -1857,7 +1854,7 @@ function tableUnitHint(
   bundles: TableBundle[],
   bundle: TableBundle,
 ): UnitReading | "kg" {
-  const chain = continuationBundles(bundles, bundle);
+  const chain = continuationChain(bundles, bundle);
   const notes = chain.flatMap(bundleNotes);
   const pageTexts = [...new Set(chain.map((b) => b.page))].map((page) =>
     pageTextOutsideTables(doc, page),
@@ -1885,7 +1882,7 @@ function tableNamesMtSymbol(
   bundles: TableBundle[],
   bundle: TableBundle,
 ): boolean {
-  return continuationBundles(bundles, bundle)
+  return continuationChain(bundles, bundle)
     .flatMap(bundleNotes)
     .some(lineNamesMtSymbol);
 }
@@ -3212,7 +3209,8 @@ function buildSourceChecks(
 
 /**
  * Groups of the rows printed without a unit, by page, or by page and table
- * for rows read from a table cell (`unitGroupKey`). A group preselects
+ * for rows read from a table cell (`unitGroupKey`), sorted by page and then
+ * table order (a page's group without a table first). A group preselects
  * kt or Mt when every row's printed value was scaled by that factor (the model
  * read the page's unit); else the caption hint its rows share, else tonnes.
  * A group whose rows share the hint "kg" and that preselects tonnes is
@@ -3235,8 +3233,15 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
     group.rows.push(row);
     groups.set(key, group);
   }
+  // By page; on a page the group without a table first, then the table
+  // groups in table order (`compareTableIds`).
   return [...groups.entries()]
-    .sort(([, a], [, b]) => (a.page ?? Infinity) - (b.page ?? Infinity))
+    .sort(
+      ([, a], [, b]) =>
+        (a.page ?? Infinity) - (b.page ?? Infinity) ||
+        (a.tableId == null ? -1 : 0) - (b.tableId == null ? -1 : 0) ||
+        compareTableIds(a.tableId ?? "", b.tableId ?? ""),
+    )
     .map(([key, group]) => {
       const bases = new Set(group.rows.map(baseUnitReading));
       const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));

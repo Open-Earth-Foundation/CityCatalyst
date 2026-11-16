@@ -29,6 +29,7 @@ import type { ReportedTotal } from "@/util/GHGI/extraction-summary";
 import {
   inPerPersonRange,
   applyReadings,
+  compareTableIds,
   optionTotals,
   perPerson,
   PER_PERSON_RANGE,
@@ -622,14 +623,18 @@ export function UnitGroupsCheckCard({
             unit: t(UNIT_ANSWER_KEY[reading]),
           });
   };
-  // Tables of one page (structured path) are numbered in their order there,
-  // so two groups of one page do not read the same.
+  // Table groups of one page (structured path) are numbered in table order
+  // there, so two groups of one page do not read the same. A page group
+  // without a table keeps the page heading.
   const tableNumber = new Map<UnitGroupKey, number>();
   for (const group of groups) {
-    if (group.page == null) continue;
-    const samePage = groups.filter((g) => g.page === group.page);
-    if (samePage.length > 1) {
-      tableNumber.set(group.key, samePage.indexOf(group) + 1);
+    if (group.page == null || group.tableId == null) continue;
+    const tables = groups
+      .filter((g) => g.page === group.page && g.tableId != null)
+      .map((g) => g.tableId!)
+      .sort(compareTableIds);
+    if (tables.length > 1) {
+      tableNumber.set(group.key, tables.indexOf(group.tableId) + 1);
     }
   }
   const answerOf = (group: UnitGroup) => {

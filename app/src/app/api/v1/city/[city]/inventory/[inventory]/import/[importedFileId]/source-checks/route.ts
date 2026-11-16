@@ -16,8 +16,9 @@
  *       candidate, a typed total (origin user), or no total (skip, only when the
  *       document printed none). Only valid while the import waits for approval.
  *       Unit readings are keyed by group: `doc` for the rows written "MT"
- *       (t or Mt), and each `sourceChecks.unitGroups[].key` (for example `p12`)
- *       for rows printed without a unit on that page (t, kt or Mt). A group
+ *       (t or Mt), and each `sourceChecks.unitGroups[].key` for rows printed
+ *       without a unit (t, kt or Mt): `p12` for a page, `p12:t3` for one table
+ *       of that page (structured path), `unpaged` for rows without a page. A group
  *       answer X means its printed numbers are in X: each row becomes its
  *       printed value times X. An unanswered group has no key in
  *       `expected.units`.
@@ -74,6 +75,9 @@
  *                 description: |
  *                   Unit reading per group key the import has (`doc` takes t or
  *                   Mt only). At least one key when sent.
+ *                 example:
+ *                   p12: kt
+ *                   p12:t3: t
  *                 additionalProperties:
  *                   type: string
  *                   enum: [t, kt, Mt]

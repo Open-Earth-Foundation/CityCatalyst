@@ -647,3 +647,32 @@ describe("number style from the country default", () => {
     expect(prompts()).toContain('use "," as the decimal separator');
   });
 });
+
+describe("unit groups order", () => {
+  it("sorts a page's groups: the page group first, then tables in table order", () => {
+    const cell = (tableId: string, row: number) => ({
+      tableId,
+      page: 2,
+      row,
+      col: 1,
+    });
+    const missing = (over: Partial<ExtractedRow>) =>
+      lineItem({ unit: null, unitCheck: "missing", page: 2, ...over });
+    const { summary } = finalizeExtractedRows(
+      [
+        missing({ gpcRefNo: "I.1.1", sourceCell: cell("tbl-10.md", 1) }),
+        missing({ gpcRefNo: "I.2.1", sourceCell: cell("tbl-2.md", 1) }),
+        missing({ gpcRefNo: "I.3.1" }),
+        missing({ gpcRefNo: "II.1.1", page: 1, sourceCell: null }),
+      ],
+      2021,
+      { readFromCells: true },
+    );
+    expect(summary.sourceChecks?.unitGroups?.map((g) => g.key)).toEqual([
+      "p1",
+      "p2",
+      "p2:tbl-2.md",
+      "p2:tbl-10.md",
+    ]);
+  });
+});

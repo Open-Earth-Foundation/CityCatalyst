@@ -684,6 +684,32 @@ describe("unit group card (rows without a printed unit)", () => {
     );
   });
 
+  it("numbers only the table groups of a page, in table order", async () => {
+    const c = await render({
+      checks: {
+        unitGroups: [
+          group("p2", 2, 1),
+          group("p2:tbl-10.md", 2, 1, { tableId: "tbl-10.md" }),
+          group("p2:tbl-2.md", 2, 1, { tableId: "tbl-2.md" }),
+        ],
+      },
+      rows: [
+        row({ totalCO2e: 1, unitCheck: "missing", page: 2 }),
+        row({ totalCO2e: 2, unitCheck: "missing", page: 2 }),
+        row({ totalCO2e: 3, unitCheck: "missing", page: 2 }),
+      ],
+    });
+    expect(groupEl(c, "p2:tbl-2.md").textContent).toContain(
+      "Page 2, table 1: 1 row without a printed unit",
+    );
+    expect(groupEl(c, "p2:tbl-10.md").textContent).toContain(
+      "Page 2, table 2: 1 row without a printed unit",
+    );
+    expect(groupEl(c, "p2").textContent).toContain(
+      "Page 2: 1 row without a printed unit",
+    );
+  });
+
   it("notes kg only on a group whose page names kg only", async () => {
     const note =
       "This page names kg. If these rows are in kg, skip them in the review below.";

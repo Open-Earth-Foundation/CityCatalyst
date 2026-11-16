@@ -159,6 +159,42 @@ describe("Mt with an MT glossary", () => {
     },
   );
 
+  it.each([
+    ["unscaled", 1],
+    ["scaled by the model", 1_000_000],
+  ])(
+    "unit-less rows under an Mt caption go to the MT card, never missing (R27, %s)",
+    async (_label, factor) => {
+      mockTablePage(
+        modelRows("", factor).map((row) => ({ ...row, unit: null })),
+      );
+      const { rows, summary } = await extractInventoryFromDocument(
+        TABLE_PAGE + GLOSSARY_PAGE,
+        options,
+      );
+      expect(rows).toHaveLength(3);
+      for (const [i, row] of rows.entries()) {
+        expect(row).toMatchObject({
+          totalCO2e: PRINTED[i].value,
+          totalCO2eText: PRINTED[i].text,
+          unitCheck: "MT",
+          printedUnit: "Mt",
+        });
+        expect(row.unitHint).toBeUndefined();
+      }
+      expect(summary.importedSum).toBe(LONG_BEACH_TOTAL);
+      expect(summary.reportedTotals[0]).toMatchObject({
+        value: LONG_BEACH_TOTAL,
+        unitCheck: "MT",
+      });
+      expect(summary.sourceChecks?.unit).toMatchObject({
+        status: "pending",
+        reading: "t",
+      });
+      expect(summary.sourceChecks?.unitGroups ?? []).toEqual([]);
+    },
+  );
+
   it("chunk path (no pages): Mt rows go to the card too", async () => {
     mockTablePage(modelRows("Mt", 1));
     const text =

@@ -3513,7 +3513,10 @@ export type FinalizeOptions = {
  *   the document defines MT as metric tons (`mtIsMetricTons`); unit-less rows on a
  *   kt/Mt/kg page (its own captions, or a table continued from the previous
  *   page) are kept and marked (`unitCheck: "missing"`, with the page's
- *   `unitHint`), and unit-less totals there are dropped;
+ *   `unitHint`), and unit-less totals there are dropped; on a page whose
+ *   captions spell the `Mt` symbol in such a document, unit-less rows and
+ *   totals get `unitCheck: "MT"` with `printedUnit` "Mt" instead, never
+ *   "missing" (R27);
  * - printed text (`totalCO2eText`) is checked against the value and sets
  *   `printedFactor` and `numberCheck`;
  * - rows that arrive marked (structured path: `unitCheck` "MT" or "missing",
@@ -3719,12 +3722,21 @@ function finalizeRows(
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
       (v) => v != null,
     );
+    // On a page whose captions spell the `Mt` symbol, in a document that
+    // defines MT as metric tons, a row without a unit is in that column's
+    // "Mt": it goes to the MT card, never to a missing-unit check (R27).
+    const mtUnitless =
+      mtCaption &&
+      !row.unit?.trim() &&
+      row.unitCheck !== "missing" &&
+      hasAmount;
     // A blank unit converts like a missing one (multiplier 1), so mark it too.
     // "MT" is a unit (its own check below), never a missing one.
     const unitMissing =
       ((unitUnclear && !row.unit?.trim()) || row.unitCheck === "missing") &&
-      hasAmount;
-    if (unitMissing) evidenceDropped = true;
+      hasAmount &&
+      !mtUnitless;
+    if (unitMissing || mtUnitless) evidenceDropped = true;
     // "MT" stays as printed (tonnes by default) and the review asks which unit.
     // So does "Mt" in a document that defines MT as metric tons (CC-1233).
     const ambiguousMt =
@@ -3787,6 +3799,9 @@ function finalizeRows(
           "Value looks scaled from Mt in a document defining MT as metric tons; kept as extracted",
         );
       }
+    }
+    if (mtUnitless && scaled.unitCheck !== "MT") {
+      scaled = { ...scaled, unitCheck: "MT", printedUnit: "Mt" };
     }
     if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
 

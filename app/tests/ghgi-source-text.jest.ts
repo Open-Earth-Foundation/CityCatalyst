@@ -8,8 +8,9 @@ import {
   tableCaptionLines,
   yearEvidence,
   namesLargeUnit,
+  pageScaleEvidence,
 } from "@/util/GHGI/source-text";
-import type { NumberStyle } from "@/util/GHGI/source-text";
+import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
 describe("parseNumberString", () => {
   it.each<[string, NumberStyle, number | null]>([
@@ -52,15 +53,15 @@ describe("detectNumberStyle", () => {
 });
 
 describe("isValueInText", () => {
-  it.each<[number, string, boolean]>([
+  it.each<[number, string, boolean, Scale[]?]>([
     [9559215, "| TOTAL | 9,559,215 |", true],
     [9559215, "Total 9,559,215.4", true],
     // Scaled: the model converted kt to tonnes itself.
-    [9559215, "(kt CO2e) Total 9,559.2", true],
+    [9559215, "(kt CO2e) Total 9,559.2", true, [1000]],
     [-811512, "Forestry (811,512)", true],
     [-603983, "AFOLU −603,983", true],
     [-603983, "| AFOLU | -603,983 |", true],
-    [-25639000, "(kt CO2e) Net ( 25,639.0 )", true],
+    [-25639000, "(kt CO2e) Net ( 25,639.0 )", true, [1000]],
     // The sign must match: a positive answer is not a printed negative.
     [25639, "Net emissions (25,639)", false],
     [25639, "Net emissions −25,639", false],
@@ -72,15 +73,21 @@ describe("isValueInText", () => {
     [5000000, "Total 4,876,120", false],
     [9559215, "about 9.56 million", false],
     // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.
-    [2000000, "CO2e emissions", false],
+    [2000000, "CO2e emissions", false, [1000, 1000000]],
     // Scaled down: the page prints kg and the model converted to tonnes
     // (Santiago 2022, CC-950 backtest 2026-11-09).
-    [2145243.596, "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |", true],
-    [841891, "| Subtotal Transporte | 841.891.000 |", true],
+    [
+      2145243.596,
+      "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |",
+      true,
+      [0.001],
+    ],
+    [841891, "| Subtotal Transporte | 841.891.000 |", true, [0.001]],
     // A short kg figure never matches: 500 kg is not 0.5 t of a total.
-    [0.5, "500 kg", false],
-  ])("finds %s in %j: %s", (raw, text, expected) => {
-    expect(isValueInText(raw, text)).toBe(expected);
+    [0.5, "500 kg", false, [0.001]],
+  ])("finds %s in %j: %s", (...row) => {
+    const [raw, text, expected, scales] = row;
+    expect(isValueInText(raw, text, undefined, scales)).toBe(expected);
   });
 });
 
@@ -364,6 +371,41 @@ describe("isValueInNumbers", () => {
   ])("agrees with isValueInText for %s in %j", (raw, text) => {
     const numbers = numbersInText(text, detectNumberStyle(text));
     expect(isValueInNumbers(raw, numbers)).toBe(isValueInText(raw, text));
+    expect(isValueInNumbers(raw, numbers, [1000])).toBe(
+      isValueInText(raw, text, undefined, [1000]),
+    );
+  });
+});
+
+describe("scales from unit evidence", () => {
+  it("reads the scale a caption line names", () => {
+    expect(
+      pageScaleEvidence("Table 3: Emissions (kt CO2e)\n| a | 9,559.2 |"),
+    ).toEqual([1000]);
+    expect(pageScaleEvidence("Table 3 (Mt CO2e)")).toEqual([1000000]);
+    expect(pageScaleEvidence("Tabla 2: Emisiones (kg CO2e)")).toEqual([0.001]);
+  });
+
+  it("ignores a unit named only in prose", () => {
+    expect(pageScaleEvidence("About 3 kt of waste was collected.")).toEqual([]);
+  });
+
+  it("finds no scale on a page without unit evidence", () => {
+    expect(pageScaleEvidence("Population 5.000")).toEqual([]);
+    expect(isValueInText(5000000, "Population 5.000", "european")).toBe(false);
+  });
+
+  it("matches a kt figure only when kt scale is allowed", () => {
+    expect(isValueInText(9559215, "Total 9,559.2", "english")).toBe(false);
+    expect(isValueInText(9559215, "Total 9,559.2", "english", [1000])).toBe(
+      true,
+    );
+  });
+
+  it("matches a kg figure (Santiago) only when kg scale is allowed", () => {
+    const text = "2.145.243.596";
+    expect(isValueInText(2145243.596, text, "european", [0.001])).toBe(true);
+    expect(isValueInText(2145243.596, text, "european")).toBe(false);
   });
 });
 
@@ -397,8 +439,12 @@ describe("parseNumberString with unit, percent or plus sign", () => {
 describe("parseNumberString ambiguous group callback", () => {
   it("reports a single 3-digit group read with style unknown", () => {
     const seen: string[] = [];
-    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(1.5);
-    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(1500);
+    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(
+      1.5,
+    );
+    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(
+      1500,
+    );
     expect(seen).toEqual(["1.500", "1,500"]);
   });
 

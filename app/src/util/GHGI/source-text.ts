@@ -191,10 +191,11 @@ export function numbersInText(
 }
 
 /**
- * The model may convert a printed figure to tonnes itself: kt and Mt figures up
- * (×1000, ×1,000,000), kg figures down (×0.001, e.g. Santiago 2022 prints kg).
+ * A factor the model may apply to a printed figure to get tonnes: ×1000 for kt
+ * or Gg, ×1,000,000 for Mt, ×0.001 for kg (Santiago 2022 prints kg). A scale
+ * applies only when the page names its unit: see `pageScaleEvidence`.
  */
-const SCALES = [0.001, 1000, 1000000];
+export type Scale = 0.001 | 1000 | 1000000;
 
 /** A printed figure needs this many significant digits to match scaled. */
 const MIN_SCALED_DIGITS = 4;
@@ -207,9 +208,11 @@ function significantDigits(value: number, step: number): number {
 
 /**
  * True when `raw` (a model value before unit conversion) is printed in `text`:
- * equal up to rounding of the printed figure, or the printed figure times 0.001,
- * 1000 or 1,000,000 up to its rounding. The sign must match: 25,639 is not
- * found in `(25,639)` or `−25,639`.
+ * equal up to rounding of the printed figure, or the printed figure times one of
+ * `scales` up to its rounding. `scales` come from the page's unit evidence
+ * (`pageScaleEvidence`); without them only an unscaled match counts, so a total
+ * cannot match an unrelated number through ×1000. The sign must match: 25,639 is
+ * not found in `(25,639)` or `−25,639`.
  *
  * A scaled match needs a printed figure of at least 4 significant digits
  * (`9,559.2` kt matches 9,559,215 t). Shorter figures would match almost any
@@ -220,8 +223,9 @@ export function isValueInText(
   raw: number,
   text: string,
   style: NumberStyle = detectNumberStyle(text),
+  scales: readonly Scale[] = [],
 ): boolean {
-  return isValueInNumbers(raw, numbersInText(text, style));
+  return isValueInNumbers(raw, numbersInText(text, style), scales);
 }
 
 /**
@@ -231,13 +235,14 @@ export function isValueInText(
 export function isValueInNumbers(
   raw: number,
   numbers: { value: number; step: number }[],
+  scales: readonly Scale[] = [],
 ): boolean {
   return numbers.some(
     ({ value, step }) =>
       Math.sign(raw) * Math.sign(value) >= 0 &&
       (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
         (significantDigits(Math.abs(value), step) >= MIN_SCALED_DIGITS &&
-          SCALES.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
+          scales.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
 }
 
@@ -449,21 +454,36 @@ export function yearEvidence(
   return { kind: "none", years, leadText: "" };
 }
 
-const LARGE_UNIT_PATTERNS: RegExp[] = [
+const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  /\bGg\b/,
+  /\bgigagrams?\b/i,
+];
+
+const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
-  /\bGg\b/,
-  /\bgigagrams?\b/i,
   // `Mt` is case-sensitive ("Mt Eden" is a place) and counts only before a
   // CO2 or tonnes word, or alone in parentheses.
   /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
   /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+];
+
+const LARGE_UNIT_PATTERNS: RegExp[] = [
+  ...KILOTONNE_PATTERNS,
+  ...MEGATONNE_PATTERNS,
+];
+
+const KILOGRAM_PATTERNS: RegExp[] = [
+  /\bkgCO(?:2|₂)/i,
+  /\bkg\b/i,
+  /\bkilograms?\b/i,
+  /\bkilogrammes?\b/i,
 ];
 
 /** A tonne unit: t, tCO2e, tCO2-e, tonnes, tons, metric tonnes (not kt or Mt). */
@@ -477,23 +497,44 @@ function namesUnit(line: string, patterns: RegExp[]): boolean {
 }
 
 /**
- * True when the page names kt, Mt, Gg or an equivalent large unit on a caption
- * line. A Table caption, heading or table header row counts on its own. A Figure
- * caption or a short unit line counts only when no Table caption, heading or
- * header row names a tonne unit: a figure in kt beside a table in tonnes leaves
- * the table in tonnes. Prose is ignored, so "about 3 kt of waste" does not count.
+ * True when a caption line names a unit matching `patterns`. A Table caption,
+ * heading or table header row counts on its own. A Figure caption or a short unit
+ * line counts only when no Table caption, heading or header row names a tonne
+ * unit: a figure in kt beside a table in tonnes leaves the table in tonnes.
+ * Prose is ignored, so "about 3 kt of waste" does not count.
  */
-export function namesLargeUnit(text: string): boolean {
+function captionsNameUnit(text: string, patterns: RegExp[]): boolean {
   const lines = classifyCaptionLines(text);
   const tableLines = lines.filter((l) => l.table).map((l) => l.text);
-  if (tableLines.some((line) => namesUnit(line, LARGE_UNIT_PATTERNS))) {
-    return true;
-  }
-  const otherLarge = lines.some(
-    (l) => !l.table && namesUnit(l.text, LARGE_UNIT_PATTERNS),
-  );
+  if (tableLines.some((line) => namesUnit(line, patterns))) return true;
+  const other = lines.some((l) => !l.table && namesUnit(l.text, patterns));
   return (
-    otherLarge &&
-    !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
+    other && !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
   );
+}
+
+/**
+ * True when the page names kt, Mt, Gg or an equivalent large unit on a caption
+ * line (see `captionsNameUnit` for the line rules).
+ */
+export function namesLargeUnit(text: string): boolean {
+  return captionsNameUnit(text, LARGE_UNIT_PATTERNS);
+}
+
+/** True when the page names kg on a caption line, with the rules of `namesLargeUnit`. */
+export function namesSmallUnit(text: string): boolean {
+  return captionsNameUnit(text, KILOGRAM_PATTERNS);
+}
+
+/**
+ * The scales the page's captions justify: 1000 for kt or Gg, 1,000,000 for Mt,
+ * 0.001 for kg. Empty when no caption names a non-tonne unit; the caller passes
+ * no scales for text without a page (the chunk path).
+ */
+export function pageScaleEvidence(text: string): Scale[] {
+  const scales: Scale[] = [];
+  if (captionsNameUnit(text, KILOTONNE_PATTERNS)) scales.push(1000);
+  if (captionsNameUnit(text, MEGATONNE_PATTERNS)) scales.push(1000000);
+  if (namesSmallUnit(text)) scales.push(0.001);
+  return scales;
 }

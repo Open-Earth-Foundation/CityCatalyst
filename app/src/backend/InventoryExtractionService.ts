@@ -27,6 +27,7 @@ import {
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  pageScaleEvidence,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
 import {
@@ -2125,6 +2126,7 @@ function finalizeRows(
       const relabel = evidence.years[0];
       // A table continued from the previous page sits above the other year's
       // caption: a row whose value is printed there keeps its year.
+      const leadScales = pageScaleEvidence(options.source.text);
       const leadNumbers = numbersInText(
         evidence.leadText,
         detectNumberStyle(options.source.text),
@@ -2134,7 +2136,7 @@ function finalizeRows(
         if (
           row.totalCO2e != null &&
           leadNumbers.length > 0 &&
-          isValueInNumbers(row.totalCO2e, leadNumbers)
+          isValueInNumbers(row.totalCO2e, leadNumbers, leadScales)
         ) {
           return row;
         }
@@ -2156,6 +2158,9 @@ function finalizeRows(
   const sourceNumbers = source
     ? numbersInText(source.text, detectNumberStyle(source.text))
     : [];
+  // Scales the page's captions justify; a chunk has no page and allows none.
+  const sourceScales =
+    source?.kind === "page" ? pageScaleEvidence(source.text) : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2166,7 +2171,7 @@ function finalizeRows(
     page: number | null | undefined,
   ): { inText?: boolean } => {
     if (!source || raw == null) return {};
-    const found = isValueInNumbers(raw, sourceNumbers);
+    const found = isValueInNumbers(raw, sourceNumbers, sourceScales);
     if (!found) {
       logger.warn(
         { label, value, page: page ?? null },

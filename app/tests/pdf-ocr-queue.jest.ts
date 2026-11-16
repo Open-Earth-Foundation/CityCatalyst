@@ -756,6 +756,63 @@ describe("PdfOcrJob queue", () => {
       },
     );
 
+    describe("an unreconciled structured run (R22)", () => {
+      const withSelection = (
+        pageSelection: "reconciled" | "fallback",
+        importedSum: number,
+      ) => ({
+        rows: [{ sector: "Energy", totalCO2e: importedSum }],
+        summary: { ...extraction.summary, importedSum, pageSelection },
+      });
+
+      it("uses the Markdown result when it reconciles", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockResolvedValueOnce(withSelection("reconciled", 12));
+        const importedFile = await runWithArtifact({});
+        expect(extractStructured).toHaveBeenCalledTimes(1);
+        expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 12 }],
+          }),
+        );
+        await expectPath("markdown", "structured_unreconciled");
+      });
+
+      it("keeps the structured result when the Markdown run does not reconcile", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockResolvedValueOnce(withSelection("fallback", 12));
+        const importedFile = await runWithArtifact({});
+        expect(extractRows).toHaveBeenCalledTimes(1);
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 99 }],
+          }),
+        );
+        await expectPath("structured", "structured_unreconciled");
+      });
+
+      it("keeps the structured result when the Markdown run fails", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("fallback", 99));
+        extractRows.mockRejectedValueOnce(new Error("provider down"));
+        const importedFile = await runWithArtifact({});
+        expect(importedFile.importStatus).toBe("waiting_for_approval");
+        expect(importedFile.mappingConfiguration).toEqual(
+          expect.objectContaining({
+            rows: [{ sector: "Energy", totalCO2e: 99 }],
+          }),
+        );
+        await expectPath("structured", "structured_unreconciled");
+      });
+
+      it("does not run the Markdown path for a reconciled structured run", async () => {
+        extractStructured.mockResolvedValueOnce(withSelection("reconciled", 99));
+        await runWithArtifact({});
+        expect(extractRows).not.toHaveBeenCalled();
+        await expectPath("structured", null);
+      });
+    });
+
     it("uses the structured path when the job has a supported artifact", async () => {
       const importedFile = await runWithArtifact({});
       expect(extractStructured).toHaveBeenCalledWith(

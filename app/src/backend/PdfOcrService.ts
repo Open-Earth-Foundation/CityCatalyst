@@ -685,7 +685,8 @@ type MarkdownReason =
   | "unsupported_schema_version"
   | "artifact_unreadable"
   | "artifact_invalid"
-  | "structured_empty";
+  | "structured_empty"
+  | "structured_unreconciled";
 
 /**
  * The job's stored structured document, or why it cannot be used: the job has
@@ -755,7 +756,11 @@ function monotonicProgress(
  * artifact is not read and the reason is `structured_disabled`. A structured run that
  * keeps no line item (no table bundles, no row read, or every row dropped by
  * the year filter) falls back to the Markdown too (`structured_empty`); the
- * Markdown path then raises its own error if it also finds nothing. The
+ * Markdown path then raises its own error if it also finds nothing. A
+ * structured run whose page selection does not reconcile (`fallback`) is
+ * followed by a Markdown run, whose result is used only when it reconciles
+ * (`structured_unreconciled`, logged with the path whose result is kept; a
+ * failed Markdown run keeps the structured result). The
  * progress bar never moves back across the two phases. Logs the path once per
  * job, also when extraction throws, with the reason for the Markdown path;
  * never the document content.
@@ -794,7 +799,27 @@ async function extractInventoryForJob(
           throw error;
         }
       }
-      if (result && result.rows.length > 0) return result;
+      if (result && result.rows.length > 0) {
+        if (result.summary.pageSelection !== "fallback") return result;
+        // No page run of the structured rows reconciles: the Markdown path may
+        // (R22). Its result is used only when it reconciles.
+        reason = "structured_unreconciled";
+        const fromMarkdown = await extractInventoryFromDocument(
+          markdown,
+          phased,
+        ).catch((error) => {
+          logger.warn(
+            { sourceId: job.sourceId, err: error },
+            "Markdown extraction after an unreconciled structured run failed",
+          );
+          return null;
+        });
+        if (fromMarkdown?.summary.pageSelection === "reconciled") {
+          extractionPath = "markdown";
+          return fromMarkdown;
+        }
+        return result;
+      }
       reason = "structured_empty";
     } else {
       reason = loaded.reason;

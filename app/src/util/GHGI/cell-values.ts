@@ -20,10 +20,11 @@ import {
   yearsInLine,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
-import type {
-  CellRef,
-  TableBundle,
-  TableCell,
+import {
+  continuationChain,
+  type CellRef,
+  type TableBundle,
+  type TableCell,
 } from "@/util/GHGI/table-bundles";
 
 export type CellUnit = "t" | "kt" | "Mt" | "kg" | "Gg";
@@ -174,25 +175,6 @@ function headersOfColumn(bundle: TableBundle, col: number): string[] {
     .slice(0, bundle.headerRowCount)
     .map((cells) => cells[col]?.text ?? "")
     .filter((text) => text !== "");
-}
-
-/**
- * The bundle, then the table it continues, and so on back to the first
- * table of the chain (a table met twice ends it).
- */
-function continuationChain(
-  bundles: TableBundle[],
-  bundle: TableBundle,
-): TableBundle[] {
-  const chain = [bundle];
-  let current = bundle;
-  while (current.continuationOf) {
-    const source = bundles.find((b) => b.tableId === current.continuationOf);
-    if (!source || chain.includes(source)) break;
-    chain.push(source);
-    current = source;
-  }
-  return chain;
 }
 
 /** True when header lines name a unit, the ambiguous `MT` or a per-person unit. */

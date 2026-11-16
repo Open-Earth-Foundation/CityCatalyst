@@ -14,6 +14,7 @@ import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
 import {
   buildTableBundles,
   bundleText,
+  continuationChain,
   type TableBundle,
 } from "@/util/GHGI/table-bundles";
 import {
@@ -1547,15 +1548,8 @@ function cellFields(
 
 /** First table of a continuation chain: tables with the same root are one table. */
 function chainRoot(bundles: TableBundle[], tableId: string): string {
-  const seen = new Set<string>();
-  let current = tableId;
-  while (!seen.has(current)) {
-    seen.add(current);
-    const source = bundles.find((b) => b.tableId === current)?.continuationOf;
-    if (!source) break;
-    current = source;
-  }
-  return current;
+  const bundle = bundles.find((b) => b.tableId === tableId);
+  return bundle ? continuationChain(bundles, bundle).at(-1)!.tableId : tableId;
 }
 
 /**
@@ -1617,14 +1611,7 @@ function tableScaleEvidence(
   bundles: TableBundle[],
   bundle: TableBundle,
 ): boolean {
-  const chain: TableBundle[] = [];
-  let current: TableBundle | undefined = bundle;
-  while (current && !chain.includes(current)) {
-    chain.push(current);
-    const source: string | null = current.continuationOf;
-    current = source ? bundles.find((b) => b.tableId === source) : undefined;
-  }
-  return chain.some((b) => {
+  return continuationChain(bundles, bundle).some((b) => {
     const notes = [
       ...(b.caption ? [b.caption] : []),
       ...b.headings,

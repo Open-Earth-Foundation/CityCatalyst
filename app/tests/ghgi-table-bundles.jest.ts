@@ -4,7 +4,9 @@ import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
 import {
   buildTableBundles,
   bundleText,
+  continuationChain,
   parseMarkdownTable,
+  type TableBundle,
 } from "@/util/GHGI/table-bundles";
 
 /**
@@ -314,5 +316,32 @@ describe("bundleText", () => {
       continuationOf: null,
     });
     expect(text).toContain("[t2:r1:c0] Fuel \\| diesel | [t2:r1:c1] 3");
+  });
+});
+
+describe("continuationChain", () => {
+  const bundle = (tableId: string, continuationOf: string | null) =>
+    ({ tableId, continuationOf }) as TableBundle;
+
+  it("walks back to the first table, and stops at a loop or a missing source", () => {
+    const a = bundle("a", null);
+    const b = bundle("b", "a");
+    const c = bundle("c", "b");
+    expect(continuationChain([a, b, c], c).map((x) => x.tableId)).toEqual([
+      "c",
+      "b",
+      "a",
+    ]);
+    const x = bundle("x", "y");
+    const y = bundle("y", "x");
+    expect(continuationChain([x, y], x).map((t) => t.tableId)).toEqual([
+      "x",
+      "y",
+    ]);
+    expect(
+      continuationChain([bundle("d", "gone")], bundle("d", "gone")).map(
+        (t) => t.tableId,
+      ),
+    ).toEqual(["d"]);
   });
 });

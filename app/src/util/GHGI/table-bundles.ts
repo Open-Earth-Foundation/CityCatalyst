@@ -46,6 +46,25 @@ export type TableBundle = {
 
 const MAX_HEADINGS = 2;
 
+/**
+ * The bundle, then the table it continues, and so on back to the first
+ * table of the chain (a table met twice, or a missing source, ends it).
+ */
+export function continuationChain(
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): TableBundle[] {
+  const chain = [bundle];
+  let current = bundle;
+  while (current.continuationOf) {
+    const source = bundles.find((b) => b.tableId === current.continuationOf);
+    if (!source || chain.includes(source)) break;
+    chain.push(source);
+    current = source;
+  }
+  return chain;
+}
+
 function cellRef(tableId: string, row: number, col: number): CellRef {
   return `${tableId}:r${row}:c${col}`;
 }

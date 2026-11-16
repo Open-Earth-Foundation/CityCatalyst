@@ -378,6 +378,9 @@
   "import-unit-group-heading-no-page_other": "{{count}} Zeilen ohne gedruckte Einheit",
   "import-unit-group-answer": "S. {{page}} in {{unit}}",
   "import-unit-group-answer-no-page": "Zeilen ohne Seite in {{unit}}",
+  "import-unit-group-heading-table_one": "Seite {{page}}, Tabelle {{table}}: {{count}} Zeile ohne gedruckte Einheit",
+  "import-unit-group-heading-table_other": "Seite {{page}}, Tabelle {{table}}: {{count}} Zeilen ohne gedruckte Einheit",
+  "import-unit-group-answer-table": "S. {{page}}, Tabelle {{table}} in {{unit}}",
   "import-unit-group-option-per-person": "{{value}} t pro Person",
   "import-unit-group-kg-only": "Diese Seite nennt kg. Wenn diese Zeilen in kg angegeben sind, überspringen Sie sie in der Prüfung unten."
 }

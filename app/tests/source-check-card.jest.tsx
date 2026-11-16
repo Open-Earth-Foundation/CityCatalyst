@@ -635,6 +635,55 @@ describe("unit group card (rows without a printed unit)", () => {
     expect(c.querySelectorAll("[role=radiogroup]")).toHaveLength(0);
   });
 
+  it("numbers the tables of one page in the heading and the confirmed line", async () => {
+    const tableRows = [
+      row({ totalCO2e: 1, unitCheck: "missing", page: 2 }),
+      row({ totalCO2e: 2, unitCheck: "missing", page: 2 }),
+      row({ totalCO2e: 3, unitCheck: "missing", page: 2 }),
+      row({ totalCO2e: 4, unitCheck: "missing", page: 5 }),
+    ];
+    const pending = await render({
+      checks: {
+        unitGroups: [
+          group("p2:t1", 2, 1, { tableId: "t1" }),
+          group("p2:t2", 2, 2, { tableId: "t2" }),
+          group("p5", 5, 1),
+        ],
+      },
+      rows: tableRows,
+    });
+    expect(groupEl(pending, "p2:t1").textContent).toContain(
+      "Page 2, table 1: 1 row without a printed unit",
+    );
+    expect(groupEl(pending, "p2:t2").textContent).toContain(
+      "Page 2, table 2: 2 rows without a printed unit",
+    );
+    // A page with one group keeps the page heading.
+    expect(groupEl(pending, "p5").textContent).toContain(
+      "Page 5: 1 row without a printed unit",
+    );
+    const confirmed = await render({
+      checks: {
+        unitGroups: [
+          group("p2:t1", 2, 1, {
+            tableId: "t1",
+            status: "confirmed",
+            reading: "kt",
+          }),
+          group("p2:t2", 2, 2, {
+            tableId: "t2",
+            status: "confirmed",
+            reading: "t",
+          }),
+        ],
+      },
+      rows: tableRows.slice(0, 3),
+    });
+    expect(confirmed.textContent).toContain(
+      "Units: p. 2, table 1 in kilotonnes, p. 2, table 2 in metric tonnes — confirmed",
+    );
+  });
+
   it("notes kg only on a group whose page names kg only", async () => {
     const note =
       "This page names kg. If these rows are in kg, skip them in the review below.";

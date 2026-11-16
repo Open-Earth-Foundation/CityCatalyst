@@ -1526,6 +1526,14 @@ function singleNoteYear(bundle: TableBundle): number | null {
  * named a unit (`unitSource` null: not a conflict, not `MT`) and its table has
  * no kt, Mt, Gg or kg evidence.
  */
+/**
+ * `readCell` gives no unit and no conflict, at a level that names one, only
+ * for a capital MT alone: metric tonnes or megatonnes.
+ */
+function isLoneMtRead(read: Extract<CellRead, { ok: true }>): boolean {
+  return read.unit == null && read.unitSource != null && !read.unitConflict;
+}
+
 function readsAsTonnes(
   read: Extract<CellRead, { ok: true }>,
   bundle: TableBundle,
@@ -1539,7 +1547,9 @@ function readsAsTonnes(
 /**
  * The gas cell `ref` in tonnes, or null: it must be in the value cell's table
  * and row, read (`readCell` on the cell's own text, so the parse, per-person
- * and unit checks apply), and be in tonnes (`readsAsTonnes`).
+ * and unit checks apply), and be in tonnes (`readsAsTonnes`). On a row whose
+ * value is a lone capital `MT` (`valueIsMt`), a gas cell read the same way is
+ * kept as printed too: the "MT" answer of the unit card scales it.
  */
 function gasFromCell(
   bundles: TableBundle[],
@@ -1548,6 +1558,7 @@ function gasFromCell(
   style: NumberStyle,
   currentYear: number,
   hasScaleEvidence: (bundle: TableBundle) => boolean,
+  valueIsMt: boolean,
 ): number | null {
   if (!ref) return null;
   const found = findCell(bundles, ref);
@@ -1560,8 +1571,9 @@ function gasFromCell(
   }
   // The model names the gas cell but copies no text: the cell's own text is read.
   const read = readCell(bundles, ref, found.cell.text, style, currentYear);
-  if (!read.ok || !readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
-    return null;
+  if (!read.ok) return null;
+  if (!readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
+    if (!(valueIsMt && isLoneMtRead(read))) return null;
   }
   return read.tonnes;
 }
@@ -1590,6 +1602,10 @@ function gasFromCell(
  * two ways in a document of undetected style gets `numberCheck`; and in a
  * document that defines MT as metric tons, an `Mt` cell of a table that
  * spells the `Mt` symbol is read back as printed (`asPrintedMt`).
+ * `totalCO2eText` keeps the cell's sign when the model copied the number
+ * without it. A row whose cell does not read keeps the model's text with
+ * `printedFactor` set to the model's unit factor when the text matches its
+ * value at that factor.
  */
 function readRowCells(
   row: ExtractedRow,
@@ -1612,22 +1628,48 @@ function readRowCells(
     if (multiplier != null) {
       out.totalCO2e = row.totalCO2e == null ? null : row.totalCO2e * multiplier;
       out.unit = row.unit ? "t" : null;
+      // The model's text of a value it gave in kt or Mt: kept with that factor
+      // when it matches, so finalizeRows does not check it at factor 1.
+      const printed =
+        out.totalCO2eText != null
+          ? parseNumberString(out.totalCO2eText, style)
+          : null;
+      if (
+        multiplier !== 1 &&
+        out.totalCO2e != null &&
+        matchesPrinted(out.totalCO2e, printed, multiplier)
+      ) {
+        out.printedFactor = multiplier;
+      }
     }
     if (out.totalCO2e != null) out.valueCheck = "not_found";
     return out;
   }
+  // A capital MT, asked on the unit card; its gas cells are read the same way.
+  const ambiguousMt = isLoneMtRead(read);
   const gas = (ref: string | null | undefined) =>
-    gasFromCell(bundles, ref, found, style, currentYear, hasScaleEvidence);
+    gasFromCell(
+      bundles,
+      ref,
+      found,
+      style,
+      currentYear,
+      hasScaleEvidence,
+      ambiguousMt,
+    );
   out.co2 = gas(row.co2Cell);
   out.ch4 = gas(row.ch4Cell);
   out.n2o = gas(row.n2oCell);
   out.totalCO2e = read.tonnes;
-  out.totalCO2eText = read.printed;
+  // `readCell` accepts printed text without the cell's sign ("25,639" of
+  // "(25,639)"): the text keeps the sign, so a number-format answer that
+  // parses it again does not flip the value.
+  const printedValue = parseNumberString(read.printed, style);
+  out.totalCO2eText =
+    read.tonnes < 0 && !(printedValue != null && printedValue < 0)
+      ? `-${read.printed}`
+      : read.printed;
   out.printedFactor = CELL_UNIT_FACTOR[read.unit ?? "t"];
-  // `readCell` gives no unit and no conflict, at a level that names one, only
-  // for a capital MT: metric tonnes or megatonnes, asked on the unit card.
-  const ambiguousMt =
-    read.unit == null && read.unitSource != null && !read.unitConflict;
   const tonnes = readsAsTonnes(read, found.bundle, hasScaleEvidence);
   out.unit = tonnes || ambiguousMt ? "t" : null;
   out.unitSource = read.unitSource;
@@ -1638,7 +1680,7 @@ function readRowCells(
     out.unitCheck = "missing";
     out.unitHint = read.unitConflict ? "t" : marks.unitHint(found.bundle);
   }
-  if (marks.undetected && isAmbiguousNumberText(read.printed)) {
+  if (marks.undetected && isAmbiguousNumberText(out.totalCO2eText)) {
     out.numberCheck = true;
     if (out.co2 != null || out.ch4 != null || out.n2o != null) {
       out.extractedGases = {

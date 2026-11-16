@@ -433,6 +433,9 @@
   "import-unit-group-heading-no-page_other": "{{count}} linhas sem unidade impressa",
   "import-unit-group-answer": "p. {{page}} em {{unit}}",
   "import-unit-group-answer-no-page": "linhas sem página em {{unit}}",
+  "import-unit-group-heading-table_one": "Página {{page}}, tabela {{table}}: {{count}} linha sem unidade impressa",
+  "import-unit-group-heading-table_other": "Página {{page}}, tabela {{table}}: {{count}} linhas sem unidade impressa",
+  "import-unit-group-answer-table": "p. {{page}}, tabela {{table}} em {{unit}}",
   "import-unit-group-option-per-person": "{{value}} t por pessoa",
   "import-unit-group-kg-only": "Esta página indica kg. Se essas linhas estiverem em kg, pule-as na revisão abaixo."
 }

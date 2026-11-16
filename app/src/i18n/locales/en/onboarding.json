@@ -484,6 +484,9 @@
   "import-unit-group-heading-no-page_other": "{{count}} rows without a printed unit",
   "import-unit-group-answer": "p. {{page}} in {{unit}}",
   "import-unit-group-answer-no-page": "rows without a page in {{unit}}",
+  "import-unit-group-heading-table_one": "Page {{page}}, table {{table}}: {{count}} row without a printed unit",
+  "import-unit-group-heading-table_other": "Page {{page}}, table {{table}}: {{count}} rows without a printed unit",
+  "import-unit-group-answer-table": "p. {{page}}, table {{table}} in {{unit}}",
   "import-unit-group-option-per-person": "{{value}} t per person",
   "import-unit-group-kg-only": "This page names kg. If these rows are in kg, skip them in the review below."
 }

@@ -622,16 +622,33 @@ export function UnitGroupsCheckCard({
             unit: t(UNIT_ANSWER_KEY[reading]),
           });
   };
-  const answerOf = (group: UnitGroup) =>
-    t(
+  // Tables of one page (structured path) are numbered in their order there,
+  // so two groups of one page do not read the same.
+  const tableNumber = new Map<UnitGroupKey, number>();
+  for (const group of groups) {
+    if (group.page == null) continue;
+    const samePage = groups.filter((g) => g.page === group.page);
+    if (samePage.length > 1) {
+      tableNumber.set(group.key, samePage.indexOf(group) + 1);
+    }
+  }
+  const answerOf = (group: UnitGroup) => {
+    const unit = t(UNIT_ANSWER_KEY[group.reading ?? group.preselected]);
+    const table = tableNumber.get(group.key);
+    if (table != null) {
+      return t("import-unit-group-answer-table", {
+        page: group.page,
+        table,
+        unit,
+      });
+    }
+    return t(
       group.page != null
         ? "import-unit-group-answer"
         : "import-unit-group-answer-no-page",
-      {
-        page: group.page,
-        unit: t(UNIT_ANSWER_KEY[group.reading ?? group.preselected]),
-      },
+      { page: group.page, unit },
     );
+  };
 
   return (
     <SourceCheckCard
@@ -657,14 +674,20 @@ export function UnitGroupsCheckCard({
             gap={2}
           >
             <Text fontWeight="semibold" fontSize="body.md">
-              {group.page != null
-                ? t("import-unit-group-heading", {
+              {tableNumber.has(group.key)
+                ? t("import-unit-group-heading-table", {
                     page: group.page,
+                    table: tableNumber.get(group.key),
                     count: group.rowCount,
                   })
-                : t("import-unit-group-heading-no-page", {
-                    count: group.rowCount,
-                  })}
+                : group.page != null
+                  ? t("import-unit-group-heading", {
+                      page: group.page,
+                      count: group.rowCount,
+                    })
+                  : t("import-unit-group-heading-no-page", {
+                      count: group.rowCount,
+                    })}
             </Text>
             {group.kgOnly && (
               <Text fontSize="body.sm" color="content.secondary">

@@ -1591,6 +1591,80 @@ describe("Import Routes API", () => {
         }
       });
 
+      it("two table groups of one page (structured rows): each option total equals the stored importedSum", async () => {
+        const cell = (tableId: string, r: number) => ({
+          tableId,
+          page: 12,
+          row: r,
+          col: 1,
+        });
+        const tableRows = [
+          row("I.1.1", 1.5, {
+            unitCheck: "missing",
+            page: 12,
+            printedFactor: 1,
+            totalCO2eText: "1.5",
+            sourceCell: cell("t1", 1),
+          }),
+          row("I.2.1", 2, {
+            unitCheck: "missing",
+            page: 12,
+            printedFactor: 1,
+            totalCO2eText: "2",
+            sourceCell: cell("t2", 1),
+          }),
+          row("I.3.1", 3.25, {
+            unitCheck: "missing",
+            page: 12,
+            printedFactor: 1,
+            totalCO2eText: "3.25",
+            sourceCell: cell("t2", 2),
+          }),
+          row("II.2.1", 100, { page: 12 }),
+        ] as ExtractedRow[];
+        const tableGroup = (tableId: string, rowCount: number) => ({
+          ...group(`p12:${tableId}`, 12, rowCount),
+          tableId,
+          preselected: "t" as const,
+        });
+        const selected = { "p12:t1": "t", "p12:t2": "kt" } as const;
+        for (const reading of ["t", "kt", "Mt"] as const) {
+          const file = await createChecked({
+            rows: tableRows,
+            checks: {
+              unitGroups: [tableGroup("t1", 1), tableGroup("t2", 2)],
+            } as SourceChecks,
+          });
+          const shown = unitGroupOptionTotals(
+            tableRows,
+            T_GROUPS,
+            selected,
+            "p12:t1",
+          ).find((option) => option.reading === reading)?.total;
+          await expectStatusCode(
+            await patch(
+              file.id,
+              { units: { ...selected, "p12:t1": reading } },
+              T_GROUPS,
+            ),
+            200,
+          );
+          const stored = await storedSummary(file);
+          expect(stored.extractionSummary.importedSum).toBe(shown);
+          // The two tables of page 12 took different answers.
+          expect(stored.rows.map((r) => r.totalCO2e)).toEqual([
+            1.5 * { t: 1, kt: 1000, Mt: 1_000_000 }[reading],
+            2000,
+            3250,
+            100,
+          ]);
+          expect(stored.extractionSummary.sourceChecks?.unitGroups).toEqual([
+            { ...tableGroup("t1", 1), status: "confirmed", reading },
+            { ...tableGroup("t2", 2), status: "confirmed", reading: "kt" },
+          ]);
+        }
+      });
+
       it("a kt answer leaves a row the model already scaled unchanged", async () => {
         // Printed "1,234" on a kt page; the model returned 1,234,000 t.
         const scaledRows = [

@@ -794,6 +794,34 @@ describe("decisions on held rows (applyReviewedRows)", () => {
       }
     });
 
+    it.each([
+      // Each would be accepted on another issue: it matches the catalogue scope.
+      ["reclassify", "1", { gpcRefNo: "I.4.4" }],
+      ["correct-scope", null, { scope: "1" }],
+    ])(
+      "ignores a crafted %s on an unconfirmed row",
+      async (kind, scope, extra) => {
+        const result = held("I.1.1", {
+          ...document,
+          scope,
+          valueCheck: "not_found",
+        });
+        await applyReviewedRows(
+          result,
+          decide({
+            decisionRef: "I.1.1",
+            decisionScope: scope,
+            reviewDecision: kind,
+            ...extra,
+          }),
+          "file",
+        );
+        expect(result.rows[0].gpcRefNo).toBe("I.1.1");
+        expect(result.rows[0].review?.decision).toBeNull();
+        expect(findPendingRows(result)).toHaveLength(1);
+      },
+    );
+
     it("a stored import without the new fields has no new pending rows", () => {
       expect(findPendingRows(held("I.1.1", document))).toHaveLength(0);
       expect(

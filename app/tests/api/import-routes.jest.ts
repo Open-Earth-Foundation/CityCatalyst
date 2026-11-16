@@ -1063,6 +1063,14 @@ describe("Import Routes API", () => {
             break;
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
+        expect(importedFile.importStatus).toBe(ImportStatusEnum.COMPLETED);
+        const values = await db.models.InventoryValue.findAll({
+          where: { inventoryId: pdfInventory.inventoryId },
+        });
+        expect(values).toHaveLength(1);
+        expect(values[0].gpcReferenceNumber).toBe("I.1.1");
+        // co2eq is stored in kilograms: the kept 436.329 t, unscaled.
+        expect(values[0].co2eq?.toString()).toBe("436329");
       });
     });
   });

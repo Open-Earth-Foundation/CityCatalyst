@@ -195,6 +195,38 @@ describe("Mt with an MT glossary", () => {
     },
   );
 
+  it("chunk path (no pages): rows the model scaled from Mt are restored to the card (R28)", async () => {
+    mockTablePage(modelRows("t", 1_000_000));
+    const text =
+      TABLE_PAGE.replace("<!-- page: 1 -->\n", "") +
+      GLOSSARY_PAGE.replace("<!-- page: 2 -->\n", "");
+    const { rows, summary } = await extractInventoryFromDocument(text, options);
+    expect(rows.map((r) => r.totalCO2e)).toEqual(PRINTED.map((p) => p.value));
+    for (const row of rows) {
+      expect(row).toMatchObject({
+        unitCheck: "MT",
+        printedUnit: "Mt",
+        printedFactor: 1,
+      });
+    }
+    expect(summary.importedSum).toBe(LONG_BEACH_TOTAL);
+    expect(summary.sourceChecks?.unit?.reading).toBe("t");
+  });
+
+  it("chunk path without an Mt caption keeps the model's conversion", async () => {
+    mockTablePage(modelRows("t", 1_000_000));
+    const text =
+      TABLE_PAGE.replace("<!-- page: 1 -->\n", "").replace(
+        "(Mt CO2e)",
+        "(million metric tons CO2e)",
+      ) + GLOSSARY_PAGE.replace("<!-- page: 2 -->\n", "");
+    const { rows } = await extractInventoryFromDocument(text, options);
+    expect(rows.map((r) => r.totalCO2e)).toEqual(
+      PRINTED.map((p) => p.value * 1_000_000),
+    );
+    expect(rows.some((r) => r.unitCheck != null)).toBe(false);
+  });
+
   it("chunk path (no pages): Mt rows go to the card too", async () => {
     mockTablePage(modelRows("Mt", 1));
     const text =

@@ -3482,7 +3482,8 @@ export type FinalizeOptions = {
    * whole document). "Mt" then reads like "MT": kept as tonnes with
    * `unitCheck: "MT"`. A value the model scaled by 1,000,000 is restored to
    * the printed value with the same mark only on a page whose captions spell
-   * the `Mt` symbol (`namesMtSymbol`, or `inheritedMtSymbol`); "million metric
+   * the `Mt` symbol (`namesMtSymbol`, or `inheritedMtSymbol`), or on the
+   * chunk path when the document's captions spell it (R28); "million metric
    * tons" or "megatonnes" captions keep the conversion. When the document also
    * prints "Mt" for megatonnes, those rows go to the unit card with a tonnes
    * default; that fails safe, since approval waits for the card's answer.
@@ -3696,6 +3697,14 @@ function finalizeRows(
     !!options?.mtIsMetricTons &&
     source?.kind === "page" &&
     (namesMtSymbol(source.text) || !!options.inheritedMtSymbol);
+  // The chunk path has no page: the document's captions decide whether a
+  // value the model scaled by 1,000,000 is read back (R28). Unit-less rows
+  // there stay as they are (R27 needs a page).
+  const mtRestore =
+    mtCaption ||
+    (!!options?.mtIsMetricTons &&
+      source?.kind === "document" &&
+      namesMtSymbol(source.text));
 
   // Structured path: a total is printed when it was read from its cell.
   const totalSource = (
@@ -3780,7 +3789,7 @@ function finalizeRows(
     scaled = checked;
     // The model converted a "Mt" column by 1,000,000 in a document that
     // defines MT as metric tons: back to the printed value, asked like "MT".
-    if (mtCaption && multiplier === 1 && !ambiguousMt) {
+    if (mtRestore && multiplier === 1 && !ambiguousMt) {
       if (scaled.printedFactor === UNIT_FACTOR.Mt) {
         scaled = asPrintedMt(scaled);
       } else if (

@@ -2732,8 +2732,10 @@ function repeatKey(row: ExtractedRow): string {
 /**
  * The text the model read: one page, or the whole document on the chunk path.
  * A page allows the scales its unit captions justify (`pageScaleEvidence`),
- * plus `FinalizeOptions.inheritedScales`, in the in-text checks; a document
- * allows exact matches only.
+ * plus `FinalizeOptions.inheritedScales`, in the in-text checks. A document
+ * allows its line items the scales its caption lines justify
+ * (`pageScaleEvidence` over the whole text, R24) and its totals exact
+ * matches only.
  */
 export type FinalizeSource = { text: string; kind: "page" | "document" };
 
@@ -2892,6 +2894,10 @@ function finalizeRows(
   // table; a chunk has no page and allows none.
   const sourceScales =
     totalsSource?.kind === "page" ? pageScales(totalsSource.text, options) : [];
+  // Line items on the chunk path may also use the scales the document's
+  // caption lines justify (R24); its totals stay exact matches.
+  const lineItemScales =
+    source?.kind === "document" ? pageScaleEvidence(source.text) : sourceScales;
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -3039,7 +3045,7 @@ function finalizeRows(
         row.totalCO2e,
         sourceNumbers,
         cellNumbers,
-        sourceScales,
+        lineItemScales,
       )
     ) {
       scaled.valueCheck = "not_found";

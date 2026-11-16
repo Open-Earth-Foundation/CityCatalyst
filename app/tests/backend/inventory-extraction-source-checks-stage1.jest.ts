@@ -138,6 +138,23 @@ describe("CC-1163 stage 1: line items checked against their page", () => {
     expect(items.rows[0].totalCO2e).toBe(9559200);
   });
 
+  it("chunk path: line items may use the scales the document's captions justify, totals stay exact (R24)", () => {
+    const text =
+      "Table 4: Emissions by sector (kt CO2e)\n\n| Sector | 2021 |\n| --- | --- |\n| Road | 9,559.2 |\n| Total | 9,559.2 |";
+    const source = { source: { text, kind: "document" as const } };
+    // The model already scaled the kt figure to tonnes.
+    const items = finalizeExtractedRows([lineItem(9559200)], 2021, source);
+    expect(items.rows[0].valueCheck).toBeUndefined();
+    expect(items.rows[0].totalCO2e).toBe(9559200);
+    const totals = finalizeExtractedRows([total(9559200)], 2021, source);
+    expect(totals.summary.reportedTotals[0].inText).toBe(false);
+    // Without a unit caption the scaled line item is not confirmed.
+    const prose = finalizeExtractedRows([lineItem(9559200)], 2021, {
+      source: { text: "Road transport was 9,559.2 kt.", kind: "document" },
+    });
+    expect(prose.rows[0].valueCheck).toBe("not_found");
+  });
+
   it("records page and onTableLine on reported totals", () => {
     const result = finalizeExtractedRows(
       [lineItem(100, { page: 7 }), total(300, { page: 7 })],

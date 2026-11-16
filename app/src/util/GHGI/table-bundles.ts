@@ -326,8 +326,8 @@ export function buildTableBundles(
 /**
  * The prompt rendering of a bundle: a `Table` line, then caption, headings,
  * unit, year and continuation lines when present, then one line per row with
- * each cell prefixed by its ref (`[t1:r2:c1] 1,200`). A `|` inside a cell is
- * written `\|`.
+ * each cell prefixed by its ref (`[t1:r2:c1] 1,200`). Inside a cell, a `\` is
+ * written `\\` and a `|` is written `\|`.
  */
 export function bundleText(bundle: TableBundle): string {
   const lines = [`Table ${bundle.tableId} (page ${bundle.page})`];
@@ -345,7 +345,10 @@ export function bundleText(bundle: TableBundle): string {
   for (const row of bundle.grid) {
     lines.push(
       row
-        .map((cell) => `[${cell.ref}] ${cell.text.replace(/\|/g, "\\|")}`)
+        .map(
+          (cell) =>
+            `[${cell.ref}] ${cell.text.replace(/\\/g, "\\\\").replace(/\|/g, "\\|")}`,
+        )
         .join(" | "),
     );
   }

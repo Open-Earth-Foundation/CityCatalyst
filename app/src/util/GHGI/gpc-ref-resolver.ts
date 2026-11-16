@@ -195,6 +195,11 @@ export function siblingReferences(gpcRefNo: string): string[] {
     .filter((ref) => ref === prefix || ref.startsWith(`${prefix}.`));
 }
 
+/** True when the reference is in the GPC reference table. */
+export function isGpcReference(gpcRefNo: string): boolean {
+  return table.some((row) => row.gpcRefNo === gpcRefNo);
+}
+
 /** Scope of a reference in the taxonomy; undefined when it has none. */
 export function taxonomyScope(gpcRefNo: string): number | undefined {
   return table.find((row) => row.gpcRefNo === gpcRefNo)?.scope;

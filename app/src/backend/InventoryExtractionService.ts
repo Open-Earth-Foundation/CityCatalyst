@@ -26,6 +26,7 @@ import {
   isLineItemValueInNumbers,
   isValueInNumbers,
   numbersInText,
+  numbersInTableCells,
   numbersOnTableLines,
   parseNumberString,
   yearEvidence,
@@ -2233,6 +2234,11 @@ function finalizeRows(
     source?.kind === "page"
       ? numbersOnTableLines(source.text, sourceStyle)
       : [];
+  // Numbers in table body cells, for short scaled line-item matches.
+  const cellNumbers =
+    source?.kind === "page"
+      ? numbersInTableCells(source.text, sourceStyle)
+      : [];
   // Scales the page's captions justify, or a previous page's for a continued
   // table; a chunk has no page and allows none.
   const sourceScales =
@@ -2350,7 +2356,7 @@ function finalizeRows(
       !isLineItemValueInNumbers(
         row.totalCO2e,
         sourceNumbers,
-        tableNumbers,
+        cellNumbers,
         sourceScales,
       )
     ) {

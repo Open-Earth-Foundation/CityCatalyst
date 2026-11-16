@@ -172,6 +172,14 @@ export function numbersInText(
   text: string,
   style: NumberStyle,
 ): { value: number; step: number }[] {
+  return readNumbers(text, style, [NUMBER_TOKEN, SPACE_GROUPED]);
+}
+
+function readNumbers(
+  text: string,
+  style: NumberStyle,
+  patterns: RegExp[],
+): { value: number; step: number }[] {
   const found: { value: number; step: number }[] = [];
   const add = (match: RegExpMatchArray) => {
     const token = match[0];
@@ -185,8 +193,9 @@ export function numbersInText(
       step: lastDigitStep(token, abs),
     });
   };
-  for (const match of text.matchAll(NUMBER_TOKEN)) add(match);
-  for (const match of text.matchAll(SPACE_GROUPED)) add(match);
+  for (const re of patterns) {
+    for (const match of text.matchAll(re)) add(match);
+  }
   return found;
 }
 
@@ -203,6 +212,35 @@ export function numbersOnTableLines(
     .filter((line) => line.includes("|"))
     .join("\n");
   return numbersInText(tableText, style);
+}
+
+/**
+ * A number token standing alone: not attached to a letter, dot or digit, so
+ * the "2" of `CO2e` and the `1.1` of the reference `I.1.1` are left out.
+ */
+const STANDALONE_NUMBER_TOKEN =
+  /(?<![\p{L}.,\d])\d(?:[\d.,]*\d)?(?![\p{L}.\d]|,\d)/gu;
+
+/**
+ * The numbers in the body cells of Markdown tables: numbersOnTableLines
+ * without header rows (the `|` line above a `| --- |` separator), separator
+ * lines, and tokens attached to letters or dots (`CO2e`, `I.1.1`). Used for the
+ * short scaled matches of `isLineItemValueInNumbers`.
+ */
+export function numbersInTableCells(
+  text: string,
+  style: NumberStyle,
+): { value: number; step: number }[] {
+  const lines = text.split(/\r?\n/);
+  const cellText = lines
+    .filter(
+      (line, i) =>
+        line.includes("|") &&
+        !TABLE_SEPARATOR.test(line) &&
+        !(i + 1 < lines.length && TABLE_SEPARATOR.test(lines[i + 1])),
+    )
+    .join("\n");
+  return readNumbers(cellText, style, [STANDALONE_NUMBER_TOKEN]);
 }
 
 /**
@@ -257,11 +295,12 @@ export function isValueInNumbers(
 
 /**
  * isValueInNumbers for a line item. `numbers` are all the numbers of the text
- * and `tableNumbers` those on its Markdown table lines (`numbersOnTableLines`).
- * Exact matches and scaled matches of 4+ significant digits count anywhere, as
- * in isValueInNumbers. A shorter figure matches scaled only on a table line:
- * `| Manufacturing | 80.3 |` under a "thousand MT CO2e" caption matches
- * 80,300 t, but the "2" of "CO2e" in prose does not match 2,000 t. `scales`
+ * and `tableNumbers` those in its Markdown table body cells
+ * (`numbersInTableCells`). Exact matches and scaled matches of 4+ significant
+ * digits count anywhere, as in isValueInNumbers. A shorter figure matches
+ * scaled only in a table body cell: `| Manufacturing | 80.3 |` under a
+ * "thousand MT CO2e" caption matches 80,300 t, but the "2" of "CO2e" (in prose
+ * or a header row) does not match 2,000 t, nor the `1.1` of `I.1.1` 1,100 t. `scales`
  * come from the page's unit evidence (`pageScaleEvidence`, or a previous
  * page's through `inheritedPageScales`); without them only an unscaled match
  * counts. Reported totals keep isValueInNumbers and its 4-digit guard.
@@ -638,16 +677,34 @@ function hasOwnUnitCaption(text: string): boolean {
   );
 }
 
+/** True when a line of the page is a `Table` caption or a Markdown heading. */
+function hasTableCaptionOrHeading(text: string): boolean {
+  return text.split(/\r?\n/).some((raw) => {
+    const line = raw.trim();
+    return /^[\s#*_>]*table\b/i.test(line) || line.startsWith("#");
+  });
+}
+
+/** True when the page's first non-empty line is a table line (it has `|`). */
+function startsWithTableLine(text: string): boolean {
+  const first = text.split(/\r?\n/).find((line) => line.trim() !== "");
+  return first?.includes("|") ?? false;
+}
+
 /**
  * Scales each page inherits from a table continued from earlier pages, keyed
- * by page number. A page with no unit caption of its own gets the evidence of
- * page p-1: that page's `pageScaleEvidence`, or, when p-1 has no unit caption
- * either, what p-1 inherited. The chain runs only across consecutive page
- * numbers with no unit caption; it stops at a missing page and at any page
- * naming a unit, a tonne caption included. A page with its own unit caption
- * inherits nothing (`[]`). Santiago 2022: the `TOTAL (KgCO2e)` header on p20
- * covers p21 and p22. Pass every page of the document in order, not only the
- * candidate pages, so a continuation page in between is not skipped.
+ * by page number. Only a continuation page inherits: one whose first non-empty
+ * line is a table line, with no `Table` caption, heading or unit caption of
+ * its own. It gets what page p-1 passes on: p-1's `pageScaleEvidence` when p-1
+ * has a unit caption, or what p-1 inherited when p-1 is a continuation page
+ * too. Anything else passes nothing on: a missing page number, a page starting
+ * with prose ("Population 5.000" after a kt table), or a page with its own
+ * `Table` caption or heading, whether or not it names a unit. A page with its
+ * own unit caption (tonnes included) inherits nothing and passes on its own
+ * evidence. Pages that inherit nothing get `[]`. Santiago 2022: the
+ * `TOTAL (KgCO2e)` header on p20 covers p21 and p22. Pass every page of the
+ * document in order, not only the candidate pages, so a continuation page in
+ * between is not skipped.
  */
 export function inheritedPageScales(
   pages: readonly { page: number; text: string }[],
@@ -659,6 +716,9 @@ export function inheritedPageScales(
     if (hasOwnUnitCaption(text)) {
       inherited.set(page, []);
       passedOn.set(page, pageScaleEvidence(text));
+    } else if (hasTableCaptionOrHeading(text) || !startsWithTableLine(text)) {
+      inherited.set(page, []);
+      passedOn.set(page, []);
     } else {
       const fromPrevious = passedOn.get(page - 1) ?? [];
       inherited.set(page, fromPrevious);

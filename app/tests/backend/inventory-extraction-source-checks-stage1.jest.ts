@@ -24,6 +24,7 @@ const {
   finalizeExtractedRows,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
+const { inheritedPageScales } = await import("@/util/GHGI/source-text");
 const { reconciliationTargets } =
   await import("@/util/GHGI/extraction-summary");
 
@@ -251,11 +252,15 @@ function documentOf(
     const rows = hits.length === 1 ? (hits[0][1].rows ?? []) : chunkRows;
     return { content: JSON.stringify({ rows }) };
   });
-  return entries
-    .map(
-      ([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`,
-    )
-    .join("");
+  return (
+    entries
+      // The marker goes after the page text, so a page starting with a table
+      // line still does (continued tables, see inheritedPageScales).
+      .map(
+        ([n, p]) => `<!-- page: ${n} -->\n${p.text}\nPAGE-${n}-MARK\n${FILLER}`,
+      )
+      .join("")
+  );
 }
 
 const item = (
@@ -541,6 +546,51 @@ describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => 
     const rail = rows.find((r) => r.gpcRefNo === "II.2.1");
     expect(rail).toBeDefined();
     expect(rail?.unitCheck).toBe("missing");
+  });
+
+  it("ignores the CO2e header digit and the I.1.1 reference for short matches", () => {
+    const text = "| Sector | kt CO2e |\n| --- | --- |\n| I.1.1 | 80.3 |";
+    const result = finalizeExtractedRows(
+      [
+        lineItem(2000, { gpcRefNo: "I.1.1" }),
+        lineItem(1100, { gpcRefNo: "I.2.1" }),
+        lineItem(80300, { gpcRefNo: "I.3.1" }),
+      ],
+      2021,
+      page(text),
+    );
+    expect(result.rows).toHaveLength(3);
+    expect(result.rows.map((r) => r.valueCheck)).toEqual([
+      "not_found",
+      "not_found",
+      undefined,
+    ]);
+  });
+
+  it("does not carry kt onto a prose demographics page (C6)", () => {
+    const p9 = "Table 1 Emissions (kt CO2e)\n| Residential | 3,190.1 |";
+    const p10 =
+      "Population 5.000\n1.234.567 2.345.678 3.456.789 4.567.890\n" +
+      "Residential buildings 3.000.000\nCommercial buildings 2.000.000\n";
+    const inheritedScales = inheritedPageScales([
+      { page: 9, text: p9 },
+      { page: 10, text: p10 },
+    ]).get(10);
+    expect(inheritedScales).toEqual([]);
+    const result = finalizeExtractedRows(
+      [
+        lineItem(3000000, { gpcRefNo: "I.1.1" }),
+        lineItem(2000000, { gpcRefNo: "I.2.1" }),
+        total(5000000, { page: 10 }),
+      ],
+      2021,
+      { ...page(p10), inheritedScales },
+    );
+    const invented = result.summary.reportedTotals.find(
+      (t) => t.value === 5000000,
+    );
+    expect(invented?.inText).toBe(false);
+    expect(targetValues(result.summary.reportedTotals)).not.toContain(5000000);
   });
 
   it("checks a continued page with the inherited kg scale", () => {

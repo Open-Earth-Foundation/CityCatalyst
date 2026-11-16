@@ -11,6 +11,7 @@ import {
   namesLargeUnit,
   pageScaleEvidence,
   isLineItemValueInNumbers,
+  numbersInTableCells,
   inheritedPageScales,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
@@ -555,6 +556,16 @@ describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
     expect(isLineItemValueInNumbers(80300, long, [], [1000])).toBe(false);
   });
 
+  it("ignores unit and reference digits for short scaled matches", () => {
+    const text = "| Sector | kt CO2e |\n| --- | --- |\n| I.1.1 | 80.3 |";
+    const numbers = numbersInText(text, "english");
+    const cells = numbersInTableCells(text, "english");
+    expect(pageScaleEvidence(text)).toEqual([1000]);
+    expect(isLineItemValueInNumbers(2000, numbers, cells, [1000])).toBe(false);
+    expect(isLineItemValueInNumbers(1100, numbers, cells, [1000])).toBe(false);
+    expect(isLineItemValueInNumbers(80300, numbers, cells, [1000])).toBe(true);
+  });
+
   it("gives no scale for population 5.000 without a unit caption", () => {
     const text = "Population 5.000";
     expect(pageScaleEvidence(text)).toEqual([]);
@@ -609,6 +620,41 @@ describe("inheritedPageScales: tables continued from the previous page", () => {
     ]);
     expect(inherited.get(10)).toEqual([]);
     expect(inherited.get(11)).toEqual([]);
+  });
+
+  it("does not inherit onto a page that starts with prose", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "Population 5.000\n| Households | 1.234 |" },
+      { page: 11, text: "| Rail | 12 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+  });
+
+  it("resets the chain at a Table caption or heading without a unit", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "| Annex | 1 |\n## Annex B\n| a | 1 |" },
+      { page: 11, text: "| b | 2 |" },
+      { page: 12, text: "| c | 3 |\nTable 7 Population" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+    expect(inherited.get(12)).toEqual([]);
+  });
+
+  it("takes the nearest unit caption in a chain kt, kg, none", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      {
+        page: 10,
+        text: "| Energía | 1 |\n| Sector | TOTAL (KgCO2e) |\n| --- | --- |",
+      },
+      { page: 11, text: "\n| Residuos | 2 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([0.001]);
   });
 
   it("does not inherit across a missing page", () => {

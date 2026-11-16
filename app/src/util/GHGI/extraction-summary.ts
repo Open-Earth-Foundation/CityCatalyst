@@ -4,6 +4,8 @@
  * shown on the review screen. No server imports: the browser uses this file too.
  */
 
+import type { SourceCell } from "@/util/GHGI/cell-values";
+
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
 export type ReportedTotal = {
   label: string;
@@ -27,11 +29,15 @@ export type ReportedTotal = {
    */
   onTableLine?: boolean;
   /**
-   * False when no kept line item of the target year is near the total (on its
-   * page, on the page before, or, for a total on a table line, on any page): it
-   * is no target. Set only on the page path.
+   * False when no kept line item of the target year is near the total: on the
+   * Markdown page path, on its page, on the page before, or, for a total on a
+   * table line, on any page; on the structured path, in its cell's table or a
+   * table of that table's continuation chain. It is then no target. Set only
+   * on the page paths.
    */
   rowsNearby?: boolean;
+  /** The table cell the total was read from (structured path only). */
+  sourceCell?: SourceCell;
 };
 
 export type DroppedRowReason =

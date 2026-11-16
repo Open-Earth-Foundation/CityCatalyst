@@ -6,7 +6,17 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
-import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
+import {
+  EXTRACTION_RESPONSE_SCHEMA,
+  STRUCTURED_EXTRACTION_RESPONSE_SCHEMA,
+} from "@/backend/extraction-response-schema";
+import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
+import {
+  buildTableBundles,
+  bundleText,
+  type TableBundle,
+} from "@/util/GHGI/table-bundles";
+import { findCell, readCell, type SourceCell } from "@/util/GHGI/cell-values";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
@@ -277,6 +287,21 @@ export type ExtractedRow = {
    * kg. It is kept as tonnes, not rescaled, and goes to review.
    */
   unitCheck?: "missing" | null;
+  /**
+   * Structured path: the value as printed in its cell, as the model copied it
+   * (normalized by `readCell` when the read succeeded).
+   */
+  totalCO2eText?: string | null;
+  /** Structured path: the model's reference of the value cell (`t3:r5:c2`). */
+  valueCell?: string | null;
+  /** Structured path: the model's references of the gas cells. */
+  co2Cell?: string | null;
+  ch4Cell?: string | null;
+  n2oCell?: string | null;
+  /** Structured path: the cell the value was read from, when the read succeeded. */
+  sourceCell?: SourceCell | null;
+  /** Structured path: where the value's unit was found (`readCell`). */
+  unitSource?: "column" | "row" | "caption" | null;
   /** User decision on a row held for review (`mappingConfiguration.overrides`). */
   reviewDecision?: "keep" | "reclassify" | "skip" | null;
   /** Reference the model suggested, kept when the user chose another one. */
@@ -315,15 +340,11 @@ export type ExtractedRow = {
   sourceRowNumber?: number | null;
 };
 
-// Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
-const SYSTEM_PROMPT = `<role>
-You are an extractor of GHG inventory line items from city emissions reports. You output only valid JSON with no commentary.
-</role>
+/** Prompt text shared by the Markdown and the structured extraction prompts. */
+const ROLE_TEXT = `You are an extractor of GHG inventory line items from city emissions reports. You output only valid JSON with no commentary.`;
 
-<task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
-
-Row types (critical): set "rowType" on every row.
+/** Row types, scope columns, notation keys, table choice, year columns, granularity. */
+const TASK_RULES = `Row types (critical): set "rowType" on every row.
 - "line_item": a measured value for one activity, subsector or GPC reference. Only these rows are imported.
 - "subtotal": a sum of several line items (sector subtotal, "SUB-TOTAL", "(All II emissions)", a subsector total when the table also lists its activities).
 - "total": a grand total of the inventory (TOTAL row, BASIC, BASIC+, BASIC+ S3, "Total GHG emissions").
@@ -348,22 +369,16 @@ Granularity (critical):
 - If the report has activity-level data (breakdown by fuel type, building type, category, or similar within a subsector): extract one row per activity with totalCO2e for that activity. Do not collapse to a single sector or subsector total when activity breakdown exists.
 - If the report has only subsector-level data (no activity breakdown): extract one row per subsector with totalCO2e for that subsector; set category to a label like "Subsector total" or the subsector name.
 - If the report has only sector-level totals (no subsector or activity breakdown): then output one row per sector with that sector total.
-- Never output only the whole-sector total when the table actually shows subsector or activity breakdown—always extract each subsector and each activity row with its own totalCO2e.
-</task>
+- Never output only the whole-sector total when the table actually shows subsector or activity breakdown—always extract each subsector and each activity row with its own totalCO2e.`;
 
-<input>
-- documentText (string): Full report text, or a segment of a longer report. Prefer full-coverage emissions summaries (comprehensive inventory); when the report has none, use its per-sector tables once each. Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore single-total summaries, per-capita tables and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
-</input>
-
-<output>
-Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
-- year (integer | null): year the value belongs to. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year. Use the year of the table or column even when it is not the requested year (the system drops other years). Null only when the document gives no year at all.
+/** Output fields before the value fields. */
+const OUTPUT_FIELDS_HEAD = `- year (integer | null): year the value belongs to. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year. Use the year of the table or column even when it is not the requested year (the system drops other years). Null only when the document gives no year at all.
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
-- category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
-- totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
-- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
-- rowType (string): "line_item", "subtotal" or "total" (see Row types).
+- category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.`;
+
+/** Output fields after the value fields. */
+const OUTPUT_FIELDS_TAIL = `- rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
 - gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
@@ -375,13 +390,12 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - activityAmount (number | null): consumption/quantity value when table has such column.
 - activityUnit (string | null): e.g. liters, kWh, GJ from "Units" or header.
 - activityType (string | null): fuel/activity name when present.
-- activityDataSource, activityDataQuality (string | null): when present.
+- activityDataSource, activityDataQuality (string | null): when present.`;
 
-Numbers: Output all numeric fields (totalCO2e, co2, ch4, n2o, activityAmount) as JSON numbers. Strip thousand separators (commas or spaces in "48,000" or "48 000" → 48000). Use a decimal point for decimals (e.g. 1.5); if the source uses a comma as decimal separator (e.g. "1,5"), convert to 1.5. Do not output numbers as strings or with commas/spaces inside them.
-Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.
-</output>
+const NUMBERS_TEXT = `Numbers: Output all numeric fields (totalCO2e, co2, ch4, n2o, activityAmount) as JSON numbers. Strip thousand separators (commas or spaces in "48,000" or "48 000" → 48000). Use a decimal point for decimals (e.g. 1.5); if the source uses a comma as decimal separator (e.g. "1,5"), convert to 1.5. Do not output numbers as strings or with commas/spaces inside them.
+Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.`;
 
-<taxonomy>
+const TAXONOMY_TEXT = `<taxonomy>
 Sector → Subsector hierarchy (use only these pairs):
 ${HIERARCHY_TEXT}
 
@@ -389,7 +403,34 @@ GPC references (use only these for gpcRefNo):
 ${REFERENCE_TEXT}
 
 Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"}. Subsector: ${SUBSECTOR_DICTIONARY_TEXT || "(none)"}.
-</taxonomy>
+</taxonomy>`;
+
+// Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
+const SYSTEM_PROMPT = `<role>
+${ROLE_TEXT}
+</role>
+
+<task>
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+
+${TASK_RULES}
+</task>
+
+<input>
+- documentText (string): Full report text, or a segment of a longer report. Prefer full-coverage emissions summaries (comprehensive inventory); when the report has none, use its per-sector tables once each. Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore single-total summaries, per-capita tables and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
+</input>
+
+<output>
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
+${OUTPUT_FIELDS_HEAD}
+- totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
+- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
+${OUTPUT_FIELDS_TAIL}
+
+${NUMBERS_TEXT}
+</output>
+
+${TAXONOMY_TEXT}
 
 <example_output>
 {"rows": [
@@ -400,6 +441,50 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
   {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "totalCO2e": null, "unit": null, "activityClass": "other", "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "source": "Table 5"},
   {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Unmanaged manure on pasture", "totalCO2e": 73000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"},
   {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
+]}
+</example_output>`;
+
+/**
+ * Prompt of the structured path: one page's table bundles with a reference on
+ * every cell. The model names cells and copies their text; code reads the
+ * value (`readCell`). Same structure as SYSTEM_PROMPT.
+ */
+const STRUCTURED_SYSTEM_PROMPT = `<role>
+${ROLE_TEXT}
+</role>
+
+<task>
+Extract emissions from the tables of one page of a city emissions report, at the most granular level the tables provide. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Every table cell is written with its reference in square brackets, e.g. "[t3:r5:c2] 1,234.5". For every row you output, put the reference of the cell that holds its emissions value in "valueCell" and copy that cell's number exactly as printed into "totalCO2eText": the same digits, separators, sign and parentheses, without the unit. Never compute, add, convert or round a value: code reads the number and its unit from the cell. A row whose value is not printed in one table cell (a value you calculated, or one from a chart or from the page text) gets valueCell and totalCO2eText null. When the table has gas columns (CO2, CH4, N2O), put the row's gas cells in co2Cell, ch4Cell and n2oCell. A table with a "Continues: <id>" line is the next part of table <id> from the previous page and has its columns. Extract scope as "1", "2", or "3" when the document indicates it. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the table has multiple. Also output subtotal and total rows, with their cells, but mark them with rowType so they are not counted as data.
+
+${TASK_RULES}
+</task>
+
+<input>
+- tables (string): the page's tables. Each starts with a line "Table <id> (page <n>)", then "Caption:", "Heading:", "Units:", "Years:", "Continues:" and "Columns of <id>:" lines when present, then one line per table row with each cell written "[<reference>] <text>" and cells separated by " | ".
+- pageText (string): the page text outside the tables (headings, notes, prose), for context only. A value printed only here has no cell.
+</input>
+
+<output>
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical tables produce many rows (do not collapse to a single row). Each object in "rows" has:
+${OUTPUT_FIELDS_HEAD}
+- valueCell (string | null): reference of the cell that holds this row's emissions value (e.g. "t3:r5:c2"), copied from the tables. Null when the value is not printed in a table cell. For a notation key, the reference of the cell that holds it.
+- totalCO2eText (string | null): the number in valueCell exactly as printed (e.g. "1,234.5", "(811)", "−603"), without the unit. Null for a notation key and when valueCell is null.
+- totalCO2e (number | null): the same number as a JSON number, as printed, not converted. Null for a notation key.
+- unit (string | null): the unit the table prints for that number (e.g. "kt CO2e", "t CO2e"); null when the table does not say.
+${OUTPUT_FIELDS_TAIL}
+- co2Cell, ch4Cell, n2oCell (string | null): references of the row's CO2, CH4 and N2O cells when the table has gas columns; else null.
+
+${NUMBERS_TEXT}
+</output>
+
+${TAXONOMY_TEXT}
+
+<example_output>
+{"rows": [
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "valueCell": "t1:r2:c4", "totalCO2eText": "125,000", "totalCO2e": 125000, "unit": "t CO2e", "co2Cell": "t1:r2:c2", "ch4Cell": "t1:r2:c3", "n2oCell": null, "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "refSource": "document", "directionEvidence": null, "co2": 124100, "ch4": 900, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "valueCell": "t1:r4:c4", "totalCO2eText": "167,000", "totalCO2e": 167000, "unit": "t CO2e", "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "refSource": null, "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": null, "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "valueCell": "t2:r1:c1", "totalCO2eText": null, "totalCO2e": null, "unit": null, "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": "other", "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "refSource": "inferred", "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Table 6", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": null, "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "valueCell": null, "totalCO2eText": null, "totalCO2e": 89000, "unit": "t CO2e", "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "refSource": "inferred", "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Figure 3", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null}
 ]}
 </example_output>`;
 
@@ -925,7 +1010,20 @@ export async function extractInventoryFromDocument(
   documentContent: string,
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
-  const result = await extractRowsFromDocument(documentContent, options);
+  return withProvenance(
+    await extractRowsFromDocument(documentContent, options),
+    documentContent,
+  );
+}
+
+/**
+ * verifyRowProvenance (references, direction quotes, activity-class rules)
+ * on extracted rows, and the reconciliation sum after it.
+ */
+function withProvenance(
+  result: ExtractionResult,
+  documentContent: string,
+): ExtractionResult {
   const rows = verifyRowProvenance(result.rows, documentContent);
   // The activity-class rules can move a row onto or off a reference left out
   // of the total (I.4.4), so the reconciliation sum is taken after them.
@@ -1033,10 +1131,8 @@ export function isSchemaRejection(err: unknown): boolean {
   );
 }
 
-async function extractRowsFromDocument(
-  documentContent: string,
-  options?: ExtractOptions,
-): Promise<ExtractionResult> {
+/** Rejects content that starts with instruction-like text (possible prompt injection). */
+function rejectPromptInjection(documentContent: string): void {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
   const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
@@ -1051,12 +1147,145 @@ async function extractRowsFromDocument(
       LLMErrorCode.BAD_REQUEST,
     );
   }
+}
+
+function yearInstructionFor(targetYear: number | undefined): string {
+  return targetYear != null
+    ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
+    : "";
+}
+
+/** Rows and totals of one page, with whether page evidence dropped or marked rows. */
+type PageExtraction = { result: ExtractionResult; evidenceDropped: boolean };
+
+type PagePhase = {
+  perPage: PageResult[];
+  /** Pages whose extraction failed and were skipped, ascending. */
+  failedPages: number[];
+  /** Pages where caption year or unit evidence dropped rows (see finalizeRows). */
+  evidencePages: Set<number>;
+};
+
+/**
+ * Extracts every page with the LLM concurrency (`mapPool`), for both page
+ * paths. An unusable answer is asked for once more; a page that still fails
+ * is skipped, and when every page fails the first error is thrown. When a
+ * page states its own grand total and its rows miss it, the page is asked
+ * once more and the closer answer kept. `onProgress` gets the completed count.
+ */
+async function extractPages<P extends { page: number }>(
+  pages: P[],
+  extract: (page: P) => Promise<PageExtraction>,
+  onProgress?: (completed: number) => Promise<void>,
+): Promise<PagePhase> {
+  const failedPages: { page: number; error: unknown }[] = [];
+  const evidencePages = new Set<number>();
+  const perPage = await mapPool(
+    pages,
+    getLlmChunkConcurrency(),
+    async (page): Promise<PageResult> => {
+      let finalized: PageExtraction;
+      try {
+        // Like a chunk: only an unusable answer is asked for once more. The
+        // LLM client already retries timeouts, rate limits and provider errors.
+        finalized = await extract(page).catch((error) => {
+          if (!(error instanceof ExtractionResponseError)) throw error;
+          logger.info(
+            { page: page.page, err: error },
+            "Page answer unusable; retrying once",
+          );
+          return extract(page);
+        });
+      } catch (error) {
+        // One unreadable page must not fail the whole import.
+        logger.warn(
+          { page: page.page, err: error },
+          "Page extraction failed; page skipped",
+        );
+        failedPages.push({ page: page.page, error });
+        return { page: page.page, result: EMPTY_RESULT };
+      }
+      // The model sometimes skips a column of a dense table. When the page states
+      // its own grand total and the rows miss it, ask once more; keep the closer.
+      const first = ownTotalDeviation(finalized.result);
+      if (first != null && first > RECONCILIATION_TOLERANCE) {
+        const retry = await extract(page).catch(() => null);
+        const second = retry ? ownTotalDeviation(retry.result) : null;
+        if (retry && second != null && second < first) finalized = retry;
+        logger.info(
+          { page: page.page, first, second },
+          "Page retried: rows did not add up to the page total",
+        );
+      }
+      if (finalized.evidenceDropped) evidencePages.add(page.page);
+      return { page: page.page, result: finalized.result };
+    },
+    async (completedCount) => {
+      if (onProgress) await onProgress(completedCount);
+    },
+  );
+  if (failedPages.length > 0 && failedPages.length === pages.length) {
+    throw failedPages[0].error;
+  }
+  return {
+    perPage,
+    failedPages: failedPages.map((f) => f.page).sort((a, b) => a - b),
+    evidencePages,
+  };
+}
+
+function withFailedPages(
+  result: ExtractionResult,
+  failedPages: number[],
+): ExtractionResult {
+  return failedPages.length > 0
+    ? { ...result, summary: { ...result.summary, failedPages } }
+    : result;
+}
+
+/** selectReconciledPages over a page phase, with its failed pages recorded. */
+function selectPagePhase(
+  phase: PagePhase,
+  year: number | undefined,
+): ExtractionResult {
+  const selected = withFailedPages(
+    selectReconciledPages(phase.perPage, year),
+    phase.failedPages,
+  );
+  logger.info(
+    {
+      pageSelection: selected.summary.pageSelection,
+      selectedPages: selected.summary.selectedPages,
+      importedSum: selected.summary.importedSum,
+      failedPages: phase.failedPages,
+    },
+    "Page selection finished",
+  );
+  return selected;
+}
+
+/** Rows the pages returned, kept or dropped. */
+function extractedRowCount(perPage: PageResult[]): number {
+  return perPage.reduce(
+    (n, p) =>
+      n +
+      p.result.rows.length +
+      Object.values(p.result.summary.droppedRows).reduce(
+        (a, b) => a + (b ?? 0),
+        0,
+      ),
+    0,
+  );
+}
+
+async function extractRowsFromDocument(
+  documentContent: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
+  rejectPromptInjection(documentContent);
 
   const targetYear = options?.targetYear;
-  const yearInstruction =
-    targetYear != null
-      ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
-      : "";
+  const yearInstruction = yearInstructionFor(targetYear);
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
@@ -1076,88 +1305,33 @@ async function extractRowsFromDocument(
     // One progress bar for the page phase and a possible chunk fallback, so the
     // bar never moves back. The chunk count is known before any call.
     const progressTotal = pages.length + countChunks(documentContent);
-    const failedPages: { page: number; error: unknown }[] = [];
-    // Pages where caption year or unit evidence dropped rows (see finalizeRows).
-    const evidencePages = new Set<number>();
-    const perPage = await mapPool(
+    const phase = await extractPages(
       pages,
-      getLlmChunkConcurrency(),
-      async (page): Promise<PageResult> => {
-        const extract = async () =>
-          finalizeRows(
-            normalizeExtractedRows(
-              await extractSegment(
-                page.text,
-                yearInstruction,
-                false,
-                schemaState,
-              ),
-            ).map((row) => ({ ...row, page: page.page })),
-            year,
-            {
-              deferYearAssumption: true,
-              source: { text: page.text, kind: "page" },
-              inheritedScales: inheritedScales.get(page.page) ?? [],
-            },
-          );
-        let finalized: Awaited<ReturnType<typeof extract>>;
-        try {
-          // Like a chunk: only an unusable answer is asked for once more. The
-          // LLM client already retries timeouts, rate limits and provider errors.
-          finalized = await extract().catch((error) => {
-            if (!(error instanceof ExtractionResponseError)) throw error;
-            logger.info(
-              { page: page.page, err: error },
-              "Page answer unusable; retrying once",
-            );
-            return extract();
-          });
-        } catch (error) {
-          // One unreadable page must not fail the whole import.
-          logger.warn(
-            { page: page.page, err: error },
-            "Page extraction failed; page skipped",
-          );
-          failedPages.push({ page: page.page, error });
-          return { page: page.page, result: EMPTY_RESULT };
-        }
-        // The model sometimes skips a column of a dense table. When the page states
-        // its own grand total and the rows miss it, ask once more; keep the closer.
-        const first = ownTotalDeviation(finalized.result);
-        if (first != null && first > RECONCILIATION_TOLERANCE) {
-          const retry = await extract().catch(() => null);
-          const second = retry ? ownTotalDeviation(retry.result) : null;
-          if (retry && second != null && second < first) finalized = retry;
-          logger.info(
-            { page: page.page, first, second },
-            "Page retried: rows did not add up to the page total",
-          );
-        }
-        if (finalized.evidenceDropped) evidencePages.add(page.page);
-        return { page: page.page, result: finalized.result };
-      },
-      async (completedCount) => {
-        if (onProgress) {
-          await Promise.resolve(onProgress(completedCount, progressTotal));
-        }
-      },
+      async (page) =>
+        finalizeRows(
+          normalizeExtractedRows(
+            await extractSegment(
+              page.text,
+              yearInstruction,
+              false,
+              schemaState,
+            ),
+          ).map((row) => ({ ...row, page: page.page })),
+          year,
+          {
+            deferYearAssumption: true,
+            source: { text: page.text, kind: "page" },
+            inheritedScales: inheritedScales.get(page.page) ?? [],
+          },
+        ),
+      onProgress
+        ? async (completed) => {
+            await Promise.resolve(onProgress(completed, progressTotal));
+          }
+        : undefined,
     );
-    if (failedPages.length === pages.length) throw failedPages[0].error;
-    const failed = failedPages.map((f) => f.page).sort((a, b) => a - b);
-    const withFailed = (result: ExtractionResult): ExtractionResult =>
-      failed.length > 0
-        ? { ...result, summary: { ...result.summary, failedPages: failed } }
-        : result;
-    const selected = withFailed(selectReconciledPages(perPage, year));
-    logger.info(
-      {
-        pageSelection: selected.summary.pageSelection,
-        selectedPages: selected.summary.selectedPages,
-        importedSum: selected.summary.importedSum,
-        failedPages: failedPages.map((f) => f.page),
-      },
-      "Page selection finished",
-    );
+    const { perPage, evidencePages } = phase;
+    const selected = selectPagePhase(phase, year);
     if (
       selected.summary.pageSelection === "fallback" &&
       evidencePages.size === 0
@@ -1177,10 +1351,13 @@ async function extractRowsFromDocument(
         { source: { text: documentContent, kind: "document" } },
       );
       return checkExtractionResult(
-        withFailed({
-          rows: result.rows,
-          summary: { ...result.summary, pageSelection: "fallback" },
-        }),
+        withFailedPages(
+          {
+            rows: result.rows,
+            summary: { ...result.summary, pageSelection: "fallback" },
+          },
+          phase.failedPages,
+        ),
         chunked.length,
         targetYear,
       );
@@ -1196,17 +1373,11 @@ async function extractRowsFromDocument(
     if (onProgress) {
       await Promise.resolve(onProgress(progressTotal, progressTotal));
     }
-    const extractedCount = perPage.reduce(
-      (n, p) =>
-        n +
-        p.result.rows.length +
-        Object.values(p.result.summary.droppedRows).reduce(
-          (a, b) => a + (b ?? 0),
-          0,
-        ),
-      0,
+    return checkExtractionResult(
+      selected,
+      extractedRowCount(perPage),
+      targetYear,
     );
-    return checkExtractionResult(selected, extractedCount, targetYear);
   }
 
   const allRows = await extractByChunks(
@@ -1221,6 +1392,281 @@ async function extractRowsFromDocument(
     }),
     allRows.length,
     targetYear,
+  );
+}
+
+/** The single year (1990 to the current year) a bundle's notes name, or null. */
+function singleNoteYear(bundle: TableBundle): number | null {
+  return bundle.yearNotes.length === 1 ? bundle.yearNotes[0] : null;
+}
+
+/** The cell `ref` read as a gas value in tonnes, or null when it does not read. */
+function gasFromCell(
+  bundles: TableBundle[],
+  ref: string | null | undefined,
+  style: NumberStyle,
+  currentYear: number,
+): number | null {
+  if (!ref) return null;
+  const found = findCell(bundles, ref);
+  if (!found) return null;
+  // The model names the gas cell but copies no text: the cell's own text is
+  // read, so the parse, per-person and unit checks still apply.
+  const read = readCell(bundles, ref, found.cell.text, style, currentYear);
+  return read.ok ? read.tonnes : null;
+}
+
+/**
+ * Replaces the model's numbers by what code reads from the cells (structured
+ * path). For a row whose value cell reads, the model's totalCO2e and unit are
+ * ignored: the value is the cell's, in tonnes; `unit` is "t", or null with
+ * `unitCheck: "missing"` (kept as printed) when the cell has no unit, a
+ * conflict or `MT`; the year is the cell's column year, else the single year
+ * of its table's notes, else the model's. A row whose cell does not read (no
+ * cell, text not in the cell, not a number, per-person column), or that names
+ * no cell, keeps the model's value for review (`valueCheck: "not_found"`),
+ * converted with the model's unit. Gases come only from their cells; one that
+ * does not read is null.
+ */
+function readRowCells(
+  row: ExtractedRow,
+  bundles: TableBundle[],
+  style: NumberStyle,
+  currentYear: number,
+): ExtractedRow {
+  const out: ExtractedRow = {
+    ...row,
+    co2: gasFromCell(bundles, row.co2Cell, style, currentYear),
+    ch4: gasFromCell(bundles, row.ch4Cell, style, currentYear),
+    n2o: gasFromCell(bundles, row.n2oCell, style, currentYear),
+  };
+  const read = row.valueCell
+    ? readCell(bundles, row.valueCell, row.totalCO2eText, style, currentYear)
+    : null;
+  const found = row.valueCell ? findCell(bundles, row.valueCell) : null;
+  if (!read?.ok || !found) {
+    // Converted here, so the unit multiplier of finalizeRows does not touch
+    // the gases, which are in tonnes already. An unknown unit is left for
+    // finalizeRows to drop.
+    const multiplier = tonnesMultiplier(row.unit);
+    if (multiplier != null) {
+      out.totalCO2e = row.totalCO2e == null ? null : row.totalCO2e * multiplier;
+      out.unit = row.unit ? "t" : null;
+    }
+    if (out.totalCO2e != null) out.valueCheck = "not_found";
+    return out;
+  }
+  out.totalCO2e = read.tonnes;
+  out.totalCO2eText = read.printed;
+  out.unit = read.unit ? "t" : null;
+  out.unitSource = read.unitSource;
+  if (read.unit == null) out.unitCheck = "missing";
+  out.sourceCell = {
+    tableId: found.bundle.tableId,
+    page: found.bundle.page,
+    row: found.row,
+    col: found.col,
+  };
+  out.year = read.columnYear ?? singleNoteYear(found.bundle) ?? row.year;
+  return out;
+}
+
+/** Cell references and printed text of one model row (structured path). */
+function cellFields(
+  raw: Record<string, unknown>,
+): Pick<
+  ExtractedRow,
+  "valueCell" | "totalCO2eText" | "co2Cell" | "ch4Cell" | "n2oCell"
+> {
+  const text = (value: unknown): string | null => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return String(value);
+    }
+    return typeof value === "string" && !isPlaceholderOrEmpty(value)
+      ? value.trim()
+      : null;
+  };
+  return {
+    valueCell: text(raw.valueCell),
+    totalCO2eText: text(raw.totalCO2eText),
+    co2Cell: text(raw.co2Cell),
+    ch4Cell: text(raw.ch4Cell),
+    n2oCell: text(raw.n2oCell),
+  };
+}
+
+/** First table of a continuation chain: tables with the same root are one table. */
+function chainRoot(bundles: TableBundle[], tableId: string): string {
+  const seen = new Set<string>();
+  let current = tableId;
+  while (!seen.has(current)) {
+    seen.add(current);
+    const source = bundles.find((b) => b.tableId === current)?.continuationOf;
+    if (!source) break;
+    current = source;
+  }
+  return current;
+}
+
+/**
+ * Structured path: a total is near its rows (`rowsNearby`) only when its cell's
+ * table, or a table on that table's continuation chain (either direction),
+ * holds a kept line item of the target year. A total without a cell is not.
+ */
+function withTableTargets(
+  perPage: PageResult[],
+  bundles: TableBundle[],
+  year: number | undefined,
+): PageResult[] {
+  const rowTables = new Set(
+    perPage
+      .flatMap((p) => p.result.rows)
+      .filter(
+        (row) =>
+          row.sourceCell != null &&
+          (year == null || row.year == null || row.year === year),
+      )
+      .map((row) => chainRoot(bundles, row.sourceCell!.tableId)),
+  );
+  return perPage.map((p) => ({
+    page: p.page,
+    result: {
+      ...p.result,
+      summary: {
+        ...p.result.summary,
+        reportedTotals: p.result.summary.reportedTotals.map((total) => ({
+          ...total,
+          rowsNearby:
+            total.sourceCell != null &&
+            rowTables.has(chainRoot(bundles, total.sourceCell.tableId)),
+        })),
+      },
+    },
+  }));
+}
+
+/**
+ * The user message of one page on the structured path: the page's table
+ * bundles (`bundleText`), with the column headers of the table a continuation
+ * continues, then the page text outside the tables.
+ */
+function structuredPagePrompt(
+  doc: StructuredDocument,
+  bundles: TableBundle[],
+  page: number,
+): string {
+  const tables = bundles
+    .filter((bundle) => bundle.page === page)
+    .map((bundle) => {
+      const text = bundleText(bundle);
+      const source = bundle.continuationOf
+        ? bundles.find((b) => b.tableId === bundle.continuationOf)
+        : null;
+      if (!source || source.headerRowCount === 0) return text;
+      const columns = source.grid
+        .slice(0, source.headerRowCount)
+        .map((cells) => cells.map((cell) => cell.text).join(" | "));
+      return `${text}\nColumns of ${source.tableId}: ${columns.join(" / ")}`;
+    });
+  const pageText = (
+    doc.document.pages.find((p) => p.page_index + 1 === page)?.blocks ?? []
+  )
+    .filter((block) => block.related_table_id == null && block.content.trim())
+    .sort((a, b) => a.reading_order_index - b.reading_order_index)
+    .map((block) => block.content.trim())
+    .join("\n\n");
+  return `Tables:\n\n${tables.join("\n\n")}\n\nPage text outside the tables:\n\n${pageText || "(none)"}`;
+}
+
+/**
+ * Extract inventory rows from the stored structured OCR document: one call
+ * per page that has tables, with that page's table bundles. The model names
+ * the cell of each row and total and copies its text; code reads the value,
+ * its unit and its column year from the cell (`readCell`). A row whose cell
+ * does not read goes to review (`valueCheck: "not_found"`); a total is a
+ * target only when it is in the table, or continuation chain, of a kept line
+ * item. Page selection, the provenance checks and the GPC references are
+ * those of the Markdown path; `markdown`, the OCR Markdown of the same job,
+ * feeds the provenance checks.
+ *
+ * @throws LLMError with BAD_REQUEST if the Markdown looks like prompt-injection
+ */
+export async function extractInventoryFromStructured(
+  doc: StructuredDocument,
+  markdown: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
+  rejectPromptInjection(markdown);
+  const targetYear = options?.targetYear;
+  const year =
+    targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  const yearInstruction = yearInstructionFor(targetYear);
+  const currentYear = new Date().getUTCFullYear();
+  const bundles = buildTableBundles(doc, currentYear);
+  const style = detectNumberStyle(markdown);
+  const pages = [...new Set(bundles.map((bundle) => bundle.page))]
+    .sort((a, b) => a - b)
+    .map((page) => ({
+      page,
+      prompt: structuredPagePrompt(doc, bundles, page),
+    }));
+  logger.info(
+    { pageCount: pages.length, tableCount: bundles.length },
+    "Extraction from structured tables page by page",
+  );
+  if (pages.length === 0) {
+    return withProvenance(
+      checkExtractionResult(
+        {
+          rows: [],
+          summary: { ...EMPTY_RESULT.summary, targetYear: year ?? null },
+        },
+        0,
+        targetYear,
+      ),
+      markdown,
+    );
+  }
+  const schemaState: SchemaState = { useSchema: true };
+  const onProgress = options?.onChunkProgress;
+  const progressTotal = pages.length;
+  const phase = await extractPages(
+    pages,
+    async ({ page, prompt }) => {
+      const raw = await callExtractionModel(
+        yearInstruction + prompt,
+        false,
+        schemaState,
+        STRUCTURED_PROMPT,
+      );
+      const rows = normalizeRows(raw, style).map((row, index) =>
+        readRowCells(
+          { ...row, ...cellFields(raw[index]), page },
+          bundles,
+          style,
+          currentYear,
+        ),
+      );
+      return finalizeRows(normalizeExtractedRows(rows), year, {
+        deferYearAssumption: true,
+        readFromCells: true,
+        currentYear,
+      });
+    },
+    onProgress
+      ? async (completed) => {
+          await Promise.resolve(onProgress(completed, progressTotal));
+        }
+      : undefined,
+  );
+  const perPage = withTableTargets(phase.perPage, bundles, year);
+  const selected = selectPagePhase({ ...phase, perPage }, year);
+  if (onProgress) {
+    await Promise.resolve(onProgress(progressTotal, progressTotal));
+  }
+  return withProvenance(
+    checkExtractionResult(selected, extractedRowCount(perPage), targetYear),
+    markdown,
   );
 }
 
@@ -1436,6 +1882,22 @@ export function mergeAndDedupeRows(
   return out;
 }
 
+/** System prompt and strict response schema of one extraction call. */
+type ExtractionPrompt = {
+  system: string;
+  schema: { name: string; schema: Record<string, unknown> };
+};
+
+const MARKDOWN_PROMPT: ExtractionPrompt = {
+  system: SYSTEM_PROMPT,
+  schema: EXTRACTION_RESPONSE_SCHEMA,
+};
+
+const STRUCTURED_PROMPT: ExtractionPrompt = {
+  system: STRUCTURED_SYSTEM_PROMPT,
+  schema: STRUCTURED_EXTRACTION_RESPONSE_SCHEMA,
+};
+
 /**
  * Run one LLM extraction on a single document or segment. Returns normalized rows only.
  */
@@ -1447,19 +1909,33 @@ async function extractSegment(
   style: NumberStyle = detectNumberStyle(content),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
+  return normalizeRows(
+    await callExtractionModel(userContent, isSegment, state, MARKDOWN_PROMPT),
+    style,
+  );
+}
 
+/**
+ * One extraction call: the strict schema first, jsonMode once a provider
+ * rejects it (shared `state`); a cut-off answer throws ExtractionResponseError.
+ * Returns the parsed row objects, not yet normalized.
+ */
+async function callExtractionModel(
+  userContent: string,
+  isSegment: boolean,
+  state: SchemaState,
+  prompt: ExtractionPrompt,
+): Promise<Record<string, unknown>[]> {
   const client = createLLMClient();
   const call = async (structured: boolean): Promise<string> => {
     const started = Date.now();
     const { content, model, usage, finishReason } = await client.complete({
       use: "pdf_extraction",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: prompt.system },
         { role: "user", content: userContent },
       ],
-      ...(structured
-        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
-        : { jsonMode: true }),
+      ...(structured ? { jsonSchema: prompt.schema } : { jsonMode: true }),
       // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
       // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
       maxTokens: 16000,
@@ -1513,8 +1989,7 @@ async function extractSegment(
   );
   logger.debug({ extractionResponse: truncated }, "Extraction LLM output");
 
-  const parsed = parseExtractionResponse(responseContent);
-  return normalizeRows(parsed, style);
+  return parseExtractionResponse(responseContent);
 }
 
 /**
@@ -2137,6 +2612,12 @@ export type FinalizeOptions = {
    * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
    */
   inheritedScales?: readonly Scale[];
+  /**
+   * Structured path (no `source`): the values were read from table cells. A
+   * total is printed (`inText`) only when its row has a `sourceCell`, and it
+   * records that cell and its page; `rowsNearby` is set after all pages.
+   */
+  readFromCells?: boolean;
 };
 
 /**
@@ -2145,7 +2626,8 @@ export type FinalizeOptions = {
  * - units are converted to tonnes, rows with an unknown unit are dropped;
  *   unit-less rows on a kt/Mt/kg page (its own captions, or a table continued
  *   from the previous page) are kept and marked (`unitCheck`), and unit-less
- *   totals there are dropped;
+ *   totals there are dropped; rows that arrive marked `unitCheck: "missing"`
+ *   (structured path) are treated the same;
  * - with a source, line items whose value is not printed there are kept and
  *   marked (`valueCheck`);
  * - with a target year, rows of another year or without a year are dropped when
@@ -2279,13 +2761,31 @@ function finalizeRows(
       namesSmallUnit(source.text) ||
       (options?.inheritedScales?.length ?? 0) > 0);
 
+  // Structured path: a total is printed when it was read from its cell.
+  const totalSource = (
+    row: ExtractedRow,
+    raw: number | null | undefined,
+    label: string,
+    value: number,
+  ): Pick<ReportedTotal, "inText" | "page" | "onTableLine" | "sourceCell"> => {
+    if (!options?.readFromCells) return inText(raw, label, value, row.page);
+    if (!row.sourceCell) return { inText: false, page: row.page ?? null };
+    return {
+      inText: true,
+      page: row.sourceCell.page,
+      sourceCell: row.sourceCell,
+    };
+  };
+
   for (const row of rows) {
     // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
       (v) => v != null,
     );
     // A blank unit converts like a missing one (multiplier 1), so mark it too.
-    const unitMissing = unitUnclear && !row.unit?.trim() && hasAmount;
+    const unitMissing =
+      ((unitUnclear && !row.unit?.trim()) || row.unitCheck === "missing") &&
+      hasAmount;
     if (unitMissing) evidenceDropped = true;
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {
@@ -2340,7 +2840,7 @@ function finalizeRows(
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
-          ...inText(row.totalCO2e, label, scaled.totalCO2e, row.page),
+          ...totalSource(row, row.totalCO2e, label, scaled.totalCO2e),
         });
       }
       continue;
@@ -2408,7 +2908,7 @@ function finalizeRows(
         sector: row.sector,
         subsector: row.subsector,
         level: "subtotal",
-        ...inText(rawValues.get(row), label, value, row.page),
+        ...totalSource(row, rawValues.get(row), label, value),
       });
     }
   }

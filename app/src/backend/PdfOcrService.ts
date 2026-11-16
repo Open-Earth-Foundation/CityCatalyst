@@ -18,12 +18,18 @@ import {
 import {
   STRUCTURED_DOCUMENT_SCHEMA_VERSION,
   StructuredDocumentError,
+  type StructuredDocument,
 } from "@/backend/StructuredDocumentArtifact";
 import {
   getPdfOcrConfig,
   getPdfOcrRetryDelayMs,
 } from "@/backend/pdf-ocr-config";
-import { extractInventoryFromDocument } from "@/backend/InventoryExtractionService";
+import {
+  extractInventoryFromDocument,
+  extractInventoryFromStructured,
+  type ExtractOptions,
+  type ExtractionResult,
+} from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
 import { zeroRowReason } from "@/util/GHGI/extraction-summary";
 import { logger } from "@/services/logger";
@@ -659,6 +665,89 @@ async function finalizeInventoryExtraction(
   });
 }
 
+/** Why a job's extraction ran on the Markdown instead of the structured document. */
+type MarkdownReason =
+  | "no_structured_artifact"
+  | "unsupported_schema_version"
+  | "artifact_unreadable"
+  | "artifact_invalid"
+  | "no_tables";
+
+/**
+ * The job's stored structured document, or why it cannot be used: the job has
+ * no artifact (made before it existed), records another schema version, or
+ * the file cannot be read, parsed or has the wrong shape or version.
+ */
+async function loadStructuredDocument(
+  job: PdfOcrJob,
+): Promise<{ doc: StructuredDocument } | { reason: MarkdownReason }> {
+  if (!job.structuredS3Key) return { reason: "no_structured_artifact" };
+  if (job.structuredSchemaVersion !== STRUCTURED_DOCUMENT_SCHEMA_VERSION) {
+    return { reason: "unsupported_schema_version" };
+  }
+  let text: string;
+  try {
+    text = await InventoryFileStorageService.getTextFile(job.structuredS3Key);
+  } catch {
+    return { reason: "artifact_unreadable" };
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return { reason: "artifact_invalid" };
+  }
+  const doc = parsed as Partial<StructuredDocument> | null;
+  const pages = doc?.document?.pages;
+  if (
+    doc?.schema_version !== STRUCTURED_DOCUMENT_SCHEMA_VERSION ||
+    !Array.isArray(pages) ||
+    !Array.isArray(doc.document?.relationships) ||
+    !pages.every(
+      (page) =>
+        page != null &&
+        Number.isInteger(page.page_index) &&
+        Array.isArray(page.blocks) &&
+        Array.isArray(page.tables),
+    )
+  ) {
+    return { reason: "artifact_invalid" };
+  }
+  if (!pages.some((page) => page.tables.length > 0)) {
+    return { reason: "no_tables" };
+  }
+  return { doc: doc as StructuredDocument };
+}
+
+/**
+ * Extracts from the structured document when the job has a usable one
+ * (stage 2), otherwise from the Markdown (stage 1). Logs the path once per
+ * job, with the reason for the Markdown path; never the document content.
+ */
+async function extractInventoryForJob(
+  job: PdfOcrJob,
+  markdown: string,
+  options: ExtractOptions,
+): Promise<ExtractionResult> {
+  const loaded = await loadStructuredDocument(job);
+  if ("doc" in loaded) {
+    logger.info(
+      { sourceId: job.sourceId, extractionPath: "structured", reason: null },
+      "Inventory extraction path",
+    );
+    return extractInventoryFromStructured(loaded.doc, markdown, options);
+  }
+  logger.info(
+    {
+      sourceId: job.sourceId,
+      extractionPath: "markdown",
+      reason: loaded.reason,
+    },
+    "Inventory extraction path",
+  );
+  return extractInventoryFromDocument(markdown, options);
+}
+
 export async function extractInventoryRowsFromStoredMarkdown(
   job: PdfOcrJob,
   owner: string,
@@ -688,7 +777,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const { rows, summary } = await extractInventoryFromDocument(markdown, {
+    const { rows, summary } = await extractInventoryForJob(job, markdown, {
       targetYear,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");

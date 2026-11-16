@@ -33,6 +33,7 @@ const getFilePrefix = jest.fn<AsyncMock>();
 const createSignedDownloadUrl = jest.fn<AsyncMock>();
 const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
+const extractStructured = jest.fn<AsyncMock>();
 const extraction = {
   rows: [{ sector: "Energy", totalCO2e: 12 }],
   summary: {
@@ -97,6 +98,7 @@ jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
 }));
 jest.unstable_mockModule("@/backend/InventoryExtractionService", () => ({
   extractInventoryFromDocument: extractRows,
+  extractInventoryFromStructured: extractStructured,
 }));
 jest.unstable_mockModule("@/backend/GHGINativeInputCatalogService", () => ({
   syncGHGIImportedInventorySource,
@@ -625,6 +627,168 @@ describe("PdfOcrJob queue", () => {
     expect(importedFile.errorLog).toBe(
       "i18n:inventory-not-found-for-target-year",
     );
+  });
+
+  describe("structured or Markdown extraction path (CC-1163 stage 2)", () => {
+    const markdown =
+      "<!-- page: 1 -->\n| Sector | tCO2e |\n|---|---:|\n| Energy | 12 |";
+    const structured = {
+      schema_version: "citycatalyst.structured-document.1",
+      annotation_mode: "none",
+      provider: {
+        name: "mistral",
+        requested_model: "mistral-ocr-latest",
+        returned_model: "mistral-ocr-latest",
+        payload: {},
+      },
+      document: {
+        page_count: 1,
+        pages: [
+          {
+            page_index: 0,
+            dimensions: { width: 1, height: 1, dpi: null },
+            header: null,
+            footer: null,
+            markdown: "[tbl-0.md](tbl-0.md)",
+            blocks: [],
+            tables: [
+              {
+                table_id: "tbl-0.md",
+                page_index: 0,
+                content: "| Sector | tCO2e |\n|---|---:|\n| Energy | 12 |",
+                bbox_px: null,
+                bbox_norm: null,
+              },
+            ],
+            images: [],
+          },
+        ],
+        relationships: [],
+      },
+    };
+
+    const runWithArtifact = async (
+      jobPatch: Record<string, unknown>,
+      structuredText: string = JSON.stringify(structured),
+    ) => {
+      const importedFile = {
+        inventoryId: "inventory-id",
+        importStatus: "extracting",
+        mappingConfiguration: {} as Record<string, unknown>,
+        update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
+      };
+      const job = {
+        sourceType: "inventory_import",
+        sourceId: "source-id",
+        status: "succeeded",
+        resultS3Key: "result.md",
+        structuredS3Key: "document.structured.json",
+        structuredSchemaVersion: "citycatalyst.structured-document.1",
+        ...jobPatch,
+      } as unknown as Parameters<
+        typeof extractInventoryRowsFromStoredMarkdown
+      >[0];
+      importedFindByPk.mockResolvedValue(importedFile);
+      inventoryFindByPk.mockResolvedValue({ year: 2024 });
+      getTextFile.mockImplementation(async (key) =>
+        key === "result.md" ? markdown : structuredText,
+      );
+      extractRows.mockResolvedValue(extraction);
+      extractStructured.mockResolvedValue(extraction);
+      importedUpdate.mockImplementation(async (values) => {
+        Object.assign(importedFile, values);
+        return [1];
+      });
+      await extractInventoryRowsFromStoredMarkdown(job, "extractor-1");
+      return importedFile;
+    };
+
+    it("uses the structured path when the job has a supported artifact", async () => {
+      const importedFile = await runWithArtifact({});
+      expect(extractStructured).toHaveBeenCalledWith(
+        structured,
+        markdown,
+        expect.objectContaining({ targetYear: 2024 }),
+      );
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
+
+    it("a job with no structuredS3Key uses the Markdown path", async () => {
+      const importedFile = await runWithArtifact({
+        structuredS3Key: null,
+        structuredSchemaVersion: null,
+      });
+      expect(extractRows).toHaveBeenCalledWith(
+        markdown,
+        expect.objectContaining({ targetYear: 2024 }),
+      );
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(getTextFile).toHaveBeenCalledTimes(1);
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
+
+    it("a job whose artifact has the wrong schema version uses the Markdown path", async () => {
+      await runWithArtifact({
+        structuredSchemaVersion: "citycatalyst.structured-document.0",
+      });
+      expect(extractRows).toHaveBeenCalled();
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(getTextFile).not.toHaveBeenCalledWith("document.structured.json");
+    });
+
+    it("an artifact whose own schema version is wrong uses the Markdown path", async () => {
+      await runWithArtifact(
+        {},
+        JSON.stringify({ ...structured, schema_version: "other.1" }),
+      );
+      expect(extractRows).toHaveBeenCalled();
+      expect(extractStructured).not.toHaveBeenCalled();
+    });
+
+    it("a job whose artifact JSON is truncated uses the Markdown path and the import finishes", async () => {
+      const truncated = JSON.stringify(structured).slice(0, 120);
+      const importedFile = await runWithArtifact({}, truncated);
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+    });
+
+    it("an artifact that cannot be read uses the Markdown path", async () => {
+      const importedFile = {
+        inventoryId: "inventory-id",
+        importStatus: "extracting",
+        mappingConfiguration: {} as Record<string, unknown>,
+        update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
+      };
+      importedFindByPk.mockResolvedValue(importedFile);
+      inventoryFindByPk.mockResolvedValue({ year: 2024 });
+      getTextFile.mockImplementation(async (key) => {
+        if (key === "result.md") return markdown;
+        throw new Error("NoSuchKey");
+      });
+      extractRows.mockResolvedValue(extraction);
+      importedUpdate.mockImplementation(async (values) => {
+        Object.assign(importedFile, values);
+        return [1];
+      });
+      await extractInventoryRowsFromStoredMarkdown(
+        {
+          sourceType: "inventory_import",
+          sourceId: "source-id",
+          status: "succeeded",
+          resultS3Key: "result.md",
+          structuredS3Key: "document.structured.json",
+          structuredSchemaVersion: "citycatalyst.structured-document.1",
+        } as never,
+        "extractor-1",
+      );
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
   });
 
   it("prevents a stale extractor from overwriting a newer terminal state", async () => {

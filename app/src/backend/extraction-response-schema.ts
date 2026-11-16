@@ -60,3 +60,40 @@ export const EXTRACTION_RESPONSE_SCHEMA: {
     },
   },
 };
+
+/**
+ * Row fields of the PDF extraction call on structured OCR tables: the
+ * Markdown fields plus the cell references and the value as printed. They
+ * mirror the `<output>` block of the structured extraction prompt.
+ */
+const CELL_ROW_PROPERTIES = {
+  ...ROW_PROPERTIES,
+  valueCell: nullable("string"),
+  totalCO2eText: nullable("string"),
+  co2Cell: nullable("string"),
+  ch4Cell: nullable("string"),
+  n2oCell: nullable("string"),
+};
+
+export const STRUCTURED_EXTRACTION_RESPONSE_SCHEMA: {
+  name: "inventory_rows_cells";
+  schema: Record<string, unknown>;
+} = {
+  name: "inventory_rows_cells",
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    required: ["rows"],
+    properties: {
+      rows: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: Object.keys(CELL_ROW_PROPERTIES),
+          properties: CELL_ROW_PROPERTIES,
+        },
+      },
+    },
+  },
+};

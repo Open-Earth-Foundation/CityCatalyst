@@ -54,6 +54,14 @@ export type CellRead =
 
 type UnitSource = "column" | "row" | "caption";
 
+/** Where a value was read: its table, 1-based page, and 0-based grid row and column. */
+export type SourceCell = {
+  tableId: string;
+  page: number;
+  row: number;
+  col: number;
+};
+
 const KILOTONNE_ONLY_PATTERNS = KILOTONNE_PATTERNS.filter(
   (re) => !GIGAGRAM_PATTERNS.includes(re),
 );
@@ -109,7 +117,11 @@ function unitOfLevel(lines: string[]): UnitLevel {
   return { unit: [...units][0], conflict: false };
 }
 
-function findCell(
+/**
+ * The cell `ref` names in `bundles`, with its bundle and grid position, or
+ * null when the ref is malformed or no bundle has that cell.
+ */
+export function findCell(
   bundles: TableBundle[],
   ref: CellRef,
 ): { bundle: TableBundle; row: number; col: number; cell: TableCell } | null {

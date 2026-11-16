@@ -20,22 +20,25 @@ jest.unstable_mockModule("@/backend/llm", () => ({
   LLMErrorCode: { BAD_REQUEST: "BAD_REQUEST" },
 }));
 
+const warn = jest.fn();
+
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: {
-    warn: jest.fn(),
+    warn,
     info: jest.fn(),
     debug: jest.fn(),
     error: jest.fn(),
   },
 }));
 
-const { extractInventoryFromDocument } =
+const { extractInventoryFromDocument, finalizeExtractedRows } =
   await import("@/backend/InventoryExtractionService");
 const { optionTotals, readingsOf, DOC_UNIT_GROUP } =
   await import("@/util/GHGI/source-checks");
 
 beforeEach(() => {
   complete.mockReset();
+  warn.mockReset();
 });
 
 const LONG_BEACH_TOTAL = 3_250_886;
@@ -91,6 +94,8 @@ function modelRows(unit: string, factor: number) {
       gpcRefNo: p.ref,
       totalCO2e: p.value * factor,
       co2: p.value * factor * 0.9,
+      ch4: p.value * factor * 0.06,
+      n2o: p.value * factor * 0.04,
       totalCO2eText: p.text,
       unit,
       rowType: "line_item",
@@ -125,10 +130,13 @@ describe("Mt with an MT glossary", () => {
         expect(row).toMatchObject({
           totalCO2e: PRINTED[i].value,
           co2: PRINTED[i].value * 0.9,
+          ch4: PRINTED[i].value * 0.06,
+          n2o: PRINTED[i].value * 0.04,
           totalCO2eText: PRINTED[i].text,
           printedFactor: 1,
           unitCheck: "MT",
         });
+        expect(row.valueCheck).toBeUndefined();
       }
       expect(summary.pageSelection).toBe("reconciled");
       expect(summary.importedSum).toBe(LONG_BEACH_TOTAL);
@@ -139,6 +147,8 @@ describe("Mt with an MT glossary", () => {
       const checks = summary.sourceChecks!;
       expect(checks.unit).toMatchObject({ status: "pending", reading: "t" });
       expect(checks.unit?.evidence.pages).toEqual([1]);
+      // The card quotes the unit as Long Beach prints it.
+      expect(checks.unit?.evidence.unitText).toBe("Mt");
       // The card's options: tonnes (the stored sum) or megatonnes.
       expect(
         optionTotals(rows, readingsOf(checks), { unitGroup: DOC_UNIT_GROUP }),
@@ -189,5 +199,103 @@ describe("Mt without a glossary", () => {
     });
     expect(rows[0].unitCheck).toBeUndefined();
     expect(summary.sourceChecks?.unit).toBeUndefined();
+  });
+});
+
+describe("Mt restore needs an Mt caption", () => {
+  const MILLION_PAGE = TABLE_PAGE.replace(
+    "(Mt CO2e)",
+    "(million metric tons CO2e)",
+  );
+
+  it("MT glossary with a million metric tons caption keeps the conversion", async () => {
+    mockTablePage(modelRows("t", 1_000_000));
+    const { rows, summary } = await extractInventoryFromDocument(
+      MILLION_PAGE + GLOSSARY_PAGE,
+      options,
+    );
+    expect(rows.map((r) => r.totalCO2e)).toEqual(
+      PRINTED.map((p) => p.value * 1_000_000),
+    );
+    expect(rows.every((r) => r.printedFactor === 1_000_000)).toBe(true);
+    expect(rows.some((r) => r.unitCheck != null)).toBe(false);
+    expect(summary.sourceChecks?.unit).toBeUndefined();
+  });
+
+  it("restores ch4, n2o and the extracted gases too", () => {
+    const factor = 1_000_000;
+    const { rows } = finalizeExtractedRows(
+      [
+        {
+          year: 2021,
+          sector: "Stationary Energy",
+          subsector: null,
+          category: "Natural gas",
+          scope: "1",
+          gpcRefNo: "I.1.1",
+          totalCO2e: 6600 * factor,
+          co2: 6000 * factor,
+          ch4: 400 * factor,
+          n2o: 200 * factor,
+          unit: "t",
+          rowType: "line_item",
+          page: 1,
+          totalCO2eText: "6.600",
+          printedFactor: factor,
+          numberCheck: true,
+          extractedGases: {
+            co2: 6000 * factor,
+            ch4: 400 * factor,
+            n2o: 200 * factor,
+            numberFormat: "english",
+            unit: "t",
+          },
+        },
+      ],
+      2021,
+      {
+        source: {
+          text: "| Sector | (Mt CO2e) |\n|---|---|\n| Gas | 6.600 |\n",
+          kind: "page",
+        },
+        mtIsMetricTons: true,
+      },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 6600,
+      co2: 6000,
+      ch4: 400,
+      n2o: 200,
+      printedFactor: 1,
+      unitCheck: "MT",
+      printedUnit: "Mt",
+      extractedGases: {
+        co2: 6000,
+        ch4: 400,
+        n2o: 200,
+        numberFormat: "english",
+        unit: "t",
+      },
+    });
+    expect(rows[0].valueCheck).toBeUndefined();
+  });
+
+  it("a converted row without printed text is kept as extracted and logged", async () => {
+    mockTablePage(
+      modelRows("t", 1_000_000).map((row) => {
+        const { totalCO2eText: _text, ...rest } = row;
+        return rest;
+      }),
+    );
+    const { rows } = await extractInventoryFromDocument(
+      TABLE_PAGE + GLOSSARY_PAGE,
+      options,
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 1_500_000 * 1_000_000 });
+    expect(rows[0].unitCheck).toBeUndefined();
+    expect(warn).toHaveBeenCalledWith(
+      expect.objectContaining({ value: 1_500_000 * 1_000_000, page: 1 }),
+      "Value looks scaled from Mt in a document defining MT as metric tons; kept as extracted",
+    );
   });
 });

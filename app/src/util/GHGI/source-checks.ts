@@ -77,6 +77,11 @@ export type CheckableValue = {
    * the item's page group applies (see `unitGroupKey`).
    */
   unitCheck?: "MT" | "missing" | null;
+  /**
+   * On `unitCheck: "MT"` items: the unit as the document printed it, before
+   * cleaning ("MT CO2e", "Mt"). The unit card shows its spelling.
+   */
+  printedUnit?: string | null;
   numberCheck?: boolean | null;
   totalCO2eText?: string | null;
   printedFactor?: number | null;

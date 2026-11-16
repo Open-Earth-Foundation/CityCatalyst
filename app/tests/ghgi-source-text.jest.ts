@@ -14,6 +14,8 @@ import {
   numbersInTableCells,
   inheritedPageScales,
   definesMtAsMetricTons,
+  namesMtSymbol,
+  inheritedMtSymbol,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -675,6 +677,7 @@ describe("definesMtAsMetricTons", () => {
     "all values in metric tons (MT) of CO2e",
     "MT (metric tons)",
     "MT: Metric Tons",
+    "MTCO2e: metric tons of carbon dioxide equivalent",
   ])("true on %j", (text) => {
     expect(definesMtAsMetricTons(text)).toBe(true);
   });
@@ -683,9 +686,48 @@ describe("definesMtAsMetricTons", () => {
     "Mt: million tonnes",
     "mt: metric tons",
     "Mt (metric tons)",
+    "emissions in million metric tons (MT)",
     "| Sector | 2021 Emissions (Mt CO2e) |\n| Energy | 1,500,000 |",
     "",
   ])("false on %j", (text) => {
     expect(definesMtAsMetricTons(text)).toBe(false);
+  });
+});
+
+describe("namesMtSymbol", () => {
+  it("true on an (Mt CO2e) header", () => {
+    expect(
+      namesMtSymbol("| Sector | 2021 Emissions (Mt CO2e) |\n|---|---|\n"),
+    ).toBe(true);
+  });
+
+  it.each([
+    "| Sector | 2021 Emissions (million metric tons CO2e) |\n|---|---|\n",
+    "| Sector | Emissions (megatonnes CO2e) |\n|---|---|\n",
+    "| Sector | Emissions (thousand Mt CO2e) |\n|---|---|\n",
+    "Mt Eden road works took 3 years.",
+  ])("false on %j", (text) => {
+    expect(namesMtSymbol(text)).toBe(false);
+  });
+
+  it("a continued table inherits it", () => {
+    const inherited = inheritedMtSymbol([
+      {
+        page: 1,
+        text: "Table 1\n| Sector | (Mt CO2e) |\n|---|---|\n| A | 1 |",
+      },
+      { page: 2, text: "| B | 2 |" },
+      {
+        page: 3,
+        text: "Table 2\n| Sector | (million tonnes CO2e) |\n|---|---|\n",
+      },
+      { page: 4, text: "| C | 3 |" },
+    ]);
+    expect([...inherited]).toEqual([
+      [1, false],
+      [2, true],
+      [3, false],
+      [4, false],
+    ]);
   });
 });

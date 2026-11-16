@@ -565,14 +565,20 @@ const KILOTONNE_PATTERNS: RegExp[] = [
   /\bgigagrams?\b/i,
 ];
 
+/**
+ * The `Mt` symbol. Case-sensitive ("Mt Eden" is a place); it counts only
+ * before a CO2 or tonnes word, or alone in parentheses.
+ */
+const MT_SYMBOL_PATTERNS: RegExp[] = [
+  /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
+  /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+];
+
 const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
-  // `Mt` is case-sensitive ("Mt Eden" is a place) and counts only before a
-  // CO2 or tonnes word, or alone in parentheses.
-  /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
-  /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+  ...MT_SYMBOL_PATTERNS,
 ];
 
 const LARGE_UNIT_PATTERNS: RegExp[] = [
@@ -610,6 +616,20 @@ function namesMegatonne(line: string): boolean {
   return namesUnit(
     line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
     MEGATONNE_PATTERNS,
+  );
+}
+
+/**
+ * True when the page spells the `Mt` symbol on a caption line ("(Mt CO2e)",
+ * "Mt CO2"), with the rules of `namesLargeUnit`. "million tonnes",
+ * "megatonnes" and "thousand Mt" do not count.
+ */
+export function namesMtSymbol(text: string): boolean {
+  return captionsNameUnit(text, (line) =>
+    namesUnit(
+      line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
+      MT_SYMBOL_PATTERNS,
+    ),
   );
 }
 
@@ -659,22 +679,27 @@ const METRIC_TON = String.raw`metric\s+ton(?:ne)?s?\b`;
 
 /**
  * A definition of `MT` as metric tons: `MT: metric tons`, `MT = metric
- * tonnes`, `MT – metric ton`, `metric tons (MT)` or `MT (metric tons)`. The
- * `MT` group is checked in capitals by `definesMtAsMetricTons`.
+ * tonnes`, `MT – metric ton`, `MTCO2e: metric tons of CO2e`, `metric tons
+ * (MT)` or `MT (metric tons)`. `million metric tons (MT)` is no such
+ * definition. The `MT` group is checked in capitals by `definesMtAsMetricTons`.
  */
 const MT_DEFINITIONS: RegExp[] = [
-  new RegExp(String.raw`(?<![\w])(MT)\s*[:=–—-]\s*${METRIC_TON}`, "gi"),
-  new RegExp(String.raw`${METRIC_TON}\s*\(\s*(MT)\s*\)`, "gi"),
+  new RegExp(
+    String.raw`(?<![\w])(MT)(?:\s*CO(?:2|₂)e?)?\s*[:=–—-]\s*${METRIC_TON}`,
+    "gi",
+  ),
+  new RegExp(String.raw`(?<!million\s+)${METRIC_TON}\s*\(\s*(MT)\s*\)`, "gi"),
   new RegExp(String.raw`(?<![\w])(MT)\s*\(\s*${METRIC_TON}\s*\)`, "gi"),
 ];
 
 /**
  * True when the document defines MT as metric tons (a glossary line
- * `MT: metric tons`, `MT = metric tonnes`, `MT – metric ton`, or
- * `metric tons (MT)`, `MT (metric tons)`). "metric ton(ne)s" matches in any
- * case, `MT` only in capitals: `Mt: million tonnes` is no such definition.
- * Read on the whole document: the glossary often sits on another page than
- * the table.
+ * `MT: metric tons`, `MT = metric tonnes`, `MT – metric ton`,
+ * `MTCO2e: metric tons of carbon dioxide equivalent`, or `metric tons (MT)`,
+ * `MT (metric tons)`). "metric ton(ne)s" matches in any case, `MT` only in
+ * capitals: `Mt: million tonnes` and `million metric tons (MT)` are no such
+ * definition. Read on the whole document: the glossary often sits on another
+ * page than the table.
  */
 export function definesMtAsMetricTons(text: string): boolean {
   return MT_DEFINITIONS.some((re) =>
@@ -780,18 +805,41 @@ function startsWithTableLine(text: string): boolean {
 export function inheritedPageScales(
   pages: readonly { page: number; text: string }[],
 ): Map<number, Scale[]> {
-  const inherited = new Map<number, Scale[]>();
+  return inheritedEvidence(pages, pageScaleEvidence, () => []);
+}
+
+/**
+ * Pages that inherit the `Mt` symbol (`namesMtSymbol`) from a table continued
+ * from earlier pages, with the continuation rules of `inheritedPageScales`.
+ */
+export function inheritedMtSymbol(
+  pages: readonly { page: number; text: string }[],
+): Map<number, boolean> {
+  return inheritedEvidence(pages, namesMtSymbol, () => false);
+}
+
+/**
+ * Evidence each page inherits from a table continued from earlier pages (see
+ * `inheritedPageScales`): `own` of the page with the unit caption, passed on
+ * through continuation pages; `none()` for every other page.
+ */
+function inheritedEvidence<T>(
+  pages: readonly { page: number; text: string }[],
+  own: (text: string) => T,
+  none: () => T,
+): Map<number, T> {
+  const inherited = new Map<number, T>();
   // Evidence each page passes on to the next: its own, or what it inherited.
-  const passedOn = new Map<number, Scale[]>();
+  const passedOn = new Map<number, T>();
   for (const { page, text } of pages) {
     if (hasOwnUnitCaption(text)) {
-      inherited.set(page, []);
-      passedOn.set(page, pageScaleEvidence(text));
+      inherited.set(page, none());
+      passedOn.set(page, own(text));
     } else if (hasTableCaptionOrHeading(text) || !startsWithTableLine(text)) {
-      inherited.set(page, []);
-      passedOn.set(page, []);
+      inherited.set(page, none());
+      passedOn.set(page, none());
     } else {
-      const fromPrevious = passedOn.get(page - 1) ?? [];
+      const fromPrevious = passedOn.get(page - 1) ?? none();
       inherited.set(page, fromPrevious);
       passedOn.set(page, fromPrevious);
     }

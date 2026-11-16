@@ -9,7 +9,11 @@ import type { CheckableValue, SourceChecks } from "@/util/GHGI/source-checks";
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
 export type ReportedTotal = Pick<
   CheckableValue,
-  "unitCheck" | "numberCheck" | "totalCO2eText" | "printedFactor"
+  | "unitCheck"
+  | "printedUnit"
+  | "numberCheck"
+  | "totalCO2eText"
+  | "printedFactor"
 > & {
   label: string;
   value: number;

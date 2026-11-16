@@ -36,6 +36,7 @@ import { toCanonical } from "@/util/notation-keys";
 import {
   definesMtAsMetricTons,
   detectNumberStyle,
+  inheritedMtSymbol,
   inheritedPageScales,
   isAmbiguousNumberText,
   isLineItemValueInNumbers,
@@ -46,6 +47,7 @@ import {
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  namesMtSymbol,
   namesSmallUnit,
   namesTonneUnit,
   pageScaleEvidence,
@@ -338,6 +340,11 @@ export type ExtractedRow = {
    * kt, Mt, Gg or kg. It is kept as tonnes, not rescaled, and goes to review.
    */
   unitCheck?: "MT" | "missing" | null;
+  /**
+   * On `unitCheck: "MT"` rows: the unit as printed, before cleaning ("MT
+   * CO2e", "Mt"). The unit card shows its spelling.
+   */
+  printedUnit?: string | null;
   /**
    * On `unitCheck: "missing"` rows: the reading the page's captions suggest
    * ("kt" or "Mt" when the page names only that unit, "kg" when only kg, else
@@ -1150,6 +1157,7 @@ async function extractRowsFromDocument(
   // Unit evidence of a table continued from previous pages, read from the page
   // text of every page before the concurrent page calls.
   const inheritedScales = inheritedPageScales(allPages);
+  const inheritedMt = inheritedMtSymbol(allPages);
   // A glossary may define MT on another page than the table: read it once on
   // the whole document, for every page and chunk (CC-1233).
   const mtIsMetricTons = definesMtAsMetricTons(documentContent);
@@ -1187,6 +1195,7 @@ async function extractRowsFromDocument(
               sourceMetadata: metadata,
               documentStyle,
               inheritedScales: inheritedScales.get(page.page) ?? [],
+              inheritedMtSymbol: inheritedMt.get(page.page) ?? false,
               mtIsMetricTons,
             },
           );
@@ -2195,12 +2204,18 @@ function withPrintedText(
 
 /**
  * A row the model scaled by 1,000,000 (`printedFactor`) read back as printed,
- * with `unitCheck: "MT"`: the total and gases divided by the factor, and
- * `printedFactor` 1, since the "MT" factor is applied by the unit reading.
+ * with `unitCheck: "MT"` and `printedUnit` "Mt": the total and gases divided
+ * by the factor, and `printedFactor` 1, since the "MT" factor is applied by
+ * the unit reading.
  */
 function asPrintedMt(row: ExtractedRow): ExtractedRow {
   const factor = UNIT_FACTOR.Mt;
-  const out: ExtractedRow = { ...row, printedFactor: 1, unitCheck: "MT" };
+  const out: ExtractedRow = {
+    ...row,
+    printedFactor: 1,
+    unitCheck: "MT",
+    printedUnit: "Mt",
+  };
   if (row.totalCO2e != null) out.totalCO2e = row.totalCO2e / factor;
   for (const gas of ["co2", "ch4", "n2o"] as const) {
     const value = row[gas];
@@ -2224,6 +2239,7 @@ function totalCheckFields(row: ExtractedRow): Partial<ReportedTotal> {
   if (row.source) out.source = row.source;
   if (row.page != null) out.page = row.page;
   if (row.unitCheck) out.unitCheck = row.unitCheck;
+  if (row.printedUnit) out.printedUnit = row.printedUnit;
   if (row.numberCheck) out.numberCheck = true;
   if (row.totalCO2eText != null) out.totalCO2eText = row.totalCO2eText;
   if (row.printedFactor != null) out.printedFactor = row.printedFactor;
@@ -2285,13 +2301,21 @@ function buildSourceChecks(
           .filter((page): page is number => page != null),
       ),
     ].sort((a, b) => a - b);
+    // The spellings the document printed ("MT", "Mt"), cleaned of CO2e words.
+    const spellings = [
+      ...new Set(
+        items
+          .map((item) => item.printedUnit && cleanUnit(item.printedUnit))
+          .filter((unit): unit is string => !!unit),
+      ),
+    ];
     const exampleRow = mtRows.find((row) => row.totalCO2e != null);
     const exampleTotal = mtTotals[0];
     checks.unit = {
       status: "pending",
       reading: "t",
       evidence: {
-        unitText: "MT",
+        unitText: spellings.length > 0 ? spellings.join(" / ") : "MT",
         sources,
         pages,
         example: exampleRow
@@ -2627,11 +2651,20 @@ export type FinalizeOptions = {
    */
   inheritedScales?: readonly Scale[];
   /**
+   * The page inherits the `Mt` symbol (`inheritedMtSymbol`) from a table
+   * continued from previous pages: counts as its own `namesMtSymbol` caption
+   * for `mtIsMetricTons`. Ignored without a page source.
+   */
+  inheritedMtSymbol?: boolean;
+  /**
    * The document defines MT as metric tons (`definesMtAsMetricTons` on the
    * whole document). "Mt" then reads like "MT": kept as tonnes with
-   * `unitCheck: "MT"`, and a value the model scaled by 1,000,000 on a page
-   * whose captions (or a continued table) name Mt is restored to the printed
-   * value with the same mark.
+   * `unitCheck: "MT"`. A value the model scaled by 1,000,000 is restored to
+   * the printed value with the same mark only on a page whose captions spell
+   * the `Mt` symbol (`namesMtSymbol`, or `inheritedMtSymbol`); "million metric
+   * tons" or "megatonnes" captions keep the conversion. When the document also
+   * prints "Mt" for megatonnes, those rows go to the unit card with a tonnes
+   * default; that fails safe, since approval waits for the card's answer.
    */
   mtIsMetricTons?: boolean;
 };
@@ -2798,6 +2831,13 @@ function finalizeRows(
       (namesLargeUnit(source.text) || sourceScales.some((m) => m >= 1000)),
   };
 
+  // A document that defines MT as metric tons, on a page whose captions spell
+  // the `Mt` symbol: a value the model scaled by 1,000,000 is read back.
+  const mtCaption =
+    !!options?.mtIsMetricTons &&
+    source?.kind === "page" &&
+    (namesMtSymbol(source.text) || !!options.inheritedMtSymbol);
+
   for (const row of rows) {
     // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
@@ -2827,7 +2867,10 @@ function finalizeRows(
       if (row.n2o != null) scaled.n2o = row.n2o * multiplier;
     }
     if (row.unit) scaled.unit = "t";
-    if (ambiguousMt) scaled.unitCheck = "MT";
+    if (ambiguousMt) {
+      scaled.unitCheck = "MT";
+      scaled.printedUnit = row.unit!.trim();
+    }
     // A huge value in Mt can overflow to Infinity; it is not a usable number.
     if (
       [scaled.totalCO2e, scaled.co2, scaled.ch4, scaled.n2o].some(
@@ -2847,13 +2890,25 @@ function finalizeRows(
     scaled = checked;
     // The model converted a "Mt" column by 1,000,000 in a document that
     // defines MT as metric tons: back to the printed value, asked like "MT".
-    if (
-      options?.mtIsMetricTons &&
-      multiplier === 1 &&
-      scaled.printedFactor === UNIT_FACTOR.Mt &&
-      sourceScales.includes(1_000_000)
-    ) {
-      scaled = asPrintedMt(scaled);
+    if (mtCaption && multiplier === 1 && !ambiguousMt) {
+      if (scaled.printedFactor === UNIT_FACTOR.Mt) {
+        scaled = asPrintedMt(scaled);
+      } else if (
+        scaled.totalCO2eText == null &&
+        rawTotal != null &&
+        isValueInNumbers(rawTotal / UNIT_FACTOR.Mt, sourceNumbers) &&
+        !isValueInNumbers(rawTotal, sourceNumbers)
+      ) {
+        // Without the printed text nothing proves the model scaled it: kept.
+        logger.warn(
+          {
+            value: rawTotal,
+            label: row.category ?? row.subsector ?? null,
+            page: row.page ?? null,
+          },
+          "Value looks scaled from Mt in a document defining MT as metric tons; kept as extracted",
+        );
+      }
     }
     if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
 

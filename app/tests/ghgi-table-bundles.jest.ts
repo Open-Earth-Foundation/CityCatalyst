@@ -355,6 +355,26 @@ describe("bundleText", () => {
     });
     expect(text).toContain("[t2:r1:c0] Fuel \\| diesel | [t2:r1:c1] 3");
   });
+
+  it("escapes a backslash inside a cell before the pipe", () => {
+    const text = bundleText({
+      tableId: "t2",
+      page: 1,
+      caption: null,
+      headings: [],
+      unitNotes: [],
+      yearNotes: [],
+      headerRowCount: 0,
+      grid: [
+        [
+          { ref: "t2:r0:c0", text: "a\\|b", header: false },
+          { ref: "t2:r0:c1", text: "3", header: false },
+        ],
+      ],
+      continuationOf: null,
+    });
+    expect(text).toBe("Table t2 (page 1)\n[t2:r0:c0] a\\\\\\|b | [t2:r0:c1] 3");
+  });
 });
 
 describe("continuationChain", () => {

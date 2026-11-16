@@ -1,0 +1,19 @@
+[project]
+name = "hiap-brazilv3"
+version = "0.1.0"
+description = "HIAP Brazil v3 prioritization service (scaffold): region x methodology registry with impact, alignment and feasibility pillar stubs."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "pydantic>=2.0",
+    "pyyaml>=6.0.3",
+    "python-dotenv>=1.2.2",
+    "uvicorn>=0.52.1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]

@@ -87,6 +87,27 @@ describe("CC-1163 number strings", () => {
     });
     expect(rows[0].totalCO2e).toBe(1.5);
   });
+
+  it("scientific notation strings keep their exponent", async () => {
+    mockRows([
+      { ...stringRows("9e2")[0], totalCO2e: "9e2" },
+      {
+        ...stringRows("6e2")[0],
+        subsector: "Commercial Buildings",
+        gpcRefNo: "I.2.1",
+        totalCO2e: "6e2",
+      },
+      { ...stringRows("15e2")[1], totalCO2e: "15e2" },
+    ]);
+    const text =
+      "<!-- page: 1 -->\nGPC table\nResidential 900\nCommercial 600\n" +
+      "Total 1,500\n";
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(rows.map((r) => r.totalCO2e)).toEqual([900, 600]);
+    expect(summary.reportedTotals?.[0]?.value).toBe(1500);
+  });
 });
 
 /** Two line items that add up to 5,000,000 and a total row of `total`. */
@@ -361,17 +382,35 @@ describe("CC-1163 check 3: missing unit", () => {
   const body =
     "Residential buildings 3,000,000\nOn-road 2,000,000\nTOTAL 5,000,000\n";
 
-  it("drops unitless rows on a kt page", () => {
+  it("keeps and marks unitless rows on a kt page, drops the unitless total", () => {
     const rows = noUnitRows();
     const result = finalizeExtractedRows(rows, 2021, {
       source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "page" },
     });
-    expect(result.rows).toHaveLength(0);
-    expect(result.summary.droppedRows.unsupported_unit).toBe(rows.length);
+    expect(result.rows.map((r) => [r.totalCO2e, r.unitCheck])).toEqual([
+      [3000000, "missing"],
+      [2000000, "missing"],
+    ]);
+    expect(result.summary.droppedRows.unsupported_unit).toBe(1);
     expect(result.summary.reportedTotals).toHaveLength(0);
     expect(extractionReviewNotes(result.summary).droppedReasons).toContain(
       "unsupported_unit",
     );
+  });
+
+  it("keeps a notation-only row (NE) on a kt page", () => {
+    const [residential] = noUnitRows();
+    const notationRow: ExtractedRow = {
+      ...residential,
+      totalCO2e: null,
+      notationKey: "NE",
+    };
+    const result = finalizeExtractedRows([notationRow], 2021, {
+      source: { text: "Table 2 Emissions (kt CO2e)\n" + body, kind: "page" },
+    });
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].notationKey).toBe("NE");
+    expect(result.summary.droppedRows.unsupported_unit).toBeUndefined();
   });
 
   it("keeps unitless rows on a tonnes page", () => {
@@ -432,25 +471,31 @@ describe("CC-1163 page evidence survives the chunk fallback", () => {
     "101,101 102,102 103,103 104,104 105,105 106,106\n" +
     "<!-- page: 2 -->\nNotes only.\n";
 
-  it("kt page with unitless rows: nothing imported as tonnes", async () => {
-    mockRows(ktRows(null));
-    const text =
-      "<!-- page: 1 -->\n## Table 2 GHG emissions 2021 (kt CO2e)\n" +
-      "| Sector | Emissions |\n| --- | --- |\n" +
-      tail;
-    const { rows, summary } = await extractInventoryFromDocument(text, {
-      targetYear: 2021,
-    });
-    expect(rows).toEqual([]);
-    expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
-    expect(extractionReviewNotes(summary).droppedReasons).toContain(
-      "unsupported_unit",
-    );
-    const reconciliation = reconcileExtraction(summary);
-    expect(reconciliation == null || reconciliation.mismatch).toBe(true);
-    // The page call only: no whole-document re-extraction.
-    expect(complete).toHaveBeenCalledTimes(1);
-  });
+  it.each(["kt CO2e", "ktCO₂e"])(
+    "kt page (%s) with unitless rows: rows held for review, not trusted as tonnes",
+    async (unit) => {
+      mockRows(ktRows(null));
+      const text =
+        `<!-- page: 1 -->\n## Table 2 GHG emissions 2021 (${unit})\n` +
+        "| Sector | Emissions |\n| --- | --- |\n" +
+        tail;
+      const { rows, summary } = await extractInventoryFromDocument(text, {
+        targetYear: 2021,
+      });
+      expect(rows.map((r) => [r.totalCO2e, r.unitCheck])).toEqual([
+        [6000.2, "missing"],
+        [3559, "missing"],
+      ]);
+      expect(summary.droppedRows.unsupported_unit).toBeGreaterThan(0);
+      expect(extractionReviewNotes(summary).droppedReasons).toContain(
+        "unsupported_unit",
+      );
+      const reconciliation = reconcileExtraction(summary);
+      expect(reconciliation == null || reconciliation.mismatch).toBe(true);
+      // The page call only: no whole-document re-extraction.
+      expect(complete).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it("2019 table labeled 2021: no 2021 rows imported", async () => {
     mockRows(ktRows("t"));

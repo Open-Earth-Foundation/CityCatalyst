@@ -204,7 +204,7 @@ export default function UploadFileStep({
             <Input
               ref={fileInputRef}
               type="file"
-              accept=".csv,.xlsx,.pdf,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf"
+              accept=".csv,.xlsx,.xlsm,.pdf,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/pdf"
               onChange={handleFileSelect}
               display="none"
               disabled={isUploading}

@@ -194,9 +194,9 @@ describe("previewImportRows", () => {
 
 describe("ECRFImportService.fromExtractedRows empty rows", () => {
   it("keeps empty extracted rows as skipped with the Excel row number", async () => {
-    jest.spyOn(db.models.Scope, "findAll").mockResolvedValue([
-      { scopeId: "scope-1", scopeName: "1" },
-    ] as never);
+    jest
+      .spyOn(db.models.Scope, "findAll")
+      .mockResolvedValue([{ scopeId: "scope-1", scopeName: "1" }] as never);
     jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
       sectorId: "sector-I",
       subsectorId: "subsector-I.1",
@@ -400,11 +400,14 @@ describe("ECRFImportService.processECRFFile", () => {
       { gpcRefNo: 0, totalCO2e: 1 },
     );
 
+    // Blank template rows are skipped silently (CC-1217 CIRIS Path A hygiene).
     expect(result.rowCount).toBe(3);
-    expect(result.rows[1]).toMatchObject({
-      sourceRowNumber: 3,
-      issue: "no-value-or-notation-key",
-    });
+    expect(result.rowsSkippedEmptyEmissions).toBe(1);
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.map((row) => row.sourceRowNumber)).toEqual([2, 4]);
+    expect(
+      result.rows.every((row) => row.issue !== "no-value-or-notation-key"),
+    ).toBe(true);
   });
 });
 
@@ -738,5 +741,92 @@ describe("decisions on held rows (applyReviewedRows)", () => {
     );
     expect(result.rows[0].gpcRefNo).toBe("I.1.1");
     expect(findPendingRows(result)).toHaveLength(1);
+  });
+
+  describe("unconfirmed value or unit", () => {
+    // A document reference with a matching scope: nothing else holds the row.
+    const document = { refSource: "document" };
+    const decideOn = (reviewDecision: string) =>
+      decide({ decisionRef: "I.1.1", reviewDecision });
+
+    it("a row with valueCheck not_found is a value-unconfirmed review row", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, valueCheck: "not_found", page: 4 }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0]).toMatchObject({
+        issue: "value-unconfirmed",
+        page: 4,
+        value: 1710,
+      });
+    });
+
+    it("unitCheck missing wins over valueCheck", () => {
+      const pending = findPendingRows(
+        held("I.1.1", {
+          ...document,
+          valueCheck: "not_found",
+          unitCheck: "missing",
+        }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0].issue).toBe("unit-unconfirmed");
+    });
+
+    it("a reference conflict wins over an unconfirmed unit", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, scope: "2", unitCheck: "missing" }),
+      );
+      expect(pending[0].issue).toBe("reference-conflict");
+    });
+
+    it.each([
+      ["valueCheck", { valueCheck: "not_found" }],
+      ["unitCheck", { unitCheck: "missing" }],
+    ])("a %s row is pending until kept or skipped", async (_name, check) => {
+      for (const kind of ["keep", "skip"]) {
+        const result = held("I.1.1", { ...document, ...check });
+        expect(findPendingRows(result)).toHaveLength(1);
+        await applyReviewedRows(result, decideOn(kind), "file");
+        expect(findPendingRows(result)).toHaveLength(0);
+        // Keep imports the stored value unchanged.
+        expect(result.rows[0].totalCO2e).toBe(1710);
+      }
+    });
+
+    it.each([
+      // Each would be accepted on another issue: it matches the catalogue scope.
+      ["reclassify", "1", { gpcRefNo: "I.4.4" }],
+      ["correct-scope", null, { scope: "1" }],
+    ])(
+      "ignores a crafted %s on an unconfirmed row",
+      async (kind, scope, extra) => {
+        const result = held("I.1.1", {
+          ...document,
+          scope,
+          valueCheck: "not_found",
+        });
+        await applyReviewedRows(
+          result,
+          decide({
+            decisionRef: "I.1.1",
+            decisionScope: scope,
+            reviewDecision: kind,
+            ...extra,
+          }),
+          "file",
+        );
+        expect(result.rows[0].gpcRefNo).toBe("I.1.1");
+        expect(result.rows[0].review?.decision).toBeNull();
+        expect(findPendingRows(result)).toHaveLength(1);
+      },
+    );
+
+    it("a stored import without the new fields has no new pending rows", () => {
+      expect(findPendingRows(held("I.1.1", document))).toHaveLength(0);
+      expect(
+        findPendingRows(held("I.1.1", { refSource: "inferred" })),
+      ).toHaveLength(0);
+    });
   });
 });

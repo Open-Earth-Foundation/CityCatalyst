@@ -55,6 +55,7 @@ export function fileTypeOf(
   filename: string,
 ): "xlsx" | "csv" | "pdf" | "unknown" {
   const ext = extensionOf(filename);
+  if (ext === "xlsm") return "xlsx";
   if (ext === "xlsx" || ext === "csv" || ext === "pdf") return ext;
   return "unknown";
 }
@@ -70,8 +71,8 @@ export function classifyBulkInventoryFile(validation: ValidationResult): {
   if (validation.fileType === "pdf") {
     return { kind: "not_ecrf", detectedType: "pdf" };
   }
-  if (validation.isCIRIS) {
-    return { kind: "not_ecrf", detectedType: "ciris" };
+  if (validation.cirisWithoutEcrf) {
+    return { kind: "not_ecrf", detectedType: "ciris_without_ecrf" };
   }
   if (validation.isBIOMATEC) {
     return { kind: "not_ecrf", detectedType: "biomatec" };

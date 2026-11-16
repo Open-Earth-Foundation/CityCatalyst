@@ -26,8 +26,19 @@ export type ReportedTotal = Pick<
   inText?: boolean;
   /** Table or section the model named for the total, when it gave one. */
   source?: string | null;
-  /** Page of the extracted text, when extraction ran page by page. */
+  /** Page the total was read from, when extraction ran page by page. */
   page?: number | null;
+  /**
+   * True when the value is printed on a Markdown table line (a line with `|`) of
+   * its source text. Missing when no page source was given.
+   */
+  onTableLine?: boolean;
+  /**
+   * False when no kept line item of the target year is near the total (on its
+   * page, on the page before, or, for a total on a table line, on any page): it
+   * is no target. Set only on the page path.
+   */
+  rowsNearby?: boolean;
 };
 
 export type DroppedRowReason =
@@ -205,6 +216,8 @@ function netAndRemovalsByValue(
  * against 785,873) and would raise the share every other total is held to. For the
  * same reason a negative total is a grand total only when the document has no
  * positive one.
+ *
+ * A total with no line item nearby (`rowsNearby === false`) is no target.
  */
 export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
@@ -216,6 +229,8 @@ export function reconciliationTargets(
       Number.isFinite(total.value) &&
       // A total not printed in the source text (model arithmetic) is no target.
       total.inText !== false &&
+      // A total far from any line item (prose or a profile figure) is no target.
+      total.rowsNearby !== false &&
       // A total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );

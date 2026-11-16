@@ -52,7 +52,8 @@ export type CheckableValue = {
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;
-  unitCheck?: "MT" | null;
+  /** "MT": the unit card applies. "missing" is a row review issue, not a card. */
+  unitCheck?: "MT" | "missing" | null;
   numberCheck?: boolean | null;
   totalCO2eText?: string | null;
   printedFactor?: number | null;

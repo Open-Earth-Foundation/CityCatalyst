@@ -87,6 +87,15 @@ export function parseNumberString(
     negative = true;
     t = t.slice(1);
   }
+  // Scientific notation (`1.5e3`, `9E+2`), as some providers return, is read
+  // before units are dropped, so the exponent is not taken for a unit.
+  const scientific =
+    /^(\d+(?:\.\d+)?[eE][+-]?\d+)(?:[A-Za-z][A-Za-z0-9₂/]*)?$/.exec(t);
+  if (scientific) {
+    const value = Number(scientific[1]);
+    if (!Number.isFinite(value)) return null;
+    return negative ? -value : value;
+  }
   // A trailing unit (`tCO2e`, `kg`) or `%` after the last digit is dropped.
   t = t.replace(/%$/, "").replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
   if (!/^\d[\d.,]*\d$|^\d$/.test(t)) return null;
@@ -148,33 +157,70 @@ function lastDigitStep(token: string, value: number): number {
 }
 
 /**
- * Every number printed in `text`, parsed with `style`, signs dropped: `(811,512)`
- * and `−603,983` read as 811512 and 603983. `step` is the place value of the last
- * digit (1 for `9,559`, 0.1 for `9,559.2`). A space-grouped run (`9 559 215`)
- * yields the merged number and each token on its own. Tokens that do not parse
- * with the style are skipped.
+ * True when the number printed at `text[start, end)` is negative: a Unicode
+ * minus right before it, a `-` right before it that does not join two words or
+ * numbers (`2019-2021`, `CO2-e`), or parentheses around it alone (`(811,512)`).
+ */
+function isNegativeAt(text: string, start: number, end: number): boolean {
+  const before = text.slice(0, start).replace(/[   ]+$/, "");
+  const after = text.slice(end).replace(/^[   ]+/, "");
+  if (before.endsWith("−")) return true;
+  if (text[start - 1] === "-" && !/[\p{L}\d]/u.test(text[start - 2] ?? "")) {
+    return true;
+  }
+  return before.endsWith("(") && after.startsWith(")");
+}
+
+/**
+ * Every number printed in `text`, parsed with `style`, with its sign:
+ * `(811,512)` and `−603,983` read as -811512 and -603983. `step` is the place
+ * value of the last digit (1 for `9,559`, 0.1 for `9,559.2`). A space-grouped
+ * run (`9 559 215`) yields the merged number and each token on its own. Tokens
+ * that do not parse with the style are skipped.
  */
 export function numbersInText(
   text: string,
   style: NumberStyle,
 ): { value: number; step: number }[] {
   const found: { value: number; step: number }[] = [];
-  const add = (token: string) => {
+  const add = (match: RegExpMatchArray) => {
+    const token = match[0];
     const value = parseNumberString(token, style);
     if (value == null) return;
     const abs = Math.abs(value);
-    found.push({ value: abs, step: lastDigitStep(token, abs) });
+    const start = match.index ?? 0;
+    const negative = isNegativeAt(text, start, start + token.length);
+    found.push({
+      value: negative ? -abs : abs,
+      step: lastDigitStep(token, abs),
+    });
   };
-  for (const match of text.matchAll(NUMBER_TOKEN)) add(match[0]);
-  for (const match of text.matchAll(SPACE_GROUPED)) add(match[0]);
+  for (const match of text.matchAll(NUMBER_TOKEN)) add(match);
+  for (const match of text.matchAll(SPACE_GROUPED)) add(match);
   return found;
 }
 
 /**
- * The model may convert a printed figure to tonnes itself: kt and Mt figures up
- * (×1000, ×1,000,000), kg figures down (×0.001, e.g. Santiago 2022 prints kg).
+ * numbersInText restricted to lines containing `|`: the numbers printed in
+ * Markdown tables, not in prose.
  */
-const SCALES = [0.001, 1000, 1000000];
+export function numbersOnTableLines(
+  text: string,
+  style: NumberStyle,
+): { value: number; step: number }[] {
+  const tableText = text
+    .split(/\r?\n/)
+    .filter((line) => line.includes("|"))
+    .join("\n");
+  return numbersInText(tableText, style);
+}
+
+/**
+ * A factor the model may apply to a printed figure to get tonnes: ×1000 for kt
+ * or Gg, ×1,000,000 for Mt, ×0.001 for kg (Santiago 2022 prints kg). A scale
+ * applies only when the page names its unit: see `pageScaleEvidence`.
+ */
+export type Scale = 0.001 | 1000 | 1000000;
 
 /** A printed figure needs this many significant digits to match scaled. */
 const MIN_SCALED_DIGITS = 4;
@@ -187,8 +233,11 @@ function significantDigits(value: number, step: number): number {
 
 /**
  * True when `raw` (a model value before unit conversion) is printed in `text`:
- * equal up to rounding of the printed figure, or the printed figure times 0.001,
- * 1000 or 1,000,000 up to its rounding. The sign is ignored on both sides.
+ * equal up to rounding of the printed figure, or the printed figure times one of
+ * `scales` up to its rounding. `scales` come from the page's unit evidence
+ * (`pageScaleEvidence`); without them only an unscaled match counts, so a total
+ * cannot match an unrelated number through ×1000. The sign must match: 25,639 is
+ * not found in `(25,639)` or `−25,639`.
  *
  * A scaled match needs a printed figure of at least 4 significant digits
  * (`9,559.2` kt matches 9,559,215 t). Shorter figures would match almost any
@@ -199,8 +248,9 @@ export function isValueInText(
   raw: number,
   text: string,
   style: NumberStyle = detectNumberStyle(text),
+  scales: readonly Scale[] = [],
 ): boolean {
-  return isValueInNumbers(raw, numbersInText(text, style));
+  return isValueInNumbers(raw, numbersInText(text, style), scales);
 }
 
 /**
@@ -210,13 +260,14 @@ export function isValueInText(
 export function isValueInNumbers(
   raw: number,
   numbers: { value: number; step: number }[],
+  scales: readonly Scale[] = [],
 ): boolean {
-  const target = Math.abs(raw);
   return numbers.some(
     ({ value, step }) =>
-      Math.abs(target - value) <= Math.max(0.5, step / 2) ||
-      (significantDigits(value, step) >= MIN_SCALED_DIGITS &&
-        SCALES.some((m) => Math.abs(target - value * m) <= (step * m) / 2)),
+      Math.sign(raw) * Math.sign(value) >= 0 &&
+      (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
+        (significantDigits(Math.abs(value), step) >= MIN_SCALED_DIGITS &&
+          scales.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
 }
 
@@ -241,10 +292,12 @@ function classifyCaptionLines(text: string): CaptionLine[] {
   lines.forEach((raw, i) => {
     const line = raw.trim();
     if (!line) return;
-    if (/^[\s#*_>]*table\b/i.test(line) || line.startsWith("#")) {
-      found.push({ text: line, table: true, line: i });
-    } else if (/^[\s#*_>]*figure\b/i.test(line)) {
+    // Figure captions first: `## Figure 2: Emissions 2019` is a heading, but
+    // it describes a chart, not the table next to it.
+    if (/^[\s#*_>]*figure\b/i.test(line)) {
       found.push({ text: line, table: false, line: i });
+    } else if (/^[\s#*_>]*table\b/i.test(line) || line.startsWith("#")) {
+      found.push({ text: line, table: true, line: i });
     } else if (
       line.includes("|") &&
       i + 1 < lines.length &&
@@ -426,21 +479,36 @@ export function yearEvidence(
   return { kind: "none", years, leadText: "" };
 }
 
-const LARGE_UNIT_PATTERNS: RegExp[] = [
-  /\bktCO2/i,
+const KILOTONNE_PATTERNS: RegExp[] = [
+  /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  /\bGg\b/,
+  /\bgigagrams?\b/i,
+];
+
+const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
-  /\bGg\b/,
-  /\bgigagrams?\b/i,
   // `Mt` is case-sensitive ("Mt Eden" is a place) and counts only before a
   // CO2 or tonnes word, or alone in parentheses.
   /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
   /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+];
+
+const LARGE_UNIT_PATTERNS: RegExp[] = [
+  ...KILOTONNE_PATTERNS,
+  ...MEGATONNE_PATTERNS,
+];
+
+const KILOGRAM_PATTERNS: RegExp[] = [
+  /\bkgCO(?:2|₂)/i,
+  /\bkg\b/i,
+  /\bkilograms?\b/i,
+  /\bkilogrammes?\b/i,
 ];
 
 /** A tonne unit: t, tCO2e, tCO2-e, tonnes, tons, metric tonnes (not kt or Mt). */
@@ -449,30 +517,74 @@ const TONNE_UNIT_PATTERNS: RegExp[] = [
   /\b(?:metric\s+)?(?:tonnes?|tons?)\b/i,
 ];
 
+/**
+ * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
+ * `kg CO2e/hab.`, `kg per head`):
+ * a column of an emissions-per-capita table, not the unit of the emissions.
+ */
+const PER_PERSON_KG =
+  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?![\p{L}])/giu;
+
 function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
 }
 
+/** namesUnit for kg, with per-person kg mentions left out. */
+function namesKilogram(line: string): boolean {
+  return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
+}
+
 /**
- * True when the page names kt, Mt, Gg or an equivalent large unit on a caption
- * line. A Table caption, heading or table header row counts on its own. A Figure
- * caption or a short unit line counts only when no Table caption, heading or
- * header row names a tonne unit: a figure in kt beside a table in tonnes leaves
- * the table in tonnes. Prose is ignored, so "about 3 kt of waste" does not count.
+ * True when `names` finds the unit on a caption line. A Table caption,
+ * heading or table header row counts on its own. A Figure caption or a short unit
+ * line counts only when no Table caption, heading or header row names a tonne
+ * unit: a figure in kt beside a table in tonnes leaves the table in tonnes.
+ * Prose is ignored, so "about 3 kt of waste" does not count.
  */
-export function namesLargeUnit(text: string): boolean {
+function captionsNameUnit(
+  text: string,
+  names: (line: string) => boolean,
+): boolean {
   const lines = classifyCaptionLines(text);
   const tableLines = lines.filter((l) => l.table).map((l) => l.text);
-  if (tableLines.some((line) => namesUnit(line, LARGE_UNIT_PATTERNS))) {
-    return true;
-  }
-  const otherLarge = lines.some(
-    (l) => !l.table && namesUnit(l.text, LARGE_UNIT_PATTERNS),
-  );
+  if (tableLines.some(names)) return true;
+  const other = lines.some((l) => !l.table && names(l.text));
   return (
-    otherLarge &&
-    !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
+    other && !tableLines.some((line) => namesUnit(line, TONNE_UNIT_PATTERNS))
   );
+}
+
+/**
+ * True when the page names kt, Mt, Gg or an equivalent large unit on a caption
+ * line (see `captionsNameUnit` for the line rules).
+ */
+export function namesLargeUnit(text: string): boolean {
+  return captionsNameUnit(text, (line) => namesUnit(line, LARGE_UNIT_PATTERNS));
+}
+
+/**
+ * True when the page names kg on a caption line, with the rules of
+ * `namesLargeUnit`. A per-person kg (`kg/capita`, `kg per person`) does not count.
+ */
+export function namesSmallUnit(text: string): boolean {
+  return captionsNameUnit(text, namesKilogram);
+}
+
+/**
+ * The scales the page's captions justify: 1000 for kt or Gg, 1,000,000 for Mt,
+ * 0.001 for kg. Empty when no caption names a non-tonne unit; the caller passes
+ * no scales for text without a page (the chunk path).
+ */
+export function pageScaleEvidence(text: string): Scale[] {
+  const scales: Scale[] = [];
+  if (captionsNameUnit(text, (line) => namesUnit(line, KILOTONNE_PATTERNS))) {
+    scales.push(1000);
+  }
+  if (captionsNameUnit(text, (line) => namesUnit(line, MEGATONNE_PATTERNS))) {
+    scales.push(1000000);
+  }
+  if (namesSmallUnit(text)) scales.push(0.001);
+  return scales;
 }
 
 /**

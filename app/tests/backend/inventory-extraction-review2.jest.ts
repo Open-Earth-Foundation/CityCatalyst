@@ -282,9 +282,10 @@ const numbers = Array.from(
   { length: 10 },
   (_, i) => `${100 + i},${100 + i}`,
 ).join(" ");
-// CC-1163: a total is a target only when the page prints it.
+// CC-1163: a total is a target only when the page prints it, on a table line
+// as the real report does (a summary table may sit far from its rows).
 const page = (n: number, title: string) =>
-  `<!-- page: ${n} -->\n${title}\n${numbers}\nTOTAL 9,559,215\n`;
+  `<!-- page: ${n} -->\n${title}\n${numbers}\n| TOTAL | 9,559,215 |\n`;
 
 describe("4. progress over page phase and chunk fallback", () => {
   it("never moves back and ends at the total on fallback", async () => {

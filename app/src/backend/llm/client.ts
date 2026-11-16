@@ -3,7 +3,7 @@
  */
 
 import { logger } from "@/services/logger";
-import { loadLLMConfigFromEnv } from "./config";
+import { loadLLMConfig } from "./config";
 import { openaiComplete } from "./openai-adapter";
 import type {
   LLMCompleteOptions,
@@ -54,7 +54,7 @@ export interface CreateLLMClientOptions {
 }
 
 /**
- * Create an LLM client. If config is omitted, loads from env (OPENAI_API_KEY, LLM_PROVIDER, LLM_MODEL, etc.).
+ * Create an LLM client. If config is omitted, loads env (OPENAI_API_KEY, LLM_PROVIDER, ...) and llm_config.yaml.
  */
 
 export function createLLMClient(
@@ -64,17 +64,18 @@ export function createLLMClient(
     options && typeof (options as CreateLLMClientOptions).adapter === "object"
       ? (options as CreateLLMClientOptions)
       : { config: options as LLMConfig | undefined };
-  const resolvedConfig = opts.config ?? loadLLMConfigFromEnv();
+  const resolvedConfig = opts.config ?? loadLLMConfig();
   const adapter = opts.adapter ?? getAdapter(resolvedConfig.provider);
 
   async function complete(
     options: LLMCompleteOptions,
   ): Promise<LLMCompleteResult> {
-    const model = options.model ?? resolvedConfig.model;
+    const model = resolvedConfig.models[options.use];
     log.debug(
       {
         provider: resolvedConfig.provider,
-        model,
+        model: model.name,
+        use: options.use,
         messageCount: options.messages.length,
       },
       "LLM complete request",
@@ -85,14 +86,17 @@ export function createLLMClient(
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const result = await adapter.complete(options, resolvedConfig);
+        const result = await adapter.complete(options, resolvedConfig, model);
         if (result.usage) {
           log.debug(
             {
               provider: resolvedConfig.provider,
-              model,
+              model: model.name,
+              use: options.use,
               promptTokens: result.usage.promptTokens,
               completionTokens: result.usage.completionTokens,
+              reasoningTokens: result.usage.reasoningTokens,
+              finishReason: result.finishReason,
             },
             "LLM complete response",
           );

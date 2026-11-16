@@ -20,5 +20,7 @@ COPY --from=full-build /app/templates ./templates
 # next start reloads this file at runtime. Without it, images.remotePatterns
 # is empty and org logos (S3 via /_next/image) return 400.
 COPY --from=full-build /app/next.config.mjs ./next.config.mjs
+# Read at runtime by src/backend/llm/config.ts. Without it every LLM call fails.
+COPY --from=full-build /app/llm_config.yaml ./llm_config.yaml
 EXPOSE 3000
 CMD ["npm", "run", "start"]

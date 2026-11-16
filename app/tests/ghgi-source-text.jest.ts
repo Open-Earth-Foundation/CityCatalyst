@@ -3,13 +3,15 @@ import {
   isValueInText,
   isValueInNumbers,
   numbersInText,
+  numbersOnTableLines,
   parseNumberString,
   captionLines,
   tableCaptionLines,
   yearEvidence,
   namesLargeUnit,
+  pageScaleEvidence,
 } from "@/util/GHGI/source-text";
-import type { NumberStyle } from "@/util/GHGI/source-text";
+import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
 describe("parseNumberString", () => {
   it.each<[string, NumberStyle, number | null]>([
@@ -52,25 +54,41 @@ describe("detectNumberStyle", () => {
 });
 
 describe("isValueInText", () => {
-  it.each<[number, string, boolean]>([
+  it.each<[number, string, boolean, Scale[]?]>([
     [9559215, "| TOTAL | 9,559,215 |", true],
     [9559215, "Total 9,559,215.4", true],
     // Scaled: the model converted kt to tonnes itself.
-    [9559215, "(kt CO2e) Total 9,559.2", true],
+    [9559215, "(kt CO2e) Total 9,559.2", true, [1000]],
     [-811512, "Forestry (811,512)", true],
     [-603983, "AFOLU −603,983", true],
+    [-603983, "| AFOLU | -603,983 |", true],
+    [-25639000, "(kt CO2e) Net ( 25,639.0 )", true, [1000]],
+    // The sign must match: a positive answer is not a printed negative.
+    [25639, "Net emissions (25,639)", false],
+    [25639, "Net emissions −25,639", false],
+    [25639, "Net emissions -25,639", false],
+    [-25639, "Net emissions 25,639", false],
+    // A hyphen joining two numbers or words is not a minus.
+    [2021, "Period 2019-2021", true],
+    [2021, "I.1-2021", true],
     [5000000, "Total 4,876,120", false],
     [9559215, "about 9.56 million", false],
     // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.
-    [2000000, "CO2e emissions", false],
+    [2000000, "CO2e emissions", false, [1000, 1000000]],
     // Scaled down: the page prints kg and the model converted to tonnes
     // (Santiago 2022, CC-950 backtest 2026-11-09).
-    [2145243.596, "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |", true],
-    [841891, "| Subtotal Transporte | 841.891.000 |", true],
+    [
+      2145243.596,
+      "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |",
+      true,
+      [0.001],
+    ],
+    [841891, "| Subtotal Transporte | 841.891.000 |", true, [0.001]],
     // A short kg figure never matches: 500 kg is not 0.5 t of a total.
-    [0.5, "500 kg", false],
-  ])("finds %s in %j: %s", (raw, text, expected) => {
-    expect(isValueInText(raw, text)).toBe(expected);
+    [0.5, "500 kg", false, [0.001]],
+  ])("finds %s in %j: %s", (...row) => {
+    const [raw, text, expected, scales] = row;
+    expect(isValueInText(raw, text, undefined, scales)).toBe(expected);
   });
 });
 
@@ -130,6 +148,20 @@ describe("yearEvidence", () => {
     expect(
       yearEvidence("Table 3-1 Emissions summary for 2021", 2021, 2026).kind,
     ).toBe("target");
+  });
+  it("a figure heading does not date the table next to it", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("none");
+    expect(tableCaptionLines(page)).toEqual(["| Sector | tCO2e |"]);
+  });
+  it("a figure heading beside a 2021 table heading: target", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "## Table 3 Emissions 2021\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("target");
   });
   it.each([2021, 2022])("fiscal 2021/22 is target for %i", (year) => {
     expect(yearEvidence("Table 4 Emissions 2021/22", year, 2026).kind).toBe(
@@ -216,6 +248,8 @@ describe("namesLargeUnit", () => {
   it.each([
     "Table 2 Emissions (kt CO2e)",
     "| Sector | ktCO2e |\n| --- | --- |",
+    "| Sector | ktCO₂e |\n| --- | --- |",
+    "Table 3 Emissions (ktCO₂e)",
     "Table 5 (Mt CO2e)",
     "Table 5 Mt CO2-e",
     "Table 7 thousand tonnes CO2e",
@@ -338,6 +372,76 @@ describe("isValueInNumbers", () => {
   ])("agrees with isValueInText for %s in %j", (raw, text) => {
     const numbers = numbersInText(text, detectNumberStyle(text));
     expect(isValueInNumbers(raw, numbers)).toBe(isValueInText(raw, text));
+    expect(isValueInNumbers(raw, numbers, [1000])).toBe(
+      isValueInText(raw, text, undefined, [1000]),
+    );
+  });
+});
+
+describe("scales from unit evidence", () => {
+  it("reads the scale a caption line names", () => {
+    expect(
+      pageScaleEvidence("Table 3: Emissions (kt CO2e)\n| a | 9,559.2 |"),
+    ).toEqual([1000]);
+    expect(pageScaleEvidence("Table 3 (Mt CO2e)")).toEqual([1000000]);
+    expect(pageScaleEvidence("Tabla 2: Emisiones (kg CO2e)")).toEqual([0.001]);
+  });
+
+  it("ignores a unit named only in prose", () => {
+    expect(pageScaleEvidence("About 3 kt of waste was collected.")).toEqual([]);
+  });
+
+  it("finds no scale on a page without unit evidence", () => {
+    expect(pageScaleEvidence("Population 5.000")).toEqual([]);
+    expect(isValueInText(5000000, "Population 5.000", "european")).toBe(false);
+  });
+
+  it("matches a kt figure only when kt scale is allowed", () => {
+    expect(isValueInText(9559215, "Total 9,559.2", "english")).toBe(false);
+    expect(isValueInText(9559215, "Total 9,559.2", "english", [1000])).toBe(
+      true,
+    );
+  });
+
+  it("matches a kg figure (Santiago) only when kg scale is allowed", () => {
+    const text = "2.145.243.596";
+    expect(isValueInText(2145243.596, text, "european", [0.001])).toBe(true);
+    expect(isValueInText(2145243.596, text, "european")).toBe(false);
+  });
+
+  it("does not read a per-person kg header as kg evidence", () => {
+    for (const header of [
+      "| Sector | t CO2e | kg/capita |\n| --- | --- | --- |",
+      "Table 5: Emissions per capita (kg CO2e/capita)",
+      "Table 5: Emissions (kg per capita)",
+      "Table 5: Emissions (kg per person)",
+      "Tabla 5: Emisiones (kg per cápita)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+    expect(
+      pageScaleEvidence("Table 5: Emissions (kg CO2e) and kg/capita"),
+    ).toEqual([0.001]);
+  });
+
+  it("does not read a kg per inhabitant or per head header as kg evidence", () => {
+    expect(pageScaleEvidence("| Sector | kg CO2e/hab. |")).toEqual([]);
+    for (const header of [
+      "Tabla 5: Emisiones (kg/hab)",
+      "Tabla 5: Emisiones (kg/habitante)",
+      "Table 5: Emissions (kg per head)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+  });
+});
+
+describe("numbersOnTableLines", () => {
+  it("reads numbers only on lines containing |", () => {
+    const text = "Total emissions were 300 t.\n| Total | 1,200 |\n";
+    expect(numbersOnTableLines(text, "english").map((n) => n.value)).toEqual([
+      1200,
+    ]);
   });
 });
 
@@ -351,6 +455,11 @@ describe("parseNumberString with unit, percent or plus sign", () => {
     ["12%", "unknown", 12],
     ["12,5 %", "european", 12.5],
     ["1500 kg", "unknown", 1500],
+    ["1.5e3", "unknown", 1500],
+    ["9e2", "european", 900],
+    ["15E+2", "unknown", 1500],
+    ["-2.5e-1", "unknown", -0.25],
+    ["1.5e3 tCO2e", "unknown", 1500],
   ])("parses %s (%s) as %s", (input, style, expected) => {
     expect(parseNumberString(input, style)).toBe(expected);
   });
@@ -366,8 +475,12 @@ describe("parseNumberString with unit, percent or plus sign", () => {
 describe("parseNumberString ambiguous group callback", () => {
   it("reports a single 3-digit group read with style unknown", () => {
     const seen: string[] = [];
-    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(1.5);
-    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(1500);
+    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(
+      1.5,
+    );
+    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(
+      1500,
+    );
     expect(seen).toEqual(["1.500", "1,500"]);
   });
 

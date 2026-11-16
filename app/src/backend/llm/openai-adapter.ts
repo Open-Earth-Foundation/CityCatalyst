@@ -9,19 +9,9 @@ import type {
   LLMCompleteResult,
   LLMConfig,
   LLMMessage,
+  LLMModelConfig,
 } from "./types";
 import { LLMError, LLMErrorCode } from "./types";
-
-/**
- * Reasoning models (gpt-5 family, o-series) accept only the default temperature and
- * answer 400 "temperature does not support 0 with this model" to any other value.
- * OpenRouter drops the parameter silently, the OpenAI API does not. The provider
- * prefix (`openai/gpt-5.6-luna`) is ignored.
- */
-export function supportsCustomTemperature(model: string): boolean {
-  const name = model.split("/").pop() ?? model;
-  return !/^(gpt-5|o\d)/i.test(name);
-}
 
 function toOpenAIRole(
   role: LLMMessage["role"],
@@ -64,29 +54,29 @@ function normalizeError(err: unknown): LLMError {
 export async function openaiComplete(
   options: LLMCompleteOptions,
   config: LLMConfig,
+  model: LLMModelConfig,
 ): Promise<LLMCompleteResult> {
   const client = new OpenAI({
     apiKey: config.apiKey,
     ...(config.baseURL && { baseURL: config.baseURL }),
+    // The LLM client (client.ts) is the one retry layer; the SDK default of 2
+    // retries would multiply with it.
+    maxRetries: 0,
   });
 
-  const model = options.model ?? config.model;
-  // Some models (e.g. gpt-4o-mini) only support default temperature (1); omit when 0.1 to avoid 400
-  const sendTemperature =
-    options.temperature !== undefined &&
-    options.temperature !== 0.1 &&
-    supportsCustomTemperature(model);
-
   const body: OpenAI.Chat.ChatCompletionCreateParams = {
-    model,
+    model: model.name,
     messages: options.messages.map((m) => ({
       role: toOpenAIRole(m.role),
       content: m.content,
     })),
-    ...(sendTemperature && { temperature: options.temperature }),
+    ...(model.temperature !== undefined && { temperature: model.temperature }),
     // Newer models (e.g. gpt-4o-mini) require max_completion_tokens; older accept both
     ...(options.maxTokens !== undefined && {
       max_completion_tokens: options.maxTokens,
+    }),
+    ...(model.reasoningEffort !== undefined && {
+      reasoning_effort: model.reasoningEffort,
     }),
     ...(options.jsonSchema
       ? {
@@ -119,10 +109,18 @@ export async function openaiComplete(
           promptTokens: response.usage.prompt_tokens,
           completionTokens: response.usage.completion_tokens,
           totalTokens: response.usage.total_tokens,
+          reasoningTokens:
+            response.usage.completion_tokens_details?.reasoning_tokens,
         }
       : undefined;
 
-    return { content, usage, raw: response };
+    return {
+      content,
+      model: response.model ?? model.name,
+      usage,
+      finishReason: choice?.finish_reason ?? undefined,
+      raw: response,
+    };
   } catch (err) {
     clearTimeout(timeoutId);
     const msg = err instanceof Error ? err.message : String(err);

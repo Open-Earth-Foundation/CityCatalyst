@@ -11,11 +11,8 @@ jest.unstable_mockModule("openai", () => ({
 
 const { openaiComplete } = await import("@/backend/llm/openai-adapter");
 
-const config = {
-  apiKey: "test",
-  model: "gpt-4o-mini",
-  timeoutMs: 1000,
-} as never;
+const config = { apiKey: "test", timeoutMs: 1000 } as never;
+const model = { name: "gpt-4o-mini" };
 const schema = { type: "object", properties: {} };
 
 const call = async (extra: Record<string, unknown>) => {
@@ -26,6 +23,7 @@ const call = async (extra: Record<string, unknown>) => {
   await openaiComplete(
     { messages: [{ role: "user", content: "x" }], ...extra } as never,
     config,
+    model,
   );
   return create.mock.calls[create.mock.calls.length - 1][0];
 };

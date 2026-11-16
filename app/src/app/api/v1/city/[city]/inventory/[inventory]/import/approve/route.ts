@@ -56,7 +56,8 @@
  *       409:
  *         description: |
  *           The inventory already has data and replaceExisting was not set (error code inventory-has-data),
- *           rows need a decision (import-rows-pending), or a source check is still pending (source-checks-pending).
+ *           rows held for review have no decision yet (import-rows-pending), or a source check is still
+ *           pending (source-checks-pending). A value-unconfirmed or unit-unconfirmed row accepts only keep or skip.
  *       401:
  *         description: Unauthorized.
  */

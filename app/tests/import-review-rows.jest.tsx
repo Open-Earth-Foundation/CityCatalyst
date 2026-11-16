@@ -96,6 +96,28 @@ describe("ImportReviewRows", () => {
     expect(html).toContain("import-review-change-scope");
   });
 
+  it.each(["value-unconfirmed", "unit-unconfirmed"] as const)(
+    "offers only keep and skip on a %s row, with its page",
+    (issue) => {
+      const html = render([{ ...row, issue, page: 7 }]);
+      expect(html).toContain(
+        `import-row-issue-${issue} ${JSON.stringify({ page: 7 })}`.replace(
+          /"/g,
+          "&quot;",
+        ),
+      );
+      expect(html).toContain("import-review-keep");
+      expect(html).toContain("import-review-skip");
+      expect(html).not.toContain("import-review-reclassify");
+      expect(html).not.toContain("import-review-change-scope");
+    },
+  );
+
+  it("uses the no-page message when the row has no page", () => {
+    const html = render([{ ...row, issue: "value-unconfirmed", page: null }]);
+    expect(html).toContain("import-row-issue-value-unconfirmed-no-page");
+  });
+
   it("renders nothing with no held rows", () => {
     expect(render([])).not.toContain("import-review-rows");
   });

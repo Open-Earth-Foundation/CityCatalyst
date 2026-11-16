@@ -1,5 +1,9 @@
 import createHttpError from "http-errors";
 
+import {
+  cirisMissingEcrf3,
+  isCirisSheetList,
+} from "@/backend/ciris-workbook";
 import FileParserService, {
   type ParsedFileData,
 } from "@/backend/FileParserService";
@@ -14,8 +18,15 @@ import {
 export const MAX_FILE_SIZE_MB = INVENTORY_IMPORT_MAX_FILE_SIZE_MB;
 export const MAX_FILE_SIZE = INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES;
 
-// Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
+// Stored/parsed kinds (xlsm uploads normalize to xlsx).
 export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;
+/** Extensions accepted on upload; .xlsm is treated as xlsx for parse/storage. */
+export const ACCEPTED_UPLOAD_EXTENSIONS = [
+  "xlsx",
+  "xlsm",
+  "csv",
+  "pdf",
+] as const;
 
 export type AcceptedFileFormat = (typeof ACCEPTED_FILE_FORMATS)[number];
 
@@ -26,8 +37,13 @@ export interface ValidationResult {
   fileType?: AcceptedFileFormat;
   fileSize?: number;
   detectedColumns?: Record<string, number>; // Column name -> index mapping
-  /** True when file is CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction (Path B). */
+  /**
+   * True when file is CIRIS (CDP) format with eCRF_3. Import uses deterministic
+   * Path A; the flag still drives selective parse, Report reconcile, and column ignore.
+   */
   isCIRIS?: boolean;
+  /** CIRIS-like workbook with no eCRF_3 tab (e.g. older packs) — reject clearly. */
+  cirisWithoutEcrf?: boolean;
   /** True when file is BIOMATEC format (Spanish multi-sector Excel). */
   isBIOMATEC?: boolean;
   /** Which format adapter family was detected for this file, if any. */
@@ -56,23 +72,27 @@ export default class FileValidatorService {
    * @returns true if file type is accepted, throws error otherwise
    */
   public static validateFileType(file: File): AcceptedFileFormat {
-    // GHGI wizard still allowlists xlsx/csv/pdf. Core ingest uses
+    // GHGI wizard allowlists xlsx/xlsm/csv/pdf. Core ingest uses
     // detectCoarseFileKind (CC-959) for pdf|xlsx|csv|md|zip|unknown.
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
     if (!fileExtension) {
       throw new createHttpError.BadRequest(
         "File must have an extension. Accepted formats are: " +
-          ACCEPTED_FILE_FORMATS.join(", "),
+          ACCEPTED_UPLOAD_EXTENSIONS.join(", "),
       );
     }
 
-    if (!ACCEPTED_FILE_FORMATS.includes(fileExtension as AcceptedFileFormat)) {
+    if (
+      !(ACCEPTED_UPLOAD_EXTENSIONS as readonly string[]).includes(fileExtension)
+    ) {
       throw new createHttpError.BadRequest(
-        `Invalid file type. Accepted formats are: ${ACCEPTED_FILE_FORMATS.join(", ")}`,
+        `Invalid file type. Accepted formats are: ${ACCEPTED_UPLOAD_EXTENSIONS.join(", ")}`,
       );
     }
 
+    // CIRIS templates ship as .xlsm; macros are ignored, cell data is xlsx.
+    if (fileExtension === "xlsm") return "xlsx";
     return fileExtension as AcceptedFileFormat;
   }
 
@@ -167,6 +187,7 @@ export default class FileValidatorService {
     const warnings: string[] = [...basicValidation.warnings];
     const detectedColumns: Record<string, number> = {};
     let isCIRIS = false;
+    let cirisWithoutEcrf = false;
     let isBIOMATEC = false;
     let adapterType: AdapterType | undefined;
     let isMultiCity: boolean | undefined;
@@ -177,22 +198,32 @@ export default class FileValidatorService {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // Parse the file
+      // Parse the file (CIRIS selectively loads eCRF_3 + Report)
       const parsedData = await FileParserService.parseFile(
         buffer,
         basicValidation.fileType,
       );
 
-      // CIRIS (CDP) format: has eCRF_3 sheet but is a multi-sheet workbook for CDP; route to Path B (AI extraction)
       if (parsedData.fileType === "xlsx") {
-        isCIRIS = this.isCIRISFormat(parsedData);
-        if (!isCIRIS) {
+        const sourceNames =
+          parsedData.sourceSheetNames ?? parsedData.sheets.map((s) => s.name);
+        cirisWithoutEcrf = cirisMissingEcrf3(sourceNames);
+        isCIRIS =
+          parsedData.isCIRIS === true ||
+          this.isCIRISFormat(parsedData) ||
+          isCirisSheetList(sourceNames);
+        if (cirisWithoutEcrf) {
+          isCIRIS = false;
+          errors.push(
+            "This CIRIS workbook does not contain an eCRF_3 sheet. Only CIRIS files with eCRF_3 are supported for deterministic import.",
+          );
+        } else if (!isCIRIS) {
           isBIOMATEC = this.isBIOMATECFormat(parsedData);
         }
       }
 
       // Format adapter detection (runs for non-CIRIS, non-BIOMATEC files only)
-      if (!isCIRIS && !isBIOMATEC) {
+      if (!isCIRIS && !cirisWithoutEcrf && !isBIOMATEC) {
         const adapterDetection = FormatAdapterService.detect(parsedData);
         if (adapterDetection.adapterType) {
           adapterType = adapterDetection.adapterType;
@@ -203,14 +234,12 @@ export default class FileValidatorService {
         }
       }
 
-      // Validate structure based on file type
-      if (parsedData.fileType === "xlsx") {
-        // For eCRF XLSX files, validate sheet structure
+      // Validate structure based on file type (skip eCRF checks when CIRIS has no eCRF_3)
+      if (parsedData.fileType === "xlsx" && !cirisWithoutEcrf) {
         const structureValidation = this.validateECRFStructure(parsedData);
         errors.push(...structureValidation.errors);
         warnings.push(...structureValidation.warnings);
-      } else {
-        // For CSV files, validate single sheet structure
+      } else if (parsedData.fileType === "csv") {
         const structureValidation = this.validateCSVStructure(parsedData);
         errors.push(...structureValidation.errors);
         warnings.push(...structureValidation.warnings);
@@ -224,7 +253,7 @@ export default class FileValidatorService {
       }
 
       // Detect and map required columns
-      if (parsedData.primarySheet) {
+      if (parsedData.primarySheet && !cirisWithoutEcrf) {
         const columnMapping = this.detectRequiredColumns(
           parsedData.primarySheet.headers,
         );
@@ -245,6 +274,7 @@ export default class FileValidatorService {
       detectedColumns:
         Object.keys(detectedColumns).length > 0 ? detectedColumns : undefined,
       isCIRIS: isCIRIS || undefined,
+      cirisWithoutEcrf: cirisWithoutEcrf || undefined,
       isBIOMATEC: isBIOMATEC || undefined,
       adapterType,
       isMultiCity: isMultiCity || undefined,
@@ -272,24 +302,18 @@ export default class FileValidatorService {
   }
 
   /**
-   * Detect CIRIS (CDP) format: XLSX with eCRF_3 sheet and many other sheets or CDP/CIRIS-specific sheet names.
-   * CIRIS files should use Path B (AI extraction from eCRF_3) instead of standard eCRF processing.
+   * Detect CIRIS (CDP) format: XLSX/XLSM with eCRF_3 plus CIRIS helper sheets.
+   * After selective parse only eCRF_3 + Report may remain — still treat as CIRIS.
    */
   public static isCIRISFormat(parsedData: ParsedFileData): boolean {
-    if (!parsedData.sheets?.length || parsedData.fileType !== "xlsx") {
-      return false;
-    }
-    const hasECRF3 = parsedData.sheets.some((s) =>
-      s.name.toLowerCase().includes("ecrf_3"),
-    );
-    if (!hasECRF3) return false;
-    const sheetCount = parsedData.sheets.length;
-    const cirisIndicators =
-      /ciris|cdp|overview|summary|boundary|governance|city information|disclosure|questionnaire/i;
-    const hasCIRISSheets = parsedData.sheets.some((s) =>
-      cirisIndicators.test(s.name),
-    );
-    return sheetCount > 5 || hasCIRISSheets;
+    if (parsedData.isCIRIS) return true;
+    if (parsedData.fileType !== "xlsx") return false;
+    const names =
+      parsedData.sourceSheetNames ??
+      parsedData.sheets?.map((s) => s.name) ??
+      [];
+    if (names.length === 0) return false;
+    return isCirisSheetList(names);
   }
 
   /**

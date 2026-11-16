@@ -194,6 +194,7 @@ import { buildImportResult } from "@/backend/ImportResultBuilder";
 import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import { isCirisIgnorableHeader } from "@/backend/ciris-workbook";
 import { countRowsWithEmptyEmissionCells } from "@/util/empty-emission-rows";
 import {
   exampleValuesFromRecord,
@@ -243,6 +244,7 @@ const EXCLUDED_COLUMN_NAMES = [
   "Activity data conversion - override used?",
   "Emission factor - Biogenic CO2",
   "Oxidation factor",
+  "Emission factor - Oxidation factor",
   "Emission factor - Year",
   "Emission factor - Data Quality",
   "Emission factor - Scale",
@@ -382,7 +384,10 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
 
   const isExcludedColumn = (header: string) => {
     const n = header.toLowerCase().trim();
-    return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
+    return (
+      EXCLUDED_COLUMN_NAMES.some((e) => n === e) ||
+      isCirisIgnorableHeader(header)
+    );
   };
 
   // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
@@ -461,9 +466,12 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             const liveDetectedColumns =
               FileValidatorService.detectRequiredColumns(headers);
 
-            // Build detected columns list (exclude non-required columns)
+            // Build detected columns list (exclude non-required / duplicate headers)
+            const seenColumnNames = new Set<string>();
             for (const header of headers) {
               if (!header || isExcludedColumn(header)) continue;
+              if (seenColumnNames.has(header)) continue;
+              seenColumnNames.add(header);
 
               // Find which GPC field this column maps to (live detection)
               let interpretedAs: string | null = null;

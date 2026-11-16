@@ -12,6 +12,7 @@ export type CoarseFileKind = (typeof COARSE_FILE_KINDS)[number];
 const EXTENSION_TO_KIND: Record<string, Exclude<CoarseFileKind, "unknown">> = {
   pdf: "pdf",
   xlsx: "xlsx",
+  xlsm: "xlsx",
   xls: "xlsx",
   csv: "csv",
   md: "md",

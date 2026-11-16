@@ -32,9 +32,12 @@ import {
   isAmbiguousNumberText,
   isValueInNumbers,
   numbersInText,
+  numbersOnTableLines,
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  namesSmallUnit,
+  pageScaleEvidence,
   type NumberStyle,
 } from "@/util/GHGI/source-text";
 import {
@@ -273,6 +276,12 @@ export type ExtractedRow = {
   directionEvidenceFound?: boolean | null;
   /** Page of the extracted text, when extraction ran page by page. */
   page?: number | null;
+  /**
+   * `not_found`: the model's raw totalCO2e (before the unit multiplier) is not
+   * printed in the row's source text, exactly or with a scale the page's unit
+   * captions allow. The row is kept and goes to review.
+   */
+  valueCheck?: "not_found" | null;
   /** User decision on a row held for review (`mappingConfiguration.overrides`). */
   reviewDecision?: "keep" | "reclassify" | "skip" | null;
   /** Reference the model suggested, kept when the user chose another one. */
@@ -311,8 +320,12 @@ export type ExtractedRow = {
    * `applyReadings` applies through `unitCheck`.
    */
   printedFactor?: number | null;
-  /** "MT" when the document wrote the unit so: read as tonnes until the review confirms it. */
-  unitCheck?: "MT" | null;
+  /**
+   * "MT" when the document wrote the unit so: read as tonnes until the review
+   * confirms it. `missing`: the row has no unit on a page whose captions name
+   * kt, Mt, Gg or kg. It is kept as tonnes, not rescaled, and goes to review.
+   */
+  unitCheck?: "MT" | "missing" | null;
   /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
   numberCheck?: boolean | null;
   /**
@@ -632,7 +645,31 @@ function selectPages(
         },
       };
     });
-  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
+  // A total is tied to its rows when a kept line item of the target year sits on
+  // its page or the page before, or, for a total on a table line (a summary table
+  // far from the detail), on any page. Otherwise it is no target. A total without
+  // page-path information (no page, or no page source) stays unknown.
+  const rowPages = new Set(
+    sorted
+      .filter((p) =>
+        p.result.rows.some(
+          (row) => targetYear == null || row.year === targetYear,
+        ),
+      )
+      .map((p) => p.page),
+  );
+  const reportedTotals = sorted.flatMap((p) =>
+    p.result.summary.reportedTotals.map((total): ReportedTotal => {
+      if (total.page == null || total.onTableLine === undefined) return total;
+      return {
+        ...total,
+        rowsNearby:
+          rowPages.has(total.page) ||
+          rowPages.has(total.page - 1) ||
+          (total.onTableLine && rowPages.size > 0),
+      };
+    }),
+  );
   // Without any year in the document a wrong table cannot be told apart by year:
   // accept only a run that reconciles within the review tolerance.
   const selectionTolerance = yearAssumed
@@ -1038,6 +1075,17 @@ function numberStyleInstruction(
 
 type SchemaState = { useSchema: boolean };
 
+/**
+ * The answer itself is unusable: cut off at the token limit, or not valid
+ * JSON. Asking again can succeed, so this is the one error the chunk path
+ * retries. Transport errors are already retried by the LLM client.
+ */
+class ExtractionResponseError extends LLMError {
+  constructor(message: string) {
+    super(message, LLMErrorCode.BAD_REQUEST);
+  }
+}
+
 /** A provider that cannot take the strict schema answers 400 and names it. */
 export function isSchemaRejection(err: unknown): boolean {
   return (
@@ -1118,10 +1166,13 @@ async function extractRowsFromDocument(
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
         try {
+          // Like a chunk: only an unusable answer is asked for once more. The
+          // LLM client already retries timeouts, rate limits and provider errors.
           finalized = await extract().catch((error) => {
+            if (!(error instanceof ExtractionResponseError)) throw error;
             logger.info(
               { page: page.page, err: error },
-              "Page extraction failed; retrying once",
+              "Page answer unusable; retrying once",
             );
             return extract();
           });
@@ -1129,7 +1180,7 @@ async function extractRowsFromDocument(
           // One unreadable page must not fail the whole import.
           logger.warn(
             { page: page.page, err: error },
-            "Page extraction failed twice; page skipped",
+            "Page extraction failed; page skipped",
           );
           failedPages.push({ page: page.page, error });
           return { page: page.page, result: EMPTY_RESULT };
@@ -1272,7 +1323,7 @@ async function extractByChunks(
         ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
           "\n\n[Document truncated for length.]"
         : documentContent;
-    allRows = await extractSegment(
+    allRows = await extractSegmentWithRetry(
       content,
       yearInstruction,
       false,
@@ -1294,7 +1345,7 @@ async function extractByChunks(
       chunks,
       concurrency,
       async (chunk) =>
-        extractSegment(chunk, segmentPrefix, true, schemaState, style),
+        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1312,6 +1363,36 @@ async function extractByChunks(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
   return allRows;
+}
+
+/**
+ * Whole-document call or chunk. An unusable answer (cut off, or not valid
+ * JSON) is asked for once more; a second one rejects the import, because rows
+ * of a whole-document call cannot be dropped in part. Every other error is
+ * rethrown: the LLM client already retries timeouts, rate limits and provider
+ * errors, and an auth or config error cannot succeed on a retry.
+ */
+async function extractSegmentWithRetry(
+  content: string,
+  promptPrefix: string,
+  isSegment: boolean,
+  schemaState: SchemaState,
+  style?: NumberStyle,
+): Promise<ExtractedRow[]> {
+  return extractSegment(
+    content,
+    promptPrefix,
+    isSegment,
+    schemaState,
+    style,
+  ).catch((error) => {
+    if (!(error instanceof ExtractionResponseError)) throw error;
+    logger.info(
+      { isSegment, err: error },
+      "Extraction answer unusable; retrying once",
+    );
+    return extractSegment(content, promptPrefix, isSegment, schemaState, style);
+  });
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -1439,12 +1520,10 @@ async function extractSegment(
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
-  const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
-  const call = (structured: boolean) =>
-    client.complete({
-      // Table extraction needs a stronger model than column mapping (CC-1008:
-      // gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
-      model,
+  const call = async (structured: boolean): Promise<string> => {
+    const started = Date.now();
+    const { content, model, usage, finishReason } = await client.complete({
+      use: "pdf_extraction",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userContent },
@@ -1452,24 +1531,46 @@ async function extractSegment(
       ...(structured
         ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
         : { jsonMode: true }),
-      temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
+      // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
+      // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
       maxTokens: 16000,
     });
+    logger.info(
+      {
+        isSegment,
+        model,
+        finishReason,
+        promptTokens: usage?.promptTokens,
+        completionTokens: usage?.completionTokens,
+        reasoningTokens: usage?.reasoningTokens,
+        durationMs: Date.now() - started,
+      },
+      "Extraction LLM call finished",
+    );
+    // A response cut off at the token limit is incomplete JSON. Fail the call so
+    // the page is retried and then reported as failed, never imported in part.
+    if (finishReason === "length") {
+      throw new ExtractionResponseError(
+        "Extraction response was cut off at the token limit",
+      );
+    }
+    return content;
+  };
   let responseContent: string;
   const structured = state.useSchema;
   try {
-    ({ content: responseContent } = await call(structured));
+    responseContent = await call(structured);
   } catch (err) {
     if (!structured || !isSchemaRejection(err)) throw err;
     // Concurrent chunks can all be rejected; the shared state warns once.
     if (state.useSchema) {
       state.useSchema = false;
       logger.warn(
-        { model },
+        { use: "pdf_extraction" },
         "Extraction structured output rejected; using jsonMode",
       );
     }
-    ({ content: responseContent } = await call(false));
+    responseContent = await call(false);
   }
 
   const truncated =
@@ -1579,35 +1680,23 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    // Truncated response: try closing {"rows": [ ... with ]}
-    const trimmedEnd = jsonStr.trimEnd();
-    if (trimmedEnd.endsWith("}") && jsonStr.includes('"rows"')) {
-      try {
-        parsed = JSON.parse(trimmedEnd + "]}");
-        logger.debug("Repaired truncated extraction JSON by appending ]}");
-      } catch {
-        /* ignore */
-      }
-    }
-    if (parsed === undefined) {
-      // Last resort: find a top-level JSON array
-      const arrayStart = jsonStr.indexOf("[");
-      if (arrayStart >= 0) {
-        const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
-        if (end > 0) {
-          try {
-            parsed = JSON.parse(jsonStr.slice(arrayStart, end));
-          } catch {
-            /* ignore */
-          }
+    // A cut-off response is not repaired (closing it would drop rows silently).
+    // Last resort: find a complete top-level JSON array
+    const arrayStart = jsonStr.indexOf("[");
+    if (arrayStart >= 0) {
+      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+      if (end > 0) {
+        try {
+          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+        } catch {
+          /* ignore */
         }
       }
     }
     if (parsed === undefined) {
       logExtractionFailure(content, "Extraction parse failed: not valid JSON");
-      throw new LLMError(
+      throw new ExtractionResponseError(
         "Extraction response was not valid JSON",
-        LLMErrorCode.BAD_REQUEST,
       );
     }
   }
@@ -2365,7 +2454,11 @@ function repeatKey(row: ExtractedRow): string {
   ].join("\t");
 }
 
-/** The text the model read: one page, or the whole document on the chunk path. */
+/**
+ * The text the model read: one page, or the whole document on the chunk path.
+ * A page allows the scales its unit captions justify (`pageScaleEvidence`) in
+ * the in-text checks; a document allows exact matches only.
+ */
 export type FinalizeSource = { text: string; kind: "page" | "document" };
 
 export type FinalizeOptions = {
@@ -2376,7 +2469,9 @@ export type FinalizeOptions = {
   deferYearAssumption?: boolean;
   /**
    * Source text of the rows. When set, each reported total records whether its
-   * value is printed there (`inText`).
+   * value is printed there (`inText`; on a page also `page` and `onTableLine`),
+   * and a line item whose raw value is not printed there gets
+   * `valueCheck: "not_found"`.
    */
   source?: FinalizeSource;
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
@@ -2397,9 +2492,13 @@ export type FinalizeOptions = {
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
- *   rows are kept as tonnes with `unitCheck`;
+ *   rows are kept as tonnes with `unitCheck: "MT"`; unit-less rows on a
+ *   kt/Mt/kg page are kept and marked (`unitCheck: "missing"`), and unit-less
+ *   totals there are dropped;
  * - printed text (`totalCO2eText`) is checked against the value and sets
  *   `printedFactor` and `numberCheck`;
+ * - with a source, line items whose value is not printed there are kept and
+ *   marked (`valueCheck`);
  * - `summary.sourceChecks` lists the checks the review asks (none without rows);
  * - with a target year, rows of another year or without a year are dropped when
  *   any row names a year; only when no row names a year is the target year assumed;
@@ -2415,8 +2514,8 @@ export function finalizeExtractedRows(
 
 /**
  * finalizeExtractedRows, plus `evidenceDropped`: true when page evidence removed
- * rows, either a caption year relabeled at least one row or total, or a row
- * without a unit was dropped on a kt or Mt page. The chunk path cannot see that
+ * or marked rows: a caption year relabeled at least one row or total, or a row
+ * without a unit was found on a kt, Mt or kg page. The chunk path cannot see that
  * evidence, so such a page must not be re-extracted by chunks.
  */
 function finalizeRows(
@@ -2442,6 +2541,7 @@ function finalizeRows(
       const relabel = evidence.years[0];
       // A table continued from the previous page sits above the other year's
       // caption: a row whose value is printed there keeps its year.
+      const leadScales = pageScaleEvidence(options.source.text);
       const leadNumbers = numbersInText(
         evidence.leadText,
         resolveNumberStyle(options.source.text, options.sourceMetadata),
@@ -2451,7 +2551,7 @@ function finalizeRows(
         if (
           row.totalCO2e != null &&
           leadNumbers.length > 0 &&
-          isValueInNumbers(row.totalCO2e, leadNumbers)
+          isValueInNumbers(row.totalCO2e, leadNumbers, leadScales)
         ) {
           return row;
         }
@@ -2470,12 +2570,18 @@ function finalizeRows(
   const converted: ExtractedRow[] = [];
   const source = options?.source;
   // Every number printed in the source, read once for all the in-text checks.
-  const sourceNumbers = source
-    ? numbersInText(
-        source.text,
-        resolveNumberStyle(source.text, options?.sourceMetadata),
-      )
-    : [];
+  const sourceStyle = source
+    ? resolveNumberStyle(source.text, options?.sourceMetadata)
+    : "unknown";
+  const sourceNumbers = source ? numbersInText(source.text, sourceStyle) : [];
+  // Numbers printed on Markdown table lines of a page, for `onTableLine`.
+  const tableNumbers =
+    source?.kind === "page"
+      ? numbersOnTableLines(source.text, sourceStyle)
+      : [];
+  // Scales the page's captions justify; a chunk has no page and allows none.
+  const sourceScales =
+    source?.kind === "page" ? pageScaleEvidence(source.text) : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2484,21 +2590,30 @@ function finalizeRows(
     label: string,
     value: number,
     page: number | null | undefined,
-  ): { inText?: boolean } => {
+  ): Pick<ReportedTotal, "inText" | "page" | "onTableLine"> => {
     if (!source || raw == null) return {};
-    const found = isValueInNumbers(raw, sourceNumbers);
+    const found = isValueInNumbers(raw, sourceNumbers, sourceScales);
     if (!found) {
       logger.warn(
         { label, value, page: page ?? null },
         "Reported total not found in source text",
       );
     }
-    return { inText: found };
+    if (source.kind !== "page") return { inText: found };
+    return {
+      inText: found,
+      page: page ?? null,
+      onTableLine: isValueInNumbers(raw, tableNumbers, sourceScales),
+    };
   };
 
-  // On a page whose captions name kt or Mt, a row without a unit is unknown,
-  // not tonnes: dropping it is safer than a 1000x or 1,000,000x error.
-  const unitRequired = source?.kind === "page" && namesLargeUnit(source.text);
+  // On a page whose captions name kt, Mt, Gg or kg, a row without a unit may
+  // be in that unit, not tonnes. Line items are kept as tonnes and marked
+  // `unitCheck: "missing"` for review; totals are dropped, since a total in an
+  // unknown unit confirms nothing.
+  const unitUnclear =
+    source?.kind === "page" &&
+    (namesLargeUnit(source.text) || namesSmallUnit(source.text));
 
   // The document's own style decides whether a printed number is ambiguous;
   // a page alone often prints too few numbers to tell.
@@ -2513,11 +2628,14 @@ function finalizeRows(
   };
 
   for (const row of rows) {
-    if (unitRequired && row.unit == null) {
-      evidenceDropped = true;
-      drop("unsupported_unit");
-      continue;
-    }
+    // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
+    const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
+      (v) => v != null,
+    );
+    // A blank unit converts like a missing one (multiplier 1), so mark it too.
+    // "MT" is a unit (its own check below), never a missing one.
+    const unitMissing = unitUnclear && !row.unit?.trim() && hasAmount;
+    if (unitMissing) evidenceDropped = true;
     // "MT" stays as printed (tonnes by default) and the review asks which unit.
     const ambiguousMt = isAmbiguousMtUnit(row.unit);
     const multiplier = ambiguousMt ? 1 : tonnesMultiplier(row.unit);
@@ -2560,6 +2678,10 @@ function finalizeRows(
         : row.rowType;
 
     if (rowType === "subtotal" || rowType === "total") {
+      if (unitMissing) {
+        drop("unsupported_unit");
+        continue;
+      }
       drop("subtotal_or_total");
       if (
         scaled.totalCO2e != null &&
@@ -2583,6 +2705,17 @@ function finalizeRows(
         });
       }
       continue;
+    }
+    if (unitMissing) scaled.unitCheck = "missing";
+    // Each line item's raw value (as printed, see rawTotal) must be printed in
+    // its source text, with the scales the page's captions allow; otherwise it
+    // is kept for review.
+    if (
+      source &&
+      rawTotal != null &&
+      !isValueInNumbers(rawTotal, sourceNumbers, sourceScales)
+    ) {
+      scaled.valueCheck = "not_found";
     }
     rawValues.set(scaled, rawTotal ?? null);
     converted.push(scaled);
@@ -2616,6 +2749,9 @@ function finalizeRows(
   const hiddenTotals = findHiddenRowTotals(yearFiltered);
   for (const row of hiddenTotals) {
     drop("subtotal_or_total");
+    // Like a printed total without a unit, a sum of unit-less rows on such a
+    // page confirms nothing: it is no target.
+    if (row.unitCheck === "missing") continue;
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
       const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
       const value = row.totalCO2e as number;

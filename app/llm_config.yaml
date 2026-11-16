@@ -1,0 +1,17 @@
+# App LLM configuration (non-secret). Read by src/backend/llm/config.ts.
+models:
+  # GHGI inventory PDF extraction (InventoryExtractionService)
+  # Table extraction needs a stronger model than column mapping (CC-1008:
+  # gpt-4o-mini dropped columns of the Auckland GPC table on 2 calls of 3).
+  pdf_extraction:
+    name: "gpt-5.6-luna"
+  # CRVA field extraction (CcraIngestPlugin)
+  crva_extraction:
+    name: "gpt-5.6-luna"
+  # Column mapping and shape detection for tabular imports (AIInterpretationService)
+  file_interpretation:
+    name: "gpt-4o-mini"
+    temperature: 0
+api:
+  timeout_ms: 180000
+  max_retries: 3

@@ -7,7 +7,8 @@ import type { IngestItemRecord, IngestJobRecord } from "./types";
 
 /**
  * Run one GHGI file on the shared runner. Used by Chile bulk and
- * deterministic wizard approve. PDF / CIRIS / BIOMATEC stay unknown_format.
+ * deterministic wizard approve. PDF / BIOMATEC stay unknown_format;
+ * CIRIS with eCRF_3 commits as eCRF (CC-1217).
  */
 export async function ingestGhgiBuffer(input: {
   buffer: Buffer;
@@ -60,9 +61,13 @@ export function shouldCommitViaGhgiRunner(file: {
 }): boolean {
   if (file.fileType === "pdf") return false;
   const validation = (file.validationResults ?? {}) as Record<string, unknown>;
-  if (validation.isCIRIS || validation.isBIOMATEC) return false;
+  if (validation.isBIOMATEC) return false;
+  if (validation.cirisWithoutEcrf) return false;
   if (validation.adapterType === "near-ecrf") return true;
   if (validation.processingResults) return true;
+  // CIRIS Path A stores isCIRIS + processingResults; isCIRIS alone is enough
+  // when approve re-parses before processingResults is written.
+  if (validation.isCIRIS === true) return true;
   return false;
 }
 

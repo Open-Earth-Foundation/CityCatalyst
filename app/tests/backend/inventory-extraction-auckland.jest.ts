@@ -614,7 +614,7 @@ describe("page-by-page extraction with reconciliation (CC-1008 amendment)", () =
   const page = (n: number, title: string, withNumbers = true) =>
     `<!-- page: ${n} -->
 ${title}
-${withNumbers ? `${numbers(10)}\nTOTAL 9,559,215` : "Prose only."}
+${withNumbers ? `${numbers(10)}\n| TOTAL | 9,559,215 |` : "Prose only."}
 `;
 
   const grandTotal = {
@@ -771,17 +771,14 @@ ${withNumbers ? `${numbers(10)}\nTOTAL 9,559,215` : "Prose only."}
     expect(summary.importedSum).toBe(9559215);
   });
 
-  it("uses LLM_EXTRACTION_MODEL when set", async () => {
-    process.env.LLM_EXTRACTION_MODEL = "gpt-4o";
-    try {
-      mockLlm(tableA1);
-      await extractInventoryFromDocument(fixture, { targetYear: 2021 });
-      expect((complete.mock.calls[0][0] as { model?: string }).model).toBe(
-        "gpt-4o",
-      );
-    } finally {
-      delete process.env.LLM_EXTRACTION_MODEL;
-    }
+  it("calls the LLM with the pdf_extraction role", async () => {
+    mockLlm(tableA1);
+    await extractInventoryFromDocument(fixture, { targetYear: 2021 });
+    const options = complete.mock.calls[0][0] as Record<string, unknown>;
+    expect(options.use).toBe("pdf_extraction");
+    expect(options).not.toHaveProperty("model");
+    expect(options).not.toHaveProperty("temperature");
+    expect(options).not.toHaveProperty("reasoningEffort");
   });
 
   it("ignores a grand total of another year when selecting", async () => {

@@ -120,9 +120,8 @@ export class CcraIngestPlugin implements IngestPlugin {
     const file = ctx.item.originalFileName;
     try {
       const client = (this.options.llm ?? createLLMClient)();
-      const model = process.env.LLM_EXTRACTION_MODEL?.trim() || undefined;
       const pages = splitOcrPages(ocr);
-      const extracted = await extractCrvaFields({ client, model, file, pages });
+      const extracted = await extractCrvaFields({ client, file, pages });
       const { verified, dropped } = verifyQuotes(extracted.values, pages);
       const values = dedupeValues(verified);
       const covered = new Set(values.map((value) => value.fieldId as string));
@@ -130,7 +129,7 @@ export class CcraIngestPlugin implements IngestPlugin {
         file,
         pageCount: ocr.pageCount,
         ocrModel: ocr.model,
-        extractionModel: model ?? client.getConfig().model,
+        extractionModel: client.getConfig().models.crva_extraction.name,
         values,
         uncoveredFields: CRVA_FIELD_IDS.filter((id) => !covered.has(id)),
         figures: listFigures(ocr),

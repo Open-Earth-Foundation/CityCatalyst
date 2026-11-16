@@ -601,6 +601,7 @@ const PER_PERSON_TAIL = String.raw`(?:(?:\/\s*|(?<!\p{L})per\s+)(?:capita|cápit
  * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
  * `kg CO2e/hab.`, `kg per head`, `kg pro Kopf`):
  * a column of an emissions-per-capita table, not the unit of the emissions.
+ * `per` must start a word, so the joined form `kgper capita` does not match.
  */
 const PER_PERSON_KG = new RegExp(
   String.raw`\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*` +

@@ -186,6 +186,31 @@ describe("buildTableBundles", () => {
     expect(continued.grid[1][1].ref).toBe("tbl-5.md:r1:c1");
   });
 
+  it("reads a continuation's first Markdown row as data when it holds numbers (R16)", () => {
+    const doc = loadFixture("continued-table.json");
+    doc.document.pages[4].tables[0].content =
+      "| Industrial | 830.4 | 2.5 |\n| --- | --- | --- |\n| Total | 1,744.5 | 4.6 |";
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued.continuationOf).toBe("tbl-4.md");
+    expect(continued.headerRowCount).toBe(0);
+    expect(continued.grid[0].map((cell) => [cell.ref, cell.header])).toEqual([
+      ["tbl-5.md:r0:c0", false],
+      ["tbl-5.md:r0:c1", false],
+      ["tbl-5.md:r0:c2", false],
+    ]);
+    expect(continued.grid[1][1].ref).toBe("tbl-5.md:r1:c1");
+  });
+
+  it("keeps a continuation's repeated header row when it holds only years", () => {
+    const doc = loadFixture("continued-table.json");
+    doc.document.pages[4].tables[0].content =
+      "| Sector | 2020 | 2021 |\n| --- | --- | --- |\n| Total | 1,744.5 | 4.6 |";
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued.continuationOf).toBe("tbl-4.md");
+    expect(continued.headerRowCount).toBe(1);
+    expect(continued.grid[0][1].header).toBe(true);
+  });
+
   it("does not continue a table with a different column count", () => {
     const doc = loadFixture("continued-table.json");
     doc.document.pages[4].tables[0].content =

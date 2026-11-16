@@ -16,6 +16,7 @@ import {
   namesKilogram,
   namesMegatonne,
   namesUnit,
+  parseNumberString,
   yearsInLine,
 } from "@/util/GHGI/source-text";
 
@@ -123,6 +124,36 @@ function unique<T>(values: T[]): T[] {
   return [...new Set(values)];
 }
 
+/** True when a header cell holds a value: a number that is not a bare year. */
+function isDataCell(text: string): boolean {
+  const trimmed = text.trim();
+  if (/^\d{4}$/.test(trimmed) && yearsInLine(trimmed).length > 0) return false;
+  return parseNumberString(trimmed, "unknown") != null;
+}
+
+/**
+ * A continuation table's header rows when one of them is data: OCR prints
+ * every Markdown table with a header and separator, so the first row of a
+ * continued table is usually its first data row. When a header row has a
+ * number (not a bare year) in any cell but the first, the table gets no
+ * header rows. Refs do not change.
+ */
+function demoteDataHeaderRows(parsed: {
+  grid: TableCell[][];
+  headerRowCount: number;
+}): { grid: TableCell[][]; headerRowCount: number } {
+  const dataHeader = parsed.grid
+    .slice(0, parsed.headerRowCount)
+    .some((cells) => cells.slice(1).some((cell) => isDataCell(cell.text)));
+  if (!dataHeader) return parsed;
+  return {
+    grid: parsed.grid.map((cells) =>
+      cells.map((cell) => ({ ...cell, header: false })),
+    ),
+    headerRowCount: 0,
+  };
+}
+
 function columnCount(grid: TableCell[][]): number {
   return grid.reduce((max, row) => Math.max(max, row.length), 0);
 }
@@ -145,6 +176,9 @@ function columnCount(grid: TableCell[][]): number {
  *   heading starts a new table, as in stage 1) and the same column count.
  *   It then inherits the caption,
  *   and the previous table's unit and year notes come before its own.
+ *   When one of its header rows has a number (not a bare year) in a cell
+ *   other than the first, that row is data: the continuation gets
+ *   `headerRowCount` 0 and no header cells (refs are unchanged).
  */
 export function buildTableBundles(
   doc: StructuredDocument,
@@ -203,10 +237,7 @@ export function buildTableBundles(
             .slice(-MAX_HEADINGS)
             .map((block) => block.content.trim())
         : [];
-      const { grid, headerRowCount } = parseMarkdownTable(
-        table.table_id,
-        table.content ?? "",
-      );
+      const parsed = parseMarkdownTable(table.table_id, table.content ?? "");
 
       const candidate =
         index === 0 && lastOfPreviousPage?.page === page.page_index
@@ -216,10 +247,13 @@ export function buildTableBundles(
         candidate &&
         ownCaption == null &&
         headings.length === 0 &&
-        grid.length > 0 &&
-        columnCount(grid) === columnCount(candidate.grid)
+        parsed.grid.length > 0 &&
+        columnCount(parsed.grid) === columnCount(candidate.grid)
           ? candidate
           : null;
+      const { grid, headerRowCount } = continued
+        ? demoteDataHeaderRows(parsed)
+        : parsed;
 
       const headerCells = grid
         .flat()

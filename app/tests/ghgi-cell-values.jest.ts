@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
+
+import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
 import {
   CELL_UNIT_FACTOR,
   readCell,
   type CellRead,
 } from "@/util/GHGI/cell-values";
 import {
+  buildTableBundles,
   parseMarkdownTable,
   type TableBundle,
 } from "@/util/GHGI/table-bundles";
@@ -167,6 +171,118 @@ describe("readCell", () => {
       tonnes: 7000,
     });
     expect(read.unit && CELL_UNIT_FACTOR[read.unit]).toBe(1000);
+  });
+
+  describe("a continuation reads its source column header (R16)", () => {
+    const sourceHeader =
+      "| Sector | t CO2e (2021) | kt CO2e | t CO2e / capita | Share % |";
+    // As buildTableBundles writes them: the source's unit header cells, which
+    // the continuation inherits.
+    const notes = ["t CO2e (2021)", "kt CO2e", "t CO2e / capita"];
+    const source = bundle(
+      "t1",
+      `${sourceHeader}\n| --- | --- | --- | --- | --- |\n| Energy | 1,200 | 1.2 | 5.1 | 40 |`,
+      { unitNotes: notes },
+    );
+    // No separator: the continuation has no header rows.
+    const continuation = bundle(
+      "t2",
+      "| Waste | 300 | 0.3 | 1.2 | 10 |\n| Total | 1,500 | 1.5 | 6.3 | 50 |",
+      { page: 2, unitNotes: notes, continuationOf: "t1" },
+    );
+    const bundles = [source, continuation];
+
+    it("reads the t column as t and the kt column as kt, without a conflict", () => {
+      expect(
+        okRead(readCell(bundles, "t2:r0:c1", "300", "english")),
+      ).toMatchObject({
+        unit: "t",
+        unitSource: "column",
+        unitConflict: false,
+        tonnes: 300,
+      });
+      expect(
+        okRead(readCell(bundles, "t2:r1:c2", "1.5", "english")),
+      ).toMatchObject({
+        unit: "kt",
+        unitSource: "column",
+        unitConflict: false,
+        tonnes: 1500,
+      });
+    });
+
+    it("gives per_person for the per-capita column", () => {
+      expect(readCell(bundles, "t2:r0:c3", "1.2", "english")).toEqual({
+        ok: false,
+        reason: "per_person",
+      });
+    });
+
+    it("gives the Share column no unit", () => {
+      expect(
+        okRead(readCell(bundles, "t2:r0:c4", "10", "english")),
+      ).toMatchObject({ unit: null, unitSource: null, unitConflict: false });
+    });
+
+    it("takes columnYear from the source header", () => {
+      expect(
+        okRead(readCell(bundles, "t2:r0:c1", "300", "english")).columnYear,
+      ).toBe(2021);
+    });
+
+    it("follows a chain of continuations", () => {
+      const third = bundle("t3", "| Other | 7 | 0.7 | 0.1 | 2 |", {
+        page: 3,
+        unitNotes: notes,
+        continuationOf: "t2",
+      });
+      expect(
+        okRead(readCell([...bundles, third], "t3:r0:c2", "0.7", "english")),
+      ).toMatchObject({ unit: "kt", tonnes: 700 });
+    });
+
+    it("reads the first row of a built continuation", () => {
+      const doc = JSON.parse(
+        readFileSync("tests/fixtures/structured/continued-table.json", "utf8"),
+      ) as StructuredDocument;
+      doc.document.pages[4].tables[0].content =
+        "| Industrial | 830.4 | 2.5 |\n| --- | --- | --- |\n| Total | 1,744.5 | 4.6 |";
+      const built = buildTableBundles(doc, 2026);
+      expect(
+        okRead(readCell(built, "tbl-5.md:r0:c1", "830.4", "english")),
+      ).toMatchObject({ unit: "kt", unitSource: "caption", tonnes: 830400 });
+    });
+  });
+
+  it("does not take the end of a space-grouped number", () => {
+    const b = bundle(
+      "t1",
+      "| Sector | Total |\n| --- | --- |\n| Energy | 9 559 215 |",
+    );
+    expect(readCell([b], "t1:r1:c1", "215", "english")).toEqual({
+      ok: false,
+      reason: "text_not_in_cell",
+    });
+  });
+
+  it("finds a printed hyphen-minus in a cell with a Unicode minus", () => {
+    const b = bundle(
+      "t1",
+      "| Sector | Total |\n| --- | --- |\n| AFOLU | −603,983 |",
+    );
+    expect(
+      okRead(readCell([b], "t1:r1:c1", "-603,983", "english")).tonnes,
+    ).toBe(-603983);
+  });
+
+  it("limits columnYear to currentYear", () => {
+    const b = bundle("t1", "| Sector | 2027 |\n| --- | --- |\n| Energy | 40 |");
+    expect(
+      okRead(readCell([b], "t1:r1:c1", "40", "english", 2026)).columnYear,
+    ).toBeNull();
+    expect(
+      okRead(readCell([b], "t1:r1:c1", "40", "english", 2027)).columnYear,
+    ).toBe(2027);
   });
 
   it("keeps a value without any unit in tonnes, with no source", () => {

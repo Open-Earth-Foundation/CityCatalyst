@@ -128,7 +128,8 @@ function findCell(
 
 /**
  * The start of `printed` in `cellText` as a whole number: not inside a longer
- * number (`559` in `9,559.2`). -1 when there is none.
+ * number (`559` in `9,559.2`, `215` in `9 559 215`; `.`, `,`, a space, NBSP,
+ * narrow NBSP or `'` between digits joins them). -1 when there is none.
  */
 function wholeNumberIndex(cellText: string, printed: string): number {
   for (
@@ -138,16 +139,16 @@ function wholeNumberIndex(cellText: string, printed: string): number {
   ) {
     const before = cellText.slice(Math.max(0, i - 2), i);
     const after = cellText.slice(i + printed.length, i + printed.length + 2);
-    const joinedBefore = /\d$|\d[.,]$/.test(before);
-    const joinedAfter = /^\d|^[.,]\d/.test(after);
+    // cellText is whitespace-collapsed: a NBSP or narrow NBSP is a space here.
+    const joinedBefore = /\d$|\d[.,\s']$/.test(before);
+    const joinedAfter = /^\d|^[.,\s']\d/.test(after);
     if (!joinedBefore && !joinedAfter) return i;
   }
   return -1;
 }
 
-/** The single year (1990 to this year) in the column's header cells, or null. */
-function yearOfColumn(headers: string[]): number | null {
-  const currentYear = new Date().getFullYear();
+/** The single year (1990 to `currentYear`) in header cells, or null. */
+function yearOfColumn(headers: string[], currentYear: number): number | null {
   const years = new Set(
     headers
       .flatMap(yearsInLine)
@@ -156,48 +157,91 @@ function yearOfColumn(headers: string[]): number | null {
   return years.size === 1 ? [...years][0] : null;
 }
 
+function headersOfColumn(bundle: TableBundle, col: number): string[] {
+  return bundle.grid
+    .slice(0, bundle.headerRowCount)
+    .map((cells) => cells[col]?.text ?? "")
+    .filter((text) => text !== "");
+}
+
+/**
+ * The bundle, then the table it continues, and so on back to the first
+ * table of the chain (a table met twice ends it).
+ */
+function continuationChain(
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): TableBundle[] {
+  const chain = [bundle];
+  let current = bundle;
+  while (current.continuationOf) {
+    const source = bundles.find((b) => b.tableId === current.continuationOf);
+    if (!source || chain.includes(source)) break;
+    chain.push(source);
+    current = source;
+  }
+  return chain;
+}
+
+/** True when header lines name a unit, the ambiguous `MT` or a per-person unit. */
+function namesColumnUnit(headers: string[]): boolean {
+  return headers.some(namesPerPerson) || unitOfLevel(headers) != null;
+}
+
 /**
  * Reads the value of the cell `ref` in tonnes.
  *
  * 1. `no_cell`: no ref, no such cell in `bundles`, or a header cell.
- * 2. `text_not_in_cell`: `printedText` (whitespace collapsed) is empty or is
- *    not in the cell text as a whole number (not `559` of `9,559.2`).
- * 3. `per_person`: the column's header cells name a per-person unit
- *    (`/capita`, `per capita`, `per person`, `per cápita`, `pro Kopf`).
+ * 2. `text_not_in_cell`: `printedText` (whitespace collapsed, `−` read as
+ *    `-` in both) is empty or is not in the cell text as a whole number (not
+ *    `559` of `9,559.2`, not `215` of `9 559 215`).
+ * 3. Column headers: the cell's column headers in its table; when they name
+ *    no unit and the table continues another (`continuationOf`), the same
+ *    column's headers in the first table up the chain that names one.
+ *    `per_person`: those headers name a per-person unit (`/capita`,
+ *    `per capita`, `per person`, `per cápita`, `pro Kopf`).
  * 4. The number is parsed from the cell with `style`: the whole cell, or else
  *    the printed text with the cell's sign (`(811,512)`, `−603,983 (a)`).
  *    `not_a_number` when neither parses (`NE`).
  * 5. Unit: the column's header cells, then the row's first cell, then the
- *    caption, headings and the `unitNotes` inherited from a continued table
- *    (not this table's header cells of other columns); the first level that
+ *    caption, headings and `unitNotes` without any header cell text of the
+ *    continuation chain (other columns' units are not caption evidence); the first level that
  *    names a unit decides (`unitSource`). Units with different factors at
  *    that level give `unit: null` and `unitConflict: true` (kt and Gg do
  *    not conflict); a capital `MT` (metric tonnes or megatonnes) gives
  *    `unit: null` without a conflict. With `unit: null` the value is kept as
  *    tonnes; `unitSource` is null only when no level names a unit.
- * 6. `columnYear`: the one year in the column's header cells, else null.
+ * 6. `columnYear`: the one year (1990 to `currentYear`) in the column's
+ *    header cells, up the continuation chain, else null.
  */
 export function readCell(
   bundles: TableBundle[],
   ref: CellRef | null | undefined,
   printedText: string | null | undefined,
   style: NumberStyle,
+  currentYear: number = new Date().getFullYear(),
 ): CellRead {
   if (!ref) return { ok: false, reason: "no_cell" };
   const found = findCell(bundles, ref);
   if (!found || found.cell.header) return { ok: false, reason: "no_cell" };
   const { bundle, row, col, cell } = found;
 
-  const cellText = collapse(cell.text);
-  const printed = collapse(printedText ?? "");
+  // The Unicode minus (U+2212) is read as `-` in both texts.
+  const cellText = collapse(cell.text).replace(/−/g, "-");
+  const printed = collapse(printedText ?? "").replace(/−/g, "-");
   const start = printed === "" ? -1 : wholeNumberIndex(cellText, printed);
   if (start === -1) return { ok: false, reason: "text_not_in_cell" };
 
-  const headers = bundle.grid
-    .slice(0, bundle.headerRowCount)
-    .map((cells) => cells[col]?.text ?? "")
-    .filter((text) => text !== "");
+  // A continuation's column takes its unit and year from the first table of
+  // the chain whose header for that column names them.
+  const chain = continuationChain(bundles, bundle);
+  const chainHeaders = chain.map((b) => headersOfColumn(b, col));
+  const headers = chainHeaders.find(namesColumnUnit) ?? chainHeaders[0];
   if (headers.some(namesPerPerson)) return { ok: false, reason: "per_person" };
+  const columnYear =
+    chainHeaders
+      .map((h) => yearOfColumn(h, currentYear))
+      .find((year) => year != null) ?? null;
 
   let value = parseNumberString(cellText, style);
   if (value == null) {
@@ -211,14 +255,16 @@ export function readCell(
   if (value == null) return { ok: false, reason: "not_a_number" };
 
   const rowLabel = col > 0 ? (bundle.grid[row][0]?.text ?? "") : "";
-  // `unitNotes` also holds this table's header cells; those of other columns
-  // are not caption evidence, so only the caption, headings and the notes
-  // inherited from a continued table are read at the caption level.
-  const ownHeaderTexts = new Set(
-    bundle.grid
-      .slice(0, bundle.headerRowCount)
-      .flat()
-      .map((headerCell) => headerCell.text),
+  // `unitNotes` also holds the header cells of this table and of the tables
+  // it continues; those of other columns are not caption evidence, so only
+  // the caption, headings and the other notes are read at the caption level.
+  const chainHeaderTexts = new Set(
+    chain.flatMap((b) =>
+      b.grid
+        .slice(0, b.headerRowCount)
+        .flat()
+        .map((headerCell) => headerCell.text),
+    ),
   );
   const levels: [UnitSource, string[]][] = [
     ["column", headers],
@@ -228,7 +274,7 @@ export function readCell(
       [
         ...(bundle.caption ? [bundle.caption] : []),
         ...bundle.headings,
-        ...bundle.unitNotes.filter((note) => !ownHeaderTexts.has(note)),
+        ...bundle.unitNotes.filter((note) => !chainHeaderTexts.has(note)),
       ],
     ],
   ];
@@ -253,6 +299,6 @@ export function readCell(
     unit,
     unitSource,
     unitConflict,
-    columnYear: yearOfColumn(headers),
+    columnYear,
   };
 }

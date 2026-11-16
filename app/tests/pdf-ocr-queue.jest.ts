@@ -33,6 +33,7 @@ const getFilePrefix = jest.fn<AsyncMock>();
 const createSignedDownloadUrl = jest.fn<AsyncMock>();
 const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
+const extractStructured = jest.fn<AsyncMock>();
 const extraction = {
   rows: [{ sector: "Energy", totalCO2e: 12 }],
   summary: {
@@ -97,6 +98,8 @@ jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
 }));
 jest.unstable_mockModule("@/backend/InventoryExtractionService", () => ({
   extractInventoryFromDocument: extractRows,
+  extractInventoryFromStructured: extractStructured,
+  TARGET_YEAR_NOT_FOUND: "Inventory not found for the target year",
 }));
 jest.unstable_mockModule("@/backend/GHGINativeInputCatalogService", () => ({
   syncGHGIImportedInventorySource,
@@ -687,6 +690,306 @@ describe("PdfOcrJob queue", () => {
       "OCR Markdown",
       expect.objectContaining({ sourceMetadata: null }),
     );
+  });
+
+  describe("structured or Markdown extraction path (CC-1163 stage 2)", () => {
+    const markdown =
+      "<!-- page: 1 -->\n| Sector | tCO2e |\n|---|---:|\n| Energy | 12 |";
+    const structured = {
+      schema_version: "citycatalyst.structured-document.1",
+      annotation_mode: "none",
+      provider: {
+        name: "mistral",
+        requested_model: "mistral-ocr-latest",
+        returned_model: "mistral-ocr-latest",
+        payload: {},
+      },
+      document: {
+        page_count: 1,
+        pages: [
+          {
+            page_index: 0,
+            dimensions: { width: 1, height: 1, dpi: null },
+            header: null,
+            footer: null,
+            markdown: "[tbl-0.md](tbl-0.md)",
+            blocks: [],
+            tables: [
+              {
+                table_id: "tbl-0.md",
+                page_index: 0,
+                content: "| Sector | tCO2e |\n|---|---:|\n| Energy | 12 |",
+                bbox_px: null,
+                bbox_norm: null,
+              },
+            ],
+            images: [],
+          },
+        ],
+        relationships: [],
+      },
+    };
+
+    const runWithArtifact = async (
+      jobPatch: Record<string, unknown>,
+      structuredText: string = JSON.stringify(structured),
+    ) => {
+      const importedFile = {
+        inventoryId: "inventory-id",
+        importStatus: "extracting",
+        mappingConfiguration: {} as Record<string, unknown>,
+        update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
+      };
+      const job = {
+        sourceType: "inventory_import",
+        sourceId: "source-id",
+        status: "succeeded",
+        resultS3Key: "result.md",
+        structuredS3Key: "document.structured.json",
+        structuredSchemaVersion: "citycatalyst.structured-document.1",
+        ...jobPatch,
+      } as unknown as Parameters<
+        typeof extractInventoryRowsFromStoredMarkdown
+      >[0];
+      importedFindByPk.mockResolvedValue(importedFile);
+      inventoryFindByPk.mockResolvedValue({ year: 2024 });
+      getTextFile.mockImplementation(async (key) =>
+        key === "result.md" ? markdown : structuredText,
+      );
+      extractRows.mockResolvedValue(extraction);
+      extractStructured.mockResolvedValue(extraction);
+      importedUpdate.mockImplementation(async (values) => {
+        Object.assign(importedFile, values);
+        return [1];
+      });
+      await extractInventoryRowsFromStoredMarkdown(job, "extractor-1");
+      return importedFile;
+    };
+
+    /** The path was logged exactly once, with this reason. */
+    const expectPath = async (
+      extractionPath: "structured" | "markdown",
+      reason: string | null,
+    ) => {
+      const { logger } = await import("@/services/logger");
+      const calls = (logger.info as jest.Mock).mock.calls.filter(
+        (call) => call[1] === "Inventory extraction path",
+      );
+      expect(calls).toHaveLength(1);
+      expect(calls[0][0]).toEqual(
+        expect.objectContaining({ extractionPath, reason }),
+      );
+    };
+
+    it("uses the structured path when the job has a supported artifact", async () => {
+      const importedFile = await runWithArtifact({});
+      expect(extractStructured).toHaveBeenCalledWith(
+        structured,
+        markdown,
+        expect.objectContaining({ targetYear: 2024 }),
+      );
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
+
+    it("a job with no structuredS3Key uses the Markdown path", async () => {
+      const importedFile = await runWithArtifact({
+        structuredS3Key: null,
+        structuredSchemaVersion: null,
+      });
+      expect(extractRows).toHaveBeenCalledWith(
+        markdown,
+        expect.objectContaining({ targetYear: 2024 }),
+      );
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(getTextFile).toHaveBeenCalledTimes(1);
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
+
+    it("a job whose artifact has the wrong schema version uses the Markdown path", async () => {
+      await runWithArtifact({
+        structuredSchemaVersion: "citycatalyst.structured-document.0",
+      });
+      expect(extractRows).toHaveBeenCalled();
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(getTextFile).not.toHaveBeenCalledWith("document.structured.json");
+    });
+
+    it("an artifact whose own schema version is wrong uses the Markdown path", async () => {
+      await runWithArtifact(
+        {},
+        JSON.stringify({ ...structured, schema_version: "other.1" }),
+      );
+      expect(extractRows).toHaveBeenCalled();
+      expect(extractStructured).not.toHaveBeenCalled();
+    });
+
+    it("a job whose artifact JSON is truncated uses the Markdown path and the import finishes", async () => {
+      const truncated = JSON.stringify(structured).slice(0, 120);
+      const importedFile = await runWithArtifact({}, truncated);
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+    });
+
+    it("a structured run with no line item falls back to the Markdown path (structured_empty)", async () => {
+      const { readFileSync } = await import("node:fs");
+      const { logger } = await import("@/services/logger");
+      const chartOnly = readFileSync(
+        "tests/fixtures/structured/chart-caption-only.json",
+        "utf8",
+      );
+      // Takes precedence over the default answer runWithArtifact sets.
+      extractStructured.mockResolvedValueOnce({
+        rows: [],
+        summary: { ...extraction.summary, importedSum: 0 },
+      });
+      const importedFile = await runWithArtifact({}, chartOnly);
+      expect(extractStructured).toHaveBeenCalledWith(
+        JSON.parse(chartOnly),
+        markdown,
+        expect.anything(),
+      );
+      expect(extractRows).toHaveBeenCalledTimes(1);
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(logger.info).toHaveBeenCalledWith(
+        expect.objectContaining({
+          extractionPath: "markdown",
+          reason: "structured_empty",
+        }),
+        "Inventory extraction path",
+      );
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+    });
+
+    it("an artifact that cannot be read uses the Markdown path", async () => {
+      const importedFile = {
+        inventoryId: "inventory-id",
+        importStatus: "extracting",
+        mappingConfiguration: {} as Record<string, unknown>,
+        update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
+      };
+      importedFindByPk.mockResolvedValue(importedFile);
+      inventoryFindByPk.mockResolvedValue({ year: 2024 });
+      getTextFile.mockImplementation(async (key) => {
+        if (key === "result.md") return markdown;
+        throw new Error("NoSuchKey");
+      });
+      extractRows.mockResolvedValue(extraction);
+      importedUpdate.mockImplementation(async (values) => {
+        Object.assign(importedFile, values);
+        return [1];
+      });
+      await extractInventoryRowsFromStoredMarkdown(
+        {
+          sourceType: "inventory_import",
+          sourceId: "source-id",
+          status: "succeeded",
+          resultS3Key: "result.md",
+          structuredS3Key: "document.structured.json",
+          structuredSchemaVersion: "citycatalyst.structured-document.1",
+        } as never,
+        "extractor-1",
+      );
+      expect(extractStructured).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      await expectPath("markdown", "artifact_unreadable");
+    });
+
+    it.each([
+      [
+        "no_structured_artifact",
+        { structuredS3Key: null, structuredSchemaVersion: null },
+        undefined,
+      ],
+      [
+        "unsupported_schema_version",
+        { structuredSchemaVersion: "citycatalyst.structured-document.0" },
+        undefined,
+      ],
+      ["artifact_invalid", {}, JSON.stringify(structured).slice(0, 120)],
+    ] as const)(
+      "logs the Markdown path once with reason %s",
+      async (reason, patch, text) => {
+        await runWithArtifact(patch, text);
+        await expectPath("markdown", reason);
+      },
+    );
+
+    it("logs the structured path once when the structured run succeeds", async () => {
+      await runWithArtifact({});
+      await expectPath("structured", null);
+    });
+
+    it("a plain Error with the target-year message is not a fallback", async () => {
+      extractStructured.mockRejectedValueOnce(
+        new Error("Inventory not found for the target year"),
+      );
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("failed");
+    });
+
+    it("logs the path once when the structured run throws", async () => {
+      extractStructured.mockRejectedValueOnce(new Error("provider down"));
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("failed");
+      await expectPath("structured", null);
+    });
+
+    it("a structured run emptied by the year filter falls back to the Markdown path", async () => {
+      const { LLMError, LLMErrorCode } = await import("@/backend/llm/types");
+      extractStructured.mockRejectedValueOnce(
+        new LLMError(
+          "Inventory not found for the target year",
+          LLMErrorCode.BAD_REQUEST,
+        ),
+      );
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+      await expectPath("markdown", "structured_empty");
+    });
+
+    it("the progress bar never moves back when the Markdown path follows", async () => {
+      type Progress = (current: number, total: number) => Promise<void>;
+      extractStructured.mockImplementationOnce(async (...args) => {
+        const options = args[2] as { onChunkProgress: Progress };
+        await options.onChunkProgress(1, 2);
+        await options.onChunkProgress(2, 2);
+        return { rows: [], summary: extraction.summary };
+      });
+      extractRows.mockImplementationOnce(async (...args) => {
+        const options = args[1] as { onChunkProgress: Progress };
+        await options.onChunkProgress(1, 4);
+        await options.onChunkProgress(4, 4);
+        return extraction;
+      });
+      const importedFile = await runWithArtifact({});
+      const shown = importedFile.update.mock.calls.map((call) => {
+        const config = call[0].mappingConfiguration as {
+          extractionProgress: { current: number; total: number };
+        };
+        return config.extractionProgress;
+      });
+      expect(shown).toEqual([
+        { current: 1, total: 2 },
+        { current: 2, total: 2 },
+        { current: 4, total: 4 },
+        { current: 4, total: 4 },
+      ]);
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+    });
   });
 
   it("prevents a stale extractor from overwriting a newer terminal state", async () => {

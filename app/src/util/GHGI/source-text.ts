@@ -161,7 +161,11 @@ function lastDigitStep(token: string, value: number): number {
  * minus right before it, a `-` right before it that does not join two words or
  * numbers (`2019-2021`, `CO2-e`), or parentheses around it alone (`(811,512)`).
  */
-function isNegativeAt(text: string, start: number, end: number): boolean {
+export function isNegativeAt(
+  text: string,
+  start: number,
+  end: number,
+): boolean {
   const before = text.slice(0, start).replace(/[   ]+$/, "");
   const after = text.slice(end).replace(/^[   ]+/, "");
   if (before.endsWith("−")) return true;
@@ -343,7 +347,8 @@ function matchesPrinted(
 }
 
 /** Markdown separator line under a table header: `| --- | :---: |`. */
-const TABLE_SEPARATOR = /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/;
+export const TABLE_SEPARATOR =
+  /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/;
 
 /** A short line made of a parenthesized phrase: `(kt CO2e)`, `Total (tonnes CO2e)`. */
 function isUnitLine(line: string): boolean {
@@ -415,7 +420,7 @@ export type YearEvidence = {
   leadText: string;
 };
 
-const MIN_YEAR = 1990;
+export const MIN_YEAR = 1990;
 const MAX_YEAR = 2100;
 const PROJECTION_WORDS =
   /target|projection|goal|forecast|scenario|pathway|\bby\s+20\d\d/i;
@@ -481,7 +486,7 @@ function blankGovernedYears(line: string): string {
 }
 
 /** Years named on one caption line, fiscal forms counting for both years. */
-function yearsInLine(line: string): number[] {
+export function yearsInLine(line: string): number[] {
   const years: number[] = [];
   let rest = line;
   // A range with a 4-digit second year is a trend, not the table year.
@@ -551,9 +556,13 @@ export function yearEvidence(
 }
 
 /** "thousand MT", "thousand mt", "thousand MTCO2e": kt, not an MT or Mt unit. */
-const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
+export const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
 
-const KILOTONNE_PATTERNS: RegExp[] = [
+/** Gg and gigagrams: the scale of kt. */
+export const GIGAGRAM_PATTERNS: RegExp[] = [/\bGg\b/, /\bgigagrams?\b/i];
+
+/** kt and its equivalents, Gg included (`GIGAGRAM_PATTERNS`). */
+export const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
@@ -561,8 +570,7 @@ const KILOTONNE_PATTERNS: RegExp[] = [
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   // "thousand MT CO2e" (Phoenix 2022): MT is metric tonnes, so this is kt.
   THOUSAND_MT,
-  /\bGg\b/,
-  /\bgigagrams?\b/i,
+  ...GIGAGRAM_PATTERNS,
 ];
 
 /**
@@ -574,7 +582,7 @@ const MT_SYMBOL_PATTERNS: RegExp[] = [
   /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
 ];
 
-const MEGATONNE_PATTERNS: RegExp[] = [
+export const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
@@ -594,25 +602,42 @@ const KILOGRAM_PATTERNS: RegExp[] = [
 ];
 
 /** A tonne unit: t, tCO2e, tCO2-e, tonnes, tons, metric tonnes (not kt or Mt). */
-const TONNE_UNIT_PATTERNS: RegExp[] = [
+export const TONNE_UNIT_PATTERNS: RegExp[] = [
   /(?<![\w.])t(?:\s*CO(?:2|₂)(?:-?e)?)?\b/,
   /\b(?:metric\s+)?(?:tonnes?|tons?)\b/i,
 ];
 
 /**
- * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
- * `kg CO2e/hab.`, `kg per head`):
- * a column of an emissions-per-capita table, not the unit of the emissions.
+ * The per-person part of a unit: `/capita`, `per capita`, `per person`,
+ * `per cápita`, `/hab.`, `per head`, `pro Kopf`.
  */
-const PER_PERSON_KG =
-  /\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*(?:\/\s*|per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?![\p{L}])/giu;
+const PER_PERSON_TAIL = String.raw`(?:(?:\/\s*|(?<!\p{L})per\s+)(?:capita|cápita|person|inhabitant|hab(?:itante)?\.?|head)(?!\p{L})|(?<!\p{L})pro\s+Kopf(?!\p{L}))`;
 
-function namesUnit(line: string, patterns: RegExp[]): boolean {
+/**
+ * A per-person kg figure (`kg/capita`, `kg CO2e per person`, `kg per cápita`,
+ * `kg CO2e/hab.`, `kg per head`, `kg pro Kopf`):
+ * a column of an emissions-per-capita table, not the unit of the emissions.
+ * `per` must start a word, so the joined form `kgper capita` does not match.
+ */
+const PER_PERSON_KG = new RegExp(
+  String.raw`\b(?:kg|kilograms?|kilogrammes?)(?:\s*CO(?:2|₂)(?:-?e(?:q)?)?)?\s*` +
+    PER_PERSON_TAIL,
+  "giu",
+);
+
+const PER_PERSON_UNIT = new RegExp(PER_PERSON_TAIL, "iu");
+
+/** True when a line names a per-person unit of any size (`t CO2e / capita`, `kg pro Kopf`). */
+export function namesPerPerson(line: string): boolean {
+  return PER_PERSON_UNIT.test(line);
+}
+
+export function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
 }
 
 /** namesUnit for Mt; "thousand Mt CO2e" names kt, so it is left out. */
-function namesMegatonne(line: string): boolean {
+export function namesMegatonne(line: string): boolean {
   return namesUnit(
     line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
     MEGATONNE_PATTERNS,
@@ -625,16 +650,22 @@ function namesMegatonne(line: string): boolean {
  * "megatonnes" and "thousand Mt" do not count.
  */
 export function namesMtSymbol(text: string): boolean {
-  return captionsNameUnit(text, (line) =>
-    namesUnit(
-      line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
-      MT_SYMBOL_PATTERNS,
-    ),
+  return captionsNameUnit(text, lineNamesMtSymbol);
+}
+
+/**
+ * True when one line (a caption, a table header cell) spells the `Mt` symbol.
+ * "thousand Mt" does not count.
+ */
+export function lineNamesMtSymbol(line: string): boolean {
+  return namesUnit(
+    line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
+    MT_SYMBOL_PATTERNS,
   );
 }
 
 /** namesUnit for kg, with per-person kg mentions left out. */
-function namesKilogram(line: string): boolean {
+export function namesKilogram(line: string): boolean {
   return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
 }
 

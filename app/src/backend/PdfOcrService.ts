@@ -22,12 +22,21 @@ import {
 import {
   STRUCTURED_DOCUMENT_SCHEMA_VERSION,
   StructuredDocumentError,
+  type StructuredDocument,
 } from "@/backend/StructuredDocumentArtifact";
 import {
   getPdfOcrConfig,
   getPdfOcrRetryDelayMs,
 } from "@/backend/pdf-ocr-config";
-import { extractInventoryFromDocument } from "@/backend/InventoryExtractionService";
+import {
+  extractInventoryFromDocument,
+  extractInventoryFromStructured,
+  TARGET_YEAR_NOT_FOUND,
+  type ExtractOptions,
+  type ExtractionResult,
+} from "@/backend/InventoryExtractionService";
+// The types module only: the client entry point needs a configured logger.
+import { LLMError } from "@/backend/llm/types";
 import { ImportStatusEnum } from "@/util/enums";
 import { zeroRowReason } from "@/util/GHGI/extraction-summary";
 import { logger } from "@/services/logger";
@@ -130,8 +139,7 @@ class PdfSourceError extends Error {
 
 /** Extraction errors the import wizard can show in the user's language. */
 const EXTRACTION_ERROR_KEYS: Record<string, string> = {
-  "Inventory not found for the target year":
-    "i18n:inventory-not-found-for-target-year",
+  [TARGET_YEAR_NOT_FOUND]: "i18n:inventory-not-found-for-target-year",
 };
 
 function sanitizedMessage(error: unknown): string {
@@ -678,6 +686,138 @@ function withCountryNumberFormat(
   return { numberFormat, numberFormatSource: "country_default" };
 }
 
+/** Why a job's extraction ran on the Markdown instead of the structured document. */
+type MarkdownReason =
+  | "no_structured_artifact"
+  | "unsupported_schema_version"
+  | "artifact_unreadable"
+  | "artifact_invalid"
+  | "structured_empty";
+
+/**
+ * The job's stored structured document, or why it cannot be used: the job has
+ * no artifact (made before it existed), records another schema version, or
+ * the file cannot be read, parsed or has the wrong shape or version.
+ */
+async function loadStructuredDocument(
+  job: PdfOcrJob,
+): Promise<{ doc: StructuredDocument } | { reason: MarkdownReason }> {
+  if (!job.structuredS3Key) return { reason: "no_structured_artifact" };
+  if (job.structuredSchemaVersion !== STRUCTURED_DOCUMENT_SCHEMA_VERSION) {
+    return { reason: "unsupported_schema_version" };
+  }
+  let text: string;
+  try {
+    text = await InventoryFileStorageService.getTextFile(job.structuredS3Key);
+  } catch {
+    return { reason: "artifact_unreadable" };
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return { reason: "artifact_invalid" };
+  }
+  const doc = parsed as Partial<StructuredDocument> | null;
+  const pages = doc?.document?.pages;
+  if (
+    doc?.schema_version !== STRUCTURED_DOCUMENT_SCHEMA_VERSION ||
+    !Array.isArray(pages) ||
+    !Array.isArray(doc.document?.relationships) ||
+    !pages.every(
+      (page) =>
+        page != null &&
+        Number.isInteger(page.page_index) &&
+        Array.isArray(page.blocks) &&
+        Array.isArray(page.tables),
+    )
+  ) {
+    return { reason: "artifact_invalid" };
+  }
+  return { doc: doc as StructuredDocument };
+}
+
+/**
+ * Progress for two phases on one bar: a later phase never reports a lower
+ * fraction than one already shown. Every call is still passed on (the
+ * callback renews the lease); a lower one is raised to the shown fraction.
+ */
+function monotonicProgress(
+  onProgress: ExtractOptions["onChunkProgress"],
+): ExtractOptions["onChunkProgress"] {
+  if (!onProgress) return undefined;
+  let shown = 0;
+  return (current, total) => {
+    const floor = total > 0 ? Math.ceil(shown * total - 1e-9) : current;
+    const clamped = Math.min(total, Math.max(current, floor));
+    if (total > 0) shown = Math.max(shown, clamped / total);
+    return onProgress(clamped, total);
+  };
+}
+
+/**
+ * Extracts from the structured document when the job has a usable one
+ * (stage 2), otherwise from the Markdown (stage 1). A structured run that
+ * keeps no line item (no table bundles, no row read, or every row dropped by
+ * the year filter) falls back to the Markdown too (`structured_empty`); the
+ * Markdown path then raises its own error if it also finds nothing. The
+ * progress bar never moves back across the two phases. Logs the path once per
+ * job, also when extraction throws, with the reason for the Markdown path;
+ * never the document content.
+ */
+async function extractInventoryForJob(
+  job: PdfOcrJob,
+  markdown: string,
+  options: ExtractOptions,
+): Promise<ExtractionResult> {
+  const phased: ExtractOptions = {
+    ...options,
+    onChunkProgress: monotonicProgress(options.onChunkProgress),
+  };
+  let extractionPath: "structured" | "markdown" = "markdown";
+  let reason: MarkdownReason | null = null;
+  try {
+    const loaded = await loadStructuredDocument(job);
+    if ("doc" in loaded) {
+      extractionPath = "structured";
+      let result: ExtractionResult | null = null;
+      try {
+        result = await extractInventoryFromStructured(
+          loaded.doc,
+          markdown,
+          phased,
+        );
+      } catch (error) {
+        // A whole table can land on a wrong year (a single note year such as
+        // "change since 2019"): the Markdown path reads the year its own way.
+        if (!(
+          error instanceof LLMError && error.message === TARGET_YEAR_NOT_FOUND
+        )) {
+          throw error;
+        }
+      }
+      if (result && result.rows.length > 0) return result;
+      reason = "structured_empty";
+    } else {
+      reason = loaded.reason;
+    }
+    extractionPath = "markdown";
+    return await extractInventoryFromDocument(markdown, phased);
+  } finally {
+    logger.info(
+      { sourceId: job.sourceId, extractionPath, reason },
+      "Inventory extraction path",
+    );
+  }
+}
+
+/**
+ * Runs inventory extraction for a succeeded OCR job and stores the rows on its
+ * imported file. Reads the job's structured document (`structuredS3Key`,
+ * `document.structured.json`) when it is usable and falls back to the stored
+ * Markdown otherwise; see `extractInventoryForJob`. Releases the extraction
+ * lease when the job or file is no longer in a state to extract.
+ */
 export async function extractInventoryRowsFromStoredMarkdown(
   job: PdfOcrJob,
   owner: string,
@@ -708,7 +848,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const { rows, summary } = await extractInventoryFromDocument(markdown, {
+    const { rows, summary } = await extractInventoryForJob(job, markdown, {
       targetYear,
       sourceMetadata: withCountryNumberFormat(inventory?.city),
       inventoryType: inventory?.inventoryType ?? null,

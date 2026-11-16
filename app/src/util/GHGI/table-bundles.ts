@@ -96,10 +96,23 @@ function splitRow(line: string): string[] {
 }
 
 /**
+ * True when a row is a unit sub-header: a cell other than the first names an
+ * emissions unit, and no cell other than the first holds a number (a bare
+ * year is not one).
+ */
+function isUnitSubHeader(cells: string[] | undefined): boolean {
+  if (!cells) return false;
+  const rest = cells.slice(1);
+  return rest.some(namesEmissionsUnit) && !rest.some(isDataCell);
+}
+
+/**
  * Reads a Markdown table into a grid of cells. Lines without `|` are skipped
  * and the first `| --- |` separator line is not a row; a later line of
  * `---` cells is a body row. Every row above the first separator is a
- * header row (OCR prints multi-row headers that way); a table
+ * header row (OCR prints multi-row headers that way), and so is the row
+ * right below it when it is a unit sub-header: a cell other than the first
+ * names an emissions unit and none of them holds a number (R30). A table
  * without a separator has no header rows.
  */
 export function parseMarkdownTable(
@@ -118,7 +131,10 @@ export function parseMarkdownTable(
     }
     rows.push(splitRow(line));
   }
-  const headers = headerRowCount ?? 0;
+  let headers = headerRowCount ?? 0;
+  // A unit row OCR put right below the separator (Santiago: `Item / Unidad |
+  // Valor | Emisiones totales (KgCO2eq)`) belongs to the header (R30).
+  if (headerRowCount != null && isUnitSubHeader(rows[headers])) headers += 1;
   const grid = rows.map((cells, row) =>
     cells.map((text, col) => ({
       ref: cellRef(tableId, row, col),

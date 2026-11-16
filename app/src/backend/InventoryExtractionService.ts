@@ -311,7 +311,7 @@ export type ExtractedRow = {
   /** Structured path: the cell the value was read from, when the read succeeded. */
   sourceCell?: SourceCell | null;
   /** Structured path: where the value's unit was found (`readCell`). */
-  unitSource?: "column" | "row" | "caption" | null;
+  unitSource?: "column" | "row" | "table" | "caption" | null;
   /** User decision on a row held for review (`mappingConfiguration.overrides`). */
   reviewDecision?: "keep" | "reclassify" | "skip" | null;
   /** Reference the model suggested, kept when the user chose another one. */

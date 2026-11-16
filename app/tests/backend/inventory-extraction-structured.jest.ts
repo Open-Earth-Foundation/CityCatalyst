@@ -791,6 +791,7 @@ describe("extractInventoryFromStructured", () => {
   });
 
   it("a unit-less gas cell is null when the table has scale evidence", async () => {
+    // The t and kt header cells disagree, so no table level applies (R19).
     const pages: PageSpec[] = [
       { tables: [] },
       {
@@ -799,8 +800,8 @@ describe("extractInventoryFromStructured", () => {
           {
             id: "t1",
             content:
-              "| Sector | Emissions | CH4 | CO2 (t CO2e) |\n| --- | --- | --- | --- |\n" +
-              "| Residential | 1,000 | 10 | 900 |",
+              "| Sector | Emissions | CH4 | CO2 (t CO2e) | N2O (kt CO2e) |\n| --- | --- | --- | --- | --- |\n" +
+              "| Residential | 1,000 | 10 | 900 | 0.1 |",
           },
         ],
       },

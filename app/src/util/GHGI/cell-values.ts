@@ -44,7 +44,7 @@ export type CellRead =
       tonnes: number;
       printed: string;
       unit: CellUnit | null;
-      unitSource: "column" | "row" | "caption" | null;
+      unitSource: "column" | "row" | "table" | "caption" | null;
       unitConflict: boolean;
       columnYear: number | null;
     }
@@ -53,7 +53,7 @@ export type CellRead =
       reason: "no_cell" | "text_not_in_cell" | "not_a_number" | "per_person";
     };
 
-type UnitSource = "column" | "row" | "caption";
+type UnitSource = "column" | "row" | "table" | "caption";
 
 /** Where a value was read: its table, 1-based page, and 0-based grid row and column. */
 export type SourceCell = {
@@ -177,6 +177,20 @@ function headersOfColumn(bundle: TableBundle, col: number): string[] {
     .filter((text) => text !== "");
 }
 
+/**
+ * The table level (R19): the header cells of the whole continuation chain
+ * (per-person cells left out) when they name units of one factor and no
+ * ambiguous `MT`, else no lines. Phoenix prints the unit only in the first
+ * header cell (`Scope 2 GHG Emissions (thousand MT CO2e) | 2012 | 2022`).
+ * Header cells that disagree (`t CO2e | kt CO2e | Share`) give no table
+ * level: other columns' units are then no evidence for this one (R15).
+ */
+function tableLevelLines(headerTexts: string[]): string[] {
+  const lines = headerTexts.filter((text) => !namesPerPerson(text));
+  const level = unitOfLevel(lines);
+  return level?.unit != null && !level.conflict ? lines : [];
+}
+
 /** True when header lines name a unit, the ambiguous `MT` or a per-person unit. */
 function namesColumnUnit(headers: string[]): boolean {
   return headers.some(namesPerPerson) || unitOfLevel(headers) != null;
@@ -198,9 +212,12 @@ function namesColumnUnit(headers: string[]): boolean {
  *    the printed text with the cell's sign (`(811,512)`, `−603,983 (a)`).
  *    `not_a_number` when neither parses (`NE`).
  * 5. Unit: the column's header cells, then the row's first cell, then the
- *    caption, headings and `unitNotes` without any header cell text of the
- *    continuation chain (other columns' units are not caption evidence); the first level that
- *    names a unit decides (`unitSource`). Units with different factors at
+ *    table level (the header cells of the continuation chain, per-person
+ *    cells left out, only when they all name units of one factor and no
+ *    `MT`: R19), then the caption, headings and `unitNotes` without any
+ *    header cell text of the continuation chain (other columns' units are
+ *    not caption evidence); the first level that names a unit decides
+ *    (`unitSource`). Units with different factors at
  *    that level give `unit: null` and `unitConflict: true` (kt and Gg do
  *    not conflict); a capital `MT` (metric tonnes or megatonnes) gives
  *    `unit: null` without a conflict. With `unit: null` the value is kept as
@@ -263,6 +280,7 @@ export function readCell(
   const levels: [UnitSource, string[]][] = [
     ["column", headers],
     ["row", rowLabel ? [rowLabel] : []],
+    ["table", tableLevelLines([...chainHeaderTexts])],
     [
       "caption",
       [

@@ -256,19 +256,26 @@ export function isValueInNumbers(
 }
 
 /**
- * isValueInNumbers for a line item: a scaled match needs no minimum of
- * significant digits, since `scales` come from the page's own unit evidence
- * (`pageScaleEvidence`, or a previous page's through `inheritedPageScales`).
- * `80.3` under a "thousand MT CO2e" caption matches 80,300 t. Without scales
- * only an unscaled match counts, as before. Reported totals keep
- * isValueInNumbers and its 4-digit guard.
+ * isValueInNumbers for a line item. `numbers` are all the numbers of the text
+ * and `tableNumbers` those on its Markdown table lines (`numbersOnTableLines`).
+ * Exact matches and scaled matches of 4+ significant digits count anywhere, as
+ * in isValueInNumbers. A shorter figure matches scaled only on a table line:
+ * `| Manufacturing | 80.3 |` under a "thousand MT CO2e" caption matches
+ * 80,300 t, but the "2" of "CO2e" in prose does not match 2,000 t. `scales`
+ * come from the page's unit evidence (`pageScaleEvidence`, or a previous
+ * page's through `inheritedPageScales`); without them only an unscaled match
+ * counts. Reported totals keep isValueInNumbers and its 4-digit guard.
  */
 export function isLineItemValueInNumbers(
   raw: number,
   numbers: { value: number; step: number }[],
+  tableNumbers: { value: number; step: number }[],
   scales: readonly Scale[] = [],
 ): boolean {
-  return matchesPrinted(raw, numbers, scales, 0);
+  return (
+    matchesPrinted(raw, numbers, scales, MIN_SCALED_DIGITS) ||
+    matchesPrinted(raw, tableNumbers, scales, 0)
+  );
 }
 
 function matchesPrinted(

@@ -494,6 +494,55 @@ describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => 
     ]);
   });
 
+  it("does not match a short figure in prose (the 2 of CO2e) scaled", () => {
+    const result = finalizeExtractedRows(
+      [lineItem(2000)],
+      2021,
+      page(
+        "Table 4 Transport emissions (kt CO2e)\n" +
+          "Emissions are reported in kt CO2e for 2021.\n" +
+          "| Road | 1,234.5 |",
+      ),
+    );
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].valueCheck).toBe("not_found");
+  });
+
+  it("marks a unit-less row on a page continuing a kt table", () => {
+    const p21 = "| Rail | 1,234.5 |\n| Bus | 80.3 |";
+    const rows = [lineItem(1234500, { unit: null })];
+    const own = finalizeExtractedRows(rows, 2021, page(p21));
+    expect(own.rows[0].unitCheck).toBeUndefined();
+    const inherited = finalizeExtractedRows(rows, 2021, {
+      ...page(p21),
+      inheritedScales: [1000],
+    });
+    expect(inherited.rows).toHaveLength(1);
+    expect(inherited.rows[0].unitCheck).toBe("missing");
+  });
+
+  it("marks a unit-less p21 row after a p20 kt caption in the page loop", async () => {
+    const text = documentOf({
+      20: {
+        text: "Table 3 Emissions (kt CO2e)\n| Sector | 2021 |\n| --- | --- |\n| Residential | 3,190.1 |",
+        rows: [],
+      },
+      21: {
+        text: "| Rail | 1,234.5 |",
+        rows: [
+          { ...item("Rail", "II.2.1", 1234.5), unit: null },
+          { ...totalOf(1234.5), unit: null },
+        ],
+      },
+    });
+    const { rows } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const rail = rows.find((r) => r.gpcRefNo === "II.2.1");
+    expect(rail).toBeDefined();
+    expect(rail?.unitCheck).toBe("missing");
+  });
+
   it("checks a continued page with the inherited kg scale", () => {
     const p22 =
       "| Uso de Productos | KgCO2e/año | 85.668.155 | 85.668.155 |\n" +

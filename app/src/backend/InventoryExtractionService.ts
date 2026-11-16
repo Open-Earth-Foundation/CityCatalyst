@@ -2132,7 +2132,8 @@ export type FinalizeOptions = {
   /**
    * Scales a page inherits from a table continued from previous pages
    * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
-   * in-text checks. Ignored without a page source.
+   * in-text checks. A non-empty list also makes the page a kt/Mt/kg page for
+   * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
    */
   inheritedScales?: readonly Scale[];
 };
@@ -2141,8 +2142,9 @@ export type FinalizeOptions = {
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped;
- *   unit-less rows on a kt/Mt/kg page are kept and marked (`unitCheck`), and
- *   unit-less totals there are dropped;
+ *   unit-less rows on a kt/Mt/kg page (its own captions, or a table continued
+ *   from the previous page) are kept and marked (`unitCheck`), and unit-less
+ *   totals there are dropped;
  * - with a source, line items whose value is not printed there are kept and
  *   marked (`valueCheck`);
  * - with a target year, rows of another year or without a year are dropped when
@@ -2263,10 +2265,13 @@ function finalizeRows(
   // On a page whose captions name kt, Mt, Gg or kg, a row without a unit may
   // be in that unit, not tonnes. Line items are kept as tonnes and marked
   // `unitCheck: "missing"` for review; totals are dropped, since a total in an
-  // unknown unit confirms nothing.
+  // unknown unit confirms nothing. A page continuing a kt, Mt or kg table
+  // (`inheritedScales`) counts the same.
   const unitUnclear =
     source?.kind === "page" &&
-    (namesLargeUnit(source.text) || namesSmallUnit(source.text));
+    (namesLargeUnit(source.text) ||
+      namesSmallUnit(source.text) ||
+      (options?.inheritedScales?.length ?? 0) > 0);
 
   for (const row of rows) {
     // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
@@ -2337,11 +2342,17 @@ function finalizeRows(
     if (unitMissing) scaled.unitCheck = "missing";
     // Each line item's raw value must be printed in its source text, with the
     // scales the page's captions allow; otherwise it is kept for review. With
-    // that evidence a short figure counts too (`80.3` kt is 80,300 t).
+    // that evidence a short figure on a table line counts too (`| 80.3 |` kt
+    // is 80,300 t).
     if (
       source &&
       row.totalCO2e != null &&
-      !isLineItemValueInNumbers(row.totalCO2e, sourceNumbers, sourceScales)
+      !isLineItemValueInNumbers(
+        row.totalCO2e,
+        sourceNumbers,
+        tableNumbers,
+        sourceScales,
+      )
     ) {
       scaled.valueCheck = "not_found";
     }

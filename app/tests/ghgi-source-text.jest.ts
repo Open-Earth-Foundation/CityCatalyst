@@ -525,11 +525,13 @@ describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
   );
 
   it("finds 80,300 printed as 80.3 when kt is allowed", () => {
-    expect(isLineItemValueInNumbers(80300, phoenix, [1000])).toBe(true);
+    expect(isLineItemValueInNumbers(80300, phoenix, phoenix, [1000])).toBe(
+      true,
+    );
   });
 
   it("needs the scale evidence", () => {
-    expect(isLineItemValueInNumbers(80300, phoenix, [])).toBe(false);
+    expect(isLineItemValueInNumbers(80300, phoenix, phoenix, [])).toBe(false);
   });
 
   it("leaves the totals check guarded", () => {
@@ -537,8 +539,20 @@ describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
   });
 
   it("still matches unscaled values and respects the sign", () => {
-    expect(isLineItemValueInNumbers(80.3, phoenix, [])).toBe(true);
-    expect(isLineItemValueInNumbers(-80300, phoenix, [1000])).toBe(false);
+    expect(isLineItemValueInNumbers(80.3, phoenix, phoenix, [])).toBe(true);
+    expect(isLineItemValueInNumbers(-80300, phoenix, phoenix, [1000])).toBe(
+      false,
+    );
+  });
+
+  it("matches a short figure scaled only on a table line", () => {
+    const prose = numbersInText("Emissions are shown in kt CO2e.", "english");
+    expect(isLineItemValueInNumbers(2000, prose, [], [1000])).toBe(false);
+    // Off a table line, the 4-digit scaled match and exact matches still count.
+    const long = numbersInText("Total 9,559.2 and 80.3", "english");
+    expect(isLineItemValueInNumbers(9559200, long, [], [1000])).toBe(true);
+    expect(isLineItemValueInNumbers(80.3, long, [], [1000])).toBe(true);
+    expect(isLineItemValueInNumbers(80300, long, [], [1000])).toBe(false);
   });
 
   it("gives no scale for population 5.000 without a unit caption", () => {
@@ -548,6 +562,7 @@ describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
       isLineItemValueInNumbers(
         5000000,
         numbersInText(text, "european"),
+        [],
         pageScaleEvidence(text),
       ),
     ).toBe(false);

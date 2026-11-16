@@ -757,6 +757,39 @@ describe("PdfOcrJob queue", () => {
       );
     });
 
+    it("a structured run with no line item falls back to the Markdown path (structured_empty)", async () => {
+      const { readFileSync } = await import("node:fs");
+      const { logger } = await import("@/services/logger");
+      const chartOnly = readFileSync(
+        "tests/fixtures/structured/chart-caption-only.json",
+        "utf8",
+      );
+      // Takes precedence over the default answer runWithArtifact sets.
+      extractStructured.mockResolvedValueOnce({
+        rows: [],
+        summary: { ...extraction.summary, importedSum: 0 },
+      });
+      const importedFile = await runWithArtifact({}, chartOnly);
+      expect(extractStructured).toHaveBeenCalledWith(
+        JSON.parse(chartOnly),
+        markdown,
+        expect.anything(),
+      );
+      expect(extractRows).toHaveBeenCalledTimes(1);
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(logger.info).toHaveBeenCalledWith(
+        expect.objectContaining({
+          extractionPath: "markdown",
+          reason: "structured_empty",
+        }),
+        "Inventory extraction path",
+      );
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+    });
+
     it("an artifact that cannot be read uses the Markdown path", async () => {
       const importedFile = {
         inventoryId: "inventory-id",

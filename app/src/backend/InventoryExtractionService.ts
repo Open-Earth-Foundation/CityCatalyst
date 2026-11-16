@@ -42,6 +42,10 @@ import {
   yearEvidence,
   namesLargeUnit,
   namesSmallUnit,
+  namesKilogram,
+  namesMegatonne,
+  namesUnit,
+  KILOTONNE_PATTERNS,
   pageScaleEvidence,
   type NumberStyle,
   type Scale,
@@ -1419,9 +1423,11 @@ function gasFromCell(
 /**
  * Replaces the model's numbers by what code reads from the cells (structured
  * path). For a row whose value cell reads, the model's totalCO2e and unit are
- * ignored: the value is the cell's, in tonnes; `unit` is "t", or null with
- * `unitCheck: "missing"` (kept as printed) when the cell has no unit, a
- * conflict or `MT`; the year is the cell's column year, else the single year
+ * ignored: the value is the cell's, in tonnes; `unit` is "t". A cell with no
+ * unit is tonnes when its table has no kt, Mt, Gg or kg evidence
+ * (`hasScaleEvidence`, as stage 1 reads a page without it); otherwise, and
+ * for a unit conflict or `MT`, `unit` is null with `unitCheck: "missing"`
+ * (kept as printed). The year is the cell's column year, else the single year
  * of its table's notes, else the model's. A row whose cell does not read (no
  * cell, text not in the cell, not a number, per-person column), or that names
  * no cell, keeps the model's value for review (`valueCheck: "not_found"`),
@@ -1433,6 +1439,7 @@ function readRowCells(
   bundles: TableBundle[],
   style: NumberStyle,
   currentYear: number,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
 ): ExtractedRow {
   const out: ExtractedRow = {
     ...row,
@@ -1458,9 +1465,14 @@ function readRowCells(
   }
   out.totalCO2e = read.tonnes;
   out.totalCO2eText = read.printed;
-  out.unit = read.unit ? "t" : null;
+  // No level named a unit (`unitSource` null): not a conflict, not `MT`.
+  const unitless =
+    read.unit == null && !read.unitConflict && read.unitSource == null;
+  const tonnes =
+    read.unit != null || (unitless && !hasScaleEvidence(found.bundle));
+  out.unit = tonnes ? "t" : null;
   out.unitSource = read.unitSource;
-  if (read.unit == null) out.unitCheck = "missing";
+  if (!tonnes) out.unitCheck = "missing";
   out.sourceCell = {
     tableId: found.bundle.tableId,
     page: found.bundle.page,
@@ -1545,6 +1557,59 @@ function withTableTargets(
   }));
 }
 
+/** The page's text outside its tables (headings, captions, prose), in reading order. */
+function pageTextOutsideTables(doc: StructuredDocument, page: number): string {
+  return (
+    doc.document.pages.find((p) => p.page_index + 1 === page)?.blocks ?? []
+  )
+    .filter((block) => block.related_table_id == null && block.content.trim())
+    .sort((a, b) => a.reading_order_index - b.reading_order_index)
+    .map((block) => block.content.trim())
+    .join("\n\n");
+}
+
+/**
+ * True when a table, or a table up its continuation chain, has kt, Mt, Gg or
+ * kg evidence: in its caption, headings, unit notes or header cells, or in
+ * the text outside the tables of its page (`namesLargeUnit`, `namesSmallUnit`:
+ * the stage 1 page rule). A cell with no unit there is then not tonnes.
+ */
+function tableScaleEvidence(
+  doc: StructuredDocument,
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): boolean {
+  const chain: TableBundle[] = [];
+  let current: TableBundle | undefined = bundle;
+  while (current && !chain.includes(current)) {
+    chain.push(current);
+    const source: string | null = current.continuationOf;
+    current = source ? bundles.find((b) => b.tableId === source) : undefined;
+  }
+  return chain.some((b) => {
+    const notes = [
+      ...(b.caption ? [b.caption] : []),
+      ...b.headings,
+      ...b.unitNotes,
+      ...b.grid
+        .slice(0, b.headerRowCount)
+        .flat()
+        .map((cell) => cell.text),
+    ];
+    const pageText = pageTextOutsideTables(doc, b.page);
+    return (
+      notes.some(
+        (line) =>
+          namesUnit(line, KILOTONNE_PATTERNS) ||
+          namesMegatonne(line) ||
+          namesKilogram(line),
+      ) ||
+      namesLargeUnit(pageText) ||
+      namesSmallUnit(pageText)
+    );
+  });
+}
+
 /**
  * The user message of one page on the structured path: the page's table
  * bundles (`bundleText`), with the column headers of the table a continuation
@@ -1568,13 +1633,7 @@ function structuredPagePrompt(
         .map((cells) => cells.map((cell) => cell.text).join(" | "));
       return `${text}\nColumns of ${source.tableId}: ${columns.join(" / ")}`;
     });
-  const pageText = (
-    doc.document.pages.find((p) => p.page_index + 1 === page)?.blocks ?? []
-  )
-    .filter((block) => block.related_table_id == null && block.content.trim())
-    .sort((a, b) => a.reading_order_index - b.reading_order_index)
-    .map((block) => block.content.trim())
-    .join("\n\n");
+  const pageText = pageTextOutsideTables(doc, page);
   return `Tables:\n\n${tables.join("\n\n")}\n\nPage text outside the tables:\n\n${pageText || "(none)"}`;
 }
 
@@ -1604,6 +1663,14 @@ export async function extractInventoryFromStructured(
   const currentYear = new Date().getUTCFullYear();
   const bundles = buildTableBundles(doc, currentYear);
   const style = detectNumberStyle(markdown);
+  const scaleEvidence = new Map(
+    bundles.map((bundle) => [
+      bundle.tableId,
+      tableScaleEvidence(doc, bundles, bundle),
+    ]),
+  );
+  const hasScaleEvidence = (bundle: TableBundle) =>
+    scaleEvidence.get(bundle.tableId) ?? true;
   const pages = [...new Set(bundles.map((bundle) => bundle.page))]
     .sort((a, b) => a - b)
     .map((page) => ({
@@ -1645,6 +1712,7 @@ export async function extractInventoryFromStructured(
           bundles,
           style,
           currentYear,
+          hasScaleEvidence,
         ),
       );
       return finalizeRows(normalizeExtractedRows(rows), year, {

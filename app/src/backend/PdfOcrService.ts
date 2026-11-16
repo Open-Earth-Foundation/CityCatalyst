@@ -671,7 +671,7 @@ type MarkdownReason =
   | "unsupported_schema_version"
   | "artifact_unreadable"
   | "artifact_invalid"
-  | "no_tables";
+  | "structured_empty";
 
 /**
  * The job's stored structured document, or why it cannot be used: the job has
@@ -713,16 +713,15 @@ async function loadStructuredDocument(
   ) {
     return { reason: "artifact_invalid" };
   }
-  if (!pages.some((page) => page.tables.length > 0)) {
-    return { reason: "no_tables" };
-  }
   return { doc: doc as StructuredDocument };
 }
 
 /**
  * Extracts from the structured document when the job has a usable one
- * (stage 2), otherwise from the Markdown (stage 1). Logs the path once per
- * job, with the reason for the Markdown path; never the document content.
+ * (stage 2), otherwise from the Markdown (stage 1). A structured run that
+ * keeps no line item (no table bundles, or no row read) falls back to the
+ * Markdown too (`structured_empty`). Logs the path once per job, with the
+ * reason for the Markdown path; never the document content.
  */
 async function extractInventoryForJob(
   job: PdfOcrJob,
@@ -730,19 +729,26 @@ async function extractInventoryForJob(
   options: ExtractOptions,
 ): Promise<ExtractionResult> {
   const loaded = await loadStructuredDocument(job);
+  let reason: MarkdownReason;
   if ("doc" in loaded) {
-    logger.info(
-      { sourceId: job.sourceId, extractionPath: "structured", reason: null },
-      "Inventory extraction path",
+    const result = await extractInventoryFromStructured(
+      loaded.doc,
+      markdown,
+      options,
     );
-    return extractInventoryFromStructured(loaded.doc, markdown, options);
+    if (result.rows.length > 0) {
+      logger.info(
+        { sourceId: job.sourceId, extractionPath: "structured", reason: null },
+        "Inventory extraction path",
+      );
+      return result;
+    }
+    reason = "structured_empty";
+  } else {
+    reason = loaded.reason;
   }
   logger.info(
-    {
-      sourceId: job.sourceId,
-      extractionPath: "markdown",
-      reason: loaded.reason,
-    },
+    { sourceId: job.sourceId, extractionPath: "markdown", reason },
     "Inventory extraction path",
   );
   return extractInventoryFromDocument(markdown, options);

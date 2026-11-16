@@ -372,7 +372,7 @@ describe("extractInventoryFromStructured", () => {
     expect(rows[0]).toMatchObject({ valueCheck: "not_found" });
   });
 
-  it("a cell without a unit is kept as printed and marked for the unit check", async () => {
+  it("a table with no unit anywhere reads as tonnes, and its total is a target", async () => {
     const pages: PageSpec[] = [
       { tables: [] },
       {
@@ -381,7 +381,7 @@ describe("extractInventoryFromStructured", () => {
             id: "t1",
             caption: "Table 1: Emissions 2021",
             content:
-              "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |",
+              "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |\n| Total | 5,000 |",
           },
         ],
       },
@@ -393,7 +393,87 @@ describe("extractInventoryFromStructured", () => {
           totalCO2eText: "5,000",
           unit: "kt",
         }),
+        {
+          year: 2021,
+          category: "Total",
+          rowType: "total",
+          valueCell: "t1:r2:c1",
+          totalCO2eText: "5,000",
+        },
       ],
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 5000, unit: "t" });
+    expect(rows[0].unitCheck).toBeUndefined();
+    expect(rows[0].valueCheck).toBeUndefined();
+    expect(summary.reportedTotals[0]).toMatchObject({
+      value: 5000,
+      inText: true,
+      rowsNearby: true,
+    });
+    expect(
+      reconciliationTargets(summary.reportedTotals, 2021).grand,
+    ).toHaveLength(1);
+  });
+
+  it("a page with a kt caption whose column has no unit marks the rows", async () => {
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        // The caption is page text, not linked to the table.
+        text: "Table 1: Emissions by sector 2021 (kt CO2e)",
+        tables: [
+          {
+            id: "t1",
+            content:
+              "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |\n| Total | 5,000 |",
+          },
+        ],
+      },
+    ];
+    mockRowsByTable({
+      t1: [
+        lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000" }),
+        {
+          year: 2021,
+          category: "Total",
+          rowType: "total",
+          valueCell: "t1:r2:c1",
+          totalCO2eText: "5,000",
+        },
+      ],
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 5000, unitCheck: "missing" });
+    // A unit-less total there confirms nothing (R4).
+    expect(summary.reportedTotals).toEqual([]);
+    expect(summary.droppedRows.unsupported_unit).toBe(1);
+  });
+
+  it("an MT header marks the rows for the unit check", async () => {
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        tables: [
+          {
+            id: "t1",
+            caption: "Table 1: Emissions 2021",
+            content:
+              "| Sector | MT CO2e |\n| --- | --- |\n| Residential | 5,000 |",
+          },
+        ],
+      },
+    ];
+    mockRowsByTable({
+      t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000" })],
     });
     const { rows } = await extractInventoryFromStructured(
       structuredDoc(pages),
@@ -401,7 +481,18 @@ describe("extractInventoryFromStructured", () => {
       { targetYear: 2021 },
     );
     expect(rows[0]).toMatchObject({ totalCO2e: 5000, unitCheck: "missing" });
-    expect(rows[0].valueCheck).toBeUndefined();
+  });
+
+  it("a chart caption over a table with no data rows keeps no line item", async () => {
+    mockRowsByTable({});
+    const { rows } = await extractInventoryFromStructured(
+      fixture("chart-caption-only.json"),
+      "<!-- page: 1 -->\n# City GHG Inventory 2021\n<!-- page: 2 -->\n" +
+        "Figure 2: Emissions by sector 2021 (kt CO2e)\n\n| Sector | 2021 |\n| --- | --- |",
+      { targetYear: 2021 },
+    );
+    expect(complete).toHaveBeenCalledTimes(1);
+    expect(rows).toEqual([]);
   });
 
   it("a column year other than the target drops the row as other_year", async () => {

@@ -89,9 +89,10 @@ function unitsInLine(line: string): { units: CellUnit[]; ambiguous: boolean } {
 type UnitLevel = { unit: CellUnit | null; conflict: boolean } | null;
 
 /**
- * The unit the lines of one level name, or null when they name none. Two
- * different units are a conflict; the ambiguous `MT` alone gives no unit and
- * no conflict, and beside another unit a conflict.
+ * The unit the lines of one level name, or null when they name none. Units
+ * with different factors are a conflict (kt and Gg are not: the first named
+ * is kept); the ambiguous `MT` alone gives no unit and no conflict, and
+ * beside another unit a conflict.
  */
 function unitOfLevel(lines: string[]): UnitLevel {
   const units = new Set<CellUnit>();
@@ -103,7 +104,8 @@ function unitOfLevel(lines: string[]): UnitLevel {
   }
   if (ambiguous) return { unit: null, conflict: units.size > 0 };
   if (units.size === 0) return null;
-  if (units.size > 1) return { unit: null, conflict: true };
+  const factors = new Set([...units].map((unit) => CELL_UNIT_FACTOR[unit]));
+  if (factors.size > 1) return { unit: null, conflict: true };
   return { unit: [...units][0], conflict: false };
 }
 
@@ -166,9 +168,11 @@ function yearOfColumn(headers: string[]): number | null {
  *    the printed text with the cell's sign (`(811,512)`, `−603,983 (a)`).
  *    `not_a_number` when neither parses (`NE`).
  * 5. Unit: the column's header cells, then the row's first cell, then the
- *    caption, headings and `unitNotes`; the first level that names a unit
- *    decides (`unitSource`). Two units at that level give `unit: null` and
- *    `unitConflict: true`; a capital `MT` (metric tonnes or megatonnes) gives
+ *    caption, headings and the `unitNotes` inherited from a continued table
+ *    (not this table's header cells of other columns); the first level that
+ *    names a unit decides (`unitSource`). Units with different factors at
+ *    that level give `unit: null` and `unitConflict: true` (kt and Gg do
+ *    not conflict); a capital `MT` (metric tonnes or megatonnes) gives
  *    `unit: null` without a conflict. With `unit: null` the value is kept as
  *    tonnes; `unitSource` is null only when no level names a unit.
  * 6. `columnYear`: the one year in the column's header cells, else null.
@@ -207,6 +211,15 @@ export function readCell(
   if (value == null) return { ok: false, reason: "not_a_number" };
 
   const rowLabel = col > 0 ? (bundle.grid[row][0]?.text ?? "") : "";
+  // `unitNotes` also holds this table's header cells; those of other columns
+  // are not caption evidence, so only the caption, headings and the notes
+  // inherited from a continued table are read at the caption level.
+  const ownHeaderTexts = new Set(
+    bundle.grid
+      .slice(0, bundle.headerRowCount)
+      .flat()
+      .map((headerCell) => headerCell.text),
+  );
   const levels: [UnitSource, string[]][] = [
     ["column", headers],
     ["row", rowLabel ? [rowLabel] : []],
@@ -215,7 +228,7 @@ export function readCell(
       [
         ...(bundle.caption ? [bundle.caption] : []),
         ...bundle.headings,
-        ...bundle.unitNotes,
+        ...bundle.unitNotes.filter((note) => !ownHeaderTexts.has(note)),
       ],
     ],
   ];

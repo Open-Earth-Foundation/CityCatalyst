@@ -129,6 +129,46 @@ describe("readCell", () => {
     });
   });
 
+  it("does not read other columns' header units at the caption level (R15)", () => {
+    const b = bundle(
+      "t1",
+      "| Sector | t CO2e | kt CO2e | Share |\n| --- | --- | --- | --- |\n| Energy | 1,200 | 1.2 | 12 |",
+      // As buildTableBundles writes them: the header cells that name a unit.
+      { unitNotes: ["t CO2e", "kt CO2e"] },
+    );
+    expect(okRead(readCell([b], "t1:r1:c3", "12", "english"))).toMatchObject({
+      unit: null,
+      unitSource: null,
+      unitConflict: false,
+      tonnes: 12,
+    });
+    expect(okRead(readCell([b], "t1:r1:c2", "1.2", "english"))).toMatchObject({
+      unit: "kt",
+      unitSource: "column",
+      unitConflict: false,
+      tonnes: 1200,
+    });
+  });
+
+  it("does not count kt and Gg at one level as a conflict (R15)", () => {
+    const b = bundle(
+      "t1",
+      "| Sector | Total |\n| --- | --- |\n| Energy | 7 |",
+      {
+        caption: "Emissions in Gg CO2e",
+        headings: ["Inventory (kt)"],
+        unitNotes: ["Emissions in Gg CO2e", "Inventory (kt)"],
+      },
+    );
+    const read = okRead(readCell([b], "t1:r1:c1", "7", "english"));
+    expect(read).toMatchObject({
+      unitSource: "caption",
+      unitConflict: false,
+      tonnes: 7000,
+    });
+    expect(read.unit && CELL_UNIT_FACTOR[read.unit]).toBe(1000);
+  });
+
   it("keeps a value without any unit in tonnes, with no source", () => {
     const b = bundle(
       "t1",

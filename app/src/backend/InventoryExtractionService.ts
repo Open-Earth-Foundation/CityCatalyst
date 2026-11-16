@@ -16,7 +16,12 @@ import {
   bundleText,
   type TableBundle,
 } from "@/util/GHGI/table-bundles";
-import { findCell, readCell, type SourceCell } from "@/util/GHGI/cell-values";
+import {
+  findCell,
+  readCell,
+  type CellRead,
+  type SourceCell,
+} from "@/util/GHGI/cell-values";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
@@ -1404,35 +1409,66 @@ function singleNoteYear(bundle: TableBundle): number | null {
   return bundle.yearNotes.length === 1 ? bundle.yearNotes[0] : null;
 }
 
-/** The cell `ref` read as a gas value in tonnes, or null when it does not read. */
+/**
+ * True when a successful read is in tonnes: its unit is known, or no level
+ * named a unit (`unitSource` null: not a conflict, not `MT`) and its table has
+ * no kt, Mt, Gg or kg evidence.
+ */
+function readsAsTonnes(
+  read: Extract<CellRead, { ok: true }>,
+  bundle: TableBundle,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
+): boolean {
+  if (read.unit != null) return true;
+  const unitless = !read.unitConflict && read.unitSource == null;
+  return unitless && !hasScaleEvidence(bundle);
+}
+
+/**
+ * The gas cell `ref` in tonnes, or null: it must be in the value cell's table
+ * and row, read (`readCell` on the cell's own text, so the parse, per-person
+ * and unit checks apply), and be in tonnes (`readsAsTonnes`).
+ */
 function gasFromCell(
   bundles: TableBundle[],
   ref: string | null | undefined,
+  valueCell: NonNullable<ReturnType<typeof findCell>>,
   style: NumberStyle,
   currentYear: number,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
 ): number | null {
   if (!ref) return null;
   const found = findCell(bundles, ref);
-  if (!found) return null;
-  // The model names the gas cell but copies no text: the cell's own text is
-  // read, so the parse, per-person and unit checks still apply.
+  if (
+    !found ||
+    found.bundle !== valueCell.bundle ||
+    found.row !== valueCell.row
+  ) {
+    return null;
+  }
+  // The model names the gas cell but copies no text: the cell's own text is read.
   const read = readCell(bundles, ref, found.cell.text, style, currentYear);
-  return read.ok ? read.tonnes : null;
+  if (!read.ok || !readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
+    return null;
+  }
+  return read.tonnes;
 }
 
 /**
  * Replaces the model's numbers by what code reads from the cells (structured
- * path). For a row whose value cell reads, the model's totalCO2e and unit are
- * ignored: the value is the cell's, in tonnes; `unit` is "t". A cell with no
- * unit is tonnes when its table has no kt, Mt, Gg or kg evidence
- * (`hasScaleEvidence`, as stage 1 reads a page without it); otherwise, and
- * for a unit conflict or `MT`, `unit` is null with `unitCheck: "missing"`
- * (kept as printed). The year is the cell's column year, else the single year
- * of its table's notes, else the model's. A row whose cell does not read (no
- * cell, text not in the cell, not a number, per-person column), or that names
- * no cell, keeps the model's value for review (`valueCheck: "not_found"`),
- * converted with the model's unit. Gases come only from their cells; one that
- * does not read is null.
+ * path). The value cell must be in a table of the row's own page (`row.page`;
+ * `readCell` still follows the continuation chain for headers). For a row
+ * whose value cell reads, the model's totalCO2e and unit are ignored: the
+ * value is the cell's, in tonnes; `unit` is "t". A cell with no unit is
+ * tonnes when its table has no kt, Mt, Gg or kg evidence (`hasScaleEvidence`,
+ * as stage 1 reads a page without it); otherwise, and for a unit conflict or
+ * `MT`, `unit` is null with `unitCheck: "missing"` (kept as printed). The
+ * year is the cell's column year, else the single year of its table's notes,
+ * else the model's. A row whose cell does not read (no cell on its page, text
+ * not in the cell, not a number, per-person column), or that names no cell,
+ * keeps the model's value for review (`valueCheck: "not_found"`), converted
+ * with the model's unit. Gases come only from cells in the value cell's table
+ * and row, in tonnes (`gasFromCell`); any other gas is null.
  */
 function readRowCells(
   row: ExtractedRow,
@@ -1441,19 +1477,14 @@ function readRowCells(
   currentYear: number,
   hasScaleEvidence: (bundle: TableBundle) => boolean,
 ): ExtractedRow {
-  const out: ExtractedRow = {
-    ...row,
-    co2: gasFromCell(bundles, row.co2Cell, style, currentYear),
-    ch4: gasFromCell(bundles, row.ch4Cell, style, currentYear),
-    n2o: gasFromCell(bundles, row.n2oCell, style, currentYear),
-  };
-  const read = row.valueCell
+  const out: ExtractedRow = { ...row, co2: null, ch4: null, n2o: null };
+  const found = row.valueCell ? findCell(bundles, row.valueCell) : null;
+  const onPage = found != null && found.bundle.page === row.page;
+  const read = onPage
     ? readCell(bundles, row.valueCell, row.totalCO2eText, style, currentYear)
     : null;
-  const found = row.valueCell ? findCell(bundles, row.valueCell) : null;
   if (!read?.ok || !found) {
-    // Converted here, so the unit multiplier of finalizeRows does not touch
-    // the gases, which are in tonnes already. An unknown unit is left for
+    // Converted here with the model's unit. An unknown unit is left for
     // finalizeRows to drop.
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier != null) {
@@ -1463,13 +1494,14 @@ function readRowCells(
     if (out.totalCO2e != null) out.valueCheck = "not_found";
     return out;
   }
+  const gas = (ref: string | null | undefined) =>
+    gasFromCell(bundles, ref, found, style, currentYear, hasScaleEvidence);
+  out.co2 = gas(row.co2Cell);
+  out.ch4 = gas(row.ch4Cell);
+  out.n2o = gas(row.n2oCell);
   out.totalCO2e = read.tonnes;
   out.totalCO2eText = read.printed;
-  // No level named a unit (`unitSource` null): not a conflict, not `MT`.
-  const unitless =
-    read.unit == null && !read.unitConflict && read.unitSource == null;
-  const tonnes =
-    read.unit != null || (unitless && !hasScaleEvidence(found.bundle));
+  const tonnes = readsAsTonnes(read, found.bundle, hasScaleEvidence);
   out.unit = tonnes ? "t" : null;
   out.unitSource = read.unitSource;
   if (!tonnes) out.unitCheck = "missing";
@@ -1648,7 +1680,9 @@ function structuredPagePrompt(
  * those of the Markdown path; `markdown`, the OCR Markdown of the same job,
  * feeds the provenance checks.
  *
- * @throws LLMError with BAD_REQUEST if the Markdown looks like prompt-injection
+ * @throws LLMError with BAD_REQUEST if the Markdown, a page's text or a
+ *   table's cells look like prompt-injection, and "Inventory not found for
+ *   the target year" when the year filter drops every row (as the Markdown path)
  */
 export async function extractInventoryFromStructured(
   doc: StructuredDocument,
@@ -1677,6 +1711,20 @@ export async function extractInventoryFromStructured(
       page,
       prompt: structuredPagePrompt(doc, bundles, page),
     }));
+  // Defense in depth: the Markdown check above reads only the start of the
+  // document. Each page's text and each table's cells (one per line) are
+  // checked too, before any call.
+  for (const { page } of pages) {
+    rejectPromptInjection(pageTextOutsideTables(doc, page));
+  }
+  for (const bundle of bundles) {
+    rejectPromptInjection(
+      bundle.grid
+        .flat()
+        .map((cell) => cell.text)
+        .join("\n"),
+    );
+  }
   logger.info(
     { pageCount: pages.length, tableCount: bundles.length },
     "Extraction from structured tables page by page",

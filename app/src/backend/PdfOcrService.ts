@@ -716,42 +716,79 @@ async function loadStructuredDocument(
   return { doc: doc as StructuredDocument };
 }
 
+/** Error message of an extraction whose year filter dropped every row. */
+const TARGET_YEAR_EMPTY = "Inventory not found for the target year";
+
+/**
+ * Progress for two phases on one bar: a later phase never reports a lower
+ * fraction than one already shown. Every call is still passed on (the
+ * callback renews the lease); a lower one is raised to the shown fraction.
+ */
+function monotonicProgress(
+  onProgress: ExtractOptions["onChunkProgress"],
+): ExtractOptions["onChunkProgress"] {
+  if (!onProgress) return undefined;
+  let shown = 0;
+  return (current, total) => {
+    const floor = total > 0 ? Math.ceil(shown * total - 1e-9) : current;
+    const clamped = Math.min(total, Math.max(current, floor));
+    if (total > 0) shown = Math.max(shown, clamped / total);
+    return onProgress(clamped, total);
+  };
+}
+
 /**
  * Extracts from the structured document when the job has a usable one
  * (stage 2), otherwise from the Markdown (stage 1). A structured run that
- * keeps no line item (no table bundles, or no row read) falls back to the
- * Markdown too (`structured_empty`). Logs the path once per job, with the
- * reason for the Markdown path; never the document content.
+ * keeps no line item (no table bundles, no row read, or every row dropped by
+ * the year filter) falls back to the Markdown too (`structured_empty`); the
+ * Markdown path then raises its own error if it also finds nothing. The
+ * progress bar never moves back across the two phases. Logs the path once per
+ * job, also when extraction throws, with the reason for the Markdown path;
+ * never the document content.
  */
 async function extractInventoryForJob(
   job: PdfOcrJob,
   markdown: string,
   options: ExtractOptions,
 ): Promise<ExtractionResult> {
-  const loaded = await loadStructuredDocument(job);
-  let reason: MarkdownReason;
-  if ("doc" in loaded) {
-    const result = await extractInventoryFromStructured(
-      loaded.doc,
-      markdown,
-      options,
-    );
-    if (result.rows.length > 0) {
-      logger.info(
-        { sourceId: job.sourceId, extractionPath: "structured", reason: null },
-        "Inventory extraction path",
-      );
-      return result;
+  const phased: ExtractOptions = {
+    ...options,
+    onChunkProgress: monotonicProgress(options.onChunkProgress),
+  };
+  let extractionPath: "structured" | "markdown" = "markdown";
+  let reason: MarkdownReason | null = null;
+  try {
+    const loaded = await loadStructuredDocument(job);
+    if ("doc" in loaded) {
+      extractionPath = "structured";
+      let result: ExtractionResult | null = null;
+      try {
+        result = await extractInventoryFromStructured(
+          loaded.doc,
+          markdown,
+          phased,
+        );
+      } catch (error) {
+        // A whole table can land on a wrong year (a single note year such as
+        // "change since 2019"): the Markdown path reads the year its own way.
+        if (!(error instanceof Error && error.message === TARGET_YEAR_EMPTY)) {
+          throw error;
+        }
+      }
+      if (result && result.rows.length > 0) return result;
+      reason = "structured_empty";
+    } else {
+      reason = loaded.reason;
     }
-    reason = "structured_empty";
-  } else {
-    reason = loaded.reason;
+    extractionPath = "markdown";
+    return await extractInventoryFromDocument(markdown, phased);
+  } finally {
+    logger.info(
+      { sourceId: job.sourceId, extractionPath, reason },
+      "Inventory extraction path",
+    );
   }
-  logger.info(
-    { sourceId: job.sourceId, extractionPath: "markdown", reason },
-    "Inventory extraction path",
-  );
-  return extractInventoryFromDocument(markdown, options);
 }
 
 export async function extractInventoryRowsFromStoredMarkdown(

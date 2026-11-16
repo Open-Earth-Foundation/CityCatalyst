@@ -703,6 +703,21 @@ describe("PdfOcrJob queue", () => {
       return importedFile;
     };
 
+    /** The path was logged exactly once, with this reason. */
+    const expectPath = async (
+      extractionPath: "structured" | "markdown",
+      reason: string | null,
+    ) => {
+      const { logger } = await import("@/services/logger");
+      const calls = (logger.info as jest.Mock).mock.calls.filter(
+        (call) => call[1] === "Inventory extraction path",
+      );
+      expect(calls).toHaveLength(1);
+      expect(calls[0][0]).toEqual(
+        expect.objectContaining({ extractionPath, reason }),
+      );
+    };
+
     it("uses the structured path when the job has a supported artifact", async () => {
       const importedFile = await runWithArtifact({});
       expect(extractStructured).toHaveBeenCalledWith(
@@ -820,6 +835,83 @@ describe("PdfOcrJob queue", () => {
         "extractor-1",
       );
       expect(extractStructured).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      await expectPath("markdown", "artifact_unreadable");
+    });
+
+    it.each([
+      [
+        "no_structured_artifact",
+        { structuredS3Key: null, structuredSchemaVersion: null },
+        undefined,
+      ],
+      [
+        "unsupported_schema_version",
+        { structuredSchemaVersion: "citycatalyst.structured-document.0" },
+        undefined,
+      ],
+      ["artifact_invalid", {}, JSON.stringify(structured).slice(0, 120)],
+    ] as const)(
+      "logs the Markdown path once with reason %s",
+      async (reason, patch, text) => {
+        await runWithArtifact(patch, text);
+        await expectPath("markdown", reason);
+      },
+    );
+
+    it("logs the structured path once when the structured run succeeds", async () => {
+      await runWithArtifact({});
+      await expectPath("structured", null);
+    });
+
+    it("logs the path once when the structured run throws", async () => {
+      extractStructured.mockRejectedValueOnce(new Error("provider down"));
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).not.toHaveBeenCalled();
+      expect(importedFile.importStatus).toBe("failed");
+      await expectPath("structured", null);
+    });
+
+    it("a structured run emptied by the year filter falls back to the Markdown path", async () => {
+      extractStructured.mockRejectedValueOnce(
+        new Error("Inventory not found for the target year"),
+      );
+      const importedFile = await runWithArtifact({});
+      expect(extractRows).toHaveBeenCalledWith(markdown, expect.anything());
+      expect(importedFile.importStatus).toBe("waiting_for_approval");
+      expect(importedFile.mappingConfiguration).toEqual(
+        expect.objectContaining({ rows: extraction.rows }),
+      );
+      await expectPath("markdown", "structured_empty");
+    });
+
+    it("the progress bar never moves back when the Markdown path follows", async () => {
+      type Progress = (current: number, total: number) => Promise<void>;
+      extractStructured.mockImplementationOnce(async (...args) => {
+        const options = args[2] as { onChunkProgress: Progress };
+        await options.onChunkProgress(1, 2);
+        await options.onChunkProgress(2, 2);
+        return { rows: [], summary: extraction.summary };
+      });
+      extractRows.mockImplementationOnce(async (...args) => {
+        const options = args[1] as { onChunkProgress: Progress };
+        await options.onChunkProgress(1, 4);
+        await options.onChunkProgress(4, 4);
+        return extraction;
+      });
+      const importedFile = await runWithArtifact({});
+      const shown = importedFile.update.mock.calls.map((call) => {
+        const config = call[0].mappingConfiguration as {
+          extractionProgress: { current: number; total: number };
+        };
+        return config.extractionProgress;
+      });
+      expect(shown).toEqual([
+        { current: 1, total: 2 },
+        { current: 2, total: 2 },
+        { current: 4, total: 4 },
+        { current: 4, total: 4 },
+      ]);
       expect(importedFile.importStatus).toBe("waiting_for_approval");
     });
   });

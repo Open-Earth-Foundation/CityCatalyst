@@ -1468,8 +1468,10 @@ function gasFromCell(
  * whose value cell reads, the model's totalCO2e and unit are ignored: the
  * value is the cell's, in tonnes; `unit` is "t". A cell with no unit is
  * tonnes when its table has no kt, Mt, Gg or kg evidence (`hasScaleEvidence`,
- * as stage 1 reads a page without it); otherwise, and for a unit conflict or
- * `MT`, `unit` is null with `unitCheck: "missing"` (kept as printed). The
+ * as stage 1 reads a page without it) and the model's own unit is tonnes or
+ * absent; otherwise (a model unit such as kt, Mt, `MT` or an unknown word:
+ * R26), and for a unit conflict or `MT`, `unit` is null with
+ * `unitCheck: "missing"` (kept as printed). The
  * year is the cell's column year, else the single year of its table's notes,
  * else the model's. A row whose cell does not read (no cell on its page, text
  * not in the cell, not a number, per-person column), or that names no cell,
@@ -1503,7 +1505,14 @@ function readRowCells(
   out.n2o = gas(row.n2oCell);
   out.totalCO2e = read.tonnes;
   out.totalCO2eText = read.printed;
-  const tonnes = readsAsTonnes(read, found.bundle, hasScaleEvidence);
+  // No level names a unit, yet the model read one other than tonnes (kt,
+  // Mt, `MT`, an unknown word): code cannot tell which is right (R26).
+  const modelUnitDiffers =
+    read.unitSource == null &&
+    !read.unitConflict &&
+    tonnesMultiplier(row.unit) !== 1;
+  const tonnes =
+    !modelUnitDiffers && readsAsTonnes(read, found.bundle, hasScaleEvidence);
   out.unit = tonnes ? "t" : null;
   out.unitSource = read.unitSource;
   if (!tonnes) out.unitCheck = "missing";

@@ -392,7 +392,7 @@ describe("extractInventoryFromStructured", () => {
         lineItem({
           valueCell: "t1:r1:c1",
           totalCO2eText: "5,000",
-          unit: "kt",
+          unit: "t",
         }),
         {
           year: 2021,
@@ -420,6 +420,43 @@ describe("extractInventoryFromStructured", () => {
       reconciliationTargets(summary.reportedTotals, 2021).grand,
     ).toHaveLength(1);
   });
+
+  it.each([
+    ["kt", "missing"],
+    ["Mt CO2e", "missing"],
+    ["MT", "missing"],
+    ["Tonnen CO₂", "missing"],
+    ["tCO2e", undefined],
+    [null, undefined],
+  ])(
+    "a unit-less cell with the model's unit %p gets unitCheck %p (R26)",
+    async (unit, unitCheck) => {
+      const pages: PageSpec[] = [
+        { tables: [] },
+        {
+          tables: [
+            {
+              id: "t1",
+              caption: "Table 1: Emissions 2021",
+              content:
+                "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |",
+            },
+          ],
+        },
+      ];
+      mockRowsByTable({
+        t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000", unit })],
+      });
+      const { rows } = await extractInventoryFromStructured(
+        structuredDoc(pages),
+        markdownOf(pages),
+        { targetYear: 2021 },
+      );
+      // The printed number is kept as tonnes either way; only the check differs.
+      expect(rows[0].totalCO2e).toBe(5000);
+      expect(rows[0].unitCheck).toBe(unitCheck);
+    },
+  );
 
   it("a page with a kt caption whose column has no unit marks the rows", async () => {
     const pages: PageSpec[] = [

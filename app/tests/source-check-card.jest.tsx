@@ -655,6 +655,17 @@ describe("unit group card (rows without a printed unit)", () => {
     const summary = (sourceChecks: SourceChecks) =>
       ({ sourceChecks }) as unknown as ExtractionSummary;
     expect(hasPendingSourceChecks(summary(GROUP_CHECKS))).toBe(true);
+    // One group answered, one pending: still pending.
+    expect(
+      hasPendingSourceChecks(
+        summary({
+          unitGroups: [
+            group("p12", 12, 3, { status: "confirmed", reading: "kt" }),
+            group("p14", 14, 1),
+          ],
+        }),
+      ),
+    ).toBe(true);
     expect(
       hasPendingSourceChecks(
         summary({

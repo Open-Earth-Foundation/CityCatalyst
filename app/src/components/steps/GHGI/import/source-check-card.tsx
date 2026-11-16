@@ -35,6 +35,7 @@ import {
   readingsOf,
   sumImported,
   totalPlausibility,
+  unitGroupOptionTotals,
   DOC_UNIT_GROUP,
   type NumberReading,
   type Readings,
@@ -592,25 +593,16 @@ export function UnitGroupsCheckCard({
         groups.map((group) => [group.key, group.reading ?? group.preselected]),
       ),
   );
-  /** Readings with every group but `except` at its selection. */
-  const selectedReadings = (except?: UnitGroupKey): Readings => {
-    const units = { ...readings.units };
-    for (const [key, reading] of Object.entries(selected)) {
-      if (key !== except) units[key] = reading;
-    }
-    return { ...readings, units };
-  };
+  // One conversion from the stored rows, as the endpoint does, so a total is
+  // exactly the `importedSum` stored for that answer.
   const selectedTotal = sumImported(
-    applyReadings(rows, readings, selectedReadings()),
+    applyReadings(rows, readings, {
+      ...readings,
+      units: { ...readings.units, ...selected },
+    }),
   );
-  // The other groups' selections apply first; with one group the stored rows
-  // pass unchanged, so the totals are `optionTotals` of the stored rows.
-  const totalsOf = (key: UnitGroupKey) => {
-    const others = selectedReadings(key);
-    return optionTotals(applyReadings(rows, readings, others), others, {
-      unitGroup: key,
-    });
-  };
+  const totalsOf = (key: UnitGroupKey) =>
+    unitGroupOptionTotals(rows, readings, selected, key);
   const detail = (total: number, reading: UnitReading) => {
     const value = perPerson(total, population);
     if (value != null) {

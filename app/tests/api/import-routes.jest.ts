@@ -18,7 +18,9 @@ import { PATCH as patchSourceChecks } from "@/app/api/v1/city/[city]/inventory/[
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
 import {
+  applyReadings,
   optionTotals,
+  unitGroupOptionTotals,
   type Readings,
   type SourceChecks,
 } from "@/util/GHGI/source-checks";
@@ -1543,6 +1545,50 @@ describe("Import Routes API", () => {
             (option) => option.reading === "Mt",
           )?.total,
         );
+      });
+
+      it("each option total equals the stored importedSum for that answer exactly", async () => {
+        // 696.234837 * 1000 = 696234.8369999999; converting that again
+        // (x 1000 / 1000) gives 696234.837, so a second conversion drifts.
+        const driftRows = [
+          row("I.1.1", 1.5, { unitCheck: "missing", page: 12 }),
+          row("II.1.1", 696.234837, { unitCheck: "missing", page: 14 }),
+        ] as ExtractedRow[];
+        const twice = (696.234837 * 1000 * 1000) / 1000;
+        expect(twice).not.toBe(696.234837 * 1000);
+        const selected = { p12: "kt", p14: "kt" } as const;
+        for (const reading of ["t", "kt", "Mt"] as const) {
+          const file = await createChecked({
+            rows: driftRows,
+            checks: {
+              unitGroups: [group("p12", 12, 1), group("p14", 14, 1)],
+            } as SourceChecks,
+          });
+          const shown = unitGroupOptionTotals(
+            driftRows,
+            T_GROUPS,
+            selected,
+            "p12",
+          ).find((option) => option.reading === reading)?.total;
+          await expectStatusCode(
+            await patch(
+              file.id,
+              { units: { ...selected, p12: reading } },
+              T_GROUPS,
+            ),
+            200,
+          );
+          const stored = await storedSummary(file);
+          expect(stored.extractionSummary.importedSum).toBe(shown);
+          // Converting to the other groups first, then per option, drifts.
+          const others: Readings = { units: { p14: "kt" }, numberFormat: null };
+          const twoStep = optionTotals(
+            applyReadings(driftRows, T_GROUPS, others),
+            others,
+            { unitGroup: "p12" },
+          ).find((option) => option.reading === reading)?.total;
+          expect(twoStep).not.toBe(stored.extractionSummary.importedSum);
+        }
       });
 
       it("a kt answer leaves a row the model already scaled unchanged", async () => {

@@ -109,7 +109,8 @@ export type UnitGroup = {
   /** The answered reading; null until answered (rows on their base readings). */
   reading: UnitReading | null;
   /**
-   * True when the page names only kg, which no option reads: such rows keep
+   * True when the page names only kg, which no option reads, and the group
+   * preselects "t" (no printed factor read a larger unit): such rows keep
    * their row-level keep-or-skip review. Absent otherwise.
    */
   kgOnly?: true;
@@ -330,6 +331,31 @@ export function optionTotals(
   return unitOptions(key).map((reading) => ({
     reading,
     total: total({ ...current, units: { ...current.units, [key]: reading } }),
+  }));
+}
+
+/**
+ * Imported total under each reading of one unit group, with the other groups
+ * at `selected` (the card's one Confirm answers them all). Each total is one
+ * conversion from the stored rows, `sumImported(applyReadings(rows, current,
+ * to))`, the same the PATCH endpoint stores, so it equals the stored
+ * `importedSum` for that answer exactly.
+ */
+export function unitGroupOptionTotals(
+  rows: ExtractedRow[],
+  current: Readings,
+  selected: Record<UnitGroupKey, UnitReading>,
+  key: UnitGroupKey,
+): { reading: UnitReading; total: number }[] {
+  const units = { ...current.units, ...selected };
+  return unitOptions(key).map((reading) => ({
+    reading,
+    total: sumImported(
+      applyReadings(rows, current, {
+        ...current,
+        units: { ...units, [key]: reading },
+      }),
+    ),
   }));
 }
 

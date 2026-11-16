@@ -657,6 +657,23 @@ describe("CC-1163 #3420: unit groups for rows without a printed unit", () => {
     );
   });
 
+  it("does not flag kgOnly when the rows' printed factor read kt", () => {
+    // Rebuilt from stored rows: a kg page, but the model scaled each row by 1000.
+    const stored = [
+      {
+        ...unitless(1_234_000, 5),
+        totalCO2eText: "1,234",
+        printedFactor: 1000,
+        unitCheck: "missing" as const,
+        unitHint: "kg" as const,
+      },
+    ];
+    const result = finalizeExtractedRows(stored, 2021);
+    const [group] = result.summary.sourceChecks?.unitGroups ?? [];
+    expect(group).toMatchObject({ key: "p5", preselected: "kt" });
+    expect(group.kgOnly).toBeUndefined();
+  });
+
   it("keeps the preselection when the checks are rebuilt without the page text", () => {
     const first = finalizeExtractedRows(
       [unitless(1234, 12)],

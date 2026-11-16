@@ -2331,7 +2331,8 @@ function buildSourceChecks(
  * Page groups of the rows printed without a unit, by page. A group preselects
  * kt or Mt when every row's printed value was scaled by that factor (the model
  * read the page's unit); else the caption hint its rows share, else tonnes.
- * A group whose rows share the hint "kg" preselects tonnes and is `kgOnly`.
+ * A group whose rows share the hint "kg" and that preselects tonnes is
+ * `kgOnly`.
  * Rows keep their extracted values until the group is answered.
  */
 function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
@@ -2353,14 +2354,15 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
       const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));
       const [base] = bases;
       const [hint] = hints;
-      // kg is no option: a kg page preselects tonnes and says so.
-      const kgOnly = hints.size === 1 && hint === "kg";
       const preselected: UnitReading =
         bases.size === 1 && base !== "t"
           ? base
           : hints.size === 1 && hint !== "kg"
             ? hint
             : "t";
+      // kg is no option: a kg page preselects tonnes and says so, unless the
+      // rows' printed factor already read a larger unit.
+      const kgOnly = hints.size === 1 && hint === "kg" && preselected === "t";
       return {
         key,
         page: group.page,

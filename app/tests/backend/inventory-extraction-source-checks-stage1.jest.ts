@@ -24,6 +24,7 @@ const {
   finalizeExtractedRows,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
+const { inheritedPageScales } = await import("@/util/GHGI/source-text");
 const { reconciliationTargets } =
   await import("@/util/GHGI/extraction-summary");
 
@@ -251,11 +252,15 @@ function documentOf(
     const rows = hits.length === 1 ? (hits[0][1].rows ?? []) : chunkRows;
     return { content: JSON.stringify({ rows }) };
   });
-  return entries
-    .map(
-      ([n, p]) => `<!-- page: ${n} -->\nPAGE-${n}-MARK\n${p.text}\n${FILLER}`,
-    )
-    .join("");
+  return (
+    entries
+      // The marker goes after the page text, so a page starting with a table
+      // line still does (continued tables, see inheritedPageScales).
+      .map(
+        ([n, p]) => `<!-- page: ${n} -->\n${p.text}\nPAGE-${n}-MARK\n${FILLER}`,
+      )
+      .join("")
+  );
 }
 
 const item = (
@@ -695,5 +700,219 @@ describe("CC-1163 #3420: unit groups for rows without a printed unit", () => {
     );
     expect(result.summary.sourceChecks?.unit).toBeDefined();
     expect(result.summary.sourceChecks?.unitGroups).toBeUndefined();
+  });
+});
+
+describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => {
+  const phoenixPage =
+    "Table ES-2. Stationary Energy GHG Emissions (thousand MT CO₂e)\n" +
+    "| Sector | 2021 |\n| --- | --- |\n" +
+    "| Residential Buildings | 3,190 |\n" +
+    "| Manufacturing Industries & Construction | 80.3 |";
+
+  it("finds kt line items under a thousand MT caption, short figures included", () => {
+    const result = finalizeExtractedRows(
+      [
+        lineItem(3190000, { gpcRefNo: "I.1.1" }),
+        lineItem(80300, { gpcRefNo: "I.3.1" }),
+      ],
+      2021,
+      page(phoenixPage),
+    );
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.map((r) => r.valueCheck)).toEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it("keeps the 4-digit guard for reported totals", () => {
+    const result = finalizeExtractedRows(
+      [total(3190000), total(80300, { category: "Manufacturing" })],
+      2021,
+      page(phoenixPage),
+    );
+    expect(
+      result.summary.reportedTotals.map((t) => [t.value, t.inText]),
+    ).toEqual([
+      [3190000, true],
+      [80300, false],
+    ]);
+  });
+
+  it("does not match a short figure in prose (the 2 of CO2e) scaled", () => {
+    const result = finalizeExtractedRows(
+      [lineItem(2000)],
+      2021,
+      page(
+        "Table 4 Transport emissions (kt CO2e)\n" +
+          "Emissions are reported in kt CO2e for 2021.\n" +
+          "| Road | 1,234.5 |",
+      ),
+    );
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].valueCheck).toBe("not_found");
+  });
+
+  it("marks a unit-less row on a page continuing a kt table", () => {
+    const p21 = "| Rail | 1,234.5 |\n| Bus | 80.3 |";
+    const rows = [lineItem(1234500, { unit: null })];
+    const own = finalizeExtractedRows(rows, 2021, page(p21));
+    expect(own.rows[0].unitCheck).toBeUndefined();
+    const inherited = finalizeExtractedRows(rows, 2021, {
+      ...page(p21),
+      inheritedScales: [1000],
+    });
+    expect(inherited.rows).toHaveLength(1);
+    expect(inherited.rows[0].unitCheck).toBe("missing");
+  });
+
+  it("marks a unit-less p21 row after a p20 kt caption in the page loop", async () => {
+    const text = documentOf({
+      20: {
+        text: "Table 3 Emissions (kt CO2e)\n| Sector | 2021 |\n| --- | --- |\n| Residential | 3,190.1 |",
+        rows: [],
+      },
+      21: {
+        text: "| Rail | 1,234.5 |",
+        rows: [
+          { ...item("Rail", "II.2.1", 1234.5), unit: null },
+          { ...totalOf(1234.5), unit: null },
+        ],
+      },
+    });
+    const { rows } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const rail = rows.find((r) => r.gpcRefNo === "II.2.1");
+    expect(rail).toBeDefined();
+    expect(rail?.unitCheck).toBe("missing");
+  });
+
+  it("preselects kt for the group of a page continuing a kt table", async () => {
+    const text = documentOf({
+      20: {
+        text: "Table 3 Emissions (kt CO2e)\n| Sector | 2021 |\n| --- | --- |\n| Residential | 3,190.1 |",
+        rows: [],
+      },
+      21: {
+        text: "| Rail | 1,234.5 |\n| Bus | 2,080.3 |",
+        rows: [
+          { ...item("Rail", "II.2.1", 1234.5), unit: null },
+          // The model applied the continued kt itself.
+          {
+            ...item("Bus", "II.1.1", 2_080_300),
+            unit: null,
+            totalCO2eText: "2,080.3",
+          },
+        ],
+      },
+    });
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const p21 = rows.filter((r) => r.page === 21);
+    expect(p21.map((r) => r.unitHint)).toEqual(["kt", "kt"]);
+    // The model's own x1000 is read as kt, so a kt answer does not scale twice.
+    expect(p21.find((r) => r.gpcRefNo === "II.1.1")?.printedFactor).toBe(1000);
+    expect(summary.sourceChecks?.unitGroups).toMatchObject([
+      { key: "p21", preselected: "kt", rowCount: 2 },
+    ]);
+  });
+
+  it("ignores the CO2e header digit and the I.1.1 reference for short matches", () => {
+    const text = "| Sector | kt CO2e |\n| --- | --- |\n| I.1.1 | 80.3 |";
+    const result = finalizeExtractedRows(
+      [
+        lineItem(2000, { gpcRefNo: "I.1.1" }),
+        lineItem(1100, { gpcRefNo: "I.2.1" }),
+        lineItem(80300, { gpcRefNo: "I.3.1" }),
+      ],
+      2021,
+      page(text),
+    );
+    expect(result.rows).toHaveLength(3);
+    expect(result.rows.map((r) => r.valueCheck)).toEqual([
+      "not_found",
+      "not_found",
+      undefined,
+    ]);
+  });
+
+  it("does not carry kt onto a prose demographics page (C6)", () => {
+    const p9 = "Table 1 Emissions (kt CO2e)\n| Residential | 3,190.1 |";
+    const p10 =
+      "Population 5.000\n1.234.567 2.345.678 3.456.789 4.567.890\n" +
+      "Residential buildings 3.000.000\nCommercial buildings 2.000.000\n";
+    const inheritedScales = inheritedPageScales([
+      { page: 9, text: p9 },
+      { page: 10, text: p10 },
+    ]).get(10);
+    expect(inheritedScales).toEqual([]);
+    const result = finalizeExtractedRows(
+      [
+        lineItem(3000000, { gpcRefNo: "I.1.1" }),
+        lineItem(2000000, { gpcRefNo: "I.2.1" }),
+        total(5000000, { page: 10 }),
+      ],
+      2021,
+      { ...page(p10), inheritedScales },
+    );
+    const invented = result.summary.reportedTotals.find(
+      (t) => t.value === 5000000,
+    );
+    expect(invented?.inText).toBe(false);
+    expect(targetValues(result.summary.reportedTotals)).not.toContain(5000000);
+  });
+
+  it("checks a continued page with the inherited kg scale", () => {
+    const p22 =
+      "| Uso de Productos | KgCO2e/año | 85.668.155 | 85.668.155 |\n" +
+      "| Disposición de residuos sólidos | KgCO2e/año | 77.495.011 | 77.495.011 |";
+    const rows = [
+      lineItem(85668.155, { gpcRefNo: "IV.2" }),
+      lineItem(77495.011, { gpcRefNo: "III.1.1" }),
+    ];
+    const without = finalizeExtractedRows(rows, 2021, page(p22));
+    expect(without.rows.map((r) => r.valueCheck)).toEqual([
+      "not_found",
+      "not_found",
+    ]);
+    const inherited = finalizeExtractedRows(rows, 2021, {
+      ...page(p22),
+      inheritedScales: [0.001],
+    });
+    expect(inherited.rows).toHaveLength(2);
+    expect(inherited.rows.map((r) => r.valueCheck)).toEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it("carries the p20 kg header through p21 to a p22 line item in the page loop", async () => {
+    const p22Item = {
+      ...item("Uso de Productos", "IV.2", 85668.155),
+      sector: "IPPU",
+    };
+    const text = documentOf({
+      20: {
+        text:
+          "| Sector | TOTAL (KgCO2e) |\n| --- | --- |\n" +
+          "| Energía | 104.801.192 |",
+        rows: [],
+      },
+      21: { text: "| Residuos | 1.234.567 |", rows: [] },
+      22: {
+        text: "| Uso de Productos | KgCO2e/año | 85.668.155 | 85.668.155 |",
+        // The table total, so the page reconciles and is selected.
+        rows: [p22Item, totalOf(85668.155)],
+      },
+    });
+    const { rows } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const found = rows.find((r) => r.gpcRefNo === "IV.2");
+    expect(found).toBeDefined();
+    expect(found?.valueCheck).toBeUndefined();
   });
 });

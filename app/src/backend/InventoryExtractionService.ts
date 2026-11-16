@@ -34,9 +34,12 @@ import {
 import { toCanonical } from "@/util/notation-keys";
 import {
   detectNumberStyle,
+  inheritedPageScales,
   isAmbiguousNumberText,
+  isLineItemValueInNumbers,
   isValueInNumbers,
   numbersInText,
+  numbersInTableCells,
   numbersOnTableLines,
   parseNumberString,
   yearEvidence,
@@ -45,6 +48,7 @@ import {
   namesTonneUnit,
   pageScaleEvidence,
   type NumberStyle,
+  type Scale,
 } from "@/util/GHGI/source-text";
 import {
   RECONCILIATION_TOLERANCE,
@@ -1139,9 +1143,11 @@ async function extractRowsFromDocument(
   const schemaState: SchemaState = { useSchema: true };
   const metadata = options?.sourceMetadata;
   const documentStyle = detectNumberStyle(documentContent);
-  const pages = splitDocumentPages(documentContent).filter((p) =>
-    isCandidatePage(p.text),
-  );
+  const allPages = splitDocumentPages(documentContent);
+  const pages = allPages.filter((p) => isCandidatePage(p.text));
+  // Unit evidence of a table continued from previous pages, read from the page
+  // text of every page before the concurrent page calls.
+  const inheritedScales = inheritedPageScales(allPages);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1175,6 +1181,7 @@ async function extractRowsFromDocument(
               source: { text: page.text, kind: "page" },
               sourceMetadata: metadata,
               documentStyle,
+              inheritedScales: inheritedScales.get(page.page) ?? [],
             },
           );
         let finalized: Awaited<ReturnType<typeof extract>>;
@@ -2378,13 +2385,17 @@ function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
 }
 
 /**
- * Unit the captions of this page suggest for rows without a unit: "kt" when
- * they name only kt (or Gg), "Mt" when only Mt, "kg" when only kg (no option
- * reads it; the group is flagged `kgOnly`), else tonnes (mixed units).
+ * Unit a page suggests for rows without a unit, from its scales
+ * (`pageScales`: its captions, or those of a table continued from the previous
+ * page): "kt" when only kt (or Gg), "Mt" when only Mt, "kg" when only kg (no
+ * option reads it; the group may be flagged `kgOnly`), else tonnes (mixed
+ * units, or a page caption naming tonnes).
  */
-function unitHintForPage(text: string): UnitReading | "kg" {
+function unitHintForPage(
+  text: string,
+  scales: readonly Scale[],
+): UnitReading | "kg" {
   if (namesTonneUnit(text)) return "t";
-  const scales = pageScaleEvidence(text);
   if (scales.length !== 1) return "t";
   if (scales[0] === 1000) return "kt";
   if (scales[0] === 1_000_000) return "Mt";
@@ -2539,8 +2550,9 @@ function repeatKey(row: ExtractedRow): string {
 
 /**
  * The text the model read: one page, or the whole document on the chunk path.
- * A page allows the scales its unit captions justify (`pageScaleEvidence`) in
- * the in-text checks; a document allows exact matches only.
+ * A page allows the scales its unit captions justify (`pageScaleEvidence`),
+ * plus `FinalizeOptions.inheritedScales`, in the in-text checks; a document
+ * allows exact matches only.
  */
 export type FinalizeSource = { text: string; kind: "page" | "document" };
 
@@ -2569,6 +2581,13 @@ export type FinalizeOptions = {
    * Defaults to the style detected on `source`.
    */
   documentStyle?: NumberStyle;
+  /**
+   * Scales a page inherits from a table continued from previous pages
+   * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
+   * in-text checks. A non-empty list also makes the page a kt/Mt/kg page for
+   * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
+   */
+  inheritedScales?: readonly Scale[];
 };
 
 /**
@@ -2576,8 +2595,9 @@ export type FinalizeOptions = {
  * - subtotal and total rows leave the rows and go to reportedTotals;
  * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
  *   rows are kept as tonnes with `unitCheck: "MT"`; unit-less rows on a
- *   kt/Mt/kg page are kept and marked (`unitCheck: "missing"`, with the
- *   page's `unitHint`), and unit-less totals there are dropped;
+ *   kt/Mt/kg page (its own captions, or a table continued from the previous
+ *   page) are kept and marked (`unitCheck: "missing"`, with the page's
+ *   `unitHint`), and unit-less totals there are dropped;
  * - printed text (`totalCO2eText`) is checked against the value and sets
  *   `printedFactor` and `numberCheck`;
  * - with a source, line items whose value is not printed there are kept and
@@ -2593,6 +2613,15 @@ export function finalizeExtractedRows(
   options?: FinalizeOptions,
 ): ExtractionResult {
   return finalizeRows(inputRows, targetYear, options).result;
+}
+
+/** A page's own scale evidence plus the scales it inherits (`inheritedScales`). */
+function pageScales(text: string, options?: FinalizeOptions): Scale[] {
+  const scales = pageScaleEvidence(text);
+  for (const scale of options?.inheritedScales ?? []) {
+    if (!scales.includes(scale)) scales.push(scale);
+  }
+  return scales;
 }
 
 /**
@@ -2624,7 +2653,7 @@ function finalizeRows(
       const relabel = evidence.years[0];
       // A table continued from the previous page sits above the other year's
       // caption: a row whose value is printed there keeps its year.
-      const leadScales = pageScaleEvidence(options.source.text);
+      const leadScales = pageScales(options.source.text, options);
       const leadNumbers = numbersInText(
         evidence.leadText,
         resolveNumberStyle(options.source.text, options.sourceMetadata),
@@ -2662,9 +2691,15 @@ function finalizeRows(
     source?.kind === "page"
       ? numbersOnTableLines(source.text, sourceStyle)
       : [];
-  // Scales the page's captions justify; a chunk has no page and allows none.
+  // Numbers in table body cells, for short scaled line-item matches.
+  const cellNumbers =
+    source?.kind === "page"
+      ? numbersInTableCells(source.text, sourceStyle)
+      : [];
+  // Scales the page's captions justify, or a previous page's for a continued
+  // table; a chunk has no page and allows none.
   const sourceScales =
-    source?.kind === "page" ? pageScaleEvidence(source.text) : [];
+    source?.kind === "page" ? pageScales(source.text, options) : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2693,10 +2728,13 @@ function finalizeRows(
   // On a page whose captions name kt, Mt, Gg or kg, a row without a unit may
   // be in that unit, not tonnes. Line items are kept as tonnes and marked
   // `unitCheck: "missing"` for review; totals are dropped, since a total in an
-  // unknown unit confirms nothing.
+  // unknown unit confirms nothing. A page continuing a kt, Mt or kg table
+  // (`inheritedScales`) counts the same.
   const unitUnclear =
     source?.kind === "page" &&
-    (namesLargeUnit(source.text) || namesSmallUnit(source.text));
+    (namesLargeUnit(source.text) ||
+      namesSmallUnit(source.text) ||
+      (options?.inheritedScales?.length ?? 0) > 0);
 
   // The document's own style decides whether a printed number is ambiguous;
   // a page alone often prints too few numbers to tell.
@@ -2707,7 +2745,10 @@ function finalizeRows(
     undetected: documentStyle === "unknown",
     reading:
       documentStyle !== "unknown" ? documentStyle : ambiguousReading(metadata),
-    largeUnit: !!source && namesLargeUnit(source.text),
+    // A continued kt or Mt table counts as the page's own caption.
+    largeUnit:
+      !!source &&
+      (namesLargeUnit(source.text) || sourceScales.some((m) => m >= 1000)),
   };
 
   for (const row of rows) {
@@ -2791,14 +2832,17 @@ function finalizeRows(
     }
     if (unitMissing) {
       scaled.unitCheck = "missing";
-      // unitMissing implies a page source.
-      scaled.unitHint = unitHintForPage(source!.text);
+      // unitMissing implies a page source; a continued table's inherited
+      // scales count as the page's own.
+      scaled.unitHint = unitHintForPage(source!.text, sourceScales);
     }
     // Each line item's raw value (as printed, see rawTotal) must be printed in
-    // its source text, with the scales the page's captions allow; otherwise it
-    // is kept for review. A number that reads two ways (`numberCheck`) is found
-    // under either reading, or as the model read it: the number card, not this
-    // check, decides the reading, and the page may be parsed in the other one.
+    // its source text, with the scales the page's captions (or a continued
+    // table) allow; otherwise it is kept for review. With that evidence a short
+    // figure in a table cell counts too (`| 80.3 |` kt is 80,300 t). A number
+    // that reads two ways (`numberCheck`) is found under either reading, or as
+    // the model read it: the number card, not this check, decides the reading,
+    // and the page may be parsed in the other one.
     const candidates = [rawTotal];
     if (scaled.numberCheck && scaled.totalCO2eText != null) {
       candidates.push(
@@ -2811,7 +2855,9 @@ function finalizeRows(
     if (
       source &&
       printed.length > 0 &&
-      !printed.some((v) => isValueInNumbers(v, sourceNumbers, sourceScales))
+      !printed.some((v) =>
+        isLineItemValueInNumbers(v, sourceNumbers, cellNumbers, sourceScales),
+      )
     ) {
       scaled.valueCheck = "not_found";
     }

@@ -182,6 +182,14 @@ export function numbersInText(
   text: string,
   style: NumberStyle,
 ): { value: number; step: number }[] {
+  return readNumbers(text, style, [NUMBER_TOKEN, SPACE_GROUPED]);
+}
+
+function readNumbers(
+  text: string,
+  style: NumberStyle,
+  patterns: RegExp[],
+): { value: number; step: number }[] {
   const found: { value: number; step: number }[] = [];
   const add = (match: RegExpMatchArray) => {
     const token = match[0];
@@ -195,8 +203,9 @@ export function numbersInText(
       step: lastDigitStep(token, abs),
     });
   };
-  for (const match of text.matchAll(NUMBER_TOKEN)) add(match);
-  for (const match of text.matchAll(SPACE_GROUPED)) add(match);
+  for (const re of patterns) {
+    for (const match of text.matchAll(re)) add(match);
+  }
   return found;
 }
 
@@ -213,6 +222,35 @@ export function numbersOnTableLines(
     .filter((line) => line.includes("|"))
     .join("\n");
   return numbersInText(tableText, style);
+}
+
+/**
+ * A number token standing alone: not attached to a letter, dot or digit, so
+ * the "2" of `CO2e` and the `1.1` of the reference `I.1.1` are left out.
+ */
+const STANDALONE_NUMBER_TOKEN =
+  /(?<![\p{L}.,\d])\d(?:[\d.,]*\d)?(?![\p{L}.\d]|,\d)/gu;
+
+/**
+ * The numbers in the body cells of Markdown tables: numbersOnTableLines
+ * without header rows (the `|` line above a `| --- |` separator), separator
+ * lines, and tokens attached to letters or dots (`CO2e`, `I.1.1`). Used for the
+ * short scaled matches of `isLineItemValueInNumbers`.
+ */
+export function numbersInTableCells(
+  text: string,
+  style: NumberStyle,
+): { value: number; step: number }[] {
+  const lines = text.split(/\r?\n/);
+  const cellText = lines
+    .filter(
+      (line, i) =>
+        line.includes("|") &&
+        !TABLE_SEPARATOR.test(line) &&
+        !(i + 1 < lines.length && TABLE_SEPARATOR.test(lines[i + 1])),
+    )
+    .join("\n");
+  return readNumbers(cellText, style, [STANDALONE_NUMBER_TOKEN]);
 }
 
 /**
@@ -262,11 +300,44 @@ export function isValueInNumbers(
   numbers: { value: number; step: number }[],
   scales: readonly Scale[] = [],
 ): boolean {
+  return matchesPrinted(raw, numbers, scales, MIN_SCALED_DIGITS);
+}
+
+/**
+ * isValueInNumbers for a line item. `numbers` are all the numbers of the text
+ * and `tableNumbers` those in its Markdown table body cells
+ * (`numbersInTableCells`). Exact matches and scaled matches of 4+ significant
+ * digits count anywhere, as in isValueInNumbers. A shorter figure matches
+ * scaled only in a table body cell: `| Manufacturing | 80.3 |` under a
+ * "thousand MT CO2e" caption matches 80,300 t, but the "2" of "CO2e" (in prose
+ * or a header row) does not match 2,000 t, nor the `1.1` of `I.1.1` 1,100 t. `scales`
+ * come from the page's unit evidence (`pageScaleEvidence`, or a previous
+ * page's through `inheritedPageScales`); without them only an unscaled match
+ * counts. Reported totals keep isValueInNumbers and its 4-digit guard.
+ */
+export function isLineItemValueInNumbers(
+  raw: number,
+  numbers: { value: number; step: number }[],
+  tableNumbers: { value: number; step: number }[],
+  scales: readonly Scale[] = [],
+): boolean {
+  return (
+    matchesPrinted(raw, numbers, scales, MIN_SCALED_DIGITS) ||
+    matchesPrinted(raw, tableNumbers, scales, 0)
+  );
+}
+
+function matchesPrinted(
+  raw: number,
+  numbers: { value: number; step: number }[],
+  scales: readonly Scale[],
+  minScaledDigits: number,
+): boolean {
   return numbers.some(
     ({ value, step }) =>
       Math.sign(raw) * Math.sign(value) >= 0 &&
       (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
-        (significantDigits(Math.abs(value), step) >= MIN_SCALED_DIGITS &&
+        (significantDigits(Math.abs(value), step) >= minScaledDigits &&
           scales.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
 }
@@ -479,12 +550,17 @@ export function yearEvidence(
   return { kind: "none", years, leadText: "" };
 }
 
+/** "thousand MT", "thousand mt", "thousand MTCO2e": kt, not an MT or Mt unit. */
+const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
+
 const KILOTONNE_PATTERNS: RegExp[] = [
   /\bktCO(?:2|₂)/i,
   /\bkt\b/i,
   /\bkilotonnes?\b/i,
   /\bkilotons?\b/i,
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
+  // "thousand MT CO2e" (Phoenix 2022): MT is metric tonnes, so this is kt.
+  THOUSAND_MT,
   /\bGg\b/,
   /\bgigagrams?\b/i,
 ];
@@ -527,6 +603,14 @@ const PER_PERSON_KG =
 
 function namesUnit(line: string, patterns: RegExp[]): boolean {
   return patterns.some((re) => re.test(line));
+}
+
+/** namesUnit for Mt; "thousand Mt CO2e" names kt, so it is left out. */
+function namesMegatonne(line: string): boolean {
+  return namesUnit(
+    line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
+    MEGATONNE_PATTERNS,
+  );
 }
 
 /** namesUnit for kg, with per-person kg mentions left out. */
@@ -590,16 +674,18 @@ export function namesSmallUnit(text: string): boolean {
 }
 
 /**
- * The scales the page's captions justify: 1000 for kt or Gg, 1,000,000 for Mt,
- * 0.001 for kg. Empty when no caption names a non-tonne unit; the caller passes
- * no scales for text without a page (the chunk path).
+ * The scales the page's captions justify: 1000 for kt or Gg (also "thousand
+ * tonnes" and "thousand MT", in any case), 1,000,000 for Mt, 0.001 for kg.
+ * "thousand Mt CO2e" is kt only. Empty when no caption names a non-tonne unit;
+ * the caller passes no scales for text without a page (the chunk path). For a
+ * page continuing a table, see `inheritedPageScales`.
  */
 export function pageScaleEvidence(text: string): Scale[] {
   const scales: Scale[] = [];
   if (captionsNameUnit(text, (line) => namesUnit(line, KILOTONNE_PATTERNS))) {
     scales.push(1000);
   }
-  if (captionsNameUnit(text, (line) => namesUnit(line, MEGATONNE_PATTERNS))) {
+  if (captionsNameUnit(text, namesMegatonne)) {
     scales.push(1000000);
   }
   if (namesSmallUnit(text)) scales.push(0.001);
@@ -618,4 +704,69 @@ export function isAmbiguousNumberText(text: string): boolean {
   t = t.replace(/^[+\-\u2212]/, "");
   t = t.replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
   return /^\d{1,3}[.,]\d{3}$/.test(t);
+}
+
+/**
+ * True when a caption line of the page names any emissions unit: tonnes, kt,
+ * Mt, Gg or kg (a per-person kg does not count). Such a page has unit evidence
+ * of its own and inherits none.
+ */
+function hasOwnUnitCaption(text: string): boolean {
+  return classifyCaptionLines(text).some(
+    ({ text: line }) =>
+      namesUnit(line, LARGE_UNIT_PATTERNS) ||
+      namesKilogram(line) ||
+      namesUnit(line, TONNE_UNIT_PATTERNS),
+  );
+}
+
+/** True when a line of the page is a `Table` caption or a Markdown heading. */
+function hasTableCaptionOrHeading(text: string): boolean {
+  return text.split(/\r?\n/).some((raw) => {
+    const line = raw.trim();
+    return /^[\s#*_>]*table\b/i.test(line) || line.startsWith("#");
+  });
+}
+
+/** True when the page's first non-empty line is a table line (it has `|`). */
+function startsWithTableLine(text: string): boolean {
+  const first = text.split(/\r?\n/).find((line) => line.trim() !== "");
+  return first?.includes("|") ?? false;
+}
+
+/**
+ * Scales each page inherits from a table continued from earlier pages, keyed
+ * by page number. Only a continuation page inherits: one whose first non-empty
+ * line is a table line, with no `Table` caption, heading or unit caption of
+ * its own. It gets what page p-1 passes on: p-1's `pageScaleEvidence` when p-1
+ * has a unit caption, or what p-1 inherited when p-1 is a continuation page
+ * too. Anything else passes nothing on: a missing page number, a page starting
+ * with prose ("Population 5.000" after a kt table), or a page with its own
+ * `Table` caption or heading, whether or not it names a unit. A page with its
+ * own unit caption (tonnes included) inherits nothing and passes on its own
+ * evidence. Pages that inherit nothing get `[]`. Santiago 2022: the
+ * `TOTAL (KgCO2e)` header on p20 covers p21 and p22. Pass every page of the
+ * document in order, not only the candidate pages, so a continuation page in
+ * between is not skipped.
+ */
+export function inheritedPageScales(
+  pages: readonly { page: number; text: string }[],
+): Map<number, Scale[]> {
+  const inherited = new Map<number, Scale[]>();
+  // Evidence each page passes on to the next: its own, or what it inherited.
+  const passedOn = new Map<number, Scale[]>();
+  for (const { page, text } of pages) {
+    if (hasOwnUnitCaption(text)) {
+      inherited.set(page, []);
+      passedOn.set(page, pageScaleEvidence(text));
+    } else if (hasTableCaptionOrHeading(text) || !startsWithTableLine(text)) {
+      inherited.set(page, []);
+      passedOn.set(page, []);
+    } else {
+      const fromPrevious = passedOn.get(page - 1) ?? [];
+      inherited.set(page, fromPrevious);
+      passedOn.set(page, fromPrevious);
+    }
+  }
+  return inherited;
 }

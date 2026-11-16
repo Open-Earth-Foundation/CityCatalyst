@@ -530,7 +530,7 @@ describe("extractInventoryFromStructured", () => {
     expect(summary.droppedRows.other_year).toBe(1);
   });
 
-  it("a total in another table is not a target", async () => {
+  it("a total in another table is a target when the document keeps line items (R20)", async () => {
     const pages: PageSpec[] = [
       { tables: [] },
       {
@@ -576,14 +576,16 @@ describe("extractInventoryFromStructured", () => {
       { targetYear: 2021 },
     );
     expect(summary.reportedTotals).toHaveLength(1);
+    // David's summary-table rule (R20), as on the Markdown path: a total on
+    // a table line is a target once the document keeps a line item of the year.
     expect(summary.reportedTotals[0]).toMatchObject({
       value: 3000,
       inText: true,
-      rowsNearby: false,
+      rowsNearby: true,
       sourceCell: { tableId: "t2", page: 2, row: 2, col: 1 },
     });
     expect(reconciliationTargets(summary.reportedTotals, 2021).grand).toEqual(
-      [],
+      [3000],
     );
   });
 
@@ -984,5 +986,264 @@ describe("extractInventoryFromStructured", () => {
       }),
     ).rejects.toThrow("Document content could not be processed");
     expect(complete).not.toHaveBeenCalled();
+  });
+
+  it("a summary table of subtotals has its total as a target when other tables hold the line items (R20)", async () => {
+    // Phoenix-like: the summary table on p2 lists sectors (typed subtotal by
+    // the model) and the city total; the line items are in detail tables.
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        tables: [
+          {
+            id: "s1",
+            caption: "Table ES-1: GHG emissions by sector 2021 (t CO2e)",
+            content:
+              "| Sector | 2021 |\n| --- | --- |\n| Energy | 1,500 |\n| Waste | 500 |\n| Total | 2,000 |",
+          },
+        ],
+      },
+      {
+        tables: [
+          {
+            id: "d1",
+            caption: "Table 3: Energy emissions 2021 (t CO2e)",
+            content:
+              "| Source | 2021 |\n| --- | --- |\n| Residential | 1,000 |\n| Commercial | 500 |",
+          },
+        ],
+      },
+      {
+        tables: [
+          {
+            id: "d2",
+            caption: "Table 4: Waste emissions 2021 (t CO2e)",
+            content: "| Source | 2021 |\n| --- | --- |\n| Landfill | 500 |",
+          },
+        ],
+      },
+    ];
+    const subtotal = (category: string, cell: string, text: string) => ({
+      year: 2021,
+      category,
+      rowType: "subtotal",
+      valueCell: cell,
+      totalCO2eText: text,
+    });
+    mockRowsByTable({
+      s1: [
+        subtotal("Energy", "s1:r1:c1", "1,500"),
+        subtotal("Waste", "s1:r2:c1", "500"),
+        {
+          year: 2021,
+          category: "Total",
+          rowType: "total",
+          valueCell: "s1:r3:c1",
+          totalCO2eText: "2,000",
+        },
+      ],
+      d1: [
+        lineItem({ valueCell: "d1:r1:c1", totalCO2eText: "1,000" }),
+        lineItem({
+          category: "Commercial",
+          subsector: "Commercial Buildings",
+          gpcRefNo: "I.2.1",
+          valueCell: "d1:r2:c1",
+          totalCO2eText: "500",
+        }),
+      ],
+      d2: [
+        lineItem({
+          sector: "Waste",
+          subsector: "Solid Waste Disposal",
+          category: "Landfill",
+          gpcRefNo: "III.1.1",
+          valueCell: "d2:r1:c1",
+          totalCO2eText: "500",
+        }),
+      ],
+    });
+    const { summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    const total = summary.reportedTotals.find((t) => t.level === "total");
+    expect(total).toMatchObject({ value: 2000, rowsNearby: true });
+    expect(reconciliationTargets(summary.reportedTotals, 2021).grand).toEqual([
+      2000,
+    ]);
+    expect(summary).toMatchObject({
+      pageSelection: "reconciled",
+      selectedPages: [3, 4],
+      importedSum: 2000,
+    });
+  });
+
+  it("a table total is no target when the document keeps no line item of the year", async () => {
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        tables: [
+          {
+            id: "s1",
+            caption: "Table 1: Emissions 2021 (t CO2e)",
+            content: "| Sector | 2021 |\n| --- | --- |\n| Total | 2,000 |",
+          },
+          {
+            id: "s2",
+            caption: "Table 2: Emissions 2019 (t CO2e)",
+            content: "| Sector | 2019 |\n| --- | --- |\n| Energy | 2,000 |",
+          },
+        ],
+      },
+    ];
+    mockRowsByTable({
+      s1: [
+        {
+          year: 2021,
+          category: "Total",
+          rowType: "total",
+          valueCell: "s1:r1:c1",
+          totalCO2eText: "2,000",
+        },
+        lineItem({ valueCell: "s2:r1:c1", totalCO2eText: "2,000" }),
+      ],
+    });
+    await expect(
+      extractInventoryFromStructured(structuredDoc(pages), markdownOf(pages), {
+        targetYear: 2021,
+      }),
+    ).rejects.toThrow("Inventory not found for the target year");
+  });
+
+  describe("prose totals (R21, R31)", () => {
+    // Masterton-like: the line items are on p2; the net and gross totals are
+    // printed only in prose on p3, which has no table (p-1 rule).
+    const prose =
+      "Summary of results for 2021. Total Gross Emissions were 785,873 tCO2e " +
+      "and Total Net Emissions were -25,639 tCO2e, after forestry removals " +
+      "of -811,512 tCO2e. Agriculture was 412,100 tCO2e, transport 210,500 " +
+      "tCO2e, energy 101,273 tCO2e and waste 62,000 tCO2e in 2021.";
+    const detail: TableSpec = {
+      id: "t1",
+      caption: "Table 5: Emissions by sector 2021 (t CO2e)",
+      content:
+        "| Sector | 2021 |\n| --- | --- |\n| Agriculture | 412,100 |\n| Transport | 210,500 |\n" +
+        "| Energy | 101,273 |\n| Waste | 62,000 |\n| Forestry | -811,512 |",
+    };
+    const pages: PageSpec[] = [
+      { tables: [] },
+      { tables: [detail] },
+      { text: prose, tables: [] },
+    ];
+    const sectors: [string, string, string, string][] = [
+      ["Agriculture", "AFOLU", "V.1.1", "412,100"],
+      ["Transport", "Transportation", "II.1.1", "210,500"],
+      ["Energy", "Stationary Energy", "I.1.1", "101,273"],
+      ["Waste", "Waste", "III.1.1", "62,000"],
+      ["Forestry", "AFOLU", "V.2.1", "-811,512"],
+    ];
+    const detailRows = sectors.map(([category, sector, gpcRefNo, text], i) =>
+      lineItem({
+        category,
+        sector,
+        subsector: category,
+        gpcRefNo,
+        valueCell: `t1:r${i + 1}:c1`,
+        totalCO2eText: text,
+      }),
+    );
+    const proseTotals = [
+      {
+        year: 2021,
+        category: "Total Gross Emissions",
+        rowType: "total",
+        totalCO2e: 785873,
+        unit: "tCO2e",
+      },
+      {
+        year: 2021,
+        category: "Total Net Emissions",
+        rowType: "total",
+        totalCO2e: -25639,
+        unit: "tCO2e",
+      },
+    ];
+
+    it("reads a candidate page without tables with the Markdown prompt and keeps its prose totals as targets", async () => {
+      complete.mockImplementation(async (args) => {
+        const prompt = args.messages[1].content;
+        if (prompt.includes("Table t1 ")) {
+          return { content: JSON.stringify({ rows: detailRows }) };
+        }
+        if (prompt.includes("Total Gross Emissions were")) {
+          return { content: JSON.stringify({ rows: proseTotals }) };
+        }
+        return { content: JSON.stringify({ rows: [] }) };
+      });
+      const { rows, summary } = await extractInventoryFromStructured(
+        structuredDoc(pages),
+        markdownOf(pages),
+        { targetYear: 2021 },
+      );
+      expect(complete).toHaveBeenCalledTimes(2);
+      const proseCall = complete.mock.calls.find((call) =>
+        call[0].messages[1].content.includes("Total Gross Emissions were"),
+      )!;
+      // The Markdown page prompt and schema, not the cells prompt.
+      expect(proseCall[0].messages[1].content).toContain("Document text:");
+      expect(proseCall[0].jsonSchema?.name).not.toBe("inventory_rows_cells");
+      expect(
+        summary.reportedTotals.find((t) => t.value === -25639),
+      ).toMatchObject({
+        inText: true,
+        page: 3,
+        onTableLine: false,
+        rowsNearby: true,
+      });
+      expect(reconciliationTargets(summary.reportedTotals, 2021).net).toEqual([
+        -25639,
+      ]);
+      expect(summary).toMatchObject({
+        pageSelection: "reconciled",
+        selectedPages: [2],
+      });
+      expect(rows.reduce((sum, row) => sum + (row.totalCO2e ?? 0), 0)).toBe(
+        -25639,
+      );
+    });
+
+    it("checks a total without a cell on a table page against the page text", async () => {
+      const onTablePage: PageSpec[] = [
+        { tables: [] },
+        { text: "Total net emissions were -25,639 tCO2e.", tables: [detail] },
+      ];
+      mockRowsByTable({
+        t1: [
+          ...detailRows,
+          { ...proseTotals[1] },
+          // Model arithmetic: printed nowhere on the page.
+          { ...proseTotals[0], category: "Total", totalCO2e: 999999 },
+        ],
+      });
+      const { summary } = await extractInventoryFromStructured(
+        structuredDoc(onTablePage),
+        markdownOf(onTablePage),
+        { targetYear: 2021 },
+      );
+      expect(
+        summary.reportedTotals.find((t) => t.value === -25639),
+      ).toMatchObject({
+        inText: true,
+        page: 2,
+        onTableLine: false,
+        rowsNearby: true,
+      });
+      expect(
+        summary.reportedTotals.find((t) => t.value === 999999),
+      ).toMatchObject({ inText: false });
+      expect(summary.pageSelection).toBe("reconciled");
+    });
   });
 });

@@ -1473,8 +1473,8 @@ function gasFromCell(
  * year is the cell's column year, else the single year of its table's notes,
  * else the model's. A row whose cell does not read (no cell on its page, text
  * not in the cell, not a number, per-person column), or that names no cell,
- * keeps the model's value for review (`valueCheck: "not_found"`), converted
- * with the model's unit. Gases come only from cells in the value cell's table
+ * keeps the model's value and unit for review (`valueCheck: "not_found"`);
+ * finalizeRows converts it with that unit. Gases come only from cells in the value cell's table
  * and row, in tonnes (`gasFromCell`); any other gas is null.
  */
 function readRowCells(
@@ -1491,13 +1491,8 @@ function readRowCells(
     ? readCell(bundles, row.valueCell, row.totalCO2eText, style, currentYear)
     : null;
   if (!read?.ok || !found) {
-    // Converted here with the model's unit. An unknown unit is left for
-    // finalizeRows to drop.
-    const multiplier = tonnesMultiplier(row.unit);
-    if (multiplier != null) {
-      out.totalCO2e = row.totalCO2e == null ? null : row.totalCO2e * multiplier;
-      out.unit = row.unit ? "t" : null;
-    }
+    // Kept in the model's number and unit: finalizeRows converts it (an
+    // unknown unit is dropped there) and checks a total in the page text.
     if (out.totalCO2e != null) out.valueCheck = "not_found";
     return out;
   }
@@ -1546,44 +1541,34 @@ function cellFields(
   };
 }
 
-/** First table of a continuation chain: tables with the same root are one table. */
-function chainRoot(bundles: TableBundle[], tableId: string): string {
-  const bundle = bundles.find((b) => b.tableId === tableId);
-  return bundle ? continuationChain(bundles, bundle).at(-1)!.tableId : tableId;
-}
-
 /**
- * Structured path: a total is near its rows (`rowsNearby`) only when its cell's
- * table, or a table on that table's continuation chain (either direction),
- * holds a kept line item of the target year. A total without a cell is not.
+ * Structured path, the Markdown summary-table rule (R20): a total read from a
+ * cell is near its rows (`rowsNearby`) when its table's continuation chain
+ * holds a kept line item of the target year, or when the document keeps any
+ * line item of the target year (a summary table far from its detail tables;
+ * a cell is on a table line by construction). The second case contains the
+ * first, so any kept line item of the year decides. A total without a cell
+ * keeps the page check of finalizeRows (`page`, `onTableLine`), and
+ * selectPages applies the page rule to it (R21).
  */
 function withTableTargets(
   perPage: PageResult[],
-  bundles: TableBundle[],
   year: number | undefined,
 ): PageResult[] {
-  const rowTables = new Set(
-    perPage
-      .flatMap((p) => p.result.rows)
-      .filter(
-        (row) =>
-          row.sourceCell != null &&
-          (year == null || row.year == null || row.year === year),
-      )
-      .map((row) => chainRoot(bundles, row.sourceCell!.tableId)),
-  );
+  const anyRows = perPage
+    .flatMap((p) => p.result.rows)
+    .some((row) => year == null || row.year == null || row.year === year);
   return perPage.map((p) => ({
     page: p.page,
     result: {
       ...p.result,
       summary: {
         ...p.result.summary,
-        reportedTotals: p.result.summary.reportedTotals.map((total) => ({
-          ...total,
-          rowsNearby:
-            total.sourceCell != null &&
-            rowTables.has(chainRoot(bundles, total.sourceCell.tableId)),
-        })),
+        reportedTotals: p.result.summary.reportedTotals.map((total) =>
+          total.sourceCell == null
+            ? total
+            : { ...total, rowsNearby: anyRows },
+        ),
       },
     },
   }));
@@ -1667,9 +1652,13 @@ function structuredPagePrompt(
  * per page that has tables, with that page's table bundles. The model names
  * the cell of each row and total and copies its text; code reads the value,
  * its unit and its column year from the cell (`readCell`). A row whose cell
- * does not read goes to review (`valueCheck: "not_found"`); a total is a
- * target only when it is in the table, or continuation chain, of a kept line
- * item. Page selection, the provenance checks and the GPC references are
+ * does not read goes to review (`valueCheck: "not_found"`). A total read from
+ * a cell is a target when the document keeps a line item of the target year
+ * (R20); a total without a cell is checked in the page's Markdown as on the
+ * Markdown path (R21). A candidate page without a table (`isCandidatePage`)
+ * is read with the Markdown page prompt and the stage 1 checks, so totals
+ * printed only in prose are found (R31); its rows join the same page
+ * selection. Page selection, the provenance checks and the GPC references are
  * those of the Markdown path; `markdown`, the OCR Markdown of the same job,
  * feeds the provenance checks. PDF import jobs call it only when
  * `GHGI_STRUCTURED_EXTRACTION` is on (see `PdfOcrService`).
@@ -1699,17 +1688,37 @@ export async function extractInventoryFromStructured(
   );
   const hasScaleEvidence = (bundle: TableBundle) =>
     scaleEvidence.get(bundle.tableId) ?? true;
-  const pages = [...new Set(bundles.map((bundle) => bundle.page))]
-    .sort((a, b) => a - b)
-    .map((page) => ({
-      page,
-      prompt: structuredPagePrompt(doc, bundles, page),
-    }));
+  const markdownPages = splitDocumentPages(markdown);
+  const markdownByPage = new Map(markdownPages.map((p) => [p.page, p.text]));
+  const inheritedScales = inheritedPageScales(markdownPages);
+  const tablePages = new Set(bundles.map((bundle) => bundle.page));
+  type StructuredPage =
+    | { page: number; kind: "tables"; prompt: string }
+    | { page: number; kind: "prose"; text: string };
+  // Pages with tables get the cells prompt; candidate pages without a table
+  // get the Markdown page prompt, so totals printed only in prose exist
+  // (R31, Masterton).
+  const pages: StructuredPage[] = [
+    ...[...tablePages].map(
+      (page): StructuredPage => ({
+        page,
+        kind: "tables",
+        prompt: structuredPagePrompt(doc, bundles, page),
+      }),
+    ),
+    ...markdownPages
+      .filter((p) => !tablePages.has(p.page) && isCandidatePage(p.text))
+      .map((p): StructuredPage => ({ page: p.page, kind: "prose", text: p.text })),
+  ].sort((a, b) => a.page - b.page);
   // Defense in depth: the Markdown check above reads only the start of the
   // document. Each page's text and each table's cells (one per line) are
   // checked too, before any call.
-  for (const { page } of pages) {
-    rejectPromptInjection(pageTextOutsideTables(doc, page));
+  for (const page of pages) {
+    rejectPromptInjection(
+      page.kind === "tables"
+        ? pageTextOutsideTables(doc, page.page)
+        : page.text,
+    );
   }
   for (const bundle of bundles) {
     // Caption, headings and unit notes go into the prompt too (`bundleText`);
@@ -1729,7 +1738,11 @@ export async function extractInventoryFromStructured(
     );
   }
   logger.info(
-    { pageCount: pages.length, tableCount: bundles.length },
+    {
+      pageCount: pages.length,
+      prosePageCount: pages.filter((p) => p.kind === "prose").length,
+      tableCount: bundles.length,
+    },
     "Extraction from structured tables page by page",
   );
   if (pages.length === 0) {
@@ -1750,9 +1763,25 @@ export async function extractInventoryFromStructured(
   const progressTotal = pages.length;
   const phase = await extractPages(
     pages,
-    async ({ page, prompt }) => {
+    async (item) => {
+      const { page } = item;
+      if (item.kind === "prose") {
+        // As the Markdown path reads a page, with its stage 1 checks (R21).
+        return finalizeRows(
+          normalizeExtractedRows(
+            await extractSegment(item.text, yearInstruction, false, schemaState),
+          ).map((row) => ({ ...row, page })),
+          year,
+          {
+            deferYearAssumption: true,
+            source: { text: item.text, kind: "page" },
+            inheritedScales: inheritedScales.get(page) ?? [],
+            currentYear,
+          },
+        );
+      }
       const raw = await callExtractionModel(
-        yearInstruction + prompt,
+        yearInstruction + item.prompt,
         false,
         schemaState,
         STRUCTURED_PROMPT,
@@ -1770,6 +1799,8 @@ export async function extractInventoryFromStructured(
         deferYearAssumption: true,
         readFromCells: true,
         currentYear,
+        totalsPageText: markdownByPage.get(page),
+        inheritedScales: inheritedScales.get(page) ?? [],
       });
     },
     onProgress
@@ -1778,7 +1809,7 @@ export async function extractInventoryFromStructured(
         }
       : undefined,
   );
-  const perPage = withTableTargets(phase.perPage, bundles, year);
+  const perPage = withTableTargets(phase.perPage, year);
   const selected = selectPagePhase({ ...phase, perPage }, year);
   if (onProgress) {
     await Promise.resolve(onProgress(progressTotal, progressTotal));
@@ -2730,10 +2761,19 @@ export type FinalizeOptions = {
   inheritedScales?: readonly Scale[];
   /**
    * Structured path (no `source`): the values were read from table cells. A
-   * total is printed (`inText`) only when its row has a `sourceCell`, and it
-   * records that cell and its page; `rowsNearby` is set after all pages.
+   * total read from its cell is printed (`inText`) and records that cell and
+   * its page; `rowsNearby` is set after all pages. A total without a cell
+   * gets the page checks of `source` against `totalsPageText` (R21).
    */
   readFromCells?: boolean;
+  /**
+   * Structured path: the page's OCR Markdown, for totals without a cell
+   * (R21). They get the page checks of a `source` page: `inText` with the
+   * page's scales (and `inheritedScales`), `page` and `onTableLine`, and
+   * dropped when unit-less on a kt, Mt or kg page. Without it such a total
+   * is `inText: false`. Line items are not checked against it.
+   */
+  totalsPageText?: string;
 };
 
 /**
@@ -2824,13 +2864,24 @@ function finalizeRows(
   const reportedTotals: ReportedTotal[] = [];
   const converted: ExtractedRow[] = [];
   const source = options?.source;
+  // The text totals are checked in: the source, or on the structured path
+  // the page text for totals without a cell (R21).
+  const totalsSource: FinalizeSource | undefined =
+    source ??
+    (options?.readFromCells && options.totalsPageText != null
+      ? { text: options.totalsPageText, kind: "page" }
+      : undefined);
   // Every number printed in the source, read once for all the in-text checks.
-  const sourceStyle = source ? detectNumberStyle(source.text) : "unknown";
-  const sourceNumbers = source ? numbersInText(source.text, sourceStyle) : [];
+  const sourceStyle = totalsSource
+    ? detectNumberStyle(totalsSource.text)
+    : "unknown";
+  const sourceNumbers = totalsSource
+    ? numbersInText(totalsSource.text, sourceStyle)
+    : [];
   // Numbers printed on Markdown table lines of a page, for `onTableLine`.
   const tableNumbers =
-    source?.kind === "page"
-      ? numbersOnTableLines(source.text, sourceStyle)
+    totalsSource?.kind === "page"
+      ? numbersOnTableLines(totalsSource.text, sourceStyle)
       : [];
   // Numbers in table body cells, for short scaled line-item matches.
   const cellNumbers =
@@ -2840,7 +2891,7 @@ function finalizeRows(
   // Scales the page's captions justify, or a previous page's for a continued
   // table; a chunk has no page and allows none.
   const sourceScales =
-    source?.kind === "page" ? pageScales(source.text, options) : [];
+    totalsSource?.kind === "page" ? pageScales(totalsSource.text, options) : [];
   // Raw totalCO2e (before the unit multiplier) of each converted row, for the
   // in-text check of hidden row totals.
   const rawValues = new Map<ExtractedRow, number | null>();
@@ -2850,7 +2901,7 @@ function finalizeRows(
     value: number,
     page: number | null | undefined,
   ): Pick<ReportedTotal, "inText" | "page" | "onTableLine"> => {
-    if (!source || raw == null) return {};
+    if (!totalsSource || raw == null) return {};
     const found = isValueInNumbers(raw, sourceNumbers, sourceScales);
     if (!found) {
       logger.warn(
@@ -2858,7 +2909,7 @@ function finalizeRows(
         "Reported total not found in source text",
       );
     }
-    if (source.kind !== "page") return { inText: found };
+    if (totalsSource.kind !== "page") return { inText: found };
     return {
       inText: found,
       page: page ?? null,
@@ -2871,11 +2922,14 @@ function finalizeRows(
   // `unitCheck: "missing"` for review; totals are dropped, since a total in an
   // unknown unit confirms nothing. A page continuing a kt, Mt or kg table
   // (`inheritedScales`) counts the same.
-  const unitUnclear =
-    source?.kind === "page" &&
-    (namesLargeUnit(source.text) ||
-      namesSmallUnit(source.text) ||
+  const pageUnitUnclear =
+    totalsSource?.kind === "page" &&
+    (namesLargeUnit(totalsSource.text) ||
+      namesSmallUnit(totalsSource.text) ||
       (options?.inheritedScales?.length ?? 0) > 0);
+  // The structured path marks its own line items (`unitCheck`); the page
+  // text there judges only totals without a cell.
+  const unitUnclear = source != null && pageUnitUnclear;
 
   // Structured path: a total is printed when it was read from its cell.
   const totalSource = (
@@ -2885,7 +2939,11 @@ function finalizeRows(
     value: number,
   ): Pick<ReportedTotal, "inText" | "page" | "onTableLine" | "sourceCell"> => {
     if (!options?.readFromCells) return inText(raw, label, value, row.page);
-    if (!row.sourceCell) return { inText: false, page: row.page ?? null };
+    if (!row.sourceCell) {
+      return totalsSource
+        ? inText(raw, label, value, row.page)
+        : { inText: false, page: row.page ?? null };
+    }
     return {
       inText: true,
       page: row.sourceCell.page,
@@ -2934,7 +2992,15 @@ function finalizeRows(
         : row.rowType;
 
     if (rowType === "subtotal" || rowType === "total") {
-      if (unitMissing) {
+      // A structured total without a cell, unit-less on a kt/Mt/kg page:
+      // the stage 1 rule (R4, R21).
+      const cellLessUnclear =
+        options?.readFromCells &&
+        !row.sourceCell &&
+        pageUnitUnclear &&
+        !row.unit?.trim() &&
+        hasAmount;
+      if (unitMissing || cellLessUnclear) {
         drop("unsupported_unit");
         continue;
       }

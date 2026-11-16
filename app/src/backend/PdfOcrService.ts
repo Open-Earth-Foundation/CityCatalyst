@@ -792,6 +792,13 @@ async function extractInventoryForJob(
   }
 }
 
+/**
+ * Runs inventory extraction for a succeeded OCR job and stores the rows on its
+ * imported file. Reads the job's structured document (`structuredS3Key`,
+ * `document.structured.json`) when it is usable and falls back to the stored
+ * Markdown otherwise; see `extractInventoryForJob`. Releases the extraction
+ * lease when the job or file is no longer in a state to extract.
+ */
 export async function extractInventoryRowsFromStoredMarkdown(
   job: PdfOcrJob,
   owner: string,

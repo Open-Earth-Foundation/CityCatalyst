@@ -170,7 +170,7 @@ flowchart TB
 
 | Input / artifact                      | SoT                                               | Owner (module)                                                   | Clima access                                                |
 | ------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
-| GHGI PDF + OCR `.md`                  | S3 + GHGI import / `PdfOcrJob`                    | **GHGI**                                                         | Path A default (inventory); Markdown when capability allows. Annotation mode stays `none`. |
+| GHGI PDF + OCR `.md` + structured JSON sibling (import extraction reads it first, Markdown fallback) | S3 + GHGI import / `PdfOcrJob`                    | **GHGI**                                                         | Path A default (inventory); Markdown when capability allows. Annotation mode stays `none`. |
 | CNB uploads                           | S3 + CNB upload rows + structured JSON sibling    | **CNB**                                                          | Path B via **CC core** markdown read and, for new PDFs, structured JSON read |
 | File uploaded in another module later | That module’s rows + S3                           | **That module**                                                  | Same pattern                                                |
 | HIAP finished state                   | Ranking, ≤3 selected actions, output plan (in CC) | **HIAP**                                                         | Path A (`hiap.summary`)                                     |

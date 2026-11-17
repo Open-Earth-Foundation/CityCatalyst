@@ -55,6 +55,27 @@ resolved failures appear only when both runs used the same fixtures, golden
 expectations and judge policy. Otherwise the runs are shown side by side with
 the reason, and the command exits `3`.
 
+### Reading extraction scores
+
+`required_fact_coverage` is the judge's share of mandatory chapter-fact pairs
+fully covered in their receiving chapter. Python adds judge-free metrics from
+whether every golden evidence passage of a fact survives verbatim in a retained
+quotation. They change only when the producer's output changes:
+
+- `fact_evidence_retained`: share of facts with a mandatory pair whose evidence
+  was kept anywhere (any chapter or the document-level quotations). Each fact
+  counts once, however many chapters need it.
+- `pair_evidence_in_chapter`: share of mandatory pairs whose evidence is in the
+  receiving chapter.
+- `pairs_misrouted`: pairs whose evidence was kept, but not in that chapter.
+  This is a routing problem.
+- `pairs_not_extracted`: pairs whose evidence was not kept anywhere. This is an
+  extraction loss.
+
+The per-pair status is in `details.evidence_retention` of `report.json`. A fact
+paraphrased from a different passage than its golden evidence shows as not
+extracted here, while the judge may still accept it.
+
 ## Store runs in MLflow (draft)
 
 Add `--mlflow` to `evaluate` to upload the finished run folder to the

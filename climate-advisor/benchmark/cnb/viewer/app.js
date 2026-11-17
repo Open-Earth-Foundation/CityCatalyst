@@ -1360,7 +1360,7 @@
 
   // ---------- runs: loading, picking, comparing ----------
   const RUN_METRICS = {
-    extraction: [["required_fact_coverage", "facts kept"], ["topic_coverage", "topics"]],
+    extraction: [["required_fact_coverage", "facts kept"], ["fact_evidence_retained", "evidence extracted"], ["pair_evidence_in_chapter", "evidence in its chapter"], ["topic_coverage", "topics"]],
     chapter_writing: [["required_fact_coverage", "facts"], ["gap_recall", "gaps flagged"], ["flagged_gap_validity", "raised gaps genuine"]],
     verification: [["defect_recall", "defects found"], ["false_alarm_rate", "false alarms"]],
     editing: [["case_pass_rate", "cases pass"]],

@@ -22,6 +22,7 @@ from app.services.cnb.chapter_drafting import (
     _sanitize_generated_output,
     build_chapter_input,
     draft_chapter,
+    fit_context_window,
 )
 
 from benchmark.cnb.golden_set.core import (
@@ -95,12 +96,16 @@ async def write_chapters(
     supplied: list[TextUnit] = []
     drafted: list[DraftedChapter] = []
     for index, chapter in enumerate(chapters):
-        payload = build_chapter_input(
-            application_context=workspace.application_context,
-            run_context=workspace.run_context,
-            current=chapter,
-            template_chapter=workspace.templates[index],
-            chapters=chapters,
+        # Fit first, as production does, so "supplied" is what the drafter really saw.
+        payload = fit_context_window(
+            build_chapter_input(
+                application_context=workspace.application_context,
+                run_context=workspace.run_context,
+                current=chapter,
+                template_chapter=workspace.templates[index],
+                chapters=chapters,
+            ),
+            settings,
         )
         inputs = deepcopy({k: v for k, v in payload.items() if k not in _NON_EVIDENCE_KEYS})
         # A producer's own summary is never evidence for evaluating its draft.

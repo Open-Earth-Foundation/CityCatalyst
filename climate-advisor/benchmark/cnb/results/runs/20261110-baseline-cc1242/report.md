@@ -40,6 +40,10 @@ Ground truth approval: **approved**.
 
 ### extraction: FAIL
 Required facts: **7 fully covered · 0 partially covered · 3 missing · 0 contradicted**.
+- fact_evidence_retained: 1.00
+- pair_evidence_in_chapter: 0.70
+- pairs_misrouted: 3.00
+- pairs_not_extracted: 0.00
 - required_fact_coverage: 0.70
 - mandatory_pairs: 10.00
 - desirable_pairs: 2.00
@@ -275,6 +279,10 @@ Ground truth approval: **approved**.
 
 ### extraction: FAIL
 Required facts: **10 fully covered · 0 partially covered · 3 missing · 0 contradicted**.
+- fact_evidence_retained: 1.00
+- pair_evidence_in_chapter: 0.77
+- pairs_misrouted: 3.00
+- pairs_not_extracted: 0.00
 - required_fact_coverage: 0.77
 - mandatory_pairs: 13.00
 - desirable_pairs: 7.00
@@ -628,6 +636,10 @@ Ground truth approval: **approved**.
 
 ### extraction: FAIL
 Required facts: **1 fully covered · 3 partially covered · 7 missing · 0 contradicted**.
+- fact_evidence_retained: 0.50
+- pair_evidence_in_chapter: 0.09
+- pairs_misrouted: 3.00
+- pairs_not_extracted: 7.00
 - required_fact_coverage: 0.09
 - mandatory_pairs: 11.00
 - desirable_pairs: 7.00

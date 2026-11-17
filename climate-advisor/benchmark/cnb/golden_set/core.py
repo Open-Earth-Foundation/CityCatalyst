@@ -3,7 +3,9 @@
 Python validates fixture artifacts and the production output's quotations, and
 checks that the judge returned one verdict per expected item. Extraction fact
 citations must point to exact retained text in their receiving chapter. Python
-never infers semantic coverage or claim support from keywords or number presence.
+never infers semantic coverage or claim support from keywords or number presence;
+its only own extraction measure is whether the golden evidence passages survive
+verbatim, and in which chapter (``score_evidence_retention``).
 Chapter writing, verification, and editing build on these helpers in their own
 modules.
 """
@@ -509,19 +511,72 @@ def score_facts_and_claims(
         report.semantic_failures.append(f"contradictory output: {conflict.reason}")
 
 
+def score_evidence_retention(
+    loaded: LoadedFixture, retained: Sequence[TextUnit], report: StageReport
+) -> None:
+    """Split mandatory chapter-fact pairs into in-chapter, misrouted, and not extracted.
+
+    Deterministic and judge-free, so these numbers change only when the producer's
+    output changes. A fact's evidence counts as held in a place only when every
+    golden evidence passage sits verbatim inside a retained quotation there;
+    document-level quotations are a place of their own (``document``).
+    """
+    # Step 1: where each evidence passage survives verbatim
+    rows = []
+    facts_with_mandatory = retained_facts = 0
+    for fact in loaded.fixture.extraction.facts:
+        places = [
+            {unit.chapter_ref or "document" for unit in retained if evidence.text in unit.text}
+            for evidence in fact.evidence
+        ]
+        anywhere = all(places)
+        complete_in = set.intersection(*places)
+        mandatory = [r for r in fact.requirements if r.priority == "mandatory"]
+        if mandatory:
+            facts_with_mandatory += 1
+            retained_facts += anywhere
+        # Step 2: classify each mandatory pair
+        for requirement in mandatory:
+            if requirement.chapter_ref in complete_in:
+                status = "in_chapter"
+            else:
+                status = "misrouted" if anywhere else "not_extracted"
+            rows.append({
+                "id": extraction_pair_id(fact.id, requirement.chapter_ref),
+                "status": status,
+                "complete_in": sorted(complete_in),
+            })
+
+    # Step 3: rates over unique facts and over pairs
+    statuses = Counter(row["status"] for row in rows)
+    if facts_with_mandatory:
+        report.metrics["fact_evidence_retained"] = retained_facts / facts_with_mandatory
+    if rows:
+        report.metrics["pair_evidence_in_chapter"] = statuses["in_chapter"] / len(rows)
+    report.metrics["pairs_misrouted"] = statuses["misrouted"]
+    report.metrics["pairs_not_extracted"] = statuses["not_extracted"]
+    report.details["evidence_retention"] = rows
+
+
 def score_extraction(
     loaded: LoadedFixture,
     payload: JudgeInput,
     judgment: JudgeEvaluation,
     integrity_failures: list[str],
 ) -> StageReport:
-    """Aggregate validated extraction verdicts without lexical surrogate scoring."""
+    """Aggregate validated extraction verdicts without lexical surrogate scoring.
+
+    Evidence retention is computed even when the judgment is invalid, because it
+    does not depend on the judge.
+    """
     errors = validate_judgment(payload, judgment)
     report = StageReport(
         integrity_failures=integrity_failures,
         judgment=judgment,
         evaluation_errors=errors,
     )
+    retained = [unit for unit in payload.outputs if unit.id.startswith("retained/")]
+    score_evidence_retention(loaded, retained, report)
     if errors:
         return report
     thresholds = loaded.fixture.extraction.thresholds

@@ -422,6 +422,8 @@
   "import-unit-option-neutral-detail": "Lit les valeurs telles qu'elles sont écrites en {{unit}}.",
   "import-source-checks-cleared_one": "{{count}} décision de ligne a été effacée, car les valeurs de cette ligne ont changé.",
   "import-source-checks-cleared_other": "{{count}} décisions de lignes ont été effacées, car les valeurs de ces lignes ont changé.",
+  "import-reconciliation-confirmed-detail": "Les lignes importées totalisent {{imported}} tCO2e, mais le total que vous avez confirmé est de {{reported}} tCO2e ({{deviation}} % d'écart).",
+  "import-reconciliation-other-total": "Les lignes importées totalisent {{matched}} t, un autre total imprimé dans le document, et non les {{confirmed}} t que vous avez confirmées.",
   "import-unit-group-hint": "S'applique aux lignes sans unité imprimée",
   "import-unit-group-heading_one": "Page {{page}} : {{count}} ligne sans unité imprimée",
   "import-unit-group-heading_other": "Page {{page}} : {{count}} lignes sans unité imprimée",

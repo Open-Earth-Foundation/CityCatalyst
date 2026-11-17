@@ -425,6 +425,8 @@
   "import-unit-option-neutral-detail": "Lee los valores tal como están escritos en {{unit}}.",
   "import-source-checks-cleared_one": "Se borró {{count}} decisión de fila porque cambiaron los valores de esa fila.",
   "import-source-checks-cleared_other": "Se borraron {{count}} decisiones de filas porque cambiaron los valores de esas filas.",
+  "import-reconciliation-confirmed-detail": "Las filas importadas suman {{imported}} tCO2e, pero el total que usted confirmó es {{reported}} tCO2e ({{deviation}} % de diferencia).",
+  "import-reconciliation-other-total": "Las filas importadas suman {{matched}} t, otro total impreso en el documento, y no las {{confirmed}} t que usted confirmó.",
   "import-unit-group-hint": "Se aplica a las filas sin unidad impresa",
   "import-unit-group-heading_one": "Página {{page}}: {{count}} fila sin unidad impresa",
   "import-unit-group-heading_other": "Página {{page}}: {{count}} filas sin unidad impresa",

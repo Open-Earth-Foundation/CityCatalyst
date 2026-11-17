@@ -424,6 +424,8 @@
   "import-unit-option-neutral-detail": "Liest die Werte wie in {{unit}} angegeben.",
   "import-source-checks-cleared_one": "{{count}} Zeilenentscheidung wurde zurückgesetzt, weil sich die Werte dieser Zeile geändert haben.",
   "import-source-checks-cleared_other": "{{count}} Zeilenentscheidungen wurden zurückgesetzt, weil sich die Werte dieser Zeilen geändert haben.",
+  "import-reconciliation-confirmed-detail": "Die importierten Zeilen ergeben zusammen {{imported}} tCO2e, aber der von Ihnen bestätigte Gesamtwert beträgt {{reported}} tCO2e ({{deviation}} % Abweichung).",
+  "import-reconciliation-other-total": "Die importierten Zeilen ergeben zusammen {{matched}} t. Das ist ein anderer Gesamtwert aus dem Dokument, nicht die von Ihnen bestätigten {{confirmed}} t.",
   "import-unit-group-hint": "Gilt für Zeilen ohne gedruckte Einheit",
   "import-unit-group-heading_one": "Seite {{page}}: {{count}} Zeile ohne gedruckte Einheit",
   "import-unit-group-heading_other": "Seite {{page}}: {{count}} Zeilen ohne gedruckte Einheit",

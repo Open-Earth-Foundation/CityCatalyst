@@ -182,6 +182,7 @@ function validate(
     problems.push(`judge named unknown item_key "${itemKey}"`);
     itemKey = null;
     verdict = null;
+    modelStatus = "NOT_FOUND";
   }
   if (verdict !== null && !(VERDICTS as readonly string[]).includes(verdict)) {
     problems.push(`judge returned verdict "${verdict}" outside the list`);

@@ -151,6 +151,7 @@ describe("judgeField", () => {
     expect(result.verdict).toBeNull();
     expect(result.uncertain).toBe(true);
     expect(result.reason).toContain("Nope");
+    expect(result.modelStatus).toBe("NOT_FOUND");
   });
 
   it("missing value index is filled as unmatched and uncertain", async () => {

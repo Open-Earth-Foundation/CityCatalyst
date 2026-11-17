@@ -70,11 +70,11 @@ function withAdapterField(notes: string, adapterFieldId: string): string {
   return [notes, `adapter field ${adapterFieldId}`].filter(Boolean).join("; ");
 }
 
-/** Judgments cached before partial reasons and causes existed lack both. */
+/** Judgments cached before partial reasons and causes existed lack both; they stay undefined so the report can say "not recorded". */
 function explanationOf(judgment: Judgment) {
   return {
-    partialReason: judgment.partialReason ?? null,
-    cause: judgment.cause ?? null,
+    partialReason: judgment.partialReason,
+    cause: judgment.cause,
   };
 }
 

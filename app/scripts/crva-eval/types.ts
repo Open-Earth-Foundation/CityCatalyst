@@ -136,10 +136,10 @@ export interface ScoredRow {
   /** The judge's reason. */
   reason: string;
   uncertain: boolean;
-  /** From the judgment that gives this row its verdict. */
-  partialReason: PartialReason | null;
+  /** From the judgment that gives this row its verdict; undefined when the cached judgment predates the field. */
+  partialReason: PartialReason | null | undefined;
   /** From that judgment; rule-scored Omission rows of non-v0 fields get field_outside_v0. */
-  cause: ErrorCause | null;
+  cause: ErrorCause | null | undefined;
 }
 
 /** Adapter field ids whose gold answer key uses another id for the same requirement. */

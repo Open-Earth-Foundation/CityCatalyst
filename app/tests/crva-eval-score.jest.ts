@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { parse } from "csv-parse/sync";
+import { buildReport } from "../scripts/crva-eval/report";
 import type {
   CrvaDraftBundle,
   CrvaDraftValue,
@@ -329,6 +330,27 @@ describe("field aliases", () => {
       uncertain: true,
       reason: "field not judged",
     });
+  });
+});
+
+describe("scoreRun with an old cached judgment", () => {
+  it("leaves partial reason and cause undefined and the report says not recorded", () => {
+    const old = judgment({ verdict: "Partial" }) as Partial<Judgment>;
+    delete old.partialReason;
+    delete old.cause;
+    const rows = score([goldRow({})], [sourceValue("El Río")], {
+      "A1.2a": [old as Judgment],
+    });
+    expect(rows[0].partialReason).toBeUndefined();
+    expect(rows[0].cause).toBeUndefined();
+    expect(reviewCsv(rows)).toContain(",Partial,,,");
+    const text = buildReport({
+      city: "x",
+      rows,
+      gold: { pdfFileName: "x.pdf", pageCount: 1, rows: [], traps: [] },
+      stats: {} as never,
+    });
+    expect(text).toContain("| (not recorded) | 1 |");
   });
 });
 

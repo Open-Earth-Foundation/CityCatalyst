@@ -1,10 +1,10 @@
 /**
  * Scores one adapter run against the gold workbook.
  *
- *   npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-n.json> --city <slug> [--rejudge] [--seed 1285]
+ *   npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-n.json> --city <slug> [--rejudge] [--seed 1285] [--out <dir name>]
  *
  * Needs JUDGE_MODEL. Refuses a gold file whose page count differs from the
- * run's. Output goes to score-run-<n>/ next to the run file: scored.csv,
+ * run's. Output goes to score-run-<n>/ (or the plain directory name given by --out, e.g. score-run-1-b for a second judging) next to the run file: scored.csv,
  * scored.json, judge.jsonl, review.csv and report.md. Fields already in
  * judge.jsonl are reused; --rejudge renames it to judge.<timestamp>.jsonl first.
  */
@@ -144,13 +144,25 @@ function argValue(flag: string, fallback?: string): string {
   return value;
 }
 
-async function readLog(file: string): Promise<JudgeLogLine[] | null> {
+export async function readLog(file: string): Promise<JudgeLogLine[] | null> {
   try {
     return parseLog(await readFile(file, "utf8"));
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
     throw err;
   }
+}
+
+/** --out names a directory next to the run file, so it must be a plain name. */
+export function outDirName(
+  flag: string | undefined,
+  runNumber: string,
+): string {
+  if (flag === undefined) return `score-run-${runNumber}`;
+  if (!flag || flag === "." || flag === ".." || /[\\/]/.test(flag)) {
+    throw new Error(`--out must be a plain directory name, got "${flag}"`);
+  }
+  return flag;
 }
 
 async function main() {
@@ -171,6 +183,19 @@ async function main() {
   const runPath = argValue("--run");
   const city = argValue("--city");
   const rejudge = process.argv.includes("--rejudge");
+  const outIndex = process.argv.indexOf("--out");
+  const runNumber = path.basename(runPath).match(/run-(\d+)/)?.[1] ?? "1";
+  let outName: string;
+  try {
+    outName = outDirName(
+      outIndex >= 0 ? process.argv[outIndex + 1] : undefined,
+      runNumber,
+    );
+  } catch (err) {
+    console.error((err as Error).message);
+    process.exitCode = 1;
+    return;
+  }
 
   const run = JSON.parse(await readFile(runPath, "utf8")) as {
     stats: RunStats;
@@ -193,8 +218,7 @@ async function main() {
     return;
   }
   if (check.warning) console.warn(`Warning: ${check.warning}`);
-  const runNumber = path.basename(runPath).match(/run-(\d+)/)?.[1] ?? "1";
-  const outDir = path.join(path.dirname(runPath), `score-run-${runNumber}`);
+  const outDir = path.join(path.dirname(runPath), outName);
   await mkdir(outDir, { recursive: true });
   const logPath = path.join(outDir, "judge.jsonl");
 

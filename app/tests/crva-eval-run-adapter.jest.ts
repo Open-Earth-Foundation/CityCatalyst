@@ -6,6 +6,7 @@ import type { MistralOcrResult } from "@/backend/MistralOcrService";
 import { recordingClient } from "../scripts/crva-eval/llm-recorder";
 import {
   runOnce,
+  shouldStartRun,
   runsTableMarkdown,
   type RunStats,
 } from "../scripts/crva-eval/run-adapter";
@@ -199,5 +200,17 @@ describe("runsTableMarkdown", () => {
     const table = runsTableMarkdown([stats]);
     expect(table).toContain("1.2%");
     expect(table).toContain("Run 1");
+  });
+});
+
+describe("shouldStartRun", () => {
+  it("stops once the wanted runs completed", () => {
+    expect(shouldStartRun(3, 2, 0)).toBe(true);
+    expect(shouldStartRun(3, 3, 1)).toBe(false);
+  });
+
+  it("stops after 2 failed runs", () => {
+    expect(shouldStartRun(3, 0, 1)).toBe(true);
+    expect(shouldStartRun(3, 0, 2)).toBe(false);
   });
 });

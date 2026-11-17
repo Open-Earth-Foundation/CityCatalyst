@@ -198,6 +198,15 @@ export function runsTableMarkdown(stats: RunStats[]): string {
   return [header, divider, ...body].join("\n") + "\n";
 }
 
+/** Keeps going until enough runs completed, or the failure cap is reached. */
+export function shouldStartRun(
+  wanted: number,
+  completed: number,
+  failed: number,
+): boolean {
+  return completed < wanted && failed < MAX_EXTRA_FAILED_RUNS;
+}
+
 function argValue(flag: string, fallback?: string): string {
   const i = process.argv.indexOf(flag);
   const value = i >= 0 ? process.argv[i + 1] : fallback;
@@ -221,11 +230,7 @@ async function main() {
   let completed = 0;
   let failed = 0;
   // Failed runs are kept on disk, but only 2 extra failures are tolerated.
-  for (
-    let run = 1;
-    completed < runs && failed <= MAX_EXTRA_FAILED_RUNS;
-    run++
-  ) {
+  for (let run = 1; shouldStartRun(runs, completed, failed); run++) {
     const { bundle, warnings, stats } = await runOnce({
       pdf,
       fileName: path.basename(pdfPath),

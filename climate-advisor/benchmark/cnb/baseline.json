@@ -10,6 +10,6 @@
   "approval": {
     "reviewer": "Piotr Nowakowski",
     "approved_at": "2026-11-10",
-    "reference": "https://linear.app/openearth/issue/CC-1242/move-the-benchmark-outputs-into-mlflow"
+    "reference": "https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3430"
   }
 }

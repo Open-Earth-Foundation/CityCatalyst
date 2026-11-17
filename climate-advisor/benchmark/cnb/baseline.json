@@ -1,12 +1,13 @@
 {
   "status": "approved",
-  "run_id": "20261110-baseline-cc1242",
-  "report_sha256": "a2ebda04d70741e7e438a8e88f7efc327d4dcf79afe05947303be1117f4788fa",
-  "artifact_sha256": "054425d7a5a452564cf25a474c34c05c5700b9d99bcfb3b3e800e42c392fedf8",
+  "run_id": "20261117-baseline-cc1242",
+  "report_sha256": "22b67d5d186923013ea086276bb23d66fda9f59d9d7f403275313fc96faa6936",
+  "artifact_sha256": "c2198b1c1504a12e621a9b43d341f43c470e8a5acde1d010289f849e9e3a1d34",
   "fingerprints": {
-    "corpus": "86d0b6ffea5e3d22fd59ddf979d811606f26ff5cf5d3b5d0946aea3c7ebf4fb1",
-    "judge_policy": "ddc2bab71cde50f2cbd84730db847db9851c7897cdd5a5e1f9176508d70b6203"
+    "corpus": "1b78f7aeacc0bf8ee6e0f51ac2c2082148419e766ae1a06a9b2daf8919b1fdc5",
+    "judge_policy": "8a6ba053173b8d8b7eeb202cbb21e86dc45d51d9277ef974a03af709bb73f67b"
   },
+  "repeats": [],
   "approval": {
     "reviewer": "Piotr Nowakowski",
     "approved_at": "2026-11-17",

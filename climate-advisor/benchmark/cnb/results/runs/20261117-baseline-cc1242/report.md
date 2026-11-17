@@ -1,0 +1,1084 @@
+# CNB golden set: FAIL
+
+Analysis contract: `9607b2291fc51193c17f24a04e80ee1a190882cf6ce99c7a88bd0a93f4ffdb5a`.
+
+- source_reader: `openai/gpt-5.6-terra` (reasoning: medium)
+- source_synthesizer: `openai/gpt-5.6-terra` (reasoning: medium)
+- chapter_drafter: `openai/gpt-5.6-terra` (reasoning: medium)
+- support_checker: `openai/gpt-5.6-terra` (reasoning: medium)
+- chapter_validator: `openai/gpt-5.6-terra` (reasoning: medium)
+- edit_planner: `openai/gpt-6.1-sol` (reasoning: high)
+- judge: `openai/gpt-6.1-sol` (reasoning: high)
+- extraction judge prompt SHA-256: `540bf0e843e4b4d9dbe6c5a6cf1a5e8c63b52d5dfae1fddca58a8aa4d09d7fe3`
+- chapter_writing judge prompt SHA-256: `4acd3266a4500416edd6a5a4265bf532f42bcccc1c3a98e9fdc7481c10621299`
+- verification judge prompt SHA-256: `24ffb5eed8a3ec95550108a5361985e38325b82102c6f02dadfdf9c38295340f`
+- editing judge prompt SHA-256: `2a6a7a965f29fb9d6226f5a9d670fa16536472e3487b05482cd5a239488f2366`
+- Code `d6bbb50d1`; LLM config SHA-256 `c4cfce9245b31fa3b633b69424f2f6193996eba9451147797ce5c6ca7c9a2255`; uv.lock SHA-256 `19086c714c765c67078cf9ad1d3dcf554ff739395480531cdad27db936f3bbcd`; 28 configured prompts hashed in report.json.
+
+## Usage
+
+| Fixture | Stage | Time (s) | Requests | Input tokens | Output tokens | Reported cost (USD) | Cost coverage |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| harbor-point-heat-resilience | extraction | 154 | 4 | 16,922 | 15,337 | 0.20 | complete |
+| harbor-point-heat-resilience | chapter_writing | 330 | 13 | 88,695 | 26,124 | 0.44 | complete |
+| harbor-point-heat-resilience | verification | 207 | 38 | 177,462 | 21,486 | 0.58 | complete |
+| harbor-point-heat-resilience | editing | 255 | 35 | 185,689 | 13,067 | 0.31 | complete |
+| krakow-flood-drainage-plan | extraction | 539 | 5 | 140,338 | 59,679 | 0.99 | complete |
+| krakow-flood-drainage-plan | chapter_writing | 484 | 15 | 613,343 | 43,558 | 1.69 | complete |
+| krakow-flood-drainage-plan | verification | 108 | 44 | 366,738 | 14,130 | 0.93 | complete |
+| krakow-flood-drainage-plan | editing | 289 | 29 | 259,238 | 15,760 | 0.44 | complete |
+| richfield-flood-risk | extraction | 447 | 5 | 90,775 | 45,192 | 0.71 | complete |
+| richfield-flood-risk | chapter_writing | 366 | 17 | 464,962 | 25,770 | 1.33 | complete |
+| richfield-flood-risk | verification | 156 | 50 | 421,625 | 26,063 | 1.18 | complete |
+| richfield-flood-risk | editing | 406 | 36 | 312,447 | 23,125 | 0.56 | complete |
+
+Reported total: 1422 s wall time, 291 model requests, USD 9.35 (complete).
+
+## harbor-point-heat-resilience: FAIL
+Source `markdown` SHA-256 `7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a`.
+Ground truth approval: **approved**. 
+
+### extraction: FAIL
+Required facts: **6 fully covered · 0 partially covered · 1 missing · 0 contradicted**.
+- fact_evidence_retained: 1.00
+- pair_evidence_in_chapter: 0.86
+- pairs_misrouted: 1.00
+- pairs_not_extracted: 0.00
+- required_fact_coverage: 0.86
+- mandatory_pairs: 7.00
+- desirable_pairs: 5.00
+- desirable_pairs_covered: 5.00
+- desirable_fact_coverage: 1.00
+- claim_support_rate: 1.00
+- topic_coverage: 1.00
+- **Semantic:** required_fact_coverage 0.86 < 1.0
+- facts `plan-adoption::project_summary`: **covered** — The receiving chapter retains the adopting body and exact adoption date.
+- facts `population::climate_context`: **missing** — No quotation retained for climate_context states the population. Its presence in other chapters does not satisfy this pair.
+- facts `population::expected_results`: **covered** — The city and population are retained exactly in the receiving chapter.
+- facts `population::project_summary`: **covered** — The city and population are retained exactly in the receiving chapter.
+- facts `extreme-heat-days::climate_context`: **covered** — The temperature threshold, 2025 count, annual historical average, and baseline period all survive.
+- facts `flooded-intersections::climate_context`: **covered** — The number of intersections and the rainfall-event return period are retained.
+- facts `cool-corridors::project_components`: **covered** — The planned status, tree count, corridor count, and both neighbourhoods are preserved.
+- facts `green-stormwater-infrastructure::project_components`: **covered** — Both planned measures and their quantities and units are retained.
+- facts `programme-financing::financing`: **covered** — The total cost and external grant amount are retained, including that the grants are sought rather than secured.
+- facts `programme-financing::project_summary`: **covered** — The receiving chapter retains the total cost and the amount sought from external grants without implying grant commitment.
+- facts `cool-corridor-cost::financing`: **covered** — The estimate, currency, amount, planting scope, and three years of establishment watering are preserved.
+- facts `cooling-centres::project_components`: **covered** — The quotation retains the city's responsible office, planned designation, and count of 18 cooling centres.
+- topics `extreme-heat`: **covered** — The label identifies the expected extreme-heat risk topic.
+- topics `stormwater-flooding`: **covered** — The label conveys the expected stormwater and drainage-risk topic.
+- topics `tree-canopy`: **covered** — Together the labels capture urban canopy and cool-corridor measures.
+- topics `green-infrastructure`: **covered** — The label names the umbrella topic encompassing bioretention and permeable-surface measures.
+- topics `financing`: **covered** — The label captures programme costs and funding sources at the topic level.
+- claims `retained/0/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133`: **supported** — The source supports the fictional coastal setting, plan objectives, 2027–2032 period, adopting council, and adoption date. Planned reductions are not presented as achieved results.
+- claims `retained/1/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0`: **supported** — Both the heat comparison and the lowest-canopy ranking are preserved, including the correct assignment of 11 percent to Eastside and 13 percent to Millbrook.
+- claims `retained/2/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd`: **supported** — The flood-event scope and the underpass closure count, year, and cause match the source. The city is established by the other global quotations.
+- claims `retained/3/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4`: **supported** — The planting quantities, destinations, neighbourhoods, and canopy target and deadline are fully retained as planned measures and targets.
+- claims `retained/4/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9`: **supported** — Both construction measures and the combined design-capture scope match the source, including quantities, units, and the distinction between design intent and observed performance.
+- claims `retained/5/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480`: **supported** — The responsible office, planned count, facility types, and temperature condition for extended hours are preserved.
+- claims `retained/6/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492`: **supported** — The total, city capital contribution, and external grant request match the source. The quotation does not turn sought grants into secured funding.
+- claims `retained/7/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b`: **supported** — The publishing office, annual frequency, and all three monitoring indicators are preserved, including the monitored-storm qualification.
+- claims `retained/project_summary/0/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133`: **supported** — The plan's city, fictional coastal setting, objectives, implementation period, and council adoption details are supported without altered status.
+- claims `retained/project_summary/1/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b`: **supported** — The population and delivery relationship between the two offices match the source; the plan is identified in the same chapter.
+- claims `retained/project_summary/2/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492`: **supported** — All financing amounts, currency, the city capital-budget source, and the requested status of external grants are retained.
+- claims `retained/climate_context/0/harbor-point-heat-and-stormwater-resilience-plan/summary/block-61378150e133`: **supported** — The city description, planned reductions, time period, and adoption details are directly supported and establish the chapter's geographic scope.
+- claims `retained/climate_context/1/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-6a2ab61eddd0`: **supported** — The heat threshold and comparison periods, canopy ranking, and respective neighbourhood percentages all match the source.
+- claims `retained/climate_context/2/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331`: **supported** — The visit counts, years, and heat-related scope are exact. Other quotations in climate_context establish Harbor Point as the city concerned.
+- claims `retained/climate_context/3/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd`: **supported** — Both flooding claims retain their counts and material event, temporal, and causal qualifications. The chapter supplies the city context.
+- claims `retained/climate_context/4/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-10e3c2ae4b58`: **supported** — The quotation preserves the Eastside scope, 5-year design standard, and assessment of inadequacy for current rainfall.
+- claims `retained/project_components/0/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4`: **supported** — The planned planting scale, connections, neighbourhoods, and 2032 canopy target are intact. The retained component and partner passages make the local programme context clear.
+- claims `retained/project_components/1/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9`: **supported** — The construction quantities and combined design-capture claim are supported. The antecedent of 'these measures' is retained, and design intent is not overstated as demonstrated performance.
+- claims `retained/project_components/2/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480`: **supported** — The office, future designation, centre count and locations, and extended-hours temperature trigger are all preserved.
+- claims `retained/project_components/3/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09`: **supported** — All three partners and their distinct delivery, hosting, and resident co-design roles are faithfully retained.
+- claims `retained/expected_results/0/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b`: **supported** — The city's population and joint delivery arrangement match the source. The other retained passages identify the measures being delivered.
+- claims `retained/expected_results/1/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331`: **supported** — The historical health trend, counts, and years are preserved. Harbor Point is identified within the receiving chapter; the passage does not assert a future health outcome.
+- claims `retained/expected_results/2/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/block-73fb6e543bc4`: **supported** — All planting and corridor details and the shared canopy target and deadline match the source. Their future and target status remain explicit.
+- claims `retained/expected_results/3/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/block-bbaaec8ebcf9`: **supported** — The proposed infrastructure and schoolyard conversions and their joint design-capture scope are preserved without implying completed construction or measured performance.
+- claims `retained/expected_results/4/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480`: **supported** — The source directly supports the designation plan, responsible office, count, host facilities, and temperature-dependent extended hours.
+- claims `retained/expected_results/5/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b`: **supported** — Annual reporting responsibility and all listed indicators match the source. No unretained numerical outcome target is implied.
+- claims `retained/implementation/0/harbor-point-heat-and-stormwater-resilience-plan/summary/block-d33b993ec07b`: **supported** — The population and delivery leadership relationship are exact. The implementation quotations together identify the relevant city measures and responsibilities.
+- claims `retained/implementation/1/harbor-point-heat-and-stormwater-resilience-plan/measures/community-cooling-network/block-5dad4af92480`: **supported** — The implementing office, planned centre designation, number and facility types, and heat threshold are supported without qualification loss.
+- claims `retained/implementation/2/harbor-point-heat-and-stormwater-resilience-plan/monitoring/block-d963acb1232b`: **supported** — The annual report commitment and all three indicators, including their monitored-storm scope, are directly supported.
+- claims `retained/implementation/3/harbor-point-heat-and-stormwater-resilience-plan/governance/partners/block-ea9a848dba09`: **supported** — The three named organisations and their respective infrastructure delivery, schoolyard hosting, and resident co-design roles match the source.
+- claims `retained/financing/0/harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors/costs/block-a6228e491584`: **supported** — The estimate retains its currency, amount, planting scope, and three-year establishment-watering inclusion.
+- claims `retained/financing/1/harbor-point-heat-and-stormwater-resilience-plan/measures/green-stormwater-infrastructure/costs/block-948ede3c0dbf`: **supported** — The estimated amount and inclusion of design and construction supervision are preserved.
+- claims `retained/financing/2/harbor-point-heat-and-stormwater-resilience-plan/financing/block-d5fdb1ec2492`: **supported** — The programme total, city contribution and budget source, and external grant request are directly supported. Requested funding remains distinguished from a secured award.
+- claims `retained/financing/3/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c`: **supported** — The row preserves the USD 9.6 million cost and grant-seeking status. The retained table header supplies the currency and units.
+- claims `retained/financing/3/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c`: **supported** — The row preserves the USD 14.2 million cost and grant-seeking status, with units clear from the retained header.
+- claims `retained/financing/3/harbor-point-heat-and-stormwater-resilience-plan/financing/block-b9e06c938f0c`: **supported** — The row exactly retains the source's USD 2.7 million cost and city operating-budget funding status. The complete retained table supplies the units.
+
+### chapter_writing: FAIL
+Required facts: **12 fully covered · 0 partially covered · 0 missing · 0 contradicted**.
+- required_fact_coverage: 1.00
+- claim_support_rate: 1.00
+- chapters_satisfied_rate: 0.67
+- gap_recall: 0.67
+- flagged_gaps: 18.00
+- flagged_gap_validity: 0.89
+- transfer_rate: 1.00
+- **Semantic:** climate_context: partially_satisfied: The chapter accurately presents available hazards, observed changes, current baseline conditions and affected assets, and correctly requests hazard-specific exposed-population counts. However, its broad requests for documented baseline conditions are already answerable from the supplied current-condition evidence. They do not specify an additional future count
+- **Semantic:** expected_results: partially_satisfied: Available results, current indicator values, the canopy target and annual monitoring are included accurately. Missing flood and emergency-visit targets are flagged. Direct beneficiary numbers and beneficiary groups are requested, but the unavailable indirect beneficiary count is neither supplied nor explicitly requested.
+- **Semantic:** gap_recall 0.67 < 0.75
+- **Semantic:** gap/climate_context/without_project_heat_baseline: answerable_from_inputs: As worded, this broad request for documented baseline conditions is answerable from the supplied heat, canopy and health observations. It does not specify an additional future no-project scenario, year or measure. The separately requested exposed-population count is genuinely missing.
+- **Semantic:** gap/climate_context/without_project_flooding_baseline: answerable_from_inputs: The source documents current flooding conditions before the proposed measures, including an event-qualified intersection baseline. The question does not identify an additional future counterfactual scenario or other baseline measure that remains unavailable.
+- Transfer `population`: extraction **covered** → draft **covered** (transferred)
+- Transfer `extreme-heat-days`: extraction **covered** → draft **covered** (transferred)
+- Transfer `flooded-intersections`: extraction **covered** → draft **covered** (transferred)
+- Transfer `cool-corridors`: extraction **covered** → draft **covered** (transferred)
+- Transfer `green-stormwater-infrastructure`: extraction **covered** → draft **covered** (transferred)
+- Transfer `programme-financing`: extraction **covered** → draft **covered** (transferred)
+- Transfer `component-costs`: extraction **covered** → draft **covered** (transferred)
+- facts `funding-programme`: **covered** — The draft identifies the application as a GCF SAP proposal and spells out the funder's name.
+- facts `lead-agency`: **covered** — Both lead delivery entities and their joint role are preserved.
+- facts `delivery-period`: **covered** — The 2027–2032 delivery period is preserved.
+- facts `population`: **covered** — The city's population is reproduced without treating it as a beneficiary or exposed-population count.
+- facts `extreme-heat-days`: **covered** — The threshold, observed year, count, comparison period and annual average are preserved.
+- facts `flooded-intersections`: **covered** — The intersection count remains qualified by the 10-year rainfall event.
+- facts `cool-corridors`: **covered** — The tree count, corridor count and both neighbourhoods are preserved.
+- facts `green-stormwater-infrastructure`: **covered** — Both activities, quantities, units and the schoolyard conversion are preserved.
+- facts `canopy-target`: **covered** — In context, both neighbourhoods clearly refers to Eastside and Millbrook; the target and deadline are unchanged.
+- facts `programme-financing`: **covered** — Total cost, city capital contribution and the external grant funding sought are distinguished correctly. The external amount is not presented as secured or automatically as the GCF request.
+- facts `component-costs`: **covered** — The indicative-cost table supplies the USD-million values, the text retains establishment watering, and cooling-network funding is correctly attributed to the operating budget.
+- facts `partners`: **covered** — All three partners and their distinct roles are retained.
+- facts `monitoring`: **covered** — The reporting institution, annual frequency and all three indicators are preserved.
+- claims `chapter/project_summary`: **supported** — The project title and city match both the original inputs and the supplied material.
+- claims `chapter/project_summary`: **supported** — The stated objectives and implementation period faithfully reflect the plan in both evidence sets.
+- claims `chapter/project_summary`: **supported** — The population is directly stated in the original and supplied evidence.
+- claims `chapter/project_summary`: **supported** — Both evidence sets explicitly identify the joint delivery leadership.
+- claims `chapter/project_summary`: **supported** — All three delivery roles are directly supported, including by the full source supplied to every chapter.
+- claims `chapter/project_summary`: **supported** — The amounts and their distinct cost, contribution and funding-sought statuses match both evidence sets.
+- claims `chapter/climate_context`: **supported** — The observed heat statistic and historical comparison are reproduced exactly.
+- claims `chapter/climate_context`: **supported** — The counts, years and direction of change match the original and supplied evidence.
+- claims `chapter/climate_context`: **supported** — The neighbourhood-to-percentage mapping and lowest-canopy qualification are preserved.
+- claims `chapter/climate_context`: **supported** — The population is explicitly available in the original source and the shared full source.
+- claims `chapter/climate_context`: **supported** — Both flood observations preserve their measures, event qualification, year and cause; writing six in words does not change the value.
+- claims `chapter/climate_context`: **supported** — The design standard, location and current inadequacy are directly supported.
+- claims `chapter/climate_context`: **supported** — This is a faithful qualitative identification of the affected assets, not an expansion to additional infrastructure.
+- claims `chapter/project_components`: **supported** — The quantified activity, connections and locations match both evidence sets.
+- claims `chapter/project_components`: **supported** — The target and deadline are explicit in both evidence sets, and the preceding sentence identifies the two neighbourhoods.
+- claims `chapter/project_components`: **supported** — The estimate and its watering inclusion are supported; the amount is not misrepresented as secured funding.
+- claims `chapter/project_components`: **supported** — The co-design role and resident participation are explicit in both evidence sets.
+- claims `chapter/project_components`: **supported** — All output quantities and the combined design-capture specification are directly stated, with no derived totals.
+- claims `chapter/project_components`: **supported** — The estimated amount and both inclusions are faithfully preserved.
+- claims `chapter/project_components`: **supported** — Both component-delivery roles are explicitly supported.
+- claims `chapter/project_components`: **supported** — The responsible office, count, facility types and temperature-triggered hours match both evidence sets.
+- claims `chapter/project_components`: **supported** — The original and supplied financing tables explicitly give this USD-million cost and funding status.
+- claims `chapter/expected_results`: **supported** — The adaptation objectives and period are directly supported.
+- claims `chapter/expected_results`: **supported** — The outputs, locations and target are preserved. Describing activities proposed for financing does not claim GCF approval or secured funds.
+- claims `chapter/expected_results`: **supported** — The proposed outputs and design performance are directly supported; they are not presented as already delivered.
+- claims `chapter/expected_results`: **supported** — The network activity, count, facility types and operating trigger match both evidence sets.
+- claims `chapter/expected_results`: **supported** — The table correctly pairs the supplied current canopy levels with the explicit target for each neighbourhood.
+- claims `chapter/expected_results`: **supported** — The supplied current flood condition is used as baseline information while retaining its event qualification, rather than generalizing it to every monitored storm.
+- claims `chapter/expected_results`: **supported** — The latest supplied observed visit count is faithfully identified as baseline information, with its year retained.
+- claims `chapter/expected_results`: **supported** — The institution, annual reporting commitment and three indicators are directly supported.
+- claims `chapter/implementation`: **supported** — The joint delivery leadership matches both evidence sets.
+- claims `chapter/implementation`: **supported** — The cooling-centre delivery commitment and all material specifications are explicitly supported.
+- claims `chapter/implementation`: **supported** — The infrastructure delivery role is directly supported.
+- claims `chapter/implementation`: **supported** — Both partner roles, including resident involvement in route design, are supported.
+- claims `chapter/implementation`: **supported** — Council adoption and its exact date are explicitly supplied. This does not assert GCF approval.
+- claims `chapter/implementation`: **supported** — The reporting arrangement is reproduced faithfully from both evidence sets.
+- claims `chapter/financing`: **supported** — The explicit programme cost and implementation period refer to the same plan; no new numerical value is derived.
+- claims `chapter/financing`: **supported** — The draft accurately attributes the estimates and states their documented inclusions without inventing a costing methodology.
+- claims `chapter/financing`: **supported** — The table heading establishes USD million, and the amount and grant-seeking status match the source and supplied table.
+- claims `chapter/financing`: **supported** — The USD-million amount and funding-sought status are explicitly supported.
+- claims `chapter/financing`: **supported** — Both evidence sets explicitly support the USD-million amount and operating-budget funding.
+- claims `chapter/financing`: **supported** — The total is explicitly provided in the inputs, rather than newly calculated from the component rows.
+- claims `chapter/financing`: **supported** — The contribution amount, future commitment and capital-budget source are unchanged.
+- claims `chapter/financing`: **supported** — The funding status and USD-million amount are stated in both evidence sets.
+- claims `chapter/financing`: **supported** — The external grant requirement is correctly described as sought. Adjacent markers explicitly distinguish it from the still-unknown GCF request and instrument.
+- chapters `project_summary`: **satisfied** — The summary supplies the title, city, duration, executing entities and programme financing. It explicitly flags the unavailable country, accredited entity and GCF-specific amount rather than inventing them.
+- chapters `climate_context`: **partially_satisfied** — The chapter accurately presents available hazards, observed changes, current baseline conditions and affected assets, and correctly requests hazard-specific exposed-population counts. However, its broad requests for documented baseline conditions are already answerable from the supplied current-condition evidence. They do not specify an additional future counterfactual scenario.
+- chapters `project_components`: **satisfied** — All three components, quantified activities, available locations, design performance and delivery roles are included. Exact bioretention locations, schoolyard sites and cooling-centre sites are genuinely absent and appropriately flagged.
+- chapters `expected_results`: **partially_satisfied** — Available results, current indicator values, the canopy target and annual monitoring are included accurately. Missing flood and emergency-visit targets are flagged. Direct beneficiary numbers and beneficiary groups are requested, but the unavailable indirect beneficiary count is neither supplied nor explicitly requested.
+- chapters `implementation`: **satisfied** — The chapter includes all available implementing and partner roles, council adoption, reporting responsibility, frequency and indicators. It properly flags the accredited entity and detailed implementation-governance arrangement, neither of which is supplied.
+- chapters `financing`: **satisfied** — The chapter gives the explicit programme and component costs, estimate inclusions, city capital contribution and operating-budget funding. It preserves funding-sought status and separately flags the unavailable GCF-specific amount and instrument.
+- gaps `accredited-entity`: **flagged** — An actionable marker and matching structured gap request the accredited entity in an allowed chapter.
+- gaps `country`: **partially_flagged** — The country is explicitly requested in the correct chapter, but the national designated authority is not requested.
+- gaps `gcf-request`: **flagged** — Both GCF-specific fields are explicitly requested. The external USD 18.6 million grant requirement is not substituted for them.
+- gaps `beneficiaries`: **partially_flagged** — The direct beneficiary count is requested in the correct chapter, but the indirect beneficiary count is not. Asking for beneficiary groups does not request an indirect count.
+- gaps `indicator-targets`: **flagged** — Both genuinely unavailable targets are explicitly flagged. Contrary to the expectation's premise, the original source does supply current flood and emergency-visit values; using those with their qualifications as baseline information is appropriate and does not require inventing or requesting missing values.
+- flagged_gaps `gap/project_summary/harbor_point_country`: **valid** — No input identifies Harbor Point's country. The question clearly requests the missing location field.
+- flagged_gaps `gap/project_summary/gcf_accredited_entity`: **valid** — The source names city delivery entities but no GCF accredited entity. The question identifies the proposal and the missing role.
+- flagged_gaps `gap/project_summary/gcf_funding_request_amount`: **valid** — The external grant requirement is supplied, but no amount is allocated specifically to a GCF request. The question correctly distinguishes the two.
+- flagged_gaps `gap/climate_context/heat_exposed_population`: **valid** — The total population and heat observations do not establish how many residents are exposed to extreme heat. The requested hazard-specific count is absent.
+- flagged_gaps `gap/climate_context/without_project_heat_baseline`: **answerable_from_inputs** — As worded, this broad request for documented baseline conditions is answerable from the supplied heat, canopy and health observations. It does not specify an additional future no-project scenario, year or measure. The separately requested exposed-population count is genuinely missing.
+- flagged_gaps `gap/climate_context/flood_exposed_population`: **valid** — Intersection flooding and drainage inadequacy do not establish a count of exposed residents. No input supplies that count.
+- flagged_gaps `gap/climate_context/without_project_flooding_baseline`: **answerable_from_inputs** — The source documents current flooding conditions before the proposed measures, including an event-qualified intersection baseline. The question does not identify an additional future counterfactual scenario or other baseline measure that remains unavailable.
+- flagged_gaps `gap/project_components/bioretention_cell_locations`: **valid** — The source gives the cell count but no cell sites or locations. The question is specific and actionable.
+- flagged_gaps `gap/project_components/schoolyard_conversion_sites`: **valid** — The area and hosting school district are supplied, but no participating schools or schoolyard sites are named.
+- flagged_gaps `gap/project_components/cooling_centre_locations`: **valid** — Libraries and recreation centres are identified as facility types, but the locations of the 18 centres are not supplied.
+- flagged_gaps `gap/expected_results/direct_beneficiary_count`: **valid** — No input quantifies direct beneficiaries. The city's population cannot be substituted for the measures' direct reach.
+- flagged_gaps `gap/expected_results/beneficiary_groups`: **valid** — The source identifies intervention neighbourhoods and connected facilities, but does not define the intended beneficiary groups across the three measures. The question requests that missing specification without inventing categories.
+- flagged_gaps `gap/expected_results/flooded_intersections_target`: **valid** — The source gives a current event-qualified flood condition and the monitoring indicator, but no target for flooded intersections.
+- flagged_gaps `gap/expected_results/heat_ed_visits_target`: **valid** — Historical emergency-visit counts are supplied, but no future target is given. The question identifies the missing indicator target clearly.
+- flagged_gaps `gap/implementation/accredited_entity`: **valid** — Neither the original inputs nor another chapter identifies a GCF accredited entity. City delivery leadership is a different role.
+- flagged_gaps `gap/implementation/implementation_governance_arrangement`: **valid** — Council adoption, delivery leadership and partner roles are supplied, but detailed oversight, decision-making and coordination arrangements are not.
+- flagged_gaps `gap/financing/gcf_funding_request`: **valid** — No input specifies the GCF share of the external grant requirement. The question is clear and preserves that distinction.
+- flagged_gaps `gap/financing/gcf_financial_instrument`: **valid** — External grant funding is sought, but no GCF-specific instrument is confirmed. Grant is presented only as a suggested answer, not a confirmed financing commitment.
+
+### verification: FAIL
+- defect_recall: 0.83
+- strict_defect_recall: 0.83
+- model_findings: 15.00
+- duplicate_findings: 7.00
+- false_alarms: 3.00
+- false_alarm_rate: 0.38
+- open_gap_findings: 14.00
+- clean_model_findings: 5.00
+- clean_false_alarms: 3.00
+- clean_false_alarm_rate: 1.00
+- **Semantic:** false_alarm_rate 0.38 > 0.25
+- **Semantic:** clean_false_alarm_rate 1.00 > 0.25
+- defects `gsi-cost-conflict`: **detected** — Findings 10 and 27 explicitly identify the conflicting green stormwater estimates. Finding 11 also identifies the resulting component-total discrepancy caused by the altered USD 12.4 million estimate.
+- defects `grant-secured`: **detected** — The finding identifies the same grant amount as secured in the summary but still sought in financing, and requests a consistent funding status.
+- defects `component-total-mismatch`: **detected** — Finding 24 explicitly identifies the incorrect sum. Findings 9, 25 and 26 additionally pinpoint the altered USD 11.6 million table entry against the unchanged USD 9.6 million estimate, enabling correction of the amount responsible.
+- defects `accredited-entity-gap-inconsistency`: **detected** — Both findings explicitly identify the inconsistency between the named accredited entity in implementation and the unresolved entity question in the summary.
+- defects `country-unflagged`: **missed** — No finding identifies the required country as absent and unflagged in the project summary.
+- defects `canopy-target-before-start`: **detected** — Finding 8 identifies the target preceding project implementation. Finding 15 also identifies its conflict with the 2032 results targets.
+- findings `finding/4`: **false_alarm** — USD 18.6 million is the total external grant requirement, not a confirmed GCF request. The summary's question already acknowledges that total and appropriately asks for the GCF amount and whether it covers the full requirement. Financing does not answer that question.
+- findings `finding/19`: **false_alarm** — The implementation chapter already states that progress reports will be annual. Its open question asks for the wider monitoring protocol, including data-collection methods and frequency, which are not established by an annual publication schedule. There is no missing-versus-stated contradiction.
+- findings `finding/28`: **false_alarm** — The financing question itself already identifies USD 2.7 million in operating-budget funding for the community cooling network. It seeks the unresolved allocation of the city contributions and whether the operating funding is included within the USD 7.9 million contribution. The component chapter does not resolve those issues.
+
+### editing: PASS
+- case_pass_rate: 1.00
+- expected_change_rate: 1.00
+- preservation_rate: 1.00
+- unsupported_changes: 0.00
+- collateral_edits: 0.00
+- case `fill-accredited-entity`
+  - expected_changes `summary-entity`: **applied** — The summary replaces the accredited-entity question with the user-supplied entity.
+  - expected_changes `implementation-entity`: **applied** — The implementation chapter also replaces its accredited-entity question with the supplied entity.
+  - preserved `lead-agency`: **preserved** — The delivery leadership remains unchanged.
+  - preserved `grant-sought`: **preserved** — The external grant funding is still sought, not described as secured.
+  - changes `change/fill-accredited-entity/0`: **supported** — The user supplied the entity and authorized filling every corresponding gap.
+  - changes `change/fill-accredited-entity/1`: **supported** — Naming the same entity in the implementation chapter is an authorized gap fill.
+- case `rename-programme`
+  - expected_changes `renamed`: **applied** — Every occurrence of the old title outside protected marker questions is renamed across all six chapters.
+  - preserved `markers-kept`: **preserved** — All 16 marker questions remain verbatim across the six chapters. Their retained old title is required by the marker-protection contract.
+  - preserved `total-cost`: **preserved** — The programme cost remains USD 26.5 million in both chapters.
+  - changes `change/rename-programme/0`: **supported** — The summary title change implements the requested rename without altering protected markers.
+  - changes `change/rename-programme/1`: **supported** — The climate chapter uses the requested new title in body text.
+  - changes `change/rename-programme/2`: **supported** — The components chapter is included in the authorized document-wide rename.
+  - changes `change/rename-programme/3`: **supported** — The expected-results chapter uses the requested new title while leaving its markers unchanged.
+  - changes `change/rename-programme/4`: **supported** — Renaming the project in the adoption sentence is authorized; the adoption date and other facts are unchanged.
+  - changes `change/rename-programme/5`: **supported** — The financing chapter's body-text title is renamed as requested without changing financial facts or marker questions.
+- case `shorten-climate-rationale`
+  - expected_changes `shorter`: **applied** — The chapter is noticeably shorter through compressed wording and removal of repetition, while retaining its figures and exposure question.
+  - preserved `heat-days`: **preserved** — The observed count, temperature threshold, year, baseline period and annual average are retained.
+  - preserved `ed-visits`: **preserved** — Both visit counts and their years remain unchanged.
+  - preserved `intersections`: **preserved** — The 37-intersection exposure and 10-year rainfall-event condition are retained.
+  - preserved `exposure-marker`: **preserved** — The complete exposed-population question remains unchanged.
+  - preserved `delivery-period`: **preserved** — The chapter still states the 2027–2032 period for addressing both risks.
+  - preserved `canopy-baseline`: **preserved** — The lowest-canopy comparison and each neighbourhood's percentage survive.
+  - preserved `population`: **preserved** — The population remains 182,400.
+  - preserved `cooling-threshold`: **preserved** — The cooling-facility temperature threshold is retained.
+  - changes `change/shorten-climate-rationale/0`: **supported** — The introduction is faithfully compressed. The period is retained, and the intervention types remain in the final paragraph.
+  - changes `change/shorten-climate-rationale/1`: **supported** — The heat and canopy passages are shortened without losing figures, dates, thresholds or the neighbourhood-to-percentage mapping.
+  - changes `change/shorten-climate-rationale/2`: **supported** — The shorter wording preserves the intersection count, rainfall-event standard, underpass closure count, year, cause and drainage limitation.
+  - changes `change/shorten-climate-rationale/3`: **supported** — This removes repeated canopy and drainage descriptions already retained elsewhere in the chapter. Population, corridor locations and flood-exposure figures remain.
+  - changes `change/shorten-climate-rationale/4`: **supported** — The closing rationale is condensed without adding a new outcome claim or losing the intervention types and cooling threshold.
+- case `contact-without-value`
+  - preserved `unchanged`: **preserved** — The pipeline asked for the missing name and email without applying any edits. The reference draft remains unchanged and no contact was invented.
+- case `add-country-from-earlier-message`
+  - expected_changes `country-stated`: **applied** — The summary's country question is replaced with the country supplied in the earlier user message.
+  - preserved `accredited-entity-open`: **preserved** — Both accredited-entity questions remain open, as requested; the implementation chapter was not edited.
+  - preserved `adoption-and-population`: **preserved** — The adopting authority, adoption date and population remain unchanged.
+  - preserved `gcf-request-open`: **preserved** — The GCF request amount remains an open question in the summary and unedited financing chapter.
+  - changes `change/add-country-from-earlier-message/0`: **supported** — The earlier user message supplies the country, and the current instruction authorizes inserting it now.
+- case `delete-partner-roles-sentence`
+  - expected_changes `partner-sentence-removed`: **applied** — The partner-role sentence has been deleted; the retained leadership sentence is now followed directly by the accredited-entity marker.
+  - preserved `lead-sentence`: **preserved** — The preceding leadership sentence is retained verbatim.
+  - preserved `entity-marker`: **preserved** — The accredited-entity question is unchanged.
+  - preserved `scope-paragraph`: **preserved** — All scope quantities, locations and intervention types remain unchanged.
+  - preserved `roles-elsewhere`: **preserved** — Neither chapter was edited, so all three partners' detailed delivery roles remain stated outside the summary.
+  - changes `change/delete-partner-roles-sentence/0`: **supported** — The replacement deletes exactly the requested sentence and leaves the preceding leadership sentence and other content intact.
+
+## krakow-flood-drainage-plan: FAIL
+Source `pdf` SHA-256 `524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28`.
+Ground truth approval: **approved**. 
+
+### extraction: FAIL
+Required facts: **9 fully covered · 0 partially covered · 1 missing · 0 contradicted**.
+- fact_evidence_retained: 1.00
+- pair_evidence_in_chapter: 0.90
+- pairs_misrouted: 1.00
+- pairs_not_extracted: 0.00
+- required_fact_coverage: 0.90
+- mandatory_pairs: 10.00
+- desirable_pairs: 10.00
+- desirable_pairs_covered: 8.00
+- desirable_fact_coverage: 0.80
+- claim_support_rate: 0.97
+- topic_coverage: 0.50
+- **Semantic:** required_fact_coverage 0.90 < 1.0
+- **Semantic:** retained/6/page-5: 1 claim(s) not fully supported: partially_supported by the source, lacks sufficient context: The core objective is authentic, but the global selection drops its defining intense-rainfall and river-flood conditions. Those qualifications are not restored by the other global quotations.
+- **Semantic:** topic_coverage 0.50 < 0.6
+- facts `plan-horizon::informacje_o_projekcie`: **covered** — The receiving chapter retains the full 2023–2035 planning horizon.
+- facts `plan-horizon::zadania`: **covered** — The tasks chapter explicitly retains the plan's 2023–2035 horizon.
+- facts `coordinator::wnioskodawca`: **covered** — Both the responsible City Office department and KEGW's principal implementation role are preserved, including cooperation with other municipal units.
+- facts `update-of-2018-plan::uzasadnienie`: **covered** — The passage identifies the previous plan, its resolution and adoption date, and explicitly describes the present document as its update.
+- facts `protection-standard::uzasadnienie`: **missing** — The 0.1%/1,000-year protection standard is retained globally, but not in uzasadnienie.
+- facts `three-threat-levels::uzasadnienie`: **covered** — The main Vistula threat and the complete causal chain linking internal streams, closed flood gates, absent pumping capacity and flooding behind levees are retained.
+- facts `specific-objectives::informacje_o_projekcie`: **covered** — All four objectives survive, including the rainfall and river-flood conditions defining objective III.
+- facts `specific-objectives::uzasadnienie`: **missing** — This chapter retains strategic alignment and the diagnosis, but not the plan's four specific objectives. Their presence in informacje_o_projekcie does not satisfy this pair.
+- facts `high-water-pumping::zadania`: **covered** — The retained PLN table preserves the planned pumping stations, amount, KEGW responsibility and 2035 deadline.
+- facts `small-retention-programme::zadania`: **covered** — The programme, PLN 30 million allocation, responsible unit JP and 2023–2030 period are all retained.
+- facts `small-retention-programme::budzet`: **covered** — The budget chapter retains the complete programme row, including its amount, implementer abbreviation and period.
+- facts `blue-green-infrastructure::zadania`: **covered** — The infrastructure types, small and micro retention, delayed runoff, PLN 6 million, KEGW and 2035 horizon are preserved.
+- facts `blue-green-infrastructure::budzet`: **covered** — The budget chapter retains the full action, financial allocation, implementation responsibility and horizon.
+- facts `monitoring-indicator::wskazniki`: **covered** — The indicator's municipal competence scope, zero baseline and all four targets are explicit.
+- facts `financing-risk::ryzyka`: **covered** — Insufficient drainage-system financing is explicitly classified as a serious risk.
+- facts `total-cost-city::budzet`: **covered** — The estimate, amount, 2023–2035 period and Table 1 scope are retained together.
+- facts `total-cost-with-pzrp::budzet`: **covered** — The larger total is explicitly tied to inclusion of PZRP actions not implemented by the municipality.
+- facts `cost-is-estimate::budzet`: **covered** — Both the estimated character and the required investment-preparation verification survive.
+- facts `cost-is-estimate::ryzyka`: **missing** — The risks chapter does not retain the qualification about estimated costs and their verification. The budget quotation cannot satisfy this chapter-specific pair.
+- facts `financing-sources::budzet`: **covered** — The city-budget source and conditional availability of external funding are preserved.
+- topics `flood-risk`: **covered** — Together these labels convey the overarching flood-threat and local-inundation subject; a topic label need not enumerate each watercourse.
+- topics `urban-drainage`: **covered** — The labels identify the municipal drainage system and its sewer components.
+- topics `rainwater-retention`: **covered** — The label expresses the overarching retention topic, including the retention function served by blue-green infrastructure.
+- topics `crisis-management`: **missing** — No returned label identifies crisis management, evacuation or public flood education. Flood-control infrastructure is not equivalent.
+- topics `costs-financing`: **missing** — No topic label conveys implementation costs or financing.
+- topics `monitoring-evaluation`: **missing** — No returned topic label identifies plan monitoring, reporting or evaluation.
+- claims `retained/0/page-1`: **supported** — The planning period is reproduced accurately. The other global quotations establish the Kraków flood-protection and drainage context.
+- claims `retained/1/page-1`: **supported** — The adaptation purpose and listed hazards are preserved as a proposed direction, not as completed measures. Identical wording in informacje_o_projekcie and uzasadnienie is equally supported.
+- claims `retained/2/page-2`: **supported** — The shortened sentence accurately identifies the principal threat without claiming the Vistula is the only threat.
+- claims `retained/3/page-2`: **supported** — The probability, return-period description and normative 'should' are intact; the quotation does not assert that this protection already exists.
+- claims `retained/4/page-4`: **supported** — This accurately retains the three principal functional aims. It neither claims completeness nor converts aims into achieved results.
+- claims `retained/5/page-5`: **supported** — Objective I is retained accurately, with its subject supplied by the other global plan quotations.
+- claims `retained/6/page-5`: **partially_supported** — The core objective is authentic, but the global selection drops its defining intense-rainfall and river-flood conditions. Those qualifications are not restored by the other global quotations.
+- claims `retained/7/page-5`: **supported** — The named action and its geographical and technical scope are accurate. The noun phrase does not assert that the system has already been built.
+- claims `retained/informacje_o_projekcie/0/page-1`: **supported** — The period and the distinct coordination and implementation roles match the source. The identical passage in wnioskodawca and zadania preserves the same claims.
+- claims `retained/informacje_o_projekcie/1/page-1`: **supported** — The strategy title, goal numbers, sustainable-environment objective and infrastructure action retain their source relationships. The duplicate in uzasadnienie has the same support.
+- claims `retained/informacje_o_projekcie/1/page-1`: **supported** — The security objective and its crisis-management action are reproduced as written, including the source's wording. The same claim is duplicated accurately in uzasadnienie.
+- claims `retained/informacje_o_projekcie/2/page-2`: **supported** — The predecessor plan, resolution, adoption date and need for updating are preserved. Identical occurrences in uzasadnienie and wskazniki are also faithful.
+- claims `retained/informacje_o_projekcie/2/page-2`: **supported** — Institutional cooperation, evaluation, verification of assumptions, deviation analysis and corrective action are retained as update purposes. The duplicates in uzasadnienie and wskazniki retain the same meaning.
+- claims `retained/informacje_o_projekcie/2/page-2`: **supported** — The adaptation purpose and reference to the separate adaptation plan through 2030 are accurate. Nothing confuses that reference date with the drainage plan's horizon; the duplicate occurrences are equally supported.
+- claims `retained/informacje_o_projekcie/3/page-4`: **supported** — The complete general purpose includes flood protection, retention, drainage, residents' safety and comfort, and reduced material losses.
+- claims `retained/informacje_o_projekcie/3/page-4`: **supported** — The three means of pursuing the general aim are preserved, with the remaining list items retained in the next quotation in the same chapter.
+- claims `retained/informacje_o_projekcie/4/page-5`: **supported** — Natural and technical retention and flood-information policy accurately complete the preceding chapter quotation.
+- claims `retained/informacje_o_projekcie/4/page-5`: **supported** — All four objectives and their material scope are retained without changing intentions into achieved outcomes.
+- claims `retained/wnioskodawca/1/page-10`: **supported** — Multi-actor implementation, use of existing institutions and the designated coordinating department match the source. The identical wskazniki quotation is also supported.
+- claims `retained/wnioskodawca/1/page-10`: **supported** — All listed coordinator functions and cooperation levels survive. The same list retained in wskazniki has identical support.
+- claims `retained/wnioskodawca/2/page-11`: **supported** — The horizontal coordination approach remains linked to communication and cooperation among the subsequently listed entities.
+- claims `retained/wnioskodawca/2/page-11`: **supported** — The six participating departments and their acronym expansions are reproduced correctly.
+- claims `retained/wnioskodawca/2/page-11`: **supported** — The remaining six entities and acronym expansions match the original stakeholder list.
+- claims `retained/uzasadnienie/2/page-2`: **supported** — The main threat, upstream mountain and foothill catchment, and importance of upstream retention and future measures retain their causal relationship.
+- claims `retained/uzasadnienie/2/page-2`: **supported** — The second threat tier retains the external catchments, outlets within Kraków and Vistula-backwater mechanism.
+- claims `retained/uzasadnienie/2/page-2`: **supported** — The lack of pumping stations is scoped to these waters, not generalized to all Kraków pumping infrastructure; the flooding mechanism is preserved.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — The dependency of urban drainage on receiving-water capacity is accurately retained.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — The high-water scenario, gate closures and resulting deterioration of combined- and storm-sewer outflow are retained together.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — All three determinants—network development, technical condition and adaptation to land-use changes—survive.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — The retained diagnosis accurately identifies climate adaptation needs and the capacity, silting and condition causes of local flooding.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — The conditional outflow blockage and peripheral-area retention/network deficiencies retain their material scope.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — Both sides of the Swoszowice requirement survive: preventing contaminated infiltration while maintaining clean groundwater recharge.
+- claims `retained/uzasadnienie/3/page-3`: **supported** — The landslide, growing impermeable-area and drought concerns accurately complete the retained problem list.
+- claims `retained/zadania/1/page-5`: **supported** — The manager-identification action, current-funds treatment and responsible units are faithful. The parent PZRP row preserves municipal-investor scope. These claims are duplicated identically in budzet.
+- claims `retained/zadania/1/page-5`: **supported** — Action scope, identifier, PLN 9 million, joint WMK/KEGW responsibility and 2035 horizon are accurate. The asterisk explanation is retained later in the same chapter and in budzet, where this row is duplicated.
+- claims `retained/zadania/1/page-5`: **supported** — Both forecasting and pump-monitoring actions retain their identifiers, PLN 6 million/2 million allocations, distinct implementing entities and 2027 deadlines. Identical budget rows have the same support.
+- claims `retained/zadania/1/page-5`: **supported** — The planned high-water pumping action, PZRP identifier, PLN 82.4 million, KEGW and 2035 horizon match the source. The corresponding budget row and retained footnote preserve the same meaning.
+- claims `retained/zadania/1/page-5`: **supported** — Both Dłubnia wall actions retain bank, chainages, identifiers, amounts and deadlines. Crucially, the retained chapter-level double-asterisk note qualifies the KEGW assignment as disputed. The duplicate budget selection also retains that note.
+- claims `retained/zadania/1/page-5`: **supported** — The Dłubnia and Baranówka actions retain their right-bank locations, chainages, identifiers, PLN 1.9 million/1.8 million and 2027 dates. Both receiving chapters retain the qualification requesting a change of implementer.
+- claims `retained/zadania/2/page-6`: **supported** — Monitoring, cooperation on PZRP updates, justification of additions and commenting on the draft retain their relationships, GK/OC responsibility and current-funds status. The identical budget block is equally supported.
+- claims `retained/zadania/2/page-6`: **supported** — The illustrative project locations, cofinancing relationship, PLN 2 million, joint entities and 2035 deadline are retained accurately in both table copies.
+- claims `retained/zadania/2/page-6`: **supported** — The parent action resolves the short place-name rows. Partial PZRP inclusion, identifier, Wolica reconstruction, all four allocations and 2030 deadlines match the source. Empty cells are not filled with invented assignments; the budget duplicate is identical.
+- claims `retained/zadania/2/page-6`: **supported** — All three plans, the receiving spatial-planning instruments, BP responsibility and current-funds treatment are preserved in both chapters.
+- claims `retained/zadania/2/page-6`: **supported** — The river-valley/floodplain planning framework and flood-impact-reducing provisions retain their scope and BP/OC assignment. The budget duplicate has the same meaning.
+- claims `retained/zadania/2/page-6`: **supported** — Flood-hazard areas, the regeneration programmes, PI, current funds and 2023–2030 period are unchanged in both retained copies.
+- claims `retained/zadania/2/page-6`: **supported** — Both decision types, flood-risk-area limitation, intended effect and AU/OC assignment are preserved. The identical budget row is also supported.
+- claims `retained/zadania/2/page-6`: **supported** — The relief channel, PLN 60 million, joint implementers and 2028 deadline are complete in both retained table copies.
+- claims `retained/zadania/2/page-6`: **supported** — Reconstruction, deferred cost estimation after agreement stage 3, joint entities and 2035 implementation remain accurate. The next retained page supplies the agreement's PGW WP/end-2023 continuation in both chapters.
+- claims `retained/zadania/3/page-7`: **supported** — The full watercourse list, concept-dependent estimation, joint responsibility and 2035 horizon match the original, including in budzet.
+- claims `retained/zadania/3/page-7`: **supported** — Continuous updating of the operational flood plan and updating/improvement of floodplain evacuation plans are accurately assigned to OC within current funds in both copies.
+- claims `retained/zadania/3/page-7`: **supported** — Training participants, institutional setting, readiness/cooperation purpose, current funding and OC responsibility are intact in zadania and budzet.
+- claims `retained/zadania/3/page-7`: **supported** — Public flood education and continuous updating of post-flood loss documentation/estimation procedures preserve their intended roles and OC/current-funds assignments in both copies.
+- claims `retained/zadania/3/page-7`: **supported** — The separate pipe and ditch inventories, modelling-detail requirement, PLN 6.5 million/1 million, KEGW and 2035 horizon are retained in both chapters.
+- claims `retained/zadania/3/page-7`: **supported** — The management-system hierarchy, three modelling tools, problem-catchment examples, distinct amounts and 2035/2028 dates retain their source relationships in both copies.
+- claims `retained/zadania/3/page-7`: **supported** — Blue-green infrastructure guidance for rainwater/snowmelt and analysis of stormwater financing are accurately retained as KEGW actions within current funds, also in budzet.
+- claims `retained/zadania/3/page-7`: **supported** — Routine maintenance of both piped drainage and ditches remains assigned to KEGW and current funds. The same claims are retained in budzet.
+- claims `retained/zadania/3/page-7`: **supported** — The three action categories, cross-references, KEGW versus ZDMK assignments and 2035 horizon are accurate. Unestimated expenditure is not converted to zero. Both chapters retain the same rows.
+- claims `retained/zadania/3/page-7`: **supported** — The Kabel estate reconstruction, PLN 18.1 million, KEGW and 2028 deadline are unchanged in both retained copies.
+- claims `retained/zadania/4/page-8`: **supported** — Both geographic scopes, PLN 48.4 million/2.75 million, KEGW and different deadlines survive. The second action retains its landslide purpose, partial PZRP inclusion and identifier. The budget duplicate is equally faithful.
+- claims `retained/zadania/4/page-8`: **supported** — The two distinct programmes/areas, precise allocations, joint versus sole responsibility and 2035 deadlines match the source in both chapters.
+- claims `retained/zadania/4/page-8`: **supported** — The non-exhaustive nine-estate scope, concept-based investment status, PLN 364.8 million, KEGW and 2035 are accurate in both table copies.
+- claims `retained/zadania/4/page-8`: **supported** — The two area-specific concepts retain their non-exhaustive locality lists, distinct PLN 118.3 million/189.1 million allocations, KEGW and 2035 horizon in both chapters.
+- claims `retained/zadania/4/page-8`: **supported** — The named concept area, PLN 177.1 million, KEGW and 2035 are preserved identically in zadania and budzet.
+- claims `retained/zadania/4/page-8`: **supported** — The ditch locations and WPF status, Wrobela/Bugaj concept and PZRP identifier, PLN 7.5 million/54.3 million, KEGW and 2030 dates match the source. Both retained copies include the asterisk explanation.
+- claims `retained/zadania/4/page-8`: **supported** — This remains preparation of an options concept, not construction. The full catchment/locality scope, PZRP status and identifier, PLN 1.5 million, KEGW and 2024 deadline are faithfully duplicated in both chapters.
+- claims `retained/zadania/4/page-8`: **supported** — Rainwater education and local-retention requirements in both decision types retain their different responsible units, runoff/sealing rationale and current-funds treatment in both copies.
+- claims `retained/zadania/5/page-9`: **supported** — Municipal-investment retention and oversight of retention implementation remain distinct, with correct AU and KEGW/PINB assignments and current funding in both chapters.
+- claims `retained/zadania/5/page-9`: **supported** — The small-retention programme retains PLN 30 million, JP and 2023–2030. The separate green-space retention action retains current/investment funds and joint ZZM/KEGW responsibility. Acronyms are preserved rather than replaced with different entities; budzet is identical.
+- claims `retained/zadania/5/page-9`: **supported** — The sustainable-rainwater-management grouping, both park projects, PLN 507,000/2,540,000 and respective periods match the source. The ZZM entry and following empty implementer cell are preserved as written in both chapters.
+- claims `retained/zadania/5/page-9`: **supported** — The approximate PLN 400,000 and conditional 2024–2030 timing remain explicitly dependent on budget allocation, with no secured WPF funds. Neither copy presents this as fully financed.
+- claims `retained/zadania/5/page-9`: **supported** — The full blue/blue-green infrastructure scope and separate stormwater pretreatment action retain PLN 6 million/12 million, KEGW and 2035 in both retained copies.
+- claims `retained/zadania/5/page-9`: **supported** — The PLN total is accurately tied to the retained table. The retained footnote in both chapters excludes current-funded and not-yet-costed actions, preventing interpretation as the cost of every need.
+- claims `retained/zadania/5/page-9`: **supported** — The source's explanation of changed names, timing and allocations is fully retained, including the regulation and the alternative causes of updated information or expanded work. It qualifies the starred rows in both copies.
+- claims `retained/zadania/5/page-9`: **supported** — The requested—not completed—implementer correction and both exclusions from the total remain explicit and connect to the retained marked rows in zadania and budzet.
+- claims `retained/wskazniki/1/page-9`: **supported** — Indicator type, completed-task unit, municipal competence scope, baseline, direction and targets are all faithful. The targets are not described as results already achieved.
+- claims `retained/wskazniki/3/page-11`: **supported** — Review, need-based updating, monitoring's information/correction role and the coordinator's monitoring responsibility match the source. The identical ryzyka passage retains the same meaning.
+- claims `retained/wskazniki/3/page-11`: **supported** — The next retained quotation in the same chapter completes the sentence with annual implementation reports. The page break therefore creates no clarity or qualification loss. The same two-part retention occurs in ryzyka.
+- claims `retained/wskazniki/4/page-12`: **supported** — The preceding retained quotation identifies who prepares annual reports. The coordinator's separate report retains all three action statuses and reporting-period scope. This is also supported across the corresponding ryzyka quotations.
+- claims `retained/wskazniki/5/page-12`: **supported** — Evaluation is accurately framed as testing both output production and contribution to objectives, not as confirming success in advance. The duplicate in ryzyka is faithful.
+- claims `retained/wskazniki/5/page-12`: **supported** — The annual frequency, plan-duration scope, monitoring evidence and STRADOM result indicators are accurately retained in both wskazniki and ryzyka.
+- claims `retained/wskazniki/5/page-12`: **supported** — The evaluation functions and maximum five-year interval between updates are preserved. Need-based updating does not conflict with the minimum frequency. The ryzyka duplicate is equally supported.
+- claims `retained/budzet/0/page-4`: **supported** — The inventory requirement retains both pipes and ditches and the modelling-detail purpose. The stormwater-system subject is resolvable from this passage and the other budget quotations despite omission of the earlier formal definition of 'System'.
+- claims `retained/budzet/0/page-4`: **supported** — The management-system prerequisite retains all three model types and the technical concept's adaptation to new operating conditions.
+- claims `retained/budzet/0/page-4`: **supported** — Coordination, network-development planning and needs-adequate maintenance/investment financing are preserved as requirements, not as guarantees that funds are already secured.
+- claims `retained/budzet/0/page-4`: **supported** — The link to preliminary external-funding requirements and both flood and drought benefits remains intact. The referred-to conditions are retained immediately before it.
+- claims `retained/budzet/6/page-11`: **supported** — The precise amount is retained as an estimate for 2023–2035 and Table 1, rather than as an exhaustive or fixed final cost.
+- claims `retained/budzet/6/page-11`: **supported** — The larger total retains its explicit inclusion of non-municipal PZRP actions; the preceding retained sentence supplies the base total.
+- claims `retained/budzet/6/page-11`: **supported** — Both the verification requirement and exclusion of current-funded departmental/unit actions are retained, materially qualifying the nearby totals.
+- claims `retained/budzet/6/page-11`: **supported** — The preliminary assessment, greater-than-PLN-4-billion lower bound and reason involving currently uncosted needs are all retained. Its broader scope explains why it exceeds the two earlier totals.
+- claims `retained/budzet/7/page-11`: **supported** — The funding sources match the original, with external funding expressly conditional rather than secured.
+- claims `retained/budzet/7/page-11`: **supported** — The responsible directors and both required financial-planning instruments are retained without implying that all actions have already been entered or financed.
+- claims `retained/ryzyka/0/page-9`: **supported** — The financing shortfall is accurately presented as an identified serious risk to the municipal drainage system.
+- claims `retained/ryzyka/1/page-10`: **supported** — PZRP implementation delays retain their illustrative financing/documentation/approval causes and serious-risk classification.
+- claims `retained/ryzyka/1/page-10`: **supported** — Unresolved water/facility status and incorrect implementer designation, plus omission of important investments from PZRP, retain their distinct serious-risk meanings.
+- claims `retained/ryzyka/1/page-10`: **supported** — The property-title/legal-status problem retains its scope to land containing piped drainage and ditches and its serious classification.
+- claims `retained/ryzyka/1/page-10`: **supported** — The external-financing eligibility risk, cited legislation, stated amendment need and municipal-retention example remain intact. It does not imply the amendment has occurred.
+- claims `retained/ryzyka/1/page-10`: **supported** — Both unfinished inventory and hydrodynamic modelling are retained as completion needs with moderate, not serious, risk.
+- claims `retained/ryzyka/1/page-10`: **supported** — The prolonged transfer of assets and duties to Wody Polskie retains its low-risk classification.
+- claims `retained/ryzyka/1/page-10`: **supported** — The two risk-assessment dimensions—impact and probability—are preserved without adding an unsupported scoring method.
+- claims `retained/ryzyka/1/page-10`: **supported** — The planned responses correctly map mitigation/prevention to risks 1–6 and monitoring to risks 7–8. All numbered antecedents are retained within ryzyka, including risk 1 in the previous quotation.
+
+### chapter_writing: FAIL
+Required facts: **7 fully covered · 3 partially covered · 2 missing · 0 contradicted**.
+- required_fact_coverage: 0.58
+- claim_support_rate: 0.86
+- chapters_satisfied_rate: 0.57
+- gap_recall: 0.80
+- flagged_gaps: 33.00
+- flagged_gap_validity: 0.97
+- transfer_rate: 0.64
+- **Semantic:** required_fact_coverage 0.58 < 0.7
+- **Semantic:** chapter/budzet: 1 claim(s) not fully supported: partially_supported by the source, partially_supported by the drafter input: The figure and estimated status are correct for Table 1. The unqualified reference to the entire Plan overstates completeness: both evidence sets exclude current-budget activities and identify additional uncosted needs.
+- **Semantic:** wnioskodawca: partially_satisfied: Plan implementers and coordination are well grounded, and project-specific partnership/lead roles are honestly left open. However, the known municipal applicant is unnecessarily treated as missing, and the contact request covers only a name, not contact details.
+- **Semantic:** zadania: partially_satisfied: It correctly distinguishes Plan tasks from an unselected project and flags task selection, scope, responsibility, and dates. However, the available retention programme is omitted, and the blue/blue-green task is stripped of its small/micro-retention detail and deadline. The Plan task context is therefore incomplete.
+- **Semantic:** budzet: partially_satisfied: All unavailable project budget and financing fields are explicitly flagged, and estimated Plan costs are not presented as grant requests or secured money. Nevertheless, the chapter omits investment-stage cost verification, exclusions from the totals, the preliminary needs estimate exceeding PLN 4 billion, and the available retention allocations. The phrase 'całego Plan
+- **Semantic:** gap/wnioskodawca/project_applicant_legal_name: answerable_from_inputs: The authoritative application city is Kraków, and the source provides its municipal legal designation. The applicant should be identified as Gmina Miejska Kraków rather than left entirely blank.
+- Transfer `coordinator`: extraction **covered** → draft **covered** (transferred)
+- Transfer `plan-horizon`: extraction **covered** → draft **covered** (transferred)
+- Transfer `three-threat-levels`: extraction **covered** → draft **covered** (transferred)
+- Transfer `specific-objectives`: extraction **covered** → draft **covered** (transferred)
+- Transfer `small-retention-programme`: extraction **covered** → draft **missing** (lost_in_drafting)
+- Transfer `blue-green-infrastructure`: extraction **covered** → draft **partially_covered** (lost_in_drafting)
+- Transfer `total-cost-city`: extraction **covered** → draft **partially_covered** (lost_in_drafting)
+- Transfer `cost-is-estimate`: extraction **covered** → draft **partially_covered** (lost_in_drafting)
+- Transfer `financing-sources`: extraction **covered** → draft **covered** (transferred)
+- Transfer `financing-risk`: extraction **covered** → draft **covered** (transferred)
+- Transfer `monitoring-indicator`: extraction **covered** → draft **covered** (transferred)
+- facts `funding-programme`: **partially_covered** — The call identifier is preserved, but the draft never explicitly identifies FEnIKS 2021–2027 or the action's urban climate-adaptation focus.
+- facts `applicant-city`: **missing** — The applicant is not identified. The applicant chapter requests confirmation instead of naming Kraków/Gmina Miejska Kraków.
+- facts `coordinator`: **covered** — Both institutional roles are accurately preserved as roles in implementing the Plan.
+- facts `plan-horizon`: **covered** — The Plan horizon is explicit and is not misrepresented as the selected project's implementation period.
+- facts `three-threat-levels`: **covered** — The Vistula's primary role and the mechanism causing flooding behind closed flood gates without pumping are preserved.
+- facts `specific-objectives`: **covered** — All four objectives and the material conditions attached to the local-flooding objective are present.
+- facts `small-retention-programme`: **missing** — The Kraków Small Rainwater Retention Programme, its PLN 30,000,000 allocation, and its 2023–2030 period are omitted.
+- facts `blue-green-infrastructure`: **partially_covered** — The infrastructure category and a general KEGW implementation role appear, but the PLN 6,000,000 estimate, 2035 deadline, and small/micro-retention scope are missing.
+- facts `total-cost-city`: **partially_covered** — The amount and estimated status are preserved, but calling it the cost of the entire Plan without the Table 1 limitation obscures the source's exclusions and uncosted needs.
+- facts `cost-is-estimate`: **partially_covered** — Estimated status is explicit, but the requirement to verify costs during investment preparation is omitted.
+- facts `financing-sources`: **covered** — City financing and the conditional availability of external funds are faithfully retained.
+- facts `financing-risk`: **covered** — The financing risk and its serious classification are explicit.
+- facts `monitoring-indicator`: **covered** — The indicator's type, municipal scope, baseline, direction, and four targets are preserved without deriving a new total.
+- claims `chapter/informacje_o_projekcie`: **supported** — Both the original and supplied text support this summary of the Plan's adaptation rationale.
+- claims `chapter/informacje_o_projekcie`: **supported** — The pronoun clearly refers to the Plan, whose general objective is accurately summarized.
+- claims `chapter/informacje_o_projekcie`: **supported** — This is a supported high-level summary of objectives III and IV, not a claim that these are the only objectives.
+- claims `chapter/informacje_o_projekcie`: **supported** — Both components are explicitly listed in the original and supplied Plan.
+- claims `chapter/informacje_o_projekcie`: **supported** — The drainage problems and their geographic qualifier are accurately summarized from evidence available to this chapter.
+- claims `chapter/wnioskodawca`: **supported** — KEGW's role is reproduced accurately and remains attached to the Plan.
+- claims `chapter/wnioskodawca`: **supported** — The designated coordination role is explicit in both evidence sets; this does not claim formal approval of the application.
+- claims `chapter/wnioskodawca`: **supported** — The coordination mechanism and every named example are supplied by the Plan.
+- claims `chapter/wnioskodawca`: **supported** — The distinction is warranted: the inputs assign Plan roles but do not select project-specific implementing arrangements.
+- claims `chapter/uzasadnienie`: **supported** — The principal river, catchment character, and upstream location match both evidence sets.
+- claims `chapter/uzasadnienie`: **supported** — Both additional threat categories are explicitly identified in the Plan.
+- claims `chapter/uzasadnienie`: **supported** — The causal mechanism and its restriction to the relevant waters are faithfully retained.
+- claims `chapter/uzasadnienie`: **supported** — The trend and all stated land-use mechanisms are directly supported.
+- claims `chapter/uzasadnienie`: **supported** — The climate-related aggravating factor is accurately stated.
+- claims `chapter/uzasadnienie`: **supported** — The source describes continuing protection deficiencies despite completed and ongoing measures.
+- claims `chapter/uzasadnienie`: **supported** — Every factor in this combined summary is explicitly provided.
+- claims `chapter/uzasadnienie`: **supported** — The scenario and both sewer-system types match the evidence.
+- claims `chapter/uzasadnienie`: **supported** — These first two examples of the Plan's listed problems are directly supported.
+- claims `chapter/uzasadnienie`: **supported** — The remaining examples in the non-exhaustive list accurately reflect the Plan.
+- claims `chapter/uzasadnienie`: **supported** — The general objective and intended benefits are stated as Plan aims rather than achieved results.
+- claims `chapter/uzasadnienie`: **supported** — The planned intervention categories are accurately attributed to the Plan.
+- claims `chapter/uzasadnienie`: **supported** — All four objectives are faithfully reproduced.
+- claims `chapter/uzasadnienie`: **supported** — The strategy, objective identifiers, titles, and associated actions match the source, including its wording on crisis management.
+- claims `chapter/uzasadnienie`: **supported** — The link to the city's adaptation plan and its 2030 horizon is explicit in both evidence sets.
+- claims `chapter/zadania`: **supported** — The Plan horizon and the purposes of these intervention categories are supported.
+- claims `chapter/zadania`: **supported** — Each of these example actions is explicitly listed in Table 1.
+- claims `chapter/zadania`: **supported** — The action categories are supported, although their available costs and deadlines are not reproduced here.
+- claims `chapter/zadania`: **supported** — The qualitative assignment is consistent with the cited task rows and the Plan's stated main implementer; it does not introduce a derived numeric share.
+- claims `chapter/zadania`: **supported** — This correctly limits the evidentiary reach of the Plan's institutional assignments.
+- claims `chapter/zadania`: **supported** — The period is copied semantically without treating it as project dates.
+- claims `chapter/zadania`: **supported** — Both named actions have the stated deadline.
+- claims `chapter/zadania`: **supported** — The dates belong to Plan tasks; no input selects those tasks or their dates for this application.
+- claims `chapter/wskazniki`: **supported** — The indicator's type, counted quantity, and municipal-competence restriction are preserved.
+- claims `chapter/wskazniki`: **supported** — All values retain their original meanings and objective associations.
+- claims `chapter/wskazniki`: **supported** — The Plan-level indicator does not establish indicators for an unselected project scope.
+- claims `chapter/budzet`: **supported** — The text states a necessary financing condition, not that the required money has been secured.
+- claims `chapter/budzet`: **supported** — This accurately reports the Plan's preliminary funding conditions without claiming call eligibility or approval.
+- claims `chapter/budzet`: **partially_supported** — The figure and estimated status are correct for Table 1. The unqualified reference to the entire Plan overstates completeness: both evidence sets exclude current-budget activities and identify additional uncosted needs.
+- claims `chapter/budzet`: **supported** — The broader combined estimate is explicitly supplied rather than newly calculated, and the nonmunicipal implementation qualifier survives.
+- claims `chapter/budzet`: **supported** — The draft correctly distinguishes estimated Plan expenditure from an application budget or funding request.
+- claims `chapter/budzet`: **supported** — The conditional wording for external funding is preserved.
+- claims `chapter/budzet`: **supported** — The responsibility and both financial planning instruments are accurately identified.
+- claims `chapter/budzet`: **supported** — General Plan financing does not establish a project-specific financing package; the limitation is justified.
+- claims `chapter/ryzyka`: **supported** — The Plan contains a system-level risk assessment, but the inputs do not establish a risk register for a selected project.
+- claims `chapter/ryzyka`: **supported** — The risk, severity, and planned response all match the Plan.
+- claims `chapter/ryzyka`: **supported** — The delay risk, example causes, classification, and response are supported.
+- claims `chapter/ryzyka`: **supported** — The row preserves the two institutional/legal issues listed together in the Plan and their common severity and response.
+- claims `chapter/ryzyka`: **supported** — The row accurately reports the omission risk and the Plan's prescribed response.
+- claims `chapter/ryzyka`: **supported** — The land-rights risk, serious rating, and response are accurately summarized.
+- claims `chapter/ryzyka`: **supported** — The row gives the supported high-level risk and its classification without inventing a determination of project eligibility.
+- claims `chapter/ryzyka`: **supported** — The incomplete technical work, moderate rating, and monitoring response all match.
+- claims `chapter/ryzyka`: **supported** — The institutional process, low rating, and monitoring response are supported.
+- claims `chapter/ryzyka`: **supported** — The methodology is accurately attributed to the Plan, not asserted as a completed project-specific assessment.
+- claims `chapter/ryzyka`: **supported** — The necessary maintenance and investment funding condition is supported, without claiming funding security.
+- claims `chapter/ryzyka`: **supported** — This accurately reports the Plan's financing approach and its conditional external component.
+- claims `chapter/ryzyka`: **supported** — The limitation is appropriate: Plan-level financing principles do not establish post-completion project maintenance arrangements.
+- claims `chapter/ryzyka`: **supported** — The stated review rule is directly supported. The separate minimum five-year update rule is omitted, not explicitly denied.
+- claims `chapter/ryzyka`: **supported** — The monitoring responsibility, reporting actors, and annual frequency are explicit in both evidence sets.
+- claims `chapter/ryzyka`: **supported** — The coordinator's reporting duty and the three action statuses match the Plan.
+- claims `chapter/ryzyka`: **supported** — The annual evaluation rule and its information sources are accurately preserved.
+- claims `chapter/ryzyka`: **supported** — The evidence describes monitoring and evaluation of the municipal Plan, not confirmed arrangements for this application.
+- chapters `informacje_o_projekcie`: **satisfied** — It provides the available Plan-level purpose and scope context and explicitly requests the unselected project's official title, dates, objective, scope, location, and alignment. It appropriately avoids substituting the city-wide Plan for a defined application project.
+- chapters `wnioskodawca`: **partially_satisfied** — Plan implementers and coordination are well grounded, and project-specific partnership/lead roles are honestly left open. However, the known municipal applicant is unnecessarily treated as missing, and the contact request covers only a name, not contact details.
+- chapters `uzasadnienie`: **satisfied** — The chapter substantively explains flood and drainage mechanisms, worsening pressures, system deficiencies, all four objectives, and municipal strategic links. It correctly flags the unavailable project-specific problem and action alignment rather than asserting them.
+- chapters `zadania`: **partially_satisfied** — It correctly distinguishes Plan tasks from an unselected project and flags task selection, scope, responsibility, and dates. However, the available retention programme is omitted, and the blue/blue-green task is stripped of its small/micro-retention detail and deadline. The Plan task context is therefore incomplete.
+- chapters `wskazniki`: **satisfied** — The available Plan output indicator is fully reported. Project product and result indicators, including baselines and targets, are appropriately requested because no project scope or corresponding indicator values are supplied.
+- chapters `budzet`: **partially_satisfied** — All unavailable project budget and financing fields are explicitly flagged, and estimated Plan costs are not presented as grant requests or secured money. Nevertheless, the chapter omits investment-stage cost verification, exclusions from the totals, the preliminary needs estimate exceeding PLN 4 billion, and the available retention allocations. The phrase 'całego Planu' also obscures the limited 
+- chapters `ryzyka`: **satisfied** — The chapter reproduces all identified Plan risks, ratings, response categories, and assessment method. It carefully distinguishes Plan monitoring and financing from unconfirmed project arrangements and requests the missing project risk register and post-completion maintenance, financing, durability period, and monitoring arrangements.
+- gaps `project-scope`: **flagged** — The draft explicitly requests selection of project tasks and distinguishes them from the broader municipal Plan.
+- gaps `contact-person`: **partially_flagged** — The contact person's name is requested in the correct chapter, but telephone/email or other contact details are not requested.
+- gaps `requested-grant`: **flagged** — Both eligible expenditure and the requested grant are explicitly left for completion, without reusing Plan costs as application amounts.
+- gaps `own-contribution`: **flagged** — The applicant's project-specific contribution amount is requested in the budget chapter.
+- gaps `result-indicators`: **flagged** — The missing result indicator and both values are explicitly requested; the Plan's task-count indicator is not relabeled as a project result.
+- gaps `project-dates`: **flagged** — Project start and end dates are requested in an allowed chapter and remain distinct from the Plan horizon.
+- gaps `durability`: **flagged** — The draft requests maintenance responsibility and financing, together with durability period and monitoring, rather than treating general Plan financing as a durability guarantee.
+- flagged_gaps `gap/informacje_o_projekcie/project_official_title`: **valid** — The run has a descriptive name, but no input confirms the official title of the application project. The request is specific and actionable.
+- flagged_gaps `gap/informacje_o_projekcie/project_implementation_period`: **valid** — The inputs give the Plan horizon and dates for individual Plan tasks, not start and end dates for a selected application project.
+- flagged_gaps `gap/informacje_o_projekcie/project_specific_objective`: **valid** — The Plan's objectives are known, but the specific objective of the as-yet-unselected application scope is not supplied.
+- flagged_gaps `gap/informacje_o_projekcie/project_physical_scope`: **valid** — No input selects the physical scope to be submitted to this call; the municipal task catalogue is not a project selection.
+- flagged_gaps `gap/informacje_o_projekcie/project_location`: **valid** — Kraków is known, but the locations within the city for the unselected project scope are not established. In the scope section, the request reasonably seeks those project implementation locations.
+- flagged_gaps `gap/informacje_o_projekcie/project_plan_alignment`: **valid** — The Plan's directions are supplied, but demonstrating a link to this particular project requires a selected scope that no input provides.
+- flagged_gaps `gap/wnioskodawca/project_applicant_legal_name`: **answerable_from_inputs** — The authoritative application city is Kraków, and the source provides its municipal legal designation. The applicant should be identified as Gmina Miejska Kraków rather than left entirely blank.
+- flagged_gaps `gap/wnioskodawca/project_lead_implementing_entity`: **valid** — KEGW is the Plan's main municipal implementer, but no input confirms the lead unit for a selected project. The suggested answer is not presented as a confirmed appointment.
+- flagged_gaps `gap/wnioskodawca/project_partner_decision`: **valid** — Plan stakeholders and cooperating bodies do not establish whether this application will have formal project partners.
+- flagged_gaps `gap/wnioskodawca/project_contact_person_name`: **valid** — No input names a project contact person. The request for a name is clear, although it does not also request contact details.
+- flagged_gaps `gap/uzasadnienie/project_problem_to_be_addressed`: **valid** — City-wide flood and drainage problems are documented, but no input identifies which specific problem the unselected project will directly address.
+- flagged_gaps `gap/uzasadnienie/project_plan_action_alignment`: **valid** — The Plan provides potential actions, but the particular action corresponding to this application cannot be identified without project selection.
+- flagged_gaps `gap/zadania/project_task_list`: **valid** — The inputs contain a municipal programme of tasks, not an agreed list of tasks for this funding application.
+- flagged_gaps `gap/zadania/project_task_scopes`: **valid** — Detailed scopes for the tasks selected into the application are absent because the project task list itself is not established.
+- flagged_gaps `gap/zadania/project_task_implementing_units`: **valid** — The Plan assigns units to its own activities, but no input confirms the project task selection and corresponding project responsibilities.
+- flagged_gaps `gap/zadania/project_implementation_period`: **valid** — Neither the Plan horizon nor individual Plan deadlines supply the selected project's start and end dates.
+- flagged_gaps `gap/zadania/project_task_schedule`: **valid** — A project-specific task schedule with start and completion dates is not supplied by the broader Plan timetable.
+- flagged_gaps `gap/wskazniki/project_product_indicator_name`: **valid** — The Plan's task-count indicator is available, but no input designates the output indicator for a selected application project.
+- flagged_gaps `gap/wskazniki/project_product_indicator_baseline`: **valid** — The Plan baseline of zero belongs to its own task-count measure and cannot automatically be assigned to an unspecified project output indicator.
+- flagged_gaps `gap/wskazniki/project_product_indicator_target`: **valid** — The four Plan targets are not targets for the unselected project scope.
+- flagged_gaps `gap/wskazniki/project_result_indicator_name`: **valid** — No input identifies a project result indicator. Mention of STRADOM result indicators does not supply an indicator for this application.
+- flagged_gaps `gap/wskazniki/project_result_indicator_baseline`: **valid** — No project result baseline is supplied, and the Plan output baseline is a different measure.
+- flagged_gaps `gap/wskazniki/project_result_indicator_target`: **valid** — No project result target is provided. Existing catchment areas and Plan task counts are not proposed project result targets.
+- flagged_gaps `gap/budzet/project_total_cost`: **valid** — The source estimates Plan and task costs, but the application scope and its total cost have not been selected or supplied.
+- flagged_gaps `gap/budzet/project_eligible_cost`: **valid** — No input establishes eligible expenditure for this application; Plan cost estimates do not determine eligibility.
+- flagged_gaps `gap/budzet/requested_grant_amount`: **valid** — No requested co-financing amount is supplied. The question correctly distinguishes the grant request from estimated investment costs.
+- flagged_gaps `gap/budzet/project_own_contribution`: **valid** — No project-specific own-contribution amount or share is supplied by the city's general financing principles.
+- flagged_gaps `gap/budzet/other_project_funding_sources`: **valid** — The Plan allows external financing, but no input confirms an additional source in this project's financing package.
+- flagged_gaps `gap/ryzyka/project_specific_risk_register`: **valid** — The Plan risk register is available and reproduced, but no selected project scope, location, or delivery model exists from which to confirm its individual register.
+- flagged_gaps `gap/ryzyka/post_completion_maintenance_entity`: **valid** — Plan implementation roles do not specify who will operate and maintain the results of an unselected project after completion.
+- flagged_gaps `gap/ryzyka/post_completion_maintenance_funding_source`: **valid** — General city-budget and possible external financing of Plan implementation does not establish post-completion maintenance financing for this project.
+- flagged_gaps `gap/ryzyka/project_durability_period`: **valid** — No supplied call conditions or other inputs specify the required project durability period.
+- flagged_gaps `gap/ryzyka/post_completion_monitoring_method`: **valid** — Annual Plan monitoring and evaluation are described, but no input establishes how this project's results will be monitored after its completion.
+
+### verification: PASS
+- defect_recall: 0.83
+- strict_defect_recall: 0.67
+- model_findings: 11.00
+- duplicate_findings: 6.00
+- false_alarms: 0.00
+- false_alarm_rate: 0.00
+- open_gap_findings: 16.00
+- clean_model_findings: 0.00
+- clean_false_alarms: 0.00
+- clean_false_alarm_rate: 0.00
+- defects `plan-horizon-conflict`: **detected** — The finding identifies the conflicting Plan horizons and locates the erroneous 2023–2030 statement. Comparing it with the tasks chapter rather than the budget chapter still makes the defect actionable.
+- defects `financing-sources-conflict`: **detected** — Both findings explicitly identify the contradictory statements about municipal-budget participation and recommend aligning the financing model.
+- defects `schedule-gap-inconsistency`: **detected** — The findings identify the fixed 2026–2028 period alongside unresolved date questions in project information, the schedule table, and the risk chapter. They provide actionable instructions to confirm the period and reconcile the statements and gaps.
+- defects `contact-unflagged`: **detected** — The finding directly identifies the missing required contact information and cites the empty contact-person section.
+- defects `indicator-direction`: **detected** — The finding identifies the completed-task indicator, its zero baseline, and the impossible decreasing direction.
+- defects `implementer-conflict`: **missed** — No finding identifies the tasks chapter's attribution of drainage inventory and sewer modernisation to ZZM or its discrepancy with KEGW's implementing role.
+
+### editing: FAIL
+- case_pass_rate: 0.67
+- expected_change_rate: 0.86
+- preservation_rate: 1.00
+- unsupported_changes: 0.00
+- collateral_edits: 0.00
+- **Semantic:** fill-contact: expected edit, got clarification
+- **Semantic:** shorten-rationale: edited length ratio {'uzasadnienie': 0.819} outside the requested band
+- **Semantic:** fill-contact/contact-stated: not_applied: No edit was made. The applicant chapter still contains the contact-information marker rather than Anna Kowalska's supplied name, unit, telephone number and email. Asking for her position did not incorporate the information already supplied.
+- case `fill-contact`
+  - expected_changes `contact-stated`: **not_applied** — No edit was made. The applicant chapter still contains the contact-information marker rather than Anna Kowalska's supplied name, unit, telephone number and email. Asking for her position did not incorporate the information already supplied.
+  - preserved `kegw`: **preserved** — The unedited applicant chapter retains KEGW's role as the main implementer of municipal tasks.
+  - preserved `applicant`: **preserved** — The applicant remains unchanged.
+- case `fill-dates`
+  - expected_changes `period-info`: **applied** — The project information chapter states both supplied dates under the implementation-period heading.
+  - expected_changes `period-tasks`: **applied** — The tasks and schedule chapter states the same complete project period.
+  - preserved `plan-horizon`: **preserved** — The Plan's 2023–2035 horizon remains, and the edited schedule explicitly distinguishes Plan deadlines from the project's schedule.
+  - preserved `total-cost`: **preserved** — The unedited budget chapter retains the Plan's estimated cost.
+  - changes `change/fill-dates/0`: **supported** — The user explicitly supplied the dates and authorized replacing the corresponding project-information gap.
+  - changes `change/fill-dates/1`: **supported** — The instruction authorizes filling the same project-period gap in the schedule chapter. Stage-specific dates remain appropriately unfilled.
+- case `shorten-rationale`
+  - expected_changes `shorter`: **applied** — The diagnosis, needs and strategic-alignment passages are noticeably more concise than the reference draft, while retaining their factual content.
+  - preserved `vistula`: **preserved** — The Vistula remains identified as the main flood threat.
+  - preserved `flood-gates`: **preserved** — The causal link between gate closure during high river levels and worsened sewer drainage remains explicit.
+  - preserved `swoszowice`: **preserved** — Both protection from polluted rainwater infiltration and clean-water groundwater replenishment remain.
+  - preserved `strategy`: **preserved** — The link to the named city development strategy is retained.
+  - preserved `tributaries`: **preserved** — Tributaries and urban streams remain threats, with the restriction of their outflow during Vistula floods and gate closure retained.
+  - preserved `runoff-drivers`: **preserved** — All specified runoff drivers and the compounding change in extreme rainfall are retained.
+  - preserved `insufficient-protection`: **preserved** — The limitation of the city's existing flood protection remains explicit.
+  - preserved `key-problems`: **preserved** — The shortened list retains deficient capacity, silting and condition, peripheral drainage and retention gaps, sealing and drought, and landslide activation.
+  - preserved `preparatory-needs`: **preserved** — Continuing inventory, deploying modelling tools and preparing technical concepts for problem catchments are all retained.
+  - preserved `scope-marker`: **preserved** — The original marker still requests the project's exact components, locations and scale.
+  - preserved `plan-horizon`: **preserved** — The Plan's 2023–2035 dates are unchanged.
+  - preserved `specific-objectives`: **preserved** — The compressed wording retains flood-threat reduction, local-flooding reduction under intense rainfall and river threats, and sustainable rainwater management.
+  - preserved `strategy-goals`: **preserved** — Strategic goal IV and both named operational goals remain, including their identifiers.
+  - preserved `adaptation-hazards`: **preserved** — The adaptation need and every specified weather hazard remain.
+  - changes `change/shorten-rationale/0`: **supported** — The replacement is an authorized compression of the diagnosis. It preserves the threat hierarchy, runoff drivers, insufficient protection and drainage constraints without introducing new facts.
+  - changes `change/shorten-rationale/1`: **supported** — The needs list and response paragraph are shortened faithfully. The listed problems, Swoszowice protection requirement and preparatory needs retain their meaning.
+  - changes `change/shorten-rationale/2`: **supported** — The strategic-alignment section is compressed without changing the Plan horizon, objectives, named strategy goals or adaptation hazards. The project's intended alignment remains qualified rather than presented as an established result.
+- case `grant-without-value`
+  - preserved `unchanged`: **preserved** — The pipeline asked for the missing amount and percentage without editing the draft. The grant marker and unconfirmed financing-table values remain; no grant amount was invented.
+- case `cofinancing-from-earlier-message`
+  - expected_changes `cofinancing-stated`: **applied** — The grant marker is replaced by the amount, percentage and funding institution supplied in the earlier user message.
+  - expected_changes `table-updated`: **applied** — The requested co-financing row now contains PLN 42,500,000 and 85%, consistently labelled as requested NFOŚiGW funding.
+  - preserved `cost-still-asked`: **preserved** — The total-cost and breakdown question remains intact, and the table does not invent a total project cost.
+  - preserved `own-contribution-still-asked`: **preserved** — The marker still requests the amount, source and form of the applicant's own contribution.
+  - preserved `plan-cost`: **preserved** — The estimated Plan cost is unchanged and remains explicitly distinguished from this project's budget.
+  - changes `change/cofinancing-from-earlier-message/0`: **supported** — The earlier user message supplies the exact amount and percentage, and the current instruction confirms that they should be inserted.
+  - changes `change/cofinancing-from-earlier-message/1`: **supported** — Updating the corresponding summary-table row faithfully propagates the user-supplied funding values and requested status.
+- case `delete-weather-risk-row`
+  - expected_changes `weather-row-removed`: **applied** — The adverse-weather row is absent. The inventory row is now followed directly by the external-financing criteria row.
+  - preserved `inventory-row`: **preserved** — The inventory and hydraulic-assessment risk row, including its proposed response, is unchanged.
+  - preserved `criteria-row`: **preserved** — The external-financing criteria risk and its proposed response remain unchanged.
+  - preserved `financing-row`: **preserved** — The insufficient or late financing row and its proposed response remain unchanged.
+  - preserved `serious-risks`: **preserved** — The Plan's serious-risk assessment for all four specified categories is retained verbatim.
+  - preserved `risk-owner-marker`: **preserved** — The marker still requests all four risk-management arrangements.
+  - changes `change/delete-weather-risk-row/0`: **supported** — The replacement deletes exactly the weather-risk row requested by the user and leaves the remaining rows and surrounding content unchanged.
+
+## richfield-flood-risk: FAIL
+Source `pdf` SHA-256 `4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977`.
+Ground truth approval: **approved**. 
+
+### extraction: FAIL
+Required facts: **5 fully covered · 3 partially covered · 0 missing · 0 contradicted**.
+- fact_evidence_retained: 0.71
+- pair_evidence_in_chapter: 0.38
+- pairs_misrouted: 3.00
+- pairs_not_extracted: 2.00
+- required_fact_coverage: 0.62
+- mandatory_pairs: 8.00
+- desirable_pairs: 10.00
+- desirable_pairs_covered: 2.00
+- desirable_fact_coverage: 0.20
+- claim_support_rate: 0.88
+- topic_coverage: 0.33
+- **Semantic:** required_fact_coverage 0.62 < 1.0
+- **Semantic:** retained/project_activities/0/page-33: 1 claim(s) not fully supported: partially_supported by the source: All printed cost figures match, and the chapter preserves their concept status. However, it omits the material limitation that adequate onward conveyance is assumed and is not accounted for in these estimates.
+- **Semantic:** retained/flood_damages/2/page-24: 1 claim(s) not fully supported: partially_supported by the source, lacks sufficient context: The numbers and event categories are authentic, but the selected rows lose the Score and Weight headers and the lowest-structure rule. Other quotations in this chapter do not resolve what the numeric columns mean or how overlapping event categories are assigned.
+- **Semantic:** retained/project_analysis/5/page-33: 1 claim(s) not fully supported: partially_supported by the source: The numbers are authentic. Although this chapter retains unresolved routing beyond Richfield, it does not preserve the explicit cost boundary and exclusion of the assumed onward conveyance from these estimates.
+- **Semantic:** retained/project_financing/1/page-33: 1 claim(s) not fully supported: partially_supported by the source: The printed point estimates and intervals match. Planning-level status and general cost exclusions are retained elsewhere in financing, but the material Wilson-specific exclusion concerning onward conveyance is absent.
+- **Semantic:** retained/project_financing/6/page-53: 1 claim(s) not fully supported: partially_supported by the source, lacks sufficient context: The 25% rate and construction-cost base are authentic, but 'these items' has no retained antecedent identifying non-itemized ancillary work. The financing chapter instead lists excluded costs, which must not be assumed to be the items covered by contingency.
+- **Semantic:** contradictory output: The printed upper amounts are approximately 75% above the corresponding bold point estimates, not 50% as the accompanying accuracy notes state. This discrepancy also affects the other concept rows and repeated tables in project_analysis and project_financing. It is inherited from the original tables, not introduced by extraction.
+- **Semantic:** topic_coverage 0.33 < 0.6
+- facts `model-coverage::project_analysis`: **missing** — The project_analysis quotations do not state that the model covers all of Richfield and adjacent areas draining into it.
+- facts `lidar-update::project_analysis`: **missing** — No quotation assigned to project_analysis retains the incorporation of USGS-published LiDAR collected in 2022.
+- facts `design-storms::project_analysis`: **covered** — The number of events, climate-adaptation event, and rainfall distribution are explicitly retained.
+- facts `prioritization-criteria::project_analysis`: **partially_covered** — The quotations retain a scored, weighted prioritization process and identify social vulnerability as part of scoring. They do not retain the full five-criterion framework, particularly critical infrastructure and number of flood-prone structures as explicit scoring criteria.
+- facts `flood-risk-area-count::flood_damages`: **covered** — Both counts and the qualification concerning location within or primarily within the boundary survive.
+- facts `flood-risk-area-count::project_description`: **missing** — Neither count is retained in project_description; the quotation in flood_damages cannot satisfy this pair.
+- facts `flood-risk-area-count::project_analysis`: **missing** — Neither the 746 evaluated areas nor the 601 municipal-boundary areas is stated in project_analysis.
+- facts `selected-areas-and-concepts::project_activities`: **covered** — The city's selection of three areas and model evaluation of six concepts are explicit.
+- facts `selected-sites::project_description`: **partially_covered** — The chapter identifies three evaluated locations and connects Wilson Pond with mitigation concepts, but does not name the Roosevelt Park or Woodlawn Terrace locations.
+- facts `selected-sites::project_activities`: **covered** — Together, the three site-specific concept tables and selection statement identify all selected areas.
+- facts `concept-level-costs::project_financing`: **partially_covered** — The financing chapter clearly preserves planning-level costs for concept-level alternatives. It does not explicitly preserve that the Section 5 model results, as well as the projects and estimates, represent concept-level designs.
+- facts `cost-basis::funding_breakout`: **missing** — There are no retained quotations assigned to funding_breakout.
+- facts `cost-basis::project_financing`: **covered** — The currency year, currency, and stated accuracy range are retained.
+- facts `cost-basis::project_analysis`: **partially_covered** — The accuracy range survives, but the chapter does not retain the 2025 US-dollar basis.
+- facts `concept-cost-figures::funding_breakout`: **missing** — There are no retained quotations assigned to funding_breakout.
+- facts `concept-cost-figures::project_financing`: **covered** — The site-specific tables preserve the lowest point estimate at Woodlawn Terrace and highest point estimate for Wilson Pond Concept C.
+- facts `concept-cost-figures::project_activities`: **covered** — Both endpoints and their associated sites and concepts are retained in the chapter's tables.
+- facts `study-area-size::flood_damages`: **missing** — The approximately 8.8-square-mile study area appears in project_description, not in flood_damages.
+- topics `stormwater-model`: **covered** — The label conveys the updated stormwater-model topic.
+- topics `flood-risk-prioritization`: **covered** — The label directly expresses prioritizing areas by flood risk.
+- topics `mitigation-concepts`: **missing** — None of the returned labels conveys proposed flood-risk reduction interventions or alternatives.
+- topics `cost-estimates`: **missing** — No topic label expresses mitigation cost estimates.
+- topics `design-storms`: **partially_covered** — Climate adaptation overlaps with the purpose of the future storm scenario, but does not convey design rainfall events or storm scenarios themselves.
+- topics `social-vulnerability`: **partially_covered** — Environmental justice is a related umbrella topic, but does not specifically identify social vulnerability in flood-risk assessment or prioritization.
+- claims `retained/1/page-7`: **supported** — As a model purpose, this is supported and preserves the qualification that structures are potentially flood-prone. The global title establishes the stormwater-model context.
+- claims `retained/2/page-7`: **supported** — The retained global passage accurately conveys a project goal, not a commitment to build infrastructure.
+- claims `retained/3/page-7`: **supported** — This accurately retains the prioritization goal and its environmental-justice component.
+- claims `retained/project_activities/0/page-33`: **supported** — Wilson Pond Concept A's proposed intervention is accurately retained.
+- claims `retained/project_activities/0/page-33`: **supported** — The intervention definitions for Concepts B and C are supported: increased capacity, and increased capacity plus additional pipes, respectively. Cost scope is assessed separately.
+- claims `retained/project_activities/0/page-33`: **partially_supported** — All printed cost figures match, and the chapter preserves their concept status. However, it omits the material limitation that adequate onward conveyance is assumed and is not accounted for in these estimates.
+- claims `retained/project_activities/0/page-33`: **supported** — The stated accuracy range is reproduced faithfully. Its arithmetic inconsistency with the printed upper amounts is also present in the source and is recorded separately.
+- claims `retained/project_activities/1/page-33`: **supported** — The proposed gate, forecast-based operation, and advance lowering of pond water are accurately retained.
+- claims `retained/project_activities/1/page-33`: **supported** — The approximate storage gain and assumed 24-hour drawdown are preserved, without presenting the concept as constructed.
+- claims `retained/project_activities/2/page-40`: **supported** — The Roosevelt Park concept, point estimate, printed interval, and accuracy note match the source. The source's numerical inconsistency is noted separately.
+- claims `retained/project_activities/3/page-40`: **supported** — The dimensions, approximate capacity, and assumed usable fraction are intact. The adjacent Roosevelt Park table supplies the site context.
+- claims `retained/project_activities/3/page-40`: **supported** — Both retention and complete post-event drainage functions are preserved as proposed design features.
+- claims `retained/project_activities/4/page-43`: **supported** — Both Woodlawn Terrace alternatives and all printed cost figures and qualifications match the source. The printed upper-bound discrepancy is source-inherited.
+- claims `retained/project_activities/5/page-43`: **supported** — The quotation faithfully retains the source's stated volume, geometry, and assumed usable fraction. The Woodlawn Terrace table and parking-lot details resolve the concept context.
+- claims `retained/project_activities/5/page-43`: **supported** — The cover, grading, and connection requirements remain conditional requirements of the proposed concept.
+- claims `retained/project_activities/5/page-43`: **supported** — The need for private-owner agreements is retained rather than implying access has already been secured.
+- claims `retained/project_activities/6/page-49`: **supported** — The selection authority, counts, framework basis, and model evaluation are all preserved.
+- claims `retained/project_activities/6/page-49`: **supported** — The passage retains both qualified mitigation benefits and the need for further design, rather than presenting implementation as committed.
+- claims `retained/flood_damages/0/page-14`: **supported** — The event count, original model dates, return periods, and 24-hour duration are faithfully retained.
+- claims `retained/flood_damages/0/page-14`: **supported** — The future event's definition and intended climate-assessment purpose are preserved as an estimate.
+- claims `retained/flood_damages/0/page-14`: **supported** — The rainfall distribution and its application to all four events are explicit.
+- claims `retained/flood_damages/0/page-14`: **supported** — All four rainfall depths and durations match. The retained table header identifies the depths as inches.
+- claims `retained/flood_damages/1/page-14`: **supported** — The modeled basis and four storm scenarios used for inundation mapping are preserved.
+- claims `retained/flood_damages/1/page-14`: **supported** — Both the level-pool method and the material exclusion of sloped roadway and floodplain water surfaces survive.
+- claims `retained/flood_damages/1/page-14`: **supported** — The local correction of LiDAR-related mapping inaccuracies is accurately retained.
+- claims `retained/flood_damages/2/page-24`: **partially_supported** — The numbers and event categories are authentic, but the selected rows lose the Score and Weight headers and the lowest-structure rule. Other quotations in this chapter do not resolve what the numeric columns mean or how overlapping event categories are assigned.
+- claims `retained/flood_damages/3/page-28`: **supported** — The spatial counting method, city-provided data, 100-year scope, and direction of scoring are retained, including the word potentially.
+- claims `retained/flood_damages/4/page-30`: **supported** — The counts, boundary qualification, and reference to the source's top-ten table are accurate.
+- claims `retained/flood_damages/5/page-32`: **supported** — The relative flood risk, greatest residential-structure concentration, and lowest-structure storm threshold match the source. The chapter establishes that the assessment is model-based.
+- claims `retained/flood_damages/5/page-32`: **supported** — The social-vulnerability classification and transportation and school exposure are accurately retained.
+- claims `retained/flood_damages/6/page-40`: **supported** — The city selection, location, multiple-structure exposure, and 10-year threshold are preserved.
+- claims `retained/flood_damages/6/page-40`: **supported** — The same retained paragraph identifies Roosevelt Park, resolving the subject of these supported vulnerability and route-exposure claims.
+- claims `retained/flood_damages/7/page-43`: **supported** — The selection, site, multiple affected structures, and lowest-structure rainfall threshold match the source.
+- claims `retained/flood_damages/7/page-43`: **supported** — Pipe risk, social vulnerability, and the count and type of exposed housing structures are all preserved.
+- claims `retained/project_description/0/page-7`: **supported** — The consultant, municipality, development dates, model type, and municipal coverage match.
+- claims `retained/project_description/0/page-7`: **supported** — The full-city and contributing-adjacent-area scope and approximate watershed size are retained.
+- claims `retained/project_description/1/page-7`: **supported** — The redevelopment context is supported, and Richfield is identified elsewhere in this chapter.
+- claims `retained/project_description/1/page-7`: **supported** — All four goals are retained, including the model update, larger-storm assessment, justice-informed prioritization, and concept-level evaluation.
+- claims `retained/project_description/2/page-9`: **supported** — The software and absence of updates before this project are correctly stated.
+- claims `retained/project_description/2/page-9`: **supported** — The incorporation of new USGS topography is supported. This passage makes no unsupported claim about its collection year.
+- claims `retained/project_description/2/page-9`: **supported** — The source of construction information, stormwater relevance, geography, and since-2018 timing survive.
+- claims `retained/project_description/2/page-9`: **supported** — Barr's use of survey information and the Minneapolis model is faithfully retained.
+- claims `retained/project_description/3/page-32`: **supported** — The city review, three selected locations, and preliminary modeling purpose are preserved.
+- claims `retained/project_description/3/page-32`: **supported** — The preliminary design and cost-estimate status and intended planning use remain clear.
+- claims `retained/project_description/4/page-33`: **supported** — The evaluation limits and assumed downstream capacity are explicit. The chapter's other quotation identifies the three Wilson Pond concepts.
+- claims `retained/project_description/4/page-33`: **supported** — The preceding retained sentence supplies the assumption. Its exclusion from costs and the conditional need for external coordination are preserved.
+- claims `retained/project_description/5/page-48`: **supported** — The outstanding design, utility, permitting, and agreement work is accurately retained, including the conditional scope of agreements.
+- claims `retained/project_description/5/page-48`: **supported** — The increased flow, possible routes, unresolved routing details, and permitting uncertainty all survive.
+- claims `retained/project_description/6/page-49`: **supported** — The selection and evaluation counts and the city's role are supported.
+- claims `retained/project_description/6/page-49`: **supported** — Qualified benefits, varying costs, additional considerations, and the need for further design are faithfully retained.
+- claims `retained/project_analysis/0/page-14`: **supported** — The event count, software, original model dates, return periods, and event duration match.
+- claims `retained/project_analysis/0/page-14`: **supported** — The future storm estimate and its intended climate-adaptation application are retained without overstating certainty.
+- claims `retained/project_analysis/0/page-14`: **supported** — Use of the MSE3 distribution for all four design events is directly supported.
+- claims `retained/project_analysis/0/page-14`: **supported** — The retained header supplies inches, and every depth and duration matches the source.
+- claims `retained/project_analysis/1/page-19`: **supported** — The multi-criterion approach, consultation, and city's responsibility for scores and weights are supported. The passage does not purport to enumerate the criteria.
+- claims `retained/project_analysis/2/page-26`: **supported** — The definition and database attribution are preserved. The chapter's prioritization quotation resolves the reference to scoring.
+- claims `retained/project_analysis/2/page-26`: **supported** — The intended users, mapping purpose, and support needs across all three event phases are accurately retained.
+- claims `retained/project_analysis/3/page-32`: **supported** — All three options are correctly identified as considered but not pursued, rather than as selected interventions.
+- claims `retained/project_analysis/3/page-32`: **supported** — The space constraint and city direction against property acquisition are both retained as reasons for rejecting surface storage.
+- claims `retained/project_analysis/3/page-32`: **supported** — The rejection rationale, atlas attribution, expected rather than measured condition, and less-than-10-foot threshold survive.
+- claims `retained/project_analysis/4/page-34`: **supported** — All existing, concept, and reduction values for the two-year event match the source. Retained headers identify feet and the pond, upstream, and downstream locations; other retained text makes unresolved onward routing clear.
+- claims `retained/project_analysis/4/page-34`: **supported** — The ten-year modeled levels and printed reductions faithfully reproduce the source, with locations and units retained in the table.
+- claims `retained/project_analysis/4/page-34`: **supported** — The hundred-year comparison and 0.3-foot reductions at all three locations match the source.
+- claims `retained/project_analysis/5/page-33`: **supported** — The Concept A intervention is accurately retained and identified as a concept by the table.
+- claims `retained/project_analysis/5/page-33`: **supported** — The definitions of Concepts B and C are supported. The scope qualification for their cost figures is assessed separately.
+- claims `retained/project_analysis/5/page-33`: **partially_supported** — The numbers are authentic. Although this chapter retains unresolved routing beyond Richfield, it does not preserve the explicit cost boundary and exclusion of the assumed onward conveyance from these estimates.
+- claims `retained/project_analysis/5/page-33`: **supported** — The stated accuracy note is faithfully extracted; the mismatch with the table's upper figures is inherited from the source.
+- claims `retained/project_analysis/6/page-48`: **supported** — The outstanding evaluation categories and conditional agreement requirements are accurately retained.
+- claims `retained/project_analysis/6/page-48`: **supported** — The routing need and alternatives are preserved together with their unresolved design and permitting status.
+- claims `retained/project_analysis/7/page-43`: **supported** — The selected location, city role, multiple-structure exposure, and two-year event threshold match the source.
+- claims `retained/project_analysis/7/page-43`: **supported** — The pipe-risk classification, high SVI, and three high-density housing structures are faithfully retained.
+- claims `retained/project_financing/0/page-30`: **supported** — All three additional planning considerations are retained as possibilities, not as confirmed partnerships, funding, or a committed delivery sequence.
+- claims `retained/project_financing/1/page-33`: **supported** — The proposed Wilson Pond Concept A is accurately described.
+- claims `retained/project_financing/1/page-33`: **supported** — The intervention definitions for Concepts B and C match. Their cost-scope limitation is evaluated separately.
+- claims `retained/project_financing/1/page-33`: **partially_supported** — The printed point estimates and intervals match. Planning-level status and general cost exclusions are retained elsewhere in financing, but the material Wilson-specific exclusion concerning onward conveyance is absent.
+- claims `retained/project_financing/1/page-33`: **supported** — The accuracy statement matches the source, including its source-inherited inconsistency with the printed upper cost amounts.
+- claims `retained/project_financing/2/page-40`: **supported** — The Roosevelt Park alternative and all printed amounts and range language match the source. The surrounding financing quotations preserve planning-level status and general exclusions.
+- claims `retained/project_financing/3/page-43`: **supported** — The two Woodlawn Terrace alternatives and their printed estimates are faithful to the source. The numerical inconsistency of upper amounts and the accuracy note is source-inherited.
+- claims `retained/project_financing/4/page-52`: **supported** — The preliminary planning status of the estimates is explicitly preserved.
+- claims `retained/project_financing/4/page-52`: **supported** — The intended concept-assessment, analysis, and budget-planning uses are accurately retained.
+- claims `retained/project_financing/4/page-52`: **supported** — The escalation exclusion and 2025 US-dollar basis both survive.
+- claims `retained/project_financing/5/page-52`: **supported** — All listed exclusions and their application to construction estimates are intact.
+- claims `retained/project_financing/5/page-52`: **supported** — The exclusion of post-construction operations, maintenance, and monitoring is preserved.
+- claims `retained/project_financing/6/page-53`: **partially_supported** — The 25% rate and construction-cost base are authentic, but 'these items' has no retained antecedent identifying non-itemized ancillary work. The financing chapter instead lists excluded costs, which must not be assumed to be the items covered by contingency.
+- claims `retained/project_financing/7/page-53`: **supported** — The chapter's cost tables and planning-level explanation resolve the estimate context. The stated range is faithfully extracted.
+- contradictions: The printed upper amounts are approximately 75% above the corresponding bold point estimates, not 50% as the accompanying accuracy notes state. This discrepancy also affects the other concept rows and repeated tables in project_analysis and project_financing. It is inherited from the original tables, not introduced by extraction.
+
+### chapter_writing: FAIL
+Required facts: **12 fully covered · 1 partially covered · 0 missing · 0 contradicted**.
+- required_fact_coverage: 0.92
+- claim_support_rate: 0.88
+- chapters_satisfied_rate: 0.50
+- gap_recall: 0.88
+- flagged_gaps: 45.00
+- flagged_gap_validity: 0.98
+- transfer_rate: 1.00
+- **Semantic:** chapter/project_analysis: 1 claim(s) not fully supported: partially_supported by the source, partially_supported by the drafter input: Similarity and differing criteria are supported, but the source attributes the comparison methodology to the City of Bloomington for work within the WMO, not directly to the WMO.
+- **Semantic:** applicant_project_information: partially_satisfied: The report context is accurate and genuinely missing submission, official project-name, contact and agent details are flagged. However, the applicant should be identified as the City of Richfield rather than raised as missing.
+- **Semantic:** existing_mitigation_regulation: partially_satisfied: Available prior modeling work is described and unavailable site-specific mitigation, standards, compliance and violations are flagged. Ordinance enforcement arrangements or practices remain neither answered nor explicitly requested; a violations record is not a complete enforcement description.
+- **Semantic:** project_analysis: partially_satisfied: The alternatives, modeled effects, rejected options and social evidence are extensive, and genuinely absent assessments and review records are flagged. However, available Wilson Pond findings about increased discharge volume and peak rate are not included as effects, and the methodological comparison is misattributed to the WMO instead of Bloomington's work w
+- **Semantic:** project_financing: partially_satisfied: All six estimates, price year, contingency, accuracy and general exclusions are retained, and unavailable financing/capability inputs are requested without invented commitments. A material available budget limitation is omitted: Wilson Pond estimates do not account for the assumed downstream conveyance beyond Richfield. Red River funding is not indicated as 
+- **Semantic:** gap/applicant_project_information/applicant_local_unit_of_government: answerable_from_inputs: The city context, municipal study client and local-government application context identify the City of Richfield, Minnesota. Applicant identity should be stated rather than treated as absent.
+- Transfer `flood-risk-area-count`: extraction **covered** → draft **covered** (transferred)
+- Transfer `prioritization-criteria`: extraction **partially_covered** → draft **covered** (recovered)
+- Transfer `selected-sites`: extraction **covered** → draft **covered** (transferred)
+- Transfer `selected-areas-and-concepts`: extraction **covered** → draft **covered** (transferred)
+- Transfer `concept-level-costs`: extraction **partially_covered** → draft **covered** (recovered)
+- Transfer `concept-cost-figures`: extraction **covered** → draft **covered** (transferred)
+- Transfer `cost-basis`: extraction **covered** → draft **covered** (transferred)
+- Transfer `cost-accuracy`: extraction **covered** → draft **covered** (transferred)
+- facts `applicant-city`: **partially_covered** — The city and state are identified, but the City of Richfield is presented only as the report client, while its applicant identity is unnecessarily left unresolved.
+- facts `funding-programme`: **covered** — The financing table identifies the correct programme as the intended funding source.
+- facts `city-population`: **missing** — The recorded population of 36,994 is not included.
+- facts `flood-risk-area-count`: **covered** — Both counts and the municipal-boundary qualification are preserved.
+- facts `prioritization-criteria`: **covered** — All five criteria are retained; the later SVI discussion clarifies the social-vulnerability measure.
+- facts `selected-sites`: **covered** — All three locations and their selection for study, rather than approved construction, are preserved.
+- facts `selected-areas-and-concepts`: **covered** — The three selected areas, six alternatives, updated-model evaluation and preliminary status are all retained.
+- facts `wilson-pond-damages`: **covered** — The Wilson Pond bullet preserves the event frequency and duration and appropriately identifies this as modeled risk.
+- facts `concept-level-costs`: **covered** — Financing clearly treats the alternative costs as preliminary construction estimates, not final budgets or funding commitments.
+- facts `concept-cost-figures`: **covered** — All six source point estimates are carried into financing with the correct concept assignments.
+- facts `cost-basis`: **covered** — Currency and price year are retained.
+- facts `cost-accuracy`: **covered** — The stated asymmetric uncertainty range is preserved.
+- facts `alternatives-not-pursued`: **covered** — Both alternatives and their distinct limiting reasons are accurately preserved.
+- facts `social-vulnerability`: **covered** — High SVI is explicitly attributed to all three evaluated areas.
+- claims `chapter/applicant_project_information`: **supported** — The location and subject agree with the authoritative context and supplied run information.
+- claims `chapter/applicant_project_information`: **supported** — The report title, client and month/year are supplied directly.
+- claims `chapter/applicant_project_information`: **supported** — The three study locations and concept-level status are supported by the full report available to this chapter.
+- claims `chapter/funding_breakout`: **supported** — The count, locations and planning-level construction-cost characterization agree with the report.
+- claims `chapter/funding_breakout`: **supported** — The price basis and uncertainty are explicit source values, not derived figures.
+- claims `chapter/funding_breakout`: **supported** — All listed exclusions are stated in Appendix A.
+- claims `chapter/funding_breakout`: **supported** — Review of the complete report confirms alternatives for future evaluation, not an application selection or current funding package.
+- claims `chapter/project_activities`: **supported** — The count, study selection, modeled status and need for further work are faithful; the report's location sections support the named sites.
+- claims `chapter/project_activities`: **supported** — The Concept A row describes modeled works, not an approved implementation commitment.
+- claims `chapter/project_activities`: **supported** — Both the conditional storage output and Concept A point estimate are explicit source figures.
+- claims `chapter/project_activities`: **supported** — Concept B's route, culvert dimensions and planning estimate match the report.
+- claims `chapter/project_activities`: **supported** — The Concept C dimensions, configuration and cost are explicitly provided.
+- claims `chapter/project_activities`: **supported** — All proposed Roosevelt Park activities are supported and remain conditional concept options.
+- claims `chapter/project_activities`: **supported** — The capacity, assumptions and cost are reproduced from the source rather than recomputed.
+- claims `chapter/project_activities`: **supported** — The Woodlawn Terrace Concept A activities agree with the report.
+- claims `chapter/project_activities`: **supported** — The draft faithfully preserves the source's stated capacity and assumptions, including its figures without attempting a new calculation.
+- claims `chapter/project_activities`: **supported** — The alignment, existing and proposed diameter ranges, and concept estimate are supported.
+- claims `chapter/project_activities`: **supported** — The preliminary design status and conditional follow-up tasks directly reflect the limitations section.
+- claims `chapter/project_activities`: **supported** — The routing need and unresolved downstream coordination are stated conditionally, as in the source.
+- claims `chapter/project_activities`: **supported** — A required future agreement is not misrepresented as an existing commitment.
+- claims `chapter/project_activities`: **supported** — Estimate status, currency year and accuracy are supported.
+- claims `chapter/project_activities`: **supported** — Every listed exclusion is explicit in the shared report.
+- claims `chapter/flood_damages`: **supported** — The chapter correctly distinguishes modeled risk from documented losses and surveyed building verification; the complete source provides no observed-loss record.
+- claims `chapter/flood_damages`: **supported** — Report identity, date and study locations are supported.
+- claims `chapter/flood_damages`: **supported** — All three event-depth pairings and units match Table 3-1.
+- claims `chapter/flood_damages`: **supported** — The future scenario, duration, depth and assessment purpose are preserved.
+- claims `chapter/flood_damages`: **supported** — The mapping method and important scope limitation are accurately retained.
+- claims `chapter/flood_damages`: **supported** — The figure references are correct.
+- claims `chapter/flood_damages`: **supported** — Counts and geographical qualification are exact.
+- claims `chapter/flood_damages`: **supported** — The GIS identification method and absence of structure-verification surveys are supported.
+- claims `chapter/flood_damages`: **supported** — Every element of the location's risk characterization is directly supported, and the modeled context is clear.
+- claims `chapter/flood_damages`: **supported** — The event, affected assets and high SVI match the Roosevelt Park discussion.
+- claims `chapter/flood_damages`: **supported** — The risk classification, rainfall event and three housing structures are all explicitly supplied.
+- claims `chapter/flood_damages`: **supported** — The complete report supplies modeling and prioritization, not an observed-damage record; no current-phase selection is inferred.
+- claims `chapter/flood_damages`: **supported** — Review of the complete source confirms that no presidential declaration record is provided. The claim concerns source availability, not whether declarations exist.
+- claims `chapter/existing_mitigation_regulation`: **supported** — The report identity, date, client and analytical character are supported.
+- claims `chapter/existing_mitigation_regulation`: **supported** — The original modeling activity and years are exact.
+- claims `chapter/existing_mitigation_regulation`: **supported** — All listed model inputs are supported; the draft does not extend the survey to flood-prone-building verification.
+- claims `chapter/existing_mitigation_regulation`: **supported** — The full report identifies the three alternative-study sites but no selected application project or site-specific completion/compliance history.
+- claims `chapter/project_description`: **supported** — The report summary accurately preserves the study's scope and preliminary status; the source's site sections establish the locations.
+- claims `chapter/project_description`: **supported** — Read as a project-specific objective rather than the general flood-risk goal, this correctly reflects the absence of an application scope or phase selection.
+- claims `chapter/project_description`: **supported** — These are the actual alternative mechanisms, correctly presented as options.
+- claims `chapter/project_description`: **supported** — The three Wilson Pond alternatives retain their actual scope and proposed status.
+- claims `chapter/project_description`: **supported** — The chamber location and associated infrastructure modifications are supported.
+- claims `chapter/project_description`: **supported** — The two alternatives are accurately distinguished.
+- claims `chapter/project_description`: **supported** — The design maturity and further-evaluation requirements are direct source findings.
+- claims `chapter/project_description`: **supported** — The complete source supplies conditional next work, not an approved implementation schedule or phased commitment.
+- claims `chapter/project_description`: **supported** — The downstream capacity is correctly identified as an assumption, not demonstrated feasibility.
+- claims `chapter/project_description`: **supported** — The unresolved routing and conditional coordination requirements are supported.
+- claims `chapter/project_description`: **supported** — The source explicitly requires a future owner agreement.
+- claims `chapter/project_description`: **supported** — The city's study-selection role and Barr's report-preparation role are supported without implying construction delivery commitments.
+- claims `chapter/project_description`: **supported** — Potential coordination parties and study roles do not establish confirmed implementation partners or contractual delivery responsibility.
+- claims `chapter/project_analysis`: **supported** — The source's date, alternative count, locations and planning-level scope are accurately summarized.
+- claims `chapter/project_analysis`: **supported** — The decision stage and all five criteria are preserved.
+- claims `chapter/project_analysis`: **supported** — All six comparison tables use these events; the draft correctly avoids turning model results into final commitments.
+- claims `chapter/project_analysis`: **supported** — Concept A's works and conditional storage output are explicitly supported.
+- claims `chapter/project_analysis`: **supported** — These are the table's reported reductions for Wilson Pond under Concept A, including the stated 1.4 rather than a newly calculated difference.
+- claims `chapter/project_analysis`: **supported** — The Concept B description is exact in scope and dimensions.
+- claims `chapter/project_analysis`: **supported** — The Concept B downstream reductions and adverse pond-level effect are reported explicitly; signs and locations are preserved.
+- claims `chapter/project_analysis`: **supported** — Concept C's configuration is accurately retained.
+- claims `chapter/project_analysis`: **supported** — The reductions and backflow-related increase match the Concept C table and footnote.
+- claims `chapter/project_analysis`: **supported** — The Roosevelt alternative's works and stated storage output are supported.
+- claims `chapter/project_analysis`: **supported** — The reductions use the correct baseball-fields column and event ordering.
+- claims `chapter/project_analysis`: **supported** — The Woodlawn Terrace Concept A scope and stated capacity are supported.
+- claims `chapter/project_analysis`: **supported** — All three Concept A results preserve the parking-lot location, including no 100-year improvement.
+- claims `chapter/project_analysis`: **supported** — The Woodlawn Terrace Concept B alignment is supported.
+- claims `chapter/project_analysis`: **supported** — The reported Concept B reductions match the correct event and location.
+- claims `chapter/project_analysis`: **supported** — The source directly supports the design status and conditional evaluation tasks.
+- claims `chapter/project_analysis`: **supported** — The routing issue and unresolved coordination are faithfully preserved.
+- claims `chapter/project_analysis`: **supported** — The draft correctly preserves the prospective agreement requirement.
+- claims `chapter/project_analysis`: **supported** — The excluded options and the surface-storage constraints are directly supported.
+- claims `chapter/project_analysis`: **supported** — The expected groundwater depth and assumed pumping timeframe retain their uncertainty and conditional basis.
+- claims `chapter/project_analysis`: **supported** — Both rejected Roosevelt Park options and their distinct feasibility constraints are supported.
+- claims `chapter/project_analysis`: **supported** — The source gives this specific land-use constraint.
+- claims `chapter/project_analysis`: **supported** — A complete selected-project assessment is absent. This does not negate the source's individual hydrologic and downstream-flow findings.
+- claims `chapter/project_analysis`: **supported** — The dataset and its role are accurately described.
+- claims `chapter/project_analysis`: **supported** — High SVI is explicitly supported for each named area.
+- claims `chapter/project_analysis`: **supported** — The affected assets are matched to the correct locations and remain potential flood impacts.
+- claims `chapter/project_analysis`: **supported** — The report gives area-level vulnerability and modeled alternatives, not selected-phase beneficiary identification or quantified social/economic impacts.
+- claims `chapter/project_analysis`: **supported** — Staff consultation is correctly distinguished from a public-engagement record, which the full source does not supply.
+- claims `chapter/project_analysis`: **supported** — The complete study calls for future permitting review but gives no selected-project environmental-review status.
+- claims `chapter/project_analysis`: **partially_supported** — Similarity and differing criteria are supported, but the source attributes the comparison methodology to the City of Bloomington for work within the WMO, not directly to the WMO.
+- claims `chapter/project_analysis`: **supported** — The organizational/methodological reference is not a local-water-plan citation; the complete input supplies no specific supporting plan provision.
+- claims `chapter/project_analysis`: **supported** — Review of the full report confirms no wetland-credit intent; no concrete intent is invented.
+- claims `chapter/project_financing`: **supported** — The report's six site-specific alternatives have preliminary construction estimates, not approved project budgets.
+- claims `chapter/project_financing`: **supported** — The three cost qualifiers are explicit and correctly distinguished.
+- claims `chapter/project_financing`: **supported** — All listed cost exclusions are supported.
+- claims `chapter/project_financing`: **supported** — The full study lacks application-specific selection and finance information. Its historical MPCA study grant is not committed funding for this application.
+- claims `chapter/project_financing`: **supported** — The three Wilson Pond estimates are assigned to the correct alternatives without combining them.
+- claims `chapter/project_financing`: **supported** — The Roosevelt Park alternative's point estimate is exact.
+- claims `chapter/project_financing`: **supported** — Both Woodlawn Terrace estimates retain the correct concept pairing.
+- claims `chapter/project_financing`: **supported** — The conclusion correctly distinguishes construction estimates with explicit exclusions from complete application budgets.
+- claims `chapter/project_financing`: **supported** — The financing table identifies the correct intended grant programme; it does not claim an award.
+- chapters `applicant_project_information`: **partially_satisfied** — The report context is accurate and genuinely missing submission, official project-name, contact and agent details are flagged. However, the applicant should be identified as the City of Richfield rather than raised as missing.
+- chapters `funding_breakout`: **satisfied** — It distinguishes preliminary estimates from application funding and explicitly requests all unavailable current-phase, DNR, other-state, federal, local and prior-FHM values.
+- chapters `project_activities`: **satisfied** — All six available activity options, approximate costs and source-stated quantities are provided, with concept selection honestly left open and design/coordination limitations explained.
+- chapters `flood_damages`: **satisfied** — The chapter supplies available event, inundation, location-specific severity and map evidence, preserves modeling limitations, and flags unavailable observed-damage, photographic and disaster-declaration records.
+- chapters `existing_mitigation_regulation`: **partially_satisfied** — Available prior modeling work is described and unavailable site-specific mitigation, standards, compliance and violations are flagged. Ordinance enforcement arrangements or practices remain neither answered nor explicitly requested; a violations record is not a complete enforcement description.
+- chapters `project_description`: **satisfied** — It describes the available concept basis, further design needs, study roles and prospective coordination, while correctly flagging the unavailable current-phase selection/objective, next phase and implementation responsibility.
+- chapters `project_analysis`: **partially_satisfied** — The alternatives, modeled effects, rejected options and social evidence are extensive, and genuinely absent assessments and review records are flagged. However, available Wilson Pond findings about increased discharge volume and peak rate are not included as effects, and the methodological comparison is misattributed to the WMO instead of Bloomington's work within it.
+- chapters `project_financing`: **partially_satisfied** — All six estimates, price year, contingency, accuracy and general exclusions are retained, and unavailable financing/capability inputs are requested without invented commitments. A material available budget limitation is omitted: Wilson Pond estimates do not account for the assumed downstream conveyance beyond Richfield. Red River funding is not indicated as applicable.
+- gaps `submittal-date`: **flagged** — The missing application date is explicitly requested in the correct chapter.
+- gaps `contact-details`: **flagged** — The contact identity and all requested communication details are flagged.
+- gaps `authorized-agent`: **flagged** — The missing authorized-agent identity is requested.
+- gaps `selected-alternative`: **flagged** — Selection among the location-specific alternatives is explicitly requested in allowed chapters, without presenting studied sites as approved works.
+- gaps `dnr-request`: **flagged** — Both the complete current-phase cost and DNR request are requested, distinctly from the source construction estimates.
+- gaps `other-funding`: **flagged** — All four categories are explicitly flagged; no unknown amount is treated as zero or secured.
+- gaps `disaster-declarations`: **flagged** — The chapter requests the applicable county presidential-declaration record.
+- gaps `floodplain-ordinance`: **partially_flagged** — Standards, compliance and violation records are requested, but the city's enforcement arrangements or practices are not explicitly requested.
+- gaps `public-input-review`: **flagged** — Both unavailable project-specific records are flagged in the analysis chapter.
+- gaps `financial-capability`: **flagged** — The financing method and evidence of local capacity are both explicitly requested.
+- flagged_gaps `gap/applicant_project_information/application_submittal_date`: **valid** — No input provides the application date. The August 2025 report date is not an application submittal date.
+- flagged_gaps `gap/applicant_project_information/applicant_local_unit_of_government`: **answerable_from_inputs** — The city context, municipal study client and local-government application context identify the City of Richfield, Minnesota. Applicant identity should be stated rather than treated as absent.
+- flagged_gaps `gap/applicant_project_information/official_project_name`: **valid** — The inputs name the study and the concept-note run, but do not establish an official name for a selected grant-funded project.
+- flagged_gaps `gap/applicant_project_information/local_government_contact_name`: **valid** — No local-government application contact is identified; redacted report names do not provide one.
+- flagged_gaps `gap/applicant_project_information/applicant_mailing_address`: **valid** — No applicant mailing address is supplied. The report cover's Minneapolis address belongs to Barr, not the city applicant.
+- flagged_gaps `gap/applicant_project_information/local_government_contact_phone`: **valid** — No city contact phone is provided; Barr's report-cover phone cannot be substituted.
+- flagged_gaps `gap/applicant_project_information/local_government_contact_email`: **valid** — The inputs do not provide an application contact email.
+- flagged_gaps `gap/applicant_project_information/authorized_agent_name_title`: **valid** — No authorized application agent or title is supplied.
+- flagged_gaps `gap/funding_breakout/current_phase_selected_concept`: **valid** — The study evaluates six alternatives but does not select one for the application or define its current phase.
+- flagged_gaps `gap/funding_breakout/current_phase_total_cost`: **valid** — Alternative construction estimates with exclusions do not establish a complete selected-phase cost.
+- flagged_gaps `gap/funding_breakout/dnr_fhm_request_amount`: **valid** — No requested DNR amount is provided, and no grant share can be inferred from construction estimates.
+- flagged_gaps `gap/funding_breakout/other_state_funding_amount`: **valid** — No other-state commitment for the proposed current phase is supplied. The MPCA grant partly funded the supporting study, not an identified application phase.
+- flagged_gaps `gap/funding_breakout/federal_funding_amount`: **valid** — No current-phase federal funding amount or commitment is supplied.
+- flagged_gaps `gap/funding_breakout/local_funding_amount`: **valid** — No local contribution is identified in the inputs.
+- flagged_gaps `gap/funding_breakout/prior_fhm_funding`: **valid** — The inputs provide no prior FHM funding history for an application project.
+- flagged_gaps `gap/project_activities/selected_fhm_concept`: **valid** — Selection for planning-level study is available, but selection of an alternative for grant submission is not.
+- flagged_gaps `gap/flood_damages/selected_current_phase_concept`: **valid** — No input ties the application phase to a selected location-specific concept.
+- flagged_gaps `gap/flood_damages/documented_flood_damage_records`: **valid** — The source provides modeled risk rather than documented observed-loss records. The requested location-specific records are genuinely absent.
+- flagged_gaps `gap/flood_damages/flood_damage_photographs`: **valid** — Maps, aerial imagery and report graphics are not photographs documenting an actual flooding event.
+- flagged_gaps `gap/flood_damages/hennepin_county_presidential_disaster_declaration`: **valid** — No applicable county presidential-declaration record is supplied, and the question identifies the county and project purpose.
+- flagged_gaps `gap/existing_mitigation_regulation/prior_mitigation_measures`: **valid** — The report discusses modeling updates and general city projects but does not supply completed mitigation history at an as-yet-selected grant project location.
+- flagged_gaps `gap/existing_mitigation_regulation/floodplain_ordinance_standards`: **valid** — Applicable floodplain ordinance standards are not supplied.
+- flagged_gaps `gap/existing_mitigation_regulation/floodplain_ordinance_compliance`: **valid** — Neither a final project nor an ordinance-compliance determination is available.
+- flagged_gaps `gap/existing_mitigation_regulation/floodplain_ordinance_violations`: **valid** — The inputs contain no site-specific ordinance-violation record; the question is actionable even though it does not fully address enforcement practices.
+- flagged_gaps `gap/project_description/selected_current_phase_concept`: **valid** — No alternative is selected for the FHM application.
+- flagged_gaps `gap/project_description/immediate_phase_objective`: **valid** — The general flood-risk-reduction purpose is known, but the objective and deliverables of a selected grant phase are not defined.
+- flagged_gaps `gap/project_description/next_project_phase`: **valid** — The study identifies further evaluation needs, not an approved phase sequence following a defined current grant phase.
+- flagged_gaps `gap/project_description/implementation_responsible_entity`: **valid** — The city and Barr have stated study roles, but the inputs do not assign implementation responsibility for a selected grant project.
+- flagged_gaps `gap/project_analysis/selected_fhm_concept`: **valid** — The current-phase concept selection is genuinely unavailable.
+- flagged_gaps `gap/project_analysis/selected_project_environmental_effects`: **valid** — Some hydrologic effects and design constraints are available, but no complete environmental-effects assessment of a selected application project is supplied.
+- flagged_gaps `gap/project_analysis/selected_project_social_economic_effects`: **valid** — Area-level SVI and affected assets do not provide a selected project's social/economic assessment or confirmed beneficiary analysis.
+- flagged_gaps `gap/project_analysis/selected_project_public_input_record`: **valid** — City staff consultation is documented, but public engagement for the application project is not.
+- flagged_gaps `gap/project_analysis/selected_project_environmental_review_status`: **valid** — Future permitting discussions do not establish formal environmental-review status.
+- flagged_gaps `gap/project_analysis/selected_project_local_water_plan_reference`: **valid** — The methodology comparison involving Bloomington and the WMO does not identify a supporting local-water-plan provision.
+- flagged_gaps `gap/project_analysis/selected_project_wetland_credit_intent`: **valid** — No input states the applicant's wetland-replacement-credit intent.
+- flagged_gaps `gap/project_financing/current_phase_concept`: **valid** — No study alternative is chosen as the current grant phase.
+- flagged_gaps `gap/project_financing/total_current_phase_cost`: **valid** — The available figures are alternative construction estimates, not a selected complete phase budget.
+- flagged_gaps `gap/project_financing/dnr_fhm_request_amount`: **valid** — The intended programme is known, but no requested amount is supplied.
+- flagged_gaps `gap/project_financing/other_state_funding_amount`: **valid** — No other-state funding commitment for the current application phase is supplied; the historical MPCA study grant does not answer this question.
+- flagged_gaps `gap/project_financing/federal_funding_amount`: **valid** — No federal contribution to a current-phase budget is provided.
+- flagged_gaps `gap/project_financing/local_funding_amount`: **valid** — No committed local contribution is provided.
+- flagged_gaps `gap/project_financing/current_phase_financing_method`: **valid** — The inputs supply no financing instrument or method for the application phase.
+- flagged_gaps `gap/project_financing/local_financial_capability`: **valid** — No fiscal evidence establishing the city's ability to meet a proposed local contribution is supplied.
+- flagged_gaps `gap/project_financing/project_partner_assistance`: **valid** — Potential coordination and partnership opportunities are mentioned, but no assistance commitment for a selected project is identified.
+- flagged_gaps `gap/project_financing/prior_fhm_funding`: **valid** — No prior FHM award history is supplied; absence of a record cannot be treated as confirmation of no prior funding.
+
+### verification: PASS
+- defect_recall: 1.00
+- strict_defect_recall: 1.00
+- model_findings: 22.00
+- duplicate_findings: 15.00
+- false_alarms: 0.00
+- false_alarm_rate: 0.00
+- open_gap_findings: 35.00
+- clean_model_findings: 1.00
+- clean_false_alarms: 0.00
+- clean_false_alarm_rate: 0.00
+- defects `concept-c-cost-conflict`: **detected** — All three findings identify Wilson Pond Concept C, the conflicting costs, and the chapters requiring reconciliation.
+- defects `accuracy-range-conflict`: **detected** — Each finding explicitly identifies the two incompatible accuracy ranges for the same planning-level estimates.
+- defects `location-count-mismatch`: **detected** — The finding names the stated count and the number actually listed, and suggests correcting the count or identifying the missing location.
+- defects `subset-exceeds-total`: **detected** — Finding 23 explicitly identifies the impossible subset. Findings 24, 29, and 41 also locate the same corrupted count through its conflict with the 601 count elsewhere, enabling correction.
+- defects `selection-gap-inconsistency`: **detected** — All nine findings identify the conflict between the explicit selection of Wilson Pond Concept B and the unresolved selection questions or gaps elsewhere.
+- defects `contact-unflagged`: **detected** — The finding identifies the empty required contact information and specifies what must be supplied.
+- findings `finding/17`: **valid** — The stated assumptions yield 8,000 × 3 × 75% = 18,000 cubic feet of usable storage, not 24,000. Although inherited from the source, this remains a genuine arithmetic inconsistency in the draft.
+
+### editing: FAIL
+- case_pass_rate: 0.83
+- expected_change_rate: 1.00
+- preservation_rate: 0.97
+- unsupported_changes: 1.00
+- collateral_edits: 0.00
+- **Semantic:** shorten-analysis/not-verified: altered: The text retains the absence of survey verification, but no longer explicitly states that no survey data were collected for that purpose. Inconclusive surveys would also fit the new wording, so the specific data-collection limitation is weakened.
+- **Semantic:** change/shorten-analysis/4: unsupported: Most of the social-effects compression is faithful, but replacing the explicit absence of data collection with 'no surveys verified' weakens that specific evidence limitation. The request to shorten did not authorize losing it.
+- case `fill-submittal-and-contact`
+  - expected_changes `submittal-date`: **applied** — The date question is replaced by the supplied submission date.
+  - expected_changes `contact`: **applied** — The applicant chapter includes the supplied name, title, address, telephone number, and email.
+  - preserved `locations`: **preserved** — All three studied locations remain unchanged.
+  - preserved `agent-still-asked`: **preserved** — The authorized-agent question remains open; the contact was not assigned that separate role.
+  - changes `change/fill-submittal-and-contact/0`: **supported** — The user explicitly supplied the date used to fill the gap.
+  - changes `change/fill-submittal-and-contact/1`: **supported** — The replacement reproduces the contact details supplied by the user.
+- case `select-concept`
+  - expected_changes `selection-stated`: **applied** — All seven chapters containing the location-and-concept question now state the supplied selection.
+  - preserved `alternatives`: **preserved** — The other five concepts retain their estimates and remain presented as evaluated alternatives. Their technical descriptions and the parallel cost tables are also unchanged.
+  - preserved `accuracy`: **preserved** — The cost discussions retain both the 2025-dollar basis and the stated uncertainty range.
+  - preserved `dnr-request`: **preserved** — Both funding chapters still request the grant amount. The construction estimate is not represented as the DNR request.
+  - changes `change/select-concept/0`: **supported** — The user supplied the selection, approach, and estimate for the applicant chapter.
+  - changes `change/select-concept/1`: **supported** — The funding-breakdown gap is filled with the supplied selection and preliminary construction estimate.
+  - changes `change/select-concept/2`: **supported** — Propagating the supplied selection to Project activities is explicitly authorized.
+  - changes `change/select-concept/3`: **supported** — The flood-damages chapter contained the same selection gap and receives the user-supplied answer.
+  - changes `change/select-concept/4`: **supported** — The project-description replacement states exactly the selection and estimate the user authorized.
+  - changes `change/select-concept/5`: **supported** — The project-analysis selection question is answered without inventing a selection rationale or changing the alternatives.
+  - changes `change/select-concept/6`: **supported** — The financing chapter receives the authorized selection while retaining the construction-estimate qualification.
+- case `shorten-analysis`
+  - expected_changes `shorter`: **applied** — The introduction, table wording, screening discussion, and subsequent narrative are substantially compressed, making the chapter noticeably shorter while retaining its structure and questions.
+  - preserved `concept-costs`: **preserved** — All six construction estimates remain attached to the correct concepts, including $17,333,000 for Wilson Pond Concept C.
+  - preserved `accuracy`: **preserved** — Both the dollar-year basis and accuracy range survive the compression.
+  - preserved `not-pursued`: **preserved** — The screening bullet retains the space constraint and the City's direction against acquisition.
+  - preserved `svi`: **preserved** — Use of the Social Vulnerability Index remains explicit.
+  - preserved `area-count`: **preserved** — The total and municipal-area counts are unchanged.
+  - preserved `design-storms`: **preserved** — All three return periods and the 24-hour duration remain stated.
+  - preserved `modeled-reductions`: **preserved** — Every listed reduction survives in its original concept row. The table heading retains the units and the 10-year, 24-hour modeling condition.
+  - preserved `box-culverts`: **preserved** — The Wilson Pond rows retain the single-versus-double configuration, dimensions, and Highway 494 endpoint.
+  - preserved `cost-exclusions`: **preserved** — Every specified exclusion remains in the shortened cost paragraph.
+  - preserved `planning-level`: **preserved** — The chapter continues to distinguish concept-level modeling from final design and verified conditions.
+  - preserved `groundwater-and-pumping`: **preserved** — Both Wilson Pond screening reasons remain, including the expected-groundwater qualification and assumed drawdown period.
+  - preserved `other-sites-screening`: **preserved** — The elevation, downstream flood-risk, and developed-open-space screening reasons remain tied to the correct locations.
+  - preserved `coordination`: **preserved** — The increased-discharge consequence and both public-entity and private-owner coordination requirements survive.
+  - preserved `not-verified`: **altered** — The text retains the absence of survey verification, but no longer explicitly states that no survey data were collected for that purpose. Inconclusive surveys would also fit the new wording, so the specific data-collection limitation is weakened.
+  - preserved `high-density-housing`: **preserved** — The count of three high-density housing structures remains associated with Woodlawn Terrace.
+  - preserved `markers`: **preserved** — All eight original information-needed questions remain unchanged.
+  - changes `change/shorten-analysis/0`: **supported** — The introduction is faithfully condensed while retaining the assessment criteria and both area counts.
+  - changes `change/shorten-analysis/1`: **supported** — The table and surrounding prose are shortened without changing the six costs, modeled reductions, culvert configurations, storm conditions, uncertainty, exclusions, or design-review requirements.
+  - changes `change/shorten-analysis/2`: **supported** — Converting the screening narrative to bullets preserves its location-specific reasons and 24-hour assumption. The following text retains the discharge and coordination implications within the concept-level context.
+  - changes `change/shorten-analysis/3`: **supported** — The replacement refers back to constraints retained immediately above rather than repeating them, and keeps the environmental-evidence limitation.
+  - changes `change/shorten-analysis/4`: **unsupported** — Most of the social-effects compression is faithful, but replacing the explicit absence of data collection with 'no surveys verified' weakens that specific evidence limitation. The request to shorten did not authorize losing it.
+  - changes `change/shorten-analysis/5`: **supported** — The replacement faithfully condenses the consultation and location-selection account, retaining the lack of documented public engagement.
+  - changes `change/shorten-analysis/6`: **supported** — The shorter wording retains each undocumented regulatory item and the need for confirmation after location and phase selection.
+  - changes `change/shorten-analysis/7`: **supported** — The concluding limitation is faithfully condensed, retaining uncertainty about configuration, cost, functioning, and flood-prone determinations.
+- case `agent-without-value`
+  - preserved `unchanged`: **preserved** — The pipeline asked for the missing name and title without editing the draft or inventing an authorized agent.
+- case `agent-after-clarification`
+  - expected_changes `agent-stated`: **applied** — The authorized-agent question is replaced with the name and title supplied in response to the clarification.
+  - preserved `contact-still-asked`: **preserved** — The contact remains an open question; Dana Whitfield is entered only as authorized agent.
+  - preserved `submittal-date-still-asked`: **preserved** — The application submittal date is still requested.
+  - preserved `project-name-still-asked`: **preserved** — The official-project-name marker is unchanged.
+  - preserved `applicant`: **preserved** — The applicant remains the City of Richfield, Minnesota.
+  - preserved `funds-official-still-asked`: **preserved** — The financing chapter was not edited and still requests financial-capability evidence and identification of the official authorized to commit funds.
+  - changes `change/agent-after-clarification/0`: **supported** — The conversation establishes which role is being filled, and the user supplies the exact name and title.
+- case `delete-site-constraints-paragraph`
+  - expected_changes `constraints-paragraph-removed`: **applied** — The specified final constraints paragraph is deleted. The chapter now ends with the preceding coordination paragraph.
+  - preserved `coordination-paragraph`: **preserved** — The requested preceding paragraph retains the entities, increased-discharge reason, and Minnesota River destination.
+  - preserved `design-review`: **preserved** — All three further-review requirements remain unchanged.
+  - preserved `ordinance-marker`: **preserved** — The entire ordinance question remains, including compliance, permits, enforcement, and unresolved violations.
+  - preserved `analysis-untouched`: **preserved** — Project analysis was not edited and retains both mentions of the Wilson Pond groundwater constraint.
+  - changes `change/delete-site-constraints-paragraph/0`: **supported** — The replacement deletes precisely the paragraph identified by the user and leaves the preceding paragraph intact.

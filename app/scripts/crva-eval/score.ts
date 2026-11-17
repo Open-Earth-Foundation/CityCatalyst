@@ -424,6 +424,8 @@ const REVIEW_HEADER = [
   "model evidence",
   "model status",
   "verdict",
+  "partial reason",
+  "cause",
   "uncertain",
   "eval notes",
 ];
@@ -442,6 +444,8 @@ export function reviewCsv(rows: ScoredRow[]): string {
       row.modelEvidence,
       row.goldStatus === "N/A" ? "" : row.modelStatus,
       row.verdict ?? "",
+      row.partialReason ?? "",
+      row.cause ?? "",
       row.uncertain ? "yes" : "no",
       evalNotes(row),
     ]

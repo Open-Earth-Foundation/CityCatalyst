@@ -3,7 +3,10 @@ import { CRVA_FIELD_IDS } from "@/backend/ingest/plugins/ccra/draft-schema";
 import type { RunStats } from "./run-adapter";
 import { citedPage, GOLD_GAP, NOT_JUDGED } from "./score";
 import {
+  ERROR_CAUSES,
   MODEL_STATUSES,
+  NO_CAUSE_VERDICTS,
+  PARTIAL_REASONS,
   VERDICTS,
   type GoldWorkbook,
   type ModelStatus,
@@ -69,29 +72,100 @@ const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const notJudged = (r: ScoredRow) => r.notes.startsWith(NOT_JUDGED);
 const goldGap = (r: ScoredRow) => r.notes.startsWith(GOLD_GAP);
 
+type Rate = { hits: number; total: number };
+const rate = ({ hits, total }: Rate) =>
+  `${hits} of ${total} (${pct(total === 0 ? 0 : hits / total)})`;
+
+const lessDetail = (r: ScoredRow) =>
+  r.verdict === "Partial" && r.partialReason === "less_detail";
+
+const TOLERANT = "tolerant view, not the official rule (pending Magdalena)";
+
 /**
- * Value-level share, the unit of the Madrid hand review (share of the model's
- * values a person would keep). Denominator: every model value that received a
- * judgment, i.e. gold rows filled by a value, extras (Hallucination,
- * Misattribution, GOLD GAP, stale judgments) and duplicates; values the judge
- * never covered ("not judged") are left out. Numerator: those whose verdict is
- * Correct or Normalisation. Duplicates have no verdict, so they only count in
- * the denominator, as a repeated value is not one a person would keep.
+ * Coverage: of the gold rows with a gold status, how many the model found.
+ * Strict counts Correct and Correct (NOT_FOUND); tolerant adds Partial rows
+ * that only lack detail.
  */
-export function valueShare(rows: ScoredRow[]): {
-  usable: number;
-  judged: number;
-} {
-  const judged = rows.filter((r) => r.modelValue !== "" && !notJudged(r));
-  const usable = judged.filter(
-    (r) => r.verdict === "Correct" || r.verdict === "Normalisation",
+export function coverage(rows: ScoredRow[]): { strict: Rate; tolerant: Rate } {
+  const gold = rows.filter(
+    (r) => r.kind === "gold" && r.goldStatus && r.goldStatus !== "N/A",
+  );
+  const strict = gold.filter(
+    (r) => r.verdict === "Correct" || r.verdict === "Correct (NOT_FOUND)",
   ).length;
-  return { usable, judged: judged.length };
+  const total = gold.length;
+  return {
+    strict: { hits: strict, total },
+    tolerant: { hits: strict + gold.filter(lessDetail).length, total },
+  };
 }
 
-function valueShareLine(rows: ScoredRow[]): string {
-  const { usable, judged } = valueShare(rows);
-  return `Model values judged Correct or Normalisation: ${usable} of ${judged} (${pct(judged === 0 ? 0 : usable / judged)}) — comparable to the Madrid hand review (71%).`;
+/**
+ * Precision: of every value the adapter returned (gold-filling rows, extras,
+ * duplicates, values the judge never covered), how many are right. Strict
+ * counts Correct and Normalisation; tolerant adds Partial with less_detail.
+ */
+export function precision(rows: ScoredRow[]): { strict: Rate; tolerant: Rate } {
+  const bundle = rows.filter((r) => r.modelValue !== "");
+  const strict = bundle.filter(
+    (r) => r.verdict === "Correct" || r.verdict === "Normalisation",
+  ).length;
+  const total = bundle.length;
+  return {
+    strict: { hits: strict, total },
+    tolerant: { hits: strict + bundle.filter(lessDetail).length, total },
+  };
+}
+
+function measuresBlock(rows: ScoredRow[]): string {
+  const c = coverage(rows);
+  const p = precision(rows);
+  return [
+    `Coverage, strict: ${rate(c.strict)} gold rows found.`,
+    `Coverage, tolerant (${TOLERANT}): ${rate(c.tolerant)}.`,
+    `Precision, strict: ${rate(p.strict)} model values right (Correct or Normalisation); comparable to the Madrid hand review (71%).`,
+    `Precision, tolerant (${TOLERANT}): ${rate(p.tolerant)}.`,
+  ].join("\n\n");
+}
+
+/** Count table; rows from an older judge log carry no field and show as not recorded. */
+function countTable(
+  title: string,
+  values: (string | null | undefined)[],
+  order: readonly string[],
+): string {
+  const counts = new Map<string, number>();
+  for (const v of values) {
+    const key = v === undefined ? "(not recorded)" : (v ?? "(none)");
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const keys = [...order, "(none)", "(not recorded)"];
+  return [
+    `| ${title} | Rows |`,
+    "| --- | --- |",
+    ...keys.map((k) => `| ${k} | ${counts.get(k) ?? 0} |`),
+  ].join("\n");
+}
+
+/** Partial reasons over Partial rows; causes over rows with an error verdict. */
+function reasonTables(rows: ScoredRow[]): string {
+  const partial = rows.filter((r) => r.verdict === "Partial");
+  const errors = rows.filter(
+    (r) => r.verdict !== null && !NO_CAUSE_VERDICTS.includes(r.verdict),
+  );
+  return [
+    countTable(
+      "Partial reason",
+      partial.map((r) => r.partialReason),
+      PARTIAL_REASONS,
+    ),
+    "",
+    countTable(
+      "Cause (error verdicts)",
+      errors.map((r) => r.cause),
+      ERROR_CAUSES,
+    ),
+  ].join("\n");
 }
 
 /** "rows 33 Correct, 35 Omission": gold rows and their verdicts. */
@@ -138,7 +212,7 @@ function summaryBlock(s: ScoreSummary, warning?: string): string {
       `| ${g} | ${MODEL_STATUSES.map((m) => s.statusMatrix[g][m]).join(" | ")} |`,
   );
   return [
-    `Scored rows: ${s.scored}. Share correct: ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
+    `Scored rows: ${s.scored}. Share correct (ticket formula, the DoD measure): ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
     ...(warning ? ["", warning] : []),
     "",
     "| Verdict | Rows |",
@@ -217,6 +291,8 @@ export function buildReport(input: {
       "",
       "Verdict definitions are provisional: they come from the xlsx and the ticket, pending the answer key doc.",
       "",
+      "Coverage = gold rows found; precision = model values that are right.",
+      "",
       "## Overall",
       "",
       summaryBlock(
@@ -226,13 +302,17 @@ export function buildReport(input: {
           : undefined,
       ),
       "",
-      valueShareLine(rows),
+      measuresBlock(rows),
+      "",
+      reasonTables(rows),
       "",
       `## v0 fields (${CRVA_FIELD_IDS.length})`,
       "",
       summaryBlock(v0),
       "",
-      valueShareLine(v0Rows),
+      measuresBlock(v0Rows),
+      "",
+      reasonTables(v0Rows),
       "",
       "| Field | Scored rows | Share correct |",
       "| --- | --- | --- |",

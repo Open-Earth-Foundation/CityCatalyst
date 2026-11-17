@@ -588,6 +588,8 @@ describe("gold side of scored rows", () => {
       "model evidence",
       "model status",
       "verdict",
+      "partial reason",
+      "cause",
       "uncertain",
       "eval notes",
     ]);

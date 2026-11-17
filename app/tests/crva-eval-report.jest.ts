@@ -469,7 +469,7 @@ describe("traps per entry", () => {
   });
 });
 
-describe("thresholds and value share", () => {
+describe("thresholds and measures", () => {
   const rows = [
     ...rowsOf("Correct", 8),
     ...rowsOf("Omission", 2),
@@ -484,59 +484,125 @@ describe("thresholds and value share", () => {
     );
   });
 
-  it("counts model values judged Correct or Normalisation", () => {
-    const valueRows = [
+  describe("coverage, precision and reason tables", () => {
+    const extra = (o: Partial<ScoredRow>) =>
+      row({ kind: "extra", rowNumber: null, goldStatus: null, ...o });
+    const fixture = [
       row({ modelValue: "a", verdict: "Correct" }),
-      row({ modelValue: "b", verdict: "Normalisation" }),
-      row({ modelValue: "c", verdict: "Wrong content" }),
-      row({ modelValue: "", verdict: "Omission" }),
       row({
-        kind: "extra",
-        rowNumber: null,
-        modelValue: "d",
-        verdict: "Hallucination",
+        goldStatus: "NOT_FOUND",
+        modelStatus: "NOT_FOUND",
+        verdict: "Correct (NOT_FOUND)",
       }),
       row({
-        kind: "extra",
-        rowNumber: null,
-        modelValue: "e",
-        verdict: null,
-        notes: "GOLD GAP",
+        modelValue: "b",
+        verdict: "Partial",
+        partialReason: "less_detail",
+        cause: null,
       }),
+      row({
+        modelValue: "c",
+        verdict: "Partial",
+        partialReason: "incomplete_list",
+        cause: "prompt",
+      }),
+      row({ modelValue: "d", verdict: "Wrong content", cause: "chunking" }),
+      row({ verdict: "Omission", cause: "ocr_text_extraction" }),
+      row({ goldStatus: "N/A", modelValue: "e", verdict: "Correct" }),
+      // Old judge log: the new fields are missing.
+      row({
+        modelValue: "k",
+        verdict: "Partial",
+        partialReason: undefined as never,
+        cause: undefined as never,
+      }),
+      row({ isV0Field: false, modelValue: "f", verdict: "Normalisation" }),
+      row({
+        isV0Field: false,
+        verdict: "Omission",
+        cause: "field_outside_v0",
+      }),
+      extra({ modelValue: "g", verdict: "Hallucination", cause: "prompt" }),
+      extra({ modelValue: "h", verdict: null, notes: "GOLD GAP" }),
+      extra({ modelValue: "i", verdict: null, notes: "not judged" }),
       row({
         kind: "duplicate",
         rowNumber: null,
-        modelValue: "f",
+        modelValue: "j",
         verdict: null,
         notes: "duplicate of k",
       }),
-      row({
-        kind: "extra",
-        rowNumber: null,
-        modelValue: "g",
-        verdict: null,
-        notes: "not judged",
-        uncertain: true,
-      }),
-      row({
-        kind: "extra",
-        rowNumber: null,
-        modelValue: "h",
-        verdict: null,
-        notes: "not judged; adapter field A2.4a",
-        uncertain: true,
-      }),
-      row({ modelValue: "i", verdict: "Correct", isV0Field: false }),
     ];
-    const r = buildReport({ city: "x", rows: valueRows, gold, stats });
-    const line = (section: string) =>
-      r.split(`## ${section}`)[1].split("\n## ")[0];
-    expect(line("Overall")).toContain(
-      "Model values judged Correct or Normalisation: 3 of 7 (42.9%) — comparable to the Madrid hand review (71%)",
-    );
-    expect(line("v0 fields (12)")).toContain(
-      "Model values judged Correct or Normalisation: 2 of 6 (33.3%)",
-    );
+    const r = buildReport({ city: "x", rows: fixture, gold, stats });
+    const section = (name: string) =>
+      r.split(`## ${name}`)[1].split("\n## ")[0];
+    const overall = section("Overall");
+    const v0 = section("v0 fields (12)");
+    const T = "tolerant view, not the official rule (pending Magdalena)";
+
+    it("explains the two measures in the header", () => {
+      expect(r).toContain(
+        "Coverage = gold rows found; precision = model values that are right.",
+      );
+    });
+
+    it("coverage: gold rows with a gold status, N/A excluded", () => {
+      expect(overall).toContain("Coverage, strict: 2 of 9 (22.2%)");
+      expect(overall).toContain(`Coverage, tolerant (${T}): 3 of 9 (33.3%)`);
+      expect(v0).toContain("Coverage, strict: 2 of 7 (28.6%)");
+      expect(v0).toContain(`Coverage, tolerant (${T}): 3 of 7 (42.9%)`);
+    });
+
+    it("precision: every bundle value, including extras, duplicates and not judged", () => {
+      expect(overall).toContain(
+        "Precision, strict: 3 of 11 (27.3%) model values right (Correct or Normalisation); comparable to the Madrid hand review (71%)",
+      );
+      expect(overall).toContain(`Precision, tolerant (${T}): 4 of 11 (36.4%)`);
+      expect(v0).toContain("Precision, strict: 2 of 10 (20.0%)");
+      expect(v0).toContain(`Precision, tolerant (${T}): 3 of 10 (30.0%)`);
+    });
+
+    it("keeps the ticket formula as the DoD measure", () => {
+      expect(overall).toContain(
+        "Share correct (ticket formula, the DoD measure)",
+      );
+      expect(v0).toContain("Share correct (ticket formula, the DoD measure)");
+    });
+
+    it("partial reasons count Partial rows, with none and not recorded", () => {
+      for (const block of [overall, v0]) {
+        expect(block).toContain(
+          [
+            "| Partial reason | Rows |",
+            "| --- | --- |",
+            "| less_detail | 1 |",
+            "| incomplete_list | 1 |",
+            "| merged_items | 0 |",
+            "| (none) | 0 |",
+            "| (not recorded) | 1 |",
+          ].join("\n"),
+        );
+      }
+    });
+
+    it("causes count error verdicts only", () => {
+      const table = (prompt: number, fov: number) =>
+        [
+          "| Cause (error verdicts) | Rows |",
+          "| --- | --- |",
+          "| ocr_text_extraction | 1 |",
+          "| chunking | 1 |",
+          `| prompt | ${prompt} |`,
+          "| figure_or_map | 0 |",
+          `| field_outside_v0 | ${fov} |`,
+          "| scope | 0 |",
+          "| gold_issue | 0 |",
+          "| (none) | 1 |",
+          "| (not recorded) | 1 |",
+        ].join("\n");
+      expect(overall).toContain(table(2, 1));
+      expect(v0).toContain(table(2, 0));
+    });
   });
 
   it("counts not-judged rows by prefix, so aliased ones count too", () => {

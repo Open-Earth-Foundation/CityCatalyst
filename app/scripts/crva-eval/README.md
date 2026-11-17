@@ -58,7 +58,7 @@ A Partial carries one partial reason: `trimmed_wording` (same item and meaning i
 `gpt-5.6-sol` rejects `temperature: 0` and the shared LLM client sends no seed, so two judgings of one run can differ. To measure it, judge the same run again into another directory and compare. From `app/`:
 
 1. `npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-1.json> --city <slug> --out score-run-1-b` (`--out` is a plain directory name next to the run file; default `score-run-<n>`; paths are rejected).
-2. `npx tsx scripts/crva-eval/judge-stability.ts --a <run dir>/score-run-1 --b <run dir>/score-run-1-b` writes `judge-stability.md` into the run directory: both sides' headline numbers (share correct, coverage and precision in full detail), gold rows keyed by sheet row with the same verdict and model status, model values keyed by field, value and evidence with the same verdict (values present on one side only are listed), a per-field table for v0 fields, up to 50 changed rows, and the judge models read from each `judge.jsonl`.
+2. `npx tsx scripts/crva-eval/judge-stability.ts --a <run dir>/score-run-1 --b <run dir>/score-run-1-b` writes `judge-stability.md` into the run directory: both sides' headline numbers (share correct, coverage and precision, each under the accepted rule first and in full detail beside it), gold rows keyed by sheet row with the same verdict and model status, model values keyed by field, value and evidence with the same verdict (values present on one side only are listed), a per-field table for v0 fields, up to 50 changed rows, and the judge models read from each `judge.jsonl`.
 
 ## Judge calibration
 

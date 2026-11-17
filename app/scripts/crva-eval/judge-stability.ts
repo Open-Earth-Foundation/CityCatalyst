@@ -9,7 +9,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { coverage, precision, summarize } from "./report";
+import { ACCEPTED, coverage, precision, summarize } from "./report";
 import { modelsFromLog, readLog } from "./score-run";
 import type { ScoredRow } from "./types";
 
@@ -156,13 +156,19 @@ export function judgeStabilityMarkdown(
   models: { a: string[]; b: string[] },
 ): string {
   const s = judgeStability(a, b);
+  // Accepted rule first, full detail beside it, as in report.md.
   const headline = (rows: ScoredRow[]) => {
-    const c = coverage(rows).fullDetail;
-    const p = precision(rows).fullDetail;
+    const summary = summarize(rows);
+    const c = coverage(rows);
+    const p = precision(rows);
+    const percent = (x: number) => `${(x * 100).toFixed(1)}%`;
     return [
-      `${(summarize(rows).shareCorrect * 100).toFixed(1)}%`,
-      share(c.hits, c.total),
-      share(p.hits, p.total),
+      percent(summary.shareCorrectAccepted),
+      percent(summary.shareCorrect),
+      share(c.accepted.hits, c.accepted.total),
+      share(c.fullDetail.hits, c.fullDetail.total),
+      share(p.accepted.hits, p.accepted.total),
+      share(p.fullDetail.hits, p.fullDetail.total),
     ];
   };
   const [ha, hb] = [headline(a), headline(b)];
@@ -178,9 +184,12 @@ export function judgeStabilityMarkdown(
     "",
     "| Measure | A | B |",
     "| --- | --- | --- |",
-    `| Share correct (ticket formula) | ${ha[0]} | ${hb[0]} |`,
-    `| Coverage, full detail | ${ha[1]} | ${hb[1]} |`,
-    `| Precision, full detail | ${ha[2]} | ${hb[2]} |`,
+    `| Share correct, ${ACCEPTED} | ${ha[0]} | ${hb[0]} |`,
+    `| Share correct, full detail (ticket formula) | ${ha[1]} | ${hb[1]} |`,
+    `| Coverage, ${ACCEPTED} | ${ha[2]} | ${hb[2]} |`,
+    `| Coverage, full detail | ${ha[3]} | ${hb[3]} |`,
+    `| Precision, ${ACCEPTED} | ${ha[4]} | ${hb[4]} |`,
+    `| Precision, full detail | ${ha[5]} | ${hb[5]} |`,
     "",
     "## Agreement",
     "",

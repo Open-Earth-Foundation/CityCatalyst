@@ -33,7 +33,7 @@ const THRESHOLDS = { maxDropped: 0.05, minFields: 10, minCorrect: 0.8 };
  * Magdalena's ruling (2026-11-17): a value in shorter wording is right when it
  * keeps every figure of the gold; a value missing a figure is not.
  */
-const ACCEPTED =
+export const ACCEPTED =
   "accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not";
 
 const trimmedWording = (r: ScoredRow) =>
@@ -270,7 +270,12 @@ function examplesBlock(rows: ScoredRow[]): string {
       const shown = [...matching]
         .sort(
           (a, b) =>
-            compare(a.fieldId, b.fieldId) || compare(a.itemKey, b.itemKey),
+            compare(a.fieldId, b.fieldId) ||
+            compare(a.itemKey, b.itemKey) ||
+            // Rows with no sheet row (extras) after gold rows.
+            (a.rowNumber ?? Number.MAX_SAFE_INTEGER) -
+              (b.rowNumber ?? Number.MAX_SAFE_INTEGER) ||
+            compare(a.modelValue, b.modelValue),
         )
         .slice(0, EXAMPLES_PER_GROUP);
       const table = [
@@ -403,7 +408,7 @@ export function buildReport(input: {
       "",
       ...trapLines(rows, gold),
       "",
-      `Rows on trap pages: ${trapRows.length}, scored ${trapSummary.scored}, share correct ${pct(trapSummary.shareCorrect)}.`,
+      `Rows on trap pages: ${trapRows.length}, scored ${trapSummary.scored}, share correct, ${ACCEPTED}: ${pct(trapSummary.shareCorrectAccepted)}; full detail: ${pct(trapSummary.shareCorrect)}.`,
       "",
       "## Thresholds",
       "",

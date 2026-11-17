@@ -125,6 +125,35 @@ describe("judgeStabilityMarkdown", () => {
   });
 });
 
+describe("judgeStabilityMarkdown headline", () => {
+  const A =
+    "accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not";
+  // A: one Correct, one Partial with trimmed wording; B: both Correct.
+  const sideA = [
+    row({ rowNumber: 2 }),
+    row({
+      rowNumber: 3,
+      modelValue: "w",
+      verdict: "Partial",
+      partialReason: "trimmed_wording",
+    }),
+  ];
+  const sideB = [row({ rowNumber: 2 }), row({ rowNumber: 3, modelValue: "w" })];
+  const md = judgeStabilityMarkdown(sideA, sideB, { a: [], b: [] });
+
+  it("shows each measure under the accepted rule first, then full detail", () => {
+    const rows = [
+      `| Share correct, ${A} | 100.0% | 100.0% |`,
+      "| Share correct, full detail (ticket formula) | 50.0% | 100.0% |",
+      `| Coverage, ${A} | 2 of 2 (100.0%) | 2 of 2 (100.0%) |`,
+      "| Coverage, full detail | 1 of 2 (50.0%) | 2 of 2 (100.0%) |",
+      `| Precision, ${A} | 2 of 2 (100.0%) | 2 of 2 (100.0%) |`,
+      "| Precision, full detail | 1 of 2 (50.0%) | 2 of 2 (100.0%) |",
+    ];
+    expect(md).toContain(rows.join("\n"));
+  });
+});
+
 describe("score-run --out", () => {
   it("defaults to score-run-<n>", () => {
     expect(outDirName(undefined, "2")).toBe("score-run-2");

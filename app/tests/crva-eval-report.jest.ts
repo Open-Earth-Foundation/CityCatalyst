@@ -435,6 +435,7 @@ describe("traps per entry", () => {
       rowNumber: 50,
       goldPages: [12],
       verdict: "Partial",
+      partialReason: "trimmed_wording",
       trap: true,
     }),
     row({
@@ -469,6 +470,12 @@ describe("traps per entry", () => {
     expect(traps).toContain("Rows with a TRAP: note: rows 50 Partial");
     expect(traps).toMatch(/keyed by page, not by item_key/);
     expect(traps).toMatch(/Rows on trap pages: 1/);
+  });
+
+  it("trap share correct shows the accepted rule first, then full detail", () => {
+    expect(traps).toContain(
+      "Rows on trap pages: 1, scored 1, share correct, accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not: 100.0%; full detail: 0.0%.",
+    );
   });
 });
 
@@ -791,6 +798,30 @@ describe("examples where model and gold differ", () => {
     expect(sub("Partial: merged_items (0 rows, 0 shown)")).toContain(
       "No rows.",
     );
+  });
+
+  it("breaks ties on field and item key by row number, then model value", () => {
+    const wrong = (rowNumber: number | null, modelValue: string) =>
+      row({
+        fieldId: "A1.3",
+        itemKey: "heat",
+        rowNumber,
+        verdict: "Wrong content",
+        modelValue,
+      });
+    const tied = buildReport({
+      city: "x",
+      rows: [wrong(null, "b"), wrong(null, "a"), wrong(9, "z"), wrong(3, "y")],
+      gold,
+      stats,
+    })
+      .split("### Wrong content")[1]
+      .split("\n## ")[0];
+    const models = tied
+      .split("\n")
+      .filter((l) => l.startsWith("| A1.3"))
+      .map((l) => l.split(" | ")[3]);
+    expect(models).toEqual(["y", "z", "a", "b"]);
   });
 
   it("orders the partial reasons, then Wrong content", () => {

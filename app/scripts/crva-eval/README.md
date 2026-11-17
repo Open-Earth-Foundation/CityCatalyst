@@ -39,9 +39,11 @@ Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (def
 | `score-run-<n>/scored.json` | The same rows with the judge's reasons, partial reason, error cause and the gold side                         |
 | `score-run-<n>/judge.jsonl` | One line per judge call (request, response, judgments or error)                                               |
 | `score-run-<n>/review.csv`  | Uncertain rows plus a seeded sample of confident verdicts, gold and model side by side, for a person to check |
-| `score-run-<n>/report.md`   | Share correct, value-level share, verdict counts, status matrix, traps per entry, thresholds, run details     |
+| `score-run-<n>/report.md`   | Share correct, coverage, precision, verdict counts, status matrix, examples, traps, thresholds, run details   |
 
 Verdict, partial reason and error cause definitions are provisional (from the xlsx, the ticket and the first Buenos Aires run) until the answer key doc is available; they live in `judge.ts`. Besides its own field, the judge sees the other fields' gold rows (at most 40 per field, values cut to 120 characters), so it can name the row a misattributed value belongs in. A `judge.jsonl` written before partial reasons and causes existed scores with both empty, so rerun with `--rejudge` to fill them. The 80% threshold is evaluated on the v0 fields; `report.md` shows the overall share beside it.
+
+A Partial carries one partial reason: `trimmed_wording` (same item and meaning in shorter wording, every number, percentage, year and unit of the gold present), `missing_figure` (one of those is missing or vaguer, for example "most of the city" for "62%"), `incomplete_list` or `merged_items`. `report.md` shows share correct, coverage and precision in two views, the accepted rule first: the **accepted rule** (Magdalena, 2026-11-17) also counts Partial with `trimmed_wording` as right, and **full detail** does not (share and coverage count Correct and Correct (NOT_FOUND); precision counts Correct and Normalisation). Share correct in full detail is the ticket formula; the 80% threshold uses it. A `judge.jsonl` written with the old `less_detail` reason is not supported (its Partial rows count under neither view nor any reason row); rerun with `--rejudge`. The section "Examples where model and gold differ" lists up to 5 rows per partial reason and for Wrong content (sorted by field, then item key; text cut at 300 characters), gold and model side by side, to share with the gold owner.
 
 ## Paste into the Sheet
 
@@ -56,7 +58,7 @@ Verdict, partial reason and error cause definitions are provisional (from the xl
 `gpt-5.6-sol` rejects `temperature: 0` and the shared LLM client sends no seed, so two judgings of one run can differ. To measure it, judge the same run again into another directory and compare. From `app/`:
 
 1. `npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-1.json> --city <slug> --out score-run-1-b` (`--out` is a plain directory name next to the run file; default `score-run-<n>`; paths are rejected).
-2. `npx tsx scripts/crva-eval/judge-stability.ts --a <run dir>/score-run-1 --b <run dir>/score-run-1-b` writes `judge-stability.md` into the run directory: both sides' headline numbers (share correct, strict coverage, strict precision), gold rows keyed by sheet row with the same verdict and model status, model values keyed by field, value and evidence with the same verdict (values present on one side only are listed), a per-field table for v0 fields, up to 50 changed rows, and the judge models read from each `judge.jsonl`.
+2. `npx tsx scripts/crva-eval/judge-stability.ts --a <run dir>/score-run-1 --b <run dir>/score-run-1-b` writes `judge-stability.md` into the run directory: both sides' headline numbers (share correct, coverage and precision in full detail), gold rows keyed by sheet row with the same verdict and model status, model values keyed by field, value and evidence with the same verdict (values present on one side only are listed), a per-field table for v0 fields, up to 50 changed rows, and the judge models read from each `judge.jsonl`.
 
 ## Judge calibration
 

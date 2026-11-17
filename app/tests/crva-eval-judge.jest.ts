@@ -418,12 +418,12 @@ describe("judgeField", () => {
     const result = await judgeOne({
       verdict: "Partial",
       modelStatus: "PARTIAL",
-      partialReason: "less_detail",
+      partialReason: "trimmed_wording",
       cause: "prompt",
     });
     expect(result).toMatchObject({
       verdict: "Partial",
-      partialReason: "less_detail",
+      partialReason: "trimmed_wording",
       cause: "prompt",
       uncertain: false,
     });
@@ -442,11 +442,11 @@ describe("judgeField", () => {
   });
 
   it("a partial reason on another verdict is cleared and flagged", async () => {
-    const result = await judgeOne({ partialReason: "less_detail" });
+    const result = await judgeOne({ partialReason: "trimmed_wording" });
     expect(result.partialReason).toBeNull();
     expect(result.uncertain).toBe(true);
     expect(result.reason).toContain(
-      'judge check: partialReason "less_detail" on verdict "Correct"',
+      'judge check: partialReason "trimmed_wording" on verdict "Correct"',
     );
   });
 
@@ -468,6 +468,37 @@ describe("judgeField", () => {
     expect(result.reason).toContain(
       'judge check: verdict "Wrong content" needs a cause',
     );
+  });
+
+  it("partial reasons split trimmed wording from a missing figure (R26)", () => {
+    expect(PARTIAL_REASONS).toEqual([
+      "trimmed_wording",
+      "missing_figure",
+      "incomplete_list",
+      "merged_items",
+    ]);
+    expect(PARTIAL_REASON_DEFINITIONS.trimmed_wording).toMatch(
+      /every number, percentage, year and unit/,
+    );
+    expect(PARTIAL_REASON_DEFINITIONS.missing_figure).toMatch(
+      /number, percentage, year or unit/,
+    );
+    // The Partial verdict no longer names a missing year as an example.
+    expect(VERDICT_DEFINITIONS.Partial).not.toMatch(/year/);
+    for (const reason of PARTIAL_REASONS) {
+      expect(VERDICT_DEFINITIONS.Partial).toContain(reason);
+    }
+  });
+
+  it("the old less_detail reason is outside the list", async () => {
+    const result = await judgeOne({
+      verdict: "Partial",
+      modelStatus: "PARTIAL",
+      partialReason: "less_detail",
+      cause: "prompt",
+    });
+    expect(result.partialReason).toBeNull();
+    expect(result.reason).toContain('partialReason "less_detail"');
   });
 
   it("a partial reason or cause outside the list becomes null and flagged", async () => {

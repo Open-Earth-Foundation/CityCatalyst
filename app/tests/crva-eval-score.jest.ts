@@ -408,14 +408,14 @@ describe("partial reason and cause", () => {
         judgment({
           verdict: "Partial",
           modelStatus: "PARTIAL",
-          partialReason: "less_detail",
+          partialReason: "trimmed_wording",
           cause: "prompt",
         }),
       ],
     });
     expect(row).toMatchObject({
       kind: "gold",
-      partialReason: "less_detail",
+      partialReason: "trimmed_wording",
       cause: "prompt",
     });
   });
@@ -477,7 +477,7 @@ describe("judge verdict", () => {
           judgment({
             valueIndex: 1,
             verdict: "Partial",
-            partialReason: "less_detail",
+            partialReason: "trimmed_wording",
             cause: "prompt",
           }),
           judgment({

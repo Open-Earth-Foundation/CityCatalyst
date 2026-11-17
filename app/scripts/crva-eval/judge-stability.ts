@@ -157,8 +157,8 @@ export function judgeStabilityMarkdown(
 ): string {
   const s = judgeStability(a, b);
   const headline = (rows: ScoredRow[]) => {
-    const c = coverage(rows).strict;
-    const p = precision(rows).strict;
+    const c = coverage(rows).fullDetail;
+    const p = precision(rows).fullDetail;
     return [
       `${(summarize(rows).shareCorrect * 100).toFixed(1)}%`,
       share(c.hits, c.total),
@@ -179,8 +179,8 @@ export function judgeStabilityMarkdown(
     "| Measure | A | B |",
     "| --- | --- | --- |",
     `| Share correct (ticket formula) | ${ha[0]} | ${hb[0]} |`,
-    `| Coverage, strict | ${ha[1]} | ${hb[1]} |`,
-    `| Precision, strict | ${ha[2]} | ${hb[2]} |`,
+    `| Coverage, full detail | ${ha[1]} | ${hb[1]} |`,
+    `| Precision, full detail | ${ha[2]} | ${hb[2]} |`,
     "",
     "## Agreement",
     "",

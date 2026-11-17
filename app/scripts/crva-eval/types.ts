@@ -13,7 +13,8 @@ export type Verdict = (typeof VERDICTS)[number];
 
 /** What a Partial value is missing, against its gold row. */
 export const PARTIAL_REASONS = [
-  "less_detail",
+  "trimmed_wording",
+  "missing_figure",
   "incomplete_list",
   "merged_items",
 ] as const;

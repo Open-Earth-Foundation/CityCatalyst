@@ -500,8 +500,15 @@ describe("thresholds and measures", () => {
       row({
         modelValue: "b",
         verdict: "Partial",
-        partialReason: "less_detail",
+        partialReason: "trimmed_wording",
         cause: null,
+      }),
+      // A missing figure is not right under the accepted rule.
+      row({
+        modelValue: "m",
+        verdict: "Partial",
+        partialReason: "missing_figure",
+        cause: "prompt",
       }),
       row({
         modelValue: "c",
@@ -541,7 +548,8 @@ describe("thresholds and measures", () => {
       r.split(`## ${name}`)[1].split("\n## ")[0];
     const overall = section("Overall");
     const v0 = section("v0 fields (12)");
-    const T = "tolerant view, not the official rule (pending Magdalena)";
+    const A =
+      "accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not";
 
     it("explains the two measures in the header", () => {
       expect(r).toContain(
@@ -549,27 +557,54 @@ describe("thresholds and measures", () => {
       );
     });
 
-    it("coverage: gold rows with a gold status, N/A excluded", () => {
-      expect(overall).toContain("Coverage, strict: 2 of 9 (22.2%)");
-      expect(overall).toContain(`Coverage, tolerant (${T}): 3 of 9 (33.3%)`);
-      expect(v0).toContain("Coverage, strict: 2 of 7 (28.6%)");
-      expect(v0).toContain(`Coverage, tolerant (${T}): 3 of 7 (42.9%)`);
+    // Accepted rule first, full detail after it.
+    const inOrder = (block: string, first: string, second: string) => {
+      expect(block).toContain(first);
+      expect(block).toContain(second);
+      expect(block.indexOf(first)).toBeLessThan(block.indexOf(second));
+    };
+
+    it("coverage: gold rows with a gold status, N/A excluded; accepted rule first", () => {
+      inOrder(
+        overall,
+        `Coverage, ${A}: 3 of 10 (30.0%) gold rows found.`,
+        "Coverage, full detail: 2 of 10 (20.0%) gold rows found.",
+      );
+      inOrder(
+        v0,
+        `Coverage, ${A}: 3 of 8 (37.5%)`,
+        "Coverage, full detail: 2 of 8 (25.0%)",
+      );
     });
 
-    it("precision: every bundle value, including extras, duplicates and not judged", () => {
-      expect(overall).toContain(
-        "Precision, strict: 3 of 11 (27.3%) model values right (Correct or Normalisation); comparable to the Madrid hand review (71%)",
+    it("precision: every bundle value, including extras, duplicates and not judged; accepted rule first", () => {
+      inOrder(
+        overall,
+        `Precision, ${A}: 4 of 12 (33.3%) model values right.`,
+        "Precision, full detail: 3 of 12 (25.0%) model values right (Correct or Normalisation); comparable to the Madrid hand review (71%)",
       );
-      expect(overall).toContain(`Precision, tolerant (${T}): 4 of 11 (36.4%)`);
-      expect(v0).toContain("Precision, strict: 2 of 10 (20.0%)");
-      expect(v0).toContain(`Precision, tolerant (${T}): 3 of 10 (30.0%)`);
+      inOrder(
+        v0,
+        `Precision, ${A}: 3 of 11 (27.3%)`,
+        "Precision, full detail: 2 of 11 (18.2%)",
+      );
     });
 
-    it("keeps the ticket formula as the DoD measure", () => {
-      expect(overall).toContain(
-        "Share correct (ticket formula, the DoD measure)",
+    it("headline share correct: accepted rule first, then the ticket formula", () => {
+      inOrder(
+        overall,
+        `Share correct, ${A}: 33.3%.`,
+        "Share correct, full detail (ticket formula, the DoD measure): 25.0%.",
       );
-      expect(v0).toContain("Share correct (ticket formula, the DoD measure)");
+      inOrder(
+        v0,
+        `Share correct, ${A}: 40.0%.`,
+        "Share correct, full detail (ticket formula, the DoD measure): 30.0%.",
+      );
+    });
+
+    it("drops the old tolerant and strict labels", () => {
+      expect(r).not.toMatch(/tolerant|strict/);
     });
 
     it("partial reasons count Partial rows, with none and not recorded", () => {
@@ -578,7 +613,8 @@ describe("thresholds and measures", () => {
           [
             "| Partial reason | Rows |",
             "| --- | --- |",
-            "| less_detail | 1 |",
+            "| trimmed_wording | 1 |",
+            "| missing_figure | 1 |",
             "| incomplete_list | 1 |",
             "| merged_items | 0 |",
             "| (none) | 0 |",
@@ -603,8 +639,8 @@ describe("thresholds and measures", () => {
           "| (none) | 1 |",
           "| (not recorded) | 1 |",
         ].join("\n");
-      expect(overall).toContain(table(2, 1));
-      expect(v0).toContain(table(2, 0));
+      expect(overall).toContain(table(3, 1));
+      expect(v0).toContain(table(3, 0));
     });
   });
 
@@ -630,6 +666,118 @@ describe("thresholds and measures", () => {
     });
     expect(r).toMatch(/Not judged rows: 1/);
     expect(r).toMatch(/GOLD GAP rows: 1/);
+  });
+});
+
+describe("examples where model and gold differ", () => {
+  const partial = (
+    fieldId: string,
+    itemKey: string,
+    partialReason: ScoredRow["partialReason"],
+    o: Partial<ScoredRow> = {},
+  ) =>
+    row({
+      fieldId,
+      itemKey,
+      verdict: "Partial",
+      partialReason,
+      goldValue: `gold ${fieldId} ${itemKey}`,
+      modelValue: `model ${fieldId} ${itemKey}`,
+      reason: `why ${fieldId} ${itemKey}`,
+      ...o,
+    });
+  const long = "x".repeat(400);
+  const rows = [
+    // Six trimmed_wording rows out of order: five are shown, sorted.
+    partial("B2.1", "b", "trimmed_wording"),
+    partial("A1.2a", "z", "trimmed_wording"),
+    partial("B2.1", "a", "trimmed_wording"),
+    partial("A1.2a", "c", "trimmed_wording"),
+    partial("C3", "-", "trimmed_wording"),
+    partial("A1.2a", "a", "trimmed_wording"),
+    partial("A2.4", "62%", "missing_figure", {
+      goldValue: `62% of the city | ${long}`,
+      modelValue: "most of\nthe city",
+    }),
+    row({
+      fieldId: "A1.3",
+      itemKey: "heat",
+      verdict: "Wrong content",
+      goldValue: "2020",
+      modelValue: "2010",
+      reason: "another year",
+    }),
+    // Not examples: a Correct row and a duplicate.
+    row({ modelValue: "fine", verdict: "Correct" }),
+    row({
+      kind: "duplicate",
+      rowNumber: null,
+      verdict: null,
+      partialReason: "trimmed_wording",
+      modelValue: "dup",
+    }),
+  ];
+  const section = buildReport({ city: "x", rows, gold, stats })
+    .split("## Examples where model and gold differ")[1]
+    .split("\n## ")[0];
+  const sub = (title: string) =>
+    section.split(`### ${title}`)[1].split("\n### ")[0];
+  const header =
+    "| Field | Item key | Gold value | Model value | Judge reason |";
+
+  it("shows up to 5 rows per partial reason, sorted by field then item key", () => {
+    const t = sub("Partial: trimmed_wording (6 rows, 5 shown)");
+    expect(t).toContain(header);
+    const keys = t
+      .split("\n")
+      // Data rows start with a field id, so the header and separator drop out.
+      .filter((l) => /^\| [A-Z]\d/.test(l))
+      .map((l) => l.split(" | ").slice(0, 2).join(" "));
+    expect(keys).toEqual([
+      "| A1.2a a",
+      "| A1.2a c",
+      "| A1.2a z",
+      "| B2.1 a",
+      "| B2.1 b",
+    ]);
+    expect(t).toContain(
+      "| A1.2a | a | gold A1.2a a | model A1.2a a | why A1.2a a |",
+    );
+  });
+
+  it("cuts long text at 300 characters and keeps the table intact", () => {
+    const t = sub("Partial: missing_figure (1 rows, 1 shown)");
+    // Cut at 300 characters of the text, then escape the pipe for the table.
+    const cut = `62% of the city | ${long}`
+      .slice(0, 300)
+      .replace("|", "\\|")
+      .concat("…");
+    expect(t).toContain(
+      `| A2.4 | 62% | ${cut} | most of the city | why A2.4 62% |`,
+    );
+  });
+
+  it("lists Wrong content and says when a reason has no rows", () => {
+    expect(sub("Wrong content (1 rows, 1 shown)")).toContain(
+      "| A1.3 | heat | 2020 | 2010 | another year |",
+    );
+    expect(sub("Partial: incomplete_list (0 rows, 0 shown)")).toContain(
+      "No rows.",
+    );
+    expect(sub("Partial: merged_items (0 rows, 0 shown)")).toContain(
+      "No rows.",
+    );
+  });
+
+  it("orders the partial reasons, then Wrong content", () => {
+    const titles = section.match(/^### .*$/gm)!.map((l) => l.split(" (")[0]);
+    expect(titles).toEqual([
+      "### Partial: trimmed_wording",
+      "### Partial: missing_figure",
+      "### Partial: incomplete_list",
+      "### Partial: merged_items",
+      "### Wrong content",
+    ]);
   });
 });
 

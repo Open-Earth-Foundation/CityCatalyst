@@ -188,7 +188,7 @@ describe("agreement", () => {
       rec({
         "row id": "g3",
         "judge verdict": "Partial",
-        "judge partial reason": "less_detail",
+        "judge partial reason": "trimmed_wording",
         "reviewer verdict": "Partial",
         "reviewer partial reason": "incomplete_list",
         "reviewer note": "list",

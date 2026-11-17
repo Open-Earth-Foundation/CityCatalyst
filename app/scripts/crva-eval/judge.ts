@@ -29,7 +29,7 @@ export const VERDICT_DEFINITIONS: Record<Verdict, string> = {
   "Correct (NOT_FOUND)":
     "Gold status is NOT_FOUND and no model value fills the row. Assigned by the scorer, never to a model value.",
   Partial:
-    "Right content but incomplete: it covers only part of the gold value (for example part of a list, or a missing year or element).",
+    "Right content but not all of the gold value; partialReason says what is missing: trimmed_wording, missing_figure, incomplete_list or merged_items.",
   Hallucination:
     "The content is not in the document: no gold row holds it and the quote does not state it. A value that fits a NOT_FOUND gold row is also Hallucination, because the gold says the PDF does not hold that information.",
   Omission:
@@ -46,8 +46,10 @@ export const VERDICT_DEFINITIONS: Record<Verdict, string> = {
 
 /** Provisional, like the verdicts: what a Partial value is missing. */
 export const PARTIAL_REASON_DEFINITIONS: Record<PartialReason, string> = {
-  less_detail:
-    'The right item with less detail than the gold, for example a reference given as "DesInventar, 2020" without its full title.',
+  trimmed_wording:
+    'The same item and meaning as the gold in shorter wording, with every number, percentage, year and unit of the gold value present. Example: a reference given as "DesInventar, 2020" without its full title.',
+  missing_figure:
+    'A number, percentage, year or unit of the gold value is missing or vaguer, for example "most of the city" for "62%".',
   incomplete_list:
     "A list value that covers only some of the gold list's items.",
   merged_items: "One model value merges two or more gold items.",

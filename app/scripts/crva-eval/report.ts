@@ -18,13 +18,26 @@ export type ReportRunStats = RunStats;
 
 export interface ScoreSummary {
   scored: number;
+  /** The ticket formula (full detail), the DoD measure. */
   shareCorrect: number;
+  /** The accepted rule: also counts Partial with trimmed wording. */
+  shareCorrectAccepted: number;
   verdictCounts: Record<Verdict, number>;
   statusMatrix: Record<ModelStatus, Record<ModelStatus, number>>;
   statusMatchRate: number;
 }
 
 const THRESHOLDS = { maxDropped: 0.05, minFields: 10, minCorrect: 0.8 };
+
+/**
+ * Magdalena's ruling (2026-11-17): a value in shorter wording is right when it
+ * keeps every figure of the gold; a value missing a figure is not.
+ */
+export const ACCEPTED =
+  "accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not";
+
+const trimmedWording = (r: ScoredRow) =>
+  r.verdict === "Partial" && r.partialReason === "trimmed_wording";
 
 /** Share correct follows the Summary tab: rows with any verdict are the denominator. */
 export function summarize(
@@ -42,12 +55,14 @@ export function summarize(
   ) as Record<ModelStatus, Record<ModelStatus, number>>;
 
   let scored = 0;
+  let trimmed = 0;
   let matrixTotal = 0;
   let diagonal = 0;
   for (const row of rows.filter(filter)) {
     if (row.verdict !== null) {
       scored++;
       verdictCounts[row.verdict]++;
+      if (trimmedWording(row)) trimmed++;
     }
     // Only gold rows with a gold status to compare against.
     if (row.kind === "gold" && row.goldStatus && row.goldStatus !== "N/A") {
@@ -60,6 +75,7 @@ export function summarize(
   return {
     scored,
     shareCorrect: scored === 0 ? 0 : correct / scored,
+    shareCorrectAccepted: scored === 0 ? 0 : (correct + trimmed) / scored,
     verdictCounts,
     statusMatrix,
     statusMatchRate: matrixTotal === 0 ? 0 : diagonal / matrixTotal,
@@ -76,44 +92,42 @@ type Rate = { hits: number; total: number };
 const rate = ({ hits, total }: Rate) =>
   `${hits} of ${total} (${pct(total === 0 ? 0 : hits / total)})`;
 
-const lessDetail = (r: ScoredRow) =>
-  r.verdict === "Partial" && r.partialReason === "less_detail";
-
-const TOLERANT = "tolerant view, not the official rule (pending Magdalena)";
+type Views = { accepted: Rate; fullDetail: Rate };
 
 /**
  * Coverage: of the gold rows with a gold status, how many the model found.
- * Strict counts Correct and Correct (NOT_FOUND); tolerant adds Partial rows
- * that only lack detail.
+ * Full detail counts Correct and Correct (NOT_FOUND); the accepted rule adds
+ * Partial rows with trimmed wording.
  */
-export function coverage(rows: ScoredRow[]): { strict: Rate; tolerant: Rate } {
+export function coverage(rows: ScoredRow[]): Views {
   const gold = rows.filter(
     (r) => r.kind === "gold" && r.goldStatus && r.goldStatus !== "N/A",
   );
-  const strict = gold.filter(
+  const full = gold.filter(
     (r) => r.verdict === "Correct" || r.verdict === "Correct (NOT_FOUND)",
   ).length;
   const total = gold.length;
   return {
-    strict: { hits: strict, total },
-    tolerant: { hits: strict + gold.filter(lessDetail).length, total },
+    accepted: { hits: full + gold.filter(trimmedWording).length, total },
+    fullDetail: { hits: full, total },
   };
 }
 
 /**
  * Precision: of every value the adapter returned (gold-filling rows, extras,
- * duplicates, values the judge never covered), how many are right. Strict
- * counts Correct and Normalisation; tolerant adds Partial with less_detail.
+ * duplicates, values the judge never covered), how many are right. Full
+ * detail counts Correct and Normalisation; the accepted rule adds Partial
+ * with trimmed wording.
  */
-export function precision(rows: ScoredRow[]): { strict: Rate; tolerant: Rate } {
+export function precision(rows: ScoredRow[]): Views {
   const bundle = rows.filter((r) => r.modelValue !== "");
-  const strict = bundle.filter(
+  const full = bundle.filter(
     (r) => r.verdict === "Correct" || r.verdict === "Normalisation",
   ).length;
   const total = bundle.length;
   return {
-    strict: { hits: strict, total },
-    tolerant: { hits: strict + bundle.filter(lessDetail).length, total },
+    accepted: { hits: full + bundle.filter(trimmedWording).length, total },
+    fullDetail: { hits: full, total },
   };
 }
 
@@ -121,10 +135,10 @@ function measuresBlock(rows: ScoredRow[]): string {
   const c = coverage(rows);
   const p = precision(rows);
   return [
-    `Coverage, strict: ${rate(c.strict)} gold rows found.`,
-    `Coverage, tolerant (${TOLERANT}): ${rate(c.tolerant)}.`,
-    `Precision, strict: ${rate(p.strict)} model values right (Correct or Normalisation); comparable to the Madrid hand review (71%).`,
-    `Precision, tolerant (${TOLERANT}): ${rate(p.tolerant)}.`,
+    `Coverage, ${ACCEPTED}: ${rate(c.accepted)} gold rows found.`,
+    `Coverage, full detail: ${rate(c.fullDetail)} gold rows found.`,
+    `Precision, ${ACCEPTED}: ${rate(p.accepted)} model values right.`,
+    `Precision, full detail: ${rate(p.fullDetail)} model values right (Correct or Normalisation); comparable to the Madrid hand review (71%).`,
   ].join("\n\n");
 }
 
@@ -212,7 +226,7 @@ function summaryBlock(s: ScoreSummary, warning?: string): string {
       `| ${g} | ${MODEL_STATUSES.map((m) => s.statusMatrix[g][m]).join(" | ")} |`,
   );
   return [
-    `Scored rows: ${s.scored}. Share correct (ticket formula, the DoD measure): ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
+    `Scored rows: ${s.scored}. Share correct, ${ACCEPTED}: ${pct(s.shareCorrectAccepted)}. Share correct, full detail (ticket formula, the DoD measure): ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
     ...(warning ? ["", warning] : []),
     "",
     "| Verdict | Rows |",
@@ -223,6 +237,59 @@ function summaryBlock(s: ScoreSummary, warning?: string): string {
     `| --- | ${MODEL_STATUSES.map(() => "---").join(" | ")} |`,
     ...matrixRows,
   ].join("\n");
+}
+
+const EXAMPLES_PER_GROUP = 5;
+const EXAMPLE_CHARS = 300;
+
+/** One table cell: one line, cut at 300 characters, pipes escaped. */
+function exampleCell(text: string): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  const cut =
+    flat.length > EXAMPLE_CHARS ? flat.slice(0, EXAMPLE_CHARS) + "…" : flat;
+  return cut.replace(/\|/g, "\\|");
+}
+
+// Code-unit order, so the examples do not depend on the machine's locale.
+const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * Gold and model side by side for each partial reason and for Wrong content,
+ * so the gold owner can check where the line between the verdicts falls.
+ */
+function examplesBlock(rows: ScoredRow[]): string {
+  const groups: [string, ScoredRow[]][] = [
+    ...PARTIAL_REASONS.map((reason): [string, ScoredRow[]] => [
+      `Partial: ${reason}`,
+      rows.filter((r) => r.verdict === "Partial" && r.partialReason === reason),
+    ]),
+    ["Wrong content", rows.filter((r) => r.verdict === "Wrong content")],
+  ];
+  return groups
+    .flatMap(([title, matching]) => {
+      const shown = [...matching]
+        .sort(
+          (a, b) =>
+            compare(a.fieldId, b.fieldId) || compare(a.itemKey, b.itemKey),
+        )
+        .slice(0, EXAMPLES_PER_GROUP);
+      const table = [
+        "| Field | Item key | Gold value | Model value | Judge reason |",
+        "| --- | --- | --- | --- | --- |",
+        ...shown.map(
+          (r) =>
+            `| ${[r.fieldId, r.itemKey, r.goldValue, r.modelValue, r.reason].map(exampleCell).join(" | ")} |`,
+        ),
+      ];
+      return [
+        `### ${title} (${matching.length} rows, ${shown.length} shown)`,
+        "",
+        ...(shown.length === 0 ? ["No rows."] : table),
+        "",
+      ];
+    })
+    .join("\n")
+    .trimEnd();
 }
 
 function check(label: string, ok: boolean, detail: string): string {
@@ -323,6 +390,12 @@ export function buildReport(input: {
       `## Other fields (${otherFieldCount})`,
       "",
       summaryBlock(other),
+      "",
+      "## Examples where model and gold differ",
+      "",
+      `Up to ${EXAMPLES_PER_GROUP} rows per group, sorted by field then item key; text longer than ${EXAMPLE_CHARS} characters is cut.`,
+      "",
+      examplesBlock(rows),
       "",
       "## Traps",
       "",

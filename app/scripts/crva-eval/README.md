@@ -6,6 +6,7 @@ Engineering scripts. They run the CRVA ingest adapter on a city PDF, then score 
 
 - Work from `app/`.
 - `OPENAI_API_KEY` and `MISTRAL_API_KEY` in `.env` (extraction and OCR).
+- `LLM_BASE_URL`, if set, must match the provider of `OPENAI_API_KEY`.
 - `JUDGE_MODEL` in `.env`: the model that grades the extraction. `score-run.ts` exits with `JUDGE_MODEL is not set` without it.
 - The extraction model is not an env var. It is the `crva_extraction` role in `llm_config.yaml`. The judge reuses that role with `JUDGE_MODEL` swapped in.
 
@@ -23,7 +24,7 @@ Check `runs.md` in the new folder: status ok, parts and boundaries listed. Then:
 npx tsx scripts/crva-eval/score-run.ts --gold "C:\Users\david\Downloads\Buenos_Aires_CRVA_2020.xlsx" --run reports\crva-eval\buenos-aires\<timestamp>\run-1.json --city buenos-aires
 ```
 
-Options: `--rejudge` calls the judge again (otherwise an existing `judge.jsonl` is reused and no LLM calls are made), `--seed 1285` changes the review sample.
+Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (default 15); `--rejudge` calls the judge again (otherwise an existing `judge.jsonl` is reused and no LLM calls are made), `--seed 1285` changes the review sample.
 
 A failed run (`bundle` null) is refused. Only the 12 v0 fields with at least one value are judged; a field whose judge call fails twice is listed in `report.md` under Run and shown as `field not judged`.
 

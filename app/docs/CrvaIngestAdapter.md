@@ -34,13 +34,15 @@ Each value has `fieldId`, `value`, `source` (file, page, quote), `origin: "ai_dr
 
 Figures, maps and charts are listed in `bundle.figures` with page and caption, for human review.
 
+The adapter's `A2.4a` corresponds to field `A2.4` in the CC-1227 answer keys. The eval harness maps it.
+
 ## Does not cover
 
 - Maps to GeoJSON, and reading values from images, colours or icons.
 - Ratings: probability, frequency, intensity, magnitude and degree. The scale is pending C40.
 - `OEF` and `Manual` fields, B2, C2, E2, and every other field not listed above.
 - Saving to a database, an upload route, a review UI and durable drafts (CC-956).
-- PDFs over 20 MiB. Seattle and Buenos Aires do not run in v0.
+- PDFs over 20 MiB. The plugin rejects them in v0. The eval harness splits them by page range (parts of at most 15 MiB, pages mapped back to the original); see [`../scripts/crva-eval/README.md`](../scripts/crva-eval/README.md).
 
 Code does not enforce the ratings and figures scope. The prompt excludes them and a stray `probability` key is removed, but free text can still hold a rating, and a value can quote a figure caption. Runs 4 and 5 had neither. The reviewer checks this.
 
@@ -100,4 +102,12 @@ The quote check removes every unverified value, so a "verified share" measure wo
 
 ## Running locally
 
-No run script is committed. A local run needs an `IngestRunner` with `MemoryIngestStore`. The plugin sends the item bytes as a `data:` URL by default, because Mistral cannot fetch the `madrid.es` link (error 3310).
+The eval harness in `app/scripts/crva-eval/` runs the adapter on a PDF and scores the result against a gold `.xlsx`. From `app/`:
+
+```
+npx tsx scripts/crva-eval/run-adapter.ts --pdf <path> --city <slug> --runs 1
+npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run reports\crva-eval\<city>\<timestamp>
+un-1.json --city <slug>
+```
+
+Options, environment variables and outputs are in [`../scripts/crva-eval/README.md`](../scripts/crva-eval/README.md). The plugin sends the item bytes as a `data:` URL by default, because Mistral cannot fetch the `madrid.es` link (error 3310).

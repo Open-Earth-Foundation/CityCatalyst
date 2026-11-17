@@ -50,3 +50,11 @@ Verdict, partial reason and error cause definitions are provisional (from the xl
 3. Paste the columns `model value` to `verdict` at row 2 of the `model value` column.
 4. Paste the `eval notes` column of the CSV at row 2 of the `eval notes` column, for every row. Never paste eval notes into the gold `notes` column of gold rows: that column is the annotator's.
 5. For extra and duplicate rows (empty `gold_row`), also paste `field_id` and `item_key` into the `field_id` and `item_key` columns of the new rows at the end of the Sheet.
+
+## Judge calibration
+
+A Claude reviewer (an LLM, so this measures agreement between models, not human truth) checks a stratified sample of the judge's verdicts. From `app/`:
+
+1. `npx tsx scripts/crva-eval/calibration.ts sample --scored <score-run-n/scored.json> [--seed 1] [--size 40]` writes `calibration-sample.csv` next to it: every verdict present, at least 10 uncertain rows, GOLD GAP and duplicate rows, then random fill. N/A and not-judged rows are never included.
+2. The reviewer fills `reviewer verdict`, `reviewer partial reason`, `reviewer cause` and `reviewer note`. For GOLD GAP and duplicate rows the judge's "verdict" is that label.
+3. `npx tsx scripts/crva-eval/calibration.ts score --sample <filled csv>` writes `calibration.md`: overall and per-verdict agreement, confusion table, partial-reason and cause agreement, disagreements. Target is 85% overall; below that, adjust the judge prompt.

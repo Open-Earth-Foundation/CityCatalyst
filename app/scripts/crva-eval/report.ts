@@ -33,7 +33,7 @@ const THRESHOLDS = { maxDropped: 0.05, minFields: 10, minCorrect: 0.8 };
  * Magdalena's ruling (2026-11-17): a value in shorter wording is right when it
  * keeps every figure of the gold; a value missing a figure is not.
  */
-export const ACCEPTED =
+const ACCEPTED =
   "accepted rule (Magdalena, 2026-11-17): trimmed wording counts as right, missing figures do not";
 
 const trimmedWording = (r: ScoredRow) =>

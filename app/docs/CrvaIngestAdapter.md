@@ -90,35 +90,37 @@ Other limits seen on Madrid:
 
 ## Buenos Aires and Seattle results (CC-1285)
 
-Five runs per city, 2026-11-17, against the CC-1227 gold keys. Both PDFs are scans over 20 MiB, so the eval harness split them into 3 parts. Adapter code from `d9ce767`, with no plugin changes. Extraction used `gpt-5.6-luna` (role `crva_extraction`, no temperature set). The judge was `gpt-5.6-sol`. Scoring used the harness at the CC-1285 branch head.
+Five runs per city, 2026-11-17, against the CC-1227 gold keys. Both PDFs are scans over 20 MiB, so the eval harness split them into 3 parts. Adapter code from `d9ce767`, with no plugin changes. Extraction used `gpt-5.6-luna` (role `crva_extraction`, no temperature set). The judge was `gpt-5.6-sol`. Scoring used the harness at commit `73370ee` of the CC-1285 branch.
 
-| Measure                                         | Buenos Aires 2020      | Seattle 2023           |
-| ----------------------------------------------- | ---------------------- | ---------------------- |
-| PDF                                             | 185 pages, 41.2 MiB    | 137 pages, 34.7 MiB    |
-| Gold rows with a status (in the 12 v0 fields)   | 273 (113)              | 502 (322)              |
-| Values kept per run                             | 270 to 305             | 284 to 335             |
-| Values dropped by the quote check               | 1.0% to 3.8%           | 2.1% to 3.4%           |
-| Minutes per run                                 | 4.7 to 5.5             | 4.4 to 4.6             |
-| Tokens per run (prompt / completion)            | about 566,000 / 73,000 | about 374,000 / 67,000 |
-| v0 gold rows found, accepted rule               | 23.9% to 31.9%         | 15.8% to 23.3%         |
-| v0 gold rows found, full detail                 | 14.2% to 21.2%         | 4.3% to 9.3%           |
-| Model values right, accepted rule               | 10.0% to 12.0%         | 18.0% to 23.4%         |
-| Model values right, full detail                 | 5.9% to 7.9%           | 4.4% to 9.2%           |
-| v0 gold rows with the same status in all 5 runs | 55.8%                  | 58.7%                  |
+| Measure                                                       | Buenos Aires 2020      | Seattle 2023           |
+| ------------------------------------------------------------- | ---------------------- | ---------------------- |
+| PDF                                                           | 185 pages, 41.2 MiB    | 137 pages, 34.7 MiB    |
+| Gold rows with a status (in the 12 v0 fields)                 | 273 (113)              | 502 (322)              |
+| Values kept per run                                           | 270 to 305             | 284 to 335             |
+| Values dropped by validation (quote check and invalid values) | 1.0% to 3.8%           | 2.1% to 3.4%           |
+| Minutes per run                                               | 4.7 to 5.5             | 4.4 to 4.6             |
+| Tokens per run (prompt / completion)                          | about 566,000 / 73,000 | about 374,000 / 67,000 |
+| v0 gold rows found, accepted rule                             | 23.9% to 31.9%         | 15.8% to 23.3%         |
+| v0 gold rows found, full detail                               | 14.2% to 21.2%         | 4.3% to 9.3%           |
+| Model values right, accepted rule                             | 17.3% to 21.0%         | 18.7% to 26.1%         |
+| Model values right, full detail                               | 8.9% to 11.5%          | 4.4% to 9.2%           |
+| Model values that repeat one already on the same gold row     | 62 to 69               | 50 to 81               |
+| v0 gold rows with the same status in all 5 runs               | 55.8%                  | 58.7%                  |
 
 The accepted rule is Magdalena's ruling of 2026-11-17: a shorter answer is right when it keeps the meaning and every number, percentage, year and unit of the gold. An answer that drops a number or percentage is not right. "Full detail" needs everything in the gold value.
 
 How far to trust these numbers:
 
-- The judge is an LLM. Judging the same run twice gave the same verdict for 98.9% of gold rows and 90.7% of model values, with the same headline.
-- A Claude review of 40 sampled rows agreed with the judge on right versus not right for 35 of them (87.5%). Where they differed, the judge was stricter. So the accepted-rule numbers are a lower bound.
+- The judge is an LLM. With an earlier version of its prompt, judging the same run twice gave the same verdict for 98.9% of gold rows and 90.7% of model values, with the same headline. This was not measured again for the final prompt.
+- A Claude review of 40 sampled rows from Buenos Aires run 1 (none from Seattle) agreed with the judge on right versus not right for 35 of them (87.5%). Where they differed, the judge was stricter. So the accepted-rule numbers are a lower bound.
 - The judge's labels for wrong values (Hallucination, Misattribution, gold gap) agree less well, so treat the error breakdown as indicative.
-- "Model values right" compares each value with the gold. The Madrid hand review only checked that the quote supports the value, which is a weaker test, so the two are not comparable.
+- "Model values right" compares each value with the gold. A value that repeats one already on the same gold row is graded like any other value.
+- "Model values right" is a stricter test than the Madrid hand review. The Madrid hand review only checked that the quote supports the value, so the two are not comparable.
 
 Where the losses are, from Buenos Aires run 5 and Seattle run 1:
 
 - Omission. A1.2a (sources) causes most of it: 28 of 54 omitted v0 gold rows in Buenos Aires, and 155 of 192 in Seattle. The gold lists the reference list and Seattle's Appendix A, one row per source. The adapter mostly returns in-text citations, and sometimes the report itself.
-- Values in the wrong field: about 110 per city. D1.1a and D1.2a take hazard and impact statements, which belong in B1.2a and C2.2a. C1 (current impacts) takes future impacts, which belong in C2.
+- Values in the wrong field: 112 in Buenos Aires, 102 in Seattle. D1.1a and D1.2a take hazard and impact statements, which belong in B1.2a and C2.2a. C1 (observed impacts) takes potential impacts, which the gold puts in C2.
 - Detail lost: Partial values with a missing figure (7 in Buenos Aires, 14 in Seattle) or an incomplete or merged list (17 and 42).
 - The 34 fields outside v0 hold 160 Buenos Aires and 180 Seattle gold rows. They count as Omission by design.
 
@@ -130,7 +132,7 @@ These are proposals, because the output format is still being defined. The Madri
 
 | Measure                                   | Proposal          | Madrid                  | Buenos Aires and Seattle                             |
 | ----------------------------------------- | ----------------- | ----------------------- | ---------------------------------------------------- |
-| Values dropped by the quote check         | Under 5%          | 1.2% in run 5           | 1.0% to 3.8%, passes                                 |
+| Values dropped by validation              | Under 5%          | 1.2% in run 5           | 1.0% to 3.8%, passes                                 |
 | Required v0 fields with a value           | At least 10 of 12 | 12 of 12 in runs 1 to 5 | 12 of 12 in every run, passes                        |
 | Sampled values usable by hand review      | At least 80%      | 71% in run 1, fails     | Not measured: replaced by the judge                  |
 | Share correct in v0 fields, accepted rule | At least 80%      | Not measured            | 11.2% to 13.4% (BA), 11.5% to 17.1% (Seattle), fails |

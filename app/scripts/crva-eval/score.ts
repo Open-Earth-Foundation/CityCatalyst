@@ -46,6 +46,20 @@ export function formatEvidence(source: Source): string {
 interface Match {
   value: CrvaDraftValue;
   judgment: Judgment;
+  index: number;
+}
+
+interface Ordered {
+  index: number;
+  row: ScoredRow;
+}
+
+function sortOrdered(items: Ordered[]): ScoredRow[] {
+  return items
+    .sort(
+      (a, b) => a.row.fieldId.localeCompare(b.row.fieldId) || a.index - b.index,
+    )
+    .map((item) => item.row);
 }
 
 export function scoreRun(input: {
@@ -68,14 +82,17 @@ export function scoreRun(input: {
   ]);
 
   const goldScored: ScoredRow[] = [];
-  const extras: ScoredRow[] = [];
-  const duplicates: ScoredRow[] = [];
+  // Extras and duplicates carry their value index so the output order is stable.
+  const extras: Ordered[] = [];
+  const duplicates: Ordered[] = [];
 
   for (const fieldId of fieldIds) {
     const isV0Field = V0_FIELDS.has(fieldId);
     const values = bundle.values.filter((v) => v.fieldId === fieldId);
-    const fieldJudgments = judgments[fieldId];
-    const notJudged = isV0Field && !fieldJudgments;
+    const fieldJudgments = judgments[fieldId] ?? [];
+    // An empty list is the same as a field the judge never reached.
+    const notJudged =
+      isV0Field && fieldJudgments.length === 0 && values.length > 0;
     const rows = goldRows.filter((r) => r.fieldId === fieldId);
     // N/A rows take no value; a match naming one is scored as an extra.
     const fillable = new Map<string, GoldRow[]>();
@@ -86,17 +103,29 @@ export function scoreRun(input: {
 
     const byKey = new Map<string, Match[]>();
     const seen = new Set<number>();
-    for (const judgment of fieldJudgments ?? []) {
+    for (const judgment of fieldJudgments) {
       const value = values[judgment.valueIndex];
+      // Bad or repeated indexes are ignored; the value falls to "not judged".
       if (!value || seen.has(judgment.valueIndex)) continue;
       seen.add(judgment.valueIndex);
       const key = judgment.itemKey;
-      if (key !== null && fillable.has(key)) {
-        byKey.set(key, [...(byKey.get(key) ?? []), { value, judgment }]);
+      if (!judgment.goldGap && key !== null && fillable.has(key)) {
+        byKey.set(key, [
+          ...(byKey.get(key) ?? []),
+          { value, judgment, index: judgment.valueIndex },
+        ]);
         continue;
       }
-      extras.push(extraRow(fieldId, value, judgment, trapPages));
+      extras.push({
+        index: judgment.valueIndex,
+        row: extraRow(fieldId, value, judgment, trapPages),
+      });
     }
+    // Every bundle value must reach the output, judged or not.
+    values.forEach((value, index) => {
+      if (seen.has(index)) return;
+      extras.push({ index, row: unjudgedRow(fieldId, value, trapPages) });
+    });
 
     const filled = new Map<number, Match>();
     for (const [key, matches] of byKey) {
@@ -113,20 +142,23 @@ export function scoreRun(input: {
         }
         const { value, judgment } = match;
         duplicates.push({
-          kind: "duplicate",
-          rowNumber: null,
-          fieldId,
-          isV0Field,
-          itemKey: key,
-          goldStatus: null,
-          trap: trapPages.has(value.source.page),
-          modelValue: formatModelValue(value),
-          modelEvidence: formatEvidence(value.source),
-          modelStatus: judgment.modelStatus,
-          verdict: null,
-          notes: `duplicate of ${key}`,
-          reason: judgment.reason,
-          uncertain: judgment.uncertain,
+          index: match.index,
+          row: {
+            kind: "duplicate",
+            rowNumber: null,
+            fieldId,
+            isV0Field,
+            itemKey: key,
+            goldStatus: null,
+            trap: trapPages.has(value.source.page),
+            modelValue: formatModelValue(value),
+            modelEvidence: formatEvidence(value.source),
+            modelStatus: judgment.modelStatus,
+            verdict: null,
+            notes: `duplicate of ${key}`,
+            reason: judgment.reason,
+            uncertain: judgment.uncertain,
+          },
         });
       });
     }
@@ -167,11 +199,15 @@ export function scoreRun(input: {
         goldScored.push({ ...empty, modelStatus: "NOT_FOUND", verdict: null });
         continue;
       }
+      const unjudged = notJudged
+        ? { uncertain: true, reason: "field not judged" }
+        : {};
       if (row.status === "NOT_FOUND") {
         goldScored.push({
           ...empty,
           modelStatus: "NOT_FOUND",
           verdict: "Correct (NOT_FOUND)",
+          ...unjudged,
         });
         continue;
       }
@@ -185,15 +221,13 @@ export function scoreRun(input: {
           figurePage === undefined
             ? ""
             : `figure listed on p. ${figurePage} for review`,
-        ...(notJudged && values.length > 0
-          ? { uncertain: true, reason: "field not judged" }
-          : {}),
+        ...unjudged,
       });
     }
   }
 
   goldScored.sort((a, b) => a.rowNumber! - b.rowNumber!);
-  return [...goldScored, ...extras, ...duplicates];
+  return [...goldScored, ...sortOrdered(extras), ...sortOrdered(duplicates)];
 }
 
 function extraRow(
@@ -225,6 +259,30 @@ function extraRow(
   };
 }
 
+/** A value the judge never covered: kept visible and flagged for review. */
+function unjudgedRow(
+  fieldId: string,
+  value: CrvaDraftValue,
+  trapPages: Set<number>,
+): ScoredRow {
+  return {
+    kind: "extra",
+    rowNumber: null,
+    fieldId,
+    isV0Field: V0_FIELDS.has(fieldId),
+    itemKey: "",
+    goldStatus: null,
+    trap: trapPages.has(value.source.page),
+    modelValue: formatModelValue(value),
+    modelEvidence: formatEvidence(value.source),
+    modelStatus: "NOT_FOUND",
+    verdict: null,
+    notes: "not judged",
+    reason: "",
+    uncertain: true,
+  };
+}
+
 const CSV_HEADER = [
   "gold_row",
   "field_id",
@@ -236,7 +294,9 @@ const CSV_HEADER = [
   "eval notes",
 ];
 
-function csvCell(text: string): string {
+function csvCell(raw: string): string {
+  // A leading apostrophe stops Sheets from evaluating the cell as a formula.
+  const text = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 

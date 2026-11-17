@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import { parse } from "csv-parse/sync";
 import type {
   CrvaDraftBundle,
   CrvaDraftValue,
@@ -174,7 +175,7 @@ describe("scoreRun with matches", () => {
     );
     expect(rows).toHaveLength(2);
     expect(rows[0]).toMatchObject({ kind: "gold", verdict: "Correct" });
-    expect(rows[0].modelValue).toContain("second");
+    expect(rows[0].modelValue).toBe("second — 1961");
     expect(rows[1]).toMatchObject({
       kind: "duplicate",
       rowNumber: null,
@@ -198,8 +199,8 @@ describe("scoreRun with matches", () => {
       },
     );
     expect(rows.map((r) => r.kind)).toEqual(["gold", "gold"]);
-    expect(rows[0].modelValue).toContain("a");
-    expect(rows[1].modelValue).toContain("b");
+    expect(rows[0].modelValue).toBe("a — 1961");
+    expect(rows[1].modelValue).toBe("b — 1961");
   });
 
   it("a value matched to a NOT_FOUND row fills it as Hallucination", () => {
@@ -387,5 +388,141 @@ describe("reviewSample", () => {
   it("scales to 10% for large populations", () => {
     const rows = Array.from({ length: 500 }, (_, i) => row(i));
     expect(reviewSample(rows, 1)).toHaveLength(50);
+  });
+});
+
+describe("no value is ever dropped", () => {
+  const halluc = judgment({
+    itemKey: null,
+    verdict: "Hallucination",
+    modelStatus: "NOT_FOUND",
+  });
+
+  it("a value with no judgment becomes an uncertain 'not judged' extra", () => {
+    const rows = score([], [sourceValue("a"), sourceValue("b")], {
+      "A1.2a": [halluc],
+    });
+    expect(rows).toHaveLength(2);
+    expect(rows[1]).toMatchObject({
+      kind: "extra",
+      verdict: null,
+      uncertain: true,
+      notes: "not judged",
+      modelValue: "b — 1961",
+    });
+  });
+
+  it("out-of-range and negative valueIndex are ignored", () => {
+    const rows = score([], [sourceValue("a")], {
+      "A1.2a": [
+        judgment({ ...halluc, valueIndex: 5 }),
+        judgment({ ...halluc, valueIndex: -1 }),
+      ],
+    });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ notes: "not judged", uncertain: true });
+  });
+
+  it("an empty judgments array counts as not judged", () => {
+    const rows = score([goldRow({})], [sourceValue("a")], { "A1.2a": [] });
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({
+      uncertain: true,
+      reason: "field not judged",
+    });
+    expect(rows[1].notes).toBe("not judged");
+  });
+
+  it("a not-judged field with values and no gold rows still emits them", () => {
+    const rows = score([], [sourceValue("a")], {});
+    expect(rows).toHaveLength(1);
+    expect(rows[0].notes).toBe("not judged");
+  });
+
+  it("NOT_FOUND gold rows of a not-judged field are uncertain too", () => {
+    const [row] = score(
+      [goldRow({ status: "NOT_FOUND" })],
+      [sourceValue("a")],
+      {},
+    );
+    expect(row).toMatchObject({
+      verdict: "Correct (NOT_FOUND)",
+      uncertain: true,
+      reason: "field not judged",
+    });
+  });
+
+  it("N/A rows are not flagged as not judged", () => {
+    const [row] = score([goldRow({ status: "N/A" })], [sourceValue("a")], {});
+    expect(row.uncertain).toBe(false);
+  });
+});
+
+describe("matching edge cases", () => {
+  it("equal verdicts: the lower valueIndex fills the row", () => {
+    const rows = score([goldRow({})], [sourceValue("a"), sourceValue("b")], {
+      "A1.2a": [judgment({ valueIndex: 1 }), judgment({ valueIndex: 0 })],
+    });
+    expect(rows[0].modelValue).toBe("a — 1961");
+    expect(rows[1]).toMatchObject({
+      kind: "duplicate",
+      modelValue: "b — 1961",
+    });
+  });
+
+  it("a judgment naming an N/A row or unknown key becomes an extra", () => {
+    const rows = score(
+      [goldRow({ status: "N/A" })],
+      [sourceValue("a"), sourceValue("b")],
+      {
+        "A1.2a": [
+          judgment({ valueIndex: 0 }),
+          judgment({ valueIndex: 1, itemKey: "Nope" }),
+        ],
+      },
+    );
+    expect(rows.map((r) => r.kind)).toEqual(["gold", "extra", "extra"]);
+    expect(rows[0].modelValue).toBe("");
+  });
+
+  it("goldGap with an itemKey never fills a gold row", () => {
+    const rows = score([goldRow({})], [sourceValue("a")], {
+      "A1.2a": [judgment({ verdict: null, goldGap: true, uncertain: true })],
+    });
+    expect(rows[0]).toMatchObject({ kind: "gold", verdict: "Omission" });
+    expect(rows[1]).toMatchObject({ kind: "extra", notes: "GOLD GAP" });
+  });
+
+  it("extras are ordered by field then value index", () => {
+    const b: CrvaDraftValue = {
+      ...sourceValue("b"),
+      fieldId: "A1.1",
+      value: "t",
+    };
+    const rows = score([], [sourceValue("a"), sourceValue("c"), b], {});
+    expect(rows.map((r) => r.fieldId)).toEqual(["A1.1", "A1.2a", "A1.2a"]);
+    expect(rows.map((r) => r.modelValue)).toEqual([
+      "t",
+      "a — 1961",
+      "c — 1961",
+    ]);
+  });
+});
+
+describe("sheetCsv cells", () => {
+  it("round-trips multi-line cells and neutralises formulas", () => {
+    const rows = score(
+      [],
+      [sourceValue("line1\nline2"), sourceValue("=SUM(1)")],
+      {},
+    );
+    const parsed = parse(sheetCsv(rows), { columns: true }) as Record<
+      string,
+      string
+    >[];
+    expect(parsed).toHaveLength(2);
+    expect(parsed[0]["model value"]).toBe("line1\nline2 — 1961");
+    expect(parsed[1]["model value"]).toBe("'=SUM(1) — 1961");
+    expect(parsed[0]["eval notes"]).toBe("not judged");
   });
 });

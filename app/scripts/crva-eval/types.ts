@@ -23,6 +23,20 @@ export interface PdfPart {
   buffer: Buffer;
 }
 
+/** Pages of the original PDF that one part covered, and its size. */
+export interface PartRange {
+  startPage: number;
+  pageCount: number;
+  bytes: number;
+}
+
+/** "1–62, 63–121": the part boundaries, where a passage may have been cut. */
+export function formatPartPages(ranges: PartRange[]): string {
+  return ranges
+    .map((r) => `${r.startPage}–${r.startPage + r.pageCount - 1}`)
+    .join(", ");
+}
+
 /** One row of the Gold tab (the human-made answer key). */
 export interface GoldRow {
   /** 1-based row in the Sheet, so reports can point back to it. */
@@ -76,6 +90,10 @@ export interface ScoredRow {
   fieldId: string;
   itemKey: string;
   goldStatus: GoldStatus | null;
+  /** The gold row's answer, for review; empty for extras. */
+  goldValue: string;
+  goldEvidence: string;
+  goldPages: number[];
   isV0Field: boolean;
   trap: boolean;
   modelValue: string;

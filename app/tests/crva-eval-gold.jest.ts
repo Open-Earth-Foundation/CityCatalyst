@@ -152,6 +152,20 @@ describe("readGoldWorkbook", () => {
     ]);
   });
 
+  it("reads en and em dash ranges like a hyphen", async () => {
+    const file = await build({
+      goldRows: [
+        ["f1", "", "k1", "a", "32–35", "", "FOUND"],
+        ["f2", "", "k2", "a", "7 — 8", "", "FOUND"],
+      ],
+    });
+    const { rows } = await readGoldWorkbook(file);
+    expect(rows.map((r) => r.pages)).toEqual([
+      [32, 33, 34, 35],
+      [7, 8],
+    ]);
+  });
+
   it("rejects an unknown status naming the row", async () => {
     const file = await build({
       goldRows: [["f1", "", "k1", "a", "", "", "FOUN"]],

@@ -7,6 +7,7 @@ import type {
 import {
   formatEvidence,
   formatModelValue,
+  reviewCsv,
   reviewSample,
   scoreRun,
   sheetCsv,
@@ -147,6 +148,19 @@ describe("scoreRun without matches", () => {
       expect(row.modelStatus).toBe("PARTIAL");
     });
 
+    it.each(["figuras", "mapas", "gráficos", "figures", "maps", "charts"])(
+      "matches the plural %s",
+      (word) => {
+        const [row] = score(
+          [goldRow({ evidence: `ver ${word} 3 y 4` })],
+          [],
+          {},
+          { figures: captioned },
+        );
+        expect(row.modelStatus).toBe("PARTIAL");
+      },
+    );
+
     it("does not apply when the figure has no caption", () => {
       const [row] = score(
         [figureRow],
@@ -269,21 +283,41 @@ describe("field aliases", () => {
     });
   });
 
-  it("an unmatched A2.4a value keeps the adapter field id", () => {
+  it("an unmatched A2.4a value is filed under A2.4 and names the adapter field", () => {
     const rows = score([], [a24], {
       "A2.4a": [
         judgment({
           itemKey: null,
           verdict: "Hallucination",
           modelStatus: "NOT_FOUND",
+          reason: "invented",
         }),
       ],
     });
     expect(rows[0]).toMatchObject({
       kind: "extra",
-      fieldId: "A2.4a",
+      fieldId: "A2.4",
       isV0Field: true,
+      notes: "invented; adapter field A2.4a",
     });
+  });
+
+  it("aliased unjudged and duplicate rows use the gold id too", () => {
+    const rows = score(
+      [goldRow({ fieldId: "A2.4", itemKey: "Puerto" })],
+      [a24, a24, a24],
+      {
+        "A2.4a": [
+          judgment({ valueIndex: 0, itemKey: "Puerto" }),
+          judgment({ valueIndex: 1, itemKey: "Puerto" }),
+        ],
+      },
+    );
+    expect(rows.map((r) => [r.kind, r.fieldId, r.notes])).toEqual([
+      ["gold", "A2.4", "Same reference."],
+      ["extra", "A2.4", "not judged; adapter field A2.4a"],
+      ["duplicate", "A2.4", "duplicate of Puerto; adapter field A2.4a"],
+    ]);
   });
 
   it("A2.4 rows with no judged values count as v0 and not judged", () => {
@@ -434,6 +468,78 @@ describe("formatters and sheetCsv", () => {
   });
 });
 
+describe("gold side of scored rows", () => {
+  it("gold and duplicate rows carry the gold answer; extras are empty", () => {
+    const rows = score(
+      [goldRow({ evidence: "Balay, 1961", pages: [179, 180] })],
+      [sourceValue("a"), sourceValue("b"), sourceValue("c")],
+      {
+        "A1.2a": [
+          judgment({ valueIndex: 0 }),
+          judgment({ valueIndex: 1 }),
+          judgment({
+            valueIndex: 2,
+            itemKey: null,
+            verdict: "Hallucination",
+          }),
+        ],
+      },
+    );
+    const gold = {
+      goldValue: "Balay M. 1961",
+      goldEvidence: "Balay, 1961",
+      goldPages: [179, 180],
+    };
+    expect(rows.map((r) => r.kind)).toEqual(["gold", "extra", "duplicate"]);
+    expect(rows[0]).toMatchObject(gold);
+    expect(rows[2]).toMatchObject(gold);
+    expect(rows[1]).toMatchObject({
+      goldValue: "",
+      goldEvidence: "",
+      goldPages: [],
+    });
+  });
+
+  it("review.csv shows gold and model side by side; scored.csv is unchanged", () => {
+    const rows = score(
+      [goldRow({ evidence: "Balay, 1961" })],
+      [sourceValue("El Río")],
+      { "A1.2a": [judgment({ verdict: "Partial", uncertain: true })] },
+    );
+    const parsed = parse(reviewCsv(rows), { columns: true }) as Record<
+      string,
+      string
+    >[];
+    expect(Object.keys(parsed[0])).toEqual([
+      "gold_row",
+      "field_id",
+      "item_key",
+      "gold status",
+      "gold value",
+      "gold evidence",
+      "model value",
+      "model evidence",
+      "model status",
+      "verdict",
+      "uncertain",
+      "eval notes",
+    ]);
+    expect(parsed[0]).toMatchObject({
+      gold_row: "2",
+      "gold status": "FOUND",
+      "gold value": "Balay M. 1961",
+      "gold evidence": "Balay, 1961",
+      "model value": "El Río — 1961",
+      verdict: "Partial",
+      uncertain: "yes",
+    });
+    expect(sheetCsv(rows).split("\n")[0]).toBe(
+      "gold_row,field_id,item_key,model value,model evidence,model status,verdict,eval notes",
+    );
+    expect(sheetCsv(rows)).not.toContain("Balay, 1961");
+  });
+});
+
 describe("reviewSample", () => {
   const row = (i: number, extra: Partial<ScoredRow> = {}): ScoredRow => ({
     kind: "gold",
@@ -441,6 +547,9 @@ describe("reviewSample", () => {
     fieldId: "A1.1",
     itemKey: `k${i}`,
     goldStatus: "FOUND",
+    goldValue: "",
+    goldEvidence: "",
+    goldPages: [],
     isV0Field: true,
     trap: false,
     modelValue: "",
@@ -566,6 +675,12 @@ describe("matching edge cases", () => {
     );
     expect(rows.map((r) => r.kind)).toEqual(["gold", "extra", "extra"]);
     expect(rows[0].modelValue).toBe("");
+    expect(rows.slice(1).map((r) => [r.verdict, r.uncertain, r.notes])).toEqual(
+      [
+        [null, true, 'gold row "Balay (1961)" not found (stale judgment?)'],
+        [null, true, 'gold row "Nope" not found (stale judgment?)'],
+      ],
+    );
   });
 
   it("goldGap with an itemKey never fills a gold row", () => {

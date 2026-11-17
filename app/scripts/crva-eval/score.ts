@@ -23,7 +23,12 @@ const V0_FIELDS = new Set([
 
 /** A figure row is only worth a human look when the gold itself describes a figure. */
 const FIGURE_WORDS =
-  /\b(?:figura|fig\b\.?|mapa|gr[aá]fico|figure|map|chart)\b/i;
+  /\b(?:figuras?|fig|mapas?|gr[aá]ficos?|figures?|maps?|charts?)\b/i;
+
+/** Eval note of a value the judge never covered. */
+export const NOT_JUDGED = "not judged";
+/** Eval note of a value the gold missed. */
+export const GOLD_GAP = "GOLD GAP";
 
 /** Best first; a better verdict wins when several values hit one gold row. */
 const VERDICT_RANK: Verdict[] = [
@@ -51,6 +56,26 @@ export function formatModelValue(value: CrvaDraftValue): string {
 
 export function formatEvidence(source: Source): string {
   return `p. ${source.page} — "${source.quote}"`;
+}
+
+/** The page a scored row's model value cites, read back from formatEvidence. */
+export function citedPage(row: ScoredRow): number | null {
+  const match = /^p\. (\d+) — /.exec(row.modelEvidence);
+  return match ? Number(match[1]) : null;
+}
+
+/** Names the adapter's own field id on rows filed under an aliased gold id. */
+function withAdapterField(notes: string, adapterFieldId: string): string {
+  if (goldFieldId(adapterFieldId) === adapterFieldId) return notes;
+  return [notes, `adapter field ${adapterFieldId}`].filter(Boolean).join("; ");
+}
+
+function goldOf(row: GoldRow | undefined) {
+  return {
+    goldValue: row?.goldValue ?? "",
+    goldEvidence: row?.evidence ?? "",
+    goldPages: row ? [...row.pages] : [],
+  };
 }
 
 interface Match {
@@ -114,7 +139,7 @@ export function scoreRun(input: {
     const notJudged =
       isV0Field && fieldJudgments.length === 0 && values.length > 0;
     const rows = goldRows.filter((r) => r.fieldId === fieldId);
-    // N/A rows take no value; a match naming one is scored as an extra.
+    // N/A rows take no value; a judgment naming one becomes an extra.
     const fillable = new Map<string, GoldRow[]>();
     for (const row of rows) {
       if (row.status === "N/A") continue;
@@ -138,13 +163,13 @@ export function scoreRun(input: {
       }
       extras.push({
         index: judgment.valueIndex,
-        row: extraRow(value.fieldId, value, judgment, trapPages),
+        row: extraRow(fieldId, value, judgment, trapPages),
       });
     }
     // Every bundle value must reach the output, judged or not.
     values.forEach((value, index) => {
       if (seen.has(index)) return;
-      extras.push({ index, row: unjudgedRow(value.fieldId, value, trapPages) });
+      extras.push({ index, row: unjudgedRow(fieldId, value, trapPages) });
     });
 
     const filled = new Map<number, Match>();
@@ -170,12 +195,14 @@ export function scoreRun(input: {
             isV0Field,
             itemKey: key,
             goldStatus: null,
+            // The row it duplicates, so a reviewer can compare both values.
+            ...goldOf(free[0]),
             trap: trapPages.has(value.source.page),
             modelValue: formatModelValue(value),
             modelEvidence: formatEvidence(value.source),
             modelStatus: judgment.modelStatus,
             verdict: null,
-            notes: `duplicate of ${key}`,
+            notes: withAdapterField(`duplicate of ${key}`, value.fieldId),
             reason: judgment.reason,
             uncertain: judgment.uncertain,
           },
@@ -191,6 +218,7 @@ export function scoreRun(input: {
         isV0Field,
         itemKey: row.itemKey,
         goldStatus: row.status,
+        ...goldOf(row),
         trap: row.trapNote || row.pages.some((page) => trapPages.has(page)),
       };
       const match = filled.get(row.rowNumber);
@@ -254,6 +282,7 @@ export function scoreRun(input: {
   return [...goldScored, ...sortOrdered(extras), ...sortOrdered(duplicates)];
 }
 
+/** `fieldId` is the gold id; the value keeps the adapter's own. */
 function extraRow(
   fieldId: string,
   value: CrvaDraftValue,
@@ -261,8 +290,21 @@ function extraRow(
   trapPages: Set<number>,
 ): ScoredRow {
   let notes = judgment.reason;
-  if (judgment.goldGap) notes = "GOLD GAP";
-  else if (judgment.verdict === "Misattribution" && judgment.misattributedTo) {
+  let verdict = judgment.verdict;
+  let uncertain = judgment.uncertain;
+  if (judgment.goldGap) {
+    notes = GOLD_GAP;
+    verdict = null;
+  } else if (judgment.itemKey !== null) {
+    // The judge named a row that is not fillable now (the gold was edited
+    // after the judgment was cached, an N/A row, or a key it made up).
+    notes = `gold row "${judgment.itemKey}" not found (stale judgment?)`;
+    verdict = null;
+    uncertain = true;
+  } else if (
+    judgment.verdict === "Misattribution" &&
+    judgment.misattributedTo
+  ) {
     notes = `belongs in ${judgment.misattributedTo}`;
   }
   return {
@@ -272,14 +314,15 @@ function extraRow(
     isV0Field: V0_FIELDS.has(fieldId),
     itemKey: "",
     goldStatus: null,
+    ...goldOf(undefined),
     trap: trapPages.has(value.source.page),
     modelValue: formatModelValue(value),
     modelEvidence: formatEvidence(value.source),
     modelStatus: judgment.modelStatus,
-    verdict: judgment.goldGap ? null : judgment.verdict,
-    notes,
+    verdict,
+    notes: withAdapterField(notes, value.fieldId),
     reason: judgment.reason,
-    uncertain: judgment.uncertain,
+    uncertain,
   };
 }
 
@@ -296,12 +339,13 @@ function unjudgedRow(
     isV0Field: V0_FIELDS.has(fieldId),
     itemKey: "",
     goldStatus: null,
+    ...goldOf(undefined),
     trap: trapPages.has(value.source.page),
     modelValue: formatModelValue(value),
     modelEvidence: formatEvidence(value.source),
     modelStatus: "NOT_FOUND",
     verdict: null,
-    notes: "not judged",
+    notes: withAdapterField(NOT_JUDGED, value.fieldId),
     reason: "",
     uncertain: true,
   };
@@ -350,6 +394,44 @@ export function sheetCsv(rows: ScoredRow[]): string {
       .join(","),
   );
   return [CSV_HEADER.join(","), ...lines].join("\n") + "\n";
+}
+
+const REVIEW_HEADER = [
+  "gold_row",
+  "field_id",
+  "item_key",
+  "gold status",
+  "gold value",
+  "gold evidence",
+  "model value",
+  "model evidence",
+  "model status",
+  "verdict",
+  "uncertain",
+  "eval notes",
+];
+
+/** Gold and model side by side, so a reviewer can check a verdict without the Sheet. */
+export function reviewCsv(rows: ScoredRow[]): string {
+  const lines = rows.map((row) =>
+    [
+      row.rowNumber === null ? "" : String(row.rowNumber),
+      row.fieldId,
+      row.itemKey,
+      row.goldStatus ?? "",
+      row.goldValue,
+      row.goldEvidence,
+      row.modelValue,
+      row.modelEvidence,
+      row.goldStatus === "N/A" ? "" : row.modelStatus,
+      row.verdict ?? "",
+      row.uncertain ? "yes" : "no",
+      evalNotes(row),
+    ]
+      .map(csvCell)
+      .join(","),
+  );
+  return [REVIEW_HEADER.join(","), ...lines].join("\n") + "\n";
 }
 
 function mulberry32(seed: number): () => number {

@@ -34,10 +34,13 @@ function cellText(value: Excel.CellValue | undefined): string {
   return "";
 }
 
-/** Expands "32, 33" and "18 vs 84-95" into page numbers; ranges are inclusive. */
+/**
+ * Expands "32, 33" and "18 vs 84-95" into page numbers; ranges are inclusive
+ * and may use an en or em dash ("32–35"), as typed in the Sheets.
+ */
 function parsePages(text: string): number[] {
   const pages: number[] = [];
-  for (const match of text.matchAll(/(\d+)(?:\s*-\s*(\d+))?/g)) {
+  for (const match of text.matchAll(/(\d+)(?:\s*[-–—]\s*(\d+))?/g)) {
     const start = Number(match[1]);
     const end = match[2] ? Number(match[2]) : start;
     for (let page = start; page <= end; page++) pages.push(page);

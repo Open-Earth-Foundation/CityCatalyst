@@ -845,6 +845,17 @@ export function localeNumberReading(locale?: string): NumberReading {
   return decimal === "," ? "european" : "english";
 }
 
+/** The "Enter another total" option of the total card. */
+const OTHER_TOTAL = "other";
+/** A candidate index, the typed total, or nothing picked yet. */
+type TotalChoice = number | typeof OTHER_TOTAL | null;
+
+/**
+ * The document total card. The printed totals are options, plus "Enter
+ * another total", which opens the typed-total input (marked "No source").
+ * Without printed totals the input shows directly, with "Continue without a
+ * total".
+ */
 export function TotalCheckCard({
   t,
   check,
@@ -858,7 +869,11 @@ export function TotalCheckCard({
   // Shared with the card frame, so "Continue without" and Confirm save once.
   const saveState = useSave();
   const { candidates } = check;
-  const initial = (() => {
+  // A typed total (origin "user") reopens on "other" with its value.
+  const typedBefore =
+    check.selected?.origin === "user" ? check.selected.value : null;
+  const initial: TotalChoice = (() => {
+    if (typedBefore != null && candidates.length > 0) return OTHER_TOTAL;
     const fromSelected = check.selected
       ? candidates.findIndex(
           (c) =>
@@ -870,13 +885,17 @@ export function TotalCheckCard({
     // No qualifying total (e.g. only net totals for BASIC): the user picks.
     return check.suggested ?? null;
   })();
-  const [selected, setSelected] = useState<number | null>(initial);
-  const [typed, setTyped] = useState("");
+  const [selected, setSelected] = useState<TotalChoice>(initial);
+  const [typed, setTyped] = useState(
+    typedBefore != null ? String(typedBefore) : "",
+  );
   const typedValue = typed.trim()
     ? parseNumberString(typed, localeNumberReading(locale))
     : null;
   const typedValid =
     typedValue != null && Number.isFinite(typedValue) && typedValue > 0;
+  // The typed total is used without printed totals, or when "other" is picked.
+  const typing = candidates.length === 0 || selected === OTHER_TOTAL;
 
   const confirmedLine = t("import-check-confirmed", {
     check: t("import-total-check-label"),
@@ -884,12 +903,6 @@ export function TotalCheckCard({
       ? formatTonnes(t, check.selected.value, locale)
       : t("import-total-none"),
   });
-
-  // A single total is shown as evidence only when it is the suggestion;
-  // otherwise it is an option the user has to pick.
-  const single =
-    candidates.length === 1 && selected === 0 ? candidates[0] : null;
-  const listed = candidates.length >= 2 || (candidates.length === 1 && !single);
 
   return (
     <SaveContext.Provider value={saveState}>
@@ -904,55 +917,44 @@ export function TotalCheckCard({
             <NoSourceBadge t={t} />
           ) : undefined
         }
-        confirmDisabled={
-          candidates.length === 0 ? !typedValid : selected == null
-        }
+        confirmDisabled={typing ? !typedValid : selected == null}
         onConfirm={() =>
           onConfirm(
-            candidates.length === 0
+            typing
               ? { total: { value: typedValue as number } }
               : { total: { candidate: selected as number } },
           )
         }
       >
-        {single && (
-          <EvidenceBox>
-            <Flex justifyContent="space-between" gap={3} wrap="wrap">
-              <Box minW={0}>
-                <Text fontWeight="bold" color="content.primary">
-                  {single.label}
-                </Text>
-                {candidateLocation(t, single) && (
-                  <Text>{candidateLocation(t, single)}</Text>
-                )}
-              </Box>
-              <Text
-                fontWeight="semibold"
-                color="content.primary"
-                whiteSpace="nowrap"
-              >
-                {formatTonnes(t, single.value, locale)}
-              </Text>
-            </Flex>
-          </EvidenceBox>
-        )}
-        {listed && (
+        {candidates.length > 0 && (
           <OptionList
             selected={selected == null ? "" : String(selected)}
-            onSelect={(value) => setSelected(Number(value))}
-            options={candidates.map((candidate, index) => ({
-              value: String(index),
-              title: candidate.label,
-              detail: candidateLocation(t, candidate) || undefined,
-              total: formatTonnes(t, candidate.value, locale),
-            }))}
+            onSelect={(value) =>
+              setSelected(value === OTHER_TOTAL ? OTHER_TOTAL : Number(value))
+            }
+            options={[
+              ...candidates.map((candidate, index) => ({
+                value: String(index),
+                title: candidate.label,
+                detail: candidateLocation(t, candidate) || undefined,
+                total: formatTonnes(t, candidate.value, locale),
+              })),
+              {
+                value: OTHER_TOTAL,
+                title: t("import-total-other-option"),
+                detail: t("import-total-other-detail"),
+                total: "",
+              },
+            ]}
           />
         )}
-        {candidates.length === 0 && (
+        {typing && (
           <VStack alignItems="stretch" gap={2}>
-            <Text fontSize="body.sm" color="content.secondary">
-              {t("import-total-fallback-hint")}
-            </Text>
+            {candidates.length === 0 && (
+              <Text fontSize="body.sm" color="content.secondary">
+                {t("import-total-fallback-hint")}
+              </Text>
+            )}
             <HStack gap={2} flexWrap="wrap">
               <Text asChild fontSize="body.sm">
                 <label htmlFor="import-total-input">
@@ -977,21 +979,23 @@ export function TotalCheckCard({
                 = {formatTonnes(t, typedValue as number, locale)}
               </Text>
             )}
-            <Box>
-              <Button
-                variant="ghost"
-                size="sm"
-                px={0}
-                color="content.link"
-                textDecoration="underline"
-                disabled={saveState.saving}
-                onClick={() =>
-                  saveState.save(() => onConfirm({ total: { skip: true } }))
-                }
-              >
-                {t("import-total-continue-without")}
-              </Button>
-            </Box>
+            {candidates.length === 0 && (
+              <Box>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  px={0}
+                  color="content.link"
+                  textDecoration="underline"
+                  disabled={saveState.saving}
+                  onClick={() =>
+                    saveState.save(() => onConfirm({ total: { skip: true } }))
+                  }
+                >
+                  {t("import-total-continue-without")}
+                </Button>
+              </Box>
+            )}
           </VStack>
         )}
       </SourceCheckCard>

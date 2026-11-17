@@ -353,6 +353,60 @@ describe("SourceCheckCards", () => {
     });
   });
 
+  it("lets the user enter another total when the document prints one", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [candidate({ source: "Table 3", page: 7 })],
+          selected: null,
+          suggested: 0,
+        },
+      },
+      onConfirm,
+    });
+    expect(radio(c, "0").checked).toBe(true);
+    expect(c.querySelector("input[inputmode='decimal']")).toBeNull();
+    expect(c.textContent).toContain("Enter another total");
+    await act(async () => radio(c, "other").click());
+    const input = c.querySelector(
+      "input[inputmode='decimal']",
+    ) as HTMLInputElement;
+    expect(input).not.toBeNull();
+    expect(c.textContent).toContain("No source");
+    expect(button(c, "Confirm").disabled).toBe(true);
+    await act(async () => setInput(input, "400,000"));
+    expect(byTestId(c, "import-total-parsed")?.textContent).toContain(
+      "400,000",
+    );
+    expect(button(c, "Confirm").disabled).toBe(false);
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { value: 400000 },
+      expected: { units: {}, numberFormat: null },
+    });
+    // No "Continue without" when the document prints a total.
+    expect(button(c, "Continue without a total")).toBeUndefined();
+  });
+
+  it("reopens a typed total with the other option and its value", async () => {
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [candidate({})],
+          selected: { value: 400000, origin: "user" } as never,
+          suggested: 0,
+        },
+      },
+    });
+    expect(radio(c, "other").checked).toBe(true);
+    expect(
+      (c.querySelector("input[inputmode='decimal']") as HTMLInputElement).value,
+    ).toBe("400000");
+  });
+
   it("preselects no total when none qualifies, and waits for a pick", async () => {
     const onConfirm = jest.fn();
     const c = await render({

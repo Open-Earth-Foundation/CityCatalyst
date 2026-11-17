@@ -414,6 +414,8 @@
   "import-total-fallback-hint": "No se encontró ningún total en el documento. Escriba el total que indica, si lo hay.",
   "import-total-input-label": "Emisiones totales en el documento (t CO2e)",
   "import-total-no-source": "Sin fuente",
+  "import-total-other-option": "Introducir otro total",
+  "import-total-other-detail": "Use un total que sabe que es correcto. Se marca como no tomado del documento.",
   "import-total-continue-without": "Continuar sin un total",
   "import-source-checks-pending": "Confirme las revisiones de arriba antes de importar.",
   "import-source-checks-pending-button": "Confirme primero las revisiones",

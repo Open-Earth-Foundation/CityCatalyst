@@ -413,6 +413,8 @@
   "import-total-fallback-hint": "Im Dokument wurde kein Gesamtwert gefunden. Geben Sie den Gesamtwert ein, den es angibt, falls vorhanden.",
   "import-total-input-label": "Gesamtemissionen im Dokument (t CO2e)",
   "import-total-no-source": "Keine Quelle",
+  "import-total-other-option": "Anderen Gesamtwert eingeben",
+  "import-total-other-detail": "Verwenden Sie einen Gesamtwert, von dem Sie wissen, dass er stimmt. Er wird als nicht aus dem Dokument stammend markiert.",
   "import-total-continue-without": "Ohne Gesamtwert fortfahren",
   "import-source-checks-pending": "Bestätigen Sie die Prüfungen oben, bevor Sie importieren.",
   "import-source-checks-pending-button": "Zuerst die Prüfungen bestätigen",

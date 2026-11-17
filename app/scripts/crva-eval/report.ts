@@ -330,7 +330,7 @@ export function buildReport(input: {
     const gid = goldFieldId(id);
     const s = summarize(rows, (r) => r.fieldId === id || r.fieldId === gid);
     const label = gid === id ? id : `${id} (gold ${gid})`;
-    return `| ${label} | ${s.scored} | ${pct(s.shareCorrect)} |`;
+    return `| ${label} | ${s.scored} | ${pct(s.shareCorrectAccepted)} | ${pct(s.shareCorrect)} |`;
   });
 
   const usedModels = input.judgeModels?.length
@@ -383,8 +383,8 @@ export function buildReport(input: {
       "",
       reasonTables(v0Rows),
       "",
-      "| Field | Scored rows | Share correct |",
-      "| --- | --- | --- |",
+      "| Field | Scored rows | Share correct, accepted rule | Share correct, full detail |",
+      "| --- | --- | --- | --- |",
       ...perField,
       "",
       `## Other fields (${otherFieldCount})`,
@@ -421,10 +421,11 @@ export function buildReport(input: {
       ),
       // The adapter is judged on its own 12 fields; the other fields have no
       // model values, so the overall share mostly measures the gold's size.
+      // The accepted rule is the official one; full detail is shown beside it.
       check(
-        "At least 80% correct (v0 fields)",
-        v0.shareCorrect >= THRESHOLDS.minCorrect,
-        `${pct(v0.shareCorrect)} v0; overall ${pct(overall.shareCorrect)}`,
+        "At least 80% correct (v0 fields, accepted rule)",
+        v0.shareCorrectAccepted >= THRESHOLDS.minCorrect,
+        `accepted rule: ${pct(v0.shareCorrectAccepted)} v0, overall ${pct(overall.shareCorrectAccepted)}; full detail: ${pct(v0.shareCorrect)} v0, overall ${pct(overall.shareCorrect)}`,
       ),
       "",
       "## Run",

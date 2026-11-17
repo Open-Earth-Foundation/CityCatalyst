@@ -483,8 +483,32 @@ describe("thresholds and measures", () => {
   it("evaluates 80% correct on v0 and shows overall beside it", () => {
     const t = report.split("## Thresholds")[1].split("\n## ")[0];
     expect(t).toContain(
-      "| At least 80% correct (v0 fields) | 80.0% v0; overall 40.0% | pass |",
+      "| At least 80% correct (v0 fields, accepted rule) | accepted rule: 80.0% v0, overall 40.0%; full detail: 80.0% v0, overall 40.0% | pass |",
     );
+  });
+
+  // 7 Correct + 1 trimmed wording of 10 v0 rows: 80% accepted, 70% full detail.
+  const trimmed = [
+    ...rowsOf("Correct", 7),
+    ...rowsOf("Partial", 1, { partialReason: "trimmed_wording" }),
+    ...rowsOf("Omission", 2),
+    ...rowsOf("Omission", 10, { isV0Field: false, fieldId: "X9" }),
+  ];
+  const trimmedReport = buildReport({ city: "x", rows: trimmed, gold, stats });
+
+  it("decides the 80% threshold on the accepted rule, full detail beside it", () => {
+    const t = trimmedReport.split("## Thresholds")[1].split("\n## ")[0];
+    expect(t).toContain(
+      "| At least 80% correct (v0 fields, accepted rule) | accepted rule: 80.0% v0, overall 40.0%; full detail: 70.0% v0, overall 35.0% | pass |",
+    );
+  });
+
+  it("per-field share correct shows the accepted rule first, then full detail", () => {
+    const v0 = trimmedReport.split("## v0 fields (12)")[1].split("\n## ")[0];
+    expect(v0).toContain(
+      "| Field | Scored rows | Share correct, accepted rule | Share correct, full detail |",
+    );
+    expect(v0).toContain("| A1.2a | 10 | 80.0% | 70.0% |");
   });
 
   describe("coverage, precision and reason tables", () => {
